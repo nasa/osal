@@ -3378,7 +3378,8 @@ int32 OS_Tick2Micros (void)
    ** and how do we find out ?
    */
    /*return(10000);*/
-   return((1/(CLOCKS_PER_SEC))*1000);
+   int32 tick_duration_usec = (1/(CLOCKS_PER_SEC))*1000;
+   return((tick_duration_usec > 0) ? tick_duration_usec : 1);
 }
 
 
