@@ -107,23 +107,45 @@
    #define OS_USED 
 #endif
 
-#if defined(_ix86_)
+#include <stdint.h>
+#include <stdbool.h>
+
+#define int8 int8_t
+#define int16 int16_t
+#define int32 int32_t
+#define int64 int64_t
+#define uint8 uint8_t
+#define uint16 uint16_t
+#define uint32 uint32_t
+#define uint64 uint64_t
+
+#if defined(__i386)
 /* ----------------------- Intel x86 processor family -------------------------*/
   /* Little endian */
   #undef   _STRUCT_HIGH_BIT_FIRST_
   #define  _STRUCT_LOW_BIT_FIRST_
 
 #ifndef _USING_RTEMS_INCLUDES_
-  typedef unsigned char                         boolean;
+  #define boolean bool
 #endif
 
-  typedef signed char                           int8;
-  typedef short int                             int16;
-  typedef long int                              int32;
-  typedef unsigned char                         uint8;
-  typedef unsigned short int                    uint16;
-  typedef unsigned long int                     uint32;
-  _EXTENSION_ typedef unsigned long long int    uint64;
+#elif defined(__x86_64__)
+/* ----------------------- Intel x86 64 processor family -------------------------*/
+  /* Little endian */
+  #undef   _STRUCT_HIGH_BIT_FIRST_
+  #define  _STRUCT_LOW_BIT_FIRST_
+
+#ifndef _USING_RTEMS_INCLUDES_
+  #define boolean bool
+#endif
+
+#elif defined(__arm__)
+/* ----------------------- ARM processor family -------------------------*/
+  /* Little endian */
+  #undef   _STRUCT_HIGH_BIT_FIRST_
+  #define  _STRUCT_LOW_BIT_FIRST_
+
+  #define boolean bool
 
 #elif defined(__PPC__)
    /* ----------------------- Motorola Power PC family ---------------------------*/
@@ -132,14 +154,7 @@
    #define _STRUCT_HIGH_BIT_FIRST_
    #undef  _STRUCT_LOW_BIT_FIRST_
 
-   typedef unsigned char                        boolean;
-   typedef signed char                          int8;
-   typedef short int                            int16;
-   typedef long int                             int32;
-   typedef unsigned char                        uint8;
-   typedef unsigned short int                   uint16;
-   typedef unsigned long int                    uint32;
-   _EXTENSION_ typedef unsigned long long int   uint64;
+   #define boolean bool
 
 #elif defined(_m68k_)
    /* ----------------------- Motorola m68k/Coldfire family ---------------------------*/
@@ -147,14 +162,7 @@
    #define _STRUCT_HIGH_BIT_FIRST_
    #undef  _STRUCT_LOW_BIT_FIRST_
 
-   typedef unsigned char                        boolean;
-   typedef signed char                          int8;
-   typedef short int                            int16;
-   typedef long int                             int32;
-   typedef unsigned char                        uint8;
-   typedef unsigned short int                   uint16;
-   typedef unsigned long int                    uint32;
-   _EXTENSION_ typedef unsigned long long int   uint64;
+   #define boolean bool
 
 #elif defined(__SPARC__)
    /* ----------------------- SPARC/LEON family ---------------------------*/
@@ -162,14 +170,7 @@
    #define _STRUCT_HIGH_BIT_FIRST_
    #undef  _STRUCT_LOW_BIT_FIRST_
 
-   typedef unsigned char                        boolean;
-   typedef signed char                          int8;
-   typedef short int                            int16;
-   typedef long int                             int32;
-   typedef unsigned char                        uint8;
-   typedef unsigned short int                   uint16;
-   typedef unsigned long int                    uint32;
-   _EXTENSION_ typedef unsigned long long int   uint64;
+   #define boolean bool
 
 #else  /* not any of the above */
    #error undefined processor
