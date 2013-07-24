@@ -2063,7 +2063,9 @@ int32 OS_BinSemDelete (uint32 sem_id)
 ---------------------------------------------------------------------------------------*/
 int32 OS_BinSemGive ( uint32 sem_id )
 {
-    int    ret;
+    int      ret;
+    sigset_t previous;
+    sigset_t mask;
    
     /* Check Parameters */
     if(sem_id >= OS_MAX_BIN_SEMAPHORES || OS_bin_sem_table[sem_id].free == TRUE)
@@ -2072,7 +2074,7 @@ int32 OS_BinSemGive ( uint32 sem_id )
     }
 
     /* Lock the mutex ( not the table! ) */    
-    ret = pthread_mutex_lock(&(OS_bin_sem_table[sem_id].id));
+    ret = OS_SafeLockTable(&(OS_bin_sem_table[sem_id].id), &mask, &previous);
     if ( ret != 0 )
     {
        return(OS_SEM_FAILURE);
@@ -2087,7 +2089,7 @@ int32 OS_BinSemGive ( uint32 sem_id )
          pthread_cond_signal(&(OS_bin_sem_table[sem_id].cv));
     }
 
-    pthread_mutex_unlock(&(OS_bin_sem_table[sem_id].id));
+    OS_SafeUnlockTable(&(OS_bin_sem_table[sem_id].id), &previous);
     return (OS_SUCCESS);
 
 }/* end OS_BinSemGive */
@@ -2107,8 +2109,10 @@ int32 OS_BinSemGive ( uint32 sem_id )
 ---------------------------------------------------------------------------------------*/
 int32 OS_BinSemFlush (uint32 sem_id)
 {
-    uint32 ret_val;
-    int32  ret = 0;
+    uint32   ret_val;
+    int32    ret = 0;
+    sigset_t previous;
+    sigset_t mask;
 
     /* Check Parameters */
     if(sem_id >= OS_MAX_BIN_SEMAPHORES || OS_bin_sem_table[sem_id].free == TRUE)
@@ -2117,7 +2121,7 @@ int32 OS_BinSemFlush (uint32 sem_id)
     }
 
     /* Lock the mutex ( not the table! ) */    
-    ret = pthread_mutex_lock(&(OS_bin_sem_table[sem_id].id));
+    ret = OS_SafeLockTable(&(OS_bin_sem_table[sem_id].id), &mask, &previous);
     if ( ret != 0 )
     {
        return(OS_SEM_FAILURE);
@@ -2136,7 +2140,7 @@ int32 OS_BinSemFlush (uint32 sem_id)
     {
        ret_val = OS_SEM_FAILURE;
     }
-    ret = pthread_mutex_unlock(&(OS_bin_sem_table[sem_id].id));
+    OS_SafeUnlockTable(&(OS_bin_sem_table[sem_id].id), &previous);
 
     return(ret_val);
 
@@ -2158,8 +2162,10 @@ int32 OS_BinSemFlush (uint32 sem_id)
 ----------------------------------------------------------------------------------------*/
 int32 OS_BinSemTake ( uint32 sem_id )
 {
-    uint32 ret_val;
-    int    ret;
+    uint32   ret_val;
+    int      ret;
+    sigset_t previous;
+    sigset_t mask;
    
     /* Check parameters */ 
     if(sem_id >= OS_MAX_BIN_SEMAPHORES  || OS_bin_sem_table[sem_id].free == TRUE)
@@ -2168,7 +2174,7 @@ int32 OS_BinSemTake ( uint32 sem_id )
     }
         
     /* Lock the mutex */    
-    ret = pthread_mutex_lock(&(OS_bin_sem_table[sem_id].id));
+    ret = OS_SafeLockTable(&(OS_bin_sem_table[sem_id].id), &mask, &previous);
     if ( ret != 0 )
     {
        return(OS_SEM_FAILURE);
@@ -2208,7 +2214,7 @@ int32 OS_BinSemTake ( uint32 sem_id )
     }
 
     /* Unlock the mutex */
-    pthread_mutex_unlock(&(OS_bin_sem_table[sem_id].id));
+    OS_SafeUnlockTable(&(OS_bin_sem_table[sem_id].id), &previous);
     
     return (ret_val);
 
@@ -2234,6 +2240,8 @@ int32 OS_BinSemTimedWait ( uint32 sem_id, uint32 msecs )
     int              ret;
     uint32           ret_val;
     struct timespec  ts;
+    sigset_t         previous;
+    sigset_t         mask;
 
     if( (sem_id >= OS_MAX_BIN_SEMAPHORES) || (OS_bin_sem_table[sem_id].free == TRUE) )
     {
@@ -2246,7 +2254,7 @@ int32 OS_BinSemTimedWait ( uint32 sem_id, uint32 msecs )
     ret_val = OS_CompAbsDelayTime(msecs, &ts);
 
     /* Lock the mutex */    
-    ret = pthread_mutex_lock(&(OS_bin_sem_table[sem_id].id));
+    ret = OS_SafeLockTable(&(OS_bin_sem_table[sem_id].id), &mask, &previous);
     if ( ret != 0 )
     {
        return(OS_SEM_FAILURE);
@@ -2288,7 +2296,7 @@ int32 OS_BinSemTimedWait ( uint32 sem_id, uint32 msecs )
     }
 
     /* Unlock the mutex */
-    pthread_mutex_unlock(&(OS_bin_sem_table[sem_id].id));
+    OS_SafeUnlockTable(&(OS_bin_sem_table[sem_id].id), &previous);
 
     return ret_val;
 }
@@ -2595,7 +2603,9 @@ int32 OS_CountSemDelete (uint32 sem_id)
 ---------------------------------------------------------------------------------------*/
 int32 OS_CountSemGive ( uint32 sem_id )
 {
-    int   ret;
+    int      ret;
+    sigset_t previous;
+    sigset_t mask;
    
     /* Check Parameters */
     if(sem_id >= OS_MAX_COUNT_SEMAPHORES || OS_count_sem_table[sem_id].free == TRUE)
@@ -2604,7 +2614,7 @@ int32 OS_CountSemGive ( uint32 sem_id )
     }
 
     /* Lock the mutex ( not the table! ) */    
-    ret = pthread_mutex_lock(&(OS_count_sem_table[sem_id].id));
+    ret = OS_SafeLockTable(&(OS_count_sem_table[sem_id].id), &mask, &previous);
     if ( ret != 0 )
     {
        return(OS_SEM_FAILURE);
@@ -2624,7 +2634,7 @@ int32 OS_CountSemGive ( uint32 sem_id )
          OS_count_sem_table[sem_id].current_value ++;
     }
 
-    pthread_mutex_unlock(&(OS_count_sem_table[sem_id].id));
+    OS_SafeUnlockTable(&(OS_count_sem_table[sem_id].id), &previous);
 
     return (OS_SUCCESS);
 
@@ -2646,8 +2656,10 @@ int32 OS_CountSemGive ( uint32 sem_id )
 ----------------------------------------------------------------------------------------*/
 int32 OS_CountSemTake ( uint32 sem_id )
 {
-    uint32 ret_val;
-    int    ret;
+    uint32   ret_val;
+    int      ret;
+    sigset_t previous;
+    sigset_t mask;
    
     /* Check parameters */ 
     if(sem_id >= OS_MAX_COUNT_SEMAPHORES  || OS_count_sem_table[sem_id].free == TRUE)
@@ -2656,7 +2668,7 @@ int32 OS_CountSemTake ( uint32 sem_id )
     }
         
     /* Lock the mutex */    
-    ret = pthread_mutex_lock(&(OS_count_sem_table[sem_id].id));
+    ret = OS_SafeLockTable(&(OS_count_sem_table[sem_id].id), &mask, &previous);
     if ( ret != 0 )
     {
        return(OS_SEM_FAILURE);
@@ -2695,7 +2707,7 @@ int32 OS_CountSemTake ( uint32 sem_id )
     }
 
     /* Unlock the mutex */
-    pthread_mutex_unlock(&(OS_count_sem_table[sem_id].id));
+    OS_SafeUnlockTable(&(OS_count_sem_table[sem_id].id), &previous);
     
     return (ret_val);
 
@@ -2721,6 +2733,8 @@ int32 OS_CountSemTimedWait ( uint32 sem_id, uint32 msecs )
     int              ret;
     uint32           ret_val;
     struct timespec  ts;
+    sigset_t         previous;
+    sigset_t         mask;
 
     if( (sem_id >= OS_MAX_COUNT_SEMAPHORES) || (OS_count_sem_table[sem_id].free == TRUE) )
     {
@@ -2733,7 +2747,7 @@ int32 OS_CountSemTimedWait ( uint32 sem_id, uint32 msecs )
     ret_val = OS_CompAbsDelayTime(msecs, &ts);
 
     /* Lock the mutex */    
-    ret = pthread_mutex_lock(&(OS_count_sem_table[sem_id].id));
+    ret = OS_SafeLockTable(&(OS_count_sem_table[sem_id].id), &mask, &previous);
     if ( ret != 0 )
     {
        return(OS_SEM_FAILURE);
@@ -2774,7 +2788,7 @@ int32 OS_CountSemTimedWait ( uint32 sem_id, uint32 msecs )
     }
 
     /* Unlock the mutex */
-    pthread_mutex_unlock(&(OS_count_sem_table[sem_id].id));
+    OS_SafeUnlockTable(&(OS_count_sem_table[sem_id].id), &previous);
 
     return ret_val;
 }
