@@ -222,6 +222,12 @@ pthread_mutex_t OS_count_sem_table_mut;
 uint32          OS_printf_enabled = TRUE;
 
 /*
+** Local Helper Functions for locking and unlocking
+*/
+int OS_SafeLockTable(pthread_mutex_t *lock, sigset_t *set, sigset_t *previous);
+void OS_SafeUnlockTable(pthread_mutex_t *lock, sigset_t *previous);
+
+/*
 ** Local Function Prototypes
 */
 uint32  OS_CompAbsDelayTime( uint32 milli_second , struct timespec * tm);
@@ -430,6 +436,8 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
     uint32             local_stack_size;
     int                ret;  
     int                os_priority;
+    sigset_t           previous;
+    sigset_t           mask;
 
     
     /* Check for NULL pointers */    
@@ -453,9 +461,9 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
 
     /* Change OSAL priority into a priority that will work for this OS */
     os_priority = OS_PriorityRemap(priority);
-    
+
     /* Check Parameters */
-    pthread_mutex_lock(&OS_task_table_mut); 
+    OS_SafeLockTable(&OS_task_table_mut, &mask, &previous);
 
     for(possible_taskid = 0; possible_taskid < OS_MAX_TASKS; possible_taskid++)
     {
@@ -468,7 +476,7 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
     /* Check to see if the id is out of bounds */
     if( possible_taskid >= OS_MAX_TASKS || OS_task_table[possible_taskid].free != TRUE)
     {
-        pthread_mutex_unlock(&OS_task_table_mut);
+        OS_SafeUnlockTable(&OS_task_table_mut, &previous);
         return OS_ERR_NO_FREE_IDS;
     }
 
@@ -477,8 +485,8 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
     {
         if ((OS_task_table[i].free == FALSE) &&
            ( strcmp((char*) task_name, OS_task_table[i].name) == 0)) 
-        {       
-            pthread_mutex_unlock(&OS_task_table_mut);
+        {
+            OS_SafeUnlockTable(&OS_task_table_mut, &previous);
             return OS_ERR_NAME_TAKEN;
         }
     }
@@ -489,7 +497,7 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
     */
     OS_task_table[possible_taskid].free = FALSE;
     
-    pthread_mutex_unlock(&OS_task_table_mut);
+    OS_SafeUnlockTable(&OS_task_table_mut, &previous);
 
     if ( stack_size < PTHREAD_STACK_MIN )
     {
@@ -507,9 +515,9 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
     memset(&custom_attr, 0, sizeof(custom_attr));
     if(pthread_attr_init(&custom_attr))
     {  
-        pthread_mutex_lock(&OS_task_table_mut); 
+        OS_SafeLockTable(&OS_task_table_mut, &mask, &previous);
         OS_task_table[possible_taskid].free = TRUE;
-        pthread_mutex_unlock(&OS_task_table_mut); 
+        OS_SafeUnlockTable(&OS_task_table_mut, &previous);
         printf("pthread_attr_init error in OS_TaskCreate, Task ID = %d\n",possible_taskid);
 		  perror("pthread_attr_init");
         return(OS_ERROR); 
@@ -555,9 +563,9 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
                                  (void *)0);
     if (return_code != 0)
     {
-        pthread_mutex_lock(&OS_task_table_mut); 
+        OS_SafeLockTable(&OS_task_table_mut, &mask, &previous);
         OS_task_table[possible_taskid].free = TRUE;
-        pthread_mutex_unlock(&OS_task_table_mut); 
+        OS_SafeUnlockTable(&OS_task_table_mut, &previous);
         printf("pthread_create error in OS_TaskCreate, Task ID = %d\n",possible_taskid);
         return(OS_ERROR);
     }
@@ -568,9 +576,9 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
     return_code = pthread_detach(OS_task_table[possible_taskid].id);
     if (return_code !=0)
     {
-       pthread_mutex_lock(&OS_task_table_mut);
+       OS_SafeLockTable(&OS_task_table_mut, &mask, &previous);
        OS_task_table[possible_taskid].free = TRUE;
-       pthread_mutex_unlock(&OS_task_table_mut);
+       OS_SafeUnlockTable(&OS_task_table_mut, &previous);
        printf("pthread_detach error in OS_TaskCreate, Task ID = %d\n",possible_taskid);
        return(OS_ERROR);
     }
@@ -578,9 +586,9 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
     return_code = pthread_attr_destroy(&custom_attr);
     if (return_code !=0)
     {
-       pthread_mutex_lock(&OS_task_table_mut);
+       OS_SafeLockTable(&OS_task_table_mut, &mask, &previous);
        OS_task_table[possible_taskid].free = TRUE;
-       pthread_mutex_unlock(&OS_task_table_mut);
+       OS_SafeUnlockTable(&OS_task_table_mut, &previous);
        printf("pthread_attr_destroy error in OS_TaskCreate, Task ID = %d\n",possible_taskid);
        return(OS_ERROR);
     }
@@ -593,7 +601,7 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
     /* 
     ** Initialize the table entries 
     */
-    pthread_mutex_lock(&OS_task_table_mut); 
+    OS_SafeLockTable(&OS_task_table_mut, &mask, &previous);
 
     OS_task_table[possible_taskid].free = FALSE;
     strcpy(OS_task_table[*task_id].name, (char*) task_name);
@@ -602,7 +610,7 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
     /* Use the abstracted priority, not the OS one */
     OS_task_table[possible_taskid].priority = priority;
 
-    pthread_mutex_unlock(&OS_task_table_mut);
+    OS_SafeUnlockTable(&OS_task_table_mut, &previous);
 
     return OS_SUCCESS;
 }/* end OS_TaskCreate */
@@ -621,6 +629,8 @@ int32 OS_TaskDelete (uint32 task_id)
 {    
     int       ret;
     FuncPtr_t FunctionPointer;
+    sigset_t  previous;
+    sigset_t  mask;
     
     /* 
     ** Check to see if the task_id given is valid 
@@ -654,7 +664,7 @@ int32 OS_TaskDelete (uint32 task_id)
     ** Now that the task is deleted, remove its 
     ** "presence" in OS_task_table
     */
-    pthread_mutex_lock(&OS_task_table_mut); 
+    OS_SafeLockTable(&OS_task_table_mut, &mask, &previous);
 
     OS_task_table[task_id].free = TRUE;
     strcpy(OS_task_table[task_id].name, "");
@@ -664,7 +674,7 @@ int32 OS_TaskDelete (uint32 task_id)
     OS_task_table[task_id].id = UNINITIALIZED;
     OS_task_table[task_id].delete_hook_pointer = NULL;
     
-    pthread_mutex_unlock(&OS_task_table_mut);
+    OS_SafeUnlockTable(&OS_task_table_mut, &previous);
 
     return OS_SUCCESS;
     
@@ -680,11 +690,13 @@ int32 OS_TaskDelete (uint32 task_id)
 
 void OS_TaskExit()
 {
-    uint32 task_id;
+    uint32   task_id;
+    sigset_t previous;
+    sigset_t mask;
 
     task_id = OS_TaskGetId();
 
-    pthread_mutex_lock(&OS_task_table_mut); 
+    OS_SafeLockTable(&OS_task_table_mut, &mask, &previous);
 
     OS_task_table[task_id].free = TRUE;
     strcpy(OS_task_table[task_id].name, "");
@@ -694,7 +706,7 @@ void OS_TaskExit()
     OS_task_table[task_id].id = UNINITIALIZED;
     OS_task_table[task_id].delete_hook_pointer = NULL;
     
-    pthread_mutex_unlock(&OS_task_table_mut);
+    OS_SafeUnlockTable(&OS_task_table_mut, &previous);
 
     pthread_exit(NULL);
 
@@ -902,6 +914,9 @@ int32 OS_TaskGetIdByName (uint32 *task_id, const char *task_name)
 ---------------------------------------------------------------------------------------*/
 int32 OS_TaskGetInfo (uint32 task_id, OS_task_prop_t *task_prop)  
 {
+    sigset_t previous;
+    sigset_t mask;
+
     /* 
     ** Check to see that the id given is valid 
     */
@@ -916,7 +931,7 @@ int32 OS_TaskGetInfo (uint32 task_id, OS_task_prop_t *task_prop)
     }
 
     /* put the info into the stucture */
-    pthread_mutex_lock(&OS_task_table_mut); 
+    OS_SafeLockTable(&OS_task_table_mut, &mask, &previous);
 
     task_prop -> creator =    OS_task_table[task_id].creator;
     task_prop -> stack_size = OS_task_table[task_id].stack_size;
@@ -925,7 +940,7 @@ int32 OS_TaskGetInfo (uint32 task_id, OS_task_prop_t *task_prop)
     
     strcpy(task_prop-> name, OS_task_table[task_id].name);
 
-    pthread_mutex_unlock(&OS_task_table_mut);
+    OS_SafeUnlockTable(&OS_task_table_mut, &previous);
     
     return OS_SUCCESS;
     
@@ -942,6 +957,8 @@ int32 OS_TaskGetInfo (uint32 task_id, OS_task_prop_t *task_prop)
 int32 OS_TaskInstallDeleteHandler(void *function_pointer)
 {
     uint32 task_id;
+    sigset_t previous;
+    sigset_t mask;
 
     task_id = OS_TaskGetId();
 
@@ -950,14 +967,14 @@ int32 OS_TaskInstallDeleteHandler(void *function_pointer)
        return(OS_ERR_INVALID_ID);
     }
 
-    pthread_mutex_lock(&OS_task_table_mut); 
+    OS_SafeLockTable(&OS_task_table_mut, &mask, &previous);
 
     if ( OS_task_table[task_id].free != FALSE )
     {
        /* 
        ** Somehow the calling task is not registered 
        */
-       pthread_mutex_unlock(&OS_task_table_mut);
+       OS_SafeUnlockTable(&OS_task_table_mut, &previous);
        return(OS_ERR_INVALID_ID);
     }
 
@@ -966,7 +983,7 @@ int32 OS_TaskInstallDeleteHandler(void *function_pointer)
     */
     OS_task_table[task_id].delete_hook_pointer = function_pointer;    
     
-    pthread_mutex_unlock(&OS_task_table_mut);
+    OS_SafeUnlockTable(&OS_task_table_mut, &previous);
 
     return(OS_SUCCESS);
     
@@ -1013,8 +1030,7 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
     }
 
    /* Check Parameters */
-
-    pthread_mutex_lock(&OS_queue_table_mut);    
+    OS_SafeLockTable(&OS_queue_table_mut, &mask, &previous);
     
     for(possible_qid = 0; possible_qid < OS_MAX_QUEUES; possible_qid++)
     {
@@ -1024,7 +1040,7 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
         
     if( possible_qid >= OS_MAX_QUEUES || OS_queue_table[possible_qid].free != TRUE)
     {
-        pthread_mutex_unlock(&OS_queue_table_mut);
+        OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
         return OS_ERR_NO_FREE_IDS;
     }
 
@@ -1034,7 +1050,7 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
         if ((OS_queue_table[i].free == FALSE) &&
                 strcmp ((char*) queue_name, OS_queue_table[i].name) == 0)
         {
-            pthread_mutex_unlock(&OS_queue_table_mut);
+            OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
             return OS_ERR_NAME_TAKEN;
         }
     } 
@@ -1044,14 +1060,14 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
 
     OS_queue_table[possible_qid].free = FALSE;
     
-    pthread_mutex_unlock(&OS_queue_table_mut);
+    OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
     
     tmpSkt = socket(AF_INET, SOCK_DGRAM, 0);
     if ( tmpSkt == -1 )
     {
-        pthread_mutex_lock(&OS_queue_table_mut);
+        OS_SafeLockTable(&OS_queue_table_mut, &mask, &previous);
         OS_queue_table[possible_qid].free = TRUE;
-        pthread_mutex_unlock(&OS_queue_table_mut);
+        OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
 
         printf("Failed to create a socket on OS_QueueCreate. errno = %d\n",errno);
         return OS_ERROR;
@@ -1070,9 +1086,9 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
    
    if ( returnStat == -1 )
    {
-        pthread_mutex_lock(&OS_queue_table_mut);
+        OS_SafeLockTable(&OS_queue_table_mut, &mask, &previous);
         OS_queue_table[possible_qid].free = TRUE;
-        pthread_mutex_unlock(&OS_queue_table_mut);
+        OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
 
         printf("bind failed on OS_QueueCreate. errno = %d\n",errno);
         return OS_ERROR;
@@ -1083,14 +1099,14 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
    */
    *queue_id = possible_qid;
    
-    pthread_mutex_lock(&OS_queue_table_mut);    
+    OS_SafeLockTable(&OS_queue_table_mut, &mask, &previous);
 
    OS_queue_table[*queue_id].id = tmpSkt;
    OS_queue_table[*queue_id].free = FALSE;
    strcpy( OS_queue_table[*queue_id].name, (char*) queue_name);
    OS_queue_table[*queue_id].creator = OS_FindCreator();
 
-    pthread_mutex_unlock(&OS_queue_table_mut);
+    OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
 
    return OS_SUCCESS;
     
@@ -1129,17 +1145,17 @@ int32 OS_QueueDelete (uint32 queue_id)
      * Now that the queue is deleted, remove its "presence"
      * in OS_message_q_table and OS_message_q_name_table 
     */
-        
-    pthread_mutex_lock(&OS_queue_table_mut);    
+
+    OS_SafeLockTable(&OS_queue_table_mut, &mask, &previous);
 
     OS_queue_table[queue_id].free = TRUE;
     strcpy(OS_queue_table[queue_id].name, "");
     OS_queue_table[queue_id].creator = UNINITIALIZED;
     OS_queue_table[queue_id].id = UNINITIALIZED;
 
-    pthread_mutex_unlock(&OS_queue_table_mut);
- 
-   return OS_SUCCESS;
+    OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
+
+    return OS_SUCCESS;
 
 } /* end OS_QueueDelete */
 
@@ -1385,7 +1401,8 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
     uint32                  possible_qid;
     char                    name[OS_MAX_API_NAME * 2];
     char                    process_id_string[OS_MAX_API_NAME+1];
-    
+    sigset_t               previous;
+    sigset_t               mask;
     
     if ( queue_id == NULL || queue_name == NULL)
     {
@@ -1401,8 +1418,7 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
     }
     
     /* Check Parameters */
-    
-    pthread_mutex_lock(&OS_queue_table_mut);    
+    OS_SafeLockTable(&OS_queue_table_mut, &mask, &previous);
     
     for(possible_qid = 0; possible_qid < OS_MAX_QUEUES; possible_qid++)
     {
@@ -1412,7 +1428,7 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
     
     if( possible_qid >= OS_MAX_QUEUES || OS_queue_table[possible_qid].free != TRUE)
     {
-        pthread_mutex_unlock(&OS_queue_table_mut);
+        OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
         return OS_ERR_NO_FREE_IDS;
     }
     
@@ -1423,7 +1439,7 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
         if ((OS_queue_table[i].free == FALSE) &&
             strcmp ((char*) queue_name, OS_queue_table[i].name) == 0)
         {
-            pthread_mutex_unlock(&OS_queue_table_mut);
+            OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
             return OS_ERR_NAME_TAKEN;
         }
     } 
@@ -1433,7 +1449,7 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
     
     OS_queue_table[possible_qid].free = FALSE;
     
-    pthread_mutex_unlock(&OS_queue_table_mut);
+    OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
     
     /* set queue attributes */
     queueAttr.mq_maxmsg  = 20;
@@ -1467,9 +1483,9 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
     
     if ( queueDesc == -1 )
     {
-        pthread_mutex_lock(&OS_queue_table_mut);
+        OS_SafeLockTable(&OS_queue_table_mut, &mask, &previous);
         OS_queue_table[possible_qid].free = TRUE;
-        pthread_mutex_unlock(&OS_queue_table_mut);
+        OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
         
         printf("OS_QueueCreate Error. errno = %d\n",errno);
         if( errno ==EINVAL)
@@ -1488,14 +1504,14 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
     */
     *queue_id = possible_qid;
     
-    pthread_mutex_lock(&OS_queue_table_mut);    
+    OS_SafeLockTable(&OS_queue_table_mut, &mask, &previous);
     
     OS_queue_table[*queue_id].id = queueDesc;
     OS_queue_table[*queue_id].free = FALSE;
     strcpy( OS_queue_table[*queue_id].name, (char*) queue_name);
     OS_queue_table[*queue_id].creator = OS_FindCreator();
     
-    pthread_mutex_unlock(&OS_queue_table_mut);
+    OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
     
     return OS_SUCCESS;
     
@@ -1515,9 +1531,11 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
  ---------------------------------------------------------------------------------------*/
 int32 OS_QueueDelete (uint32 queue_id)
 {
-    pid_t   process_id;
-    char    name[OS_MAX_API_NAME+1];
-    char    process_id_string[OS_MAX_API_NAME+1];
+    pid_t    process_id;
+    char     name[OS_MAX_API_NAME+1];
+    char     process_id_string[OS_MAX_API_NAME+1];
+    sigset_t previous;
+    sigset_t mask;
 
     /* Check to see if the queue_id given is valid */
     
@@ -1554,14 +1572,14 @@ int32 OS_QueueDelete (uint32 queue_id)
      * Now that the queue is deleted, remove its "presence"
      * in OS_message_q_table and OS_message_q_name_table 
      */
-    pthread_mutex_lock(&OS_queue_table_mut);    
+    OS_SafeLockTable(&OS_queue_table_mut, &mask, &previous);
     
     OS_queue_table[queue_id].free = TRUE;
     strcpy(OS_queue_table[queue_id].name, "");
     OS_queue_table[queue_id].creator = UNINITIALIZED;
     OS_queue_table[queue_id].id = UNINITIALIZED;
     
-    pthread_mutex_unlock(&OS_queue_table_mut);
+    OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
     
     return OS_SUCCESS;
     
@@ -1798,6 +1816,9 @@ int32 OS_QueueGetIdByName (uint32 *queue_id, const char *queue_name)
 ---------------------------------------------------------------------------------------*/
 int32 OS_QueueGetInfo (uint32 queue_id, OS_queue_prop_t *queue_prop)  
 {
+    sigset_t previous;
+    sigset_t mask;
+
     /* Check to see that the id given is valid */
     
     if (queue_prop == NULL)
@@ -1811,12 +1832,12 @@ int32 OS_QueueGetInfo (uint32 queue_id, OS_queue_prop_t *queue_prop)
     }
 
     /* put the info into the stucture */
-    pthread_mutex_lock(&OS_queue_table_mut);    
+    OS_SafeLockTable(&OS_queue_table_mut, &mask, &previous);
 
     queue_prop -> creator =   OS_queue_table[queue_id].creator;
     strcpy(queue_prop -> name, OS_queue_table[queue_id].name);
 
-    pthread_mutex_unlock(&OS_queue_table_mut);
+    OS_SafeUnlockTable(&OS_queue_table_mut, &previous);
 
     return OS_SUCCESS;
     
@@ -1850,6 +1871,8 @@ int32 OS_BinSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initial_
     uint32              i;
     int                 Status;
     pthread_mutexattr_t mutex_attr;    
+    sigset_t            previous;
+    sigset_t            mask;
 
     /* 
     ** Check Parameters 
@@ -1868,7 +1891,7 @@ int32 OS_BinSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initial_
     }
 
     /* Lock table */
-    pthread_mutex_lock(&OS_bin_sem_table_mut);  
+    OS_SafeLockTable(&OS_bin_sem_table_mut, &mask, &previous);
 
     for (possible_semid = 0; possible_semid < OS_MAX_BIN_SEMAPHORES; possible_semid++)
     {
@@ -1879,7 +1902,7 @@ int32 OS_BinSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initial_
     if((possible_semid >= OS_MAX_BIN_SEMAPHORES) ||  
        (OS_bin_sem_table[possible_semid].free != TRUE))
     {
-        pthread_mutex_unlock(&OS_bin_sem_table_mut);
+        OS_SafeUnlockTable(&OS_bin_sem_table_mut, &previous);
         return OS_ERR_NO_FREE_IDS;
     }
     
@@ -1889,7 +1912,7 @@ int32 OS_BinSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initial_
         if ((OS_bin_sem_table[i].free == FALSE) &&
                 strcmp ((char*) sem_name, OS_bin_sem_table[i].name) == 0)
         {
-            pthread_mutex_unlock(&OS_bin_sem_table_mut);
+            OS_SafeUnlockTable(&OS_bin_sem_table_mut, &previous);
             return OS_ERR_NAME_TAKEN;
         }
     }  
@@ -1944,34 +1967,34 @@ int32 OS_BinSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initial_
                 OS_bin_sem_table[*sem_id].free = FALSE;
    
                 /* Unlock table */ 
-                pthread_mutex_unlock(&OS_bin_sem_table_mut);
+                OS_SafeUnlockTable(&OS_bin_sem_table_mut, &previous);
 
                 return OS_SUCCESS;
              } 
              else
              {
-                pthread_mutex_unlock(&OS_bin_sem_table_mut);
+                OS_SafeUnlockTable(&OS_bin_sem_table_mut, &previous);
                 printf("Error: pthread_cond_init failed\n");
                 return (OS_SEM_FAILURE);
              }
           }
           else
           {
-             pthread_mutex_unlock(&OS_bin_sem_table_mut);
+             OS_SafeUnlockTable(&OS_bin_sem_table_mut, &previous);
              printf("Error: pthread_mutex_init failed\n");
              return (OS_SEM_FAILURE);
           }
       }
       else
       {
-          pthread_mutex_unlock(&OS_bin_sem_table_mut);
+          OS_SafeUnlockTable(&OS_bin_sem_table_mut, &previous);
           printf("Error: pthread_mutexattr_setprotocol failed\n");
           return (OS_SEM_FAILURE);
       }
    }
    else
    {
-      pthread_mutex_unlock(&OS_bin_sem_table_mut);
+      OS_SafeUnlockTable(&OS_bin_sem_table_mut, &previous);
       printf("Error: pthread_mutexattr_init failed\n");
       return (OS_SEM_FAILURE);
    }
@@ -1993,6 +2016,9 @@ int32 OS_BinSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initial_
 ---------------------------------------------------------------------------------------*/
 int32 OS_BinSemDelete (uint32 sem_id)
 {
+    sigset_t previous;
+    sigset_t mask;
+
     /* Check to see if this sem_id is valid */
     if (sem_id >= OS_MAX_BIN_SEMAPHORES || OS_bin_sem_table[sem_id].free == TRUE)
     {
@@ -2000,7 +2026,7 @@ int32 OS_BinSemDelete (uint32 sem_id)
     }
 
     /* Lock table */
-    pthread_mutex_lock(&OS_bin_sem_table_mut);  
+    OS_SafeLockTable(&OS_bin_sem_table_mut, &mask, &previous);
    
     /* Remove the Id from the table, and its name, so that it cannot be found again */
     pthread_mutex_destroy(&(OS_bin_sem_table[sem_id].id));
@@ -2012,7 +2038,7 @@ int32 OS_BinSemDelete (uint32 sem_id)
     OS_bin_sem_table[sem_id].current_value = 0;
 
     /* Unlock table */
-    pthread_mutex_unlock(&OS_bin_sem_table_mut);
+    OS_SafeUnlockTable(&OS_bin_sem_table_mut, &previous);
    
     return OS_SUCCESS;
 
@@ -2327,6 +2353,9 @@ int32 OS_BinSemGetIdByName (uint32 *sem_id, const char *sem_name)
 
 int32 OS_BinSemGetInfo (uint32 sem_id, OS_bin_sem_prop_t *bin_prop)  
 {
+    sigset_t previous;
+    sigset_t mask;
+
     /* Check parameters */
     if (sem_id >= OS_MAX_BIN_SEMAPHORES || OS_bin_sem_table[sem_id].free == TRUE)
     {
@@ -2338,13 +2367,13 @@ int32 OS_BinSemGetInfo (uint32 sem_id, OS_bin_sem_prop_t *bin_prop)
     }
 
     /* put the info into the stucture */
-    pthread_mutex_lock(&OS_bin_sem_table_mut);  
+    OS_SafeLockTable(&OS_bin_sem_table_mut, &mask, &previous);
 
     bin_prop ->creator =    OS_bin_sem_table[sem_id].creator;
     bin_prop -> value = OS_bin_sem_table[sem_id].current_value ;
     strcpy(bin_prop-> name, OS_bin_sem_table[sem_id].name);
     
-    pthread_mutex_unlock(&OS_bin_sem_table_mut);
+    OS_SafeUnlockTable(&OS_bin_sem_table_mut, &previous);
 
     return OS_SUCCESS;
     
@@ -2374,7 +2403,9 @@ int32 OS_CountSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initia
     uint32              possible_semid;
     uint32              i;
     int                 Status;
-    pthread_mutexattr_t mutex_attr;    
+    pthread_mutexattr_t mutex_attr;
+    sigset_t            previous;
+    sigset_t            mask;
 
     /* 
     ** Check Parameters 
@@ -2405,7 +2436,7 @@ int32 OS_CountSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initia
     }
 
     /* Lock table */
-    pthread_mutex_lock(&OS_count_sem_table_mut);  
+    OS_SafeLockTable(&OS_count_sem_table_mut, &mask, &previous);
 
     for (possible_semid = 0; possible_semid < OS_MAX_COUNT_SEMAPHORES; possible_semid++)
     {
@@ -2416,7 +2447,7 @@ int32 OS_CountSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initia
     if((possible_semid >= OS_MAX_COUNT_SEMAPHORES) ||  
        (OS_count_sem_table[possible_semid].free != TRUE))
     {
-        pthread_mutex_unlock(&OS_count_sem_table_mut);
+        OS_SafeUnlockTable(&OS_count_sem_table_mut, &previous);
         return OS_ERR_NO_FREE_IDS;
     }
     
@@ -2426,7 +2457,7 @@ int32 OS_CountSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initia
         if ((OS_count_sem_table[i].free == FALSE) &&
                 strcmp ((char*) sem_name, OS_count_sem_table[i].name) == 0)
         {
-            pthread_mutex_unlock(&OS_count_sem_table_mut);
+            OS_SafeUnlockTable(&OS_count_sem_table_mut, &previous);
             return OS_ERR_NAME_TAKEN;
         }
     }  
@@ -2469,34 +2500,34 @@ int32 OS_CountSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initia
                 OS_count_sem_table[*sem_id].free = FALSE;
    
                 /* Unlock table */ 
-                pthread_mutex_unlock(&OS_count_sem_table_mut);
+                OS_SafeUnlockTable(&OS_count_sem_table_mut, &previous);
 
                 return OS_SUCCESS;
              } 
              else
              {
-                pthread_mutex_unlock(&OS_count_sem_table_mut);
+                OS_SafeUnlockTable(&OS_count_sem_table_mut, &previous);
                 printf("Error: pthread_cond_init failed\n");
                 return (OS_SEM_FAILURE);
              }
           }
           else
           {
-             pthread_mutex_unlock(&OS_count_sem_table_mut);
+             OS_SafeUnlockTable(&OS_count_sem_table_mut, &previous);
              printf("Error: pthread_mutex_init failed\n");
              return (OS_SEM_FAILURE);
           }
       }
       else
       {
-          pthread_mutex_unlock(&OS_count_sem_table_mut);
+          OS_SafeUnlockTable(&OS_count_sem_table_mut, &previous);
           printf("Error: pthread_mutexattr_setprotocol failed\n");
           return (OS_SEM_FAILURE);
       }
    }
    else
    {
-      pthread_mutex_unlock(&OS_count_sem_table_mut);
+      OS_SafeUnlockTable(&OS_count_sem_table_mut, &previous);
       printf("Error: pthread_mutexattr_init failed\n");
       return (OS_SEM_FAILURE);
    }
@@ -2518,6 +2549,8 @@ int32 OS_CountSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initia
 ---------------------------------------------------------------------------------------*/
 int32 OS_CountSemDelete (uint32 sem_id)
 {
+    sigset_t previous;
+    sigset_t mask;
 
     /* Check to see if this sem_id is valid */
     if (sem_id >= OS_MAX_COUNT_SEMAPHORES || OS_count_sem_table[sem_id].free == TRUE)
@@ -2526,7 +2559,7 @@ int32 OS_CountSemDelete (uint32 sem_id)
     }
 
     /* Lock table */
-    pthread_mutex_lock(&OS_count_sem_table_mut);  
+    OS_SafeLockTable(&OS_count_sem_table_mut, &mask, &previous);
    
     /* Remove the Id from the table, and its name, so that it cannot be found again */
     pthread_mutex_destroy(&(OS_count_sem_table[sem_id].id));
@@ -2538,7 +2571,7 @@ int32 OS_CountSemDelete (uint32 sem_id)
     OS_count_sem_table[sem_id].current_value = 0;
 
     /* Unlock table */
-    pthread_mutex_unlock(&OS_count_sem_table_mut);
+    OS_SafeUnlockTable(&OS_count_sem_table_mut, &previous);
    
     return OS_SUCCESS;
 
@@ -2806,6 +2839,9 @@ int32 OS_CountSemGetIdByName (uint32 *sem_id, const char *sem_name)
 
 int32 OS_CountSemGetInfo (uint32 sem_id, OS_count_sem_prop_t *count_prop)  
 {
+    sigset_t previous;
+    sigset_t mask;
+
     /* 
     ** Check to see that the id given is valid 
     */
@@ -2822,7 +2858,7 @@ int32 OS_CountSemGetInfo (uint32 sem_id, OS_count_sem_prop_t *count_prop)
     /*
     ** Lock
     */
-    pthread_mutex_lock(&OS_count_sem_table_mut);  
+    OS_SafeLockTable(&OS_count_sem_table_mut, &mask, &previous);
     
     /* put the info into the stucture */
     count_prop -> value = OS_count_sem_table[sem_id].current_value;
@@ -2833,7 +2869,7 @@ int32 OS_CountSemGetInfo (uint32 sem_id, OS_count_sem_prop_t *count_prop)
     /*
     ** Unlock
     */ 
-    pthread_mutex_unlock(&OS_count_sem_table_mut);
+    OS_SafeUnlockTable(&OS_count_sem_table_mut, &previous);
 
     return OS_SUCCESS;
     
@@ -2862,7 +2898,9 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
     int                 return_code;
     pthread_mutexattr_t mutex_attr ;    
     uint32              possible_semid;
-    uint32              i;      
+    uint32              i;
+    sigset_t            previous;
+    sigset_t            mask;
 
     /* Check Parameters */
     if (sem_id == NULL || sem_name == NULL)
@@ -2877,7 +2915,7 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
         return OS_ERR_NAME_TOO_LONG;
     }
 
-    pthread_mutex_lock(&OS_mut_sem_table_mut);  
+    OS_SafeLockTable(&OS_mut_sem_table_mut, &mask, &previous);
 
     for (possible_semid = 0; possible_semid < OS_MAX_MUTEXES; possible_semid++)
     {
@@ -2888,7 +2926,7 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
     if( (possible_semid == OS_MAX_MUTEXES) ||
         (OS_mut_sem_table[possible_semid].free != TRUE) )
     {
-        pthread_mutex_unlock(&OS_mut_sem_table_mut);
+        OS_SafeUnlockTable(&OS_mut_sem_table_mut, &previous);
         return OS_ERR_NO_FREE_IDS;
     }
 
@@ -2899,7 +2937,7 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
         if ((OS_mut_sem_table[i].free == FALSE) &&
                 strcmp ((char*) sem_name, OS_mut_sem_table[i].name) == 0)
         {
-            pthread_mutex_unlock(&OS_mut_sem_table_mut);
+            OS_SafeUnlockTable(&OS_mut_sem_table_mut, &previous);
             return OS_ERR_NAME_TAKEN;
         }
     }
@@ -2907,7 +2945,7 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
     /* Set the free flag to false to make sure no other task grabs it */
 
     OS_mut_sem_table[possible_semid].free = FALSE;
-    pthread_mutex_unlock(&OS_mut_sem_table_mut);
+    OS_SafeUnlockTable(&OS_mut_sem_table_mut, &previous);
 
     /* 
     ** initialize the attribute with default values 
@@ -2916,9 +2954,9 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
     if ( return_code != 0 )
     {
         /* Since the call failed, set free back to true */
-        pthread_mutex_lock(&OS_mut_sem_table_mut);
+        OS_SafeLockTable(&OS_mut_sem_table_mut, &mask, &previous);
         OS_mut_sem_table[possible_semid].free = TRUE;
-        pthread_mutex_unlock(&OS_mut_sem_table_mut);
+        OS_SafeUnlockTable(&OS_mut_sem_table_mut, &previous);
 
        printf("Error: Mutex could not be created. pthread_mutexattr_init failed ID = %lu\n",possible_semid);
        return OS_SEM_FAILURE;
@@ -2931,9 +2969,9 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
     if ( return_code != 0 )
     {
         /* Since the call failed, set free back to true */
-        pthread_mutex_lock(&OS_mut_sem_table_mut);
+        OS_SafeLockTable(&OS_mut_sem_table_mut, &mask, &previous);
         OS_mut_sem_table[possible_semid].free = TRUE;
-        pthread_mutex_unlock(&OS_mut_sem_table_mut);
+        OS_SafeUnlockTable(&OS_mut_sem_table_mut, &previous);
 
        printf("Error: Mutex could not be created. pthread_mutexattr_setprotocol failed ID = %lu\n",possible_semid);
        return OS_SEM_FAILURE;    
@@ -2945,9 +2983,9 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
     if ( return_code != 0 )
     {
         /* Since the call failed, set free back to true */
-        pthread_mutex_lock(&OS_mut_sem_table_mut);
+        OS_SafeLockTable(&OS_mut_sem_table_mut, &mask, &previous);
         OS_mut_sem_table[possible_semid].free = TRUE;
-        pthread_mutex_unlock(&OS_mut_sem_table_mut);
+        OS_SafeUnlockTable(&OS_mut_sem_table_mut, &previous);
 
        printf("Error: Mutex could not be created. pthread_mutexattr_settype failed ID = %lu\n",possible_semid);
        return OS_SEM_FAILURE;   
@@ -2961,9 +2999,9 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
     if ( return_code != 0 )
     {
         /* Since the call failed, set free back to true */
-        pthread_mutex_lock(&OS_mut_sem_table_mut);
+        OS_SafeLockTable(&OS_mut_sem_table_mut, &mask, &previous);
         OS_mut_sem_table[possible_semid].free = TRUE;
-        pthread_mutex_unlock(&OS_mut_sem_table_mut);
+        OS_SafeUnlockTable(&OS_mut_sem_table_mut, &previous);
 
        printf("Error: Mutex could not be created. ID = %lu\n",possible_semid);
        return OS_SEM_FAILURE;
@@ -2975,13 +3013,13 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
        */
        *sem_id = possible_semid;
     
-       pthread_mutex_lock(&OS_mut_sem_table_mut);  
+       OS_SafeLockTable(&OS_mut_sem_table_mut, &mask, &previous);
 
        strcpy(OS_mut_sem_table[*sem_id].name, (char*) sem_name);
        OS_mut_sem_table[*sem_id].free = FALSE;
        OS_mut_sem_table[*sem_id].creator = OS_FindCreator();
     
-       pthread_mutex_unlock(&OS_mut_sem_table_mut);
+       OS_SafeUnlockTable(&OS_mut_sem_table_mut, &previous);
 
        return OS_SUCCESS;
     }
@@ -3003,7 +3041,9 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
 
 int32 OS_MutSemDelete (uint32 sem_id)
 {
-    int status=-1;
+    int      status=-1;
+    sigset_t previous;
+    sigset_t mask;
 
     /* Check to see if this sem_id is valid   */
     if (sem_id >= OS_MAX_MUTEXES || OS_mut_sem_table[sem_id].free == TRUE)
@@ -3019,13 +3059,13 @@ int32 OS_MutSemDelete (uint32 sem_id)
     }
     /* Delete its presence in the table */
    
-    pthread_mutex_lock(&OS_mut_sem_table_mut);  
+    OS_SafeLockTable(&OS_mut_sem_table_mut, &mask, &previous);
 
     OS_mut_sem_table[sem_id].free = TRUE;
     strcpy(OS_mut_sem_table[sem_id].name , "");
     OS_mut_sem_table[sem_id].creator = UNINITIALIZED;
     
-    pthread_mutex_unlock(&OS_mut_sem_table_mut);
+    OS_SafeUnlockTable(&OS_mut_sem_table_mut, &previous);
     
     return OS_SUCCESS;
 
@@ -3180,6 +3220,9 @@ int32 OS_MutSemGetIdByName (uint32 *sem_id, const char *sem_name)
 
 int32 OS_MutSemGetInfo (uint32 sem_id, OS_mut_sem_prop_t *mut_prop)  
 {
+    sigset_t previous;
+    sigset_t mask;
+
     /* Check to see that the id given is valid */
     
     if (sem_id >= OS_MAX_MUTEXES || OS_mut_sem_table[sem_id].free == TRUE)
@@ -3194,12 +3237,12 @@ int32 OS_MutSemGetInfo (uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
     
     /* put the info into the stucture */    
     
-    pthread_mutex_lock(&OS_mut_sem_table_mut);  
+    OS_SafeLockTable(&OS_mut_sem_table_mut, &mask, &previous);
 
     mut_prop -> creator =   OS_mut_sem_table[sem_id].creator;
     strcpy(mut_prop-> name, OS_mut_sem_table[sem_id].name);
 
-    pthread_mutex_unlock(&OS_mut_sem_table_mut);
+    OS_SafeUnlockTable(&OS_mut_sem_table_mut, &previous);
     
     return OS_SUCCESS;
     
@@ -3864,3 +3907,24 @@ int32 OS_FPUExcGetMask(uint32 *mask)
     return(OS_SUCCESS);
 }
 
+int OS_SafeLockTable(pthread_mutex_t *lock, sigset_t *set, sigset_t *previous)
+{
+    /* Block all signals */
+    sigfillset(set);
+
+    if (pthread_sigmask(SIG_SETMASK, set, previous) == 0) {
+        /* Acquire the lock */
+        return pthread_mutex_lock(lock);
+    } else {
+        return EINVAL;
+    }
+}
+
+void OS_SafeUnlockTable(pthread_mutex_t *lock, sigset_t *previous)
+{
+    /* Release the lock */
+    pthread_mutex_unlock(lock);
+
+    /* Restore previous signals */
+    pthread_sigmask(SIG_SETMASK, previous, NULL);
+}
