@@ -45,4 +45,4 @@ BSP = pc-linux
 ## correct flag for your compiler. This flag may also be specified on
 ## the "make" command line or in the shell environment.
 ##---------------------------------------------------------
-# OSAL_M32 = -m32
+OSAL_M32 = -m32

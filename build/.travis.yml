@@ -1,0 +1,29 @@
+dist: trusty
+sudo: required
+language:
+  - c
+compiler:
+  - gcc
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - cmake
+      - gcc-multilib
+      - g++-multilib
+
+before_install:
+# needed for compiling 32bit software on 64bit machine
+  - sudo apt-get install gcc-multilib g++-multilib
+
+script:
+  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib32/:/usr/lib/gcc/x86_64-linux-gnu/7/x32/
+  - ls /usr/lib32/
+  # Check versions of gcc, g++ and cmake
+  - gcc -v && g++ -v && cmake --version
+  # Run your build commands next
+  - source setvars.sh
+  - cd build
+  - make config
+  - make
