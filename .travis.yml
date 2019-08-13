@@ -27,3 +27,4 @@ script:
   - cd build
   - make config
   - make
+  - ls
