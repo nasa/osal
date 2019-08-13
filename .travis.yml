@@ -23,6 +23,7 @@ script:
   # Check versions of gcc, g++ and cmake
   - gcc -v && g++ -v && cmake --version
   # Run your build commands next
+  - source setvars.sh
   - cd build
   - make config
   - make
