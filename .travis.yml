@@ -27,4 +27,13 @@ script:
   - cd build
   - make config
   - make
-  - ls
+  - ./tests/bin-sem-timeout-test/bin-sem-timeout-test.bin
+  - ./tests/mutex-test/mutex-test.bin
+  - ./tests/queue-timeout-test/queue-timeout-test.bin
+  - ./tests/file-api-test/file-api-test.bin
+  - ./tests/count-sem-test/count-sem-test.bin
+  - ./tests/timer-test/timer-test.bin
+  - ./tests/bin-sem-test/bin-sem-test.bin
+  - ./tests/symbol-api-test/symbol-api-test.bin
+  - ./tests/bin-sem-flush-test/bin-sem-flush-test.bin
+  - ./tests/osal-core-test/osal-core-test.bin
