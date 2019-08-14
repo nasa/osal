@@ -29,7 +29,7 @@ script:
   - make
   - ./tests/bin-sem-timeout-test/bin-sem-timeout-test.bin
   - ./tests/mutex-test/mutex-test.bin
-  - ./tests/queue-timeout-test/queue-timeout-test.bin
+  - sudo /tests/queue-timeout-test/queue-timeout-test.bin
   - ./tests/file-api-test/file-api-test.bin
   - ./tests/count-sem-test/count-sem-test.bin
   - ./tests/timer-test/timer-test.bin
