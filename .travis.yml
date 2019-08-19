@@ -27,6 +27,7 @@ script:
   - cd build
   - make config
   - make
+  - make unit-tests
   - ./tests/bin-sem-timeout-test/bin-sem-timeout-test.bin
   - ./tests/mutex-test/mutex-test.bin
   - sudo ./tests/queue-timeout-test/queue-timeout-test.bin
@@ -37,3 +38,10 @@ script:
  # - ./tests/symbol-api-test/symbol-api-test.bin
   - ./tests/bin-sem-flush-test/bin-sem-flush-test.bin
   - sudo ./tests/osal-core-test/osal-core-test.bin
+  - ./unit-tests/osfilesys-test/osfilesys-test.bin
+  - ./unit-tests/osnetwork-test/osnetwork-test.bin
+  - ./unit-tests/oscore-test/oscore-test.bin
+  - ./unit-tests/ostimer-test/ostimer-test.bin
+  - ./unit-tests/osloader-test/osloader-test.bin
+  - ./unit-tests/osfile-test/osfile-test.bin
+
