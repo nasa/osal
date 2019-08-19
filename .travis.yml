@@ -41,7 +41,7 @@ script:
   - ./unit-tests/osfilesys-test/osfilesys-test.bin
   - ./unit-tests/osnetwork-test/osnetwork-test.bin
   - ./unit-tests/oscore-test/oscore-test.bin
-  - ./unit-tests/ostimer-test/ostimer-test.bin
-  - ./unit-tests/osloader-test/osloader-test.bin
+  - sudo ./unit-tests/ostimer-test/ostimer-test.bin
+  - sudo ./unit-tests/osloader-test/osloader-test.bin
   - ./unit-tests/osfile-test/osfile-test.bin
 
