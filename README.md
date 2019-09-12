@@ -96,3 +96,4 @@ License information:
 
 This software is licensed under NASAs Open Source Agreement. The release of the software is conditional upon the recipients acceptance of the Open Source Agreement. Please see the file: NASA_Open_Source_Agreement_1_3-OS_AbstractionLayer.txt
 
+Auto build status: [![Build Status](https://travis-ci.com/travis-r-wheatley/osal.svg?branch=master)](https://travis-ci.com/travis-r-wheatley/osal)
