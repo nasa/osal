@@ -214,7 +214,8 @@ int32 OS_SocketBind_Impl(uint32 sock_id, const OS_SockAddr_t *Addr)
       break;
    }
 
-   if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN)
+   
+   if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN) // lgtm [cpp/constant-comparison] 
    {
       return OS_ERR_BAD_ADDRESS;
    }
@@ -565,13 +566,13 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
       break;
    }
 
-   if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN)
+   if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN) // lgtm [cpp/constant-comparison] 
    {
       return OS_ERR_NOT_IMPLEMENTED;
    }
 
    Addr->ActualLength = addrlen;
-   Accessor->sockaddr.sa_family = sa_family;
+   Accessor->sockaddr.sa_family = sa_family; // lgtm[cpp/uninitialized-local] 
 
    return OS_SUCCESS;
 } /* end OS_SocketAddrInit_Impl */

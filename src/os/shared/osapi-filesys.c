@@ -327,7 +327,7 @@ static int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const c
             {
                 /* to avoid leaving in an intermediate state,
                  * this also stops the volume if formatting failed. */
-                OS_FileSysStopVolume_Impl(local_id);
+                OS_FileSysStopVolume_Impl(local_id);  // lgtm[cpp/useless-expression] 
             }
         }
 

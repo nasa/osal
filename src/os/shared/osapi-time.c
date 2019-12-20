@@ -463,7 +463,7 @@ int32 OS_TimerDelete(uint32 timer_id)
      */
     if (return_code == OS_SUCCESS)
     {
-        OS_ObjectIdRefcountDecr(timebase);
+        OS_ObjectIdRefcountDecr(timebase); // lgtm[cpp/uninitialized-local] 
         if (dedicated_timebase_id != 0)
         {
             OS_TimeBaseDelete(dedicated_timebase_id);

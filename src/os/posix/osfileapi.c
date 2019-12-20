@@ -183,7 +183,7 @@ int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char* Cmd)
            }
        }
 
-       execl(shell, "sh", "-c", Cmd, NULL); /* does not return if successful */
+       execl(shell, "sh", "-c", Cmd, NULL); /* does not return if successful  */ //lgtm[cpp/uncontrolled-process-operation]
        exit(EXIT_FAILURE);
    }
 

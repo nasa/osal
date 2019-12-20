@@ -526,7 +526,7 @@ static int32 OS_ObjectIdFindNext(uint32 idtype, uint32 *array_index, OS_common_r
 
    if(return_code == OS_SUCCESS)
    {
-       return_code = OS_ObjectIdMap(idtype, idvalue, &obj->active_id);
+       return_code = OS_ObjectIdMap(idtype, idvalue, &obj->active_id); // lgtm[cpp/uninitialized-local]
 
        /* Ensure any data in the record has been cleared */
        obj->name_entry = NULL;
@@ -542,11 +542,11 @@ static int32 OS_ObjectIdFindNext(uint32 idtype, uint32 *array_index, OS_common_r
 
    if (array_index != NULL)
    {
-       *array_index = local_id;
+       *array_index = local_id; // lgtm[cpp/uninitialized-local] 
    }
    if (record != NULL)
    {
-       *record = obj;
+       *record = obj; // lgtm[cpp/uninitialized-local] 
    }
 
    return return_code;

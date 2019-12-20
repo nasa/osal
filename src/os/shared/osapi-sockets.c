@@ -269,7 +269,7 @@ int32 OS_SocketAccept(uint32 sock_id, uint32 *connsock_id, OS_SockAddr_t *Addr, 
       OS_SocketAddrInit_Impl(Addr, OS_stream_table[local_id].socket_domain);
 
       /* The actual accept impl is done without global table lock, only refcount lock */
-      return_code = OS_SocketAccept_Impl(local_id, conn_id, Addr, timeout);
+      return_code = OS_SocketAccept_Impl(local_id, conn_id, Addr, timeout); // lgtm[cpp/uninitialized-local] 
 
       OS_Lock_Global_Impl(LOCAL_OBJID_TYPE);
       if (return_code == OS_SUCCESS)
