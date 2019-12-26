@@ -156,11 +156,6 @@ int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char* Cmd)
    int wstat;
    const char *shell = getenv("SHELL");
 
-   if (shell == NULL)
-   {
-       shell = "/bin/sh";
-   }
-
    cpid = fork();
    if (cpid < 0)
    {
@@ -183,7 +178,11 @@ int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char* Cmd)
            }
        }
 
-       execl(shell, "sh", "-c", Cmd, NULL); /* does not return if successful */
+       if (shell == NULL || strstr(shell, "sh") != NULL )
+       {
+           execl("/bin/sh", "sh", "-c", Cmd, NULL); /* does not return if successful */
+       }
+
        exit(EXIT_FAILURE);
    }
 
