@@ -33,7 +33,12 @@
 #include <sys/statvfs.h>
 #include <sys/stat.h>
 #include <sys/mount.h>
-#include <sys/vfs.h>
+
+/// TODO-MAC
+/// I found somewhere that sys/vfs.h could be replaced with sys/mount.h.
+/// I have no idea what the difference is, but now it works!
+/// https://github.com/kartverket/fyba/issues/12
+//#include <sys/vfs.h>
 
 #include "common_types.h"
 #include "osapi.h"

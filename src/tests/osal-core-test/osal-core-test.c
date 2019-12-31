@@ -134,7 +134,8 @@ void TestTasks(void)
        status = OS_TaskDelete( TaskData[tasknum].task_id );
 
        UtDebug("Delete Status = %d, Id = %d\n",(int)status,(int)TaskData[tasknum].task_id);
-
+       /// TODO-MAC: 1 of 5 full runs of make this line fails:
+       /// [ FAIL] 01.205 osal-core-test.c:138 - OS_TaskDelete, self exiting task
        UtAssert_True(status != OS_SUCCESS, "OS_TaskDelete, self exiting task");
 
     }

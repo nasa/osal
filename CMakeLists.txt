@@ -190,6 +190,9 @@ target_include_directories(osal INTERFACE
     ${OSAL_API_INCLUDE_DIRECTORIES}
 )
 
+add_subdirectory(posix-macos-addons)
+target_link_libraries(osal posix-macos-addons)
+
 # Link the OSAL with the BSP
 target_link_libraries(osal osal_bsp)
 

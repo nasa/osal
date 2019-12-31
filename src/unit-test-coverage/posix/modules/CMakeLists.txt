@@ -35,6 +35,7 @@ foreach(MODULE ${MODULE_LIST})
     target_compile_options(ut_${SETNAME}_${MODULE} PRIVATE
         ${UT_COVERAGE_COMPILE_FLAGS}
     )
+    target_link_libraries(ut_${SETNAME}_${MODULE} PUBLIC posix-macos-addons)
   endif ()
 endforeach()
 

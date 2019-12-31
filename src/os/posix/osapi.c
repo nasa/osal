@@ -26,7 +26,13 @@
 
 #include "os-posix.h"
 #include "bsp-impl.h"
+
 #include <sched.h>
+
+#include <posix-macos-time.h>
+#include <posix-macos-semaphore2-debug.h>
+#include <posix-macos-stubs.h>
+#include <posix-macos-pthread.h>
 
 /*
  * Defines

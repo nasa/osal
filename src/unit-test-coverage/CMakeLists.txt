@@ -90,6 +90,7 @@ function (add_coverage_tests SETNAME)
         ${UT_COVERAGE_LINK_FLAGS}
         ${OSALCOVERAGE_STUB_LIB_LIST}
         ut_assert
+        posix-macos-addons
       )
       add_test(${TESTNAME} ${TESTNAME}-testrunner)
 

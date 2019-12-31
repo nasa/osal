@@ -33,6 +33,8 @@
  *   dlsym()
  */
 
+#include <dlfcn.h>
+
 /****************************************************************************************
                                      DEFINES
  ***************************************************************************************/
@@ -71,6 +73,26 @@ OS_impl_module_internal_record_t OS_impl_module_table[OS_MAX_MODULES];
 /****************************************************************************************
                                      DEFINES
  ***************************************************************************************/
+
+/*
+ * Determine what to pass in for the first parameter of dlsym()
+ *
+ * If the "os-impl-loader.h" header already defined this, then use that.
+ *
+ * Otherwise, check if the C library provides an "RTLD_DEFAULT" symbol -
+ * This symbol is not POSIX standard but many implementations do provide it.
+ *
+ * Lastly, if nothing else works, use NULL.  This is technically undefined
+ * behavior per POSIX, but most implementations do seem to interpret this
+ * as referring to the complete process (base executable + all loaded modules).
+ */
+#ifndef OSAL_DLSYM_DEFAULT_HANDLE
+#ifdef RTLD_DEFAULT
+#define OSAL_DLSYM_DEFAULT_HANDLE   RTLD_DEFAULT
+#else
+#define OSAL_DLSYM_DEFAULT_HANDLE   NULL
+#endif
+#endif
 
 /****************************************************************************************
                                      FUNCTION PROTOTYPES
@@ -123,7 +145,16 @@ int32 OS_SymbolLookup_Impl( cpuaddr *SymbolAddress, const char *SymbolName )
      * call dlerror() to clear any prior error that might have occured.
      */
     dlerror();
-    Function = dlsym((void *)0, SymbolName);
+
+    /// TODO-MAC:
+    /// [BEGIN] 04 OS_SymbolLookup
+    /// [ PASS] 04.001 ut_osloader_symtable_test.c:149 - #1 Invalid-pointer-arg-1
+    /// [ PASS] 04.002 ut_osloader_symtable_test.c:158 - #2 Invalid-pointer-arg-2
+    /// [ PASS] 04.003 ut_osloader_symtable_test.c:167 - #3 Symbol-not-found
+    /// Current working dir: /sandbox/cFS/osal/build.commandline.dir
+    /// [ FAIL] 04.004 ut_osloader_symtable_test.c:186 - #4 Nominal
+    /// [  END] 04 OS_SymbolLookup      TOTAL::4     PASS::3     FAIL::1      MIR::0      TSF::0      N/A::0
+    Function = dlsym((void *)OSAL_DLSYM_DEFAULT_HANDLE, SymbolName);
     dlError = dlerror();
     if( dlError == NULL )
     {

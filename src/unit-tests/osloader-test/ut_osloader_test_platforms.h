@@ -44,9 +44,9 @@
 #else /* For any other OS assume Linux/POSIX style .so files */
 /*--------------------------------------------*/
 
-#define UT_OS_GENERIC_MODULE_NAME1   "/cf/MODULE.so"
-#define UT_OS_GENERIC_MODULE_NAME2   "/cf/MODULE1.so"
-#define UT_OS_SPECIFIC_MODULE_NAME   "/cf/MODULE%d.so"
+#define UT_OS_GENERIC_MODULE_NAME1   "/cf/MODULE.dylib"
+#define UT_OS_GENERIC_MODULE_NAME2   "/cf/MODULE1.dylib"
+#define UT_OS_SPECIFIC_MODULE_NAME   "/cf/MODULE%d.dylib"
 
 #endif
 

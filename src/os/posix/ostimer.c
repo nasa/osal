@@ -25,6 +25,9 @@
 
 #include "os-posix.h"
 
+#include <posix-macos-stubs.h>
+#include <posix-macos-timer.h>
+
 /****************************************************************************************
                                 EXTERNAL FUNCTION PROTOTYPES
  ***************************************************************************************/
@@ -144,7 +147,10 @@ static uint32 OS_TimeBase_SigWaitImpl(uint32 timer_id)
 
     local = &OS_impl_timebase_table[timer_id];
 
-    ret = sigwait(&local->sigset, &sig);
+    /// TODO-MAC: Replacing sigwait with a custom timer_poll to poll for timer
+    /// TODO-MAC: ticks.
+    /// ret = sigwait(&local->sigset, &sig);
+    ret = timer_poll(local->host_timerid);
 
     if (ret != 0)
     {
@@ -404,7 +410,13 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
             sigemptyset(&local->sigset);
             sigaddset(&local->sigset, local->assigned_signal);
 
-            /*
+            /**
+             * TODO-MAC: Setting up signals below and above is not needed
+             * because they are not used by the implementation of timer_*.
+             * Keeping everything intact to be as minimally invasive as possible
+             * and to keep the diff smaller for now.
+
+             *
              * Ensure that the chosen signal is NOT already pending.
              *
              * Perform a "sigtimedwait" with a zero timeout to poll the
@@ -417,7 +429,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
              *
              * The output is irrelevant here; the objective is to just ensure
              * that the signal is not already pending.
-             */
+             *
             i = sysconf( _SC_SIGQUEUE_MAX);
             do
             {
@@ -425,12 +437,13 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
                 ts.tv_nsec = 0;
                 if (sigtimedwait(&local->sigset, NULL, &ts) < 0)
                 {
-                    /* signal is NOT pending */
+                    /// signal is NOT pending
                     break;
                 }
                 --i;
             }
             while(i > 0);
+            */
 
             /*
             **  Initialize the sigevent structures for the handler.
