@@ -242,6 +242,10 @@ int32 OS_ModuleLoad ( uint32 *module_id, const char *module_name, const char *fi
 
         /* Now call the OS-specific implementation.  This reads info from the module table. */
         return_code = OS_ModuleLoad_Impl(local_id, translated_path);
+        if (return_code != OS_SUCCESS)
+        {
+            return return_code;
+        }
 #endif
 
         /* Check result, finalize record, and unlock global table. */
