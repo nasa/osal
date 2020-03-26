@@ -110,6 +110,15 @@ typedef struct
 }OS_heap_prop_t;
 
 
+typedef enum
+{
+    OS_STREAM_STATE_BOUND      = 0x01,
+    OS_STREAM_STATE_CONNECTED  = 0x02,
+    OS_STREAM_STATE_READABLE   = 0x04,
+    OS_STREAM_STATE_WRITABLE   = 0x08,
+} OS_StreamState_t;
+
+
 /* This typedef is for the OS_GetErrorName function, to ensure
  * everyone is making an array of the same length.
  *
@@ -1231,9 +1240,9 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
  *
  * This function can be used to wait for a single OSAL stream ID
  * to become readable or writable.   On entry, the "StateFlags"
- * parameter should be set to the desired state (readble or writable)
- * and upon return the flags will be set to the state actually
- * detected.
+ * parameter should be set to the desired state (OS_STREAM_STATE_READABLE
+ * and/or OS_STREAM_STATE_WRITABLE) and upon return the flags
+ * will be set to the state actually detected.
  *
  * As this operates on a single ID, the filehandle is protected
  * during this call, such that another thread accessing the same
