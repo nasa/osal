@@ -59,11 +59,18 @@ int32 OS_SelectSingle(uint32 objid, uint32 *StateFlags, int32 msecs)
    uint32 local_id;
    OS_common_record_t *record;
 
-   return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, objid, &local_id, &record);
-   if (return_code == OS_SUCCESS)
+   if(StateFlags == NULL)
    {
-      return_code = OS_SelectSingle_Impl(local_id, StateFlags, msecs);
-      OS_ObjectIdRefcountDecr(record);
+      return_code = OS_INVALID_POINTER;
+   }
+   else
+   {
+      return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, objid, &local_id, &record);
+      if (return_code == OS_SUCCESS)
+      {
+         return_code = OS_SelectSingle_Impl(local_id, StateFlags, msecs);
+         OS_ObjectIdRefcountDecr(record);
+      }
    }
 
    return return_code;
