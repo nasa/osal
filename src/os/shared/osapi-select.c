@@ -102,8 +102,16 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
  *-----------------------------------------------------------------*/
 int32 OS_SelectFdZero(OS_FdSet *Set)
 {
-   memset(Set,0,sizeof(OS_FdSet));
-   return OS_SUCCESS;
+   int32 return_code = OS_SUCCESS;
+   if (Set == NULL)
+   {
+      return_code = OS_INVALID_POINTER;
+   }
+   else
+   {
+      memset(Set,0,sizeof(OS_FdSet));
+   }
+   return return_code;
 } /* end OS_SelectFdZero */
                         
 /*----------------------------------------------------------------
@@ -116,13 +124,20 @@ int32 OS_SelectFdZero(OS_FdSet *Set)
  *-----------------------------------------------------------------*/
 int32 OS_SelectFdAdd(OS_FdSet *Set, uint32 objid)
 {
-   int32 return_code;
+   int32 return_code = OS_SUCCESS;
    uint32 local_id;
 
-   return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
-   if (return_code == OS_SUCCESS)
+   if (Set == NULL)
    {
-      Set->object_ids[local_id >> 3] |= 1 << (local_id & 0x7);
+      return_code = OS_INVALID_POINTER;
+   }
+   else
+   {
+      return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
+      if (return_code == OS_SUCCESS)
+      {
+         Set->object_ids[local_id >> 3] |= 1 << (local_id & 0x7);
+      }
    }
 
    return return_code;
@@ -138,13 +153,20 @@ int32 OS_SelectFdAdd(OS_FdSet *Set, uint32 objid)
  *-----------------------------------------------------------------*/
 int32 OS_SelectFdClear(OS_FdSet *Set, uint32 objid)
 {
-   int32 return_code;
+   int32 return_code = OS_SUCCESS;
    uint32 local_id;
 
-   return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
-   if (return_code == OS_SUCCESS)
+   if (Set == NULL)
    {
-      Set->object_ids[local_id >> 3] &= ~(1 << (local_id & 0x7));
+      return_code = OS_INVALID_POINTER;
+   }
+   else
+   {
+      return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
+      if (return_code == OS_SUCCESS)
+      {
+         Set->object_ids[local_id >> 3] &= ~(1 << (local_id & 0x7));
+      }
    }
 
    return return_code;
@@ -160,16 +182,19 @@ int32 OS_SelectFdClear(OS_FdSet *Set, uint32 objid)
  *-----------------------------------------------------------------*/
 bool OS_SelectFdIsSet(OS_FdSet *Set, uint32 objid)
 {
-   int32 return_code;
-   uint32 local_id;
-
-   return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
-   if (return_code != OS_SUCCESS)
+   if (Set != NULL)
    {
-      return false;
+      uint32 local_id;
+      int32 return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
+
+      if (return_code == OS_SUCCESS)
+      {
+         return ((Set->object_ids[local_id >> 3] >> (local_id & 0x7)) & 0x1);
+      }
    }
 
-   return ((Set->object_ids[local_id >> 3] >> (local_id & 0x7)) & 0x1);
+   /* error occurred (Set == NULL or ObjjectIdToArrayIndex returned error), return false */
+   return false;
 } /* end OS_SelectFdIsSet */
 
 
