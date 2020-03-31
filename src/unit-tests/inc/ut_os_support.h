@@ -41,6 +41,34 @@
  */
 #define UT_OS_IO_BUFF_SIZE          128
 
+static inline bool UtOsalRetVal(int32 Fn, int32 Exp, const char *File, uint32 Line, const char *FnTxt, const char *ExpTxt, const char *Msg)
+{
+    return UtAssertEx(Fn == Exp, UtAssert_GetContext(), File, Line, "%s (%d) == %s (%d): %s", FnTxt, (int)Fn, ExpTxt, (int)Exp, Msg);
+}
+
+/* Only report errors */
+static inline bool UtOsalCheck(int32 Fn, int32 Exp, const char *File, uint32 Line, const char *FnTxt, const char *ExpTxt, const char *Msg)
+{
+    return Fn == Exp ? true : 
+        UtAssertEx(Fn == Exp, UtAssert_GetContext(), File, Line, "%s (%d) == %s (%d): %s", FnTxt, (int)Fn, ExpTxt, (int)Exp, Msg);
+}
+
+static inline bool UtOsalImplemented(int32 Fn, const char *File, uint32 Line)
+{
+    if (Fn == OS_ERR_NOT_IMPLEMENTED)
+    {
+        UtAssertEx(false, UTASSERT_CASETYPE_NA, File, Line, "API not implemented");
+        return false;
+    }
+
+    return true;
+}
+
+
+#define UT_OS_SUCCESS(Fn, Msg) UtOsalRetVal(Fn, OS_SUCCESS, __FILE__, __LINE__, #Fn, "OS_SUCCESS", Msg)
+#define UT_OS_RETVAL(Fn, Exp, Msg) UtOsalRetVal(Fn, Exp, __FILE__, __LINE__, #Fn, #Exp, Msg)
+#define UT_OS_CHECK(Fn, Msg) UtOsalCheck(Fn, OS_SUCCESS, __FILE__, __LINE__, #Fn, "OS_SUCCESS", Msg)
+#define UT_OS_IMPL(Fn) UtOsalImplemented(Fn, __FILE__, __LINE__)
 
 /*--------------------------------------------------------------------------------*/
 
