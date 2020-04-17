@@ -110,11 +110,11 @@ int32 OS_DirCreate_Impl(const char *local_path, uint32 access)
 
    if ( mkdir(local_path) != OK )
    {
-      return_code = OS_FS_ERROR;
+      return_code = OS_ERROR;
    }
    else
    {
-      return_code = OS_FS_SUCCESS;
+      return_code = OS_SUCCESS;
    }
 
    return return_code;
@@ -133,9 +133,9 @@ int32 OS_DirOpen_Impl(uint32 local_id, const char *local_path)
    OS_impl_dir_table[local_id] = opendir(local_path);
    if (OS_impl_dir_table[local_id] == NULL)
    {
-      return OS_FS_ERROR;
+      return OS_ERROR;
    }
-   return OS_FS_SUCCESS;
+   return OS_SUCCESS;
 } /* end OS_DirOpen_Impl */
                         
 /*----------------------------------------------------------------
@@ -150,7 +150,7 @@ int32 OS_DirClose_Impl(uint32 local_id)
 {
    closedir(OS_impl_dir_table[local_id]);
    OS_impl_dir_table[local_id] = NULL;
-   return OS_FS_SUCCESS;
+   return OS_SUCCESS;
 } /* end OS_DirClose_Impl */
                         
 /*----------------------------------------------------------------
@@ -177,13 +177,13 @@ int32 OS_DirRead_Impl(uint32 local_id, os_dirent_t *dirent)
    de = readdir(OS_impl_dir_table[local_id]);
    if (de == NULL)
    {
-      return OS_FS_ERROR;
+      return OS_ERROR;
    }
 
    strncpy(dirent->FileName, de->d_name, OS_MAX_PATH_LEN - 1);
    dirent->FileName[OS_MAX_PATH_LEN - 1] = 0;
 
-   return OS_FS_SUCCESS;
+   return OS_SUCCESS;
 } /* end OS_DirRead_Impl */
                         
 /*----------------------------------------------------------------
@@ -197,7 +197,7 @@ int32 OS_DirRead_Impl(uint32 local_id, os_dirent_t *dirent)
 int32 OS_DirRewind_Impl(uint32 local_id)
 {
    rewinddir(OS_impl_dir_table[local_id]);
-   return OS_FS_SUCCESS;
+   return OS_SUCCESS;
 } /* end OS_DirRewind_Impl */
                         
 /*----------------------------------------------------------------
@@ -212,10 +212,10 @@ int32 OS_DirRemove_Impl(const char *local_path)
 {
    if ( rmdir(local_path) < 0 )
    {
-      return OS_FS_ERROR;
+      return OS_ERROR;
    }
 
-   return OS_FS_SUCCESS;
+   return OS_SUCCESS;
 } /* end OS_DirRemove_Impl */
 
 
@@ -280,7 +280,7 @@ int32 OS_VxWorks_DirAPI_Impl_Init(void)
  *-----------------------------------------------------------------*/
 int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char *Cmd)
 {
-    int32 ReturnCode = OS_FS_ERROR;
+    int32 ReturnCode = OS_ERROR;
     int32 Result = ERROR;
     int32 fdCmd;
     uint32 cmdidx;
@@ -289,9 +289,9 @@ int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char *Cmd)
     /* Create a file to write the command to (or write over the old one) */
     fdCmd = OS_creat(OS_SHELL_CMD_INPUT_FILE_NAME,OS_READ_WRITE);
 
-    if (fdCmd < OS_FS_SUCCESS)
+    if (fdCmd < OS_SUCCESS)
     {
-        return OS_FS_ERROR;
+        return OS_ERROR;
     }
 
     if (OS_ConvertToArrayIndex(fdCmd, &cmdidx) == OS_SUCCESS)

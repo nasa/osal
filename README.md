@@ -24,7 +24,7 @@ This distribution contains:
   - Provide sufficient framework for combining the OSAL BSP, UT BSP, and the CFE PSP and eliminating the duplication/overlap between these items.
   - Minor updates (see https://github.com/nasa/osal/pull/417)
 - 5.0.11: DEVELOPMENT
-  - The more descriptive return value OS_ERR_NAME_NOT_FOUND (instead of OS_FS_ERROR) will now be returned from the following functions (): OS_rmfs, OS_mount, OS_unmount, OS_FS_GetPhysDriveName
+  - The more descriptive return value OS_ERR_NAME_NOT_FOUND (instead of OS_ERROR) will now be returned from the following functions (): OS_rmfs, OS_mount, OS_unmount, OS_FS_GetPhysDriveName
   - Wraps OS_ShMem* prototype and unit test wrapper additions in OSAL_OMIT_DEPRECATED
   - Minor updates (see https://github.com/nasa/osal/pull/408)
 - 5.0.10: DEVELOPMENT
