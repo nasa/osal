@@ -33,12 +33,12 @@
 ** Function prototypes
 **--------------------------------------------------------------------------------*/
 
-void UT_os_mut_sem_create_test(void);
-void UT_os_mut_sem_delete_test(void);
-void UT_os_mut_sem_give_test(void);
-void UT_os_mut_sem_take_test(void);
-void UT_os_mut_sem_get_id_by_name_test(void);
-void UT_os_mut_sem_get_info_test(void);
+void UT_os_mutex_create_test(void);
+void UT_os_mutex_delete_test(void);
+void UT_os_mutex_give_test(void);
+void UT_os_mutex_take_test(void);
+void UT_os_mutex_get_id_by_name_test(void);
+void UT_os_mutex_get_info_test(void);
 
 /*--------------------------------------------------------------------------------*/
 

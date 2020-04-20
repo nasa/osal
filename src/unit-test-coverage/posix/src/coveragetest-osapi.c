@@ -1,27 +1,22 @@
 /*
- *      Copyright (c) 2019, United States government as represented by the
- *      administrator of the National Aeronautics Space Administration.
- *      All rights reserved. This software was created at NASA Goddard
- *      Space Flight Center pursuant to government contracts.
- *
- *      This is governed by the NASA Open Source Agreement and may be used,
- *      distributed and modified only according to the terms of that agreement.
- */
-
-/*
- * Filename: osapi_testcase_common.c
- *
- * Purpose: This file contains unit test cases for items in the "osapi-common" file
- *
- * Notes:
- *
+ * 
+ *    Copyright (c) 2020, United States government as represented by the
+ *    administrator of the National Aeronautics Space Administration.
+ *    All rights reserved. This software was created at NASA Goddard
+ *    Space Flight Center pursuant to government contracts.
+ * 
+ *    This is governed by the NASA Open Source Agreement and may be used,
+ *    distributed and modified only according to the terms of that agreement.
+ * 
  */
 
 
-/*
- * Includes
+/**
+ * \file     coveragetest-osapi.c
+ * \ingroup  posix
+ * \author   joseph.p.hickey@nasa.gov
+ *
  */
-
 #include <utassert.h>
 #include <uttest.h>
 #include <utstubs.h>
@@ -388,7 +383,7 @@ void Test_OS_MutSemGetInfo_Impl(void)
 {
     /*
      * Test Case For:
-     * int32 OS_MutSemGetInfo_Impl (uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
+     * int32 OS_MutSemGetInfo_Impl (uint32 sem_id, OS_mutex_prop_t *mut_prop)
      */
 }
 
@@ -410,29 +405,29 @@ void Test_OS_CompAbsDelayTime(void)
 
 /* ------------------- End of test cases --------------------------------------*/
 
-/* Osapi_Task_Setup
+/* Osapi_Test_Setup
  *
  * Purpose:
  *   Called by the unit test tool to set up the app prior to each test
  */
-void Osapi_Task_Setup(void)
+void Osapi_Test_Setup(void)
 {
     UT_ResetState(0);
 }
 
 /*
- * Osapi_TearDown
+ * Osapi_Test_Teardown
  *
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_TearDown(void)
+void Osapi_Test_Teardown(void)
 {
 
 }
 
 
-#define ADD_TEST(test) UtTest_Add((Test_ ## test), Osapi_Task_Setup, Osapi_TearDown, #test)
+#define ADD_TEST(test) UtTest_Add((Test_ ## test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
 
 /* UtTest_Setup
  *

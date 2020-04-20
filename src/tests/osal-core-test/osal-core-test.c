@@ -531,7 +531,7 @@ void TestGetInfos(void)
     OS_task_prop_t      task_prop;
     OS_queue_prop_t     queue_prop;
     OS_bin_sem_prop_t   bin_prop;
-    OS_mut_sem_prop_t   mut_prop;
+    OS_mutex_prop_t   mut_prop;
         
     /* first step is to create an object to to get the properties of */
     

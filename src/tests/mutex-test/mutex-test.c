@@ -29,7 +29,7 @@ uint32 task_3_stack[TASK_STACK_SIZE];
 uint32 task_3_id; 
 uint32 task_3_failures;
 
-uint32 mut_sem_id;
+uint32 mutex_id;
 uint32 shared_obj_owner;
 
 int    counter = 0;
@@ -44,7 +44,7 @@ void task_1(void)
     while (1)
     {
        status = OS_TaskDelay(100);
-       status = OS_MutSemTake(mut_sem_id);
+       status = OS_MutSemTake(mutex_id);
        if ( status != OS_SUCCESS )
        {
           ++task_1_failures;
@@ -73,7 +73,7 @@ void task_1(void)
        }
        shared_obj_owner = 0;
 
-       status = OS_MutSemGive(mut_sem_id);
+       status = OS_MutSemGive(mutex_id);
        if ( status != OS_SUCCESS )
        {
           ++task_1_failures;
@@ -97,7 +97,7 @@ void task_2(void)
     {
        status = OS_TaskDelay(200);
 
-       status = OS_MutSemTake(mut_sem_id);
+       status = OS_MutSemTake(mutex_id);
        if ( status != OS_SUCCESS )
        {
           ++task_2_failures;
@@ -127,7 +127,7 @@ void task_2(void)
        }
        shared_obj_owner = 0;
 
-       status = OS_MutSemGive(mut_sem_id);
+       status = OS_MutSemGive(mutex_id);
        if ( status != OS_SUCCESS )
        {
           ++task_2_failures;
@@ -151,7 +151,7 @@ void task_3(void)
     {
  
        status = OS_TaskDelay(300);
-       status = OS_MutSemTake(mut_sem_id);
+       status = OS_MutSemTake(mutex_id);
        if ( status != OS_SUCCESS )
        {
           ++task_3_failures;
@@ -180,7 +180,7 @@ void task_3(void)
        }
        shared_obj_owner = 0;
 
-       status = OS_MutSemGive(mut_sem_id);
+       status = OS_MutSemGive(mutex_id);
        if ( status != OS_SUCCESS )
        {
           ++task_3_failures;
@@ -218,22 +218,22 @@ void MutexSetup(void)
    /*
    ** Create the mutex 
    */
-   status = OS_MutSemCreate( &mut_sem_id, "MutSem1", 0);
-   UtAssert_True(status == OS_SUCCESS, "MutSem1 create Id=%u Rc=%d", (unsigned int)mut_sem_id, (int)status);
+   status = OS_MutSemCreate( &mutex_id, "MutSem1", 0);
+   UtAssert_True(status == OS_SUCCESS, "MutSem1 create Id=%u Rc=%d", (unsigned int)mutex_id, (int)status);
 
    /*
    ** Test the mutex to see if it supports nesting 
    */
-   status = OS_MutSemTake(mut_sem_id);
+   status = OS_MutSemTake(mutex_id);
    UtAssert_True(status == OS_SUCCESS, "OS_MutSemTake 1 Rc=%d", (int)status);
 
-   status = OS_MutSemTake(mut_sem_id);
+   status = OS_MutSemTake(mutex_id);
    UtAssert_True(status == OS_SUCCESS, "OS_MutSemTake 2 Rc=%d", (int)status);
 
-   status = OS_MutSemGive(mut_sem_id);
+   status = OS_MutSemGive(mutex_id);
    UtAssert_True(status == OS_SUCCESS, "OS_MutSemGive 2 Rc=%d", (int)status);
 
-   status = OS_MutSemGive(mut_sem_id);
+   status = OS_MutSemGive(mutex_id);
    UtAssert_True(status == OS_SUCCESS, "OS_MutSemGive 1 Rc=%d", (int)status);
 
    /*
