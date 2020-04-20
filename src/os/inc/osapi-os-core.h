@@ -64,6 +64,7 @@
  */
 #define OS_ERROR_NAME_LENGTH     35
 
+
 /*  Object property structures */
 
 /** @brief OSAL task properties */
@@ -104,7 +105,7 @@ typedef struct
 {
     char name [OS_MAX_API_NAME];
     uint32 creator;
-}OS_mut_sem_prop_t;
+}OS_mutex_prop_t;
 
 
 /** @brief OSAL time */
@@ -1007,7 +1008,7 @@ int32 OS_MutSemGetIdByName      (uint32 *sem_id, const char *sem_name);
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
  * @retval #OS_INVALID_POINTER if the mut_prop pointer is null
  */
-int32 OS_MutSemGetInfo          (uint32 sem_id, OS_mut_sem_prop_t *mut_prop);
+int32 OS_MutSemGetInfo          (uint32 sem_id, OS_mutex_prop_t *mut_prop);
 /**@}*/
 
 /** @defgroup OSAPITime OSAL Time/Tick APIs

@@ -191,12 +191,12 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_count_sem_get_id_by_name_test, NULL, NULL, "OS_CountSemGetIdByName");
     UtTest_Add(UT_os_count_sem_get_info_test, NULL, NULL, "OS_CountSemGetInfo");
 
-    UtTest_Add(UT_os_mut_sem_create_test, NULL, NULL, "OS_MutSemCreate");
-    UtTest_Add(UT_os_mut_sem_delete_test, NULL, NULL, "OS_MutSemDelete");
-    UtTest_Add(UT_os_mut_sem_give_test, NULL, NULL, "OS_MutSemGive");
-    UtTest_Add(UT_os_mut_sem_take_test, NULL, NULL, "OS_MutSemTake");
-    UtTest_Add(UT_os_mut_sem_get_id_by_name_test, NULL, NULL, "OS_MutSemGetIdByName");
-    UtTest_Add(UT_os_mut_sem_get_info_test, NULL, NULL, "OS_MutSemGetInfo");
+    UtTest_Add(UT_os_mutex_create_test, NULL, NULL, "OS_MutSemCreate");
+    UtTest_Add(UT_os_mutex_delete_test, NULL, NULL, "OS_MutSemDelete");
+    UtTest_Add(UT_os_mutex_give_test, NULL, NULL, "OS_MutSemGive");
+    UtTest_Add(UT_os_mutex_take_test, NULL, NULL, "OS_MutSemTake");
+    UtTest_Add(UT_os_mutex_get_id_by_name_test, NULL, NULL, "OS_MutSemGetIdByName");
+    UtTest_Add(UT_os_mutex_get_info_test, NULL, NULL, "OS_MutSemGetInfo");
 
     UtTest_Add(UT_os_queue_create_test, NULL, NULL, "OS_QueueCreate");
     UtTest_Add(UT_os_queue_delete_test, NULL, NULL, "OS_QueueDelete");

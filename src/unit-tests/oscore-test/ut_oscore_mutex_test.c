@@ -45,13 +45,13 @@
 **          OS_SEM_FAILURE if the OS call failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_mut_sem_create_test()
+void UT_os_mutex_create_test()
 {
     int i;
     int32 res = 0;
     const char* testDesc;
-    uint32  mut_sem_id;
-    uint32  mut_sem_id2;
+    uint32  mutex_id;
+    uint32  mutex_id2;
     char    sem_name[UT_OS_NAME_BUFF_SIZE];
     char    long_sem_name[UT_OS_NAME_BUFF_SIZE];
     uint32  test_setup_invalid = 0;
@@ -59,15 +59,15 @@ void UT_os_mut_sem_create_test()
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_MutSemCreate(&mut_sem_id, "Good", 0 );
+    res = OS_MutSemCreate(&mutex_id, "Good", 0 );
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_mut_sem_create_test_exit_tag;
+        goto UT_os_mutex_create_test_exit_tag;
     }
 
     /* Clean up */
-    OS_MutSemDelete(mut_sem_id);
+    OS_MutSemDelete(mutex_id);
 
     /*-----------------------------------------------------*/
     testDesc = "#1 Null-pointer-arg-1";
@@ -81,7 +81,7 @@ void UT_os_mut_sem_create_test()
     /*-----------------------------------------------------*/
     testDesc = "#2 Null-pointer-arg-2";
 
-    res = OS_MutSemCreate(&mut_sem_id, NULL, 0);
+    res = OS_MutSemCreate(&mutex_id, NULL, 0);
     if (res == OS_INVALID_POINTER)
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -92,7 +92,7 @@ void UT_os_mut_sem_create_test()
 
     memset(long_sem_name, 'X', sizeof(long_sem_name));
     long_sem_name[sizeof(long_sem_name)-1] = '\0';
-    res = OS_MutSemCreate(&mut_sem_id, long_sem_name, 0);
+    res = OS_MutSemCreate(&mutex_id, long_sem_name, 0);
     if (res == OS_ERR_NAME_TOO_LONG)
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -106,7 +106,7 @@ void UT_os_mut_sem_create_test()
     {
         memset(sem_name, '\0', sizeof(sem_name));
         UT_os_sprintf(sem_name, "MUTSEM%d",i);
-        res = OS_MutSemCreate(&mut_sem_id, sem_name, 0);
+        res = OS_MutSemCreate(&mutex_id, sem_name, 0);
         if ( res != OS_SUCCESS )
         {
             testDesc = "#4 No-free-IDs - Mutex Create failed";
@@ -118,7 +118,7 @@ void UT_os_mut_sem_create_test()
 
     if ( test_setup_invalid == 0 )
     {
-        res = OS_MutSemCreate(&mut_sem_id, "OneTooMany", 0);
+        res = OS_MutSemCreate(&mutex_id, "OneTooMany", 0);
         if (res == OS_ERR_NO_FREE_IDS)
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -132,7 +132,7 @@ void UT_os_mut_sem_create_test()
     testDesc = "#5 Duplicate-name";
 
     /* Setup */
-    res = OS_MutSemCreate(&mut_sem_id2, "DUPLICATE",  0);
+    res = OS_MutSemCreate(&mutex_id2, "DUPLICATE",  0);
     if ( res != OS_SUCCESS )
     {
         testDesc = "#5 Duplicate-name - Mutex Create failed";
@@ -140,14 +140,14 @@ void UT_os_mut_sem_create_test()
     }
     else
     {
-        res = OS_MutSemCreate(&mut_sem_id, "DUPLICATE", 0);
+        res = OS_MutSemCreate(&mutex_id, "DUPLICATE", 0);
         if (res == OS_ERR_NAME_TAKEN)
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
         else
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
 
         /* Reset test environment */
-        res = OS_MutSemDelete(mut_sem_id2);
+        res = OS_MutSemDelete(mutex_id2);
     }
 
     /*-----------------------------------------------------*/
@@ -158,16 +158,16 @@ void UT_os_mut_sem_create_test()
     /*-----------------------------------------------------*/
     testDesc = "#7 Nominal";
 
-    res = OS_MutSemCreate(&mut_sem_id, "Good", 0);
+    res = OS_MutSemCreate(&mutex_id, "Good", 0);
     if ( res == OS_SUCCESS )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /* Reset test environment */
-    res = OS_MutSemDelete(mut_sem_id);
+    res = OS_MutSemDelete(mutex_id);
 
-UT_os_mut_sem_create_test_exit_tag:
+UT_os_mutex_create_test_exit_tag:
     return;
     
 }
@@ -181,11 +181,11 @@ UT_os_mut_sem_create_test_exit_tag:
 **          OS_SEM_FAILURE if the OS call failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_mut_sem_delete_test()
+void UT_os_mutex_delete_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32  mut_sem_id;
+    uint32  mutex_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
@@ -194,7 +194,7 @@ void UT_os_mut_sem_delete_test()
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_mut_sem_delete_test_exit_tag;
+        goto UT_os_mutex_delete_test_exit_tag;
     }
 
     /*-----------------------------------------------------*/
@@ -215,7 +215,7 @@ void UT_os_mut_sem_delete_test()
     testDesc = "#3 Nominal";
 
     /* Setup */
-    res = OS_MutSemCreate(&mut_sem_id, "DeleteTest", 0);
+    res = OS_MutSemCreate(&mutex_id, "DeleteTest", 0);
     if ( res != OS_SUCCESS )
     {
         testDesc = "#3 Nominal - Mutex Create failed";
@@ -223,14 +223,14 @@ void UT_os_mut_sem_delete_test()
     }
     else
     {
-        res = OS_MutSemDelete(mut_sem_id);
+        res = OS_MutSemDelete(mutex_id);
         if ( res == OS_SUCCESS )
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
         else
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
     }
 
-UT_os_mut_sem_delete_test_exit_tag:
+UT_os_mutex_delete_test_exit_tag:
     return;
     
 }
@@ -244,11 +244,11 @@ UT_os_mut_sem_delete_test_exit_tag:
 **                         array of semaphores defined by the system
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_mut_sem_give_test()
+void UT_os_mutex_give_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32  mut_sem_id;
+    uint32  mutex_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
@@ -257,7 +257,7 @@ void UT_os_mut_sem_give_test()
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_mut_sem_give_test_exit_tag;
+        goto UT_os_mutex_give_test_exit_tag;
     }
 
     /*-----------------------------------------------------*/
@@ -278,7 +278,7 @@ void UT_os_mut_sem_give_test()
     testDesc = "#3 Nominal";
 
     /* Setup */
-    res = OS_MutSemCreate(&mut_sem_id, "GiveTest", 0);
+    res = OS_MutSemCreate(&mutex_id, "GiveTest", 0);
     if ( res != OS_SUCCESS )
     {
         testDesc = "#3 Nominal - Mutex Create failed";
@@ -286,7 +286,7 @@ void UT_os_mut_sem_give_test()
     }
     else
     {
-        res = OS_MutSemTake(mut_sem_id);
+        res = OS_MutSemTake(mutex_id);
         if ( res != OS_SUCCESS )
         {
             testDesc = "#3 Nominal - Mutex Take failed";
@@ -294,17 +294,17 @@ void UT_os_mut_sem_give_test()
         }
         else
         {
-            res = OS_MutSemGive(mut_sem_id);
+            res = OS_MutSemGive(mutex_id);
             if ( res == OS_SUCCESS )
                 UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
             else
                 UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
 
-            res = OS_MutSemDelete(mut_sem_id);
+            res = OS_MutSemDelete(mutex_id);
         }
     }
 
-UT_os_mut_sem_give_test_exit_tag:
+UT_os_mutex_give_test_exit_tag:
     return;
     
 }
@@ -318,11 +318,11 @@ UT_os_mut_sem_give_test_exit_tag:
 **                         array of semaphores defined by the system
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_mut_sem_take_test()
+void UT_os_mutex_take_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32  mut_sem_id;
+    uint32  mutex_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
@@ -331,7 +331,7 @@ void UT_os_mut_sem_take_test()
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_mut_sem_take_test_exit_tag;
+        goto UT_os_mutex_take_test_exit_tag;
     }
 
     /*-----------------------------------------------------*/
@@ -352,7 +352,7 @@ void UT_os_mut_sem_take_test()
     testDesc = "#3 Nominal";
 
     /* Setup */
-    res = OS_MutSemCreate(&mut_sem_id, "TakeTest", 0);
+    res = OS_MutSemCreate(&mutex_id, "TakeTest", 0);
     if ( res != OS_SUCCESS )
     {
         testDesc = "#3 Nominal - Mutex Create failed";
@@ -360,17 +360,17 @@ void UT_os_mut_sem_take_test()
     }
     else
     {
-        res = OS_MutSemTake(mut_sem_id);
+        res = OS_MutSemTake(mutex_id);
         if ( res == OS_SUCCESS )
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
         else
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
 
-        OS_MutSemGive(mut_sem_id);
-        OS_MutSemDelete(mut_sem_id);
+        OS_MutSemGive(mutex_id);
+        OS_MutSemDelete(mutex_id);
     }
 
-UT_os_mut_sem_take_test_exit_tag:
+UT_os_mutex_take_test_exit_tag:
     return;
     
 }
@@ -384,11 +384,11 @@ UT_os_mut_sem_take_test_exit_tag:
 **          OS_ERR_NAME_NOT_FOUND if the name was not found in the mutex semaphore table
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_mut_sem_get_id_by_name_test()
+void UT_os_mutex_get_id_by_name_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32  mut_sem_id;
+    uint32  mutex_id;
     char        long_sem_name[UT_OS_NAME_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
@@ -398,7 +398,7 @@ void UT_os_mut_sem_get_id_by_name_test()
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_mut_sem_get_id_by_name_test_exit_tag;
+        goto UT_os_mutex_get_id_by_name_test_exit_tag;
     }
 
     /*-----------------------------------------------------*/
@@ -413,7 +413,7 @@ void UT_os_mut_sem_get_id_by_name_test()
     /*-----------------------------------------------------*/
     testDesc = "#2 Invalid-pointer-arg-2";
 
-    res = OS_MutSemGetIdByName(&mut_sem_id, NULL);
+    res = OS_MutSemGetIdByName(&mutex_id, NULL);
     if ( res == OS_INVALID_POINTER )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -424,7 +424,7 @@ void UT_os_mut_sem_get_id_by_name_test()
 
     memset(long_sem_name, 'Y', sizeof(long_sem_name));
     long_sem_name[sizeof(long_sem_name)-1] = '\0';
-    res = OS_MutSemGetIdByName(&mut_sem_id, long_sem_name);
+    res = OS_MutSemGetIdByName(&mutex_id, long_sem_name);
     if ( res == OS_ERR_NAME_TOO_LONG )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -433,7 +433,7 @@ void UT_os_mut_sem_get_id_by_name_test()
     /*-----------------------------------------------------*/
     testDesc = "#4 Name-not-found";
 
-    res = OS_MutSemGetIdByName(&mut_sem_id, "NameNotFound");
+    res = OS_MutSemGetIdByName(&mutex_id, "NameNotFound");
     if ( res == OS_ERR_NAME_NOT_FOUND )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -442,7 +442,7 @@ void UT_os_mut_sem_get_id_by_name_test()
     testDesc = "#5 Nominal";
 
     /* Setup */
-    res = OS_MutSemCreate(&mut_sem_id, "GetIDByName", 0);
+    res = OS_MutSemCreate(&mutex_id, "GetIDByName", 0);
     if ( res != OS_SUCCESS )
     {
         testDesc = "#5 Nominal - Mutex Create failed";
@@ -450,16 +450,16 @@ void UT_os_mut_sem_get_id_by_name_test()
     }
     else
     {
-        res = OS_MutSemGetIdByName(&mut_sem_id, "GetIDByName");
+        res = OS_MutSemGetIdByName(&mutex_id, "GetIDByName");
         if ( res == OS_SUCCESS )
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
         else
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
 
-        res = OS_MutSemDelete(mut_sem_id);
+        res = OS_MutSemDelete(mutex_id);
     }
 
-UT_os_mut_sem_get_id_by_name_test_exit_tag:
+UT_os_mutex_get_id_by_name_test_exit_tag:
     return;
     
 }
@@ -472,27 +472,27 @@ UT_os_mut_sem_get_id_by_name_test_exit_tag:
 **          OS_ERR_INVALID_ID if the id passed in is not a valid binary semaphore id
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_mut_sem_get_info_test()
+void UT_os_mutex_get_info_test()
 {
     int32              res = 0;
     const char*        testDesc;
-    uint32             mut_sem_id;
-    OS_mut_sem_prop_t  mut_sem_prop;
+    uint32             mutex_id;
+    OS_mutex_prop_t  mutex_prop;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_MutSemGetInfo(0, &mut_sem_prop);
+    res = OS_MutSemGetInfo(0, &mutex_prop);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_mut_sem_get_info_test_exit_tag;
+        goto UT_os_mutex_get_info_test_exit_tag;
     }
 
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_MutSemGetInfo(99999, &mut_sem_prop);
+    res = OS_MutSemGetInfo(99999, &mutex_prop);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -501,7 +501,7 @@ void UT_os_mut_sem_get_info_test()
     /*-----------------------------------------------------*/
     testDesc = "#2 Invalid-pointer-arg";
 
-    res = OS_MutSemCreate(&mut_sem_id, "InvalidPtr", 0);
+    res = OS_MutSemCreate(&mutex_id, "InvalidPtr", 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#2 Invalid-pointer-arg - Mutex Create failed";
@@ -509,20 +509,20 @@ void UT_os_mut_sem_get_info_test()
     }
     else
     {
-        res = OS_MutSemGetInfo(mut_sem_id, NULL);
+        res = OS_MutSemGetInfo(mutex_id, NULL);
         if ( res == OS_INVALID_POINTER )
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
         else
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
 
-          OS_MutSemDelete(mut_sem_id);
+          OS_MutSemDelete(mutex_id);
     }
 
     /*-----------------------------------------------------*/
     testDesc = "#3 Nominal";
 
     /* Setup */
-    res = OS_MutSemCreate(&mut_sem_id, "GetInfo", 0);
+    res = OS_MutSemCreate(&mutex_id, "GetInfo", 0);
     if ( res != OS_SUCCESS )
     {
         testDesc = "#3 Nominal - Mutex Create failed";
@@ -530,16 +530,16 @@ void UT_os_mut_sem_get_info_test()
     }
     else
     {
-        res = OS_MutSemGetInfo(mut_sem_id, &mut_sem_prop);
+        res = OS_MutSemGetInfo(mutex_id, &mutex_prop);
         if ( res == OS_SUCCESS )
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
         else
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
 
-        res = OS_MutSemDelete(mut_sem_id);
+        res = OS_MutSemDelete(mutex_id);
     }
 
-UT_os_mut_sem_get_info_test_exit_tag:
+UT_os_mutex_get_info_test_exit_tag:
     return;
     
 }
