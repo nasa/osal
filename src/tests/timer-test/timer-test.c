@@ -27,9 +27,6 @@ void TimerTestCheck(void);
 
 OS_time_t        StartTime;
 OS_time_t        EndTime;
-uint32           TimerStart[NUMBER_OF_TIMERS];
-uint32           TimerInterval[NUMBER_OF_TIMERS]; 
-
 uint32           TimerStart[NUMBER_OF_TIMERS] = {1000, 2000000, 3000000, 4000000 };
 uint32           TimerInterval[NUMBER_OF_TIMERS] = {500000, 400000, 800000, 600000 };
 
