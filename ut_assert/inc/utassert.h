@@ -1,26 +1,15 @@
 /*
-**
-** File: utassert.h
-**
-** Copyright 2012-2013 United States Government as represented by the 
-** Administrator of the National Aeronautics and Space Administration. 
-** All Other Rights Reserved.  
-**
-** This software was created at NASA's Goddard Space Flight Center.
-** This software is governed by the NASA Open Source Agreement and may be 
-** used, distributed and modified only pursuant to the terms of that 
-** agreement.
-**
-** Purpose: This code implements a standard set of asserts for use in unit tests.
-**
-** Design Notes:
-**    - All asserts evaluate a expression as true or false to determine if a unit test has
-**      passed or failed.  true means the test passed, false means the test failed.
-**    - All asserts return a boolen result to indicate the pass fail status.
-**    - All asserts are implemented as macros to hide the __LINE__ and __FILE__ macros.
-**    - All asserts must call the function UtAssert.
-**
-*/
+ * File: utassert.h
+ *
+ * Purpose: This code implements a standard set of asserts for use in unit tests.
+ *
+ * Design Notes:
+ *    - All asserts evaluate a expression as true or false to determine if a unit test has
+ *      passed or failed.  true means the test passed, false means the test failed.
+ *    - All asserts return a boolen result to indicate the pass fail status.
+ *    - All asserts are implemented as macros to hide the __LINE__ and __FILE__ macros.
+ *    - All asserts must call the function UtAssert.
+ */
 
 #ifndef _utassert_
 #define	_utassert_

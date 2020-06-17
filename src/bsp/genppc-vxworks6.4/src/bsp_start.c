@@ -1,20 +1,9 @@
-/******************************************************************************
-** File:  bsp_start.c
-**
-**      This is governed by the NASA Open Source Agreement and may be used, 
-**      distributed and modified only pursuant to the terms of that agreement. 
-**
-**      Copyright (c) 2004-2006, United States government as represented by the 
-**      administrator of the National Aeronautics Space Administration.  
-**      All rights reserved. 
-**
-** Purpose:
-**   
-**  OSAL main entry point.
-**
-** History:
-**
-******************************************************************************/
+/*
+ * File:  bsp_start.c
+ *
+ * Purpose:
+ *  OSAL main entry point.
+ */
 
 /*
 **  Include Files

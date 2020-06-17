@@ -1,27 +1,19 @@
 /*
-** File   :	osapi.c
-**
-**      Copyright (c) 2004-2015, United States government as represented by the
-**      administrator of the National Aeronautics Space Administration.
-**      All rights reserved. This software was created at NASA Glenn
-**      Research Center pursuant to government contracts.
-**
-**      This is governed by the NASA Open Source Agreement and may be used,
-**      distributed and modified only pursuant to the terms of that agreement.
-**
-** Author : Joe Hickey based on original VxWorks implementation by Ezra Yeheskeli
-**
-** Purpose:
-**      This file contains some of the OS APIs abstraction layer for VxWorks
-**      This has been tested against the current VxWorks 4.11 release branch
-**      
-**      NOTE: This uses only the "Classic" VxWorks API.  It is intended to
-**      work on VxWorks targets that do not provide the POSIX API, i.e.
-**      when "--disable-posix" is given during the configuration stage.
-**
-**      If the VxWorks POSIX API is enabled, then it should be possible to
-**      use the POSIX OSAL which is more full featured.
-*/
+ * File   :	osapi.c
+ *
+ * Author : Joe Hickey based on original VxWorks implementation by Ezra Yeheskeli
+ *
+ * Purpose:
+ *      This file contains some of the OS APIs abstraction layer for VxWorks
+ *      This has been tested against the current VxWorks 4.11 release branch
+ *      
+ *      NOTE: This uses only the "Classic" VxWorks API.  It is intended to
+ *      work on VxWorks targets that do not provide the POSIX API, i.e.
+ *      when "--disable-posix" is given during the configuration stage.
+ *
+ *      If the VxWorks POSIX API is enabled, then it should be possible to
+ *      use the POSIX OSAL which is more full featured.
+ */
 /****************************************************************************************
                                     INCLUDE FILES
 ****************************************************************************************/
