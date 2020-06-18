@@ -1,105 +1,42 @@
-Operating System Abstraction Layer Project
-==========================================
+# Core Flight System : Framework : Operating System Abstraction Layer
 
-![OSAL Logo by Michael Cudmore](./doc/OSAL-Logo.png)
+This repository contains NASA's Operating System Abstraction Layer (OSAL), which is a framework component of the Core Flight System.
 
+This is a collection of abstractio APIs and associated framework to be located in the `osal` subdirectory of a cFS Mission Tree. The Core Flight System is bundled at <https://github.com/nasa/cFS>, which includes build and execution instructions.
 
-The OS Abstraction Layer was originally devloped by the Flight Software Systems Branch at NASA Goddard Space Flight Center.
+## References
+- [Configuration guide](doc/OSAL-Configuration-Guide.pdf)
+- [API documentation](doc/OSAL%20Library%20API.pdf)
 
-OS Abstraction Layer information:
-=================================
+## Version History
 
-This distribution contains:
-
-1. The OS Abstraction Layer Library
-2. Tests and example applications
-3. A directory structure and makefiles to manage it all.
-
-Release Notes:
-==============
-
-- 5.0.0: RELEASE CANDIDATE
-  - In build verification testing to be considered for official release
-  - Release documentation in work
-  - This is a point release from an internal repository
+- **5.0.0: OFFICIAL RELEASE**
+  - Changes are detailed in [cFS repo](https://github.com/nasa/cFS) release 6.7.0 documentation
+  - Released under the Apache 2.0 license
 - **4.2.1a OFFICIAL RELEASE**
-  - Released under the NOSA license, see [LICENSE](LICENSE)
+  - Released under the NOSA license
   - See [version description document](OSAL%204.2.1.0%20Version%20Description%20Document.pdf)
   - This is a point release from an internal repository
 
-Getting Started:
-================
+## Quick start
 
-See the document *doc/OSAL-Configuration-Guide.doc* for complete details.
+Typically OSAL is built and tested as part of cFS as detailed in: [cFS repo](https://github.com/nasa/cFS)
 
-An easy way to get started is to use the Linux port and classic build: 
+OSAL library build pc-linux example (from the base osal directory):
+```
+mkdir build_osal
+cd build_osal
+cmake -DOSAL_SYSTEM_OSTYPE=pc-linux -DOSAL_SYSTEM_BSPTYPE=pc-linux -DOSAL_INCLUDEDIR=src/bsp/pc-linux/config/ ..
+make
+```
+See the Configuration Guide for more information.
 
-1. Set the *OSAL_SRC* environment variable to point to the OSAL source code. 
-     - Running setvars.sh will set the variable for you ($source ./setvars.sh)
-2. Edit the *build/osal-config.mak* file and set the following options:
-     - BSP - Set this to the board you are running on. For a PC running linux, use *pc-linux* 
-     - OS - Set this to the OS you are running. For a PC running linux, use *posix*.
-     - OSAL_M32 - Uncomment/Add this build variable for building 32-bit images using "native" 
-       GCC on a 64-bit X86 Linux platform
+## Known issues
 
-Buiding on a PC running linux:
+See all open issues and closed to milestones later than this version.
 
-    export OSAL_SRC = /home/acudmore/osal/src
+## Getting Help
 
-In build/osal-config.mak:
+For best results, submit issues:questions or issues:help wanted requests at <https://github.com/nasa/cFS>.
 
-    OS=posix
-    BSP=pc-linux
-    
-    Optional: OSAL_M32 = -m32 (Note: Usage of this flag may require an optional 'multilib' (or similar) 
-    package to be installed. Refer to your operating system and toolchain documentation for details, if 
-    adding the appropriate flag causes your builds to fail due to (for example) missing 32-bit or 
-    multilib related headers or libraries.) 
-
-Optional:  Some Linux systems may require an additional linker option in
-    src/bsp/pc-linux/make/link-rules.mak:
-
-    LDFLAGS ?= $(OSAL_M32) -export-dynamic
-
-    If the symbol-api-test fails, then you need this option.
-
-Now just type *make config; make* from the build directory and it should build the OSAL core files, tests, and sample
-applications for you. The binary for each application is in its own directory 
-(i.e. build/examples/tasking-example/tasking-example.bin) You can switch to that directory and run it. You 
-can also debug it using GDB.
-
-NOTE: Running on linux may require root or adjusting the posix message queue maximum sizes. 
-
-The Embedded targets take a little more work to run, because they must be cross compiled and booted on the board. 
-By copying a target, you should be able to come up with a new target.
-
-If you would like just the OSAL itself, just look in src/os/inc for the include files and src/os/<your os here> 
-for the OSAL implementation. 
-
-The API documentation is in the *doc* directory.
-
-There are two sets of tests: build/tests and build/unit-tests.  To build and the unit tests,
-perform the build steps above then *make unit-tests* in the build directory.
-
-Instructions on how to use the newely supported cmake build system are provided in the OSAL Configuration Guide
-located in the *doc* directory.
-
-Contact Information: 
-====================
-
-    Alan Cudmore
-    NASA Goddard Space Flight Center
-    Code 582.0
-    Greenbelt, MD 20771
-    Alan.P.Cudmore@nasa.gov
-
-Copyright notice:
-=================
-
-Copyright United States Government as represented by the Administrator of the National Aeronautics and Space Administration
-
-License information:
-==================== 
-
-This software is licensed under NASAs Open Source Agreement. The release of the software is conditional upon the recipients acceptance of the Open Source Agreement. Please see the file: NASA_Open_Source_Agreement_1_3-OS_AbstractionLayer.txt
-
+Official cFS page: <http://cfs.gsfc.nasa.gov>
