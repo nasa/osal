@@ -196,4 +196,10 @@
  */
 #define OSAL_DEBUG_PERMISSIVE_MODE
 
+/*
+ * If OS_HAVE_PTHREAD_SETNAME_NP is defined, this will allow underlying pthread names
+ * to match CFE task names
+ */
+#define OS_HAVE_PTHREAD_SETNAME_NP
+
 #endif

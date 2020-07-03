@@ -163,6 +163,10 @@ const OS_ErrorTable_Entry_t OS_IMPL_ERROR_NAME_TABLE[] = { { 0, NULL } };
 static void  OS_CompAbsDelayTime( uint32 milli_second , struct timespec * tm);
 static int   OS_PriorityRemap(uint32 InputPri);
 
+#ifdef OS_HAVE_PTHREAD_SETNAME_NP
+extern int pthread_setname_np(pthread_t thread, const char *name);
+#endif
+
 
 /*----------------------------------------------------------------
  *
@@ -734,7 +738,9 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t stacksz, PthreadFuncPtr_t entry, void *entry_arg)
+int32 OS_Posix_InternalTaskCreate_Impl(
+    pthread_t *pthr, const char* thread_name, uint32 priority, size_t stacksz,
+    PthreadFuncPtr_t entry, void *entry_arg)
 {
     int                return_code = 0;
     pthread_attr_t     custom_attr;
@@ -831,6 +837,20 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t 
     }
 
     /*
+     ** Set the thread name through the POSIX API to allow for visibility in OS
+     ** utilities
+     */
+
+#ifdef OS_HAVE_PTHREAD_SETNAME_NP
+    return_code = pthread_setname_np(*pthr, thread_name);
+
+    if (return_code != 0)
+    {
+        OS_DEBUG("pthread_setname_np error in OS_TaskCreate: %s\n",strerror(return_code));
+    }
+#endif
+
+    /*
      ** Free the resources that are no longer needed
      ** Since the task is now running - pthread_create() was successful -
      ** Do not treat anything bad that happens after this point as fatal.
@@ -870,6 +890,7 @@ int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
 
     return_code = OS_Posix_InternalTaskCreate_Impl(
            &OS_impl_task_table[task_id].id,
+           OS_task_table[task_id].task_name,
            OS_task_table[task_id].priority,
            OS_task_table[task_id].stack_size,
            OS_PthreadTaskEntry,
@@ -2470,6 +2491,8 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id)
     OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
     pthread_t consoletask;
     int32 return_code;
+    char console_name[OS_MAX_API_NAME];
+
     OS_U32ValueWrapper_t local_arg = { 0 };
 
     if (local_id == 0)
@@ -2487,8 +2510,15 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id)
             else
             {
                 local_arg.value = local_id;
-                return_code = OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
-                    OS_ConsoleTask_Entry, local_arg.opaque_arg);
+
+                /*
+                ** Construct the console task name:
+                ** The name will consist of "console.{console local id}"
+                */
+                snprintf(console_name, sizeof(console_name), "console.%d", local_id);
+
+                return_code = OS_Posix_InternalTaskCreate_Impl(&consoletask, console_name,
+                    OS_CONSOLE_TASK_PRIORITY, 0, OS_ConsoleTask_Entry, local_arg.opaque_arg);
 
                 if (return_code != OS_SUCCESS)
                 {

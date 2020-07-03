@@ -351,7 +351,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
     OS_impl_timebase_internal_record_t *local;
     OS_common_record_t *global;
     OS_U32ValueWrapper_t arg;
-
+    char timer_name[OS_MAX_API_NAME];
 
     local = &OS_impl_timebase_table[timer_id];
     global = &OS_global_timebase_table[timer_id];
@@ -368,7 +368,14 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
      */
     arg.opaque_arg = NULL;
     arg.value = global->active_id;
-    return_code = OS_Posix_InternalTaskCreate_Impl(&local->handler_thread, 0, 0, OS_TimeBasePthreadEntry, arg.opaque_arg);
+
+    /*
+    ** Construct the timer thread name:
+    ** The name will consist of "timer.{timer id}"
+    */
+    snprintf(timer_name, sizeof(timer_name), "timer.%d", timer_id);
+
+    return_code = OS_Posix_InternalTaskCreate_Impl(&local->handler_thread, timer_name, 0, 0, OS_TimeBasePthreadEntry, arg.opaque_arg);
     if (return_code != OS_SUCCESS)
     {
         return return_code;
