@@ -177,6 +177,75 @@ typedef enum
 } OS_StreamState_t;
 
 /**
+ * @brief A set of events that can be used with event callback routines
+ */
+typedef enum
+{
+    OS_EVENT_RESERVED = 0,          /**< no-op/reserved event id value */
+
+    /**
+     * resource/id has been newly allocated but not yet created.
+     *
+     * This event is invoked from WITHIN the locked region, in
+     * the context of the task which is allocating the resource.
+     *
+     * If the handler returns non-success, the error will be returned
+     * to the caller and the creation process is aborted.
+     */
+    OS_EVENT_RESOURCE_ALLOCATED,
+
+    /**
+     * resource/id has been fully created/finalized.
+     *
+     * Invoked outside locked region, in the context
+     * of the task which created the resource.
+     *
+     * Data object is not used, passed as NULL.
+     *
+     * Return value is ignored - this is for information purposes only.
+     */
+    OS_EVENT_RESOURCE_CREATED,
+
+    /**
+     * resource/id has been deleted.
+     *
+     * Invoked outside locked region, in the context
+     * of the task which deleted the resource.
+     *
+     * Data object is not used, passed as NULL.
+     *
+     * Return value is ignored - this is for information purposes only.
+     */
+    OS_EVENT_RESOURCE_DELETED,
+
+    /**
+     * New task is starting.
+     *
+     * Invoked outside locked region, in the context
+     * of the task which is currently starting, before
+     * the entry point is called.
+     *
+     * Data object is not used, passed as NULL.
+     *
+     * If the handler returns non-success, task startup is aborted
+     * and the entry point is not called.
+     */
+    OS_EVENT_TASK_STARTUP,
+
+    OS_EVENT_MAX                    /**< placeholder for end of enum, not used */
+} OS_Event_t;
+
+/**
+ * @brief A callback routine for event handling.
+ *
+ * @param[in]    event      The event that occurred
+ * @param[in]    object_id  The associated object_id, or 0 if not associated with an object
+ * @param[inout] data       An abstract data/context object associated with the event, or NULL.
+ * @return status Execution status, see @ref OSReturnCodes.
+ */
+typedef int32 (*OS_EventHandler_t)(OS_Event_t event, osal_id_t object_id, void *data);
+
+/**
  * @brief For the @ref OS_GetErrorName() function, to ensure
  * everyone is making an array of the same length.
  *
@@ -504,6 +573,25 @@ void OS_ForEachObject           (osal_id_t creator_id, OS_ArgCallback_t callback
  * @param[in]  callback_arg Opaque Argument to pass to callback function
   */
 void OS_ForEachObjectOfType     (uint32 objtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Callback routine registration
+ *
+ * This hook enables the application code to perform extra platform-specific
+ * operations on various system events such as resource creation/deletion.
+ *
+ * @note Some events are invoked while the resource is "locked" and therefore
+ * application-defined handlers for these events should not block or attempt
+ * to access other OSAL resources.
+ *
+ * @param[in] handler The application-provided event handler
+ * @return Execution status, see @ref OSReturnCodes.
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_ERROR   @copybrief OS_ERROR
+ */
+int32 OS_RegisterEventHandler (OS_EventHandler_t handler);
+
 /**@}*/
 
 
