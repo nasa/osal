@@ -372,7 +372,7 @@ void Server_Fn(void)
     /* Accept incoming connections */
     status = OS_SUCCESS;
     actual = OS_SocketAccept(s_socket_id, &connsock_id, &addr, OS_PEND);
-    UtAssert_True(status == expected, "OS_SocketAccept() (%ld) == OS_SUCCESS", (long)actual);
+    UtAssert_True(status == actual, "OS_SocketAccept() (%ld) == OS_SUCCESS", (long)actual);
     UtAssert_True(connsock_id != 0, "connsock_id (%lu) != 0", (unsigned long)connsock_id);
 
     /* Once connected, send data to client */
@@ -404,6 +404,7 @@ void Server_Fn(void)
     expected = OS_INVALID_POINTER;
     actual = OS_SocketAccept(s_socket_id, &connsock_id, NULL, 10);
     UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
+
 
 
 } /* end Server_Fn */
