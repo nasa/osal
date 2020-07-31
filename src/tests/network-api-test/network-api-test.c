@@ -35,8 +35,6 @@
 
 #define UT_EXIT_LOOP_MAX    100
 
-int32 expected;
-int32 actual;
 uint32 s_task_id;
 uint32 p1_socket_id;
 uint32 p2_socket_id;
@@ -55,6 +53,8 @@ OS_SockAddr_t c_addr;
 
 void TestDatagramNetworkApi_Setup(void)
 {
+    int32 expected;
+    int32 actual;
     uint32 socket_id;
     OS_SockAddr_t addr;
     OS_SockAddr_t inv_addr;
@@ -167,6 +167,8 @@ void TestDatagramNetworkApi_Setup(void)
     actual = OS_SocketBind(p2_socket_id, &inv_addr);
     UtAssert_True(actual == expected, "OS_SocketBind() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
 
+    OS_close(socket_id);
+
 } /* end TestDatagramNetworkApi_Setup */
 
 /*****************************************************************************
@@ -180,14 +182,16 @@ void TestDatagramNetworkApi(void)
     char AddrBuffer2[32];
     char AddrBuffer3[32];
     char AddrBuffer4[32];
-    char Buf1 = 'A';
-    char Buf2;
-    char Buf3 = 'B';
-    char Buf4;
-    uint16 PortNum;  
+    uint32 Buf1 = 111;
+    uint32 Buf2 = 000;
+    uint32 Buf3 = 222;
+    uint32 Buf4 = 000;
     uint32 objid = 0;
+    uint16 PortNum;  
     OS_socket_prop_t prop;
     OS_SockAddr_t l_addr;
+    int32 expected;
+    int32 actual;
 
     /*
      * Send data from peer1 to peer2 and verify
@@ -195,19 +199,19 @@ void TestDatagramNetworkApi(void)
 
     /* Send data from peer1 to peer2 */
     expected = sizeof(Buf1);
-    actual = OS_SocketSendTo(p1_socket_id, &Buf1, 1, &p2_addr);
+    actual = OS_SocketSendTo(p1_socket_id, &Buf1, sizeof(Buf1), &p2_addr);
     UtAssert_True(actual == expected, "OS_SocketSendTo() Passed. sizeof(Buf1) (%ld) == 1", (long)actual);
 
     /* Recieve data from peer1 to peer2 */
     expected = sizeof(Buf2);
-    actual = OS_SocketRecvFrom(p2_socket_id, &Buf2, 1, &l_addr, 100);
+    actual = OS_SocketRecvFrom(p2_socket_id, &Buf2, sizeof(Buf2), &l_addr, 100);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() Passed. sizeof(Buf2) (%ld) == 1", (long)actual);
     UtAssert_True(Buf1 == Buf2, "Buf1 (%ld) == Buf2 (%ld)", (long)Buf1, (long)Buf2);
 
     /* Convert addresses to string and verify data is being sent from the correct address */
     expected = OS_SUCCESS; 
 
-    actual = OS_SocketAddrToString(AddrBuffer1, sizeof(AddrBuffer1), &p2_addr);
+    actual = OS_SocketAddrToString(AddrBuffer1, sizeof(AddrBuffer1), &p1_addr);
     UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_SUCCESS", (long)actual);
 
     actual = OS_SocketAddrToString(AddrBuffer2, sizeof(AddrBuffer2), &l_addr);
@@ -221,19 +225,19 @@ void TestDatagramNetworkApi(void)
 
     /* Send data from peer2 to peer1 */
     expected = sizeof(Buf3);
-    actual = OS_SocketSendTo(p2_socket_id, &Buf3, 1, &p1_addr);
+    actual = OS_SocketSendTo(p2_socket_id, &Buf3,  sizeof(Buf3), &p1_addr);
     UtAssert_True(actual == expected, "OS_SocketSendTo() Passed. sizeof(Buf1) (%ld) == 1", (long)actual);
 
     /* Recieve data from peer2 to peer1 */
     expected = sizeof(Buf4);
-    actual = OS_SocketRecvFrom(p1_socket_id, &Buf4, 1, &l_addr, 100);
+    actual = OS_SocketRecvFrom(p1_socket_id, &Buf4,  sizeof(Buf4), &l_addr, 100);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() Passed. sizeof(Buf3) (%ld) == 1", (long)actual);
     UtAssert_True(Buf3 == Buf4, "Buf3 (%ld) == Buf4 (%ld)", (long)Buf3, (long)Buf4);
 
     /* Convert addresses to string and verify data is being sent from the correct address */
     expected = OS_SUCCESS; 
 
-    actual = OS_SocketAddrToString(AddrBuffer3, sizeof(AddrBuffer3), &p1_addr);
+    actual = OS_SocketAddrToString(AddrBuffer3, sizeof(AddrBuffer3), &p2_addr);
     UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_SUCCESS", (long)actual);
 
     actual = OS_SocketAddrToString(AddrBuffer4, sizeof(AddrBuffer4), &l_addr);
@@ -254,7 +258,7 @@ void TestDatagramNetworkApi(void)
 
     actual = OS_SocketGetIdByName(&objid,"127.0.0.1:9999");
     UtAssert_True(actual == expected, "OS_SocketGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(objid == 393217, "objid (%ld) == 393217", (long)objid);
+    UtAssert_True(objid == p1_socket_id, "objid (%ld) == p1_socket_id", (long)objid);
 
     /*
      * Test for invalid input parameters 
@@ -365,47 +369,26 @@ void Server_Fn(void)
     OS_SockAddr_t addr;
     char Buf_send_s[4] = {0};
     char Buf_rcv_s[4] = {0};
-    char Buf_expected[4] ={0};
-    int32 status;
+    char Buf_trans[8] ={0};
     uint32 connsock_id = 0;
 
     /* Accept incoming connections */
-    status = OS_SUCCESS;
-    actual = OS_SocketAccept(s_socket_id, &connsock_id, &addr, OS_PEND);
-    UtAssert_True(status == actual, "OS_SocketAccept() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(connsock_id != 0, "connsock_id (%lu) != 0", (unsigned long)connsock_id);
+    OS_SocketAccept(s_socket_id, &connsock_id, &addr, OS_PEND);
 
     /* Once connected, send data to client */
     strcpy(Buf_send_s, "abc");
-    status = sizeof(Buf_send_s);
-    actual = OS_TimedWrite(connsock_id, Buf_send_s, sizeof(Buf_send_s), OS_PEND);
-    UtAssert_True(actual == status, "OS_TimedWrite() (%ld) == %ld",(long)actual, (long)status);
+    OS_TimedWrite(connsock_id, Buf_send_s, sizeof(Buf_send_s), 10);
 
    /* Recieve incoming data from client*/
-    status = sizeof(Buf_rcv_s);
-    strcpy(Buf_expected, "xyz");
+    OS_TimedRead(connsock_id, Buf_rcv_s, sizeof(Buf_rcv_s), 10);
 
-    actual = OS_TimedRead(connsock_id, Buf_rcv_s, sizeof(Buf_rcv_s), OS_PEND);
-    UtAssert_True(actual == status, "OS_TimedRead() (%ld) == %ld",(long)actual, (long)status);
-    UtAssert_True(strcmp(Buf_rcv_s,Buf_expected) == 0, "Buf (%s) == Buf_expected (%s)", Buf_rcv_s, Buf_expected);
-
-    /*
-     * Test for invalid input parameters 
-     * to OS_SocketAccept
-     */
-    expected = OS_INVALID_POINTER;
-    actual = OS_SocketAccept(1, NULL, NULL, 0);
-    UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual = OS_SocketAccept(s_socket_id, NULL, &addr, 10);
-    UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual = OS_SocketAccept(s_socket_id, &connsock_id, NULL, 10);
-    UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
+   /* Transform the incoming data and send it back to client */
+    strcpy(Buf_trans, "uvw");
+    strcat(Buf_trans, Buf_rcv_s);
+    OS_TimedWrite(connsock_id, Buf_trans, sizeof(Buf_trans), 10);
 
 
+    OS_close(s_socket_id);
 
 } /* end Server_Fn */
 
@@ -418,19 +401,26 @@ void Server_Fn(void)
 void TestStreamNetworkApi(void)
 {
     int32 status; 
+    int32 expected;
+    int32 actual;
     uint32 loopcnt;
-    s_socket_id = 0;
-    expected = OS_SUCCESS;
+    uint32 temp_id;
+    OS_SockAddr_t temp_addr;
     OS_task_prop_t taskprop;
     char Buf_rcv_c[4] = {0};
     char Buf_send_c[4] = {0};
     char Buf_expected[4] ={0};
+    char Buf_rcv_trans[8] = {0};
+    char Buf_expec_trans[8] ={0};
+
 
     /*
      * Set up a server
      */
 
     /* Open a server socket */
+    s_socket_id = 0;
+    expected = OS_SUCCESS;
     actual = OS_SocketOpen(&s_socket_id, OS_SocketDomain_INET, OS_SocketType_STREAM);
     UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_SUCCESS", (long)actual);
     UtAssert_True(s_socket_id != 0, "s_socket_id (%lu) != 0", (unsigned long)s_socket_id);
@@ -485,22 +475,30 @@ void TestStreamNetworkApi(void)
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
 
     /* Connect to a server */
-    actual = OS_SocketConnect(c_socket_id, &s_addr, OS_PEND);
+    actual = OS_SocketConnect(c_socket_id, &s_addr, 10);
     UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
 
    /* Once connected, recieve incoming data from server*/
     expected = sizeof(Buf_rcv_c);
     strcpy(Buf_expected, "abc");
 
-    actual = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), OS_PEND);
+    actual = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), 10);
     UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld",(long)actual, (long)expected);
     UtAssert_True(strcmp(Buf_rcv_c,Buf_expected) == 0, "Buf (%s) == Buf_expected (%s)", Buf_rcv_c, Buf_expected);
 
-   /* Send data to server*/
+   /* Send data to server to be transformed and sent back */
     strcpy(Buf_send_c, "xyz");
     expected = sizeof(Buf_send_c);
-    actual = OS_TimedWrite(c_socket_id, Buf_send_c, sizeof(Buf_send_c), OS_PEND);
+    actual = OS_TimedWrite(c_socket_id, Buf_send_c, sizeof(Buf_send_c), 10);
     UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld",(long)actual, (long)expected);
+
+   /* Recieve back transformed data from server*/
+    expected = sizeof(Buf_expec_trans);
+    strcpy(Buf_expec_trans, "uvwxyz");
+
+    actual = OS_TimedRead(c_socket_id, Buf_rcv_trans, sizeof(Buf_rcv_trans), 10);
+    UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld",(long)actual, (long)expected);
+    UtAssert_True(strcmp(Buf_rcv_trans, Buf_expec_trans) == 0, "Buf_rcv_trans (%s) == Buf_expected (%s)", Buf_rcv_trans, Buf_expec_trans);
 
     /*
      * Test for invalid input parameters 
@@ -542,6 +540,19 @@ void TestStreamNetworkApi(void)
     actual = OS_TimedWrite(c_socket_id, NULL, sizeof(Buf_rcv_c), 10);
     UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld",(long)actual, (long)expected);
 
+    /* OS_SocketAccept */
+    expected = OS_INVALID_POINTER;
+    actual = OS_SocketAccept(1, NULL, NULL, 0);
+    UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    expected = OS_INVALID_POINTER;
+    actual = OS_SocketAccept(s_socket_id, NULL, &temp_addr, 10);
+    UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    expected = OS_INVALID_POINTER;
+    actual = OS_SocketAccept(s_socket_id, &temp_id, NULL, 10);
+    UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
+
 
     /*
      * NOTE: Tests for invalid and other nominal input parameters 
@@ -570,7 +581,6 @@ void TestStreamNetworkApi(void)
 void TestStreamNetworkApi_Teardown(void)
 {
     /* Close sockets */
-    OS_close(s_socket_id);
     OS_close(c_socket_id);
 
 } /* end TestStreamNetworkApi_Teardown */
