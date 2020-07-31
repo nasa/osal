@@ -63,9 +63,8 @@ typedef struct UtListNodeTag {
 } UtListNode_t;
 
  typedef struct {
-    UtListNode_t           *First;
-    UtListNode_t           *Last;
-    uint32                  NumberOfEntries;
+    UtListNode_t           *Tags;
+    uint32                  NumberOfTags;
 } UtListHead_t;
 
 /*
@@ -75,54 +74,39 @@ typedef struct UtListNodeTag {
 /* Dynamically allocates a new list head.  A list head could also just be declared, this function is useful
  * if you need to dynamically allocate memory for a new list head.  Note always free list heads allocated by
  * this function by calling UtList_Destroy. */
-UtListHead_t               *UtList_Create(void);
+UtListHead_t               *UtList_Create(uint32 NumTags);
 
 /* Frees a list head created by UtList_Create. */
 void                        UtList_Destroy(UtListHead_t *ListHead);
 
 /* Deletes all nodes on the list. */
-void                        UtList_Reset(UtListHead_t *ListHead);
+void                        UtList_Reset(UtListNode_t *TagHead);
+
+/* Merge two lists heads together */
+void                        UtList_Merge(UtListNode_t *TagHead1, UtListNode_t *TagHead2);
 
 /* Dynamically adds a new node to the list.  Nodes are always added to the end of the list.  Memory is dynamically
  * allocated for the new node and to hold the data pointed to by Data.  A Tag field is also provided to be used to
  * store user defined information with the node. */
 void                        UtList_Add(UtListHead_t *ListHead, void *Data, uint32 DataSize, uint32 Tag);
 
-/* Deletes the first node from the list. */
-void                        UtList_DeleteFirst(UtListHead_t *ListHead);
-
-/* Deletes the last node from the list. */
-void                        UtList_DeleteLast(UtListHead_t *ListHead);
-
 /* Deletes the specified node from the list, this will screw up if you do not pass in a valid DeleteNode.  I do not
  * verify that DeleteNode is a member of the list. */
-void                        UtList_DeleteNode(UtListHead_t *ListHead, UtListNode_t *DeleteNode);
-
-/* Removes the first node from the list by first copying the data from the node to the memory buffer pointed to by the
- * specified Data pointer and then the node is deleted from the list.  Make sure the destination pointer points to a
- * memory buffer large enough to hold the data.  The size of the data on the node is available by referencing UtListNode->DataSize. */
-void                        UtList_RemoveFirst(UtListHead_t *ListHead, void *Data);
-
-/* Removes the last node from the list by first copying the data from the node to the memory buffer pointed to by the
- * specified Data pointer and then the node is deleted from the list.  Make sure the destination pointer points to a
- * memory buffer large enough to hold the data.  The size of the data on the node is available by referencing UtListNode->DataSize. */
-void                        UtList_RemoveLast(UtListHead_t *ListHead, void *Data);
-
-/* Removes the speciified RemoveNode from the list by first copying the data from the node to the memory buffer pointed to by the
- * specified Data pointer and then the node is deleted from the list.  Make sure the destination pointer points to a
- * memory buffer large enough to hold the data.  The size of the data on the node is available by referencing UtListNode->DataSize. */
-void                        UtList_RemoveNode(UtListHead_t *ListHead, void *Data, UtListNode_t *RemoveNode);
-
-/* Returns a pointer to the first node on the list.  This is the same as (UtListHead->First). */
-UtListNode_t               *UtList_First(UtListHead_t *ListHead);
-
-/* Returns a pointer to the last node on the list.  This is the same as (UtListHead->Last). */
-UtListNode_t               *UtList_Last(UtListHead_t *ListHead);
+void                        UtList_DeleteNode(UtListNode_t *DeleteNode);
 
 /* Returns true if the list is empty.  This is the same as (UtListHead->NumberOfEntries == 0). */
-bool                     UtList_IsEmpty(UtListHead_t *ListHead);
+bool                        UtList_IsEmpty(UtListNode_t *TagHead);
 
-/* Returns the number of nodes on the list.  This is the same as (UtListHead->NumberOfEntries). */
-uint32                      UtList_Depth(UtListHead_t *ListHead);
+/* Returns the head node of a list for the given tag */
+UtListNode_t               *UtList_GetHead(UtListHead_t *ListHead, uint32 Tag);
+
+/* Returns the next node in the list, given the current node */
+UtListNode_t               *UtList_GetNext(UtListNode_t *ListNode);
+
+/* Returns the data object associated with the current node */
+void                       *UtList_GetObject(UtListNode_t *ListNode);
+
+/* Check if the current node marks the end of the list */
+bool                        UtList_IsEnd(UtListNode_t *TagHead, UtListNode_t *ListNode);
 
 #endif

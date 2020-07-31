@@ -51,6 +51,29 @@
 void    UtTest_Add(void (*Test)(void), void (*Setup)(void), void (*Teardown)(void), const char *TestName);
 
 /**
+ * \brief Registers a setup function
+ *
+ * This group of functions are invoked BEFORE normal test routines added with UtTest_Add.
+ * Within the group, functions are executed in the order registered.
+ *
+ * \param Setup    Setup function, called before the test function
+ * \param TestName Name of function for logging purposes
+ */
+void UtTest_AddSetup(void (*Setup)(void), const char *SequenceName);
+
+/**
+ * \brief Registers a teardown function
+ *
+ * This group of functions is invoked AFTER normal test routines added with UtTest_Add.
+ * Within the group, functions are executed in the order registered.
+ *
+ * \param Teardown Teardown function, called before the test function
+ * \param TestName Name of function for logging purposes
+ */
+void UtTest_AddTeardown(void (*Teardown)(void), const char *SequenceName);
+
+
+/**
  * \brief Early initialization function
  *
  * Reset the global data to a safe state for initial start-up.
