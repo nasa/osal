@@ -117,6 +117,7 @@ void TestDatagramNetworkApi_Setup(void)
     expected = OS_SUCCESS;
     actual = OS_SocketOpen(&socket_id, OS_SocketDomain_INET6, OS_SocketType_DATAGRAM);
     UtAssert_True(actual == expected, "OS_SocketOpen(NULL) (%ld) == OS_SUCCESS", (long)actual);
+    OS_close(socket_id);
 
     expected = OS_INVALID_POINTER;
     actual = OS_SocketOpen(NULL, OS_SocketDomain_INVALID, OS_SocketType_INVALID);
@@ -166,8 +167,6 @@ void TestDatagramNetworkApi_Setup(void)
     memset(&inv_addr,0,sizeof(inv_addr));
     actual = OS_SocketBind(p2_socket_id, &inv_addr);
     UtAssert_True(actual == expected, "OS_SocketBind() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
-
-    OS_close(socket_id);
 
 } /* end TestDatagramNetworkApi_Setup */
 
@@ -366,18 +365,17 @@ void TestDatagramNetworkApi_Teardown(void)
  *****************************************************************************/
 void Server_Fn(void)
 {
+    uint32 connsock_id = 0;
+    uint32 iter;
     OS_SockAddr_t addr;
-    char Buf_send_s[4] = {0};
+    //char Buf_send_s[4] = {0};
     char Buf_rcv_s[4] = {0};
     char Buf_trans[8] ={0};
-    uint32 connsock_id = 0;
+    uint8 Buf_each_char_s[256] = {0};
+
 
     /* Accept incoming connections */
     OS_SocketAccept(s_socket_id, &connsock_id, &addr, OS_PEND);
-
-    /* Once connected, send data to client */
-    strcpy(Buf_send_s, "abc");
-    OS_TimedWrite(connsock_id, Buf_send_s, sizeof(Buf_send_s), 10);
 
    /* Recieve incoming data from client*/
     OS_TimedRead(connsock_id, Buf_rcv_s, sizeof(Buf_rcv_s), 10);
@@ -387,8 +385,17 @@ void Server_Fn(void)
     strcat(Buf_trans, Buf_rcv_s);
     OS_TimedWrite(connsock_id, Buf_trans, sizeof(Buf_trans), 10);
 
+    /* Send all 256 chars to client */
+    for (iter = 0; iter < 256; iter++)
+        {
+           Buf_each_char_s[iter] = iter;
+        } 
+   
+    OS_TimedWrite(connsock_id, Buf_each_char_s, sizeof(Buf_each_char_s), 10);
 
     OS_close(s_socket_id);
+    OS_close(connsock_id);
+
 
 } /* end Server_Fn */
 
@@ -403,15 +410,17 @@ void TestStreamNetworkApi(void)
     int32 status; 
     int32 expected;
     int32 actual;
+    uint32 iter;
     uint32 loopcnt;
     uint32 temp_id;
     OS_SockAddr_t temp_addr;
     OS_task_prop_t taskprop;
     char Buf_rcv_c[4] = {0};
     char Buf_send_c[4] = {0};
-    char Buf_expected[4] ={0};
     char Buf_rcv_trans[8] = {0};
     char Buf_expec_trans[8] ={0};
+    uint8 Buf_each_expected[256] = {0};
+    uint8 Buf_each_char_rcv[256] = {0};
 
 
     /*
@@ -478,45 +487,10 @@ void TestStreamNetworkApi(void)
     actual = OS_SocketConnect(c_socket_id, &s_addr, 10);
     UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
 
-   /* Once connected, recieve incoming data from server*/
-    expected = sizeof(Buf_rcv_c);
-    strcpy(Buf_expected, "abc");
-
-    actual = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), 10);
-    UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld",(long)actual, (long)expected);
-    UtAssert_True(strcmp(Buf_rcv_c,Buf_expected) == 0, "Buf (%s) == Buf_expected (%s)", Buf_rcv_c, Buf_expected);
-
-   /* Send data to server to be transformed and sent back */
-    strcpy(Buf_send_c, "xyz");
-    expected = sizeof(Buf_send_c);
-    actual = OS_TimedWrite(c_socket_id, Buf_send_c, sizeof(Buf_send_c), 10);
-    UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld",(long)actual, (long)expected);
-
-   /* Recieve back transformed data from server*/
-    expected = sizeof(Buf_expec_trans);
-    strcpy(Buf_expec_trans, "uvwxyz");
-
-    actual = OS_TimedRead(c_socket_id, Buf_rcv_trans, sizeof(Buf_rcv_trans), 10);
-    UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld",(long)actual, (long)expected);
-    UtAssert_True(strcmp(Buf_rcv_trans, Buf_expec_trans) == 0, "Buf_rcv_trans (%s) == Buf_expected (%s)", Buf_rcv_trans, Buf_expec_trans);
 
     /*
      * Test for invalid input parameters 
-     * to the network functions being called above
      */
-
-    /* OS_SocketConnect */
-    expected = OS_INVALID_POINTER;
-    actual = OS_SocketConnect(c_socket_id, NULL, 10);
-    UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    expected = OS_ERR_INCORRECT_OBJ_STATE;
-    actual = OS_SocketConnect(c_socket_id, &s_addr, 0);
-    UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
-
-    expected = OS_ERR_INVALID_ID;
-    actual = OS_SocketConnect(1, &s_addr, 10);
-    UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
     /* OS_TimedRead */
     expected = OS_ERR_INVALID_ID;
@@ -552,6 +526,56 @@ void TestStreamNetworkApi(void)
     expected = OS_INVALID_POINTER;
     actual = OS_SocketAccept(s_socket_id, &temp_id, NULL, 10);
     UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    /* OS_SocketConnect */
+    expected = OS_INVALID_POINTER;
+    actual = OS_SocketConnect(c_socket_id, NULL, 10);
+    UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    expected = OS_ERR_INCORRECT_OBJ_STATE;
+    actual = OS_SocketConnect(c_socket_id, &s_addr, 0);
+    UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
+
+    expected = OS_ERR_INVALID_ID;
+    actual = OS_SocketConnect(1, &s_addr, 10);
+    UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_ERR_INVALID_ID", (long)actual);
+
+    /*
+     * Once connection is made between 
+     * server and client, transfer data 
+     */
+
+   /* Send data to server to be transformed and sent back */
+    strcpy(Buf_send_c, "xyz");
+    expected = sizeof(Buf_send_c);
+    actual = OS_TimedWrite(c_socket_id, Buf_send_c, sizeof(Buf_send_c), 10);
+    UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld",(long)actual, (long)expected);
+
+   /* Recieve back transformed data from server*/
+    expected = sizeof(Buf_expec_trans);
+    strcpy(Buf_expec_trans, "uvwxyz");
+
+    actual = OS_TimedRead(c_socket_id, Buf_rcv_trans, sizeof(Buf_rcv_trans), 10);
+    UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld",(long)actual, (long)expected);
+    UtAssert_True(strcmp(Buf_rcv_trans, Buf_expec_trans) == 0, "Buf_rcv_trans (%s) == Buf_expected (%s)", Buf_rcv_trans, Buf_expec_trans);
+
+    /* Recieve all 256 chars from server one at a time */
+    expected =  sizeof(Buf_each_char_rcv);
+    actual = OS_TimedRead(c_socket_id, Buf_each_char_rcv, sizeof(Buf_each_char_rcv), 10);
+    UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld",(long)actual, (long)expected);
+
+    /* Verify all 256 chars received */
+    for (iter = 0; iter < 256; iter++)
+        {           
+           Buf_each_expected[iter] = iter;
+           UtAssert_True(Buf_each_char_rcv[iter] == Buf_each_expected[iter], "Buf (%d) == Buf_expected (%d)", Buf_each_char_rcv[iter], Buf_each_expected[iter]);
+
+        }    
+  
+    /* Once connection socket is closed, verify that no data is recieved */
+    expected = 0;
+    actual = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), 10);
+    UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld",(long)actual, (long)expected);  
 
 
     /*
