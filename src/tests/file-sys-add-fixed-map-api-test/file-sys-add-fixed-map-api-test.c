@@ -35,6 +35,8 @@ void TestFileSysAddFixedMapApi(void)
     int32 expected;
     int32 actual;
     uint32 fs_id;
+    char virtual_path[OS_MAX_LOCAL_PATH_LEN];
+    char translated_path[OS_MAX_LOCAL_PATH_LEN];
 
     /* Test for nominal inputs */
     /*
@@ -42,9 +44,16 @@ void TestFileSysAddFixedMapApi(void)
      * Just map /test to a dir of the same name, relative to current dir.
      */
 
+    strcpy(virtual_path, "/test");
     expected = OS_SUCCESS;
-    actual = OS_FileSysAddFixedMap(&fs_id, "./test", "/test");
+    actual = OS_TranslatePath(virtual_path, translated_path);
+
+    expected = OS_SUCCESS;
+    actual = OS_FileSysAddFixedMap(&fs_id, "./test", virtual_path);
     UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_SUCCESS", (long)actual);
+
+    expected = OS_SUCCESS;
+    actual = OS_TranslatePath(virtual_path, translated_path);
 
     /* Test for invalid inputs */
     expected = OS_INVALID_POINTER;
