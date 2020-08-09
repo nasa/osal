@@ -103,7 +103,7 @@ int32 OS_GenericClose_Impl(uint32 local_id)
 int32 OS_GenericSeek_Impl (uint32 local_id, int32 offset, uint32 whence)
 {
    int where;
-   int32 result;
+   off_t result;
 
    switch(whence)
    {
@@ -144,7 +144,7 @@ int32 OS_GenericSeek_Impl (uint32 local_id, int32 offset, uint32 whence)
        }
    }
 
-   return result;
+   return (int32)result;
 } /* end OS_GenericSeek_Impl */
 
 /*----------------------------------------------------------------
@@ -158,7 +158,7 @@ int32 OS_GenericSeek_Impl (uint32 local_id, int32 offset, uint32 whence)
 int32 OS_GenericRead_Impl (uint32 local_id, void *buffer, uint32 nbytes, int32 timeout)
 {
    int32 return_code;
-   int os_result;
+   ssize_t os_result;
    uint32 operation;
 
    return_code = OS_SUCCESS;
@@ -190,12 +190,12 @@ int32 OS_GenericRead_Impl (uint32 local_id, void *buffer, uint32 nbytes, int32 t
            }
            else
            {
-               return_code = os_result;
+               return_code = (int32)os_result;
            }
        }
    }
 
-   return (return_code);
+   return (int32)(return_code);
 } /* end OS_GenericRead_Impl */
 
 /*----------------------------------------------------------------
@@ -209,7 +209,7 @@ int32 OS_GenericRead_Impl (uint32 local_id, void *buffer, uint32 nbytes, int32 t
 int32 OS_GenericWrite_Impl(uint32 local_id, const void *buffer, uint32 nbytes, int32 timeout)
 {
    int32 return_code;
-   int os_result;
+   ssize_t os_result;
    uint32 operation;
 
    return_code = OS_SUCCESS;
@@ -244,11 +244,11 @@ int32 OS_GenericWrite_Impl(uint32 local_id, const void *buffer, uint32 nbytes, i
            }
            else
            {
-               return_code = os_result;
+               return_code = (int32)os_result;
            }
        }
    }
 
-   return (return_code);
+   return (int32)(return_code);
 } /* end OS_GenericWrite_Impl */
 

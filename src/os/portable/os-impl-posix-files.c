@@ -143,8 +143,8 @@ int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
       return OS_ERROR;
    }
 
-   FileStats->FileSize = st.st_size;
-   FileStats->FileTime = st.st_mtime;
+   FileStats->FileSize = (uint32)st.st_size;
+   FileStats->FileTime = (int32)st.st_mtime;
 
    /* note that the "fst_mode" member is already zeroed by the caller */
    if (S_ISDIR(st.st_mode))

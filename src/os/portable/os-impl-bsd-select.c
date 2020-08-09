@@ -140,7 +140,7 @@ static void OS_FdSet_ConvertOut_Impl(fd_set *output, OS_FdSet *Input)
             osfd = OS_impl_filehandle_table[id].fd;
             if (osfd < 0 || !FD_ISSET(osfd, output))
             {
-               Input->object_ids[offset] &= ~(1 << bit);
+               Input->object_ids[offset] &= (uint8)~(1 << bit);
             }
          }
          ++bit;
@@ -285,11 +285,11 @@ int32 OS_SelectSingle_Impl(uint32 stream_id, uint32 *SelectFlags, int32 msecs)
       {
          if (!FD_ISSET(OS_impl_filehandle_table[stream_id].fd, &rd_set))
          {
-            *SelectFlags &= ~OS_STREAM_STATE_READABLE;
+            *SelectFlags &= (uint32)~OS_STREAM_STATE_READABLE;
          }
          if (!FD_ISSET(OS_impl_filehandle_table[stream_id].fd, &wr_set))
          {
-            *SelectFlags &= ~OS_STREAM_STATE_WRITABLE;
+            *SelectFlags &= (uint32)~OS_STREAM_STATE_WRITABLE;
          }
       }
       else

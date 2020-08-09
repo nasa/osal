@@ -135,7 +135,7 @@ int32 OS_SelectFdAdd(OS_FdSet *Set, uint32 objid)
    return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
    if (return_code == OS_SUCCESS)
    {
-      Set->object_ids[local_id >> 3] |= 1 << (local_id & 0x7);
+      Set->object_ids[local_id >> 3] |= (uint8)(1 << (local_id & 0x7));
    }
 
    return return_code;
@@ -159,7 +159,7 @@ int32 OS_SelectFdClear(OS_FdSet *Set, uint32 objid)
    return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
    if (return_code == OS_SUCCESS)
    {
-      Set->object_ids[local_id >> 3] &= ~(1 << (local_id & 0x7));
+      Set->object_ids[local_id >> 3] &= (uint8)~(1 << (local_id & 0x7));
    }
 
    return return_code;

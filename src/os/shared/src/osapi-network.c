@@ -69,7 +69,7 @@ int32 OS_NetworkAPI_Init(void)
  *-----------------------------------------------------------------*/
 int32 OS_NetworkGetHostName (char *host_name, uint32 name_len)
 {
-   uint32 return_code;
+   int32 return_code;
 
    if ( host_name == NULL)
    {

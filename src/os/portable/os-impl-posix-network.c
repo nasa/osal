@@ -92,7 +92,7 @@ int32 OS_NetworkGetHostName_Impl       (char *host_name, uint32 name_len)
 int32 OS_NetworkGetID_Impl             (int32 *IdBuf)
 {
     /* gethostid() has no failure modes */
-    *IdBuf = gethostid();
+    *IdBuf = (int32)gethostid();
     return OS_SUCCESS;
 } /* end OS_NetworkGetID_Impl */
 

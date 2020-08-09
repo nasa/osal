@@ -423,7 +423,7 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
    }
 #endif
 
-   POSIX_GlobalVars.PageSize = sysconf(_SC_PAGESIZE);
+   POSIX_GlobalVars.PageSize = (size_t)sysconf(_SC_PAGESIZE);
 
    return OS_SUCCESS;
 } /* end OS_Posix_TaskAPI_Impl_Init */

@@ -103,7 +103,7 @@ static const OS_ErrorTable_Entry_t OS_GLOBAL_ERROR_NAME_TABLE[] =
  *-----------------------------------------------------------------*/
 int32 OS_GetErrorName(int32 error_num, os_err_name_t* err_name)
 {
-    uint32 return_code;
+    int32 return_code;
     const OS_ErrorTable_Entry_t *Error;
 
     if (err_name == NULL)

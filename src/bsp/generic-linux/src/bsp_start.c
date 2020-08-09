@@ -69,7 +69,7 @@ void OS_BSP_Initialize(void)
         {
             if (fgets(buffer,sizeof(buffer),fp) != NULL)
             {
-                OS_BSP_Global.MaxQueueDepth = strtoul(buffer, NULL, 10);
+                OS_BSP_Global.MaxQueueDepth = (uint32)strtoul(buffer, NULL, 10);
                 BSP_DEBUG("Maximum user msg queue depth = %u\n", (unsigned int)OS_BSP_Global.MaxQueueDepth);
             }
             fclose(fp);
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
      * might still want to use library "getopt" and this expects the
      * first parameter to be this way.
      */
-    OS_BSP_Global.ArgC = argc;
+    OS_BSP_Global.ArgC = (uint32)argc;
     OS_BSP_Global.ArgV = argv;
 
     /*

@@ -428,7 +428,7 @@ int32 OS_SocketRecvFrom_Impl(uint32 sock_id, void *buffer, uint32 buflen, OS_Soc
       }
       else
       {
-         os_result = recvfrom(OS_impl_filehandle_table[sock_id].fd, buffer, buflen, waitflags, sa, &addrlen);
+         os_result = (int)recvfrom(OS_impl_filehandle_table[sock_id].fd, buffer, buflen, waitflags, sa, &addrlen);
          if (os_result < 0)
          {
             if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -493,7 +493,7 @@ int32 OS_SocketSendTo_Impl(uint32 sock_id, const void *buffer, uint32 buflen, co
       return OS_ERR_BAD_ADDRESS;
    }
 
-   os_result = sendto(OS_impl_filehandle_table[sock_id].fd, buffer, buflen, MSG_DONTWAIT, sa, addrlen);
+   os_result = (int)sendto(OS_impl_filehandle_table[sock_id].fd, buffer, buflen, MSG_DONTWAIT, sa, addrlen);
    if (os_result < 0)
    {
       OS_DEBUG("sendto: %s\n",strerror(errno));

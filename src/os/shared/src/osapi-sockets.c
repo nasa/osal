@@ -90,7 +90,7 @@ int32 OS_SocketAPI_Init(void)
  *-----------------------------------------------------------------*/
 void OS_CreateSocketName(uint32 local_id, const OS_SockAddr_t *Addr, const char *parent_name)
 {
-   int32 len;
+   size_t len;
    uint16 port;
    OS_stream_internal_record_t *sock = &OS_stream_table[local_id];
 

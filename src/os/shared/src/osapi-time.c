@@ -300,7 +300,7 @@ int32 OS_TimerCreate(uint32 *timer_id, const char *timer_name, uint32 *accuracy,
     }
     else
     {
-        *accuracy = OS_SharedGlobalVars.MicroSecPerTick;
+        *accuracy = (uint32)OS_SharedGlobalVars.MicroSecPerTick;
     }
 
     return return_code;

@@ -76,9 +76,9 @@ void  OS_ConsoleOutput_Impl(uint32 local_id)
         }
 
         OS_BSP_ConsoleOutput_Impl(&console->BufBase[StartPos],
-                WriteSize);
+                (uint32)WriteSize);
 
-        StartPos += WriteSize;
+        StartPos += (uint32)WriteSize;
         if (StartPos >= console->BufSize)
         {
             /* handle wrap */

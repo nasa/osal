@@ -527,7 +527,7 @@ int32 OS_cp (const char *src, const char *dest)
        wr_total = 0;
        while (wr_total < rd_size)
        {
-          wr_size = OS_write((uint32)file2, &copyblock[wr_total], rd_size - wr_total);
+          wr_size = OS_write((uint32)file2, &copyblock[wr_total], (uint32)(rd_size - wr_total));
           if (wr_size < 0)
           {
              return_code = wr_size;
@@ -539,11 +539,11 @@ int32 OS_cp (const char *src, const char *dest)
 
     if (file1 >= 0)
     {
-       OS_close(file1);
+       OS_close((uint32)file1);
     }
     if (file2 >= 0)
     {
-       OS_close(file2);
+       OS_close((uint32)file2);
     }
 
     return return_code;

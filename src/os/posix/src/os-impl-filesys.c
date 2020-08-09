@@ -324,7 +324,7 @@ int32 OS_FileSysStatVolume_Impl (uint32 filesys_id, OS_statvfs_t *result)
        return OS_ERROR;
    }
 
-   result->block_size = stat_buf.f_bsize;
+   result->block_size = (uint32)stat_buf.f_bsize;
    result->blocks_free = stat_buf.f_bfree;
    result->total_blocks = stat_buf.f_blocks;
 

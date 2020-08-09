@@ -86,7 +86,7 @@ void OS_BSP_ConsoleOutput_Impl(const char *Str, uint32 DataLen)
             break;
         }
         Str += WriteLen;
-        DataLen -= WriteLen;
+        DataLen -= (uint32)WriteLen;
     }
 }
 

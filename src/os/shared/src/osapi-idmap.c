@@ -325,7 +325,7 @@ int32 OS_ObjectIdConvertLock(OS_lock_mode_t lock_mode, uint32 idtype, uint32 ref
                 }
 
                 exclusive_bits = OS_OBJECT_EXCL_REQ_FLAG;
-                obj->flags |= exclusive_bits;
+                obj->flags |= (uint16)exclusive_bits;
             }
         }
         else
@@ -369,7 +369,7 @@ int32 OS_ObjectIdConvertLock(OS_lock_mode_t lock_mode, uint32 idtype, uint32 ref
          * In case any exclusive bits were set locally, unset them now
          * before the lock is (maybe) released.
          */
-        obj->flags &= ~exclusive_bits;
+        obj->flags &= (uint16)~exclusive_bits;
 
         /*
          * If the operation failed, then we always unlock the global table.
@@ -1206,7 +1206,7 @@ int32 OS_GetResourceName(uint32 object_id, char *buffer, uint32 buffer_size)
     uint32 idtype;
     OS_common_record_t *record;
     int32 return_code;
-    uint32 name_len;
+    size_t name_len;
     uint32 local_id;
 
     /* sanity check the passed-in buffer and size */

@@ -538,7 +538,7 @@ int32 OS_TaskFindIdBySystemData(uint32 *task_id, const void *sysdata, size_t sys
     }
 
     /* The "sysdata" and "sysdata_size" must be passed to the underlying impl for validation */
-    return_code = OS_TaskValidateSystemData_Impl(sysdata, sysdata_size);
+    return_code = OS_TaskValidateSystemData_Impl(sysdata, (uint32)sysdata_size);
     if (return_code != OS_SUCCESS)
     {
         return return_code;

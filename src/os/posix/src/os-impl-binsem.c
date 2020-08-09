@@ -203,7 +203,7 @@ int32 OS_BinSemCreate_Impl (uint32 sem_id, uint32 initial_value, uint32 options)
          ** fill out the proper OSAL table fields
          */
 
-        sem->current_value = initial_value;
+        sem->current_value = (sig_atomic_t)initial_value;
 
         return_code = OS_SUCCESS;
     }

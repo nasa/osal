@@ -77,8 +77,8 @@ int32 OS_GetLocalTime_Impl(OS_time_t *time_struct)
 
     if (Status == 0)
     {
-        time_struct -> seconds = time.tv_sec;
-        time_struct -> microsecs = time.tv_nsec / 1000;
+        time_struct -> seconds = (uint32)time.tv_sec;
+        time_struct -> microsecs = (uint32)time.tv_nsec / 1000;
         ReturnCode = OS_SUCCESS;
     }
     else

@@ -90,7 +90,7 @@ int32 OS_API_Init(void)
 {
    int32  return_code = OS_SUCCESS;
    uint32 idtype;
-   uint32 microSecPerSec;
+   int32 microSecPerSec;
 
    if (OS_SharedGlobalVars.Initialized != false)
    {
