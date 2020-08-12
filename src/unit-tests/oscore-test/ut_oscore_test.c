@@ -287,9 +287,6 @@ void UtTest_Setup(void)
 
     UtTest_Add(UT_os_geterrorname_test, NULL, NULL, "OS_GetErrorName");
 
-    UtTest_Add(UT_os_tick2micros_test, NULL, NULL, "OS_Tick2Micros");
-    UtTest_Add(UT_os_milli2ticks_test, NULL, NULL, "OS_Milli2Ticks");
-
     UtTest_Add(UT_os_getlocaltime_test, NULL, NULL, "OS_GetLocalTime");
     UtTest_Add(UT_os_setlocaltime_test, NULL, NULL, "OS_SetLocalTime");
 

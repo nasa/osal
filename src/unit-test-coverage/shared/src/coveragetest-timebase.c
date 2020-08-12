@@ -32,6 +32,7 @@
 #include "os-shared-common.h"
 
 #include <OCS_string.h>
+#include <limits.h>
 
 static uint32 TimerSyncCount = 0;
 static uint32 TimerSyncRetVal = 0;
@@ -293,28 +294,36 @@ void Test_OS_TimeBase_CallbackThread(void)
     OS_TimeBase_CallbackThread(UT_OBJID_2);
 }
 
-void Test_OS_Tick2Micros(void)
-{
-    /*
-     * Test Case For:
-     * int32 OS_Tick2Micros (void)
-     */
-    OS_SharedGlobalVars.MicroSecPerTick = 5555;
-    int32 actual = OS_Tick2Micros();
-
-    UtAssert_True(actual == 5555, "OS_Tick2Micros() (%ld) == 5555", (long)actual);
-}
-
 void Test_OS_Milli2Ticks(void)
 {
     /*
      * Test Case For:
      * int32 OS_Milli2Ticks(uint32 milli_seconds)
      */
-    OS_SharedGlobalVars.TicksPerSecond = 500;
-    int32 actual = OS_Milli2Ticks(5678);
+    uint32 msec;
+    int    ticks;
+    int    expected;
 
-    UtAssert_True(actual == 2839, "OS_Milli2Ticks() (%ld) == 2839", (long)actual);
+    msec = 5678;
+    OS_SharedGlobalVars.TicksPerSecond = 500;
+    UtAssert_INT32_EQ(OS_Milli2Ticks(msec, &ticks), OS_SUCCESS);
+    UtAssert_INT32_EQ(ticks, 2839);
+
+    /* Bigger than uint32 but valid case */
+    msec = UINT_MAX - 1;
+    expected = (((uint64)msec * OS_SharedGlobalVars.TicksPerSecond) + 999) / 1000;
+    UtAssert_INT32_EQ(OS_Milli2Ticks(msec, &ticks), OS_SUCCESS);
+    UtAssert_INT32_EQ(ticks, expected);
+
+    /* int rollover case */
+    msec = UINT_MAX;
+    UtAssert_INT32_EQ(OS_Milli2Ticks(msec, &ticks), OS_ERROR);
+    UtAssert_INT32_EQ(ticks, 0);
+
+    /* Max value rollover case */
+    OS_SharedGlobalVars.TicksPerSecond = INT_MAX;
+    UtAssert_INT32_EQ(OS_Milli2Ticks(msec, &ticks), OS_ERROR);
+    UtAssert_INT32_EQ(ticks, 0);
 }
 
 
@@ -354,7 +363,6 @@ void UtTest_Setup(void)
     ADD_TEST(OS_TimeBaseGetInfo);
     ADD_TEST(OS_TimeBaseGetFreeRun);
     ADD_TEST(OS_TimeBase_CallbackThread);
-    ADD_TEST(OS_Tick2Micros);
     ADD_TEST(OS_Milli2Ticks);
 }
 

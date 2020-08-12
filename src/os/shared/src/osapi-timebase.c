@@ -545,49 +545,32 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
     }
 } /* end OS_TimeBase_CallbackThread */
 
-/****************************************************************************************
-                  Other Time-Related API Implementation
- ***************************************************************************************/
-
-/*
- * This is the OSAL-defined interface to the OS Timer tick -
- * Not sure what it is really useful for since none of the user API timer calls deal with
- * OS ticks directly.
- */
-
-
-/*----------------------------------------------------------------
- *
- * Function: OS_Tick2Micros
- *
- *  Purpose: Implemented per public OSAL API
- *           See description in API and header file for detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_Tick2Micros (void)
-{
-   return (OS_SharedGlobalVars.MicroSecPerTick);
-} /* end OS_Tick2Micros */
-
-
 /*----------------------------------------------------------------
  *
  * Function: OS_Milli2Ticks
  *
- *  Purpose: Implemented per public OSAL API
- *           See description in API and header file for detail
+ *  Purpose: Internal helper to convert milliseconds to ticks
+ *
+ *  Returns: OS_SUCCESS on success, OS_ERROR on failure (rollover)
  *
  *-----------------------------------------------------------------*/
-int32 OS_Milli2Ticks(uint32 milli_seconds)
+int32 OS_Milli2Ticks(uint32 milli_seconds, int *ticks)
 {
-    unsigned long num_of_ticks;
+    uint64 num_of_ticks;
+    int32  return_code = OS_SUCCESS;
 
-    num_of_ticks = (unsigned long)milli_seconds;
-    num_of_ticks *= OS_SharedGlobalVars.TicksPerSecond;
-    num_of_ticks = (num_of_ticks + 999) / 1000;
+    num_of_ticks = (((uint64)milli_seconds * OS_SharedGlobalVars.TicksPerSecond) + 999) / 1000;
 
-    return((uint32)num_of_ticks);
+    /* Check against maximum int32 (limit from some OS's) */
+    if (num_of_ticks <= INT_MAX)
+    {
+        *ticks = (int)num_of_ticks;
+    }
+    else
+    {
+        return_code = OS_ERROR;
+        *ticks = 0;
+    }
+
+    return return_code;
 } /* end OS_Milli2Ticks */
-
-
-

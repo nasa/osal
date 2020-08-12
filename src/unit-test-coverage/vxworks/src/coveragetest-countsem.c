@@ -29,6 +29,7 @@
 #include "ut-adaptor-countsem.h"
 
 #include "os-shared-countsem.h"
+#include "os-shared-timebase.h"
 
 void Test_OS_VxWorks_CountSemAPI_Impl_Init(void)
 {
@@ -85,6 +86,9 @@ void Test_OS_CountSemTimedWait_Impl(void)
      * int32 OS_CountSemTimedWait_Impl ( uint32 sem_id, uint32 msecs )
      */
     OSAPI_TEST_FUNCTION_RC(OS_CountSemTimedWait_Impl(0, 100), OS_SUCCESS);
+
+    UT_SetForceFail(UT_KEY(OS_Milli2Ticks), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemTimedWait_Impl(0,100), OS_ERROR);
 }
 
 void Test_OS_CountSemGetInfo_Impl(void)

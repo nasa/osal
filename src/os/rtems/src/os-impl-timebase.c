@@ -231,7 +231,7 @@ int32  OS_Rtems_TimeBaseAPI_Impl_Init ( void )
 
 
    /*
-    * Finally compute the Microseconds per tick that is used for OS_Tick2Micros() call
+    * Finally compute the Microseconds per tick
     * This must further round again to the nearest microsecond, so it is undesirable to use
     * this for time computations if the result is not exact.
     */
