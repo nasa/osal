@@ -75,13 +75,13 @@ void Test_OS_ModuleLoad(void)
      * int32 OS_ModuleLoad ( uint32 *module_id, const char *module_name, const char *filename )
      */
     int32 expected = OS_SUCCESS;
-    uint32 objid = 0xFFFFFFFF;
+    osal_id_t objid;
     int32 actual = OS_ModuleLoad(&objid, "UT", "File");
 
     UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_SUCCESS", (long)actual);
     actual = UT_GetStubCount(UT_KEY(OS_ModuleLoad_Impl));
     UtAssert_True(actual == 1, "OS_ModuleLoad_Impl() called (%ld) == 1", (long)actual);
-    UtAssert_True(objid != 0, "objid (%lu) != 0", (unsigned long)objid);
+    OSAPI_TEST_OBJID(objid,!=,OS_OBJECT_ID_UNDEFINED);
 
 
     /* for a static module, it should also return a valid objid, but should NOT invoke OS_ModuleLoad_Impl */
@@ -89,7 +89,7 @@ void Test_OS_ModuleLoad(void)
     UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_SUCCESS", (long)actual);
     actual = UT_GetStubCount(UT_KEY(OS_ModuleLoad_Impl));
     UtAssert_True(actual == 1, "OS_ModuleLoad_Impl() called (%ld) == 1", (long)actual);
-    UtAssert_True(objid != 0, "objid (%lu) != 0", (unsigned long)objid);
+    OSAPI_TEST_OBJID(objid,!=,OS_OBJECT_ID_UNDEFINED);
 
     /* error cases */
     actual = OS_ModuleLoad(NULL,NULL,NULL);
@@ -119,7 +119,7 @@ void Test_OS_ModuleUnload(void)
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
 
-    actual = OS_ModuleUnload(1);
+    actual = OS_ModuleUnload(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_ModuleDelete() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -241,12 +241,12 @@ void Test_OS_ModuleGetInfo(void)
     OS_common_record_t *rptr = &utrec;
 
     memset(&utrec, 0, sizeof(utrec));
-    utrec.creator = 111;
+    utrec.creator = UT_OBJID_OTHER;
     utrec.name_entry = "ABC";
     strncpy(OS_module_table[1].file_name, "DEF", sizeof(OS_module_table[1].file_name));
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
-    actual = OS_ModuleInfo(1, &module_prop);
+    actual = OS_ModuleInfo(UT_OBJID_1, &module_prop);
 
     UtAssert_True(actual == expected, "OS_ModuleGetInfo() (%ld) == OS_SUCCESS", (long)actual);
     UtAssert_True(strcmp(module_prop.filename, "DEF") == 0, "module_prop.filename (%s) == DEF",
@@ -255,7 +255,7 @@ void Test_OS_ModuleGetInfo(void)
             module_prop.name);
 
 
-    actual = OS_ModuleInfo(1, NULL);
+    actual = OS_ModuleInfo(UT_OBJID_1, NULL);
     expected = OS_INVALID_POINTER;
     UtAssert_True(actual == expected, "OS_ModuleGetInfo(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
 }

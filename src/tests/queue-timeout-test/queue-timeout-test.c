@@ -32,40 +32,38 @@
 void QueueTimeoutSetup(void);
 void QueueTimeoutCheck(void);
 
-#define MSGQ_ID           1
 #define MSGQ_DEPTH        50
 #define MSGQ_SIZE         4
 
 /* Task 1 */
-#define TASK_1_ID         1
 #define TASK_1_STACK_SIZE 1024
 #define TASK_1_PRIORITY   101
 #define TASK_2_STACK_SIZE 1024
 #define TASK_2_PRIORITY   50
 
 uint32 task_1_stack[TASK_1_STACK_SIZE];
-uint32 task_1_id; 
+osal_id_t task_1_id;
 uint32 task_1_failures;
 uint32 task_1_timeouts;
 uint32 task_1_messages;
 uint32 task_2_stack[TASK_2_STACK_SIZE];
-uint32 task_2_id;
-uint32 msgq_id;
+osal_id_t task_2_id;
+osal_id_t msgq_id;
 
 uint32 timer_counter;
-uint32 timer_id;
+osal_id_t timer_id;
 uint32 timer_start = 10000;
 uint32 timer_interval = 100000; /* 1000 = 1000 hz, 10000 == 100 hz */
 uint32 timer_accuracy;
 
-void TimerFunction(uint32 timer_id)
+void TimerFunction(osal_id_t timer_id)
 {
    timer_counter++;
 }
 
 void task_1(void)
 {
-    uint32             status;
+    int32              status;
     uint32             data_received;
     uint32             data_size;
 
@@ -153,19 +151,22 @@ void QueueTimeoutSetup(void)
    task_1_timeouts = 0;
 
    status = OS_QueueCreate( &msgq_id, "MsgQ", MSGQ_DEPTH, MSGQ_SIZE, 0);
-   UtAssert_True(status == OS_SUCCESS, "MsgQ create Id=%u Rc=%d", (unsigned int)msgq_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "MsgQ create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(msgq_id), (int)status);
 
    /*
    ** Create the "consumer" task.
    */
    status = OS_TaskCreate( &task_1_id, "Task 1", task_1, task_1_stack, TASK_1_STACK_SIZE, TASK_1_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%u Rc=%d", (unsigned int)task_1_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(task_1_id), (int)status);
 
    /*
    ** Create a timer
    */
    status = OS_TimerCreate(&timer_id, "Timer 1", &accuracy, &(TimerFunction));
-   UtAssert_True(status == OS_SUCCESS, "Timer 1 create Id=%u Rc=%d", (unsigned int)timer_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Timer 1 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(timer_id), (int)status);
    UtPrintf("Timer Accuracy = %u microseconds \n",(unsigned int)accuracy);
 
    /*

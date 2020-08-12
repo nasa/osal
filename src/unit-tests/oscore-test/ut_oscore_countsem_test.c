@@ -70,7 +70,7 @@ void UT_os_count_sem_create_test()
     int            i;
     int32          res = 0;
     const char*    testDesc;
-    uint32         count_sem_ids[OS_MAX_COUNT_SEMAPHORES+1];
+    osal_id_t      count_sem_ids[OS_MAX_COUNT_SEMAPHORES+1];
     char           sem_name[UT_OS_NAME_BUFF_SIZE];
     char           long_sem_name[UT_OS_NAME_BUFF_SIZE];
     uint32         test_setup_invalid = 0;
@@ -222,12 +222,12 @@ void UT_os_count_sem_delete_test()
 {
     int32          res = 0;
     const char*    testDesc;
-    uint32         count_sem_id;
+    osal_id_t      count_sem_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_CountSemDelete(0);
+    res = OS_CountSemDelete(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -237,7 +237,7 @@ void UT_os_count_sem_delete_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_CountSemDelete(99999);
+    res = OS_CountSemDelete(UT_OBJID_INCORRECT);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -285,12 +285,12 @@ void UT_os_count_sem_give_test()
 {
     int32          res = 0;
     const char*    testDesc;
-    uint32         count_sem_id;
+    osal_id_t      count_sem_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_CountSemGive(0);
+    res = OS_CountSemGive(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -300,7 +300,7 @@ void UT_os_count_sem_give_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_CountSemGive(99999);
+    res = OS_CountSemGive(UT_OBJID_INCORRECT);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -350,12 +350,12 @@ void UT_os_count_sem_take_test()
 {
     int32          res = 0;
     const char*    testDesc;
-    uint32         count_sem_id;
+    osal_id_t      count_sem_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_CountSemTake(0);
+    res = OS_CountSemTake(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -365,7 +365,7 @@ void UT_os_count_sem_take_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_CountSemTake(99999);
+    res = OS_CountSemTake(UT_OBJID_INCORRECT);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -414,12 +414,12 @@ void UT_os_count_sem_timed_wait_test()
 {
     int32          res = 0;
     const char*    testDesc;
-    uint32         count_sem_id;
+    osal_id_t      count_sem_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_CountSemTimedWait(0,1000);
+    res = OS_CountSemTimedWait(OS_OBJECT_ID_UNDEFINED,1000);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -429,7 +429,7 @@ void UT_os_count_sem_timed_wait_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_CountSemTimedWait(99999, 1000);
+    res = OS_CountSemTimedWait(UT_OBJID_INCORRECT, 1000);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -509,7 +509,7 @@ void UT_os_count_sem_get_id_by_name_test()
 {
     int32          res = 0;
     const char*    testDesc;
-    uint32         count_sem_id;
+    osal_id_t      count_sem_id;
     char           long_sem_name[UT_OS_NAME_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
@@ -598,13 +598,13 @@ void UT_os_count_sem_get_info_test()
 {
     int32              res = 0;
     const char*        testDesc;
-    uint32             count_sem_id;
+    osal_id_t          count_sem_id;
     OS_count_sem_prop_t  count_sem_prop;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_CountSemGetInfo(0,&count_sem_prop);
+    res = OS_CountSemGetInfo(OS_OBJECT_ID_UNDEFINED,&count_sem_prop);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -614,7 +614,7 @@ void UT_os_count_sem_get_info_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_CountSemGetInfo(99999, &count_sem_prop);
+    res = OS_CountSemGetInfo(UT_OBJID_INCORRECT, &count_sem_prop);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else

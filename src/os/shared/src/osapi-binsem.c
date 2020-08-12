@@ -99,7 +99,7 @@ int32 OS_BinSemAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initial_value,
+int32 OS_BinSemCreate (osal_id_t *sem_id, const char *sem_name, uint32 sem_initial_value,
                         uint32 options)
 {
    OS_common_record_t *record;
@@ -146,7 +146,7 @@ int32 OS_BinSemCreate (uint32 *sem_id, const char *sem_name, uint32 sem_initial_
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemDelete (uint32 sem_id)
+int32 OS_BinSemDelete (osal_id_t sem_id)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -175,7 +175,7 @@ int32 OS_BinSemDelete (uint32 sem_id)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGive ( uint32 sem_id )
+int32 OS_BinSemGive ( osal_id_t sem_id )
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -201,7 +201,7 @@ int32 OS_BinSemGive ( uint32 sem_id )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemFlush (uint32 sem_id)
+int32 OS_BinSemFlush (osal_id_t sem_id)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -226,7 +226,7 @@ int32 OS_BinSemFlush (uint32 sem_id)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTake ( uint32 sem_id )
+int32 OS_BinSemTake ( osal_id_t sem_id )
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -251,7 +251,7 @@ int32 OS_BinSemTake ( uint32 sem_id )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTimedWait ( uint32 sem_id, uint32 msecs )
+int32 OS_BinSemTimedWait ( osal_id_t sem_id, uint32 msecs )
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -275,7 +275,7 @@ int32 OS_BinSemTimedWait ( uint32 sem_id, uint32 msecs )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGetIdByName (uint32 *sem_id, const char *sem_name)
+int32 OS_BinSemGetIdByName (osal_id_t *sem_id, const char *sem_name)
 {
    int32 return_code;
 
@@ -298,7 +298,7 @@ int32 OS_BinSemGetIdByName (uint32 *sem_id, const char *sem_name)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGetInfo (uint32 sem_id, OS_bin_sem_prop_t *bin_prop)
+int32 OS_BinSemGetInfo (osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
 {
    OS_common_record_t *record;
    uint32 local_id;

@@ -70,13 +70,9 @@ typedef enum
 } UT_ObjType_t;
 
 /*
- * Function to adjust any objid into the proper range
- *
- * If building an OSAL that has opaque (nonzero) object IDs,
- * then these stub functions can also replicate that.  This
- * macro will be used to support both opaque and non-opaque IDs
+ * A constant to use in stubs where no other value is applicable
  */
-#define UT_FIXUP_ID(id,typ)        id = UT_ObjIdFixup(id,typ)
+#define UT_STUB_FAKE_OBJECT_ID     ((osal_id_t){0xDEADBEEFU})
 
 /*
  * Size of the bitmask for the OSAL fake object ID validity table
@@ -105,12 +101,12 @@ extern const uint32 UT_MAXOBJS[];
 /*
  * Helper function - "allocate" a fake object ID of the given type
  */
-uint32 UT_AllocStubObjId(UT_ObjType_t ObjType);
+osal_id_t UT_AllocStubObjId(UT_ObjType_t ObjType);
 
 /*
  * Helper function - "deallocate" a fake object ID of the given type
  */
-void UT_DeleteStubObjId(UT_ObjType_t ObjType, uint32 ObjId);
+void UT_DeleteStubObjId(UT_ObjType_t ObjType, osal_id_t ObjId);
 
 /*
  * Helper function - Report any queue objects found open
@@ -125,9 +121,11 @@ void UT_CheckForOpenSockets(void);
 void UT_ClearAllStubObjects(void);
 
 /*
- * Takes an ID index and sets the proper ID bits.
+ * Compose/Decompose a unit test object ID from an index and type.
+ * This is the UT-specific version not related to the OSAL runtime version.
  */
-uint32 UT_ObjIdFixup(uint32 val,uint32 objtype);
+void UT_ObjIdCompose(uint32 indx, UT_ObjType_t objtype, osal_id_t *id);
+void UT_ObjIdDecompose(osal_id_t id, uint32 *indx, UT_ObjType_t *objtype);
 
 #endif
 

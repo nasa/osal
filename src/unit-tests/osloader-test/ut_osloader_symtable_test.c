@@ -69,7 +69,7 @@ void UT_os_symbol_lookup_test()
     int32 res = 0;
     const char*    testDesc;
     cpuaddr        symbol_addr;
-    uint32         module_id = 0;
+    osal_id_t      module_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API Not implemented";

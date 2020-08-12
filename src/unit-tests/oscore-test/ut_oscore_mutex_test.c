@@ -70,8 +70,8 @@ void UT_os_mut_sem_create_test()
     int i;
     int32 res = 0;
     const char* testDesc;
-    uint32  mut_sem_id;
-    uint32  mut_sem_id2;
+    osal_id_t  mut_sem_id;
+    osal_id_t  mut_sem_id2;
     char    sem_name[UT_OS_NAME_BUFF_SIZE];
     char    long_sem_name[UT_OS_NAME_BUFF_SIZE];
     uint32  test_setup_invalid = 0;
@@ -205,12 +205,12 @@ void UT_os_mut_sem_delete_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32  mut_sem_id;
+    osal_id_t  mut_sem_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_MutSemDelete(0);
+    res = OS_MutSemDelete(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -220,7 +220,7 @@ void UT_os_mut_sem_delete_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_MutSemDelete(99999);
+    res = OS_MutSemDelete(UT_OBJID_INCORRECT);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -268,12 +268,12 @@ void UT_os_mut_sem_give_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32  mut_sem_id;
+    osal_id_t  mut_sem_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_MutSemGive(0);
+    res = OS_MutSemGive(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -283,7 +283,7 @@ void UT_os_mut_sem_give_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_MutSemGive(99999);
+    res = OS_MutSemGive(UT_OBJID_INCORRECT);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -342,12 +342,12 @@ void UT_os_mut_sem_take_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32  mut_sem_id;
+    osal_id_t  mut_sem_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_MutSemTake(0);
+    res = OS_MutSemTake(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -357,7 +357,7 @@ void UT_os_mut_sem_take_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_MutSemTake(99999);
+    res = OS_MutSemTake(UT_OBJID_INCORRECT);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -408,7 +408,7 @@ void UT_os_mut_sem_get_id_by_name_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32  mut_sem_id;
+    osal_id_t  mut_sem_id;
     char        long_sem_name[UT_OS_NAME_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
@@ -496,13 +496,13 @@ void UT_os_mut_sem_get_info_test()
 {
     int32              res = 0;
     const char*        testDesc;
-    uint32             mut_sem_id;
+    osal_id_t             mut_sem_id;
     OS_mut_sem_prop_t  mut_sem_prop;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_MutSemGetInfo(0, &mut_sem_prop);
+    res = OS_MutSemGetInfo(OS_OBJECT_ID_UNDEFINED, &mut_sem_prop);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -512,7 +512,7 @@ void UT_os_mut_sem_get_info_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_MutSemGetInfo(99999, &mut_sem_prop);
+    res = OS_MutSemGetInfo(UT_OBJID_INCORRECT, &mut_sem_prop);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else

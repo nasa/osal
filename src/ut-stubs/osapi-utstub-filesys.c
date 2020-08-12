@@ -43,7 +43,7 @@ UT_DEFAULT_STUB(OS_FileSysAPI_Init,(void))
  * Stub function for OS_FileSysAddFixedMap()
  *
  *****************************************************************************/
-int32           OS_FileSysAddFixedMap(uint32 *filesys_id, const char *phys_path,
+int32           OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path,
                                 const char *virt_path)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_FileSysAddFixedMap), filesys_id);
@@ -60,7 +60,7 @@ int32           OS_FileSysAddFixedMap(uint32 *filesys_id, const char *phys_path,
     }
     else
     {
-        *filesys_id = 0xDEADBEEFU;
+        *filesys_id = UT_STUB_FAKE_OBJECT_ID;
     }
 
 

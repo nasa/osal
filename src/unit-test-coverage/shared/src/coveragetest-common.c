@@ -36,7 +36,7 @@
 ** It is not exposed in the public API as it is not intended to be called directly.
 ** However the coverage test case needs to invoke it directly to test it.
 */
-extern void OS_CleanUpObject(uint32 object_id, void *arg);
+extern void OS_CleanUpObject(osal_id_t object_id, void *arg);
 
 
 int32 Test_MicroSecPerTick = 0;
@@ -200,7 +200,7 @@ void Test_OS_CleanUpObject(void)
              * the goal is simply to defeat the default
              * check that the objid was valid (it isn't) */
             UT_SetForceFail(delhandler, OS_ERROR);
-            OS_CleanUpObject(0, &ActualObjs);
+            OS_CleanUpObject(OS_OBJECT_ID_UNDEFINED, &ActualObjs);
 
             CallCount = UT_GetStubCount(delhandler);
             UtAssert_True(CallCount == 1, "Objtype %lu call count (%lu) == 1",
@@ -208,7 +208,7 @@ void Test_OS_CleanUpObject(void)
         }
         else
         {
-            OS_CleanUpObject(0, &ActualObjs);
+            OS_CleanUpObject(OS_OBJECT_ID_UNDEFINED, &ActualObjs);
         }
         ++objtype;
         ++ExpObjs;

@@ -123,7 +123,7 @@ void OS_CreateSocketName(uint32 local_id, const OS_SockAddr_t *Addr, const char 
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketOpen(uint32 *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t Type)
+int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t Type)
 {
    OS_common_record_t *record;
    int32             return_code;
@@ -163,7 +163,7 @@ int32 OS_SocketOpen(uint32 *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t T
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketBind(uint32 sock_id, const OS_SockAddr_t *Addr)
+int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -216,7 +216,7 @@ int32 OS_SocketBind(uint32 sock_id, const OS_SockAddr_t *Addr)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketAccept(uint32 sock_id, uint32 *connsock_id, OS_SockAddr_t *Addr, int32 timeout)
+int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *Addr, int32 timeout)
 {
    OS_common_record_t *record;
    OS_common_record_t *connrecord;
@@ -292,7 +292,7 @@ int32 OS_SocketAccept(uint32 sock_id, uint32 *connsock_id, OS_SockAddr_t *Addr, 
       else
       {
          /* Clear the connrecord */
-         connrecord->active_id = 0;
+         connrecord->active_id = OS_OBJECT_ID_UNDEFINED;
       }
 
       /* Decrement both ref counters that were increased earlier */
@@ -312,7 +312,7 @@ int32 OS_SocketAccept(uint32 sock_id, uint32 *connsock_id, OS_SockAddr_t *Addr, 
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketConnect(uint32 sock_id, const OS_SockAddr_t *Addr, int32 Timeout)
+int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeout)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -369,7 +369,7 @@ int32 OS_SocketConnect(uint32 sock_id, const OS_SockAddr_t *Addr, int32 Timeout)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketRecvFrom(uint32 sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
+int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -412,7 +412,7 @@ int32 OS_SocketRecvFrom(uint32 sock_id, void *buffer, uint32 buflen, OS_SockAddr
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketSendTo(uint32 sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr)
+int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -451,7 +451,7 @@ int32 OS_SocketSendTo(uint32 sock_id, const void *buffer, uint32 buflen, const O
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketGetIdByName (uint32 *sock_id, const char *sock_name)
+int32 OS_SocketGetIdByName (osal_id_t *sock_id, const char *sock_name)
 {
    int32 return_code;
 
@@ -474,7 +474,7 @@ int32 OS_SocketGetIdByName (uint32 *sock_id, const char *sock_name)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketGetInfo (uint32 sock_id, OS_socket_prop_t *sock_prop)
+int32 OS_SocketGetInfo (osal_id_t sock_id, OS_socket_prop_t *sock_prop)
 {
    OS_common_record_t *record;
    uint32 local_id;

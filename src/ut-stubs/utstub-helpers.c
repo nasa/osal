@@ -69,11 +69,12 @@ void UT_ClearAllStubObjects (void)
 /*
  * Helper function - "allocate" a fake object ID of the given type
  */
-uint32 UT_AllocStubObjId(UT_ObjType_t ObjType)
+osal_id_t UT_AllocStubObjId(UT_ObjType_t ObjType)
 {
     UT_ObjTypeState_t *StatePtr;
     uint8 ObjMask;
-    uint32 Result;
+    uint32 indx;
+    osal_id_t Result;
 
     UT_Stub_CallOnce(UT_ClearAllStubObjects);
 
@@ -92,9 +93,9 @@ uint32 UT_AllocStubObjId(UT_ObjType_t ObjType)
         ++StatePtr->LastIssueNumber;
     }
 
-    Result = StatePtr->LastIssueNumber;
+    indx = StatePtr->LastIssueNumber;
 
-    ObjMask = 1 << (Result & 0x07);
+    ObjMask = 1 << (indx & 0x07);
     /*
      * Check for overlap/re-issue - this COULD happen when using
      * the original (non-opaque) object IDs if a UT creates too many
@@ -102,16 +103,16 @@ uint32 UT_AllocStubObjId(UT_ObjType_t ObjType)
      * and it means the test needs to be revised to not create so many
      * objects OR it needs to support opaque object IDs
      */
-    if ((StatePtr->ValidBits[Result >> 3] & ObjMask) != 0)
+    if ((StatePtr->ValidBits[indx >> 3] & ObjMask) != 0)
     {
         UtAssert_Failed("OSAPI UT stub object overlap");
     }
-    StatePtr->ValidBits[Result >> 3] |= ObjMask;
+    StatePtr->ValidBits[indx >> 3] |= ObjMask;
 
     /*
      * Finalize Object ID - put into proper range for type
      */
-    UT_FIXUP_ID(Result, ObjType);
+    UT_ObjIdCompose(indx, ObjType, &Result);
 
     return Result;
 }
@@ -119,25 +120,28 @@ uint32 UT_AllocStubObjId(UT_ObjType_t ObjType)
 /*
  * Helper function - "deallocate" a fake object ID of the given type
  */
-void UT_DeleteStubObjId(UT_ObjType_t ObjType, uint32 ObjId)
+void UT_DeleteStubObjId(UT_ObjType_t ObjType, osal_id_t ObjId)
 {
     UT_ObjTypeState_t *StatePtr;
     uint8 ObjMask;
+    UT_ObjType_t checktype;
+    uint32 checkidx;
     bool ObjWasValid;
 
     UT_Stub_CallOnce(UT_ClearAllStubObjects);
 
+    UT_ObjIdDecompose(ObjId, &checkidx, &checktype);
+
     /*
      * Verify the object type
      */
-    if (ObjType != ((ObjId >> 16) ^ 0x4000U))
+    if (ObjType != checktype)
     {
         /* Calling code is broken, abort the test */
         UtAssert_Failed("Object type is not correct");
     }
 
-    ObjId &= 0xFFFFU;
-    if (ObjId >= (8 * sizeof(StatePtr->ValidBits)))
+    if (checkidx >= (8 * sizeof(StatePtr->ValidBits)))
     {
         /* Calling code is broken */
         UtAssert_Failed("ObjId out of range");
@@ -147,11 +151,11 @@ void UT_DeleteStubObjId(UT_ObjType_t ObjType, uint32 ObjId)
 
     /* Clear out any bit it could have been */
     ObjWasValid = false;
-    ObjMask = 1 << (ObjId & 0x07);
-    if ((StatePtr->ValidBits[ObjId >> 3] & ObjMask) != 0)
+    ObjMask = 1 << (checkidx & 0x07);
+    if ((StatePtr->ValidBits[checkidx >> 3] & ObjMask) != 0)
     {
         ObjWasValid = true;
-        StatePtr->ValidBits[ObjId >> 3] &= ~ObjMask;
+        StatePtr->ValidBits[checkidx >> 3] &= ~ObjMask;
     }
 
     /* Unfortunately, some code has a habit of just blindly calling "Delete"
@@ -172,11 +176,20 @@ void UT_DeleteStubObjId(UT_ObjType_t ObjType, uint32 ObjId)
     }
 }
 
-
-uint32 UT_ObjIdFixup(uint32 val, uint32 objtype)
+void UT_ObjIdCompose(uint32 indx, UT_ObjType_t objtype, osal_id_t *id)
 {
-    return (val | ((0x4000U | objtype) << 16));
+    /* note - the OS_ObjectIdFromInteger() is an inline function,
+     * and therefore this uses the real thing and not a stub  */
+    *id = OS_ObjectIdFromInteger((unsigned long)indx | ((0x4000UL | objtype) << 16));
 }
+
+void UT_ObjIdDecompose(osal_id_t id, uint32 *indx, UT_ObjType_t *objtype)
+{
+    unsigned long idv = OS_ObjectIdToInteger(id);
+    *indx = idv & 0xFFFFUL;
+    *objtype = (idv >> 16) ^ 0x4000UL;
+}
+
 
 
 /*
@@ -191,17 +204,13 @@ void UT_CheckForOpenSockets(void)
 {
     UT_ObjTypeState_t *StatePtr;
     uint32 i;
-    uint32 id;
 
     StatePtr = &UT_ObjState[UT_OBJTYPE_QUEUE];
     for (i=0; i <= StatePtr->LastIssueNumber; ++i)
     {
         if ((StatePtr->ValidBits[i >> 3] & (1 << (i & 0x07))) != 0)
         {
-            id = i;
-            UT_FIXUP_ID(id, UT_OBJTYPE_QUEUE);
-
-            UtAssert_Failed("UT_Queue %d left open. ID=%x\n", (int)i, (unsigned int)id);
+            UtAssert_Failed("UT_Queue %d left open.\n", (int)i);
         }
     }
 

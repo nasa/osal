@@ -42,7 +42,7 @@ UT_DEFAULT_STUB(OS_TimeBaseAPI_Init,(void))
  * Stub for OS_TimeBaseCreate() function
  *
  *****************************************************************************/
-int32 OS_TimeBaseCreate(uint32 *timebase_id, const char *timebase_name, OS_TimerSync_t external_sync)
+int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_TimerSync_t external_sync)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_TimeBaseCreate), timebase_id);
     UT_Stub_RegisterContext(UT_KEY(OS_TimeBaseCreate), timebase_name);
@@ -58,7 +58,7 @@ int32 OS_TimeBaseCreate(uint32 *timebase_id, const char *timebase_name, OS_Timer
     }
     else
     {
-        *timebase_id = 0xDEADBEEFU;
+        *timebase_id = UT_STUB_FAKE_OBJECT_ID;
     }
 
     return status;
@@ -70,7 +70,7 @@ int32 OS_TimeBaseCreate(uint32 *timebase_id, const char *timebase_name, OS_Timer
  * Stub for OS_TimeBaseSet() function
  *
  *****************************************************************************/
-int32 OS_TimeBaseSet(uint32 timebase_id, uint32 start_time, uint32 interval_time)
+int32 OS_TimeBaseSet(osal_id_t timebase_id, uint32 start_time, uint32 interval_time)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimeBaseSet), timebase_id);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimeBaseSet), start_time);
@@ -89,7 +89,7 @@ int32 OS_TimeBaseSet(uint32 timebase_id, uint32 start_time, uint32 interval_time
  * Stub for OS_TimeBaseDelete() function
  *
  *****************************************************************************/
-int32 OS_TimeBaseDelete(uint32 timebase_id)
+int32 OS_TimeBaseDelete(osal_id_t timebase_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimeBaseDelete), timebase_id);
 
@@ -111,7 +111,7 @@ int32 OS_TimeBaseDelete(uint32 timebase_id)
  * Stub for OS_TimeBaseGetIdByName() function
  *
  *****************************************************************************/
-int32 OS_TimeBaseGetIdByName (uint32 *timebase_id, const char *timebase_name)
+int32 OS_TimeBaseGetIdByName (osal_id_t *timebase_id, const char *timebase_name)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_TimeBaseGetIdByName), timebase_id);
     UT_Stub_RegisterContext(UT_KEY(OS_TimeBaseGetIdByName), timebase_name);
@@ -123,8 +123,7 @@ int32 OS_TimeBaseGetIdByName (uint32 *timebase_id, const char *timebase_name)
     if (status == OS_SUCCESS &&
             UT_Stub_CopyToLocal(UT_KEY(OS_TimeBaseGetIdByName), timebase_id, sizeof(*timebase_id)) < sizeof(*timebase_id))
     {
-        *timebase_id =  1;
-        UT_FIXUP_ID(*timebase_id, UT_OBJTYPE_TIMEBASE);
+        UT_ObjIdCompose(1, UT_OBJTYPE_TIMEBASE, timebase_id);
     }
 
     return status;
@@ -136,7 +135,7 @@ int32 OS_TimeBaseGetIdByName (uint32 *timebase_id, const char *timebase_name)
  * Stub for OS_TimeBaseGetInfo() function
  *
  *****************************************************************************/
-int32 OS_TimeBaseGetInfo (uint32 timebase_id, OS_timebase_prop_t *timebase_prop)
+int32 OS_TimeBaseGetInfo (osal_id_t timebase_id, OS_timebase_prop_t *timebase_prop)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimeBaseGetInfo), timebase_id);
     UT_Stub_RegisterContext(UT_KEY(OS_TimeBaseGetInfo), timebase_prop);
@@ -148,8 +147,7 @@ int32 OS_TimeBaseGetInfo (uint32 timebase_id, OS_timebase_prop_t *timebase_prop)
     if (status == OS_SUCCESS &&
             UT_Stub_CopyToLocal(UT_KEY(OS_TimeBaseGetInfo), timebase_prop, sizeof(*timebase_prop)) < sizeof(*timebase_prop))
     {
-        timebase_prop->creator = 1;
-        UT_FIXUP_ID(timebase_prop->creator, UT_OBJTYPE_TASK);
+        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &timebase_prop->creator);
         strncpy(timebase_prop->name, "Name", OS_MAX_API_NAME - 1);
         timebase_prop->name[OS_MAX_API_NAME - 1] = '\0';
     }
@@ -163,7 +161,7 @@ int32 OS_TimeBaseGetInfo (uint32 timebase_id, OS_timebase_prop_t *timebase_prop)
  * Stub for OS_TimeBaseGetFreeRun() function
  *
  *****************************************************************************/
-int32 OS_TimeBaseGetFreeRun     (uint32 timebase_id, uint32 *freerun_val)
+int32 OS_TimeBaseGetFreeRun     (osal_id_t timebase_id, uint32 *freerun_val)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimeBaseGetFreeRun), timebase_id);
     UT_Stub_RegisterContext(UT_KEY(OS_TimeBaseGetFreeRun), freerun_val);

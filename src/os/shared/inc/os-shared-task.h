@@ -75,7 +75,7 @@ int32 OS_TaskAPI_Init                (void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-void   OS_TaskEntryPoint              (uint32 global_task_id);
+void   OS_TaskEntryPoint              (osal_id_t global_task_id);
 
 /*----------------------------------------------------------------
    Function: OS_TaskMatch_Impl
@@ -140,7 +140,7 @@ int32  OS_TaskSetPriority_Impl       (uint32 task_id, uint32 new_priority);
 
     Returns: The OSAL ID of the calling task, or zero if not registered
  ------------------------------------------------------------------*/
-uint32 OS_TaskGetId_Impl             (void);
+osal_id_t OS_TaskGetId_Impl             (void);
 
 /*----------------------------------------------------------------
    Function: OS_TaskGetInfo_Impl
@@ -162,7 +162,7 @@ int32  OS_TaskGetInfo_Impl           (uint32 task_id, OS_task_prop_t *task_prop)
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32  OS_TaskRegister_Impl          (uint32 global_task_id);
+int32  OS_TaskRegister_Impl          (osal_id_t global_task_id);
 
 
 /*----------------------------------------------------------------

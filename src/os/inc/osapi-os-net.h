@@ -117,7 +117,7 @@ typedef struct
 typedef struct
 {
     char name [OS_MAX_API_NAME];        /**< @brief Name of the socket */
-    uint32 creator;                     /**< @brief OSAL TaskID which opened the socket */
+    osal_id_t creator;                     /**< @brief OSAL TaskID which opened the socket */
 } OS_socket_prop_t;
 
 /**
@@ -247,7 +247,7 @@ int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_SocketOpen(uint32 *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t Type);
+int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t Type);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -265,7 +265,7 @@ int32 OS_SocketOpen(uint32 *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t T
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_SocketBind(uint32 sock_id, const OS_SockAddr_t *Addr);
+int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -281,7 +281,7 @@ int32 OS_SocketBind(uint32 sock_id, const OS_SockAddr_t *Addr);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_SocketConnect(uint32 sock_id, const OS_SockAddr_t *Addr, int32 timeout);
+int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 timeout);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -302,7 +302,7 @@ int32 OS_SocketConnect(uint32 sock_id, const OS_SockAddr_t *Addr, int32 timeout)
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_SocketAccept(uint32 sock_id, uint32 *connsock_id, OS_SockAddr_t *Addr, int32 timeout);
+int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *Addr, int32 timeout);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -319,7 +319,7 @@ int32 OS_SocketAccept(uint32 sock_id, uint32 *connsock_id, OS_SockAddr_t *Addr, 
  *
  * @return Count of actual bytes received or error status, see @ref OSReturnCodes
  */
-int32 OS_SocketRecvFrom(uint32 sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout);
+int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -336,7 +336,7 @@ int32 OS_SocketRecvFrom(uint32 sock_id, void *buffer, uint32 buflen, OS_SockAddr
  *
  * @return Count of actual bytes sent or error status, see @ref OSReturnCodes
  */
-int32 OS_SocketSendTo(uint32 sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr);
+int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -355,7 +355,7 @@ int32 OS_SocketSendTo(uint32 sock_id, const void *buffer, uint32 buflen, const O
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_NOT_FOUND if the name was not found in the table
  */
-int32 OS_SocketGetIdByName (uint32 *sock_id, const char *sock_name);
+int32 OS_SocketGetIdByName (osal_id_t *sock_id, const char *sock_name);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -372,7 +372,7 @@ int32 OS_SocketGetIdByName (uint32 *sock_id, const char *sock_name);
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
  * @retval #OS_INVALID_POINTER if the count_prop pointer is null
  */
-int32 OS_SocketGetInfo (uint32 sock_id, OS_socket_prop_t *sock_prop);
+int32 OS_SocketGetInfo (osal_id_t sock_id, OS_socket_prop_t *sock_prop);
 
 
 /*-------------------------------------------------------------------------------------*/

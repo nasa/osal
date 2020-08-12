@@ -53,7 +53,7 @@ UT_DEFAULT_STUB(OS_BinSemAPI_Init,(void))
 **        Returns either -1 or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_BinSemTake(uint32 sem_id)
+int32 OS_BinSemTake(osal_id_t sem_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_BinSemTake), sem_id);
 
@@ -83,7 +83,7 @@ int32 OS_BinSemTake(uint32 sem_id)
 **        Returns OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_BinSemFlush(uint32 sem_id)
+int32 OS_BinSemFlush(osal_id_t sem_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_BinSemFlush), sem_id);
 
@@ -117,7 +117,7 @@ int32 OS_BinSemFlush(uint32 sem_id)
 **        Returns either a user-defined status flag, OS_ERROR, or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_BinSemCreate(uint32 *sem_id, const char *sem_name,
+int32 OS_BinSemCreate(osal_id_t *sem_id, const char *sem_name,
                       uint32 sem_initial_value, uint32 options)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_BinSemCreate), sem_id);
@@ -135,7 +135,7 @@ int32 OS_BinSemCreate(uint32 *sem_id, const char *sem_name,
     }
     else
     {
-        *sem_id = 0xDEADBEEFU;
+        *sem_id = UT_STUB_FAKE_OBJECT_ID;
     }
 
     return status;
@@ -157,7 +157,7 @@ int32 OS_BinSemCreate(uint32 *sem_id, const char *sem_name,
 **        Returns the user-defined value UT_BinSemFail.
 **
 ******************************************************************************/
-int32 OS_BinSemGive(uint32 sem_id)
+int32 OS_BinSemGive(osal_id_t sem_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_BinSemGive), sem_id);
 
@@ -184,7 +184,7 @@ int32 OS_BinSemGive(uint32 sem_id)
 **        Returns OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_BinSemGetInfo(uint32 sem_id, OS_bin_sem_prop_t *bin_prop)
+int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_BinSemGetInfo), sem_id);
     UT_Stub_RegisterContext(UT_KEY(OS_BinSemGetInfo), bin_prop);
@@ -196,8 +196,7 @@ int32 OS_BinSemGetInfo(uint32 sem_id, OS_bin_sem_prop_t *bin_prop)
     if (status == OS_SUCCESS &&
             UT_Stub_CopyToLocal(UT_KEY(OS_BinSemGetInfo), bin_prop, sizeof(*bin_prop)) < sizeof(*bin_prop))
     {
-        bin_prop->creator =  1;
-        UT_FIXUP_ID(bin_prop->creator, UT_OBJTYPE_TASK);
+        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &bin_prop->creator);
         strncpy(bin_prop->name, "Name", OS_MAX_API_NAME - 1);
         bin_prop->name[OS_MAX_API_NAME - 1] = '\0';
     }
@@ -226,7 +225,7 @@ int32 OS_BinSemGetInfo(uint32 sem_id, OS_bin_sem_prop_t *bin_prop)
 **        Returns either a user-defined status flag or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_BinSemDelete(uint32 sem_id)
+int32 OS_BinSemDelete(osal_id_t sem_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_BinSemDelete), sem_id);
 
@@ -261,7 +260,7 @@ int32 OS_BinSemDelete(uint32 sem_id)
 **        Returns OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_BinSemTimedWait(uint32 sem_id, uint32 msecs)
+int32 OS_BinSemTimedWait(osal_id_t sem_id, uint32 msecs)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_BinSemTimedWait), sem_id);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_BinSemTimedWait), msecs);
@@ -278,7 +277,7 @@ int32 OS_BinSemTimedWait(uint32 sem_id, uint32 msecs)
  * Stub function for OS_BinSemGetIdByName()
  *
  *****************************************************************************/
-int32 OS_BinSemGetIdByName (uint32 *sem_id, const char *sem_name)
+int32 OS_BinSemGetIdByName (osal_id_t *sem_id, const char *sem_name)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_BinSemGetIdByName), sem_id);
     UT_Stub_RegisterContext(UT_KEY(OS_BinSemGetIdByName), sem_name);
@@ -290,8 +289,7 @@ int32 OS_BinSemGetIdByName (uint32 *sem_id, const char *sem_name)
     if (status == OS_SUCCESS &&
             UT_Stub_CopyToLocal(UT_KEY(OS_BinSemGetIdByName), sem_id, sizeof(*sem_id)) < sizeof(*sem_id))
     {
-        *sem_id =  1;
-        UT_FIXUP_ID(*sem_id, UT_OBJTYPE_BINSEM);
+        UT_ObjIdCompose(1, UT_OBJTYPE_BINSEM, sem_id);
     }
 
     return status;

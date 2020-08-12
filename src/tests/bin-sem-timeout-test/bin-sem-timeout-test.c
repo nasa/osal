@@ -40,17 +40,17 @@ void BinSemTimeoutCheck(void);
 #define TASK_2_PRIORITY   50
 
 uint32 task_1_stack[TASK_1_STACK_SIZE];
-uint32 task_1_id; 
+osal_id_t task_1_id;
 uint32 task_1_timeouts;
 uint32 task_1_work;
 uint32 task_1_failures;
 uint32 task_2_stack[TASK_2_STACK_SIZE];
-uint32 task_2_id;
+osal_id_t task_2_id;
 
-uint32 bin_sem_id;
+osal_id_t bin_sem_id;
 
 uint32 timer_counter;
-uint32 timer_id;
+osal_id_t timer_id;
 uint32 timer_start    = 1000000;
 uint32 timer_interval = 2000000; /* 2 second period */
 uint32 timer_accuracy;
@@ -64,7 +64,7 @@ int    counter = 0;
  *
  * On RTEMS even a call to BinSemGetInfo has very ill effects.
  */
-void TimerFunction(uint32 timer_id)
+void TimerFunction(osal_id_t timer_id)
 {
    int32              status;
 
@@ -201,7 +201,8 @@ void BinSemTimeoutSetup(void)
    ** Create the binary semaphore
    */
    status = OS_BinSemCreate( &bin_sem_id, "BinSem1", 1, 0);
-   UtAssert_True(status == OS_SUCCESS, "BinSem1 create Id=%u Rc=%d", (unsigned int)bin_sem_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "BinSem1 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(bin_sem_id), (int)status);
 
    status = OS_BinSemGetInfo (bin_sem_id, &bin_sem_prop);
    UtAssert_True(status == OS_SUCCESS, "BinSem1 value=%d Rc=%d", (int)bin_sem_prop.value, (int)status);
@@ -218,13 +219,15 @@ void BinSemTimeoutSetup(void)
    ** Create the "consumer" task.
    */
    status = OS_TaskCreate( &task_1_id, "Task 1", task_1, task_1_stack, TASK_1_STACK_SIZE, TASK_1_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%u Rc=%d", (unsigned int)task_1_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(task_1_id), (int)status);
 
    /*
    ** Create a timer
    */
    status = OS_TimerCreate(&timer_id, "Timer 1", &accuracy, &(TimerFunction));
-   UtAssert_True(status == OS_SUCCESS, "Timer 1 create Id=%u Rc=%d", (unsigned int)timer_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Timer 1 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(timer_id), (int)status);
    UtPrintf("Timer Accuracy = %u microseconds \n",(unsigned int)accuracy);
 
    /*

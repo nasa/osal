@@ -183,7 +183,7 @@ int32 OS_ModuleAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleLoad ( uint32 *module_id, const char *module_name, const char *filename )
+int32 OS_ModuleLoad ( osal_id_t *module_id, const char *module_name, const char *filename )
 {
     char        translated_path[OS_MAX_LOCAL_PATH_LEN];
     int32       return_code;
@@ -275,7 +275,7 @@ int32 OS_ModuleLoad ( uint32 *module_id, const char *module_name, const char *fi
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleUnload ( uint32 module_id )
+int32 OS_ModuleUnload ( osal_id_t module_id )
 {
     OS_common_record_t *record;
     int32             return_code;
@@ -304,7 +304,7 @@ int32 OS_ModuleUnload ( uint32 module_id )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleInfo ( uint32 module_id, OS_module_prop_t *module_prop )
+int32 OS_ModuleInfo ( osal_id_t module_id, OS_module_prop_t *module_prop )
 {
     OS_common_record_t *record;
     int32             return_code;

@@ -49,20 +49,20 @@ extern uint32  g_cbLoopCntMax;
 extern uint32  g_toleranceVal;
 extern uint32  g_timerFirst;
 extern int32   g_status;
-extern uint32  g_timerId;
+extern osal_id_t  g_timerId;
 
 /*--------------------------------------------------------------------------------*
 ** External function prototypes
 **--------------------------------------------------------------------------------*/
 
-extern void UT_os_timercallback(uint32 timerId);
+extern void UT_os_timercallback(osal_id_t timerId);
 
 /*--------------------------------------------------------------------------------*
 ** Global variables
 **--------------------------------------------------------------------------------*/
 
 uint32  g_clkAccuracy = 0;
-uint32  g_timerIds[UT_OS_TIMER_LIST_LEN];
+osal_id_t  g_timerIds[UT_OS_TIMER_LIST_LEN];
 
 /*--------------------------------------------------------------------------------*
 ** Local function prototypes
@@ -343,7 +343,7 @@ void UT_os_timercreate_test()
     if (res == OS_SUCCESS)
     {
         if ((OS_TimerGetIdByName(&g_timerIds[8], g_timerNames[7]) == OS_SUCCESS) &&
-            (g_timerIds[7] == g_timerIds[8]) &&
+            OS_ObjectIdEqual(g_timerIds[7], g_timerIds[8]) &&
             (OS_TimerDelete(g_timerIds[7]) == OS_SUCCESS))
             UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -409,7 +409,7 @@ void UT_os_timerdelete_test()
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_TimerDelete(99999);
+    res = OS_TimerDelete(UT_OBJID_INCORRECT);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -419,7 +419,7 @@ void UT_os_timerdelete_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-id-arg";
 
-    if (OS_TimerDelete(99999) == OS_ERR_INVALID_ID)
+    if (OS_TimerDelete(UT_OBJID_INCORRECT) == OS_ERR_INVALID_ID)
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
@@ -522,7 +522,7 @@ void UT_os_timerset_test()
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_TimerSet(99999, startTime, intervalTime);
+    res = OS_TimerSet(UT_OBJID_INCORRECT, startTime, intervalTime);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -532,7 +532,7 @@ void UT_os_timerset_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-id-arg";
 
-    res = OS_TimerSet(99999, 10000, 10000);
+    res = OS_TimerSet(UT_OBJID_INCORRECT, 10000, 10000);
     if (res == OS_ERR_INVALID_ID)
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -720,7 +720,7 @@ void UT_os_timergetidbyname_test()
     }
 
     res = OS_TimerGetIdByName(&g_timerIds[5], g_timerNames[4]);
-    if ((res == OS_SUCCESS) && (g_timerIds[4] == g_timerIds[5]))
+    if ((res == OS_SUCCESS) && OS_ObjectIdEqual(g_timerIds[4], g_timerIds[5]))
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
@@ -779,7 +779,7 @@ void UT_os_timergetinfo_test()
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_TimerGetInfo(99999, &timerProps);
+    res = OS_TimerGetInfo(UT_OBJID_INCORRECT, &timerProps);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -809,7 +809,7 @@ void UT_os_timergetinfo_test()
     /*-----------------------------------------------------*/
     testDesc = "#2 Invalid-id-arg";
 
-    if (OS_TimerGetInfo(99999, &timerProps) == OS_ERR_INVALID_ID)
+    if (OS_TimerGetInfo(UT_OBJID_INCORRECT, &timerProps) == OS_ERR_INVALID_ID)
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);

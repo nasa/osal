@@ -55,11 +55,11 @@ void Test_OS_MutSemCreate(void)
      * int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
      */
     int32 expected = OS_SUCCESS;
-    uint32 objid = 0xFFFFFFFF;
+    osal_id_t objid;
     int32 actual = OS_MutSemCreate(&objid, "UT", 0);
 
     UtAssert_True(actual == expected, "OS_MutSemCreate() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(objid != 0, "objid (%lu) != 0", (unsigned long)objid);
+    OSAPI_TEST_OBJID(objid,!=,OS_OBJECT_ID_UNDEFINED);
 
     OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate(NULL, NULL, 0), OS_INVALID_POINTER);
     UT_SetForceFail(UT_KEY(OCS_strlen), 10 + OS_MAX_API_NAME);
@@ -75,7 +75,7 @@ void Test_OS_MutSemDelete(void)
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
 
-    actual = OS_MutSemDelete(1);
+    actual = OS_MutSemDelete(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_MutSemDelete() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -89,7 +89,7 @@ void Test_OS_MutSemGive(void)
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
 
-    actual = OS_MutSemGive(1);
+    actual = OS_MutSemGive(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_MutSemGive() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -104,7 +104,7 @@ void Test_OS_MutSemTake(void)
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
 
-    actual = OS_MutSemTake(1);
+    actual = OS_MutSemTake(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_MutSemTake() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -117,12 +117,12 @@ void Test_OS_MutSemGetIdByName(void)
      */
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
-    uint32 objid = 0;
+    osal_id_t objid;
 
     UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_MutSemGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_MutSemGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(objid != 0, "OS_MutSemGetIdByName() objid (%lu) != 0", (unsigned long)objid);
+    OSAPI_TEST_OBJID(objid,!=,OS_OBJECT_ID_UNDEFINED);
     UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
@@ -148,19 +148,18 @@ void Test_OS_MutSemGetInfo(void)
     OS_common_record_t *rptr = &utrec;
 
     memset(&utrec, 0, sizeof(utrec));
-    utrec.creator = 111;
+    utrec.creator = UT_OBJID_OTHER;
     utrec.name_entry = "ABC";
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
-    actual = OS_MutSemGetInfo(1, &prop);
+    actual = OS_MutSemGetInfo(UT_OBJID_1, &prop);
 
     UtAssert_True(actual == expected, "OS_MutSemGetInfo() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(prop.creator == 111, "prop.creator (%lu) == 111",
-            (unsigned long)prop.creator);
+    OSAPI_TEST_OBJID(prop.creator,==,UT_OBJID_OTHER);
     UtAssert_True(strcmp(prop.name, "ABC") == 0, "prop.name (%s) == ABC",
             prop.name);
 
-    OSAPI_TEST_FUNCTION_RC(OS_MutSemGetInfo(0, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
 
 }
 

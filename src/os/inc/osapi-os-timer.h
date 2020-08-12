@@ -33,14 +33,14 @@
 /*
 ** Typedefs
 */
-typedef void (*OS_TimerCallback_t)(uint32 timer_id); /**< @brief Timer callback */
+typedef void (*OS_TimerCallback_t)(osal_id_t timer_id); /**< @brief Timer callback */
 typedef uint32 (*OS_TimerSync_t)(uint32 timer_id);   /**< @brief Timer sync */
 
 /** @brief Timer properties */
 typedef struct 
 {
    char                name[OS_MAX_API_NAME];
-   uint32              creator;
+   osal_id_t           creator;
    uint32              start_time;
    uint32              interval_time;
    uint32              accuracy;
@@ -51,7 +51,7 @@ typedef struct
 typedef struct
 {
     char                name[OS_MAX_API_NAME];
-    uint32              creator;
+    osal_id_t           creator;
     uint32              nominal_interval_time;
     uint32              freerun_time;
     uint32              accuracy;
@@ -91,7 +91,7 @@ typedef struct
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_TimeBaseCreate         (uint32 *timebase_id, const char *timebase_name, OS_TimerSync_t external_sync);
+int32 OS_TimeBaseCreate         (osal_id_t *timebase_id, const char *timebase_name, OS_TimerSync_t external_sync);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -113,7 +113,7 @@ int32 OS_TimeBaseCreate         (uint32 *timebase_id, const char *timebase_name,
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_TimeBaseSet            (uint32 timebase_id, uint32 start_time, uint32 interval_time);
+int32 OS_TimeBaseSet            (osal_id_t timebase_id, uint32 start_time, uint32 interval_time);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -126,7 +126,7 @@ int32 OS_TimeBaseSet            (uint32 timebase_id, uint32 start_time, uint32 i
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_TimeBaseDelete         (uint32 timebase_id);
+int32 OS_TimeBaseDelete         (osal_id_t timebase_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -143,7 +143,7 @@ int32 OS_TimeBaseDelete         (uint32 timebase_id);
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_NOT_FOUND if the name was not found in the table
  */
-int32 OS_TimeBaseGetIdByName    (uint32 *timebase_id, const char *timebase_name);
+int32 OS_TimeBaseGetIdByName    (osal_id_t *timebase_id, const char *timebase_name);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -163,7 +163,7 @@ int32 OS_TimeBaseGetIdByName    (uint32 *timebase_id, const char *timebase_name)
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid timebase
  * @retval #OS_INVALID_POINTER if the timebase_prop pointer is null
  */
-int32 OS_TimeBaseGetInfo        (uint32 timebase_id, OS_timebase_prop_t *timebase_prop);
+int32 OS_TimeBaseGetInfo        (osal_id_t timebase_id, OS_timebase_prop_t *timebase_prop);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -195,7 +195,7 @@ int32 OS_TimeBaseGetInfo        (uint32 timebase_id, OS_timebase_prop_t *timebas
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid timebase
  */
-int32 OS_TimeBaseGetFreeRun     (uint32 timebase_id, uint32 *freerun_val);
+int32 OS_TimeBaseGetFreeRun     (osal_id_t timebase_id, uint32 *freerun_val);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -234,7 +234,7 @@ int32 OS_TimeBaseGetFreeRun     (uint32 timebase_id, uint32 *freerun_val);
  * @retval #OS_TIMER_ERR_INVALID_ARGS if the callback pointer is zero.
  * @retval #OS_TIMER_ERR_UNAVAILABLE if the timer cannot be created.
  */
-int32 OS_TimerCreate            (uint32 *timer_id, const char *timer_name, uint32 *clock_accuracy, OS_TimerCallback_t callback_ptr);
+int32 OS_TimerCreate            (osal_id_t *timer_id, const char *timer_name, uint32 *clock_accuracy, OS_TimerCallback_t callback_ptr);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -264,7 +264,7 @@ int32 OS_TimerCreate            (uint32 *timer_id, const char *timer_name, uint3
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_TimerAdd               (uint32 *timer_id, const char *timer_name, uint32 timebase_id, OS_ArgCallback_t  callback_ptr, void *callback_arg);
+int32 OS_TimerAdd               (osal_id_t *timer_id, const char *timer_name, osal_id_t timebase_id, OS_ArgCallback_t  callback_ptr, void *callback_arg);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -297,7 +297,7 @@ int32 OS_TimerAdd               (uint32 *timer_id, const char *timer_name, uint3
  * @retval #OS_TIMER_ERR_INTERNAL if there was an error programming the OS timer.
  * @retval #OS_ERROR if both start time and interval time are zero. 
  */
-int32 OS_TimerSet               (uint32 timer_id, uint32 start_time, uint32 interval_time);
+int32 OS_TimerSet               (osal_id_t timer_id, uint32 start_time, uint32 interval_time);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -313,7 +313,7 @@ int32 OS_TimerSet               (uint32 timer_id, uint32 start_time, uint32 inte
  * @retval #OS_ERR_INVALID_ID if the timer_id is invalid.
  * @retval #OS_TIMER_ERR_INTERNAL if there was a problem deleting the timer in the host OS.
  */
-int32 OS_TimerDelete            (uint32 timer_id);
+int32 OS_TimerDelete            (osal_id_t timer_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -330,7 +330,7 @@ int32 OS_TimerDelete            (uint32 timer_id);
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_NOT_FOUND if the name was not found in the table
  */
-int32 OS_TimerGetIdByName       (uint32 *timer_id, const char *timer_name);
+int32 OS_TimerGetIdByName       (osal_id_t *timer_id, const char *timer_name);
 
 
 /*-------------------------------------------------------------------------------------*/
@@ -353,7 +353,7 @@ int32 OS_TimerGetIdByName       (uint32 *timer_id, const char *timer_name);
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid timer
  * @retval #OS_INVALID_POINTER if the timer_prop pointer is null
  */
-int32 OS_TimerGetInfo           (uint32  timer_id, OS_timer_prop_t *timer_prop);
+int32 OS_TimerGetInfo           (osal_id_t  timer_id, OS_timer_prop_t *timer_prop);
 /**@}*/
 
 #endif

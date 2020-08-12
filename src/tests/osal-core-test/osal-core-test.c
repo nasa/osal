@@ -37,7 +37,7 @@
 typedef struct
 {
     uint32 NumInvocations;
-    uint32 ObjList[OSAL_UT_MAX_CALLBACKS];
+    osal_id_t ObjList[OSAL_UT_MAX_CALLBACKS];
 } TestCallbackState_t;
 
 
@@ -54,7 +54,7 @@ void TestGetInfos(void);
 void TestGenericQueries(void);
 
 /* helper function for "OS_ForEachObject" test cases */
-static void TestForEachCallback(uint32 object_id, void *arg)
+static void TestForEachCallback(osal_id_t object_id, void *arg)
 {
     TestCallbackState_t *State = (TestCallbackState_t*)arg;
     if (State->NumInvocations < OSAL_UT_MAX_CALLBACKS)
@@ -108,16 +108,16 @@ void task_generic_with_exit(void)
 
 typedef struct
 {
-   uint32 task_id;
+   osal_id_t task_id;
    uint32 task_stack[TASK_0_STACK_SIZE];
 } TestTaskData;
 /* ********************************************** TASKS******************************* */
 void TestTasks(void)
 {
-    int status;
+    int32 status;
     char taskname[OS_MAX_API_NAME];
     int tasknum;
-    uint32 saved_task0_id;
+    osal_id_t saved_task0_id;
     static TestTaskData TaskData[OS_MAX_TASKS + 1];
     OS_task_prop_t taskprop;
     int loopcnt;
@@ -132,7 +132,8 @@ void TestTasks(void)
        status = OS_TaskCreate( &TaskData[tasknum].task_id, taskname, task_generic_no_exit, TaskData[tasknum].task_stack,
                                TASK_0_STACK_SIZE, (250 - OS_MAX_TASKS) + tasknum, 0);
 
-       UtDebug("Create %s Status = %d, Id = %d\n",taskname,(int)status,(int)TaskData[tasknum].task_id);
+       UtDebug("Create %s Status = %d, Id = %lx\n",taskname,(int)status,
+               OS_ObjectIdToInteger(TaskData[tasknum].task_id));
 
        UtAssert_True((tasknum < OS_MAX_TASKS && status == OS_SUCCESS) ||
              (tasknum >= OS_MAX_TASKS && status != OS_SUCCESS), "OS_TaskCreate, nominal");
@@ -147,7 +148,8 @@ void TestTasks(void)
        snprintf(taskname,sizeof(taskname), "Task %d", tasknum);
        status = OS_TaskDelete( TaskData[tasknum].task_id );
 
-       UtDebug("Delete Status = %d, Id = %d\n",(int)status,(int)TaskData[tasknum].task_id);
+       UtDebug("Delete Status = %d, Id = %lx\n",(int)status,
+               OS_ObjectIdToInteger(TaskData[tasknum].task_id));
 
        UtAssert_True((tasknum < OS_MAX_TASKS && status == OS_SUCCESS) ||
              (tasknum >= OS_MAX_TASKS && status != OS_SUCCESS), "OS_TaskDelete, nominal");
@@ -166,7 +168,8 @@ void TestTasks(void)
        status = OS_TaskCreate( &TaskData[tasknum].task_id, taskname, task_generic_with_exit, TaskData[tasknum].task_stack,
                                TASK_0_STACK_SIZE, (250 - OS_MAX_TASKS) + tasknum, 0);
 
-       UtDebug("Create %s Status = %d, Id = %d\n",taskname,(int)status,(int)TaskData[tasknum].task_id);
+       UtDebug("Create %s Status = %d, Id = %lx\n",taskname,(int)status,
+               OS_ObjectIdToInteger(TaskData[tasknum].task_id));
 
        UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate, self exiting task");
 
@@ -177,7 +180,8 @@ void TestTasks(void)
           OS_TaskDelay(10);
           loopcnt++;
        }
-       UtDebug("Looped %d times waiting for child task Id %d to exit\n", loopcnt, (int)TaskData[tasknum].task_id);
+       UtDebug("Looped %d times waiting for child task Id %lx to exit\n", loopcnt,
+               OS_ObjectIdToInteger(TaskData[tasknum].task_id));
        UtAssert_True(loopcnt < UT_EXIT_LOOP_MAX, "Looped %d times without self-exiting task exiting", loopcnt);
 
        /*
@@ -185,7 +189,8 @@ void TestTasks(void)
         */
        status = OS_TaskDelete( TaskData[tasknum].task_id );
 
-       UtDebug("Delete Status = %d, Id = %d\n",(int)status,(int)TaskData[tasknum].task_id);
+       UtDebug("Delete Status = %d, Id = %lx\n",(int)status,
+               OS_ObjectIdToInteger(TaskData[tasknum].task_id));
 
        UtAssert_True(status != OS_SUCCESS, "OS_TaskDelete, self exiting task");
 
@@ -252,11 +257,11 @@ void TestTasks(void)
 
 void TestQueues(void)
 {
-    int status;
+    int32 status;
     char qname[OS_MAX_API_NAME];
     int qnum;
-    uint32 saved_queue0_id;
-    static uint32 msgq_ids[OS_MAX_QUEUES + 1];
+    osal_id_t saved_queue0_id;
+    static osal_id_t msgq_ids[OS_MAX_QUEUES + 1];
 
     InitializeQIds();
     memset(msgq_ids,0xFF,sizeof(msgq_ids));
@@ -346,11 +351,11 @@ void TestQueues(void)
 /* *************************************************************************** */
 void TestBinaries(void)
 {
-    int status;
+    int32 status;
     char bname[OS_MAX_API_NAME];
     int bnum;
-    uint32 saved_bin0_id;
-    static uint32 binsem_ids[OS_MAX_BIN_SEMAPHORES + 1];
+    osal_id_t saved_bin0_id;
+    static osal_id_t binsem_ids[OS_MAX_BIN_SEMAPHORES + 1];
 
 
     memset(binsem_ids,0xFF,sizeof(binsem_ids));
@@ -441,11 +446,11 @@ void TestBinaries(void)
 /* ************************************************************************************ */
 void TestMutexes(void)
 {
-    int status;
+    int32 status;
     char mname[OS_MAX_API_NAME];
     int mnum;
-    uint32 saved_mut0_id;
-    static uint32 mutex_ids[OS_MAX_MUTEXES + 1];
+    osal_id_t saved_mut0_id;
+    static osal_id_t mutex_ids[OS_MAX_MUTEXES + 1];
 
 
     memset(mutex_ids,0xFF,sizeof(mutex_ids));
@@ -538,12 +543,27 @@ void TestMutexes(void)
 void InitializeTaskIds(void)
 {
 
-task_0_id = 99;  task_1_id = 99;  task_2_id = 99;  task_3_id = 99; 
-     task_4_id = 99;  task_5_id = 99;  task_6_id = 99;  task_7_id = 99; 
-     task_8_id = 99;  task_9_id = 99; task_10_id = 99; task_11_id = 99;   
-    task_12_id = 99; task_13_id = 99; task_14_id = 99; task_15_id = 99;
-    task_16_id = 99; task_17_id = 99; task_18_id = 99; task_19_id = 99; 
-    task_20_id = 99;
+    task_0_id = OS_OBJECT_ID_UNDEFINED;
+    task_1_id = OS_OBJECT_ID_UNDEFINED;
+    task_2_id = OS_OBJECT_ID_UNDEFINED;
+    task_3_id = OS_OBJECT_ID_UNDEFINED;
+    task_4_id = OS_OBJECT_ID_UNDEFINED;
+    task_5_id = OS_OBJECT_ID_UNDEFINED;
+    task_6_id = OS_OBJECT_ID_UNDEFINED;
+    task_7_id = OS_OBJECT_ID_UNDEFINED;
+    task_8_id = OS_OBJECT_ID_UNDEFINED;
+    task_9_id = OS_OBJECT_ID_UNDEFINED;
+    task_10_id = OS_OBJECT_ID_UNDEFINED;
+    task_11_id = OS_OBJECT_ID_UNDEFINED;
+    task_12_id = OS_OBJECT_ID_UNDEFINED;
+    task_13_id = OS_OBJECT_ID_UNDEFINED;
+    task_14_id = OS_OBJECT_ID_UNDEFINED;
+    task_15_id = OS_OBJECT_ID_UNDEFINED;
+    task_16_id = OS_OBJECT_ID_UNDEFINED;
+    task_17_id = OS_OBJECT_ID_UNDEFINED;
+    task_18_id = OS_OBJECT_ID_UNDEFINED;
+    task_19_id = OS_OBJECT_ID_UNDEFINED;
+    task_20_id = OS_OBJECT_ID_UNDEFINED;
 
     return;
 } /* end InitializeTaskIds */
@@ -552,9 +572,18 @@ task_0_id = 99;  task_1_id = 99;  task_2_id = 99;  task_3_id = 99;
 /* **************************************************************************** */
 void InitializeQIds(void)
 {
-    msgq_0 = 99; msgq_1 = 99; msgq_2 = 99; msgq_3 = 99; msgq_4 = 99; 
-    msgq_5 = 99; msgq_6 = 99; msgq_7 = 99; msgq_8 = 99; msgq_9 = 99; msgq_10 = 99; 
-    msgq_id = 99;
+    msgq_0 = OS_OBJECT_ID_UNDEFINED;
+    msgq_1 = OS_OBJECT_ID_UNDEFINED;
+    msgq_2 = OS_OBJECT_ID_UNDEFINED;
+    msgq_3 = OS_OBJECT_ID_UNDEFINED;
+    msgq_4 = OS_OBJECT_ID_UNDEFINED;
+    msgq_5 = OS_OBJECT_ID_UNDEFINED;
+    msgq_6 = OS_OBJECT_ID_UNDEFINED;
+    msgq_7 = OS_OBJECT_ID_UNDEFINED;
+    msgq_8 = OS_OBJECT_ID_UNDEFINED;
+    msgq_9 = OS_OBJECT_ID_UNDEFINED;
+    msgq_10 = OS_OBJECT_ID_UNDEFINED;
+    msgq_id = OS_OBJECT_ID_UNDEFINED;
     
     return;
 } /* end InitializeQIds */  
@@ -563,8 +592,17 @@ void InitializeQIds(void)
 /* ***************************************************************************** */
 void InitializeBinIds(void)
 {
-    bin_0 = 99; bin_1 = 99; bin_2 = 99; bin_3 = 99; bin_4 = 99; bin_5 = 99; 
-    bin_6 = 99; bin_7 = 99; bin_8 = 99; bin_9 = 99; bin_10 = 99;
+    bin_0 = OS_OBJECT_ID_UNDEFINED;
+    bin_1 = OS_OBJECT_ID_UNDEFINED;
+    bin_2 = OS_OBJECT_ID_UNDEFINED;
+    bin_3 = OS_OBJECT_ID_UNDEFINED;
+    bin_4 = OS_OBJECT_ID_UNDEFINED;
+    bin_5 = OS_OBJECT_ID_UNDEFINED;
+    bin_6 = OS_OBJECT_ID_UNDEFINED;
+    bin_7 = OS_OBJECT_ID_UNDEFINED;
+    bin_8 = OS_OBJECT_ID_UNDEFINED;
+    bin_9 = OS_OBJECT_ID_UNDEFINED;
+    bin_10 = OS_OBJECT_ID_UNDEFINED;
     return;
 } /* end InitializeBinIds */
 
@@ -572,8 +610,17 @@ void InitializeBinIds(void)
 /* ***************************************************************************** */
 void InitializeMutIds(void)
 {
-    mut_0 = 99; mut_1 = 99; mut_2 = 99; mut_3 = 99; mut_4 = 99; mut_5 = 99;
-    mut_6 = 99; mut_7 = 99; mut_8 = 99; mut_9 = 99; mut_10 = 99;
+    mut_0 = OS_OBJECT_ID_UNDEFINED;
+    mut_1 = OS_OBJECT_ID_UNDEFINED;
+    mut_2 = OS_OBJECT_ID_UNDEFINED;
+    mut_3 = OS_OBJECT_ID_UNDEFINED;
+    mut_4 = OS_OBJECT_ID_UNDEFINED;
+    mut_5 = OS_OBJECT_ID_UNDEFINED;
+    mut_6 = OS_OBJECT_ID_UNDEFINED;
+    mut_7 = OS_OBJECT_ID_UNDEFINED;
+    mut_8 = OS_OBJECT_ID_UNDEFINED;
+    mut_9 = OS_OBJECT_ID_UNDEFINED;
+    mut_10 = OS_OBJECT_ID_UNDEFINED;
     return;
 } /* end InitializeMutIds */
 /* ***************************************************************************** */
@@ -663,14 +710,14 @@ void TestGenericQueries(void)
     memset(&State, 0, sizeof(State));
     OS_ForEachObjectOfType(OS_OBJECT_TYPE_OS_TASK, OS_OBJECT_CREATOR_ANY, TestForEachCallback, &State);
     UtAssert_True(State.NumInvocations == 1, "Task NumInvocations (%lu) == 1", (unsigned long)State.NumInvocations);
-    UtAssert_True(State.ObjList[0] == task_0_id, "Task ObjList[0] (%lx) == %lx",
-            (unsigned long)State.ObjList[0], (unsigned long)task_0_id);
+    UtAssert_True(OS_ObjectIdEqual(State.ObjList[0], task_0_id), "Task ObjList[0] (%lx) == %lx",
+            OS_ObjectIdToInteger(State.ObjList[0]), OS_ObjectIdToInteger(task_0_id));
 
     memset(&State, 0, sizeof(State));
     OS_ForEachObjectOfType(OS_OBJECT_TYPE_OS_BINSEM, OS_OBJECT_CREATOR_ANY, TestForEachCallback, &State);
     UtAssert_True(State.NumInvocations == 1, "BinSem NumInvocations (%lu) == 1", (unsigned long)State.NumInvocations);
-    UtAssert_True(State.ObjList[0] == bin_0, "BinSem ObjList[0] (%lx) == %lx",
-            (unsigned long)State.ObjList[0], (unsigned long)bin_0);
+    UtAssert_True(OS_ObjectIdEqual(State.ObjList[0], bin_0), "BinSem ObjList[0] (%lx) == %lx",
+            OS_ObjectIdToInteger(State.ObjList[0]), OS_ObjectIdToInteger(bin_0));
 
     memset(&State, 0, sizeof(State));
     OS_ForEachObjectOfType(OS_OBJECT_TYPE_OS_COUNTSEM, OS_OBJECT_CREATOR_ANY, TestForEachCallback, &State);
@@ -690,17 +737,21 @@ void TestGenericQueries(void)
 
     /* Test the OS_GetResourceName() API function */
     status = OS_GetResourceName(mut_0, ResourceName, 0);
-    UtAssert_True(status == OS_INVALID_POINTER, "OS_GetResourceName (%lx,%ld) == OS_INVALID_POINTER", (unsigned long)mut_0, (long)status);
+    UtAssert_True(status == OS_INVALID_POINTER, "OS_GetResourceName (%lx,%ld) == OS_INVALID_POINTER",
+            OS_ObjectIdToInteger(mut_0), (long)status);
 
     status = OS_GetResourceName(msgq_0, ResourceName, sizeof(ResourceName));
-    UtAssert_True(status == OS_SUCCESS, "OS_GetResourceName (%lx,%ld) == OS_SUCCESS", (unsigned long)msgq_0, (long)status);
+    UtAssert_True(status == OS_SUCCESS, "OS_GetResourceName (%lx,%ld) == OS_SUCCESS",
+            OS_ObjectIdToInteger(msgq_0), (long)status);
     UtAssert_StrCmp(ResourceName, "q 0", "Output value correct");
 
-    status = OS_GetResourceName(0, ResourceName, sizeof(ResourceName));
-    UtAssert_True(status == OS_ERR_INVALID_ID, "OS_GetResourceName (%lx,%ld) == OS_ERR_INVALID_ID", (unsigned long)msgq_0, (long)status);
+    status = OS_GetResourceName(OS_OBJECT_ID_UNDEFINED, ResourceName, sizeof(ResourceName));
+    UtAssert_True(status == OS_ERR_INVALID_ID, "OS_GetResourceName (%lx,%ld) == OS_ERR_INVALID_ID",
+            OS_ObjectIdToInteger(OS_OBJECT_ID_UNDEFINED), (long)status);
 
     status = OS_GetResourceName(bin_0, ResourceName, 1);
-    UtAssert_True(status == OS_ERR_NAME_TOO_LONG, "OS_GetResourceName (%lx,%ld) == OS_ERR_NAME_TOO_LONG", (unsigned long)bin_0, (long)status);
+    UtAssert_True(status == OS_ERR_NAME_TOO_LONG, "OS_GetResourceName (%lx,%ld) == OS_ERR_NAME_TOO_LONG",
+            OS_ObjectIdToInteger(bin_0), (long)status);
 
     /* The OS_DeleteAllObjects() should clean up every object created here. */
     OS_DeleteAllObjects();

@@ -39,21 +39,21 @@ void BinSemFlushTeardown(void);
 #define TASK_3_PRIORITY  120
 
 uint32 task_1_stack[TASK_STACK_SIZE];
-uint32 task_1_id; 
+osal_id_t task_1_id;
 uint32 task_1_failures;
 uint32 task_1_work;
 
 uint32 task_2_stack[TASK_STACK_SIZE];
-uint32 task_2_id; 
+osal_id_t task_2_id;
 uint32 task_2_failures;
 uint32 task_2_work;
 
 uint32 task_3_stack[TASK_STACK_SIZE];
-uint32 task_3_id;
+osal_id_t task_3_id;
 uint32 task_3_failures;
 uint32 task_3_work;
 
-uint32 bin_sem_id;
+osal_id_t bin_sem_id;
 
 void task_1(void)
 {
@@ -209,7 +209,8 @@ void BinSemFlushSetup(void)
    ** Create the binary semaphore
    */
    status = OS_BinSemCreate( &bin_sem_id, "BinSem1", 1, 0);
-   UtAssert_True(status == OS_SUCCESS, "BinSem1 create Id=%u Rc=%d", (unsigned int)bin_sem_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "BinSem1 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(bin_sem_id), (int)status);
 
    status = OS_BinSemGetInfo (bin_sem_id, &bin_sem_prop);
    UtAssert_True(status == OS_SUCCESS, "BinSem1 value=%d Rc=%d", (int)bin_sem_prop.value, (int)status);
@@ -226,13 +227,16 @@ void BinSemFlushSetup(void)
    ** Create the tasks
    */
    status = OS_TaskCreate( &task_1_id, "Task 1", task_1, task_1_stack, TASK_STACK_SIZE, TASK_1_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%u Rc=%d", (unsigned int)task_1_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(task_1_id), (int)status);
 
    status = OS_TaskCreate( &task_2_id, "Task 2", task_2, task_2_stack, TASK_STACK_SIZE, TASK_2_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 2 create Id=%u Rc=%d", (unsigned int)task_2_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Task 2 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(task_2_id), (int)status);
  
    status = OS_TaskCreate( &task_3_id, "Task 3", task_3, task_3_stack, TASK_STACK_SIZE, TASK_3_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 3 create Id=%u Rc=%d", (unsigned int)task_3_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Task 3 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(task_3_id), (int)status);
 
    /* 
    ** Delay, then check the status
