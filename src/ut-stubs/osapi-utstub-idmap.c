@@ -54,49 +54,6 @@ void OS_Unlock_Global(uint32 idtype)
 
 /*****************************************************************************
  *
- * Stub function for OS_ObjectIdMap()
- *
- *****************************************************************************/
-int32 OS_ObjectIdMap(uint32 idtype, uint32 idvalue, uint32 *result)
-{
-    int32 Status;
-
-    Status = UT_DEFAULT_IMPL(OS_ObjectIdMap);
-
-    if (Status == 0 &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdMap), result, sizeof(*result)) < sizeof(*result))
-    {
-        /* this needs to output something valid or code will break */
-        *result = idvalue;
-        UT_FIXUP_ID(*result, idtype);
-    }
-
-    return Status;
-}
-
-/*****************************************************************************
- *
- * Stub function for OS_ObjectIdUnMap()
- *
- *****************************************************************************/
-int32 OS_ObjectIdUnMap(uint32 id, uint32 idtype, uint32 *idvalue)
-{
-    int32 Status;
-
-    Status = UT_DEFAULT_IMPL(OS_ObjectIdUnMap);
-
-    if (Status == 0 &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdUnMap), idvalue, sizeof(*idvalue)) < sizeof(*idvalue))
-    {
-        /* this needs to output something valid or code will break */
-        *idvalue = id & 0xFFFF;
-    }
-
-    return Status;
-}
-
-/*****************************************************************************
- *
  * Stub function for OS_GetMaxForObjectType()
  *
  *****************************************************************************/
