@@ -114,27 +114,24 @@ void TestDatagramNetworkApi_Setup(void)
      */
 
     /* OS_SocketOpen */
-    expected = OS_SUCCESS;
     actual = OS_SocketOpen(&socket_id, OS_SocketDomain_INET6, OS_SocketType_DATAGRAM);
-    UtAssert_True(actual == expected, "OS_SocketOpen(NULL) (%ld) == OS_SUCCESS", (long)actual);
+    UtAssert_True(actual == OS_SUCCESS || OS_ERR_NOT_IMPLEMENTED, "OS_SocketOpen() (%ld) Passed", (long)actual);
     OS_close(socket_id);
 
     expected = OS_INVALID_POINTER;
     actual = OS_SocketOpen(NULL, OS_SocketDomain_INVALID, OS_SocketType_INVALID);
-    UtAssert_True(actual == expected, "OS_SocketOpen(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
+    UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_ERR_NOT_IMPLEMENTED;
     actual = OS_SocketOpen(&socket_id, OS_SocketDomain_MAX, OS_SocketType_MAX);
     UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_ERR_NOT_IMPLEMENTED", (long)actual);
 
     /* OS_SocketAddrInit */
-    expected = OS_SUCCESS;
     actual = OS_SocketAddrInit(&addr, OS_SocketDomain_INET6);
-    UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
+    UtAssert_True(actual == OS_SUCCESS || OS_ERR_NOT_IMPLEMENTED, "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
 
-    expected = OS_INVALID_POINTER;
     actual = OS_SocketAddrInit(NULL, OS_SocketDomain_INET6);
-    UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_INVALID_POINTER", (long)actual);
+    UtAssert_True(actual == OS_INVALID_POINTER || OS_ERR_NOT_IMPLEMENTED, "OS_SocketAddrInit() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_ERR_NOT_IMPLEMENTED;
     actual = OS_SocketAddrInit(&addr, OS_SocketDomain_INVALID);
@@ -368,7 +365,6 @@ void Server_Fn(void)
     uint32 connsock_id = 0;
     uint32 iter;
     OS_SockAddr_t addr;
-    //char Buf_send_s[4] = {0};
     char Buf_rcv_s[4] = {0};
     char Buf_trans[8] ={0};
     uint8 Buf_each_char_s[256] = {0};
@@ -568,10 +564,11 @@ void TestStreamNetworkApi(void)
     for (iter = 0; iter < 256; iter++)
         {           
            Buf_each_expected[iter] = iter;
-           UtAssert_True(Buf_each_char_rcv[iter] == Buf_each_expected[iter], "Buf (%d) == Buf_expected (%d)", Buf_each_char_rcv[iter], Buf_each_expected[iter]);
-
         }    
-  
+
+    UtAssert_True(memcmp(Buf_each_expected,Buf_each_char_rcv,sizeof(Buf_each_expected)) == 0, "buffer content match");
+
+
     /* Once connection socket is closed, verify that no data is recieved */
     expected = 0;
     actual = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), 10);
