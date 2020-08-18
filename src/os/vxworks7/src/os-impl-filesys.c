@@ -81,6 +81,14 @@ int32 OS_FileSysStartVolume_Impl (uint32 filesys_id)
     return_code = OS_ERR_NOT_IMPLEMENTED;
     switch(local->fstype)
     {
+    case OS_FILESYS_TYPE_FS_BASED:
+    {
+        /* pass through for FS based volumes, assume already mounted */
+        OS_DEBUG("OSAL: Mapping an FS_BASED disk at: %s\n",(unsigned long)local->system_mountpt );
+        return_code = OS_SUCCESS;
+        break;
+    }
+
     case OS_FILESYS_TYPE_VOLATILE_DISK:
     {
         OS_DEBUG("OSAL: Starting a RAM disk at: 0x%08lX\n",(unsigned long)local->address );
