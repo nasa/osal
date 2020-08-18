@@ -22,16 +22,16 @@
   * @brief Purpose:
   *  @details Provide version identifiers for cFS' Operating System Abstraction Layer
   *  See @ref cfsversions for version and build number and description
-  * 
+  *
   */
 #ifndef _osapi_version_h_
 #define _osapi_version_h_
 
 /*
- * Development Build Macro Definitions 
+ * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER 247 
-#define OS_BUILD_BASELINE "v5.0.0+dev"
+#define OS_BUILD_NUMBER 5 
+#define OS_BUILD_BASELINE "v5.1.0-rc1+dev"
 
 /*
  * Version Macro Definitions
@@ -43,26 +43,26 @@
 
 /*
  * Tools to construct version string
- */ 
+ */
 #define OS_STR_HELPER(x) #x /*!< @brief Helper function to concatenate strings from integer */
 #define OS_STR(x)        OS_STR_HELPER(x) /*!< @brief Helper function to concatenate strings from integer */
 
-/*! @brief Development Build Version Number. 
+/*! @brief Development Build Version Number.
  * @details Baseline git tag + Number of commits since baseline. @n
  * See @ref cfsversions for format differences between development and release versions.
  */
-#define OS_VERSION OS_BUILD_BASELINE OS_STR(OS_BUILD_NUMBER) 
+#define OS_VERSION OS_BUILD_BASELINE OS_STR(OS_BUILD_NUMBER)
 
 /*! @brief Development Build Version String.
  * @details Reports the current development build's baseline, number, and name. Also includes a note about the latest official version. @n
- * See @ref cfsversions for format differences between development and release versions. 
-*/     
+ * See @ref cfsversions for format differences between development and release versions.
+*/
 #define OS_VERSION_STRING                                                          \
     " OSAL Development Build\n"                                                    \
     " " OS_VERSION " (Codename: Bootes)\n"  /* Codename for current development */ \
     " Latest Official Version: osal v5.0.0" /* For full support please use official release version */
 
-/*! @brief Combines the revision components into a single value 
+/*! @brief Combines the revision components into a single value
  * @details Applications can check against this number @n
  * e.g. "#if OSAL_API_VERSION >= 40100" would check if some feature added in
 OSAL 4.1 is present.
