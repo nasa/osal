@@ -34,9 +34,6 @@
 typedef struct
 {
    char          dir_name[OS_MAX_PATH_LEN];
-#ifndef OSAL_OMIT_DEPRECATED
-   os_dirent_t   dirent_object;
-#endif
 } OS_dir_internal_record_t;
 
 

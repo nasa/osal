@@ -49,24 +49,6 @@
 #define OS_CHK_ONLY         0  /**< Unused, API takes bool */
 #define OS_REPAIR           1  /**< Unused, API takes bool */
 
-#ifndef OSAL_OMIT_DEPRECATED
-
-/** @defgroup OSVolType OSAL Volume Type Defines
- * @{
- */
-#define FS_BASED            0  /**< @deprecated Volume type FS based */
-#define RAM_DISK            1  /**< @deprecated Volume type RAM disk */
-#define EEPROM_DISK         2  /**< @deprecated Volume type EEPROM disk */
-#define ATA_DISK            3  /**< @deprecated Volume type ATA disk */
-/**@}*/
-
-/**
- * @brief Number of entries in the internal volume table
- * @deprecated
- */
-#define NUM_FILE_SYSTEMS    OS_MAX_FILE_SYSTEMS
-
-#endif
 /*
 ** Length of a Device and Volume name
 */
@@ -100,56 +82,7 @@
 #define OS_FS_ERR_DEVICE_NOT_FREE      (-107)  /**< @brief FS device not free */
 #define OS_FS_ERR_PATH_INVALID         (-108)  /**< @brief FS path invalid */
 
-#ifndef OSAL_OMIT_DEPRECATED
-/*
- * Map some codes used by the file API back to the generic counterparts
- * where there is overlap between them.  Do not duplicate error codes.
- */
-#define OS_FS_SUCCESS                  OS_SUCCESS               /**< @deprecated Successful execution */
-#define OS_FS_ERROR                    OS_ERROR                 /**< @deprecated Failed execution */
-#define OS_FS_ERR_INVALID_POINTER      OS_INVALID_POINTER       /**< @deprecated Invalid pointer */
-#define OS_FS_ERR_NO_FREE_FDS          OS_ERR_NO_FREE_IDS       /**< @deprecated No free IDs */
-#define OS_FS_ERR_INVALID_FD           OS_ERR_INVALID_ID        /**< @deprecated Invalid ID */
-#define OS_FS_UNIMPLEMENTED            OS_ERR_NOT_IMPLEMENTED   /**< @deprecated Not implemented */
-#endif
 /**@}*/
-
-#ifndef OSAL_OMIT_DEPRECATED
-/* This typedef is for OS_FS_GetErrorName(), to ensure
- * everyone is making an array of the same length
- *
- * Implementation note for developers:
- *
- * os_fs_err_name_t is now equivalent to the OSAL "os_err_name_t" typedef,
- * to preserve source code compatibility with anything using the OS_FS_GetErrorName api
- *
- * The sizes of strings in OSAL functions are built with os_fs_err_name_t's
- * limits in mind.  Always check the uses of os_fs_err_name_t when changing
- * os_err_name_t.
- */
-typedef os_err_name_t os_fs_err_name_t;
-
-/**
- * @brief Internal structure of the OS volume table for
- * mounted file systems and path translation
- *
- * @deprecated Use the OSAL file system API to register volumes
- */
-typedef struct
-{
-    char   DeviceName [OS_FS_DEV_NAME_LEN];
-    char   PhysDevName [OS_FS_PHYS_NAME_LEN];
-    uint32 VolumeType;
-    uint8  VolatileFlag;
-    uint8  FreeFlag;
-    uint8  IsMounted;
-    char   VolumeName [OS_FS_VOL_NAME_LEN];
-    char   MountPoint [OS_MAX_PATH_LEN];
-    uint32 BlockSize;
-
-} OS_VolumeInfo_t;
-
-#endif
 
 
 /** @brief OSAL file system info */
@@ -221,25 +154,8 @@ typedef struct
    char FileName[OS_MAX_FILE_NAME];
 } os_dirent_t;
 
-#ifndef OSAL_OMIT_DEPRECATED
-/*
- * Preserve the old type names for compatibility;
- * but instead of DIR* it is now just a void*
- */
-/* Provide something to implement os_dirp_t */
-typedef void * os_dirp_t; /**< @deprecated */
-#endif
-
 /** @brief Access filename part of the dirent structure */
 #define OS_DIRENTRY_NAME(x)   ((x).FileName)
-
-#ifndef OSAL_OMIT_DEPRECATED
-/*
- * Several old type names can be aliases for compatibility
- */
-typedef int32              os_fshealth_t;  /**< @deprecated type no longer used */
-typedef OS_file_prop_t     OS_FDTableEntry; /**< @deprecated Use OS_file_prop_t */
-#endif
 
 /*
  * Exported Functions
@@ -641,33 +557,6 @@ int32 OS_CloseFileByName(const char *Filename);
 /** @defgroup OSAPIDir OSAL Directory APIs
  * @{
  */
-
-#ifndef OSAL_OMIT_DEPRECATED
-/**
- * @brief Opens a directory for searching
- * @deprecated Replaced by OS_DirectoryOpen()
- */
-os_dirp_t       OS_opendir (const char *path);
-
-/*
- * @brief Closes an open directory
- * @deprecated Replaced by OS_DirectoryClose()
- */
-int32           OS_closedir(os_dirp_t directory);
-
-/*
- * @brief Rewinds an open directory
- * @deprecated Replaced by OS_DirectoryRewind()
- */
-void            OS_rewinddir(os_dirp_t directory);
-
-/*
- * @brief Reads the next object in the directory
- * @deprecated Replaced by OS_DirectoryRead()
- */
-os_dirent_t *   OS_readdir (os_dirp_t directory);
-
-#endif
 
 /*-------------------------------------------------------------------------------------*/
 /**

@@ -101,14 +101,6 @@ typedef struct
  */
 extern OS_BSP_GlobalData_t OS_BSP_Global;
 
-#ifndef OSAL_OMIT_DEPRECATED
-/*
- * Volume Table declaration (supplied by BSP; typically defined in bsp_voltab.c)
- * @deprecated Use OS File System API to register volumes.
- */
-extern OS_VolumeInfo_t OS_VolumeTable[OS_MAX_FILE_SYSTEMS];
-#endif
-
 /********************************************************************/
 /* INTERNAL BSP IMPLEMENTATION FUNCTIONS                            */
 /********************************************************************/

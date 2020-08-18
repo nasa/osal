@@ -335,9 +335,6 @@ uint32 OS_TaskGetId_Impl (void)
  *-----------------------------------------------------------------*/
 int32 OS_TaskGetInfo_Impl (uint32 task_id, OS_task_prop_t *task_prop)
 {
-#ifndef OSAL_OMIT_DEPRECATED
-    task_prop->OStask_id =  (uint32) OS_impl_task_table[task_id].id;
-#endif
     return OS_SUCCESS;
 
 } /* end OS_TaskGetInfo_Impl */

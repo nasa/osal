@@ -55,20 +55,6 @@ enum
  */
 OS_filesys_internal_record_t OS_filesys_table[LOCAL_NUM_OBJECTS];
 
-#ifndef OSAL_OMIT_DEPRECATED
-
-/*
- * This is the volume table reference. It is defined in the BSP/startup code for the board
- * In this implementation it is treated as a "const" -- any dynamic updates such as runtime
- * mount points are handled with an internal table.
- * 
- * Use of the static volume table is deprecated.  New applications should register the file
- * system mappings via runtime API calls instead (e.g. OS_FileSysAddFixedMap).
- */
-extern const OS_VolumeInfo_t OS_VolumeTable[];
-
-#endif
-
 /*
  * A string that should be the prefix of RAM disk volume names, which
  * provides a hint that the file system refers to a RAM disk.
@@ -104,152 +90,6 @@ bool OS_FileSys_FindVirtMountPoint(void *ref, uint32 local_id, const OS_common_r
     return (mplen > 0 && strncmp(target, rec->virtual_mountpt, mplen) == 0 &&
             (target[mplen] == '/' || target[mplen] == 0));
 } /* end OS_FileSys_FindVirtMountPoint */
-
-
-/*----------------------------------------------------------------
- *
- * Function: OS_FileSys_InitLocalFromVolTable
- *
- *  Purpose: Local helper routine, not part of OSAL API.
- *           Pre-populates a local filesys table entry from the classic OS_VolumeTable
- *           This provides backward compatibility with existing PSP/BSP implementations.
- * 
- *  This helper is not necessary when not using the OS_VolumeTable and therefore
- *  can be compiled-out when OSAL_OMIT_DEPRECATED is set.
- *
- *  Returns: OS_SUCCESS on success or appropriate error code.
- *
- *-----------------------------------------------------------------*/
-#ifndef OSAL_OMIT_DEPRECATED
-int32 OS_FileSys_InitLocalFromVolTable(OS_filesys_internal_record_t *local, const OS_VolumeInfo_t *Vol)
-{
-    int32 return_code = OS_SUCCESS;
-
-    if (isgraph((int)Vol->VolumeName[0]) &&
-            strcmp(Vol->DeviceName,"unused") != 0)
-    {
-        strncpy(local->volume_name, Vol->VolumeName, sizeof(local->volume_name)-1);
-        local->volume_name[sizeof(local->volume_name)-1] = 0;
-    }
-
-    if (isgraph((int)Vol->PhysDevName[0]) &&
-            strcmp(Vol->PhysDevName,"unused") != 0)
-    {
-        strncpy(local->system_mountpt, Vol->PhysDevName, sizeof(local->system_mountpt)-1);
-        local->system_mountpt[sizeof(local->system_mountpt)-1] = 0;
-    }
-
-    if (isgraph((int)Vol->MountPoint[0]) &&
-            strcmp(Vol->MountPoint,"unused") != 0)
-    {
-        strncpy(local->virtual_mountpt, Vol->MountPoint, sizeof(local->virtual_mountpt)-1);
-        local->virtual_mountpt[sizeof(local->virtual_mountpt)-1] = 0;
-    }
-
-    /*
-     * For filesystems marked as "FS_BASED" in the classic volume table, these
-     * must be mounted and accessible prior to starting OSAL.  OSAL does
-     * not directly manage these. The "FIXED" flag is used to indicate this.
-     *
-     * For other filesystem types, set the "fstype" field within the local
-     * record which serves as a hint or guidance to the implementation
-     * as to the proper filesystem to use when mounting or initializing the device.
-     *
-     * Note that the implementation may choose to ignore this guidance entirely,
-     * and instead use a system-specific method (such as an /etc/fstab file) which
-     * is fine.
-     */
-    if (Vol->VolumeType == FS_BASED)
-    {
-        local->fstype = OS_FILESYS_TYPE_FS_BASED;
-        local->flags |= OS_FILESYS_FLAG_IS_FIXED;
-    }
-    else if (Vol->VolumeType == RAM_DISK || Vol->VolatileFlag)
-    {
-        local->fstype = OS_FILESYS_TYPE_VOLATILE_DISK;
-    }
-    else if (Vol->VolumeType == ATA_DISK)
-    {
-        local->fstype = OS_FILESYS_TYPE_NORMAL_DISK;
-    }
-    else if (Vol->VolumeType == EEPROM_DISK)
-    {
-        local->fstype = OS_FILESYS_TYPE_MTD;
-    }
-
-    if (!Vol->FreeFlag)
-    {
-        local->flags |= OS_FILESYS_FLAG_IS_READY;
-    }
-
-    if (Vol->IsMounted)
-    {
-        local->flags |= OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM;
-    }
-
-    /* sanity check on mount points.
-     * Issue a warning and drop the entry if it does not check out. */
-    if ((local->flags & OS_FILESYS_FLAG_IS_READY) != 0 &&
-            local->volume_name[0] == 0)
-    {
-        OS_DEBUG("WARNING: Filesystem %s has invalid volume name\n", local->device_name);
-        return_code = OS_ERROR;
-    }
-
-    if ((local->flags & OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM) != 0 &&
-            local->system_mountpt[0] == 0)
-    {
-        OS_DEBUG("WARNING: Filesystem %s has invalid system mount point\n", local->device_name);
-        return_code = OS_ERROR;
-    }
-
-    if ((local->flags & OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL) != 0 &&
-            local->virtual_mountpt[0] == 0)
-    {
-        OS_DEBUG("WARNING: Filesystem %s has invalid virtual mount point\n", local->device_name);
-        return_code = OS_ERROR;
-    }
-
-    return return_code;
-} /* end OS_FileSys_InitLocalFromVolTable */
-#endif /* OSAL_OMIT_DEPRECATED */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_FileSys_SetupInitialParamsForDevice
- *
- *  Purpose: Local helper routine, not part of OSAL API.
- *           Pre-populates a local filesys table entry from the classic OS_VolumeTable
- *           This provides backward compatibility with existing PSP/BSP implementations.
- *
- *  This function is a no-op when OSAL_OMIT_DEPRECATED is set.
- *
- *  Returns: OS_SUCCESS on success or appropriate error code.
- *
- *-----------------------------------------------------------------*/
-int32 OS_FileSys_SetupInitialParamsForDevice(const char *devname, OS_filesys_internal_record_t *local)
-{
-    int32 return_code = OS_ERR_NAME_NOT_FOUND;
-
-#ifndef OSAL_OMIT_DEPRECATED
-    const OS_VolumeInfo_t *Vol;
-    uint32 i;
-
-    Vol = OS_VolumeTable;
-    for (i = 0; i < OS_MAX_FILE_SYSTEMS; i++)
-    {
-        if (strcmp(Vol->DeviceName, devname) == 0)
-        {
-            return_code = OS_FileSys_InitLocalFromVolTable(local, Vol);
-            break;
-        }
-
-        ++Vol;
-    }
-#endif /* OSAL_OMIT_DEPRECATED */
-
-    return return_code;
-} /* end OS_FileSys_SetupInitialParamsForDevice */
 
 
 /*----------------------------------------------------------------
@@ -300,10 +140,6 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char * f
         memset(local, 0, sizeof(*local));
         global->name_entry = local->device_name;
         strcpy(local->device_name, fsdevname);
-
-        /* Get the initial settings from the classic volume table.
-         * If this fails, that is OK - because passed-in values get preference anyway */
-        OS_FileSys_SetupInitialParamsForDevice(fsdevname, local);
 
         /* populate the VolumeName and BlockSize ahead of the Impl call,
          * so the implementation can reference this info if necessary */
@@ -379,59 +215,6 @@ int32 OS_FileSysAPI_Init(void)
     int32 return_code = OS_SUCCESS;
 
     memset(OS_filesys_table, 0, sizeof(OS_filesys_table));
-
-#ifndef OSAL_OMIT_DEPRECATED
-    uint32 i;
-    uint32 local_id;
-    OS_common_record_t *global;
-    OS_filesys_internal_record_t *local;
-    const OS_VolumeInfo_t *Vol;
-
-    /*
-     * For compatibility, migrate active entries of the BSP-provided OS_VolumeTable
-     * into the local filesystem table.  In this implementation, the OS_VolumeTable
-     * is not actually used at runtime, but it is referenced during this init
-     * to initially populate the tables.  This allows existing PSP/BSP packages
-     * to continue to work with their existing OS_VolumeTable definition.
-     *
-     * HOWEVER --- this table definition is problematic in regards to
-     * identify a valid/used entry vs. an unused entry.
-     *
-     * a) Checking "Free" flag is insufficient.  Old implementations would
-     *    consider (at least) the "DeviceName" as always valid and use this value,
-     *    regardless of the state of the "Free" flag.
-     * b) If an entry is all zero (i.e. from a memset() or an array index that was
-     *    not explicitly initialized), the "Free" flag becomes false and the
-     *    VolumeType field becomes "FS_BASED", so it aliases a valid entry.
-     * c) Checking for an empty string in various fields will not work either, as
-     *    many existing BSPs initialize the strings in unused fields to a string
-     *    such as "unused" or " " (a space).
-     *
-     * Most existing PSP packages seem to set the device name in unused entries
-     * to the special string "unused", whereas a valid entry starts with a slash (/).
-     */
-    Vol = OS_VolumeTable;
-    for (i = 0; i < OS_MAX_FILE_SYSTEMS && return_code == OS_SUCCESS; i++)
-    {
-        if (Vol->DeviceName[0] == '/' && Vol->FreeFlag == false)
-        {
-            OS_DEBUG("OSAL: Registering VolumeTable map for %s on %s\n", Vol->PhysDevName, Vol->MountPoint);
-            return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, Vol->DeviceName, &local_id, &global);
-            if (return_code == OS_SUCCESS)
-            {
-                local = &OS_filesys_table[local_id];
-
-                strncpy(local->device_name, Vol->DeviceName, sizeof(local->device_name)-1);
-                global->name_entry = OS_filesys_table[local_id].device_name;
-
-                return_code = OS_FileSys_InitLocalFromVolTable(&OS_filesys_table[local_id], Vol);
-
-                return_code = OS_ObjectIdFinalizeNew(return_code, global, NULL);
-            }
-        }
-        ++Vol;
-    }
-#endif
 
     return return_code;
 } /* end OS_FileSysAPI_Init */

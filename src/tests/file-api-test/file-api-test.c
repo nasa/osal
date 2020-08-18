@@ -500,10 +500,6 @@ void TestOpenReadCloseDir(void)
     int size;
     int fd1;
     int fd2;
-#if !defined(OSAL_OMIT_DEPRECATED)
-    os_dirp_t     dirp0;
-    os_dirent_t   *dirent_ptr0;
-#endif
     uint32 dirh;
     os_dirent_t dirent;
     
@@ -619,27 +615,6 @@ void TestOpenReadCloseDir(void)
     UtAssert_True(status >= OS_SUCCESS, "OS_DirectoryClose Rc=%d",(int)status);
 
         
-    /* use the deprecated API to read again (replaces test 3) */
-    /*
-     * Note the only test really does is to call readdir() until it returns NULL,
-     * this is already done in test 1 when using the abstraction API
-     */
-#if !defined(OSAL_OMIT_DEPRECATED)
-    dirp0 = OS_opendir(dir0);
-    UtAssert_True(dirp0 != NULL, "OS_opendir not null");
-
-    dirent_ptr0 = OS_readdir (dirp0);
-    UtAssert_True(dirent_ptr0 != NULL, "OS_readdir not null");
-    while (dirent_ptr0 != NULL)
-    {
-        dirent_ptr0 = OS_readdir(dirp0);
-    }
-
-    status = OS_closedir(dirp0);
-    UtAssert_True(status >= OS_SUCCESS, "OS_closedir Rc=%d",(int)status);
-
-#endif /* !defined(OSAL_OMIT_DEPRECATED) */
-
     /* Now test the open/ read close for one of the sub directories */
     
     /* New version of test 4 - uses full abstraction API */

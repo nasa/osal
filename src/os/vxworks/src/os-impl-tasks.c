@@ -427,23 +427,6 @@ uint32 OS_TaskGetId_Impl (void)
  *-----------------------------------------------------------------*/
 int32 OS_TaskGetInfo_Impl (uint32 task_id, OS_task_prop_t *task_prop)
 {
-#ifndef OSAL_OMIT_DEPRECATED
-    union
-    {
-        TASK_ID vxid;
-        uint32 value;
-    } u;
-
-    /*
-     * The "OStask_id" is a broken concept and only included for backward compatibility.
-     * On 32 bit platforms this should produce a backward-compatible result.
-     * But on 64 bit platforms this value should never be used.....
-     * using a union defeats a (valid) warning on 64-bit.
-     */
-    u.vxid = OS_impl_task_table[task_id].vxid;
-    task_prop->OStask_id = u.value;
-#endif
-
     return OS_SUCCESS;
 
 } /* end OS_TaskGetInfo_Impl */
