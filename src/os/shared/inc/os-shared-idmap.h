@@ -297,6 +297,19 @@ int32 OS_ObjectIdAllocateNew(uint32 idtype, const char *name, uint32 *array_inde
 int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record, uint32 *outid);
 
 /*----------------------------------------------------------------
+   Function: OS_ObjectIdFinalizeDelete
+
+    Purpose: Completes a delete operation
+             If the operation was successful, the OSAL ID is deleted and returned to the pool
+             If the operation was unsuccessful, no operation is performed.
+             The global table is unlocked for future operations
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *record);
+
+
+/*----------------------------------------------------------------
    Function: OS_ObjectIdRefcountDecr
 
     Purpose: Decrement the reference count

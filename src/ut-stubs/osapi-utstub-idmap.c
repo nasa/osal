@@ -181,6 +181,21 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record,
 
 /*****************************************************************************
  *
+ * Stub function for OS_ObjectIdFinalizeDelete()
+ *
+ *****************************************************************************/
+int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *record)
+{
+    int32 Status;
+
+    Status = UT_DEFAULT_IMPL_RC(OS_ObjectIdFinalizeDelete, operation_status);
+
+    return Status;
+}
+
+
+/*****************************************************************************
+ *
  * Stub function for OS_ObjectIdFindMatch()
  *
  *****************************************************************************/

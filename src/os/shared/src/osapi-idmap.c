@@ -769,6 +769,28 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record,
     return operation_status;
 } /* end OS_ObjectIdFinalizeNew */
 
+/*----------------------------------------------------------------
+   Function: OS_ObjectIdFinalizeDelete
+
+    Purpose: Helper routine, not part of OSAL public API.
+             See description in prototype
+ ------------------------------------------------------------------*/
+int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *record)
+{
+    uint32 idtype = OS_ObjectIdToType_Impl(record->active_id);
+
+    /* Clear the OSAL ID if successful - this returns the record to the pool */
+    if (operation_status == OS_SUCCESS)
+    {
+        record->active_id = 0;
+    }
+
+    /* Either way we must unlock the object type */
+    OS_Unlock_Global(idtype);
+
+    return operation_status;
+}
+
 
 /*----------------------------------------------------------------
  *

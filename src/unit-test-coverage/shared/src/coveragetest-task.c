@@ -167,9 +167,8 @@ void Test_OS_TaskExit(void)
 
     OS_TaskExit();
 
-    /* TaskExit should have cleared the active_id */
-    UtAssert_True(utrec.active_id == 0, "utrec.active_id (%lu) == 0",
-            (unsigned long)utrec.active_id);
+    /* TaskExit should have called OS_ObjectIdFinalizeDelete to clear the active_id */
+    UtAssert_STUB_COUNT(OS_ObjectIdFinalizeDelete, 1);
 }
 void Test_OS_TaskDelay(void)
 {
