@@ -116,9 +116,10 @@ static int32 OS_TaskPrepare(uint32 task_id, osal_task_entry *entrypt)
 
    if (return_code == OS_SUCCESS)
    {
-      OS_TaskRegister_Impl(task_id);
+       return_code = OS_TaskRegister_Impl(task_id);
    }
-   else
+
+   if (return_code != OS_SUCCESS)
    {
       *entrypt = NULL;
    }
