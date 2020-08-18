@@ -260,14 +260,8 @@ int32 OS_TimeBaseDelete(uint32 timer_id)
     {
         return_code = OS_TimeBaseDelete_Impl(local_id);
 
-        /* Free the entry in the master table now while still locked */
-        if (return_code == OS_SUCCESS)
-        {
-            /* Clear the ID to zero */
-            record->active_id = 0;
-        }
-
-        OS_Unlock_Global(OS_OBJECT_TYPE_OS_TIMEBASE);
+        /* Complete the operation via the common routine */
+        return_code = OS_ObjectIdFinalizeDelete(return_code, record);
     }
 
     return return_code;
