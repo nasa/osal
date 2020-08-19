@@ -240,7 +240,7 @@ void OS_Application_Run(void)
  */
 void OS_Application_Startup(void)
 {
-
+    UtTest_EarlyInit();
     UT_BSP_Setup();
 
     /*
