@@ -80,7 +80,11 @@
  */
 static inline unsigned long OS_ObjectIdToInteger(osal_id_t object_id)
 {
+#ifdef OSAL_OMIT_DEPRECATED
+    return object_id.v;
+#else
     return object_id;
+#endif
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -98,7 +102,11 @@ static inline unsigned long OS_ObjectIdToInteger(osal_id_t object_id)
  */
 static inline osal_id_t OS_ObjectIdFromInteger(unsigned long value)
 {
+#ifdef OSAL_OMIT_DEPRECATED
+    return (osal_id_t) {value};
+#else
     return (osal_id_t)value;
+#endif
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -119,7 +127,7 @@ static inline osal_id_t OS_ObjectIdFromInteger(unsigned long value)
  */
 static inline bool OS_ObjectIdEqual(osal_id_t object_id1, osal_id_t object_id2)
 {
-    return (object_id1 == object_id2);
+    return (OS_ObjectIdToInteger(object_id1) == OS_ObjectIdToInteger(object_id2));
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -140,7 +148,7 @@ static inline bool OS_ObjectIdEqual(osal_id_t object_id1, osal_id_t object_id2)
  */
 static inline bool OS_ObjectIdDefined(osal_id_t object_id)
 {
-    return (object_id != 0);
+    return (OS_ObjectIdToInteger(object_id) != 0);
 }
 
 /*-------------------------------------------------------------------------------------*/
