@@ -206,24 +206,6 @@ uint32 OS_GetMaxForObjectType(uint32 idtype);
 uint32 OS_GetBaseForObjectType(uint32 idtype);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdMap
-
-    Purpose: Convert an object serial number into a 32-bit OSAL ID of the given type
-
-    Returns: OS_SUCCESS on success, or relevant error code
- ------------------------------------------------------------------*/
-int32 OS_ObjectIdMap(uint32 idtype, uint32 idvalue, uint32 *result);
-
-/*----------------------------------------------------------------
-   Function: OS_ObjectIdUnMap
-
-    Purpose: Convert a 32-bit OSAL ID of the expected type into an object serial number
-
-    Returns: OS_SUCCESS on success, or relevant error code
- ------------------------------------------------------------------*/
-int32 OS_ObjectIdUnMap(uint32 id, uint32 idtype, uint32 *idvalue);
-
-/*----------------------------------------------------------------
    Function: OS_ObjectIdFindByName
 
     Purpose: Finds an entry in the global resource table matching the given name
