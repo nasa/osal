@@ -157,14 +157,8 @@ int32 OS_BinSemDelete (uint32 sem_id)
    {
       return_code = OS_BinSemDelete_Impl(local_id);
 
-      /* Free the entry in the master table now while still locked */
-      if (return_code == OS_SUCCESS)
-      {
-         /* Only need to clear the ID as zero is the "unused" flag */
-         record->active_id = 0;
-      }
-
-      OS_Unlock_Global(LOCAL_OBJID_TYPE);
+      /* Complete the operation via the common routine */
+      return_code = OS_ObjectIdFinalizeDelete(return_code, record);
    }
 
    return return_code;

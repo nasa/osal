@@ -459,12 +459,10 @@ int32 OS_TimerDelete(uint32 timer_id)
         local->next_ref = local_id;
         local->prev_ref = local_id;
 
-        /* Clear the ID to zero */
-        record->active_id = 0;
-
         OS_TimeBaseUnlock_Impl(local->timebase_ref);
 
-        OS_Unlock_Global(OS_OBJECT_TYPE_OS_TIMECB);
+        /* Complete the operation via the common routine */
+        return_code = OS_ObjectIdFinalizeDelete(return_code, record);
     }
 
     /*

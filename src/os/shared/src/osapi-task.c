@@ -45,6 +45,7 @@
  * User defined include files
  */
 #include "os-shared-task.h"
+#include "os-shared-common.h"
 #include "os-shared-idmap.h"
 
 
@@ -116,9 +117,10 @@ static int32 OS_TaskPrepare(uint32 task_id, osal_task_entry *entrypt)
 
    if (return_code == OS_SUCCESS)
    {
-      OS_TaskRegister_Impl(task_id);
+       return_code = OS_TaskRegister_Impl(task_id);
    }
-   else
+
+   if (return_code != OS_SUCCESS)
    {
       *entrypt = NULL;
    }
@@ -269,24 +271,14 @@ int32 OS_TaskDelete (uint32 task_id)
 
       return_code = OS_TaskDelete_Impl(local_id);
 
-      /* Free the entry in the master table now while still locked */
-      if (return_code == OS_SUCCESS)
-      {
-         /* Only need to clear the ID as zero is the "unused" flag */
-         record->active_id = 0;
-      }
-      else
-      {
-         delete_hook = NULL;
-      }
-
-      OS_Unlock_Global(LOCAL_OBJID_TYPE);
+      /* Complete the operation via the common routine */
+      return_code = OS_ObjectIdFinalizeDelete(return_code, record);
    }
 
    /*
    ** Call the thread Delete hook if there is one.
    */
-   if (delete_hook != NULL)
+   if (return_code == OS_SUCCESS && delete_hook != NULL)
    {
       delete_hook();
    }
@@ -312,9 +304,8 @@ void OS_TaskExit()
    task_id = OS_TaskGetId_Impl();
    if (OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &local_id, &record) == OS_SUCCESS)
    {
-      /* Only need to clear the ID as zero is the "unused" flag */
-      record->active_id = 0;
-      OS_Unlock_Global(LOCAL_OBJID_TYPE);
+      /* Complete the operation via the common routine */
+      OS_ObjectIdFinalizeDelete(OS_SUCCESS, record);
    }
 
    /* call the implementation */

@@ -206,24 +206,6 @@ uint32 OS_GetMaxForObjectType(uint32 idtype);
 uint32 OS_GetBaseForObjectType(uint32 idtype);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdMap
-
-    Purpose: Convert an object serial number into a 32-bit OSAL ID of the given type
-
-    Returns: OS_SUCCESS on success, or relevant error code
- ------------------------------------------------------------------*/
-int32 OS_ObjectIdMap(uint32 idtype, uint32 idvalue, uint32 *result);
-
-/*----------------------------------------------------------------
-   Function: OS_ObjectIdUnMap
-
-    Purpose: Convert a 32-bit OSAL ID of the expected type into an object serial number
-
-    Returns: OS_SUCCESS on success, or relevant error code
- ------------------------------------------------------------------*/
-int32 OS_ObjectIdUnMap(uint32 id, uint32 idtype, uint32 *idvalue);
-
-/*----------------------------------------------------------------
    Function: OS_ObjectIdFindByName
 
     Purpose: Finds an entry in the global resource table matching the given name
@@ -295,6 +277,19 @@ int32 OS_ObjectIdAllocateNew(uint32 idtype, const char *name, uint32 *array_inde
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
 int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record, uint32 *outid);
+
+/*----------------------------------------------------------------
+   Function: OS_ObjectIdFinalizeDelete
+
+    Purpose: Completes a delete operation
+             If the operation was successful, the OSAL ID is deleted and returned to the pool
+             If the operation was unsuccessful, no operation is performed.
+             The global table is unlocked for future operations
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *record);
+
 
 /*----------------------------------------------------------------
    Function: OS_ObjectIdRefcountDecr

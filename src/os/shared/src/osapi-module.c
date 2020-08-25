@@ -289,14 +289,8 @@ int32 OS_ModuleUnload ( uint32 module_id )
          */
         return_code = OS_ModuleUnload_Impl(local_id);
 
-        if (return_code == OS_SUCCESS)
-        {
-            /* Clear the ID to zero */
-            record->active_id = 0;
-        }
-
-        /* Unlock the global from OS_ObjectIdGetAndLock() */
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        /* Complete the operation via the common routine */
+        return_code = OS_ObjectIdFinalizeDelete(return_code, record);
     }
 
     return return_code;
