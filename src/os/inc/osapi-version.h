@@ -30,8 +30,8 @@
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER 5 
-#define OS_BUILD_BASELINE "v5.1.0-rc1+dev"
+#define OS_BUILD_NUMBER 12 
+#define OS_BUILD_BASELINE "v5.1.0-rc1"
 
 /*
  * Version Macro Definitions
@@ -51,7 +51,7 @@
  * @details Baseline git tag + Number of commits since baseline. @n
  * See @ref cfsversions for format differences between development and release versions.
  */
-#define OS_VERSION OS_BUILD_BASELINE OS_STR(OS_BUILD_NUMBER)
+#define OS_VERSION OS_BUILD_BASELINE "+dev" OS_STR(OS_BUILD_NUMBER) 
 
 /*! @brief Development Build Version String.
  * @details Reports the current development build's baseline, number, and name. Also includes a note about the latest official version. @n
