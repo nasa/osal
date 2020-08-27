@@ -64,20 +64,6 @@ enum
 OS_dir_internal_record_t    OS_dir_table          [LOCAL_NUM_OBJECTS];
 
 
-#ifndef OSAL_OMIT_DEPRECATED
-/*
- * A type safe(-ish) way of encoding the 32-bit dir ID inside a pointer.
- * This is because the old API used a DIR* object directly and this is intended
- * to retain compatibility with code written against that API.
- */
-typedef union
-{
-   os_dirp_t dirp;
-   uint32 dir_id;
-} OS_Dirp_Xltr_t;
-
-#endif
-
 
 /****************************************************************************************
                                   DIRECTORY API
@@ -285,93 +271,4 @@ int32  OS_rmdir (const char *path)
    return return_code;
 
 } /* end OS_rmdir */
-
-/*
- * Compatibility layers for old-style API
- */
-#ifndef OSAL_OMIT_DEPRECATED
-
-/*----------------------------------------------------------------
-
- * Function: OS_opendir
- *
- *  Purpose: Open a directory.  Deprecated function.
- *
- *-----------------------------------------------------------------*/
-os_dirp_t OS_opendir (const char *path)
-{
-    OS_Dirp_Xltr_t  dirdescptr;
-
-    dirdescptr.dirp = NULL;
-    OS_DirectoryOpen(&dirdescptr.dir_id, path);
-
-    return dirdescptr.dirp;
-} /* end OS_opendir */
-
-
-/*----------------------------------------------------------------
- *
- * Function: OS_closedir
- *
- *  Purpose: closes a directory.  Deprecated function.
- *
- *-----------------------------------------------------------------*/
-int32 OS_closedir (os_dirp_t directory)
-{
-    OS_Dirp_Xltr_t  dirdescptr;
-
-    if (directory == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-    dirdescptr.dirp = directory;
-
-    return (OS_DirectoryClose(dirdescptr.dir_id));
-} /* end OS_closedir */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_readdir
- *
- *  Purpose: read a directory.  Deprecated function.
- *
- *  NOTE: this function is not thread-safe, and it cannot ever be thread-safe,
- *  which is one reason why this is deprecated.
- *
- *-----------------------------------------------------------------*/
-os_dirent_t *OS_readdir (os_dirp_t directory)
-{
-    OS_Dirp_Xltr_t  dirdescptr;
-    uint32 array_idx;
-    os_dirent_t *tempptr;
-
-    dirdescptr.dirp = directory;
-    OS_ConvertToArrayIndex(dirdescptr.dir_id, &array_idx);
-
-    tempptr = &OS_dir_table[array_idx].dirent_object;
-    if (OS_DirectoryRead(dirdescptr.dir_id, tempptr) != OS_SUCCESS)
-    {
-        tempptr = NULL;
-    }
-
-    return tempptr;
-} /* end OS_readdir */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_rewinddir
- *
- *  Purpose: Rewinds the directory pointer.  Deprecated Function.
- *
- *-----------------------------------------------------------------*/
-void  OS_rewinddir (os_dirp_t directory )
-{
-    OS_Dirp_Xltr_t  dirdescptr;
-
-    dirdescptr.dirp = directory;
-
-    OS_DirectoryRewind(dirdescptr.dir_id);
-} /* end OS_rewinddir */
-
-#endif
 

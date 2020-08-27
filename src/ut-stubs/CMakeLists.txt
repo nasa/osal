@@ -23,10 +23,8 @@ add_library(ut_osapi_stubs STATIC
     osapi-utstub-errors.c
     osapi-utstub-file.c
     osapi-utstub-filesys.c
-    osapi-utstub-fpu.c
     osapi-utstub-heap.c
     osapi-utstub-idmap.c
-    osapi-utstub-interrupts.c
     osapi-utstub-module.c
     osapi-utstub-mutex.c
     osapi-utstub-network.c

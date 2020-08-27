@@ -25,17 +25,6 @@ set(VXWORKS_BASE_SRCLIST
     src/os-impl-timebase.c
 )
 
-# The FPU and interrupt modules are deprecated.
-# If the "OMIT_DEPRECATED" switch is set, then these are not built.
-if (NOT OMIT_DEPRECATED)
-    list(APPEND VXWORKS_BASE_SRCLIST
-        src/os-impl-fpu.c
-        src/os-impl-interrupts.c
-    )
-endif (NOT OMIT_DEPRECATED)
-
-
-
 
 # Use portable blocks for basic I/O
 set(VXWORKS_IMPL_SRCLIST

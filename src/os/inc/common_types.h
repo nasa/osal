@@ -96,44 +96,6 @@
   typedef size_t                                cpusize;
   typedef ptrdiff_t                             cpudiff;
 
-#ifndef OSAL_OMIT_DEPRECATED
-
-/*
- * Define the "osalbool" type for backward compatibility.
- * This will be removed in a future release.
- */
-typedef bool                                  osalbool; /**< @deprecated Use bool */
-
-/*
- * Boolean type for compatibility --
- *
- * Note it is a bad idea to typedef "bool" or "boolean" -- MANY other projects
- * and libraries also define a boolean type due to the lack of a standard bool in C89.
- * But calling it simply "bool" or "boolean" almost guarantees a namespace conflict
- * if trying to use OSAL with one of those other existing projects.
- *
- * RTEMS 4.11 no longer defines boolean type by default (deprecated) probably also
- * due to the high likelihood of name conflicts.
- *
- * In order to preserve compatibility for apps written against prior versions of
- * OSAL, the name "boolean" is typedefed as well, but this may be turned off
- * in a future version whenever appropriate.
- */
-
-#if (!defined(_USING_RTEMS_INCLUDES_) || !defined(RTEMS_DEPRECATED_TYPES))
-  typedef osalbool boolean; /**< @deprecated Use bool */
-#endif
-
-#ifndef TRUE              /* Boolean true */
-#define TRUE     true  /**< @deprecated Use true */
-#endif
-
-#ifndef FALSE              /* Boolean false */
-#define FALSE    false /**< @deprecated Use false */
-#endif
-
-
-#endif /* OSAL_OMIT_DEPRECATED */
 
 
 #ifndef NULL              /* pointer to nothing */

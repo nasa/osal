@@ -133,65 +133,6 @@ void Test_OS_rmdir(void)
 
 
 
-/*
- * Compatibility layers for old-style API
- */
-#ifndef OSAL_OMIT_DEPRECATED
-
-void Test_OS_opendir(void)
-{
-    /*
-     * Test Case For:
-     * os_dirp_t OS_opendir (const char *path)
-     */
-    os_dirp_t dirp = OS_opendir("Dir");
-
-    UtAssert_True(dirp != NULL, "OS_opendir() (%p) != NULL", dirp);
-}
-
-
-void Test_OS_closedir(void)
-{
-    /*
-     * Test Case For:
-     * int32 OS_closedir (os_dirp_t directory)
-     */
-    int32 expected = OS_SUCCESS;
-    os_dirp_t dirp = OS_opendir("Dir");
-    int32 actual = OS_closedir(dirp);
-
-    UtAssert_True(actual == expected, "OS_closedir() (%ld) == OS_SUCCESS", (long)actual);
-}
-
-
-void Test_OS_readdir(void)
-{
-    /*
-     * Test Case For:
-     * os_dirent_t *OS_readdir (os_dirp_t directory)
-     */
-    os_dirp_t dirp = OS_opendir("Dir");
-    os_dirent_t *dirent = OS_readdir(dirp);
-
-    UtAssert_True(dirent != NULL, "OS_readdir() (%p) != NULL", (void*)dirent);
-}
-
-
-void Test_OS_rewinddir(void)
-{
-    /*
-     * Test Case For:
-     * void  OS_rewinddir (os_dirp_t directory )
-     */
-    os_dirp_t dirp = OS_opendir("Dir");
-    OS_rewinddir(dirp);
-}
-
-
-#endif
-
-
-
 /* Osapi_Test_Setup
  *
  * Purpose:
@@ -226,12 +167,6 @@ void UtTest_Setup(void)
     ADD_TEST(OS_DirectoryRead);
     ADD_TEST(OS_DirectoryRewind);
     ADD_TEST(OS_rmdir);
-#ifndef OSAL_OMIT_DEPRECATED
-    ADD_TEST(OS_opendir);
-    ADD_TEST(OS_closedir);
-    ADD_TEST(OS_readdir);
-    ADD_TEST(OS_rewinddir);
-#endif
 }
 
 
