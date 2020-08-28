@@ -197,7 +197,7 @@ void UT_os_timerinit_test()
 **        (a) OS_ERR_NAME_TAKEN
 ** -----------------------------------------------------
 ** Test #5: No-free-ids condition
-**   1) Call this routine N number of times, where N = OS_MAX_TIMERS+1
+**   1) Call this routine N number of times, where N = OS_MAX_TIMEBASES+1
 **   2) Expect the returned value of the last call to be
 **        (a) OS_ERR_NO_FREE_IDS
 ** -----------------------------------------------------
@@ -295,7 +295,7 @@ void UT_os_timercreate_test()
     /*-----------------------------------------------------*/
     testDesc = "#5 No-free-IDs";
 
-    for (i=0; i <= OS_MAX_TIMERS; i++)
+    for (i=0; i <= OS_MAX_TIMEBASES; i++)
     {
         memset(tmpStr, '\0', sizeof(tmpStr));
         UT_os_sprintf(tmpStr, "Timer #%d", (int)i);
@@ -304,7 +304,7 @@ void UT_os_timercreate_test()
             break;
     }
 
-    if (i < OS_MAX_TIMERS)
+    if (i < OS_MAX_TIMEBASES)
     {
         testDesc = "#4 No-free-IDs - Timer-created failed";
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
