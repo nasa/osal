@@ -42,7 +42,7 @@ void TestFileSysAddFixedMapApi(void)
 {
     int32 expected;
     int32 actual;
-    uint32 fs_id;
+    osal_id_t fs_id;
     char translated_path[OS_MAX_LOCAL_PATH_LEN];
 
     /* Test for nominal inputs */
