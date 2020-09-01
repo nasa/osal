@@ -781,31 +781,6 @@ uint32 OS_TaskGetId_Impl (void)
  *-----------------------------------------------------------------*/
 int32 OS_TaskGetInfo_Impl (uint32 task_id, OS_task_prop_t *task_prop)
 {
-#ifndef OSAL_OMIT_DEPRECATED
-    size_t copy_sz;
-
-   /*
-    * NOTE - this is not really valid, as you can't officially
-    * cast a pthread_t to an integer
-    * (in fact this fails on cygwin where pthread_t is NOT an integral type)
-    *
-    * This is just a hack to fill the value with something.
-    * To be portable, the application should _NOT_ be using OStask_id for anything.
-    */
-   task_prop->OStask_id = 0;
-
-   if (sizeof(pthread_t) < sizeof(task_prop->OStask_id))
-   {
-      copy_sz = sizeof(pthread_t);
-   }
-   else
-   {
-      copy_sz = sizeof(task_prop->OStask_id);
-   }
-
-   memcpy(&task_prop->OStask_id, &OS_impl_task_table[task_id].id, copy_sz);
-#endif
-
    return OS_SUCCESS;
 } /* end OS_TaskGetInfo_Impl */
 

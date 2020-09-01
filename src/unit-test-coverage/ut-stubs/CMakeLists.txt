@@ -88,7 +88,6 @@ add_library(ut_osapi_impl_stubs STATIC EXCLUDE_FROM_ALL
     src/osapi-error-impl-stubs.c
     src/osapi-file-impl-stubs.c
     src/osapi-filesys-impl-stubs.c
-    src/osapi-fpu-impl-stubs.c
     src/osapi-heap-impl-stubs.c
     src/osapi-idmap-impl-stubs.c
     src/osapi-loader-impl-stubs.c

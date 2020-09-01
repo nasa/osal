@@ -82,21 +82,6 @@ typedef const struct
    const char *Module;
 } OS_static_symbol_record_t;
 
-#ifndef OSAL_OMIT_DEPRECATED
-/*
- * Define the former "OS_module_record_t" type as equivalent
- * to the OS_module_prop_t.  This is what the OS_ModuleInfo()
- * will output.  It used to be the same as the internal record
- * just without all the fields filled in.  This has been changed
- * to make it a separate structure, which will allow the internal
- * implementation to change without further changing the API.
- *
- * Ideally OS_module_record_t type should be removed to avoid confusion,
- * but this would break existing code that calls OS_ModuleInfo().
- */
-typedef OS_module_prop_t OS_module_record_t; /**< @deprecated Use OS_module_prop_t */
-#endif
-
 /** @defgroup OSAPILoader OSAL Dynamic Loader and Symbol APIs
  * @{
  */

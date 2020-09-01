@@ -177,12 +177,6 @@ set(BSP_SRCLIST
     src/bsp/shared/src/bsp_default_symtab.c
 )
 
-if (NOT OMIT_DEPRECATED)
-    list(APPEND BSP_SRCLIST
-        src/bsp/shared/src/bsp_default_voltab.c
-    )
-endif (NOT OMIT_DEPRECATED)
-
 # Define the external "osal_bsp" static library target
 add_library(osal_bsp STATIC
     ${BSP_SRCLIST}
@@ -262,16 +256,6 @@ if (OSAL_CONFIG_DEBUG_PRINTF)
         src/os/shared/src/osapi-debug.c
     )
 endif (OSAL_CONFIG_DEBUG_PRINTF)
-
-
-# The FPU and interrupt modules are deprecated.
-# If the "OMIT_DEPRECATED" switch is set, then these are not built.
-if (NOT OMIT_DEPRECATED)
-    list(APPEND OSAL_SRCLIST
-        src/os/shared/src/osapi-fpu.c
-        src/os/shared/src/osapi-interrupts.c
-    )
-endif (NOT OMIT_DEPRECATED)
 
 
 # Define the external "osal" static library target
