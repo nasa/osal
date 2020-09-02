@@ -83,7 +83,7 @@ OS_task_internal_record_t    OS_task_table          [LOCAL_NUM_OBJECTS];
  *
  *
  *-----------------------------------------------------------------*/
-static int32 OS_TaskPrepare(uint32 task_id, osal_task_entry *entrypt)
+static int32 OS_TaskPrepare(osal_id_t task_id, osal_task_entry *entrypt)
 {
    int32 return_code;
    uint32 local_id;
@@ -102,7 +102,7 @@ static int32 OS_TaskPrepare(uint32 task_id, osal_task_entry *entrypt)
       /*
        * Verify that we still appear to own the table entry
        */
-      if (OS_global_task_table[local_id].active_id != task_id)
+      if ( !OS_ObjectIdEqual(OS_global_task_table[local_id].active_id, task_id)  )
       {
           return_code = OS_ERR_INVALID_ID;
       }
@@ -140,7 +140,7 @@ static int32 OS_TaskPrepare(uint32 task_id, osal_task_entry *entrypt)
  *           call the user's intended entry point function.
  *
  *-----------------------------------------------------------------*/
-void OS_TaskEntryPoint(uint32 task_id)
+void OS_TaskEntryPoint(osal_id_t task_id)
 {
     osal_task_entry task_entry;
 
@@ -186,7 +186,7 @@ int32 OS_TaskAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry function_pointer,
+int32 OS_TaskCreate (osal_id_t *task_id, const char *task_name, osal_task_entry function_pointer,
                       uint32 *stack_pointer, uint32 stack_size, uint32 priority, uint32 flags)
 {
    OS_common_record_t *record;
@@ -255,7 +255,7 @@ int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry fun
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskDelete (uint32 task_id)
+int32 OS_TaskDelete (osal_id_t task_id)
 {
    OS_common_record_t *record;
    int32             return_code;
@@ -298,7 +298,7 @@ int32 OS_TaskDelete (uint32 task_id)
 void OS_TaskExit()
 {
    OS_common_record_t *record;
-   uint32 task_id;
+   osal_id_t task_id;
    uint32 local_id;
 
    task_id = OS_TaskGetId_Impl();
@@ -338,7 +338,7 @@ int32 OS_TaskDelay(uint32 millisecond)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskSetPriority (uint32 task_id, uint32 new_priority)
+int32 OS_TaskSetPriority (osal_id_t task_id, uint32 new_priority)
 {
    OS_common_record_t *record;
    int32             return_code;
@@ -401,11 +401,11 @@ int32 OS_TaskRegister (void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-uint32 OS_TaskGetId (void)
+osal_id_t OS_TaskGetId (void)
 {
    OS_common_record_t *record;
    uint32 local_id;
-   uint32 task_id;
+   osal_id_t task_id;
 
    task_id = OS_TaskGetId_Impl();
 
@@ -413,7 +413,7 @@ uint32 OS_TaskGetId (void)
     * If not it means we have some stale/leftover value */
    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, task_id, &local_id, &record) != OS_SUCCESS)
    {
-      task_id = 0;
+      task_id = OS_OBJECT_ID_UNDEFINED;
    }
 
    return(task_id);
@@ -428,7 +428,7 @@ uint32 OS_TaskGetId (void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskGetIdByName (uint32 *task_id, const char *task_name)
+int32 OS_TaskGetIdByName (osal_id_t *task_id, const char *task_name)
 {
    int32 return_code;
 
@@ -452,7 +452,7 @@ int32 OS_TaskGetIdByName (uint32 *task_id, const char *task_name)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskGetInfo (uint32 task_id, OS_task_prop_t *task_prop)
+int32 OS_TaskGetInfo (osal_id_t task_id, OS_task_prop_t *task_prop)
 {
    OS_common_record_t *record;
    int32             return_code;
@@ -501,7 +501,7 @@ int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer)
    OS_common_record_t *record;
    int32 return_code;
    uint32 local_id;
-   uint32 task_id;
+   osal_id_t task_id;
 
    task_id = OS_TaskGetId_Impl();
    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &local_id, &record);
@@ -526,7 +526,7 @@ int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskFindIdBySystemData(uint32 *task_id, const void *sysdata, size_t sysdata_size)
+int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t sysdata_size)
 {
     int32 return_code;
     OS_common_record_t *record;

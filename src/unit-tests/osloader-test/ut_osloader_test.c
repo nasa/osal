@@ -60,7 +60,7 @@
 
 void UtTest_Setup(void)
 {
-    uint32 fs_id;
+    osal_id_t fs_id;
 
     if (OS_API_Init() != OS_SUCCESS)
     {

@@ -125,7 +125,7 @@ static void *OS_PthreadTaskEntry(void *arg)
    OS_U32ValueWrapper_t local_arg;
 
    local_arg.opaque_arg = arg;
-   OS_TaskEntryPoint(local_arg.value); /* Never returns */
+   OS_TaskEntryPoint(local_arg.id); /* Never returns */
 
    return NULL;
 }
@@ -579,7 +579,7 @@ int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
     int32 return_code;
 
     arg.opaque_arg = NULL;
-    arg.value = OS_global_task_table[task_id].active_id;
+    arg.id = OS_global_task_table[task_id].active_id;
 
     return_code = OS_Posix_InternalTaskCreate_Impl(
            &OS_impl_task_table[task_id].id,
@@ -730,13 +730,13 @@ int32 OS_TaskSetPriority_Impl (uint32 task_id, uint32 new_priority)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskRegister_Impl(uint32 global_task_id)
+int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
 {
    int32 return_code;
    OS_U32ValueWrapper_t arg;
 
    arg.opaque_arg = 0;
-   arg.value = global_task_id;
+   arg.id = global_task_id;
 
    return_code = pthread_setspecific(POSIX_GlobalVars.ThreadKey, arg.opaque_arg);
    if (return_code == 0)
@@ -761,13 +761,13 @@ int32 OS_TaskRegister_Impl(uint32 global_task_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-uint32 OS_TaskGetId_Impl (void)
+osal_id_t OS_TaskGetId_Impl (void)
 {
    OS_U32ValueWrapper_t self_record;
 
    self_record.opaque_arg = pthread_getspecific(POSIX_GlobalVars.ThreadKey);
 
-   return(self_record.value);
+   return(self_record.id);
 } /* end OS_TaskGetId_Impl */
 
 

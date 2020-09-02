@@ -36,7 +36,6 @@
 #include "utbsp.h"
 
 #define NUMBER_OF_TIMERS 4
-#define TASK_1_ID         1
 #define TASK_1_STACK_SIZE 4096
 #define TASK_1_PRIORITY   101
 
@@ -49,13 +48,13 @@ uint32 TimerTestTaskStack[TASK_1_STACK_SIZE];
 uint32 timer_counter[NUMBER_OF_TIMERS];
 
 
-void counter_func(uint32 timer_id , void *arg)
+void counter_func(osal_id_t timer_id , void *arg)
 {
    uint32 *counter = arg;
    ++(*counter);
 }
 
-void null_func(uint32 timer_id , void *arg)
+void null_func(osal_id_t timer_id , void *arg)
 {
 
 }
@@ -73,11 +72,11 @@ void TestTimerAddApi(void)
     int32    expected;
     int32    tbc_ret_val;
     int32    tbs_ret_val;
-    uint32   timer_id;
-    uint32   time_base_id;
+    osal_id_t   timer_id;
+    osal_id_t   time_base_id;
     int      i = 0;
     int32    TimerStatus[NUMBER_OF_TIMERS];
-    uint32   TimerID[NUMBER_OF_TIMERS];
+    osal_id_t   TimerID[NUMBER_OF_TIMERS];
     char     TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1","TIMER2","TIMER3","TIMER4"};
     uint32   microsecs;
 
@@ -95,7 +94,8 @@ void TestTimerAddApi(void)
    for ( i = 0; i < NUMBER_OF_TIMERS; i++ )
    {
       TimerStatus[i] = OS_TimerAdd(&TimerID[i], TimerName[i], time_base_id, &counter_func, &timer_counter[i]);
-      UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d Created RC=%d ID=%d", i, (int)TimerStatus[i], (int)TimerID[i]);
+      UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d Created RC=%d ID=%lx", i, (int)TimerStatus[i],
+              OS_ObjectIdToInteger(TimerID[i]));
 
    }
 
@@ -188,7 +188,7 @@ void TestTimerAddApi(void)
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_ERR_INVALID_ID;
-    actual = OS_TimerAdd(&timer_id, "Timer", 1, null_func, NULL);
+    actual = OS_TimerAdd(&timer_id, "Timer", OS_OBJECT_ID_UNDEFINED, null_func, NULL);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
     expected = OS_TIMER_ERR_INVALID_ARGS;

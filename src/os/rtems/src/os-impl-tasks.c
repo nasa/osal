@@ -269,7 +269,7 @@ int32 OS_TaskMatch_Impl(uint32 task_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskRegister_Impl (uint32 global_task_id)
+int32 OS_TaskRegister_Impl (osal_id_t global_task_id)
 {
     /*
      * This is supposed to maintain the "reverse lookup" information used

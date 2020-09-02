@@ -56,11 +56,11 @@ void Test_OS_BinSemCreate(void)
      *          uint32 sem_initial_value, uint32 options)
      */
     int32 expected = OS_SUCCESS;
-    uint32 objid = 0xFFFFFFFF;
+    osal_id_t objid;
     int32 actual = OS_BinSemCreate(&objid, "UT", 0,0);
 
     UtAssert_True(actual == expected, "OS_BinSemCreate() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(objid != 0, "objid (%lu) != 0", (unsigned long)objid);
+    OSAPI_TEST_OBJID(objid,!=,OS_OBJECT_ID_UNDEFINED);
 
     OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(NULL, NULL, 0, 0), OS_INVALID_POINTER);
     UT_SetForceFail(UT_KEY(OCS_strlen), 10 + OS_MAX_API_NAME);
@@ -76,7 +76,7 @@ void Test_OS_BinSemDelete(void)
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
 
-    actual = OS_BinSemDelete(1);
+    actual = OS_BinSemDelete(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_BinSemDelete() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -90,7 +90,7 @@ void Test_OS_BinSemGive(void)
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
 
-    actual = OS_BinSemGive(1);
+    actual = OS_BinSemGive(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_BinSemGive() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -105,7 +105,7 @@ void Test_OS_BinSemTake(void)
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
 
-    actual = OS_BinSemTake(1);
+    actual = OS_BinSemTake(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_BinSemTake() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -119,7 +119,7 @@ void Test_OS_BinSemFlush(void)
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
 
-    actual = OS_BinSemFlush(1);
+    actual = OS_BinSemFlush(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_BinSemFlush() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -133,7 +133,7 @@ void Test_OS_BinSemTimedWait(void)
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
 
-    actual = OS_BinSemTimedWait(1,1);
+    actual = OS_BinSemTimedWait(UT_OBJID_1,1);
 
     UtAssert_True(actual == expected, "OS_BinSemTimedWait() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -147,12 +147,12 @@ void Test_OS_BinSemGetIdByName(void)
      */
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
-    uint32 objid = 0;
+    osal_id_t objid;
 
     UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_BinSemGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_BinSemGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(objid != 0, "OS_BinSemGetIdByName() objid (%lu) != 0", (unsigned long)objid);
+    OSAPI_TEST_OBJID(objid,!=,OS_OBJECT_ID_UNDEFINED);
     UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
@@ -177,20 +177,19 @@ void Test_OS_BinSemGetInfo(void)
     OS_common_record_t *rptr = &utrec;
 
     memset(&utrec, 0, sizeof(utrec));
-    utrec.creator = 111;
+    utrec.creator = UT_OBJID_OTHER;
     utrec.name_entry = "ABC";
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
-    actual = OS_BinSemGetInfo(1, &prop);
+    actual = OS_BinSemGetInfo(UT_OBJID_1, &prop);
 
     UtAssert_True(actual == expected, "OS_BinSemGetInfo() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(prop.creator == 111, "prop.creator (%lu) == 111",
-            (unsigned long)prop.creator);
+    OSAPI_TEST_OBJID(prop.creator,==,UT_OBJID_OTHER);
     UtAssert_True(strcmp(prop.name, "ABC") == 0, "prop.name (%s) == ABC",
             prop.name);
 
 
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo(0, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
 }
 
 

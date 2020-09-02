@@ -74,8 +74,8 @@ void UT_os_queue_create_test()
     int i = 0;
     int32 res = 0;
     const char* testDesc;
-    uint32  queue_id = 0;
-    uint32  queue_id2 = 0;
+    osal_id_t  queue_id;
+    osal_id_t  queue_id2;
     char    queue_name[UT_OS_NAME_BUFF_SIZE];
     char    long_queue_name[UT_OS_NAME_BUFF_SIZE];
     uint32  test_setup_invalid = 0;
@@ -206,12 +206,12 @@ void UT_os_queue_delete_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32  queue_id;
+    osal_id_t  queue_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_QueueDelete(0);
+    res = OS_QueueDelete(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -221,7 +221,7 @@ void UT_os_queue_delete_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_QueueDelete(99999);
+    res = OS_QueueDelete(UT_OBJID_INCORRECT);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -271,7 +271,7 @@ void UT_os_queue_get_test()
 {
     int32              res = 0;
     const char*        testDesc;
-    uint32             queue_id;
+    osal_id_t          queue_id;
     uint32             queue_data_out;
     uint32             queue_data_in;
     uint32             size_copied;
@@ -280,7 +280,7 @@ void UT_os_queue_get_test()
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_QueueGet(0, (void *)&queue_data_in, 4, &size_copied, OS_CHECK);
+    res = OS_QueueGet(OS_OBJECT_ID_UNDEFINED, (void *)&queue_data_in, 4, &size_copied, OS_CHECK);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -290,7 +290,7 @@ void UT_os_queue_get_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_QueueGet(99999, (void *)&queue_data_in, 4, &size_copied, OS_CHECK);
+    res = OS_QueueGet(UT_OBJID_INCORRECT, (void *)&queue_data_in, 4, &size_copied, OS_CHECK);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -524,14 +524,14 @@ void UT_os_queue_put_test()
 {
     int32              res = 0;
     const char*        testDesc;
-    uint32             queue_id;
+    osal_id_t          queue_id;
     uint32             queue_data_out = 0;
     int                i;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_QueuePut(0, (void *)&queue_data_out, 4, 0);
+    res = OS_QueuePut(OS_OBJECT_ID_UNDEFINED, (void *)&queue_data_out, 4, 0);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -541,7 +541,7 @@ void UT_os_queue_put_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_QueuePut(99999, (void *)&queue_data_out, 4, 0);
+    res = OS_QueuePut(UT_OBJID_INCORRECT, (void *)&queue_data_out, 4, 0);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -639,7 +639,7 @@ void UT_os_queue_get_id_by_name_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32  queue_id;
+    osal_id_t  queue_id;
     char  long_queue_name[UT_OS_NAME_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
@@ -728,13 +728,13 @@ void UT_os_queue_get_info_test()
 {
     int32              res = 0;
     const char*        testDesc;
-    uint32             queue_id;
+    osal_id_t          queue_id;
     OS_queue_prop_t    queue_prop;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_QueueGetInfo(0,&queue_prop);
+    res = OS_QueueGetInfo(OS_OBJECT_ID_UNDEFINED,&queue_prop);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -744,7 +744,7 @@ void UT_os_queue_get_info_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_QueueGetInfo(99999, &queue_prop);
+    res = OS_QueueGetInfo(UT_OBJID_INCORRECT, &queue_prop);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else

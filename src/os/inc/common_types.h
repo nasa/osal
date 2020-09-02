@@ -96,6 +96,11 @@
   typedef size_t                                cpusize;
   typedef ptrdiff_t                             cpudiff;
 
+  /**
+   * A type to be used for OSAL resource identifiers.
+   */
+  typedef uint32_t                              osal_id_t;
+
 
 
 #ifndef NULL              /* pointer to nothing */

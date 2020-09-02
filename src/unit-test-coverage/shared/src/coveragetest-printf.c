@@ -62,7 +62,7 @@ void Test_OS_printf(void)
     uint32 CallCount = 0;
 
     /* catch case where OS_printf called before init */
-    OS_SharedGlobalVars.PrintfConsoleId = 0;
+    OS_SharedGlobalVars.PrintfConsoleId = OS_OBJECT_ID_UNDEFINED;
     OS_SharedGlobalVars.Initialized = false;
     OS_printf("UnitTest1");
     UtAssert_True(OS_console_table[0].WritePos == 0, "WritePos (%lu) >= 0", (unsigned long)OS_console_table[0].WritePos);

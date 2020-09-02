@@ -66,11 +66,11 @@ void Test_OS_DirectoryOpen(void)
      * int32 OS_DirectoryOpen(uint32 *dir_id, const char *path)
      */
     int32 expected = OS_SUCCESS;
-    uint32 objid = 0xFFFFFFFF;
+    osal_id_t objid;
     int32 actual = OS_DirectoryOpen(&objid, "Dir");
 
     UtAssert_True(actual == expected, "OS_DirectoryOpen() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(objid != 0, "objid (%lu) != 0", (unsigned long)objid);
+    OSAPI_TEST_OBJID(objid,!=,OS_OBJECT_ID_UNDEFINED);
 
     OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(NULL, NULL), OS_INVALID_POINTER);
 }
@@ -83,7 +83,7 @@ void Test_OS_DirectoryClose(void)
      * int32 OS_DirectoryClose(uint32 dir_id)
      */
     int32 expected = OS_SUCCESS;
-    int32 actual = OS_DirectoryClose(1);
+    int32 actual = OS_DirectoryClose(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_DirectoryClose() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -98,11 +98,11 @@ void Test_OS_DirectoryRead(void)
     int32 expected = OS_SUCCESS;
     os_dirent_t dirent;
 
-    int32 actual = OS_DirectoryRead(1, &dirent);
+    int32 actual = OS_DirectoryRead(UT_OBJID_1, &dirent);
 
     UtAssert_True(actual == expected, "OS_DirectoryRead() (%ld) == OS_SUCCESS", (long)actual);
 
-    OSAPI_TEST_FUNCTION_RC(OS_DirectoryRead(1, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryRead(UT_OBJID_1, NULL), OS_INVALID_POINTER);
 }
 
 
@@ -113,7 +113,7 @@ void Test_OS_DirectoryRewind(void)
      * int32 OS_DirectoryRewind(uint32 dir_id)
      */
     int32 expected = OS_SUCCESS;
-    int32 actual = OS_DirectoryRewind(1);
+    int32 actual = OS_DirectoryRewind(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_DirectoryRewind() (%ld) == OS_SUCCESS", (long)actual);
 }

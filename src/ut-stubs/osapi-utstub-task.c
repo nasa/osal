@@ -53,7 +53,7 @@ UT_DEFAULT_STUB(OS_TaskAPI_Init,(void))
 **        Returns either OS_SUCCESS or OS_ERROR.
 **
 ******************************************************************************/
-int32 OS_TaskCreate(uint32 *task_id, const char *task_name,
+int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name,
                     osal_task_entry function_pointer,
                     uint32 *stack_pointer,
                     uint32 stack_size, uint32 priority,
@@ -77,7 +77,7 @@ int32 OS_TaskCreate(uint32 *task_id, const char *task_name,
     }
     else
     {
-        *task_id = 0xDEADBEEFU;
+        *task_id = UT_STUB_FAKE_OBJECT_ID;
     }
 
 
@@ -100,7 +100,7 @@ int32 OS_TaskCreate(uint32 *task_id, const char *task_name,
 **        Returns either OS_SUCCESS or OS_ERROR.
 **
 ******************************************************************************/
-int32 OS_TaskDelete(uint32 task_id)
+int32 OS_TaskDelete(osal_id_t task_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskDelete), task_id);
 
@@ -171,7 +171,7 @@ int32 OS_TaskDelay(uint32 millisecond)
  * Stub function for OS_TaskSetPriority()
  *
  *****************************************************************************/
-int32 OS_TaskSetPriority (uint32 task_id, uint32 new_priority)
+int32 OS_TaskSetPriority (osal_id_t task_id, uint32 new_priority)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskSetPriority), task_id);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskSetPriority), new_priority);
@@ -224,13 +224,13 @@ int32 OS_TaskRegister(void)
 **        Returns 1 unless an override value is configured.
 **
 ******************************************************************************/
-uint32 OS_TaskGetId(void)
+osal_id_t OS_TaskGetId(void)
 {
-    int32 TaskId;
+    osal_id_t TaskId;
+    int32 status;
 
-    TaskId = 1;
-    UT_FIXUP_ID(TaskId, UT_OBJTYPE_TASK);
-    TaskId = UT_DEFAULT_IMPL_RC(OS_TaskGetId, TaskId);
+    status = UT_DEFAULT_IMPL_RC(OS_TaskGetId, 1);
+    UT_ObjIdCompose(status, UT_OBJTYPE_TASK, &TaskId);
 
     return TaskId;
 }
@@ -241,7 +241,7 @@ uint32 OS_TaskGetId(void)
  * Stub function for OS_TaskGetIdByName()
  *
  *****************************************************************************/
-int32 OS_TaskGetIdByName (uint32 *task_id, const char *task_name)
+int32 OS_TaskGetIdByName (osal_id_t *task_id, const char *task_name)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_TaskGetIdByName), task_id);
     UT_Stub_RegisterContext(UT_KEY(OS_TaskGetIdByName), task_name);
@@ -253,8 +253,7 @@ int32 OS_TaskGetIdByName (uint32 *task_id, const char *task_name)
     if (status == OS_SUCCESS &&
             UT_Stub_CopyToLocal(UT_KEY(OS_TaskGetIdByName), task_id, sizeof(*task_id)) < sizeof(*task_id))
     {
-        *task_id =  1;
-        UT_FIXUP_ID(*task_id, UT_OBJTYPE_TASK);
+        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, task_id);
     }
 
     return status;
@@ -278,7 +277,7 @@ int32 OS_TaskGetIdByName (uint32 *task_id, const char *task_name)
 **        Returns either OS_INVALID_POINTER or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_TaskGetInfo(uint32 task_id, OS_task_prop_t *task_prop)
+int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskGetInfo), task_id);
     UT_Stub_RegisterContext(UT_KEY(OS_TaskGetInfo), task_prop);
@@ -290,8 +289,7 @@ int32 OS_TaskGetInfo(uint32 task_id, OS_task_prop_t *task_prop)
     if (status == OS_SUCCESS &&
             UT_Stub_CopyToLocal(UT_KEY(OS_TaskGetInfo), task_prop, sizeof(*task_prop)) < sizeof(*task_prop))
     {
-        task_prop->creator = 1;
-        UT_FIXUP_ID(task_prop->creator, UT_OBJTYPE_TASK);
+        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &task_prop->creator);
         task_prop->stack_size = 100;
         task_prop->priority = 150;
         strncpy(task_prop->name, "UnitTest", OS_MAX_API_NAME - 1);
@@ -313,7 +311,7 @@ int32 OS_TaskGetInfo(uint32 task_id, OS_task_prop_t *task_prop)
 **        The return value instructed by the test case setup
 **
 ******************************************************************************/
-int32 OS_TaskFindIdBySystemData(uint32 *task_id, const void *sysdata, size_t sysdata_size)
+int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t sysdata_size)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_TaskFindIdBySystemData), task_id);
     UT_Stub_RegisterContext(UT_KEY(OS_TaskFindIdBySystemData), sysdata);
@@ -326,8 +324,7 @@ int32 OS_TaskFindIdBySystemData(uint32 *task_id, const void *sysdata, size_t sys
     if (status == OS_SUCCESS &&
             UT_Stub_CopyToLocal(UT_KEY(OS_TaskFindIdBySystemData), task_id, sizeof(*task_id)) < sizeof(*task_id))
     {
-        *task_id = 1;
-        UT_FIXUP_ID(*task_id, UT_OBJTYPE_TASK);
+        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, task_id);
     }
 
     return status;
@@ -357,7 +354,7 @@ int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer)
  * the low level implementation that uses the shared layer.
  *
  *****************************************************************************/
-void OS_TaskEntryPoint(uint32 task_id)
+void OS_TaskEntryPoint(osal_id_t task_id)
 {
     UT_DEFAULT_IMPL(OS_TaskEntryPoint);
 }

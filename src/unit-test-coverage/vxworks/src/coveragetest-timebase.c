@@ -101,6 +101,7 @@ void Test_OS_TimeBaseCreate_Impl(void)
     /* Test Case For:
      * int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
      */
+    osal_id_t id;
 
     /*
      * Test paths though the signal number assignment.
@@ -108,7 +109,8 @@ void Test_OS_TimeBaseCreate_Impl(void)
      * This should be done first as it will assign the "external_sync"
      * and therefore cause future calls to skip this block.
      */
-    OS_global_timebase_table[1].active_id = 0x1;
+    memset(&id, 0x01, sizeof(id));
+    OS_global_timebase_table[1].active_id = id;
     UT_TimeBaseTest_Setup(1,OCS_SIGRTMIN, false);
     UT_SetForceFail(UT_KEY(OCS_sigismember), true);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(0), OS_TIMER_ERR_UNAVAILABLE);
@@ -165,8 +167,10 @@ void Test_OS_VxWorks_SigWait(void)
      */
     int signo = OCS_SIGRTMIN;
     struct OCS_itimerspec config_value;
+    osal_id_t id;
 
-    OS_global_timebase_table[0].active_id = 0x12345;
+    memset(&id, 0x02, sizeof(id));
+    OS_global_timebase_table[0].active_id = id;
     OS_timebase_table[0].nominal_start_time = 8888;
     OS_timebase_table[0].nominal_interval_time = 5555;
 
@@ -184,7 +188,7 @@ void Test_OS_VxWorks_SigWait(void)
     OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(0), 2222222);
 
     UT_TimeBaseTest_Setup(0, 0, false);
-    OS_global_timebase_table[0].active_id = 0;
+    OS_global_timebase_table[0].active_id = OS_OBJECT_ID_UNDEFINED;
     OS_timebase_table[0].nominal_interval_time = 0;
 }
 

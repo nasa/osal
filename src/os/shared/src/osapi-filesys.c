@@ -228,7 +228,7 @@ int32 OS_FileSysAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysAddFixedMap(uint32 *filesys_id, const char *phys_path, const char *virt_path)
+int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const char *virt_path)
 {
     OS_common_record_t *global;
     OS_filesys_internal_record_t *local;
@@ -394,7 +394,7 @@ int32 OS_rmfs (const char *devname)
         if (return_code == OS_SUCCESS)
         {
            /* Only need to clear the ID as zero is the "unused" flag */
-           global->active_id = 0;
+           global->active_id = OS_OBJECT_ID_UNDEFINED;
         }
 
         OS_Unlock_Global(LOCAL_OBJID_TYPE);
@@ -832,7 +832,7 @@ int32 OS_GetFsInfo(os_fsinfo_t  *filesys_info)
 
    for ( i = 0; i < OS_MAX_NUM_OPEN_FILES; i++ )
    {
-      if ( OS_global_stream_table[i].active_id == 0)
+      if ( !OS_ObjectIdDefined(OS_global_stream_table[i].active_id) )
       {
          filesys_info->FreeFds++;
       }
@@ -844,7 +844,7 @@ int32 OS_GetFsInfo(os_fsinfo_t  *filesys_info)
 
    for ( i = 0; i < OS_MAX_FILE_SYSTEMS; i++ )
    {
-       if ( OS_global_filesys_table[i].active_id == 0)
+       if ( !OS_ObjectIdDefined(OS_global_filesys_table[i].active_id) )
        {
            filesys_info->FreeVolumes++;
        }

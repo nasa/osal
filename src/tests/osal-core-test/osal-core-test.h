@@ -221,29 +221,29 @@ void task_20(void);
 /* Global Data */
 
 /* Task Id's for testing the number of tasks that can be created */
-uint32 task_0_id, task_1_id, task_2_id, task_3_id, task_4_id, task_5_id;
-uint32 task_6_id, task_7_id, task_8_id, task_9_id, task_10_id, task_11_id;
-uint32 task_12_id, task_13_id, task_14_id, task_15_id, task_16_id, task_17_id;
-uint32 task_18_id, task_19_id, task_20_id;
+osal_id_t task_0_id, task_1_id, task_2_id, task_3_id, task_4_id, task_5_id;
+osal_id_t task_6_id, task_7_id, task_8_id, task_9_id, task_10_id, task_11_id;
+osal_id_t task_12_id, task_13_id, task_14_id, task_15_id, task_16_id, task_17_id;
+osal_id_t task_18_id, task_19_id, task_20_id;
 /* uint32 extra_id; */
 
-uint32 mutex_id; 
+osal_id_t mutex_id;
 
 /* Queue ID for testing the number of queues that can be created */
-uint32 msgq_0, msgq_1, msgq_2, msgq_3, msgq_4, msgq_5, msgq_6;
-uint32 msgq_7, msgq_8, msgq_9;
-uint32 msgq_10;
+osal_id_t msgq_0, msgq_1, msgq_2, msgq_3, msgq_4, msgq_5, msgq_6;
+osal_id_t msgq_7, msgq_8, msgq_9;
+osal_id_t msgq_10;
 
-uint32 msgq_id;
-
-
-uint32 bin_0, bin_1, bin_2, bin_3, bin_4,bin_5, bin_6;
-uint32 bin_7, bin_8, bin_9, bin_10;
+osal_id_t msgq_id;
 
 
-uint32 mut_0, mut_1, mut_2, mut_3, mut_4,mut_5, mut_6;
-uint32 mut_7, mut_8 ,mut_9, mut_10;
-uint32 mutex_id;
+osal_id_t bin_0, bin_1, bin_2, bin_3, bin_4,bin_5, bin_6;
+osal_id_t bin_7, bin_8, bin_9, bin_10;
+
+
+osal_id_t mut_0, mut_1, mut_2, mut_3, mut_4,mut_5, mut_6;
+osal_id_t mut_7, mut_8 ,mut_9, mut_10;
+osal_id_t mutex_id;
 
 uint32 shared_resource_x;
 

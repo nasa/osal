@@ -53,7 +53,7 @@ void Test_OS_ShellOutputToFile_Impl(void)
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_shellGenericInit)) == 1, "shellGenericInit() called");
 
     /* failure to open the output file */
-    UT_SetForceFail(UT_KEY(OS_creat), OS_ERROR);
+    UT_SetForceFail(UT_KEY(OS_OpenCreate), OS_ERROR);
     expected = OS_ERROR;
     actual = OS_ShellOutputToFile_Impl(0, "TestCmd");
     UtAssert_True(actual == expected, "OS_ShellOutputToFile_Impl() (%ld) == OS_ERROR", (long)actual);

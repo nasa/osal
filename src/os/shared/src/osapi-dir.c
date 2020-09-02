@@ -117,7 +117,7 @@ int32 OS_mkdir (const char *path, uint32 access)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirectoryOpen(uint32 *dir_id, const char *path)
+int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
 {
     char local_path[OS_MAX_LOCAL_PATH_LEN];
     OS_common_record_t *record;
@@ -161,7 +161,7 @@ int32 OS_DirectoryOpen(uint32 *dir_id, const char *path)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirectoryClose(uint32 dir_id)
+int32 OS_DirectoryClose(osal_id_t dir_id)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -189,7 +189,7 @@ int32 OS_DirectoryClose(uint32 dir_id)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirectoryRead(uint32 dir_id, os_dirent_t *dirent)
+int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -232,7 +232,7 @@ int32 OS_DirectoryRead(uint32 dir_id, os_dirent_t *dirent)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirectoryRewind(uint32 dir_id)
+int32 OS_DirectoryRewind(osal_id_t dir_id)
 {
    OS_common_record_t *record;
    uint32 local_id;

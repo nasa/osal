@@ -38,21 +38,21 @@ void CountSemCheck(void);
 #define TASK_3_PRIORITY  120
 
 uint32 task_1_stack[TASK_STACK_SIZE];
-uint32 task_1_id; 
+osal_id_t task_1_id;
 uint32 task_1_failures;
 uint32 task_1_work;
 
 uint32 task_2_stack[TASK_STACK_SIZE];
-uint32 task_2_id; 
+osal_id_t task_2_id;
 uint32 task_2_failures;
 uint32 task_2_work;
 
 uint32 task_3_stack[TASK_STACK_SIZE];
-uint32 task_3_id; 
+osal_id_t task_3_id;
 uint32 task_3_failures;
 uint32 task_3_work;
 
-uint32 count_sem_id;
+osal_id_t count_sem_id;
 
 void task_1(void)
 {
@@ -178,7 +178,8 @@ void CountSemSetup(void)
    ** Create the Counting semaphore
    */
    status = OS_CountSemCreate( &count_sem_id, "CountSem1", 2, 0);
-   UtAssert_True(status == OS_SUCCESS, "CountSem1 create Id=%u Rc=%d", (unsigned int)count_sem_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "CountSem1 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(count_sem_id), (int)status);
 
    /*
    ** Take the semaphore so the value is 0 and the next SemTake call should block
@@ -193,13 +194,16 @@ void CountSemSetup(void)
    ** Create the tasks
    */
    status = OS_TaskCreate( &task_1_id, "Task 1", task_1, task_1_stack, TASK_STACK_SIZE, TASK_1_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%u Rc=%d", (unsigned int)task_1_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(task_1_id), (int)status);
 
    status = OS_TaskCreate( &task_2_id, "Task 2", task_2, task_2_stack, TASK_STACK_SIZE, TASK_2_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 2 create Id=%u Rc=%d", (unsigned int)task_2_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Task 2 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(task_2_id), (int)status);
  
    status = OS_TaskCreate( &task_3_id, "Task 3", task_3, task_3_stack, TASK_STACK_SIZE, TASK_3_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 3 create Id=%u Rc=%d", (unsigned int)task_3_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Task 3 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(task_3_id), (int)status);
 
    /*
     * Time-limited execution

@@ -61,14 +61,18 @@
 **--------------------------------------------------------------------------------*/
 
 char *fsAddrPtr = NULL;
-static int32 setup_file(void)
+static osal_id_t setup_file(void)
 {
+    osal_id_t id;
+    int32 status;
     UT_SETUP(OS_mkfs(fsAddrPtr, "/ramdev3", "RAM3", 512, 20));
     UT_SETUP(OS_mount("/ramdev3", "/drive3"));
-    return OS_creat("/drive3/select_test.txt", OS_READ_WRITE);
+    status = OS_creat("/drive3/select_test.txt", OS_READ_WRITE);
+    id = OS_ObjectIdFromInteger(status);
+    return id;
 }
 
-static void teardown_file(int32 fd)
+static void teardown_file(osal_id_t fd)
 {
     OS_close(fd);
     OS_remove("/drive3/select_test.txt");
@@ -86,7 +90,7 @@ static void teardown_file(int32 fd)
 void UT_os_select_fd_test(void)
 {
     OS_FdSet FdSet;
-    int32 fd = setup_file();
+    osal_id_t fd = setup_file();
 
     if(OS_SelectFdZero(&FdSet) == OS_ERR_NOT_IMPLEMENTED
         || OS_SelectFdAdd(&FdSet, fd) == OS_ERR_NOT_IMPLEMENTED
@@ -97,9 +101,9 @@ void UT_os_select_fd_test(void)
     }
 
     UtAssert_Simple(OS_SelectFdZero(NULL) == OS_INVALID_POINTER);
-    UtAssert_Simple(OS_SelectFdAdd(NULL, 0) == OS_INVALID_POINTER);
-    UtAssert_Simple(OS_SelectFdClear(NULL, 0) == OS_INVALID_POINTER);
-    UtAssert_Simple(OS_SelectFdIsSet(NULL, 0) == false);
+    UtAssert_Simple(OS_SelectFdAdd(NULL, fd) == OS_INVALID_POINTER);
+    UtAssert_Simple(OS_SelectFdClear(NULL, fd) == OS_INVALID_POINTER);
+    UtAssert_Simple(OS_SelectFdIsSet(NULL, fd) == false);
 
     OS_SelectFdZero(&FdSet);
     OS_SelectFdAdd(&FdSet, fd);
@@ -124,7 +128,7 @@ UT_os_select_fd_test_exit_tag:
 void UT_os_select_single_test(void)
 {
     uint32 StateFlags;
-    int32 fd = setup_file();
+    osal_id_t fd = setup_file();
     int32 rc;
 
     UT_RETVAL(OS_SelectSingle(fd, NULL, 0), OS_INVALID_POINTER, "NULL flags pointer");
@@ -159,7 +163,7 @@ UT_os_select_single_test_exit_tag:
 void UT_os_select_multi_test(void)
 {
     OS_FdSet ReadSet, WriteSet;
-    int32 fd = setup_file();
+    osal_id_t fd = setup_file();
     int32 rc;
 
     OS_SelectFdZero(&WriteSet);
