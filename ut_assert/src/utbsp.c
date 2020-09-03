@@ -210,7 +210,9 @@ void UT_BSP_EndTest(const UtAssert_TestCounter_t *TestCounters)
              (unsigned int)TestCounters->TestSegmentCount);
     OS_BSP_ConsoleOutput_Impl(Message, strlen(Message));
 
-    if (TestCounters->CaseCount[UTASSERT_CASETYPE_FAILURE] > 0)
+    if ((TestCounters->CaseCount[UTASSERT_CASETYPE_FAILURE] > 0) ||
+        (TestCounters->CaseCount[UTASSERT_CASETYPE_TSF] > 0) ||
+        (TestCounters->CaseCount[UTASSERT_CASETYPE_TTF] > 0))
     {
         OS_BSP_SetExitCode(OS_ERROR);
     }
