@@ -217,15 +217,6 @@ uint32 OS_GetBaseForObjectType(uint32 idtype);
 int32 OS_ObjectIdFindByName (uint32 idtype, const char *name, osal_id_t *object_id);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdToArrayIndex
-
-    Purpose: Convert a 32-bit OSAL ID into a zero-based array index
-
-    Returns: OS_SUCCESS on success, or relevant error code
- ------------------------------------------------------------------*/
-int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t id, uint32 *ArrayIndex);
-
-/*----------------------------------------------------------------
    Function: OS_ObjectIdGetBySearch
 
     Purpose: Find and lock an entry in the global resource table
