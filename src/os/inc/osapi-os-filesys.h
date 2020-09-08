@@ -154,6 +154,19 @@ typedef struct
    char FileName[OS_MAX_FILE_NAME];
 } os_dirent_t;
 
+/**
+ * @brief Flags that can be used with opening of a file (bitmask)
+ */
+typedef enum
+{
+   OS_FILE_FLAG_NONE,
+   OS_FILE_FLAG_CREATE = 0x01,
+   OS_FILE_FLAG_TRUNCATE = 0x02,
+} OS_file_flag_t;
+
+
+
+
 /** @brief Access filename part of the dirent structure */
 #define OS_DIRENTRY_NAME(x)   ((x).FileName)
 
@@ -234,7 +247,6 @@ int32           OS_open   (const char *path,  int32 access,  uint32 mode);
  */
 int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access);
 
-/**@}*/
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Closes an open file handle
@@ -921,8 +933,7 @@ int32       OS_GetFsInfo(os_fsinfo_t  *filesys_info);
 int32 OS_ShellOutputToFile(const char* Cmd, osal_id_t filedes);
 
 
-
-
+/**@}*/
 
 
 #endif

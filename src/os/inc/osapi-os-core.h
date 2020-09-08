@@ -316,6 +316,8 @@ void OS_ApplicationExit(int32 Status);
  *
  * @param[in]   object_id The object ID
  * @returns     integer value representation of object ID
+ *
+ * @hidecallergraph
  */
 static inline unsigned long OS_ObjectIdToInteger(osal_id_t object_id)
 {
@@ -331,6 +333,8 @@ static inline unsigned long OS_ObjectIdToInteger(osal_id_t object_id)
  *
  * @param[in]   value   The integer representation of an OSAL ID
  * @returns     The ID value converted to an osal_id_t
+ *
+ * @hidecallergraph
  */
 static inline osal_id_t OS_ObjectIdFromInteger(unsigned long value)
 {
@@ -349,6 +353,8 @@ static inline osal_id_t OS_ObjectIdFromInteger(unsigned long value)
  * @param[in]   object_id1 The first object ID
  * @param[in]   object_id2 The second object ID
  * @returns     true if the object IDs are equal
+ *
+ * @hidecallergraph
  */
 static inline bool OS_ObjectIdEqual(osal_id_t object_id1, osal_id_t object_id2)
 {
@@ -367,6 +373,8 @@ static inline bool OS_ObjectIdEqual(osal_id_t object_id1, osal_id_t object_id2)
  * @note OS_ObjectIdDefined(OS_OBJECT_ID_UNDEFINED) is always guaranteed to be false.
  *
  * @param[in]   object_id The first object ID
+ *
+ * @hidecallergraph
  */
 static inline bool OS_ObjectIdDefined(osal_id_t object_id)
 {

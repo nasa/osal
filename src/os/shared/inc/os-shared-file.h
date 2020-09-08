@@ -30,17 +30,6 @@
 
 #include <os-shared-globaldefs.h>
 
-/*
- * Flags that can be used with opening of a file (bitmask)
- */
-typedef enum
-{
-   OS_FILE_FLAG_NONE,
-   OS_FILE_FLAG_CREATE = 0x01,
-   OS_FILE_FLAG_TRUNCATE = 0x02,
-} OS_file_flag_t;
-
-
 
 typedef struct
 {
