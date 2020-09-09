@@ -38,7 +38,7 @@
  * Stub function for OS_SelectSingle()
  *
  *****************************************************************************/
-int32 OS_SelectSingle(uint32 objid, uint32 *StateFlags, int32 msecs)
+int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SelectSingle), objid);
     UT_Stub_RegisterContext(UT_KEY(OS_SelectSingle), StateFlags);
@@ -90,7 +90,7 @@ int32 OS_SelectFdZero(OS_FdSet *Set)
  * Stub function for OS_SelectFdAdd()
  *
  *****************************************************************************/
-int32 OS_SelectFdAdd(OS_FdSet *Set, uint32 objid)
+int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_SelectFdAdd), Set);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SelectFdAdd), objid);
@@ -107,7 +107,7 @@ int32 OS_SelectFdAdd(OS_FdSet *Set, uint32 objid)
  * Stub function for OS_SelectFdClear()
  *
  *****************************************************************************/
-int32 OS_SelectFdClear(OS_FdSet *Set, uint32 objid)
+int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_SelectFdClear), Set);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SelectFdClear), objid);
@@ -124,7 +124,7 @@ int32 OS_SelectFdClear(OS_FdSet *Set, uint32 objid)
  * Stub function for OS_SelectFdIsSet()
  *
  *****************************************************************************/
-bool OS_SelectFdIsSet(OS_FdSet *Set, uint32 objid)
+bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_SelectFdIsSet), Set);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SelectFdIsSet), objid);

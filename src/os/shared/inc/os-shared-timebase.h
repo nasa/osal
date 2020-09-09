@@ -36,7 +36,7 @@ typedef struct
     char                timebase_name[OS_MAX_API_NAME];
     OS_TimerSync_t      external_sync;
     uint32              accuracy_usec;
-    uint32              first_cb;
+    osal_id_t           first_cb;
     uint32              freerun_time;
     uint32              nominal_start_time;
     uint32              nominal_interval_time;
@@ -132,7 +132,7 @@ int32 OS_TimeBaseGetInfo_Impl       (uint32 timer_id, OS_timebase_prop_t *timer_
     Purpose: Implement the time base helper thread
              This is the context for providing application callbacks
  ------------------------------------------------------------------*/
-void  OS_TimeBase_CallbackThread    (uint32 timebase_id);
+void  OS_TimeBase_CallbackThread    (osal_id_t timebase_id);
 
 
 #endif  /* INCLUDE_OS_SHARED_TIMEBASE_H_ */

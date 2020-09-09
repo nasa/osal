@@ -39,7 +39,7 @@ UT_DEFAULT_STUB(OS_SocketAPI_Init,(void))
  * Stub function for OS_SocketOpen()
  *
  *****************************************************************************/
-int32 OS_SocketOpen(uint32 *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t Type)
+int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t Type)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_SocketOpen), sock_id);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketOpen), Domain);
@@ -62,7 +62,7 @@ int32 OS_SocketOpen(uint32 *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t T
  * Stub function for OS_SocketBind()
  *
  *****************************************************************************/
-int32 OS_SocketBind(uint32 sock_id, const OS_SockAddr_t *Addr)
+int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketBind), sock_id);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketBind), Addr);
@@ -78,7 +78,7 @@ int32 OS_SocketBind(uint32 sock_id, const OS_SockAddr_t *Addr)
  * Stub function for OS_SocketAccept()
  *
  *****************************************************************************/
-int32 OS_SocketAccept(uint32 sock_id, uint32 *connsock_id, OS_SockAddr_t *Addr, int32 timeout)
+int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *Addr, int32 timeout)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketAccept), sock_id);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketAccept), connsock_id);
@@ -97,7 +97,7 @@ int32 OS_SocketAccept(uint32 sock_id, uint32 *connsock_id, OS_SockAddr_t *Addr, 
  * Stub function for OS_SocketConnect()
  *
  *****************************************************************************/
-int32 OS_SocketConnect(uint32 sock_id, const OS_SockAddr_t *Addr, int32 timeout)
+int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 timeout)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketConnect), sock_id);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketConnect), Addr);
@@ -115,7 +115,7 @@ int32 OS_SocketConnect(uint32 sock_id, const OS_SockAddr_t *Addr, int32 timeout)
  * Stub function for OS_SocketRecvFrom()
  *
  *****************************************************************************/
-int32 OS_SocketRecvFrom(uint32 sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
+int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketRecvFrom), sock_id);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketRecvFrom), buffer);
@@ -160,7 +160,7 @@ int32 OS_SocketRecvFrom(uint32 sock_id, void *buffer, uint32 buflen, OS_SockAddr
  * Stub function for OS_SocketSendTo()
  *
  *****************************************************************************/
-int32 OS_SocketSendTo(uint32 sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr)
+int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketSendTo), sock_id);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketSendTo), buffer);
@@ -198,7 +198,7 @@ int32 OS_SocketSendTo(uint32 sock_id, const void *buffer, uint32 buflen, const O
  * Stub function for OS_SocketGetIdByName()
  *
  *****************************************************************************/
-int32 OS_SocketGetIdByName (uint32 *sock_id, const char *sock_name)
+int32 OS_SocketGetIdByName (osal_id_t *sock_id, const char *sock_name)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_SocketGetIdByName), sock_id);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketGetIdByName), sock_name);
@@ -210,8 +210,7 @@ int32 OS_SocketGetIdByName (uint32 *sock_id, const char *sock_name)
     if (status == OS_SUCCESS &&
             UT_Stub_CopyToLocal(UT_KEY(OS_SocketGetIdByName), sock_id, sizeof(*sock_id)) < sizeof(*sock_id))
     {
-        *sock_id =  1;
-        UT_FIXUP_ID(*sock_id, UT_OBJTYPE_SOCKET);
+        UT_ObjIdCompose(1, UT_OBJTYPE_SOCKET, sock_id);
     }
 
     return status;
@@ -219,10 +218,10 @@ int32 OS_SocketGetIdByName (uint32 *sock_id, const char *sock_name)
 
 /*****************************************************************************
  *
- * Stub function for OS_SocketGetInfo()
+ * Stub function for OS_SocketGetInfo(,sock_id)
  *
  *****************************************************************************/
-int32 OS_SocketGetInfo (uint32 sock_id, OS_socket_prop_t *sock_prop)
+int32 OS_SocketGetInfo (osal_id_t sock_id, OS_socket_prop_t *sock_prop)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketGetInfo), sock_id);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketGetInfo), sock_prop);
@@ -238,8 +237,7 @@ int32 OS_SocketGetInfo (uint32 sock_id, OS_socket_prop_t *sock_prop)
         CopySize = UT_Stub_CopyToLocal(UT_KEY(OS_SocketGetInfo), sock_prop, sizeof(*sock_prop));
         if (CopySize < sizeof(*sock_prop))
         {
-            sock_prop->creator = 1;
-            UT_FIXUP_ID(sock_prop->creator, UT_OBJTYPE_TASK);
+            UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &sock_prop->creator);
             strncpy(sock_prop->name, "ut", sizeof(sock_prop->name));
         }
     }

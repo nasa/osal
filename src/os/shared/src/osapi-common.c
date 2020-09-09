@@ -237,7 +237,7 @@ void OS_ApplicationExit(int32 Status)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-void OS_CleanUpObject(uint32 object_id, void *arg)
+void OS_CleanUpObject(osal_id_t object_id, void *arg)
 {
     uint32 *ObjectCount;
 
@@ -303,7 +303,7 @@ void OS_DeleteAllObjects(void)
     {
         ObjectCount = 0;
         ++TryCount;
-        OS_ForEachObject(0, OS_CleanUpObject, &ObjectCount);
+        OS_ForEachObject(OS_OBJECT_CREATOR_ANY, OS_CleanUpObject, &ObjectCount);
         if (ObjectCount == 0 || TryCount > 4)
         {
            break;

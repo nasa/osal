@@ -54,11 +54,10 @@ void Test_OS_QueueCreate(void)
      * int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_depth, uint32 data_size, uint32 flags)
      */
     int32 expected = OS_SUCCESS;
-    uint32 objid = 0xFFFFFFFF;
+    osal_id_t objid;
     int32 actual = OS_QueueCreate(&objid, "UT", 0, 0,0);
 
     UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(objid != 0, "objid (%lu) != 0", (unsigned long)objid);
 
     /* test error cases */
     expected = OS_INVALID_POINTER;
@@ -85,7 +84,7 @@ void Test_OS_QueueDelete(void)
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
 
-    actual = OS_QueueDelete(1);
+    actual = OS_QueueDelete(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_QueueDelete() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -101,18 +100,18 @@ void Test_OS_QueueGet(void)
     uint32 actual_size;
     char Buf[4];
 
-    actual = OS_QueueGet(1, Buf, sizeof(Buf), &actual_size, 0);
+    actual = OS_QueueGet(UT_OBJID_1, Buf, sizeof(Buf), &actual_size, 0);
 
     UtAssert_True(actual == expected, "OS_QueueGet() (%ld) == OS_SUCCESS", (long)actual);
 
     /* test error cases */
     expected = OS_INVALID_POINTER;
-    actual = OS_QueueGet(1, NULL, sizeof(Buf), &actual_size, 0);
+    actual = OS_QueueGet(UT_OBJID_1, NULL, sizeof(Buf), &actual_size, 0);
     UtAssert_True(actual == expected, "OS_QueueGet() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     OS_queue_table[1].max_size = sizeof(Buf) + 10;
     expected = OS_QUEUE_INVALID_SIZE;
-    actual = OS_QueueGet(1, Buf, sizeof(Buf), &actual_size, 0);
+    actual = OS_QueueGet(UT_OBJID_1, Buf, sizeof(Buf), &actual_size, 0);
     UtAssert_True(actual == expected, "OS_QueueGet() (%ld) == OS_QUEUE_INVALID_SIZE", (long)actual);
 }
 
@@ -127,13 +126,13 @@ void Test_OS_QueuePut(void)
     int32 actual = ~OS_SUCCESS;
     const char Data[4] = "xyz";
 
-    actual = OS_QueuePut(1, Data, sizeof(Data), 0);
+    actual = OS_QueuePut(UT_OBJID_1, Data, sizeof(Data), 0);
 
     UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_SUCCESS", (long)actual);
 
     /* test error cases */
     expected = OS_INVALID_POINTER;
-    actual = OS_QueuePut(1, NULL, sizeof(Data), 0);
+    actual = OS_QueuePut(UT_OBJID_1, NULL, sizeof(Data), 0);
     UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_INVALID_POINTER", (long)actual);
 
 }
@@ -147,12 +146,11 @@ void Test_OS_QueueGetIdByName(void)
      */
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
-    uint32 objid = 0;
+    osal_id_t objid;
 
     UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_QueueGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_QueueGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(objid != 0, "OS_QueueGetIdByName() objid (%lu) != 0", (unsigned long)objid);
     UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
@@ -175,25 +173,26 @@ void Test_OS_QueueGetInfo(void)
     int32 expected = OS_SUCCESS;
     int32 actual = ~OS_SUCCESS;
     OS_queue_prop_t queue_prop;
+    osal_id_t id;
     uint32 local_index = 1;
     OS_common_record_t utrec;
     OS_common_record_t *rptr = &utrec;
 
     memset(&utrec, 0, sizeof(utrec));
-    utrec.creator = 111;
+    id = UT_OBJID_OTHER;
+    utrec.creator = UT_OBJID_OTHER;
     utrec.name_entry = "ABC";
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
-    actual = OS_QueueGetInfo(1, &queue_prop);
+    actual = OS_QueueGetInfo(UT_OBJID_1, &queue_prop);
 
     UtAssert_True(actual == expected, "OS_QueueGetInfo() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(queue_prop.creator == 111, "queue_prop.creator (%lu) == 111",
-            (unsigned long)queue_prop.creator);
+    UtAssert_MemCmp(&queue_prop.creator, &id, sizeof(osal_id_t), "queue_prop.creator == UT_OBJID_OTHER");
     UtAssert_True(strcmp(queue_prop.name, "ABC") == 0, "queue_prop.name (%s) == ABC",
             queue_prop.name);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_QueueGetInfo(1, NULL);
+    actual = OS_QueueGetInfo(UT_OBJID_1, NULL);
     UtAssert_True(actual == expected, "OS_QueueGetInfo() (%ld) == OS_INVALID_POINTER", (long)actual);
 }
 

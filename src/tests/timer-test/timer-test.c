@@ -60,10 +60,11 @@ uint32 timer_idlookup[OS_MAX_TIMERS];
  * Note: For some Host OSs, this is the equivalent of an ISR, so the calls available are limited.
  * For example, Linux and vxWorks can call functions like printf, but RTEMS cannot.
  */
-void test_func(uint32 timer_id)
+void test_func(osal_id_t timer_id)
 {
-   OS_ConvertToArrayIndex(timer_id, &timer_id);
-   timer_counter[timer_idlookup[timer_id]]++;
+   uint32 indx;
+   OS_ConvertToArrayIndex(timer_id, &indx);
+   timer_counter[timer_idlookup[indx]]++;
 }
 
 
@@ -86,7 +87,7 @@ void UtTest_Setup(void)
 void TimerTestSetup(void)
 {
     int32  status;
-    uint32 TimerTestTaskId;
+    osal_id_t TimerTestTaskId;
 
     /*
      * In the new versions of OSAL, timers do NOT work in the "main" thread,
@@ -116,7 +117,7 @@ void TimerTestTask(void)
    int              i = 0;
    int32            TimerStatus[NUMBER_OF_TIMERS];
    uint32           TableId;
-   uint32           TimerID[NUMBER_OF_TIMERS];
+   osal_id_t        TimerID[NUMBER_OF_TIMERS];
    char             TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1","TIMER2","TIMER3","TIMER4"};
    uint32           ClockAccuracy;
 
@@ -124,7 +125,8 @@ void TimerTestTask(void)
    for ( i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++ )
    {
       TimerStatus[i] = OS_TimerCreate(&TimerID[i], TimerName[i], &ClockAccuracy, &(test_func));
-      UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d Created RC=%d ID=%d", i, (int)TimerStatus[i], (int)TimerID[i]);
+      UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d Created RC=%d ID=%lx", i,
+              (int)TimerStatus[i], OS_ObjectIdToInteger(TimerID[i]));
 
       UtPrintf("Timer %d Accuracy = %d microseconds \n",i ,(int)ClockAccuracy);
 

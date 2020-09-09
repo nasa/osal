@@ -71,8 +71,8 @@ void UT_os_module_load_test()
     int32 res = 0;
     const char* testDesc;
     uint32  test_setup_invalid = 0;
-    uint32  module_id;
-    uint32  module_id2;
+    osal_id_t  module_id;
+    osal_id_t  module_id2;
     char    module_name[UT_OS_NAME_BUFF_SIZE];
     char    module_file_name[UT_OS_PATH_BUFF_SIZE];
 
@@ -199,12 +199,12 @@ void UT_os_module_unload_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32  module_id = 0;
+    osal_id_t  module_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API Not implemented";
 
-    res = OS_ModuleUnload(0);
+    res = OS_ModuleUnload(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -214,7 +214,7 @@ void UT_os_module_unload_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_ModuleUnload(99999);
+    res = OS_ModuleUnload(UT_OBJID_INCORRECT);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -261,13 +261,13 @@ void UT_os_module_info_test()
 {
     int32              res = 0;
     const char*        testDesc;
-    uint32             module_id;
+    osal_id_t          module_id;
     OS_module_prop_t   module_info;
 
     /*-----------------------------------------------------*/
     testDesc = "API Not implemented";
 
-    res = OS_ModuleInfo(0, &module_info);
+    res = OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, &module_info);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
@@ -277,7 +277,7 @@ void UT_os_module_info_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-pointer-arg";
 
-    res = OS_ModuleInfo(0, NULL);
+    res = OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, NULL);
     if ( res == OS_INVALID_POINTER )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -286,7 +286,7 @@ void UT_os_module_info_test()
     /*-----------------------------------------------------*/
     testDesc = "#2 Invalid-ID-arg";
 
-    res = OS_ModuleInfo(99999, &module_info);
+    res = OS_ModuleInfo(UT_OBJID_INCORRECT, &module_info);
     if ( res == OS_ERR_INVALID_ID )
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else

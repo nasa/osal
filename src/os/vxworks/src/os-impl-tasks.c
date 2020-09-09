@@ -82,7 +82,12 @@ OS_impl_task_internal_record_t  OS_impl_task_table      [OS_MAX_TASKS];
 ---------------------------------------------------------------------------------------*/
 int OS_VxWorks_TaskEntry(int arg)
 {
-    OS_TaskEntryPoint((uint32)arg);
+    VxWorks_ID_Buffer_t id;
+
+    id.arg = arg;
+
+    OS_TaskEntryPoint(id.id);
+
     return 0;
 } /* end OS_VxWorksEntry */
 
@@ -124,6 +129,7 @@ int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
     long userstackbase;
     long actualstackbase;
     OS_impl_task_internal_record_t *lrec;
+    VxWorks_ID_Buffer_t id;
 
     lrec = &OS_impl_task_table[task_id];
 
@@ -236,6 +242,7 @@ int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
     actualstackbase  += actualsz;         /* move to last byte of stack block */
 #endif
 
+    id.id = OS_global_task_table[task_id].active_id;
     status = taskInit(
             &lrec->tcb,                 /* address of new task's TCB */
             (char*)OS_global_task_table[task_id].name_entry,
@@ -244,7 +251,7 @@ int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
             (char *)actualstackbase,    /* base of new task's stack */
             actualsz,                   /* size (bytes) of stack needed */
             (FUNCPTR)OS_VxWorks_TaskEntry,           /* entry point of new task */
-            OS_global_task_table[task_id].active_id, /* 1st arg is ID */
+            id.arg,                     /* 1st arg is ID */
             0,0,0,0,0,0,0,0,0);
 
     if (status != OK)
@@ -380,7 +387,7 @@ int32 OS_TaskMatch_Impl(uint32 task_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskRegister_Impl (uint32 global_task_id)
+int32 OS_TaskRegister_Impl (osal_id_t global_task_id)
 {
     return OS_SUCCESS;
 } /* end OS_TaskRegister_Impl */
@@ -394,13 +401,13 @@ int32 OS_TaskRegister_Impl (uint32 global_task_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-uint32 OS_TaskGetId_Impl (void)
+osal_id_t OS_TaskGetId_Impl (void)
 {
     OS_impl_task_internal_record_t *lrec;
     size_t index;
-    uint32 id;
+    osal_id_t id;
 
-    id = 0;
+    id = OS_OBJECT_ID_UNDEFINED;
     lrec = (OS_impl_task_internal_record_t *)taskTcb(taskIdSelf());
 
     if (lrec != NULL)

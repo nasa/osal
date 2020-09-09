@@ -139,7 +139,7 @@ int32 OS_SymbolTableDump ( const char *filename, uint32 size_limit );
  * @retval #OS_ERR_NO_FREE_IDS if the module table is full
  * @retval #OS_ERR_NAME_TAKEN if the name is in use
  */
-int32 OS_ModuleLoad ( uint32 *module_id, const char *module_name, const char *filename );
+int32 OS_ModuleLoad ( osal_id_t *module_id, const char *module_name, const char *filename );
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -153,7 +153,7 @@ int32 OS_ModuleLoad ( uint32 *module_id, const char *module_name, const char *fi
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERROR if the module is invalid or cannot be unloaded
  */
-int32 OS_ModuleUnload ( uint32 module_id );
+int32 OS_ModuleUnload ( osal_id_t module_id );
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -169,7 +169,7 @@ int32 OS_ModuleUnload ( uint32 module_id );
  * @retval #OS_ERR_INVALID_ID if the module id invalid
  * @retval #OS_INVALID_POINTER if the pointer to the ModuleInfo structure is invalid
  */
-int32 OS_ModuleInfo ( uint32 module_id, OS_module_prop_t *module_info );
+int32 OS_ModuleInfo ( osal_id_t module_id, OS_module_prop_t *module_info );
 /**@}*/
 
 #endif

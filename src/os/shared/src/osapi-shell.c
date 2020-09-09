@@ -52,7 +52,7 @@
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ShellOutputToFile(const char* Cmd, uint32 filedes)
+int32 OS_ShellOutputToFile(const char* Cmd, osal_id_t filedes)
 {
    OS_common_record_t *record;
    uint32 local_id;

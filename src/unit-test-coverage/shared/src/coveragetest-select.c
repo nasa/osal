@@ -43,7 +43,7 @@ void Test_OS_SelectSingle(void)
      */
     int32 expected = OS_SUCCESS;
     uint32 StateFlags = 0;
-    int32 actual = OS_SelectSingle(1, &StateFlags, 0);
+    int32 actual = OS_SelectSingle(UT_OBJID_1, &StateFlags, 0);
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
@@ -88,37 +88,37 @@ void Test_OS_SelectFdAddClearOps(void)
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
     CallCount = UT_GetStubCount(UT_KEY(OCS_memset));
     UtAssert_True(CallCount == 1, "memset() call count (%lu) == 1", (unsigned long)CallCount);
-    UtAssert_True(!OS_SelectFdIsSet(&UtSet, 1), "OS_SelectFdIsSet(1) == false");
-    UtAssert_True(!OS_SelectFdIsSet(&UtSet, 2), "OS_SelectFdIsSet(2) == false");
+    UtAssert_True(!OS_SelectFdIsSet(&UtSet, UT_OBJID_1), "OS_SelectFdIsSet(1) == false");
+    UtAssert_True(!OS_SelectFdIsSet(&UtSet, UT_OBJID_2), "OS_SelectFdIsSet(2) == false");
 
     expected = OS_SUCCESS;
-    actual = OS_SelectFdAdd(&UtSet, 1);
+    actual = OS_SelectFdAdd(&UtSet, UT_OBJID_1);
     UtAssert_True(actual == expected, "OS_SelectFdAdd() (%ld) == %ld", (long)actual, (long)expected);
-    UtAssert_True(OS_SelectFdIsSet(&UtSet, 1), "OS_SelectFdIsSet(1) == true");
-    UtAssert_True(!OS_SelectFdIsSet(&UtSet, 2), "OS_SelectFdIsSet(2) == false");
-    actual = OS_SelectFdAdd(&UtSet, 2);
+    UtAssert_True(OS_SelectFdIsSet(&UtSet, UT_OBJID_1), "OS_SelectFdIsSet(1) == true");
+    UtAssert_True(!OS_SelectFdIsSet(&UtSet, UT_OBJID_2), "OS_SelectFdIsSet(2) == false");
+    actual = OS_SelectFdAdd(&UtSet, UT_OBJID_2);
     UtAssert_True(actual == expected, "OS_SelectFdAdd() (%ld) == %ld", (long)actual, (long)expected);
-    UtAssert_True(OS_SelectFdIsSet(&UtSet, 1), "OS_SelectFdIsSet(1) == true");
-    UtAssert_True(OS_SelectFdIsSet(&UtSet, 2), "OS_SelectFdIsSet(2) == true");
+    UtAssert_True(OS_SelectFdIsSet(&UtSet, UT_OBJID_1), "OS_SelectFdIsSet(1) == true");
+    UtAssert_True(OS_SelectFdIsSet(&UtSet, UT_OBJID_2), "OS_SelectFdIsSet(2) == true");
 
-    actual = OS_SelectFdClear(&UtSet, 2);
+    actual = OS_SelectFdClear(&UtSet, UT_OBJID_2);
     UtAssert_True(actual == expected, "OS_SelectFdClear() (%ld) == %ld", (long)actual, (long)expected);
-    UtAssert_True(OS_SelectFdIsSet(&UtSet, 1), "OS_SelectFdIsSet(1) == true");
-    UtAssert_True(!OS_SelectFdIsSet(&UtSet, 2), "OS_SelectFdIsSet(2) == false");
+    UtAssert_True(OS_SelectFdIsSet(&UtSet, UT_OBJID_1), "OS_SelectFdIsSet(1) == true");
+    UtAssert_True(!OS_SelectFdIsSet(&UtSet, UT_OBJID_2), "OS_SelectFdIsSet(2) == false");
 
 
     expected = -42;
     UT_SetForceFail(UT_KEY(OS_ObjectIdToArrayIndex), expected);
-    actual = OS_SelectFdAdd(&UtSet, 2);
+    actual = OS_SelectFdAdd(&UtSet, UT_OBJID_2);
     UtAssert_True(actual == expected, "OS_SelectFdAdd() (%ld) == %ld", (long)actual, (long)expected);
-    actual = OS_SelectFdClear(&UtSet, 1);
+    actual = OS_SelectFdClear(&UtSet, UT_OBJID_1);
     UtAssert_True(actual == expected, "OS_SelectFdClear() (%ld) == %ld", (long)actual, (long)expected);
-    UtAssert_True(!OS_SelectFdIsSet(&UtSet, 1), "OS_SelectFdIsSet(1) == false");
-    UtAssert_True(!OS_SelectFdIsSet(&UtSet, 2), "OS_SelectFdIsSet(2) == false");
+    UtAssert_True(!OS_SelectFdIsSet(&UtSet, UT_OBJID_1), "OS_SelectFdIsSet(1) == false");
+    UtAssert_True(!OS_SelectFdIsSet(&UtSet, UT_OBJID_2), "OS_SelectFdIsSet(2) == false");
 
     UT_ClearForceFail(UT_KEY(OS_ObjectIdToArrayIndex));
-    UtAssert_True(OS_SelectFdIsSet(&UtSet, 1), "OS_SelectFdIsSet(1) == true");
-    UtAssert_True(!OS_SelectFdIsSet(&UtSet, 2), "OS_SelectFdIsSet(2) == false");
+    UtAssert_True(OS_SelectFdIsSet(&UtSet, UT_OBJID_1), "OS_SelectFdIsSet(1) == true");
+    UtAssert_True(!OS_SelectFdIsSet(&UtSet, UT_OBJID_2), "OS_SelectFdIsSet(2) == false");
 }
 
 /* Osapi_Test_Setup

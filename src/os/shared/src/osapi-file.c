@@ -92,7 +92,7 @@ int32 OS_FileAPI_Init(void)
  *           (The difference is a matter of what flags are passed in)
  *
  *-----------------------------------------------------------------*/
-static int32 OS_OpenCreate(uint32 *filedes, const char *path, int32 flags, int32 access)
+int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access)
 {
    int32 return_code;
    uint32 local_id;
@@ -137,7 +137,7 @@ static int32 OS_OpenCreate(uint32 *filedes, const char *path, int32 flags, int32
  *-----------------------------------------------------------------*/
 int32 OS_creat  (const char *path, int32  access)
 {
-   uint32 filedes;
+   osal_id_t filedes;
    int32 return_code;
 
    /*
@@ -158,7 +158,9 @@ int32 OS_creat  (const char *path, int32  access)
    return_code = OS_OpenCreate(&filedes, path, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, access);
    if (return_code == OS_SUCCESS)
    {
-      return_code = (int32)filedes;
+      /* for backward compatibility, on success return the ID as an int32.
+       * This will always within the positive range */
+      return_code = (int32)OS_ObjectIdToInteger(filedes);
    }
 
    return return_code;
@@ -175,7 +177,7 @@ int32 OS_creat  (const char *path, int32  access)
  *-----------------------------------------------------------------*/
 int32 OS_open   (const char *path,  int32 access,  uint32  mode)
 {
-   uint32 filedes;
+   osal_id_t filedes;
    int32 return_code;
 
    /*
@@ -195,7 +197,9 @@ int32 OS_open   (const char *path,  int32 access,  uint32  mode)
    return_code = OS_OpenCreate(&filedes, path, OS_FILE_FLAG_NONE, access);
    if (return_code == OS_SUCCESS)
    {
-      return_code = (int32)filedes;
+       /* for backward compatibility, on success return the ID as an int32.
+        * This will always within the positive range */
+       return_code = (int32)OS_ObjectIdToInteger(filedes);
    }
 
    return return_code;
@@ -211,7 +215,7 @@ int32 OS_open   (const char *path,  int32 access,  uint32  mode)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_close (uint32 filedes)
+int32 OS_close (osal_id_t filedes)
 {
     OS_common_record_t *record;
     uint32 local_id;
@@ -240,7 +244,7 @@ int32 OS_close (uint32 filedes)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimedRead(uint32  filedes, void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_TimedRead(osal_id_t  filedes, void *buffer, uint32 nbytes, int32 timeout)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -271,7 +275,7 @@ int32 OS_TimedRead(uint32  filedes, void *buffer, uint32 nbytes, int32 timeout)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimedWrite(uint32  filedes, const void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_TimedWrite(osal_id_t  filedes, const void *buffer, uint32 nbytes, int32 timeout)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -302,7 +306,7 @@ int32 OS_TimedWrite(uint32  filedes, const void *buffer, uint32 nbytes, int32 ti
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_read  (uint32  filedes, void *buffer, uint32 nbytes)
+int32 OS_read  (osal_id_t  filedes, void *buffer, uint32 nbytes)
 {
    return OS_TimedRead(filedes, buffer, nbytes, OS_PEND);
 } /* end OS_read */
@@ -316,7 +320,7 @@ int32 OS_read  (uint32  filedes, void *buffer, uint32 nbytes)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_write (uint32  filedes, const void *buffer, uint32 nbytes)
+int32 OS_write (osal_id_t  filedes, const void *buffer, uint32 nbytes)
 {
     return OS_TimedWrite(filedes, buffer, nbytes, OS_PEND);
 } /* end OS_write */
@@ -385,7 +389,7 @@ int32 OS_stat   (const char *path, os_fstat_t *filestats)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_lseek  (uint32  filedes, int32 offset, uint32 whence)
+int32 OS_lseek  (osal_id_t  filedes, int32 offset, uint32 whence)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -458,7 +462,7 @@ int32 OS_rename (const char *old, const char *new)
       OS_Lock_Global(LOCAL_OBJID_TYPE);
       for ( i =0; i < OS_MAX_NUM_OPEN_FILES; i++)
       {
-         if (OS_global_stream_table[i].active_id != 0 &&
+         if (OS_ObjectIdDefined(OS_global_stream_table[i].active_id) &&
                OS_stream_table[i].socket_domain == OS_SocketDomain_INVALID &&
                strcmp(OS_stream_table[i].stream_name, old) == 0)
          {
@@ -487,8 +491,8 @@ int32 OS_cp (const char *src, const char *dest)
     int32 rd_size;
     int32 wr_size;
     int32 wr_total;
-    int32 file1;
-    int32 file2;
+    osal_id_t file1;
+    osal_id_t file2;
     uint8 copyblock[512];
 
     if (src == NULL || dest == NULL)
@@ -496,25 +500,17 @@ int32 OS_cp (const char *src, const char *dest)
         return OS_INVALID_POINTER;
     }
 
-    return_code = OS_SUCCESS;
-    file2 = -1;
-    file1 = OS_open(src, OS_READ_ONLY, 0);
-    if (file1 < 0)
+    file1 = OS_OBJECT_ID_UNDEFINED;
+    file2 = OS_OBJECT_ID_UNDEFINED;
+    return_code = OS_OpenCreate(&file1, src, OS_FILE_FLAG_NONE, OS_READ_ONLY);
+    if (return_code == OS_SUCCESS)
     {
-       return_code = file1;
-    }
-    else
-    {
-       file2 = OS_creat(dest, OS_WRITE_ONLY);
-       if (file2 < 0)
-       {
-          return_code = file2;
-       }
+       return_code = OS_OpenCreate(&file2, dest, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_WRITE_ONLY);
     }
 
     while (return_code == OS_SUCCESS)
     {
-       rd_size = OS_read((uint32)file1, copyblock, sizeof(copyblock));
+       rd_size = OS_read(file1, copyblock, sizeof(copyblock));
        if (rd_size < 0)
        {
           return_code = rd_size;
@@ -527,7 +523,7 @@ int32 OS_cp (const char *src, const char *dest)
        wr_total = 0;
        while (wr_total < rd_size)
        {
-          wr_size = OS_write((uint32)file2, &copyblock[wr_total], rd_size - wr_total);
+          wr_size = OS_write(file2, &copyblock[wr_total], rd_size - wr_total);
           if (wr_size < 0)
           {
              return_code = wr_size;
@@ -537,11 +533,11 @@ int32 OS_cp (const char *src, const char *dest)
        }
     }
 
-    if (file1 >= 0)
+    if (OS_ObjectIdDefined(file1))
     {
        OS_close(file1);
     }
-    if (file2 >= 0)
+    if (OS_ObjectIdDefined(file2))
     {
        OS_close(file2);
     }
@@ -589,7 +585,7 @@ int32 OS_mv (const char *src, const char *dest)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FDGetInfo (uint32 filedes, OS_file_prop_t *fd_prop)
+int32 OS_FDGetInfo (osal_id_t filedes, OS_file_prop_t *fd_prop)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -642,7 +638,7 @@ int32 OS_FileOpenCheck(const char *Filename)
 
    for ( i = 0; i < OS_MAX_NUM_OPEN_FILES; i++)
    {
-      if (OS_global_stream_table[i].active_id != 0 &&
+      if (OS_ObjectIdDefined(OS_global_stream_table[i].active_id) &&
             OS_stream_table[i].socket_domain == OS_SocketDomain_INVALID &&
             (strcmp(OS_stream_table[i].stream_name, Filename) == 0))
       {
@@ -683,14 +679,14 @@ int32 OS_CloseFileByName(const char *Filename)
 
    for ( i = 0; i < OS_MAX_NUM_OPEN_FILES; i++)
    {
-      if (OS_global_stream_table[i].active_id != 0 &&
+      if (OS_ObjectIdDefined(OS_global_stream_table[i].active_id) &&
             OS_stream_table[i].socket_domain == OS_SocketDomain_INVALID &&
             (strcmp(OS_stream_table[i].stream_name, Filename) == 0))
       {
          close_code = OS_GenericClose_Impl(i);
          if (close_code == OS_SUCCESS)
          {
-             OS_global_stream_table[i].active_id = 0;
+             OS_global_stream_table[i].active_id = OS_OBJECT_ID_UNDEFINED;
          }
          if (return_code == OS_FS_ERR_PATH_INVALID || close_code != OS_SUCCESS)
          {
@@ -726,12 +722,12 @@ int32 OS_CloseAllFiles(void)
 
    for ( i = 0; i < OS_MAX_NUM_OPEN_FILES; i++)
    {
-      if (OS_global_stream_table[i].active_id != 0)
+      if (OS_ObjectIdDefined(OS_global_stream_table[i].active_id))
       {
          close_code = OS_GenericClose_Impl(i);
          if (close_code == OS_SUCCESS)
          {
-             OS_global_stream_table[i].active_id = 0;
+             OS_global_stream_table[i].active_id = OS_OBJECT_ID_UNDEFINED;
          }
          if (close_code != OS_SUCCESS)
          {

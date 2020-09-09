@@ -167,7 +167,7 @@ void Test_OS_TaskRegister_Impl(void)
      * Test Case For:
      * int32 OS_TaskRegister_Impl(uint32 global_task_id)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_TaskRegister_Impl(0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskRegister_Impl(OS_OBJECT_ID_UNDEFINED), OS_SUCCESS);
 }
 
 void Test_OS_TaskGetId_Impl(void)
@@ -177,11 +177,15 @@ void Test_OS_TaskGetId_Impl(void)
      * uint32 OS_TaskGetId_Impl (void)
      */
     OCS_WIND_TCB *TaskTcb;
+    osal_id_t id1;
+    osal_id_t id2;
 
-    OS_global_task_table[1].active_id = 0x12345;
+    memset(&id1, 0x11, sizeof(osal_id_t));
+    OS_global_task_table[1].active_id = id1;
     TaskTcb = UT_TaskTest_GetTaskTcb(1);
     UT_SetDataBuffer(UT_KEY(OCS_taskTcb), &TaskTcb, sizeof(TaskTcb), false);
-    OSAPI_TEST_FUNCTION_RC(OS_TaskGetId_Impl(), 0x12345);
+    id2 = OS_TaskGetId_Impl();
+    UtAssert_MemCmp(&id1, &id2, sizeof(osal_id_t), "OS_TaskGetId_Impl()");
 }
 
 void Test_OS_TaskGetInfo_Impl(void)

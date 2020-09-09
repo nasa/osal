@@ -59,7 +59,7 @@ UT_DEFAULT_STUB(OS_MutexAPI_Init,(void))
 **        Returns either a user-defined status flag, OS_ERROR, or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_MutSemCreate(uint32 *sem_id, const char *sem_name, uint32 options)
+int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_MutSemCreate), sem_id);
     UT_Stub_RegisterContext(UT_KEY(OS_MutSemCreate), sem_name);
@@ -75,7 +75,7 @@ int32 OS_MutSemCreate(uint32 *sem_id, const char *sem_name, uint32 options)
     }
     else
     {
-        *sem_id = 0xDEADBEEFU;
+        *sem_id = UT_STUB_FAKE_OBJECT_ID;
     }
 
     return status;
@@ -101,7 +101,7 @@ int32 OS_MutSemCreate(uint32 *sem_id, const char *sem_name, uint32 options)
 **        Returns either a user-defined status flag or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_MutSemDelete(uint32 sem_id)
+int32 OS_MutSemDelete(osal_id_t sem_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_MutSemDelete), sem_id);
 
@@ -137,7 +137,7 @@ int32 OS_MutSemDelete(uint32 sem_id)
 **        Returns either a user-defined status flag or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_MutSemGive(uint32 sem_id)
+int32 OS_MutSemGive(osal_id_t sem_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_MutSemGive), sem_id);
 
@@ -168,7 +168,7 @@ int32 OS_MutSemGive(uint32 sem_id)
 **        Returns either a user-defined status flag or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_MutSemTake(uint32 sem_id)
+int32 OS_MutSemTake(osal_id_t sem_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_MutSemTake), sem_id);
 
@@ -184,7 +184,7 @@ int32 OS_MutSemTake(uint32 sem_id)
  * Stub function for OS_MutSemGetIdByName()
  *
  *****************************************************************************/
-int32 OS_MutSemGetIdByName (uint32 *sem_id, const char *sem_name)
+int32 OS_MutSemGetIdByName (osal_id_t *sem_id, const char *sem_name)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_MutSemGetIdByName), sem_id);
     UT_Stub_RegisterContext(UT_KEY(OS_MutSemGetIdByName), sem_name);
@@ -196,8 +196,7 @@ int32 OS_MutSemGetIdByName (uint32 *sem_id, const char *sem_name)
     if (status == OS_SUCCESS &&
             UT_Stub_CopyToLocal(UT_KEY(OS_MutSemGetIdByName), sem_id, sizeof(*sem_id)) < sizeof(*sem_id))
     {
-        *sem_id =  1;
-        UT_FIXUP_ID(*sem_id, UT_OBJTYPE_MUTEX);
+        UT_ObjIdCompose(1, UT_OBJTYPE_MUTEX, sem_id);
     }
 
     return status;
@@ -220,7 +219,7 @@ int32 OS_MutSemGetIdByName (uint32 *sem_id, const char *sem_name)
 **        Returns OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_MutSemGetInfo(uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
+int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_MutSemGetInfo), sem_id);
     UT_Stub_RegisterContext(UT_KEY(OS_MutSemGetInfo), mut_prop);
@@ -234,8 +233,7 @@ int32 OS_MutSemGetInfo(uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
     {
         strncpy(mut_prop->name, "Name", OS_MAX_API_NAME - 1);
         mut_prop->name[OS_MAX_API_NAME - 1] = '\0';
-        mut_prop->creator =  1;
-        UT_FIXUP_ID(mut_prop->creator, UT_OBJTYPE_TASK);
+        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &mut_prop->creator);
     }
 
     return status;

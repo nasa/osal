@@ -93,7 +93,7 @@ int32 OS_TimerCbAPI_Init(void)
  *  Return:     OS_SUCCESS or error code
  *
  *-----------------------------------------------------------------*/
-static int32 OS_DoTimerAdd(uint32 *timer_id, const char *timer_name, uint32 timebase_ref_id, OS_ArgCallback_t  callback_ptr, void *callback_arg, uint32 flags)
+static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebase_ref_id, OS_ArgCallback_t  callback_ptr, void *callback_arg, uint32 flags)
 {
     OS_common_record_t *timebase;
     OS_common_record_t *record;
@@ -101,7 +101,7 @@ static int32 OS_DoTimerAdd(uint32 *timer_id, const char *timer_name, uint32 time
     int32             return_code;
     uint32            local_id;
     uint32            timebase_local_id;
-    uint32            cb_list;
+    osal_id_t         cb_list;
     uint32            attach_id;
 
     /*
@@ -133,7 +133,7 @@ static int32 OS_DoTimerAdd(uint32 *timer_id, const char *timer_name, uint32 time
      * Check our context.  Not allowed to use the timer API from a timer callback.
      * Just interested in the object type returned.
      */
-    local_id = OS_TaskGetId_Impl() >> OS_OBJECT_TYPE_SHIFT;
+    local_id = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
     if (local_id == OS_OBJECT_TYPE_OS_TIMEBASE)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
@@ -177,7 +177,7 @@ static int32 OS_DoTimerAdd(uint32 *timer_id, const char *timer_name, uint32 time
        cb_list = OS_timebase_table[timebase_local_id].first_cb;
        OS_timebase_table[timebase_local_id].first_cb = record->active_id;
 
-       if (cb_list != 0)
+       if ( OS_ObjectIdDefined(cb_list) )
        {
            OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TIMECB, cb_list, &attach_id);
            local->next_ref = attach_id;
@@ -208,7 +208,7 @@ static int32 OS_DoTimerAdd(uint32 *timer_id, const char *timer_name, uint32 time
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimerAdd(uint32 *timer_id, const char *timer_name, uint32 timebase_ref_id, OS_ArgCallback_t  callback_ptr, void *callback_arg)
+int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebase_ref_id, OS_ArgCallback_t  callback_ptr, void *callback_arg)
 {
     return (OS_DoTimerAdd(timer_id, timer_name, timebase_ref_id, callback_ptr, callback_arg, 0));
 } /* end OS_TimerAdd */
@@ -222,7 +222,7 @@ int32 OS_TimerAdd(uint32 *timer_id, const char *timer_name, uint32 timebase_ref_
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-static void OS_Timer_NoArgCallback(uint32 objid, void *arg)
+static void OS_Timer_NoArgCallback(osal_id_t objid, void *arg)
 {
     OS_U32ValueWrapper_t Conv;
 
@@ -243,10 +243,10 @@ static void OS_Timer_NoArgCallback(uint32 objid, void *arg)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimerCreate(uint32 *timer_id, const char *timer_name, uint32 *accuracy, OS_TimerCallback_t  callback_ptr)
+int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *accuracy, OS_TimerCallback_t  callback_ptr)
 {
     int32             return_code;
-    uint32            timebase_ref_id;
+    osal_id_t         timebase_ref_id;
     OS_U32ValueWrapper_t Conv;
 
     /*
@@ -316,15 +316,15 @@ int32 OS_TimerCreate(uint32 *timer_id, const char *timer_name, uint32 *accuracy,
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimerSet(uint32 timer_id, uint32 start_time, uint32 interval_time)
+int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time)
 {
    OS_common_record_t *record;
    OS_timecb_internal_record_t *local;
    int32             return_code;
    uint32            local_id;
-   uint32            dedicated_timebase_id;
+   osal_id_t         dedicated_timebase_id;
 
-   dedicated_timebase_id = 0;
+   dedicated_timebase_id = OS_OBJECT_ID_UNDEFINED;
 
    if (start_time >= (UINT32_MAX/2) || interval_time >= (UINT32_MAX/2))
    {
@@ -340,7 +340,7 @@ int32 OS_TimerSet(uint32 timer_id, uint32 start_time, uint32 interval_time)
     * Check our context.  Not allowed to use the timer API from a timer callback.
     * Just interested in the object type returned.
     */
-   local_id = OS_TaskGetId_Impl() >> OS_OBJECT_TYPE_SHIFT;
+   local_id = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
    if (local_id == OS_OBJECT_TYPE_OS_TIMEBASE)
    {
        return OS_ERR_INCORRECT_OBJ_STATE;
@@ -381,7 +381,7 @@ int32 OS_TimerSet(uint32 timer_id, uint32 start_time, uint32 interval_time)
     * will get applied before the old timer expires.  Therefore by definition an application
     * MUST be able to handle a possible "spurious" callback in these circumstances.
     */
-   if (return_code == OS_SUCCESS && dedicated_timebase_id != 0)
+   if (return_code == OS_SUCCESS && OS_ObjectIdDefined(dedicated_timebase_id))
    {
        return_code = OS_TimeBaseSet(dedicated_timebase_id, start_time, interval_time);
    }
@@ -398,22 +398,22 @@ int32 OS_TimerSet(uint32 timer_id, uint32 start_time, uint32 interval_time)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimerDelete(uint32 timer_id)
+int32 OS_TimerDelete(osal_id_t timer_id)
 {
     OS_timecb_internal_record_t *local;
     OS_common_record_t *record;
     OS_common_record_t *timebase = NULL;
     int32             return_code;
     uint32            local_id;
-    uint32            dedicated_timebase_id;
+    osal_id_t         dedicated_timebase_id;
 
-    dedicated_timebase_id = 0;
+    dedicated_timebase_id = OS_OBJECT_ID_UNDEFINED;
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
      * Just interested in the object type returned.
      */
-    local_id = OS_TaskGetId_Impl() >> OS_OBJECT_TYPE_SHIFT;
+    local_id = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
     if (local_id == OS_OBJECT_TYPE_OS_TIMEBASE)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
@@ -439,7 +439,7 @@ int32 OS_TimerDelete(uint32 timer_id)
         /*
          * Now we need to remove it from the time base callback ring
          */
-        if (OS_timebase_table[local->timebase_ref].first_cb == timer_id)
+        if (OS_ObjectIdEqual(OS_timebase_table[local->timebase_ref].first_cb, timer_id))
         {
             if (local->next_ref != local_id)
             {
@@ -450,7 +450,7 @@ int32 OS_TimerDelete(uint32 timer_id)
                 /*
                  * consider the list empty
                  */
-                OS_timebase_table[local->timebase_ref].first_cb = 0;
+                OS_timebase_table[local->timebase_ref].first_cb = OS_OBJECT_ID_UNDEFINED;
             }
         }
 
@@ -475,7 +475,7 @@ int32 OS_TimerDelete(uint32 timer_id)
     if (return_code == OS_SUCCESS)
     {
         OS_ObjectIdRefcountDecr(timebase);
-        if (dedicated_timebase_id != 0)
+        if ( OS_ObjectIdDefined(dedicated_timebase_id) )
         {
             OS_TimeBaseDelete(dedicated_timebase_id);
         }
@@ -493,7 +493,7 @@ int32 OS_TimerDelete(uint32 timer_id)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimerGetIdByName (uint32 *timer_id, const char *timer_name)
+int32 OS_TimerGetIdByName (osal_id_t *timer_id, const char *timer_name)
 {
     int32 return_code;
     uint32 local_id;
@@ -507,7 +507,7 @@ int32 OS_TimerGetIdByName (uint32 *timer_id, const char *timer_name)
      * Check our context.  Not allowed to use the timer API from a timer callback.
      * Just interested in the object type returned.
      */
-    local_id = OS_TaskGetId_Impl() >> OS_OBJECT_TYPE_SHIFT;
+    local_id = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
     if (local_id == OS_OBJECT_TYPE_OS_TIMEBASE)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
@@ -528,7 +528,7 @@ int32 OS_TimerGetIdByName (uint32 *timer_id, const char *timer_name)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimerGetInfo (uint32 timer_id, OS_timer_prop_t *timer_prop)
+int32 OS_TimerGetInfo (osal_id_t timer_id, OS_timer_prop_t *timer_prop)
 {
     OS_common_record_t *record;
     int32             return_code;
@@ -544,7 +544,7 @@ int32 OS_TimerGetInfo (uint32 timer_id, OS_timer_prop_t *timer_prop)
      * Check our context.  Not allowed to use the timer API from a timer callback.
      * Just interested in the object type returned.
      */
-    local_id = OS_TaskGetId_Impl() >> OS_OBJECT_TYPE_SHIFT;
+    local_id = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
     if (local_id == OS_OBJECT_TYPE_OS_TIMEBASE)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;

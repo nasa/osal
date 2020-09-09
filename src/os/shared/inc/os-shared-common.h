@@ -46,7 +46,7 @@ struct OS_shared_global_vars
    /*
     * The console device ID used for OS_printf() calls
     */
-   uint32            PrintfConsoleId;
+   osal_id_t         PrintfConsoleId;
 
    /*
     * PrintfEnabled and ShutdownFlag are marked "volatile"

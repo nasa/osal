@@ -93,7 +93,7 @@ int32 OS_QueueAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_depth, uint32 data_size, uint32 flags)
+int32 OS_QueueCreate (osal_id_t *queue_id, const char *queue_name, uint32 queue_depth, uint32 data_size, uint32 flags)
 {
    OS_common_record_t *record;
    int32             return_code;
@@ -145,7 +145,7 @@ int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_dep
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueDelete (uint32 queue_id)
+int32 OS_QueueDelete (osal_id_t queue_id)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -173,7 +173,7 @@ int32 OS_QueueDelete (uint32 queue_id)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGet (uint32 queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout)
+int32 OS_QueueGet (osal_id_t queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -216,7 +216,7 @@ int32 OS_QueueGet (uint32 queue_id, void *data, uint32 size, uint32 *size_copied
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueuePut (uint32 queue_id, const void *data, uint32 size, uint32 flags)
+int32 OS_QueuePut (osal_id_t queue_id, const void *data, uint32 size, uint32 flags)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -249,7 +249,7 @@ int32 OS_QueuePut (uint32 queue_id, const void *data, uint32 size, uint32 flags)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGetIdByName (uint32 *queue_id, const char *queue_name)
+int32 OS_QueueGetIdByName (osal_id_t *queue_id, const char *queue_name)
 {
    int32 return_code;
 
@@ -273,7 +273,7 @@ int32 OS_QueueGetIdByName (uint32 *queue_id, const char *queue_name)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGetInfo (uint32 queue_id, OS_queue_prop_t *queue_prop)
+int32 OS_QueueGetInfo (osal_id_t queue_id, OS_queue_prop_t *queue_prop)
 {
    OS_common_record_t *record;
    int32             return_code;

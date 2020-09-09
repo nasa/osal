@@ -83,14 +83,14 @@ void SemRun(void);
  */
 #define SEMOP(op)           SEMCALL(Count,op)
 
-uint32 task_1_id; 
+osal_id_t task_1_id;
 uint32 task_1_work;
 
-uint32 task_2_id; 
+osal_id_t task_2_id;
 uint32 task_2_work;
 
-uint32 sem_id_1;
-uint32 sem_id_2;
+osal_id_t sem_id_1;
+osal_id_t sem_id_2;
 
 void task_1(void)
 {
@@ -170,18 +170,22 @@ void SemSetup(void)
    ** Create the Bin semaphore
    */
    status = SEMOP(Create)( &sem_id_1, "Sem1", 0, 0);
-   UtAssert_True(status == OS_SUCCESS, "Sem 1 create Id=%u Rc=%d", (unsigned int)sem_id_1, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Sem 1 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(sem_id_1), (int)status);
    status = SEMOP(Create)( &sem_id_2, "Sem2", 0, 0);
-   UtAssert_True(status == OS_SUCCESS, "Sem 2 create Id=%u Rc=%d", (unsigned int)sem_id_2, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Sem 2 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(sem_id_2), (int)status);
 
    /*
    ** Create the tasks
    */
    status = OS_TaskCreate( &task_1_id, "Task 1", task_1, NULL, 4096, SEMTEST_TASK_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%u Rc=%d", (unsigned int)task_1_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(task_1_id), (int)status);
 
    status = OS_TaskCreate( &task_2_id, "Task 2", task_2, NULL, 4096, SEMTEST_TASK_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 2 create Id=%u Rc=%d", (unsigned int)task_2_id, (int)status);
+   UtAssert_True(status == OS_SUCCESS, "Task 2 create Id=%lx Rc=%d",
+           OS_ObjectIdToInteger(task_2_id), (int)status);
 
    /* A small delay just to allow the tasks
     * to start and pend on the sem */

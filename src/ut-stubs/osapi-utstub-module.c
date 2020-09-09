@@ -83,7 +83,7 @@ int32 dummy_function(void)
 **        Returns either a user-defined status flag or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_ModuleLoad(uint32 *module_id, const char *module_name, const char *filename)
+int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *filename)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_ModuleLoad), module_id);
     UT_Stub_RegisterContext(UT_KEY(OS_ModuleLoad), module_name);
@@ -99,7 +99,7 @@ int32 OS_ModuleLoad(uint32 *module_id, const char *module_name, const char *file
     }
     else
     {
-        *module_id = 0xDEADBEEFU;
+        *module_id = UT_STUB_FAKE_OBJECT_ID;
     }
 
     return status;
@@ -125,7 +125,7 @@ int32 OS_ModuleLoad(uint32 *module_id, const char *module_name, const char *file
 **        Returns either a user-defined status flag or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_ModuleUnload(uint32 module_id)
+int32 OS_ModuleUnload(osal_id_t module_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_ModuleUnload), module_id);
 
@@ -161,7 +161,7 @@ int32 OS_ModuleUnload(uint32 module_id)
 **        Returns either a user-defined status flag or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_ModuleInfo(uint32 module_id, OS_module_prop_t *module_info)
+int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_info)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_ModuleInfo), module_id);
     UT_Stub_RegisterContext(UT_KEY(OS_ModuleInfo), module_info);

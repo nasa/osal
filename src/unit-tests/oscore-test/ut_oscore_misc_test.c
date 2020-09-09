@@ -90,8 +90,10 @@ void UT_os_apiinit_test()
 {
     int32 res = 0;
     const char* testDesc;
-    uint32 qId = 0, qDepth = 10, qSize = 4, qFlags = 0;
-    uint32 semIds[3], semInitValue = 1, semOptions = 0;
+    osal_id_t qId;
+    uint32 qDepth = 10, qSize = 4, qFlags = 0;
+    osal_id_t semIds[3];
+    uint32 semInitValue = 1, semOptions = 0;
 
     /*-----------------------------------------------------*/
     testDesc = "#1 Init-not-call-first";

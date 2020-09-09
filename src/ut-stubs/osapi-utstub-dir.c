@@ -77,7 +77,7 @@ int32  OS_rmdir (const char *path)
  * Stub for OS_DirectoryOpen() function
  *
  *****************************************************************************/
-int32 OS_DirectoryOpen(uint32 *dir_id, const char *path)
+int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_DirectoryOpen), dir_id);
     UT_Stub_RegisterContext(UT_KEY(OS_DirectoryOpen), path);
@@ -92,7 +92,7 @@ int32 OS_DirectoryOpen(uint32 *dir_id, const char *path)
     }
     else
     {
-        *dir_id = 0xDEADBEEFU;
+        *dir_id = UT_STUB_FAKE_OBJECT_ID;
     }
 
 
@@ -104,7 +104,7 @@ int32 OS_DirectoryOpen(uint32 *dir_id, const char *path)
  * Stub for OS_DirectoryClose() function
  *
  *****************************************************************************/
-int32 OS_DirectoryClose(uint32 dir_id)
+int32 OS_DirectoryClose(osal_id_t dir_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_DirectoryClose), dir_id);
 
@@ -125,7 +125,7 @@ int32 OS_DirectoryClose(uint32 dir_id)
  * Stub for OS_DirectoryRewind() function
  *
  *****************************************************************************/
-int32 OS_DirectoryRewind(uint32 dir_id)
+int32 OS_DirectoryRewind(osal_id_t dir_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_DirectoryRewind), dir_id);
 
@@ -141,7 +141,7 @@ int32 OS_DirectoryRewind(uint32 dir_id)
  * Stub for OS_DirectoryRead() function
  *
  *****************************************************************************/
-int32 OS_DirectoryRead(uint32 dir_id, os_dirent_t *dirent)
+int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_DirectoryRead), dir_id);
     UT_Stub_RegisterContext(UT_KEY(OS_DirectoryRead), dirent);

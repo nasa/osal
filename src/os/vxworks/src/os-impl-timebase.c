@@ -150,7 +150,7 @@ uint32 OS_VxWorks_SigWait(uint32 local_id)
 {
     OS_impl_timebase_internal_record_t *local;
     OS_common_record_t *global;
-    uint32 active_id;
+    osal_id_t active_id;
     uint32 tick_time;
     int signo;
     int ret;
@@ -160,7 +160,7 @@ uint32 OS_VxWorks_SigWait(uint32 local_id)
     active_id = global->active_id;
     tick_time = 0;
 
-    if (active_id != 0 && local->assigned_signal > 0)
+    if (OS_ObjectIdDefined(active_id) && local->assigned_signal > 0)
     {
         /*
          * Pend for the tick arrival
@@ -186,7 +186,7 @@ uint32 OS_VxWorks_SigWait(uint32 local_id)
          * are generally not comparable.
          */
         if (ret == OK && signo == local->assigned_signal &&
-                global->active_id == active_id)
+                OS_ObjectIdEqual(global->active_id, active_id))
         {
             if (local->reset_flag)
             {
@@ -262,12 +262,14 @@ void OS_VxWorks_RegisterTimer(uint32 local_id)
  *-----------------------------------------------------------------*/
 int OS_VxWorks_TimeBaseTask(int arg)
 {
+    VxWorks_ID_Buffer_t id;
     uint32 local_id;
 
-    if (OS_ConvertToArrayIndex(arg, &local_id) == OS_SUCCESS)
+    id.arg = arg;
+    if (OS_ConvertToArrayIndex(id.id, &local_id) == OS_SUCCESS)
     {
         OS_VxWorks_RegisterTimer(local_id);
-        OS_TimeBase_CallbackThread(arg);
+        OS_TimeBase_CallbackThread(id.id);
     }
 
     return 0;
@@ -349,7 +351,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
     int signo;
     sigset_t inuse;
     uint32 i;
-
+    VxWorks_ID_Buffer_t idbuf;
 
     return_code = OS_SUCCESS;
     local = &OS_impl_timebase_table[timer_id];
@@ -383,7 +385,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
 
         for(i = 0; i < OS_MAX_TIMEBASES; ++i)
         {
-            if (OS_global_timebase_table[i].active_id != 0 &&
+            if (OS_ObjectIdDefined(OS_global_timebase_table[i].active_id) &&
                     OS_impl_timebase_table[i].assigned_signal > 0)
             {
                 /* mark signal as in-use */
@@ -459,13 +461,14 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
      */
     if (return_code == OS_SUCCESS)
     {
+        idbuf.id = global->active_id;
         local->handler_task = taskSpawn(
                 (char*)global->name_entry,
                 OSAL_TIMEBASE_TASK_PRIORITY,    /* priority */
                 OSAL_TIMEBASE_TASK_OPTION_WORD, /* task option word */
                 OSAL_TIMEBASE_TASK_STACK_SIZE,  /* size (bytes) of stack needed */
                 (FUNCPTR)OS_VxWorks_TimeBaseTask,
-                global->active_id, /* 1st arg is ID */
+                idbuf.arg,                      /* 1st arg is ID */
                 0,0,0,0,0,0,0,0,0);
 
         /* check if taskSpawn failed */

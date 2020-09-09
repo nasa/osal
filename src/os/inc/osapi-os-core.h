@@ -59,10 +59,15 @@
 #define OS_MAX_TASK_PRIORITY        255
 
 /**
+ * @brief Initializer for the osal_id_t type which will not match any valid value
+ */
+#define OS_OBJECT_ID_UNDEFINED      ((osal_id_t){0})
+
+/**
  * @brief Constant that may be passed to OS_ForEachObject()/OS_ForEachObjectOfType() to match any
  * creator (i.e. get all objects)
  */
-#define OS_OBJECT_CREATOR_ANY       0
+#define OS_OBJECT_CREATOR_ANY       OS_OBJECT_ID_UNDEFINED
 
 
 /** @defgroup OSSemaphoreStates OSAL Semaphore State Defines
@@ -82,13 +87,14 @@
  */
 #define OS_ERROR_NAME_LENGTH     35
 
+
 /*  Object property structures */
 
 /** @brief OSAL task properties */
 typedef struct
 {
     char name [OS_MAX_API_NAME];
-    uint32 creator;
+    osal_id_t creator;
     uint32 stack_size;
     uint32 priority;
 }OS_task_prop_t;
@@ -97,14 +103,14 @@ typedef struct
 typedef struct
 {
     char name [OS_MAX_API_NAME];
-    uint32 creator;
+    osal_id_t creator;
 }OS_queue_prop_t;
 
 /** @brief OSAL binary semaphore properties */
 typedef struct
 {                     
     char name [OS_MAX_API_NAME];
-    uint32 creator;
+    osal_id_t creator;
     int32  value;
 }OS_bin_sem_prop_t;
 
@@ -112,7 +118,7 @@ typedef struct
 typedef struct
 {                     
     char name [OS_MAX_API_NAME];
-    uint32 creator;
+    osal_id_t creator;
     int32 value;
 }OS_count_sem_prop_t;
 
@@ -120,7 +126,7 @@ typedef struct
 typedef struct
 {
     char name [OS_MAX_API_NAME];
-    uint32 creator;
+    osal_id_t creator;
 }OS_mut_sem_prop_t;
 
 
@@ -193,7 +199,7 @@ typedef osal_task ((*osal_task_entry)(void)); /**< @brief For task entry point *
  *
  * This may be used by multiple APIS
  */
-typedef void (*OS_ArgCallback_t)(uint32 object_id, void *arg);
+typedef void (*OS_ArgCallback_t)(osal_id_t object_id, void *arg);
 
 /** @defgroup OSAPICore OSAL Core Operation APIs
  *
@@ -295,6 +301,93 @@ void OS_ApplicationExit(int32 Status);
 
 /*-------------------------------------------------------------------------------------*/
 /**
+ * @brief Obtain an integer value corresponding to an object ID
+ *
+ * Obtains an integer representation of an object id, generally
+ * for the purpose of printing to the console or system logs.
+ *
+ * The returned value is of the type "unsigned long" for direct use with
+ * printf-style functions. It is recommended to use the "%lx" conversion
+ * specifier as the hexidecimal encoding clearly delineates the internal fields.
+ *
+ * @note This provides the raw integer value and is _not_ suitable for use
+ * as an array index, as the result is not zero-based.  See the
+ * OS_ConvertToArrayIndex() to obtain a zero-based index value.
+ *
+ * @param[in]   object_id The object ID
+ * @returns     integer value representation of object ID
+ *
+ * @hidecallgraph
+ * @hidecallergraph
+ */
+static inline unsigned long OS_ObjectIdToInteger(osal_id_t object_id)
+{
+    return object_id;
+}
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Obtain an osal ID corresponding to an integer value
+ *
+ * Provides the inverse of OS_ObjectIdToInteger().  Reconstitutes the original
+ * osal_id_t type from an integer representation.
+ *
+ * @param[in]   value   The integer representation of an OSAL ID
+ * @returns     The ID value converted to an osal_id_t
+ *
+ * @hidecallgraph
+ * @hidecallergraph
+ */
+static inline osal_id_t OS_ObjectIdFromInteger(unsigned long value)
+{
+    return value;
+}
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Check two OSAL object ID values for equality
+ *
+ * The OSAL ID values should be treated as abstract values by applications, and not
+ * directly manipulated using standard C operators.
+ *
+ * This checks two values for equality, replacing the "==" operator.
+ *
+ * @param[in]   object_id1 The first object ID
+ * @param[in]   object_id2 The second object ID
+ * @returns     true if the object IDs are equal
+ *
+ * @hidecallgraph
+ * @hidecallergraph
+ */
+static inline bool OS_ObjectIdEqual(osal_id_t object_id1, osal_id_t object_id2)
+{
+    return (object_id1 == object_id2);
+}
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Check if an object ID is defined.
+ *
+ * The OSAL ID values should be treated as abstract values by applications, and not
+ * directly manipulated using standard C operators.
+ *
+ * This returns false if the ID is NOT a defined resource (i.e. free/empty/invalid).
+ *
+ * @note OS_ObjectIdDefined(OS_OBJECT_ID_UNDEFINED) is always guaranteed to be false.
+ *
+ * @param[in]   object_id The first object ID
+ *
+ * @hidecallgraph
+ * @hidecallergraph
+ */
+static inline bool OS_ObjectIdDefined(osal_id_t object_id)
+{
+    return (object_id != 0);
+}
+
+
+/*-------------------------------------------------------------------------------------*/
+/**
  * @brief Obtain the name of an object given an arbitrary object ID
  *
  * All OSAL resources generally have a name associated with them.  This
@@ -309,7 +402,7 @@ void OS_ApplicationExit(int32 Status);
  *          #OS_INVALID_POINTER if the passed-in buffer is invalid
  *          #OS_ERR_NAME_TOO_LONG if the name will not fit in the buffer provided
  */
-int32 OS_GetResourceName(uint32 object_id, char *buffer, uint32 buffer_size);
+int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -322,7 +415,7 @@ int32 OS_GetResourceName(uint32 object_id, char *buffer, uint32 buffer_size);
  * @return The object type portion of the object_id, see @ref OSObjectTypes for
  *         expected values
  */
-uint32 OS_IdentifyObject       (uint32 object_id);
+uint32 OS_IdentifyObject       (osal_id_t object_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -342,7 +435,7 @@ uint32 OS_IdentifyObject       (uint32 object_id);
  * @retval #OS_SUCCESS                 @copybrief OS_SUCCESS
  * @retval #OS_ERR_INCORRECT_OBJ_TYPE  @copybrief OS_ERR_INCORRECT_OBJ_TYPE
  */
-int32 OS_ConvertToArrayIndex   (uint32 object_id, uint32 *ArrayIndex);
+int32 OS_ConvertToArrayIndex   (osal_id_t object_id, uint32 *ArrayIndex);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -356,8 +449,7 @@ int32 OS_ConvertToArrayIndex   (uint32 object_id, uint32 *ArrayIndex);
  * @param[in]  callback_ptr Function to invoke for each matching object ID
  * @param[in]  callback_arg Opaque Argument to pass to callback function
  */
-void OS_ForEachObject           (uint32 creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg);
-/**@}*/
+void OS_ForEachObject           (osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -372,7 +464,8 @@ void OS_ForEachObject           (uint32 creator_id, OS_ArgCallback_t callback_pt
  * @param[in]  callback_ptr Function to invoke for each matching object ID
  * @param[in]  callback_arg Opaque Argument to pass to callback function
   */
-void OS_ForEachObjectOfType     (uint32 objtype, uint32 creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg);
+void OS_ForEachObjectOfType     (uint32 objtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg);
+/**@}*/
 
 
 /** @defgroup OSAPITask OSAL Task APIs
@@ -404,7 +497,7 @@ void OS_ForEachObjectOfType     (uint32 objtype, uint32 creator_id, OS_ArgCallba
  * @retval #OS_ERR_NAME_TAKEN if the name specified is already used by a task
  * @retval #OS_ERROR if an unspecified/other error occurs
  */
-int32 OS_TaskCreate            (uint32 *task_id, const char *task_name, 
+int32 OS_TaskCreate            (osal_id_t *task_id, const char *task_name,
                                 osal_task_entry function_pointer,
                                 uint32 *stack_pointer,
                                 uint32 stack_size,
@@ -424,7 +517,7 @@ int32 OS_TaskCreate            (uint32 *task_id, const char *task_name,
  * @retval #OS_ERR_INVALID_ID if the ID given to it is invalid
  * @retval #OS_ERROR if the OS delete call fails
  */
-int32 OS_TaskDelete            (uint32 task_id); 
+int32 OS_TaskDelete            (osal_id_t task_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -477,7 +570,7 @@ int32 OS_TaskDelay             (uint32 millisecond);
  * @retval #OS_ERR_INVALID_PRIORITY if the priority is greater than the max allowed
  * @retval #OS_ERROR if the OS call to change the priority fails
  */
-int32 OS_TaskSetPriority       (uint32 task_id, uint32 new_priority);
+int32 OS_TaskSetPriority       (osal_id_t task_id, uint32 new_priority);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -499,7 +592,7 @@ int32 OS_TaskRegister          (void);
  *
  * @return Task ID, or zero if the operation failed (zero is never a valid task ID)
  */
-uint32 OS_TaskGetId            (void);
+osal_id_t OS_TaskGetId            (void);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -516,7 +609,7 @@ uint32 OS_TaskGetId            (void);
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_NOT_FOUND if the name wasn't found in the table
  */
-int32 OS_TaskGetIdByName       (uint32 *task_id, const char *task_name);
+int32 OS_TaskGetIdByName       (osal_id_t *task_id, const char *task_name);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -534,7 +627,7 @@ int32 OS_TaskGetIdByName       (uint32 *task_id, const char *task_name);
  * @retval #OS_ERR_INVALID_ID if the ID passed to it is invalid
  * @retval #OS_INVALID_POINTER if the task_prop pointer is NULL
  */
-int32 OS_TaskGetInfo           (uint32 task_id, OS_task_prop_t *task_prop);          
+int32 OS_TaskGetInfo           (osal_id_t task_id, OS_task_prop_t *task_prop);
 
 
 /*-------------------------------------------------------------------------------------*/
@@ -555,7 +648,7 @@ int32 OS_TaskGetInfo           (uint32 task_id, OS_task_prop_t *task_prop);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  */
-int32 OS_TaskFindIdBySystemData(uint32 *task_id, const void *sysdata, size_t sysdata_size);
+int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t sysdata_size);
 
 
 /**@}*/
@@ -589,7 +682,7 @@ int32 OS_TaskFindIdBySystemData(uint32 *task_id, const void *sysdata, size_t sys
  * @retval #OS_QUEUE_INVALID_SIZE if the queue depth exceeds the limit
  * @retval #OS_ERROR if the OS create call fails
  */
-int32 OS_QueueCreate           (uint32 *queue_id, const char *queue_name,
+int32 OS_QueueCreate           (osal_id_t *queue_id, const char *queue_name,
                                 uint32 queue_depth, uint32 data_size, uint32 flags);
 
 /*-------------------------------------------------------------------------------------*/
@@ -609,7 +702,7 @@ int32 OS_QueueCreate           (uint32 *queue_id, const char *queue_name,
  * @retval #OS_ERR_INVALID_ID if the id passed in does not exist
  * @retval #OS_ERROR if the OS call to delete the queue fails
  */
-int32 OS_QueueDelete           (uint32 queue_id);
+int32 OS_QueueDelete           (osal_id_t queue_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -632,7 +725,7 @@ int32 OS_QueueDelete           (uint32 queue_id);
  * @retval #OS_QUEUE_TIMEOUT if the timeout was OS_PEND and the time expired
  * @retval #OS_QUEUE_INVALID_SIZE if the size copied from the queue was not correct
  */
-int32 OS_QueueGet              (uint32 queue_id, void *data, uint32 size, 
+int32 OS_QueueGet              (osal_id_t queue_id, void *data, uint32 size,
                                 uint32 *size_copied, int32 timeout);
 
 /*-------------------------------------------------------------------------------------*/
@@ -651,7 +744,7 @@ int32 OS_QueueGet              (uint32 queue_id, void *data, uint32 size,
  * @retval #OS_QUEUE_FULL if the queue cannot accept another message
  * @retval #OS_ERROR if the OS call returns an error
  */
-int32 OS_QueuePut              (uint32 queue_id, const void *data, uint32 size,
+int32 OS_QueuePut              (osal_id_t queue_id, const void *data, uint32 size,
                                 uint32 flags);
 
 /*-------------------------------------------------------------------------------------*/
@@ -670,7 +763,7 @@ int32 OS_QueuePut              (uint32 queue_id, const void *data, uint32 size,
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_NOT_FOUND the name was not found in the table
  */
-int32 OS_QueueGetIdByName      (uint32 *queue_id, const char *queue_name);
+int32 OS_QueueGetIdByName      (osal_id_t *queue_id, const char *queue_name);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -687,7 +780,7 @@ int32 OS_QueueGetIdByName      (uint32 *queue_id, const char *queue_name);
  * @retval #OS_INVALID_POINTER if queue_prop is NULL
  * @retval #OS_ERR_INVALID_ID if the ID given is not  a valid queue
  */
-int32 OS_QueueGetInfo          (uint32 queue_id, OS_queue_prop_t *queue_prop);
+int32 OS_QueueGetInfo          (osal_id_t queue_id, OS_queue_prop_t *queue_prop);
 /**@}*/
 
 /** @defgroup OSAPISem OSAL Semaphore APIs
@@ -715,7 +808,7 @@ int32 OS_QueueGetInfo          (uint32 queue_id, OS_queue_prop_t *queue_prop);
  * @retval #OS_ERR_NAME_TAKEN if this is already the name of a binary semaphore
  * @retval #OS_SEM_FAILURE if the OS call failed
  */
-int32 OS_BinSemCreate          (uint32 *sem_id, const char *sem_name, 
+int32 OS_BinSemCreate          (osal_id_t *sem_id, const char *sem_name,
                                 uint32 sem_initial_value, uint32 options);
 
 /*-------------------------------------------------------------------------------------*/
@@ -732,7 +825,7 @@ int32 OS_BinSemCreate          (uint32 *sem_id, const char *sem_name,
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a binary semaphore
  * @retval #OS_SEM_FAILURE if an unspecified failure occurs
  */
-int32 OS_BinSemFlush            (uint32 sem_id);
+int32 OS_BinSemFlush            (osal_id_t sem_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -752,7 +845,7 @@ int32 OS_BinSemFlush            (uint32 sem_id);
  * in the array of semaphores defined by the system
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a binary semaphore
  */
-int32 OS_BinSemGive            (uint32 sem_id);
+int32 OS_BinSemGive            (osal_id_t sem_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -771,7 +864,7 @@ int32 OS_BinSemGive            (uint32 sem_id);
  * @retval #OS_ERR_INVALID_ID the Id passed in is not a valid binary semaphore
  * @retval #OS_SEM_FAILURE if the OS call failed
  */
-int32 OS_BinSemTake            (uint32 sem_id);
+int32 OS_BinSemTake            (osal_id_t sem_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -792,7 +885,7 @@ int32 OS_BinSemTake            (uint32 sem_id);
  * in the array of semaphores defined by the system
  * @retval #OS_ERR_INVALID_ID if the ID passed in is not a valid semaphore ID
  */
-int32 OS_BinSemTimedWait       (uint32 sem_id, uint32 msecs);
+int32 OS_BinSemTimedWait       (osal_id_t sem_id, uint32 msecs);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -808,7 +901,7 @@ int32 OS_BinSemTimedWait       (uint32 sem_id, uint32 msecs);
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid binary semaphore
  * @retval #OS_SEM_FAILURE the OS call failed
  */
-int32 OS_BinSemDelete          (uint32 sem_id);
+int32 OS_BinSemDelete          (osal_id_t sem_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -826,7 +919,7 @@ int32 OS_BinSemDelete          (uint32 sem_id);
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_NOT_FOUND if the name was not found in the table
  */
-int32 OS_BinSemGetIdByName     (uint32 *sem_id, const char *sem_name);
+int32 OS_BinSemGetIdByName     (osal_id_t *sem_id, const char *sem_name);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -844,7 +937,7 @@ int32 OS_BinSemGetIdByName     (uint32 *sem_id, const char *sem_name);
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
  * @retval #OS_INVALID_POINTER if the bin_prop pointer is null
  */
-int32 OS_BinSemGetInfo         (uint32 sem_id, OS_bin_sem_prop_t *bin_prop);
+int32 OS_BinSemGetInfo         (osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -868,7 +961,7 @@ int32 OS_BinSemGetInfo         (uint32 sem_id, OS_bin_sem_prop_t *bin_prop);
  * @retval #OS_SEM_FAILURE if the OS call failed
  * @retval #OS_INVALID_SEM_VALUE if the semaphore value is too high
  */
-int32 OS_CountSemCreate          (uint32 *sem_id, const char *sem_name, 
+int32 OS_CountSemCreate          (osal_id_t *sem_id, const char *sem_name,
                                 uint32 sem_initial_value, uint32 options);
 
 /*-------------------------------------------------------------------------------------*/
@@ -889,7 +982,7 @@ int32 OS_CountSemCreate          (uint32 *sem_id, const char *sem_name,
  * in the array of semaphores defined by the system
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a counting semaphore
  */
-int32 OS_CountSemGive            (uint32 sem_id);
+int32 OS_CountSemGive            (osal_id_t sem_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -908,7 +1001,7 @@ int32 OS_CountSemGive            (uint32 sem_id);
  * @retval #OS_ERR_INVALID_ID the Id passed in is not a valid counting semaphore
  * @retval #OS_SEM_FAILURE if the OS call failed
  */
-int32 OS_CountSemTake            (uint32 sem_id);
+int32 OS_CountSemTake            (osal_id_t sem_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -929,7 +1022,7 @@ int32 OS_CountSemTake            (uint32 sem_id);
  * in the array of semaphores defined by the system
  * @retval #OS_ERR_INVALID_ID if the ID passed in is not a valid semaphore ID
  */
-int32 OS_CountSemTimedWait       (uint32 sem_id, uint32 msecs);
+int32 OS_CountSemTimedWait       (osal_id_t sem_id, uint32 msecs);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -942,7 +1035,7 @@ int32 OS_CountSemTimedWait       (uint32 sem_id, uint32 msecs);
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid counting semaphore
  * @retval #OS_SEM_FAILURE the OS call failed
  */
-int32 OS_CountSemDelete          (uint32 sem_id);
+int32 OS_CountSemDelete          (osal_id_t sem_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -960,7 +1053,7 @@ int32 OS_CountSemDelete          (uint32 sem_id);
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_NOT_FOUND if the name was not found in the table
  */
-int32 OS_CountSemGetIdByName     (uint32 *sem_id, const char *sem_name);
+int32 OS_CountSemGetIdByName     (osal_id_t *sem_id, const char *sem_name);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -978,7 +1071,7 @@ int32 OS_CountSemGetIdByName     (uint32 *sem_id, const char *sem_name);
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
  * @retval #OS_INVALID_POINTER if the count_prop pointer is null
  */
-int32 OS_CountSemGetInfo         (uint32 sem_id, OS_count_sem_prop_t *count_prop);
+int32 OS_CountSemGetInfo         (osal_id_t sem_id, OS_count_sem_prop_t *count_prop);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -998,7 +1091,7 @@ int32 OS_CountSemGetInfo         (uint32 sem_id, OS_count_sem_prop_t *count_prop
  * @retval #OS_ERR_NAME_TAKEN if there is already a mutex with the same name
  * @retval #OS_SEM_FAILURE if the OS call failed
  */
-int32 OS_MutSemCreate           (uint32 *sem_id, const char *sem_name, uint32 options);
+int32 OS_MutSemCreate           (osal_id_t *sem_id, const char *sem_name, uint32 options);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -1016,7 +1109,7 @@ int32 OS_MutSemCreate           (uint32 *sem_id, const char *sem_name, uint32 op
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid mutex
  * @retval #OS_SEM_FAILURE if an unspecified error occurs
  */
-int32 OS_MutSemGive             (uint32 sem_id);
+int32 OS_MutSemGive             (osal_id_t sem_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -1035,7 +1128,7 @@ int32 OS_MutSemGive             (uint32 sem_id);
  * not in the array of semaphores defined by the system
  * @retval #OS_ERR_INVALID_ID the id passed in is not a valid mutex
  */
-int32 OS_MutSemTake             (uint32 sem_id);
+int32 OS_MutSemTake             (osal_id_t sem_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -1051,7 +1144,7 @@ int32 OS_MutSemTake             (uint32 sem_id);
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid mutex
  * @retval #OS_SEM_FAILURE if the OS call failed
  */
-int32 OS_MutSemDelete           (uint32 sem_id);  
+int32 OS_MutSemDelete           (osal_id_t sem_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -1069,7 +1162,7 @@ int32 OS_MutSemDelete           (uint32 sem_id);
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_NOT_FOUND if the name was not found in the table
  */
-int32 OS_MutSemGetIdByName      (uint32 *sem_id, const char *sem_name); 
+int32 OS_MutSemGetIdByName      (osal_id_t *sem_id, const char *sem_name);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -1087,7 +1180,7 @@ int32 OS_MutSemGetIdByName      (uint32 *sem_id, const char *sem_name);
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
  * @retval #OS_INVALID_POINTER if the mut_prop pointer is null
  */
-int32 OS_MutSemGetInfo          (uint32 sem_id, OS_mut_sem_prop_t *mut_prop);
+int32 OS_MutSemGetInfo          (osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop);
 /**@}*/
 
 /** @defgroup OSAPITime OSAL Time/Tick APIs
@@ -1239,7 +1332,7 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_SelectSingle(uint32 objid, uint32 *StateFlags, int32 msecs);
+int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -1259,7 +1352,7 @@ int32 OS_SelectFdZero(OS_FdSet *Set);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_SelectFdAdd(OS_FdSet *Set, uint32 objid);
+int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -1269,7 +1362,7 @@ int32 OS_SelectFdAdd(OS_FdSet *Set, uint32 objid);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_SelectFdClear(OS_FdSet *Set, uint32 objid);
+int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -1279,7 +1372,7 @@ int32 OS_SelectFdClear(OS_FdSet *Set, uint32 objid);
  * @retval true  FdSet structure contains ID
  * @retval false FDSet structure does not contain ID
  */
-bool OS_SelectFdIsSet(OS_FdSet *Set, uint32 objid);
+bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid);
 /**@}*/
 
 /** @defgroup OSAPIPrintf OSAL Printf APIs

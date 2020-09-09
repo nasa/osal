@@ -194,7 +194,7 @@ static int32 OS_Console_CopyOut(OS_console_internal_record_t *console, const cha
  *           Write into the console ring buffer
  *
  *-----------------------------------------------------------------*/
-int32 OS_ConsoleWrite(uint32 console_id, const char *Str)
+int32 OS_ConsoleWrite(osal_id_t console_id, const char *Str)
 {
     int32 return_code;
     OS_common_record_t *record;

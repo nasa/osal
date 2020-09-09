@@ -90,7 +90,7 @@ int32 OS_MutexAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
+int32 OS_MutSemCreate (osal_id_t *sem_id, const char *sem_name, uint32 options)
 {
    OS_common_record_t *record;
    int32             return_code;
@@ -134,7 +134,7 @@ int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemDelete (uint32 sem_id)
+int32 OS_MutSemDelete (osal_id_t sem_id)
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -162,7 +162,7 @@ int32 OS_MutSemDelete (uint32 sem_id)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGive ( uint32 sem_id )
+int32 OS_MutSemGive ( osal_id_t sem_id )
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -188,7 +188,7 @@ int32 OS_MutSemGive ( uint32 sem_id )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemTake ( uint32 sem_id )
+int32 OS_MutSemTake ( osal_id_t sem_id )
 {
    OS_common_record_t *record;
    uint32 local_id;
@@ -213,7 +213,7 @@ int32 OS_MutSemTake ( uint32 sem_id )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGetIdByName (uint32 *sem_id, const char *sem_name)
+int32 OS_MutSemGetIdByName (osal_id_t *sem_id, const char *sem_name)
 {
    int32 return_code;
 
@@ -237,7 +237,7 @@ int32 OS_MutSemGetIdByName (uint32 *sem_id, const char *sem_name)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGetInfo (uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
+int32 OS_MutSemGetInfo (osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
 {
    OS_common_record_t *record;
    int32             return_code;

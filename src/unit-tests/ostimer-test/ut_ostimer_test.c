@@ -53,13 +53,13 @@ uint32  g_cbLoopCntMax = 5;
 uint32  g_toleranceVal = 0;
 uint32  g_timerFirst   = 0;
 int32   g_status  = 0;
-uint32  g_timerId = 0;
+osal_id_t  g_timerId;
 
 /*--------------------------------------------------------------------------------*
 ** Local function prototypes
 **--------------------------------------------------------------------------------*/
 
-void UT_os_timercallback(uint32 timerId);
+void UT_os_timercallback(osal_id_t timerId);
 
 void UT_os_init_timer_misc(void);
 void UT_os_setup_timercreate_test(void);
@@ -72,7 +72,7 @@ void UT_os_setup_timerset_test(void);
 ** Local function definitions
 **--------------------------------------------------------------------------------*/
 
-void UT_os_timercallback(uint32 timerId)
+void UT_os_timercallback(osal_id_t timerId)
 {
     int deltaTime = 0;
     static int32 loopCnt = 0, res = 0;
@@ -80,7 +80,7 @@ void UT_os_timercallback(uint32 timerId)
     static uint32 currIntervalTime = 0;
     static OS_time_t currTime = {0,0}, endTime = {0,0};
 
-    if (timerId == g_timerId)
+    if (OS_ObjectIdEqual(timerId, g_timerId))
     {
         if (g_timerFirst)
         {
