@@ -663,58 +663,6 @@ void OS_Unlock_Global(uint32 idtype)
     }
 }
 
-
-/*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdToArrayIndex
- *
- *  Purpose: Local helper routine, not part of OSAL API.
- *           Convert an object ID (which must be of the given type) to a number suitable
- *           for use as an array index.  The array index will be in the range of:
- *            0 <= ArrayIndex < OS_MAX_<OBJTYPE>
- *
- *            If the passed-in ID type is OS_OBJECT_TYPE_UNDEFINED, then any type
- *            is allowed.
- *
- *  returns: If the passed-in ID is not of the proper type, OS_ERROR is returned
- *           Otherwise OS_SUCCESS is returned.
- *
- *-----------------------------------------------------------------*/
-int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t id, uint32 *ArrayIndex)
-{
-   uint32 max_id;
-   uint32 obj_index;
-   uint32 actual_type;
-   int32 return_code;
-
-   obj_index = OS_ObjectIdToSerialNumber_Impl(id);
-   actual_type = OS_ObjectIdToType_Impl(id);
-
-   /*
-    * If requested by the caller, enforce that the ID is of the correct type.
-    * If the caller passed OS_OBJECT_TYPE_UNDEFINED, then anything is allowed.
-    */
-   if (idtype != OS_OBJECT_TYPE_UNDEFINED && actual_type != idtype)
-   {
-       return_code = OS_ERR_INVALID_ID;
-   }
-   else
-   {
-       max_id = OS_GetMaxForObjectType(actual_type);
-       if (max_id == 0)
-       {
-           return_code = OS_ERR_INVALID_ID;
-       }
-       else
-       {
-           return_code = OS_SUCCESS;
-           *ArrayIndex = obj_index % max_id;
-       }
-   }
-
-   return return_code;
-} /* end OS_ObjectIdToArrayIndex */
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ObjectIdFinalizeNew
@@ -1247,5 +1195,56 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size)
 
     return return_code;
 } /* end OS_GetResourceName */
+
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_ObjectIdToArrayIndex
+ *
+ *  Purpose: Convert an object ID (which must be of the given type) to a number suitable
+ *           for use as an array index.  The array index will be in the range of:
+ *            0 <= ArrayIndex < OS_MAX_<OBJTYPE>
+ *
+ *            If the passed-in ID type is OS_OBJECT_TYPE_UNDEFINED, then any type
+ *            is allowed.
+ *
+ *  returns: If the passed-in ID is not of the proper type, OS_ERROR is returned
+ *           Otherwise OS_SUCCESS is returned.
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t object_id, uint32 *ArrayIndex)
+{
+   uint32 max_id;
+   uint32 obj_index;
+   uint32 actual_type;
+   int32 return_code;
+
+   obj_index = OS_ObjectIdToSerialNumber_Impl(object_id);
+   actual_type = OS_ObjectIdToType_Impl(object_id);
+
+   /*
+    * If requested by the caller, enforce that the ID is of the correct type.
+    * If the caller passed OS_OBJECT_TYPE_UNDEFINED, then anything is allowed.
+    */
+   if (idtype != OS_OBJECT_TYPE_UNDEFINED && actual_type != idtype)
+   {
+       return_code = OS_ERR_INVALID_ID;
+   }
+   else
+   {
+       max_id = OS_GetMaxForObjectType(actual_type);
+       if (max_id == 0)
+       {
+           return_code = OS_ERR_INVALID_ID;
+       }
+       else
+       {
+           return_code = OS_SUCCESS;
+           *ArrayIndex = obj_index % max_id;
+       }
+   }
+
+   return return_code;
+} /* end OS_ObjectIdToArrayIndex */
 
 

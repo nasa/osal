@@ -428,6 +428,12 @@ uint32 OS_IdentifyObject       (osal_id_t object_id);
  * @note This does NOT verify the validity of the ID, that is left to the caller.
  * This is only the conversion logic.
  *
+ * This routine accepts any object type, and returns a value based on the
+ * maximum number of objects for that type.  This is equivalent to invoking
+ * OS_ObjectIdToArrayIndex() with the idtype set to OS_OBJECT_TYPE_UNDEFINED.
+ *
+ * @sa OS_ObjectIdToArrayIndex
+ *
  * @param[in]  object_id    The object ID to operate on
  * @param[out] *ArrayIndex  The Index to return 
  *
@@ -436,6 +442,39 @@ uint32 OS_IdentifyObject       (osal_id_t object_id);
  * @retval #OS_ERR_INCORRECT_OBJ_TYPE  @copybrief OS_ERR_INCORRECT_OBJ_TYPE
  */
 int32 OS_ConvertToArrayIndex   (osal_id_t object_id, uint32 *ArrayIndex);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Converts an abstract ID into a number suitable for use as an array index.
+ *
+ * This will return a unique zero-based integer number in the range of [0,MAX) for
+ * any valid object ID.  This may be used by application code as an array index
+ * for indexing into local tables.
+ *
+ * This routine operates on a specific object type, and returns a value based on the
+ * maximum number of objects for that type.
+ *
+ * If the idtype is passed as #OS_OBJECT_TYPE_UNDEFINED, then object type verification
+ * is skipped and any object ID will be accepted and converted to an index.  In this
+ * mode, the range of the output depends on the actual passed-in object type.
+ *
+ * If the idtype is passed as any other value, the passed-in ID value is first
+ * confirmed to be the correct type.  This check will guarantee that the output
+ * is within an expected range; for instance, if the type is passed as
+ * #OS_OBJECT_TYPE_OS_TASK, then the output index is guaranteed to be between 0 and
+ * #OS_MAX_TASKS-1 after successful conversion.
+ *
+ * @param[in]  idtype       The object type to convert
+ * @param[in]  object_id    The object ID to operate on
+ * @param[out] *ArrayIndex  The Index to return
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS                 @copybrief OS_SUCCESS
+ * @retval #OS_ERR_INCORRECT_OBJ_TYPE  @copybrief OS_ERR_INCORRECT_OBJ_TYPE
+ * */
+int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t object_id, uint32 *ArrayIndex);
+
+
 
 /*-------------------------------------------------------------------------------------*/
 /**
