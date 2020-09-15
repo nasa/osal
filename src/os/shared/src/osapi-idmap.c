@@ -1212,15 +1212,15 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size)
  *           Otherwise OS_SUCCESS is returned.
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t id, uint32 *ArrayIndex)
+int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t object_id, uint32 *ArrayIndex)
 {
    uint32 max_id;
    uint32 obj_index;
    uint32 actual_type;
    int32 return_code;
 
-   obj_index = OS_ObjectIdToSerialNumber_Impl(id);
-   actual_type = OS_ObjectIdToType_Impl(id);
+   obj_index = OS_ObjectIdToSerialNumber_Impl(object_id);
+   actual_type = OS_ObjectIdToType_Impl(object_id);
 
    /*
     * If requested by the caller, enforce that the ID is of the correct type.

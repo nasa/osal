@@ -472,7 +472,7 @@ int32 OS_ConvertToArrayIndex   (osal_id_t object_id, uint32 *ArrayIndex);
  * @retval #OS_SUCCESS                 @copybrief OS_SUCCESS
  * @retval #OS_ERR_INCORRECT_OBJ_TYPE  @copybrief OS_ERR_INCORRECT_OBJ_TYPE
  * */
-int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t id, uint32 *ArrayIndex);
+int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t object_id, uint32 *ArrayIndex);
 
 
 
