@@ -184,8 +184,11 @@ int32 OS_VxWorks_GenericSemTake(SEM_ID vxid, int sys_ticks)
          * check for the timeout condition,
          * which has a different return code and
          * not necessarily an error of concern.
+         *
+         * vxworks7: if sys_ticks == 0, then if the semaphore can
+         * not be taken S_objLib_OBJ_UNAVAILABLE will be returned
          */
-        if (errno == S_objLib_OBJ_TIMEOUT)
+        if ((errno == S_objLib_OBJ_TIMEOUT) || (!sys_ticks && (errno == S_objLib_OBJ_UNAVAILABLE)))
         {
             return OS_SEM_TIMEOUT;
         }

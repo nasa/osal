@@ -238,7 +238,7 @@ int32 OS_TaskCreate_Impl(osal_index_t task_id, uint32 flags)
 #endif
 
     id.id  = OS_global_task_table[task_id].active_id;
-    status = taskInit(&lrec->tcb,                                              /* address of new task's TCB */
+    status = taskInit((WIND_TCB*)&lrec->tcb,                                   /* address of new task's TCB */
                       (char *)OS_global_task_table[task_id].name_entry, vxpri, /* priority of new task */
                       vxflags,                                                 /* task option word */
                       (char *)actualstackbase,                                 /* base of new task's stack */
