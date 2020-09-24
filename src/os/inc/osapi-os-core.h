@@ -1222,37 +1222,9 @@ int32 OS_MutSemGetIdByName      (osal_id_t *sem_id, const char *sem_name);
 int32 OS_MutSemGetInfo          (osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop);
 /**@}*/
 
-/** @defgroup OSAPITime OSAL Time/Tick APIs
+/** @defgroup OSAPITime OSAL Time APIs
  * @{
  */
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Convert time units from milliseconds to system ticks
- *
- * This function accepts a time interval in milliseconds and
- * returns the tick equivalent.  If the result is not an exact
- * number of system ticks, the result will be rounded up to
- * the nearest tick.
- *
- * @param[in]   milli_seconds the number of milliseconds
- *
- * @return The number of ticks
- */
-int32 OS_Milli2Ticks           (uint32 milli_seconds);
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Get the system tick size, in microseconds
- *
- * This function returns the duration of a system tick in micro seconds
- *
- * @note care is taken to ensure this does not return "0" since it is often used
- *  as the divisor in mathematical operations
- *
- * @return Duration of a system tick in microseconds
- */
-int32 OS_Tick2Micros           (void);
 
 /*-------------------------------------------------------------------------------------*/
 /**

@@ -134,6 +134,12 @@ int32 OS_TimeBaseGetInfo_Impl       (uint32 timer_id, OS_timebase_prop_t *timer_
  ------------------------------------------------------------------*/
 void  OS_TimeBase_CallbackThread    (osal_id_t timebase_id);
 
+/*----------------------------------------------------------------
+   Function: OS_Milli2Ticks
+
+    Purpose: Convert milliseconds to ticks
+ ------------------------------------------------------------------*/
+int32 OS_Milli2Ticks(uint32 milli_seconds, int *ticks);
 
 #endif  /* INCLUDE_OS_SHARED_TIMEBASE_H_ */
 

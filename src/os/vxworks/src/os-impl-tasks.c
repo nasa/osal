@@ -33,6 +33,7 @@
 
 #include "os-shared-task.h"
 #include "os-shared-idmap.h"
+#include "os-shared-timebase.h"
 
 #include <errnoLib.h>
 #include <taskLib.h>
@@ -323,7 +324,11 @@ int32 OS_TaskDelay_Impl (uint32 milli_second)
     /* msecs rounded to the closest system tick count */
     int sys_ticks;
 
-    sys_ticks = OS_Milli2Ticks(milli_second);
+    /* Convert to ticks if possible */
+    if (OS_Milli2Ticks(milli_second, &sys_ticks) != OS_SUCCESS)
+    {
+        return OS_ERROR;
+    }
 
     /* if successful, the execution of task will pend here until delay finishes */
     if(taskDelay(sys_ticks) != OK)

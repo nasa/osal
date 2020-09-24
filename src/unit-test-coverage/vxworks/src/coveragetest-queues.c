@@ -27,6 +27,7 @@
 #include "os-vxworks-coveragetest.h"
 #include "ut-adaptor-queues.h"
 #include "os-shared-queue.h"
+#include "os-shared-timebase.h"
 
 #include <OCS_msgQLib.h>
 #include <OCS_errno.h>
@@ -76,6 +77,9 @@ void Test_OS_QueueGet_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_QueueGet_Impl(0, &Data, sizeof(Data), &ActSz, OS_PEND), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_QueueGet_Impl(0, &Data, sizeof(Data), &ActSz, OS_CHECK), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_QueueGet_Impl(0, &Data, sizeof(Data), &ActSz, 100), OS_SUCCESS);
+
+    UT_SetForceFail(UT_KEY(OS_Milli2Ticks), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGet_Impl(0, &Data, sizeof(Data), &ActSz, 100), OS_ERROR);
 
     UT_SetForceFail(UT_KEY(OCS_msgQReceive), OCS_ERROR);
     OCS_errno = OCS_S_objLib_OBJ_TIMEOUT;

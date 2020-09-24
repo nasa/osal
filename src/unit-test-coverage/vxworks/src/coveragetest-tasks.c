@@ -29,6 +29,7 @@
 
 #include "os-shared-task.h"
 #include "os-shared-idmap.h"
+#include "os-shared-timebase.h"
 
 #include <OCS_stdlib.h>
 
@@ -146,6 +147,9 @@ void Test_OS_TaskDelay_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_TaskDelay_Impl(100), OS_SUCCESS);
 
     UT_SetForceFail(UT_KEY(OCS_taskDelay), OCS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskDelay_Impl(100), OS_ERROR);
+
+    UT_SetForceFail(UT_KEY(OS_Milli2Ticks), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_TaskDelay_Impl(100), OS_ERROR);
 }
 

@@ -244,9 +244,12 @@ int32 OS_BinSemTake_Impl (uint32 sem_id)
 int32 OS_BinSemTimedWait_Impl (uint32 sem_id, uint32 msecs)
 {
     rtems_status_code status;
-    uint32            TimeInTicks;
+    int               TimeInTicks;
 
-    TimeInTicks = OS_Milli2Ticks(msecs);
+    if (OS_Milli2Ticks(msecs, &TimInTicks) != OS_SUCCESS)
+    {
+        return OS_ERROR;
+    }
 
     status  = 	rtems_semaphore_obtain(OS_impl_bin_sem_table[sem_id].id, RTEMS_WAIT, TimeInTicks) ;
 

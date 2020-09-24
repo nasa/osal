@@ -31,6 +31,7 @@
 #include "os-vxworks.h"
 #include "os-impl-queues.h"
 #include "os-shared-queue.h"
+#include "os-shared-timebase.h"
 
 
 /****************************************************************************************
@@ -137,8 +138,11 @@ int32 OS_QueueGet_Impl (uint32 queue_id, void *data, uint32 size, uint32 *size_c
     }
     else
     {
-        /* msecs rounded to the closest system tick count */
-        ticks = OS_Milli2Ticks(timeout);
+        /* msecs rounded to the closest system tick count if possible */
+        if (OS_Milli2Ticks(timeout, &ticks) != OS_SUCCESS)
+        {
+            return OS_ERROR;
+        }
     }
 
     status = msgQReceive(OS_impl_queue_table[queue_id].vxid, data, size, ticks);
