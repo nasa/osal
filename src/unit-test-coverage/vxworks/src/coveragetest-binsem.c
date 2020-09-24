@@ -31,6 +31,7 @@
 
 #include "os-shared-binsem.h"
 #include "os-shared-idmap.h"
+#include "os-shared-timebase.h"
 
 #include <OCS_errno.h>
 #include <OCS_objLib.h>
@@ -108,6 +109,9 @@ void Test_OS_BinSemTimedWait_Impl(void)
 
     UT_SetForceFail(UT_StubKey_GenericSemTake, OS_SEM_FAILURE);
     OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(0,100), OS_SEM_FAILURE);
+
+    UT_SetForceFail(UT_KEY(OS_Milli2Ticks), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(0,100), OS_ERROR);
 }
 
 void Test_OS_BinSemGetInfo_Impl(void)

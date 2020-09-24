@@ -31,6 +31,7 @@
 #include "os-vxworks.h"
 #include "os-impl-countsem.h"
 #include "os-shared-countsem.h"
+#include "os-shared-timebase.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -153,8 +154,17 @@ int32 OS_CountSemTake_Impl (uint32 sem_id)
  *-----------------------------------------------------------------*/
 int32 OS_CountSemTimedWait_Impl (uint32 sem_id, uint32 msecs)
 {
-    return OS_VxWorks_GenericSemTake(OS_impl_count_sem_table[sem_id].vxid,
-            OS_Milli2Ticks(msecs));
+    int ticks;
+    int32 status;
+
+    status = OS_Milli2Ticks(msecs, &ticks);
+
+    if (status == OS_SUCCESS)
+    {
+        status = OS_VxWorks_GenericSemTake(OS_impl_count_sem_table[sem_id].vxid, ticks);
+    }
+
+    return status;
 } /* end OS_CountSemTimedWait_Impl */
 
 

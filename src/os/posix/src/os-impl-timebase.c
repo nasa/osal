@@ -275,7 +275,6 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
 
        /*
         * Pre-calculate the clock tick to microsecond conversion factor.
-        * This is used by OS_Tick2Micros(), OS_Milli2Ticks(), etc.
         */
        OS_SharedGlobalVars.TicksPerSecond = sysconf(_SC_CLK_TCK);
        if (OS_SharedGlobalVars.TicksPerSecond <= 0)

@@ -206,22 +206,22 @@ void OS_TimeBase_CallbackThread(uint32 timebase_id)
 
 /*****************************************************************************
  *
- * Stub for OS_Tick2Micros() function
- *
- *****************************************************************************/
-int32 OS_Tick2Micros (void)
-{
-    return UT_DEFAULT_IMPL_RC(OS_Tick2Micros,100);
-}
-
-/*****************************************************************************
- *
  * Stub for OS_Milli2Ticks() function
  *
  *****************************************************************************/
-int32 OS_Milli2Ticks(uint32 milli_seconds)
+int32 OS_Milli2Ticks(uint32 milli_seconds, int *ticks)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_Milli2Ticks), milli_seconds);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_Milli2Ticks), ticks);
 
-    return UT_DEFAULT_IMPL_RC(OS_Milli2Ticks,100);
+    int32 status;
+
+    status = UT_DEFAULT_IMPL(OS_Milli2Ticks);
+
+    if (status >= 0)
+    {
+        UT_Stub_CopyToLocal(UT_KEY(OS_Milli2Ticks), (uint8 *)ticks, sizeof(*ticks));
+    }
+
+    return status;
 }
