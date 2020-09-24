@@ -144,6 +144,17 @@ typedef struct
                 UtAssertEx(Expression, UTASSERT_CASETYPE_##Type, __FILE__, __LINE__, __VA_ARGS__)
 
 /**
+ * \brief Compare addresses for equality with an auto-generated description message
+ */
+#define UtAssert_ADDRESS_EQ(actual,expect)   do       \
+{                                                     \
+    void *exp = (void*)(expect);                      \
+    void *act = (void*)(actual);                      \
+    UtAssert_True(act == exp, "%s (%p) == %s (%p)",   \
+                  #actual, act, #expect, exp);        \
+} while(0)                                            \
+
+/**
  * \brief Compare two values for equality with an auto-generated description message
  * Values will be compared in an "int32" type context.
  */
