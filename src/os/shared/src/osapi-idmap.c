@@ -684,6 +684,7 @@ void OS_Unlock_Global(uint32 idtype)
 int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record, osal_id_t *outid)
 {
     uint32 idtype = OS_ObjectIdToType_Impl(record->active_id);
+    osal_id_t callback_id;
 
     /* if operation was unsuccessful, then clear
      * the active_id field within the record, so
@@ -708,6 +709,9 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record,
         OS_objtype_state[idtype].last_id_issued = record->active_id;
     }
 
+    /* snapshot the ID for callback - will be needed after unlock */
+    callback_id = record->active_id;
+
     if (outid != NULL)
     {
         /* always write the final value to the output buffer */
@@ -716,6 +720,12 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record,
 
     /* Either way we must unlock the object type */
     OS_Unlock_Global(idtype);
+
+    /* Give event callback to the application */
+    if (OS_ObjectIdDefined(callback_id))
+    {
+        OS_NotifyEvent(OS_EVENT_RESOURCE_CREATED, callback_id, NULL);
+    }
 
     return operation_status;
 } /* end OS_ObjectIdFinalizeNew */
@@ -729,15 +739,27 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record,
 int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *record)
 {
     uint32 idtype = OS_ObjectIdToType_Impl(record->active_id);
+    osal_id_t callback_id;
 
     /* Clear the OSAL ID if successful - this returns the record to the pool */
     if (operation_status == OS_SUCCESS)
     {
+        callback_id = record->active_id;
         record->active_id = OS_OBJECT_ID_UNDEFINED;
+    }
+    else
+    {
+        callback_id = OS_OBJECT_ID_UNDEFINED;
     }
 
     /* Either way we must unlock the object type */
     OS_Unlock_Global(idtype);
+
+    /* Give event callback to the application */
+    if (OS_ObjectIdDefined(callback_id))
+    {
+        OS_NotifyEvent(OS_EVENT_RESOURCE_DELETED, callback_id, NULL);
+    }
 
     return operation_status;
 }
@@ -1021,6 +1043,11 @@ int32 OS_ObjectIdAllocateNew(uint32 idtype, const char *name, uint32 *array_inde
    else
    {
       return_code = OS_ObjectIdFindNext(idtype, array_index, record);
+   }
+
+   if (return_code == OS_SUCCESS)
+   {
+       return_code = OS_NotifyEvent(OS_EVENT_RESOURCE_ALLOCATED, (*record)->active_id, NULL);
    }
 
    /* If allocation failed for any reason, unlock the global.

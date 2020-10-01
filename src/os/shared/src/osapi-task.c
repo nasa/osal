@@ -120,6 +120,12 @@ static int32 OS_TaskPrepare(osal_id_t task_id, osal_task_entry *entrypt)
        return_code = OS_TaskRegister_Impl(task_id);
    }
 
+   if (return_code == OS_SUCCESS)
+   {
+      /* Give event callback to the application */
+      return_code = OS_NotifyEvent(OS_EVENT_TASK_STARTUP, task_id, NULL);
+   }
+
    if (return_code != OS_SUCCESS)
    {
       *entrypt = NULL;
