@@ -178,6 +178,8 @@ typedef enum
  * @{
  */
 
+#ifndef OSAL_OMIT_DEPRECATED
+
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Creates a file specified by path
@@ -199,6 +201,9 @@ typedef enum
  * @retval #OS_FS_ERR_NAME_TOO_LONG if the name of the file is too long
  * @retval #OS_ERROR if permissions are unknown or OS call fails
  * @retval #OS_ERR_NO_FREE_IDS if there are no free file descriptors left
+ *
+ * @deprecated Replaced by OS_OpenCreate() with flags set to
+ *             OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE.
  */
 int32           OS_creat  (const char *path, int32  access);
 
@@ -225,8 +230,13 @@ int32           OS_creat  (const char *path, int32  access);
  * @retval #OS_FS_ERR_NAME_TOO_LONG if the name of the file is too long
  * @retval #OS_ERROR if permissions are unknown or OS call fails
  * @retval #OS_ERR_NO_FREE_IDS if there are no free file descriptors left
+ *
+ * @deprecated Replaced by OS_OpenCreate() with flags set to
+ *             OS_FILE_FLAG_NONE.
  */
 int32           OS_open   (const char *path,  int32 access,  uint32 mode);
+
+#endif
 
 /*-------------------------------------------------------------------------------------*/
 /**

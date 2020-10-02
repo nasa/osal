@@ -107,6 +107,7 @@ static int32 UT_GenericWriteStub(const char *fname, UT_EntryKey_t fkey, const vo
     return status;
 }
 
+#ifndef OSAL_OMIT_DEPRECATED
 
 /*****************************************************************************
  *
@@ -154,6 +155,8 @@ int32 OS_open(const char *path, int32 access, uint32 mode)
 
     return status;
 }
+
+#endif
 
 /*****************************************************************************
  *

@@ -99,6 +99,21 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
    OS_common_record_t *record;
    char   local_path[OS_MAX_LOCAL_PATH_LEN];
 
+   if (filedes == NULL)
+   {
+       return OS_INVALID_POINTER;
+   }
+
+   /*
+   ** Check for a valid access mode
+   */
+   if (access != OS_WRITE_ONLY &&
+           access != OS_READ_ONLY &&
+           access != OS_READ_WRITE)
+   {
+       return OS_ERROR;
+   }
+
    /*
     * Translate the path
     */
@@ -126,6 +141,12 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
    return return_code;
 } /* end OS_OpenCreate */
 
+
+/*
+ * The OS_open and OS_creat functions are deprecated, replaced by
+ * the generic OS_OpenCreate above
+ */
+#ifndef OSAL_OMIT_DEPRECATED
 
 /*----------------------------------------------------------------
  *
@@ -205,7 +226,7 @@ int32 OS_open   (const char *path,  int32 access,  uint32  mode)
    return return_code;
 } /* end OS_open */
 
-
+#endif
 
 /*----------------------------------------------------------------
  *
