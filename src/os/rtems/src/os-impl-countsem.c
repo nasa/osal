@@ -40,6 +40,7 @@
 
 #include "os-shared-countsem.h"
 #include "os-shared-idmap.h"
+#include "os-shared-timebase.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -207,9 +208,12 @@ int32 OS_CountSemTake_Impl (uint32 sem_id)
 int32 OS_CountSemTimedWait_Impl (uint32 sem_id, uint32 msecs)
 {
     rtems_status_code status;
-    uint32            TimeInTicks;
+    int               TimeInTicks;
 
-    TimeInTicks = OS_Milli2Ticks(msecs);
+    if (OS_Milli2Ticks(msecs, &TimeInTicks) != OS_SUCCESS)
+    {
+        return OS_ERROR;
+    }
 
     status = rtems_semaphore_obtain(OS_impl_count_sem_table[sem_id].id, RTEMS_WAIT, TimeInTicks);
     if (status == RTEMS_TIMEOUT)
