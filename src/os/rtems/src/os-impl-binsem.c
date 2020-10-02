@@ -103,7 +103,7 @@ int32 OS_BinSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 opti
     ** It is convenient to use the OSAL ID in here, as we know it is already unique
     ** and trying to use the real name would be less than useful (only 4 chars)
     */
-    r_name = OS_global_bin_sem_table[sem_id].active_id;
+    r_name = OS_ObjectIdToInteger(OS_global_bin_sem_table[sem_id].active_id);
 
     /* Check to make sure the sem value is going to be either 0 or 1 */
     if (sem_initial_value > 1)

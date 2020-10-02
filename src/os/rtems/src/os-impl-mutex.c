@@ -99,7 +99,7 @@ int32 OS_MutSemCreate_Impl (uint32 sem_id, uint32 options)
     /*
     ** Try to create the mutex
     */
-    r_name = OS_global_mutex_table[sem_id].active_id;
+    r_name = OS_ObjectIdToInteger(OS_global_mutex_table[sem_id].active_id);
     status = rtems_semaphore_create ( r_name, 1,
                                       OSAL_MUTEX_ATTRIBS ,
                                       0,
