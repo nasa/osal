@@ -39,6 +39,7 @@
 #include "os-impl-binsem.h"
 #include "os-shared-binsem.h"
 #include "os-shared-idmap.h"
+#include "os-shared-timebase.h"
 
 
 /****************************************************************************************
@@ -246,7 +247,7 @@ int32 OS_BinSemTimedWait_Impl (uint32 sem_id, uint32 msecs)
     rtems_status_code status;
     int               TimeInTicks;
 
-    if (OS_Milli2Ticks(msecs, &TimInTicks) != OS_SUCCESS)
+    if (OS_Milli2Ticks(msecs, &TimeInTicks) != OS_SUCCESS)
     {
         return OS_ERROR;
     }
