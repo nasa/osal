@@ -40,6 +40,7 @@
 
 #include "os-shared-task.h"
 #include "os-shared-idmap.h"
+#include "os-shared-timebase.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -199,15 +200,28 @@ void OS_TaskExit_Impl()
  *-----------------------------------------------------------------*/
 int32 OS_TaskDelay_Impl (uint32 milli_second)
 {
-    rtems_interval     ticks;
+    int     tick_count;
+    int32   return_code;
 
-    ticks = OS_Milli2Ticks(milli_second);
+    return_code = OS_Milli2Ticks(milli_second, &tick_count);
 
-    rtems_task_wake_after(ticks);
+    if (return_code != OS_SUCCESS)
+    {
+        /*
+         * always want to do some form of delay, because if
+         * this function becomes a no-op then this might create a
+         * tight loop that doesn't ever yield the CPU - effectively
+         * locking the system in an RTOS environment.
+         */
+        tick_count = 10;
+    }
+
     /*
     ** Always successful ( from RTEMS docs )
     */
-    return (OS_SUCCESS);
+    rtems_task_wake_after((rtems_interval)tick_count);
+
+    return (return_code);
 
 } /* end OS_TaskDelay_Impl */
 
