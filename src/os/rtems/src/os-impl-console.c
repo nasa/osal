@@ -156,7 +156,7 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id)
             ** It is convenient to use the OSAL ID in here, as we know it is already unique
             ** and trying to use the real name would be less than useful (only 4 chars)
             */
-            r_name = OS_global_console_table[local_id].active_id;
+            r_name = OS_ObjectIdToInteger(OS_global_console_table[local_id].active_id);
             status = rtems_semaphore_create( r_name, 0,
                                              RTEMS_PRIORITY,
                                              0,
