@@ -147,22 +147,16 @@ void TestCreatRemove(void)
     }
     
     /* create a file with short name */
-    status = OS_creat(filename,OS_READ_WRITE);
-    UtAssert_True(status >= 0, "fd after creat short name length file = %d",(int)status);
-
-    /* conversion to osal_id_t */
-    fd = OS_ObjectIdFromInteger(status);
+    status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
+    UtAssert_True(status == OS_SUCCESS, "fd after creat short name length file = %d",(int)status);
 
     /* close the first file */
     status = OS_close(fd);
     UtAssert_True(status == OS_SUCCESS, "status after close short name length file = %d",(int)status);
 
     /* create a file with max name size */
-    status = OS_creat(maxfilename,OS_READ_WRITE);
-    UtAssert_True(status >= 0, "fd after creat max name length file = %d",(int)status);
-
-    /* conversion to osal_id_t */
-    fd = OS_ObjectIdFromInteger(status);
+    status = OS_OpenCreate(&fd, maxfilename, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
+    UtAssert_True(status == OS_SUCCESS, "fd after creat max name length file = %d",(int)status);
 
     /* close the second file */
     status = OS_close(fd);
@@ -177,7 +171,7 @@ void TestCreatRemove(void)
     UtAssert_True(status == OS_SUCCESS, "status after remove max name length file = %d",(int)status);
 
     /* try creating with file name too big, should fail */
-    status = OS_creat(longfilename,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd, longfilename, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status < OS_SUCCESS, "status after create file name too long = %d",(int)status);
 
     /* try removing with file name too big. Should Fail */
@@ -207,12 +201,9 @@ void TestOpenClose(void)
     filename[sizeof(filename) - 1] = 0;
 
     /* create a file of reasonable length (but over 8 chars) */
-    status = OS_creat(filename,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat = %d",(int)status);
         
-    /* conversion to osal_id_t */
-    fd = OS_ObjectIdFromInteger(status);
-
     /*
     ** try to close the file
     */
@@ -220,12 +211,9 @@ void TestOpenClose(void)
     UtAssert_True(status == OS_SUCCESS, "status after close = %d",(int)status);
 
     /*  reopen the file */
-    status = OS_open(filename,OS_READ_WRITE,0644);
+    status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_NONE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after reopen = %d",(int)status);
 
-    /* conversion to osal_id_t */
-    fd = OS_ObjectIdFromInteger(status);
-   
     /*
     ** try to close the file again
     */
@@ -243,7 +231,7 @@ void TestOpenClose(void)
     UtAssert_True(status != OS_SUCCESS, "status after close = %d",(int)status);
 
     /*  open a file that was never in the system */
-    status = OS_open("/drive0/FileNotHere",OS_READ_ONLY,0644);
+    status = OS_OpenCreate(&fd, "/drive0/FileNotHere", OS_FILE_FLAG_NONE, OS_READ_ONLY);
     UtAssert_True(status < OS_SUCCESS, "status after open = %d",(int)status);
 
     /* try removing the file from the drive  to end the function */
@@ -279,11 +267,9 @@ void TestReadWriteLseek(void)
     /* create a file of reasonable length (but over 8 chars) */
     
     /* Open In R/W mode */
-    status = OS_creat(filename,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat = %d",(int)status);
     
-    /* conversion to osal_id_t */
-    fd = OS_ObjectIdFromInteger(status);
     size = strlen(buffer);
     
     /* test write portion of R/W mode */
@@ -310,11 +296,8 @@ void TestReadWriteLseek(void)
     UtAssert_True(status == OS_SUCCESS, "status after close = %d",(int)status);
 
     /*  open a file again, but only in READ mode */
-    status = OS_open(filename,OS_READ_ONLY,0644);
+    status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_NONE, OS_READ_ONLY);
     UtAssert_True(status >= OS_SUCCESS, "status after reopen = %d",(int)status);
-
-    /* conversion to osal_id_t */
-    fd = OS_ObjectIdFromInteger(status);
 
     /* test write in READ ONLY mode */
     status = OS_write(fd, (void*)buffer, size);
@@ -349,11 +332,8 @@ void TestReadWriteLseek(void)
     UtAssert_True(status == OS_SUCCESS, "status after close = %d",(int)status);
 
     /*  open a file again, but only in WRITE mode */
-    status = OS_open(filename,OS_WRITE_ONLY,0644);
+    status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_NONE, OS_WRITE_ONLY);
     UtAssert_True(status >= OS_SUCCESS, "status after reopen = %d",(int)status);
-
-    /* conversion to osal_id_t */
-    fd = OS_ObjectIdFromInteger(status);
 
     /* test write in WRITE ONLY mode */
     status = OS_write(fd, (void*)buffer, size);
@@ -423,18 +403,12 @@ void TestMkRmDirFreeBytes(void)
     
     /* now create two files in the two directories (1 file per directory) */
 
-    status = OS_creat(filename1,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd1, filename1, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat 1 = %d",(int)status);
     
-    /* conversion to osal_id_t */
-    fd1 = OS_ObjectIdFromInteger(status);
-
-    status = OS_creat(filename2,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd2, filename2, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat 2 = %d",(int)status);
     
-    /* conversion to osal_id_t */
-    fd2 = OS_ObjectIdFromInteger(status);
-
     /* write the propper buffers into each of the files */
     size = strlen(buffer1);
     status = OS_write(fd1, buffer1, size);
@@ -537,18 +511,12 @@ void TestOpenReadCloseDir(void)
     
     /* now create two files in the two directories (1 file per directory) */
 
-    status = OS_creat(filename1,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd1, filename1, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat 1 = %d",(int)status);
     
-    /* conversion to osal_id_t */
-    fd1 = OS_ObjectIdFromInteger(status);
-
-    status = OS_creat(filename2,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd2, filename2, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat 2 = %d",(int)status);
     
-    /* conversion to osal_id_t */
-    fd2 = OS_ObjectIdFromInteger(status);
-
     /* write the proper buffers into each of the files */
     size = strlen(buffer1);
     status = OS_write(fd1, buffer1, size);
@@ -756,12 +724,9 @@ void TestRename(void)
                
     /* now create a file in the directory */
 
-    status = OS_creat(filename1,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd1, filename1, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat 1 = %d",(int)status);
     
-    /* conversion to osal_id_t */
-    fd1 = OS_ObjectIdFromInteger(status);
-
     /* write the propper buffes into  the file */
     
     size = strlen(buffer1);
@@ -787,12 +752,9 @@ void TestRename(void)
 
     /* try to read the new file out */
 
-    status = OS_open(newfilename1,OS_READ_ONLY,0644);
+    status = OS_OpenCreate(&fd1, newfilename1, OS_FILE_FLAG_NONE, OS_READ_ONLY);
     UtAssert_True(status >= OS_SUCCESS, "status after open 1 = %d",(int)status);
     
-    /* conversion to osal_id_t */
-    fd1 = OS_ObjectIdFromInteger(status);
-
     size  = strlen(copybuffer1);
     status = OS_read(fd1,buffer1,size);
     UtAssert_True(status == size, "status after read 1 = %d size = %d",(int)status, (int)size);
@@ -838,12 +800,9 @@ void TestStat(void)
     UtAssert_True(status == OS_SUCCESS, "status after mkdir 1 = %d",(int)status);
     
     /* now create a file  */
-    status = OS_creat(filename1,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd1, filename1, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat 1 = %d",(int)status);
     
-    /* conversion to osal_id_t */
-    fd1 = OS_ObjectIdFromInteger(status);
-
     /* Write some data into the file */
     
     size = strlen(buffer1);
@@ -887,21 +846,22 @@ void TestOpenFileAPI(void)
     char filename2 [OS_MAX_PATH_LEN];
     char filename3 [OS_MAX_PATH_LEN];
     int status;
+    osal_id_t fd;
     
     strcpy(filename1,"/drive0/Filename1");
     strcpy(filename2,"/drive0/Filename2");
     strcpy(filename3,"/drive0/Filename3");
 
     /* Create/open a file */
-    status = OS_creat(filename1,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd, filename1, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat 1 = %d",(int)status);
 
     /* Create/open a file */
-    status = OS_creat(filename2,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd, filename2, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat 2 = %d",(int)status);
    
     /* Create/open a file */
-    status = OS_creat(filename3,OS_READ_WRITE);
+    status = OS_OpenCreate(&fd, filename3, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat 3 = %d",(int)status);
 
     /* 
