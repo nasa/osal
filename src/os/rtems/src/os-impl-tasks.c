@@ -63,7 +63,7 @@ OS_impl_task_internal_record_t    OS_impl_task_table          [OS_MAX_TASKS];
 ---------------------------------------------------------------------------------------*/
 static rtems_task OS_RtemsEntry(rtems_task_argument arg)
 {
-    OS_TaskEntryPoint((uint32)arg);
+    OS_TaskEntryPoint(OS_ObjectIdFromInteger(arg));
 } /* end OS_RtemsEntry */
 
 
@@ -107,7 +107,7 @@ int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
     ** It is convenient to use the OSAL task ID in here, as we know it is already unique
     ** and trying to use the real task name would be less than useful (only 4 chars)
     */
-    r_name = OS_global_task_table[task_id].active_id;
+    r_name = OS_ObjectIdToInteger(OS_global_task_table[task_id].active_id);
     r_mode = RTEMS_PREEMPT | RTEMS_NO_ASR | RTEMS_NO_TIMESLICE | RTEMS_INTERRUPT_LEVEL(0);
 
     /*
@@ -139,7 +139,7 @@ int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
     /* will place the task in 'ready for scheduling' state */
     status = rtems_task_start (OS_impl_task_table[task_id].id, /*rtems task id*/
 			     (rtems_task_entry) OS_RtemsEntry, /* task entry point */
-			     (rtems_task_argument) OS_global_task_table[task_id].active_id );  /* passed argument  */
+			     (rtems_task_argument) OS_ObjectIdToInteger(OS_global_task_table[task_id].active_id) );  /* passed argument  */
 
     if (status != RTEMS_SUCCESSFUL )
     {
@@ -314,9 +314,9 @@ int32 OS_TaskRegister_Impl (osal_id_t global_task_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-uint32 OS_TaskGetId_Impl (void)
+osal_id_t OS_TaskGetId_Impl (void)
 {
-    uint32            global_task_id;
+    osal_id_t         global_task_id;
     rtems_id          task_self;
     rtems_name        self_name;
     rtems_status_code status;
@@ -327,11 +327,11 @@ uint32 OS_TaskGetId_Impl (void)
     status = rtems_object_get_classic_name(task_self, &self_name);
     if (status == RTEMS_SUCCESSFUL)
     {
-        global_task_id = self_name;
+        global_task_id = OS_ObjectIdFromInteger(self_name);
     }
     else
     {
-        global_task_id = 0;
+        global_task_id = OS_OBJECT_ID_UNDEFINED;
     }
 
     return global_task_id;

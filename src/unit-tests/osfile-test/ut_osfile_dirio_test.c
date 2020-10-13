@@ -176,14 +176,13 @@ void UT_os_makedir_test()
 
     memset(g_fileName, '\0', sizeof(g_fileName));
     UT_os_sprintf(g_fileName, "%s/mkdir_File.txt", g_dirName);
-    status = OS_creat(g_fileName, OS_READ_WRITE);
+    status = OS_OpenCreate(&fileDesc, g_fileName, OS_FILE_FLAG_CREATE|OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     if (status >= 0)
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /* Reset test environment */
-    fileDesc = OS_ObjectIdFromInteger(status);
     OS_close(fileDesc);
     OS_remove(g_fileName);
     OS_rmdir(g_dirName);
@@ -776,7 +775,7 @@ void UT_os_removedir_test()
 
     memset(g_fileName, '\0', sizeof(g_fileName));
     UT_os_sprintf(g_fileName, "%s/rmdir_File1.txt", g_dirName);
-    status = OS_creat(g_fileName, OS_READ_WRITE);
+    status = OS_OpenCreate(&fileDesc, g_fileName, OS_FILE_FLAG_CREATE|OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     if (status < 0)
     {
         testDesc = "#5 Nominal - File-create failed";
@@ -784,7 +783,6 @@ void UT_os_removedir_test()
     }
 
     /* Must close and remove all files before the directory can be removed */
-    fileDesc = OS_ObjectIdFromInteger(status);
     OS_close(fileDesc);
     OS_remove(g_fileName);
 
@@ -796,7 +794,7 @@ void UT_os_removedir_test()
 
     memset(g_fileName, '\0', sizeof(g_fileName));
     UT_os_sprintf(g_fileName, "%s/rmdir_File2.txt", g_dirName);
-    status = OS_creat(g_fileName, OS_READ_WRITE);
+    status = OS_OpenCreate(&fileDesc, g_fileName, OS_FILE_FLAG_CREATE|OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     if (status < 0)
         UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
     else

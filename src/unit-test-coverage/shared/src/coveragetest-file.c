@@ -48,40 +48,44 @@ void Test_OS_FileAPI_Init(void)
     UtAssert_True(actual == expected, "OS_FileAPI_Init() (%ld) == OS_SUCCESS", (long)actual);
 }
 
-void Test_OS_creat(void)
+void Test_OS_OpenCreate(void)
 {
     /*
      * Test Case For:
-     * int32 OS_creat  (const char *path, int32  access)
+     * int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access)
      */
-    int32 actual = OS_creat("/cf/file", OS_READ_WRITE);
-    UtAssert_True(actual >= 0, "OS_creat() (%ld) >= 0", (long)actual);
+    int32 expected;
+    int32 actual;
+    osal_id_t filedes;
 
-    actual = OS_creat("/cf/file", OS_READ_ONLY);
-    UtAssert_True(actual == OS_ERROR, "OS_creat() (%ld) == OS_ERROR", (long)actual);
+    /* Test in OS_creat mode */
+    expected = OS_SUCCESS;
+    actual = OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
+    UtAssert_True(actual == expected, "OS_OpenCreate() (%ld) == OS_SUCCESS (create mode)", (long)actual);
 
+    /* Test in OS_open mode */
+    actual = OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, OS_READ_WRITE);
+    UtAssert_True(actual == expected, "OS_OpenCreate() (%ld) == OS_SUCCESS (open mode)", (long)actual);
+
+    /* Test with bad descriptor buffer */
+    expected = OS_INVALID_POINTER;
+    actual = OS_OpenCreate(NULL, "/cf/file", OS_FILE_FLAG_NONE, OS_READ_WRITE);
+    UtAssert_True(actual == expected, "OS_OpenCreate() (%ld) == OS_INVALID_POINTER (bad buffer)", (long)actual);
+
+    /* Test with bad access flags */
+    expected = OS_ERROR;
+    actual = OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, 9999);
+    UtAssert_True(actual == expected, "OS_OpenCreate() (%ld) == OS_ERROR (bad flags)", (long)actual);
+
+
+    /* Test failure to convert path */
     UT_SetForceFail(UT_KEY(OS_TranslatePath), OS_ERROR);
-    actual = OS_creat(NULL, OS_WRITE_ONLY);
-    UtAssert_True(actual == OS_ERROR, "OS_creat() (%ld) == OS_ERROR", (long)actual);
+    expected = OS_ERROR;
+    actual = OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, OS_READ_WRITE);
+    UtAssert_True(actual == OS_ERROR, "OS_OpenCreate() (%ld) == OS_ERROR (bad path)", (long)actual);
     UT_ClearForceFail(UT_KEY(OS_TranslatePath));
 
 }
-
-void Test_OS_open(void)
-{
-    /*
-     * Test Case For:
-     * int32 OS_open   (const char *path,  int32 access,  uint32  mode)
-     */
-    int32 actual = OS_open("/cf/file", OS_READ_WRITE, 0);
-
-    UtAssert_True(actual > 0, "OS_open() (%ld) > 0", (long)actual);
-
-
-    actual = OS_open("/cf/file", -1, 0);
-    UtAssert_True(actual < 0, "OS_open() (%ld) < 0", (long)actual);
-}
-
 
 void Test_OS_close(void)
 {
@@ -344,10 +348,6 @@ void Test_OS_FDGetInfo(void)
     actual = OS_FDGetInfo(UT_OBJID_1, &file_prop);
 
     UtAssert_True(actual == expected, "OS_FDGetInfo() (%ld) == OS_SUCCESS", (long)actual);
-#ifdef jphfix
-    UtAssert_True(file_prop.User == 111, "file_prop.User (%lu) == 111",
-            (unsigned long)file_prop.User);
-#endif
     UtAssert_True(strcmp(file_prop.Path, "ABC") == 0, "file_prop.Path (%s) == ABC",
             file_prop.Path);
 
@@ -457,8 +457,7 @@ void Osapi_Test_Teardown(void)
 void UtTest_Setup(void)
 {
     ADD_TEST(OS_FileAPI_Init);
-    ADD_TEST(OS_creat);
-    ADD_TEST(OS_open);
+    ADD_TEST(OS_OpenCreate);
     ADD_TEST(OS_close);
     ADD_TEST(OS_TimedRead);
     ADD_TEST(OS_TimedWrite);

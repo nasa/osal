@@ -106,7 +106,7 @@ int32 OS_CountSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 op
     ** It is convenient to use the OSAL ID in here, as we know it is already unique
     ** and trying to use the real name would be less than useful (only 4 chars)
     */
-    r_name = OS_global_count_sem_table[sem_id].active_id;
+    r_name = OS_ObjectIdToInteger(OS_global_count_sem_table[sem_id].active_id);
     status = rtems_semaphore_create( r_name, sem_initial_value,
                                      OSAL_COUNT_SEM_ATTRIBS,
                                      0,

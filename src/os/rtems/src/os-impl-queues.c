@@ -94,7 +94,7 @@ int32 OS_QueueCreate_Impl (uint32 queue_id, uint32 flags)
     ** It is convenient to use the OSAL queue ID in here, as we know it is already unique
     ** and trying to use the real queue name would be less than useful (only 4 chars)
     */
-    r_name = OS_global_queue_table[queue_id].active_id;
+    r_name = OS_ObjectIdToInteger(OS_global_queue_table[queue_id].active_id);
 
     /*
     ** Create the message queue.

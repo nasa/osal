@@ -126,9 +126,9 @@ static rtems_timer_service_routine OS_TimeBase_ISR(rtems_id rtems_timer_id, void
     OS_impl_timebase_internal_record_t *local;
 
     user_data.opaque_arg = arg;
-    OS_ConvertToArrayIndex(user_data.value, &local_id);
+    OS_ConvertToArrayIndex(user_data.id, &local_id);
     local = &OS_impl_timebase_table[local_id];
-    if (OS_global_timebase_table[local_id].active_id == user_data.value)
+    if (OS_ObjectIdEqual(OS_global_timebase_table[local_id].active_id, user_data.id))
     {
         /*
          * Reset the timer, but only if an interval was selected
@@ -299,11 +299,17 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
     rtems_status_code rtems_sc;
     OS_impl_timebase_internal_record_t *local;
     OS_common_record_t *global;
+    rtems_name           r_name;
 
 
     return_code = OS_SUCCESS;
     local = &OS_impl_timebase_table[timer_id];
     global = &OS_global_timebase_table[timer_id];
+
+    /*
+     * The RTEMS classic name for dependent resources
+     */
+    r_name = OS_ObjectIdToInteger(global->active_id);
 
     /*
      * Set up the necessary OS constructs
@@ -323,7 +329,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
          * The tick_sem is a simple semaphore posted by the ISR and taken by the
          * timebase helper task (created later).
          */
-        rtems_sc = rtems_semaphore_create (global->active_id, 0, RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_PRIORITY, 0,
+        rtems_sc = rtems_semaphore_create (r_name, 0, RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_PRIORITY, 0,
                                            &local->tick_sem);
         if ( rtems_sc != RTEMS_SUCCESSFUL )
         {
@@ -334,7 +340,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
         /*
          * The handler_mutex is deals with access to the callback list for this timebase
          */
-        rtems_sc = rtems_semaphore_create (global->active_id, 1, OSAL_TIMEBASE_MUTEX_ATTRIBS, 0,
+        rtems_sc = rtems_semaphore_create (r_name, 1, OSAL_TIMEBASE_MUTEX_ATTRIBS, 0,
                                            &local->handler_mutex);
 
         if ( rtems_sc != RTEMS_SUCCESSFUL )
@@ -344,7 +350,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
             return_code = OS_TIMER_ERR_INTERNAL;
         }
 
-        rtems_sc = rtems_timer_create(global->active_id, &local->rtems_timer_id);
+        rtems_sc = rtems_timer_create(r_name, &local->rtems_timer_id);
         if ( rtems_sc != RTEMS_SUCCESSFUL )
         {
             OS_DEBUG("Error: Timer object could not be created: %d\n",(int)rtems_sc);
@@ -372,7 +378,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
          * the priority is set to RTEMS_MINIMUM_PRIORITY.
          */
         rtems_sc = rtems_task_create(
-                     global->active_id,
+                     r_name,
                      RTEMS_MINIMUM_PRIORITY + 1,
                      0,
                      RTEMS_PREEMPT | RTEMS_NO_ASR | RTEMS_NO_TIMESLICE | RTEMS_INTERRUPT_LEVEL(0),
@@ -391,7 +397,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
             /* will place the task in 'ready for scheduling' state */
             rtems_sc = rtems_task_start (local->handler_task, /*rtems task id*/
                          (rtems_task_entry) OS_TimeBase_CallbackThread, /* task entry point */
-                         (rtems_task_argument) global->active_id );  /* passed argument  */
+                         (rtems_task_argument) OS_ObjectIdToInteger(global->active_id) );  /* passed argument  */
 
             if (rtems_sc != RTEMS_SUCCESSFUL )
             {
@@ -471,7 +477,7 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
            OS_UsecsToTicks(start_time, &start_ticks);
 
            user_data.opaque_arg = NULL;
-           user_data.value = OS_global_timebase_table[timer_id].active_id;
+           user_data.id = OS_global_timebase_table[timer_id].active_id;
 
            status = rtems_timer_fire_after(local->rtems_timer_id, start_ticks,
                    OS_TimeBase_ISR, user_data.opaque_arg );
