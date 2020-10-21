@@ -30,7 +30,6 @@
 /* mappings for declarations in ramDrv.h */
 /* ----------------------------------------- */
 
-#define ramDevCreate     OCS_ramDevCreate
-
+#define ramDevCreate OCS_ramDevCreate
 
 #endif /* _OSAL_OVERRIDE_RAMDRV_H_ */

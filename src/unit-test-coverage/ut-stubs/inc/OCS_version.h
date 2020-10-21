@@ -36,7 +36,4 @@
 /* prototypes normally declared in version.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_VERSION_H_ */
-

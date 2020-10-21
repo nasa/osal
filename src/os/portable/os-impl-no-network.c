@@ -31,11 +31,9 @@
 #include <osapi.h>
 #include "os-shared-network.h"
 
-
 /****************************************************************************************
                                     Network API
  ***************************************************************************************/
-
 
 /*----------------------------------------------------------------
  *
@@ -45,13 +43,10 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_NetworkGetID_Impl             (int32 *IdBuf)
+int32 OS_NetworkGetID_Impl(int32 *IdBuf)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_NetworkGetID_Impl */
-
-
-
 
 /*----------------------------------------------------------------
  *
@@ -61,10 +56,7 @@ int32 OS_NetworkGetID_Impl             (int32 *IdBuf)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_NetworkGetHostName_Impl       (char *host_name, uint32 name_len)
+int32 OS_NetworkGetHostName_Impl(char *host_name, uint32 name_len)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_NetworkGetHostName_Impl */
-
-
-

@@ -36,9 +36,7 @@
 /* prototypes normally declared in arpa/inet.h */
 /* ----------------------------------------- */
 
-extern const char *OCS_inet_ntop (int af, const void * cp, char * buf, size_t len);
-extern int OCS_inet_pton (int af, const char * cp, void * buf);
-
+extern const char *OCS_inet_ntop(int af, const void *cp, char *buf, size_t len);
+extern int         OCS_inet_pton(int af, const char *cp, void *buf);
 
 #endif /* _OSAL_STUB_ARPA_INET_H_ */
-

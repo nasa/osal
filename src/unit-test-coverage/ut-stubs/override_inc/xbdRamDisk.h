@@ -29,6 +29,4 @@
 /* mappings for declarations in xbdRamDisk.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_OVERRIDE_XBDRAMDISK_H_ */

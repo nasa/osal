@@ -32,7 +32,7 @@
 
 #include "utstub-helpers.h"
 
-UT_DEFAULT_STUB(OS_SocketAPI_Init,(void))
+UT_DEFAULT_STUB(OS_SocketAPI_Init, (void))
 
 /*****************************************************************************
  *
@@ -123,7 +123,7 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockA
     UT_Stub_RegisterContext(UT_KEY(OS_SocketRecvFrom), RemoteAddr);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketRecvFrom), timeout);
 
-    int32 status;
+    int32  status;
     uint32 CopySize;
 
     status = UT_DEFAULT_IMPL(OS_SocketRecvFrom);
@@ -151,7 +151,6 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockA
         memset(buffer, 0, status);
     }
 
-
     return status;
 }
 
@@ -167,7 +166,7 @@ int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, uint32 buflen, cons
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketSendTo), buflen);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketSendTo), RemoteAddr);
 
-    int32 status;
+    int32  status;
     uint32 CopySize;
 
     status = UT_DEFAULT_IMPL_RC(OS_SocketSendTo, 0x7FFFFFFF);
@@ -192,13 +191,12 @@ int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, uint32 buflen, cons
     return status;
 }
 
-
 /*****************************************************************************
  *
  * Stub function for OS_SocketGetIdByName()
  *
  *****************************************************************************/
-int32 OS_SocketGetIdByName (osal_id_t *sock_id, const char *sock_name)
+int32 OS_SocketGetIdByName(osal_id_t *sock_id, const char *sock_name)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_SocketGetIdByName), sock_id);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketGetIdByName), sock_name);
@@ -208,7 +206,7 @@ int32 OS_SocketGetIdByName (osal_id_t *sock_id, const char *sock_name)
     status = UT_DEFAULT_IMPL(OS_SocketGetIdByName);
 
     if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_SocketGetIdByName), sock_id, sizeof(*sock_id)) < sizeof(*sock_id))
+        UT_Stub_CopyToLocal(UT_KEY(OS_SocketGetIdByName), sock_id, sizeof(*sock_id)) < sizeof(*sock_id))
     {
         UT_ObjIdCompose(1, UT_OBJTYPE_SOCKET, sock_id);
     }
@@ -221,12 +219,12 @@ int32 OS_SocketGetIdByName (osal_id_t *sock_id, const char *sock_name)
  * Stub function for OS_SocketGetInfo(,sock_id)
  *
  *****************************************************************************/
-int32 OS_SocketGetInfo (osal_id_t sock_id, OS_socket_prop_t *sock_prop)
+int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketGetInfo), sock_id);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketGetInfo), sock_prop);
 
-    int32 status;
+    int32  status;
     uint32 CopySize;
 
     status = UT_DEFAULT_IMPL(OS_SocketGetInfo);
@@ -245,7 +243,6 @@ int32 OS_SocketGetInfo (osal_id_t sock_id, OS_socket_prop_t *sock_prop)
     return status;
 }
 
-
 int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_SocketAddrInit), Addr);
@@ -255,8 +252,7 @@ int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
 
     status = UT_DEFAULT_IMPL(OS_SocketAddrInit);
 
-    if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_SocketAddrInit), Addr, sizeof(*Addr)) < sizeof(*Addr))
+    if (status == OS_SUCCESS && UT_Stub_CopyToLocal(UT_KEY(OS_SocketAddrInit), Addr, sizeof(*Addr)) < sizeof(*Addr))
     {
         memset(Addr, 0, sizeof(*Addr));
     }
@@ -274,11 +270,10 @@ int32 OS_SocketAddrToString(char *buffer, uint32 buflen, const OS_SockAddr_t *Ad
 
     status = UT_DEFAULT_IMPL(OS_SocketAddrToString);
 
-    if (status == OS_SUCCESS && buflen > 0 &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_SocketAddrToString), buffer, buflen) == 0)
+    if (status == OS_SUCCESS && buflen > 0 && UT_Stub_CopyToLocal(UT_KEY(OS_SocketAddrToString), buffer, buflen) == 0)
     {
-        strncpy(buffer, "UT-addr", buflen-1);
-        buffer[buflen-1] = 0;
+        strncpy(buffer, "UT-addr", buflen - 1);
+        buffer[buflen - 1] = 0;
     }
 
     return status;
@@ -294,7 +289,7 @@ int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string)
     status = UT_DEFAULT_IMPL(OS_SocketAddrFromString);
 
     if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_SocketAddrFromString), Addr, sizeof(*Addr)) < sizeof(*Addr))
+        UT_Stub_CopyToLocal(UT_KEY(OS_SocketAddrFromString), Addr, sizeof(*Addr)) < sizeof(*Addr))
     {
         memset(Addr, 0, sizeof(*Addr));
     }
@@ -312,7 +307,7 @@ int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr)
     status = UT_DEFAULT_IMPL(OS_SocketAddrGetPort);
 
     if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_SocketAddrGetPort), PortNum, sizeof(*PortNum)) < sizeof(*PortNum))
+        UT_Stub_CopyToLocal(UT_KEY(OS_SocketAddrGetPort), PortNum, sizeof(*PortNum)) < sizeof(*PortNum))
     {
         *PortNum = 0;
     }
@@ -331,4 +326,3 @@ int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum)
 
     return status;
 }
-

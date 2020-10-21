@@ -40,13 +40,11 @@
 ****************************************************************************************/
 
 /* Console device */
-OS_impl_mutsem_internal_record_t   OS_impl_mutex_table   [OS_MAX_MUTEXES];
+OS_impl_mutsem_internal_record_t OS_impl_mutex_table[OS_MAX_MUTEXES];
 
 /****************************************************************************************
                                   MUTEX API
 ****************************************************************************************/
-
-
 
 /*----------------------------------------------------------------
  *
@@ -61,7 +59,6 @@ int32 OS_VxWorks_MutexAPI_Impl_Init(void)
     return (OS_SUCCESS);
 } /* end OS_VxWorks_MutexAPI_Impl_Init */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_MutSemCreate_Impl
@@ -70,7 +67,7 @@ int32 OS_VxWorks_MutexAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemCreate_Impl (uint32 sem_id, uint32 options)
+int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options)
 {
     SEM_ID tmp_sem_id;
 
@@ -78,16 +75,15 @@ int32 OS_MutSemCreate_Impl (uint32 sem_id, uint32 options)
      * The memory for this sem is statically allocated. */
     tmp_sem_id = semMInitialize(OS_impl_mutex_table[sem_id].mmem, SEM_Q_PRIORITY | SEM_INVERSION_SAFE);
 
-    if(tmp_sem_id == (SEM_ID)0)
+    if (tmp_sem_id == (SEM_ID)0)
     {
-        OS_DEBUG("semMInitalize() - vxWorks errno %d\n",errno);
+        OS_DEBUG("semMInitalize() - vxWorks errno %d\n", errno);
         return OS_SEM_FAILURE;
     }
 
     OS_impl_mutex_table[sem_id].vxid = tmp_sem_id;
     return OS_SUCCESS;
 } /* end OS_MutSemCreate_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -97,7 +93,7 @@ int32 OS_MutSemCreate_Impl (uint32 sem_id, uint32 options)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemDelete_Impl (uint32 sem_id)
+int32 OS_MutSemDelete_Impl(uint32 sem_id)
 {
     /*
      * As the memory for the sem is statically allocated, delete is a no-op.
@@ -107,8 +103,6 @@ int32 OS_MutSemDelete_Impl (uint32 sem_id)
 
 } /* end OS_MutSemDelete_Impl */
 
-
-
 /*----------------------------------------------------------------
  *
  * Function: OS_MutSemGive_Impl
@@ -117,12 +111,11 @@ int32 OS_MutSemDelete_Impl (uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGive_Impl (uint32 sem_id)
+int32 OS_MutSemGive_Impl(uint32 sem_id)
 {
     /* Give VxWorks Semaphore */
     return OS_VxWorks_GenericSemGive(OS_impl_mutex_table[sem_id].vxid);
 } /* end OS_MutSemGive_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -132,12 +125,11 @@ int32 OS_MutSemGive_Impl (uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemTake_Impl (uint32 sem_id)
+int32 OS_MutSemTake_Impl(uint32 sem_id)
 {
     /* Take VxWorks Semaphore */
     return OS_VxWorks_GenericSemTake(OS_impl_mutex_table[sem_id].vxid, WAIT_FOREVER);
 } /* end OS_MutSemTake_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -147,10 +139,9 @@ int32 OS_MutSemTake_Impl (uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGetInfo_Impl (uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
+int32 OS_MutSemGetInfo_Impl(uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
 {
     /* VxWorks provides no additional info */
     return OS_SUCCESS;
 
 } /* end OS_MutSemGetInfo_Impl */
-

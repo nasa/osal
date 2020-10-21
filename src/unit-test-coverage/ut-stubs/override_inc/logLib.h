@@ -29,6 +29,4 @@
 /* mappings for declarations in logLib.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_OVERRIDE_LOGLIB_H_ */

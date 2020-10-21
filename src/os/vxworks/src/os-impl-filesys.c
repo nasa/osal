@@ -35,7 +35,6 @@
 #include "os-shared-filesys.h"
 #include "os-shared-idmap.h"
 
-
 #include <fcntl.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -69,7 +68,6 @@ OS_impl_filesys_internal_record_t OS_impl_filesys_table[OS_MAX_FILE_SYSTEMS];
                                     Filesys API
 ****************************************************************************************/
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_FileSysStartVolume_Impl
@@ -78,55 +76,55 @@ OS_impl_filesys_internal_record_t OS_impl_filesys_table[OS_MAX_FILE_SYSTEMS];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStartVolume_Impl (uint32 filesys_id)
+int32 OS_FileSysStartVolume_Impl(uint32 filesys_id)
 {
-    OS_filesys_internal_record_t  *local = &OS_filesys_table[filesys_id];
-    OS_impl_filesys_internal_record_t *impl = &OS_impl_filesys_table[filesys_id];
-    int32 return_code;
+    OS_filesys_internal_record_t *     local = &OS_filesys_table[filesys_id];
+    OS_impl_filesys_internal_record_t *impl  = &OS_impl_filesys_table[filesys_id];
+    int32                              return_code;
 
-    memset(impl, 0, sizeof (*impl));
+    memset(impl, 0, sizeof(*impl));
     return_code = OS_ERR_NOT_IMPLEMENTED;
-    switch(local->fstype)
+    switch (local->fstype)
     {
-    case OS_FILESYS_TYPE_FS_BASED:
-    {
-        /* pass through for FS_BASED volumes, assume already mounted */
-        OS_DEBUG("OSAL: Mapping an FS_BASED disk at: %s\n",(unsigned long)local->system_mountpt );
-        return_code = OS_SUCCESS;
-        break;
-    }
+        case OS_FILESYS_TYPE_FS_BASED:
+        {
+            /* pass through for FS_BASED volumes, assume already mounted */
+            OS_DEBUG("OSAL: Mapping an FS_BASED disk at: %s\n", (unsigned long)local->system_mountpt);
+            return_code = OS_SUCCESS;
+            break;
+        }
 
-    case OS_FILESYS_TYPE_VOLATILE_DISK:
-    {
-        OS_DEBUG("OSAL: Starting a RAM disk at: 0x%08lX\n",(unsigned long)local->address );
+        case OS_FILESYS_TYPE_VOLATILE_DISK:
+        {
+            OS_DEBUG("OSAL: Starting a RAM disk at: 0x%08lX\n", (unsigned long)local->address);
 
-        /*
-        ** Create the ram disk device
-        ** The 32 is the number of blocks per track.
-        **  Other values dont seem to work here
-        */
-        impl->blkDev = ramDevCreate (local->address, local->blocksize , 32 , local->numblocks,  0);
-        impl->xbdMaxPartitions = 1;
-        break;
-    }
+            /*
+            ** Create the ram disk device
+            ** The 32 is the number of blocks per track.
+            **  Other values dont seem to work here
+            */
+            impl->blkDev           = ramDevCreate(local->address, local->blocksize, 32, local->numblocks, 0);
+            impl->xbdMaxPartitions = 1;
+            break;
+        }
 
 #ifdef USE_VXWORKS_ATA_DRIVER
-    case OS_FILESYS_TYPE_NORMAL_DISK:
-    {
-        /*
-        ** Create the Flash disk device
-        ** This code requires an ATA driver in the BSP, so it must be
-        ** left out of the compilation BSPs without.
-        */
-        OS_DEBUG("OSAL: Starting an ATA DISK: %s\n", local->volume_name);
-        impl->xbdMaxPartitions = 4;
-        impl->blkDev = ataDevCreate(0, 0, 0, 0);
-        break;
-    }
+        case OS_FILESYS_TYPE_NORMAL_DISK:
+        {
+            /*
+            ** Create the Flash disk device
+            ** This code requires an ATA driver in the BSP, so it must be
+            ** left out of the compilation BSPs without.
+            */
+            OS_DEBUG("OSAL: Starting an ATA DISK: %s\n", local->volume_name);
+            impl->xbdMaxPartitions = 4;
+            impl->blkDev           = ataDevCreate(0, 0, 0, 0);
+            break;
+        }
 #endif
 
-    default:
-        break;
+        default:
+            break;
     }
 
     if (impl->xbdMaxPartitions > 0)
@@ -175,8 +173,7 @@ int32 OS_FileSysStartVolume_Impl (uint32 filesys_id)
                  *    (i.e. if a partition was formatted manually and then the software
                  *    restarted, a different block device might get mounted the second time)
                  */
-                snprintf(local->system_mountpt, sizeof(local->system_mountpt),
-                        "%s:0", local->volume_name);
+                snprintf(local->system_mountpt, sizeof(local->system_mountpt), "%s:0", local->volume_name);
 
                 return_code = OS_SUCCESS;
             }
@@ -187,8 +184,6 @@ int32 OS_FileSysStartVolume_Impl (uint32 filesys_id)
 
 } /* end OS_FileSysStartVolume_Impl */
 
-
-
 /*----------------------------------------------------------------
  *
  * Function: OS_FileSysStopVolume_Impl
@@ -197,26 +192,26 @@ int32 OS_FileSysStartVolume_Impl (uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStopVolume_Impl (uint32 filesys_id)
+int32 OS_FileSysStopVolume_Impl(uint32 filesys_id)
 {
-    OS_filesys_internal_record_t  *local = &OS_filesys_table[filesys_id];
-    OS_impl_filesys_internal_record_t *impl = &OS_impl_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *     local = &OS_filesys_table[filesys_id];
+    OS_impl_filesys_internal_record_t *impl  = &OS_impl_filesys_table[filesys_id];
 
-    switch(local->fstype)
+    switch (local->fstype)
     {
-    case OS_FILESYS_TYPE_VOLATILE_DISK:
-    case OS_FILESYS_TYPE_NORMAL_DISK:
-    {
-        if (impl->xbdMaxPartitions > 0 && impl->xbd != NULLDEV)
+        case OS_FILESYS_TYPE_VOLATILE_DISK:
+        case OS_FILESYS_TYPE_NORMAL_DISK:
         {
-            xbdBlkDevDelete(impl->xbd, NULL);
-            impl->xbd = NULLDEV;
-            impl->xbdMaxPartitions = 0;
+            if (impl->xbdMaxPartitions > 0 && impl->xbd != NULLDEV)
+            {
+                xbdBlkDevDelete(impl->xbd, NULL);
+                impl->xbd              = NULLDEV;
+                impl->xbdMaxPartitions = 0;
+            }
+            break;
         }
-        break;
-    }
-    default:
-        break;
+        default:
+            break;
     }
 
     /*
@@ -228,7 +223,6 @@ int32 OS_FileSysStopVolume_Impl (uint32 filesys_id)
 
 } /* end OS_FileSysStopVolume_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_FileSysFormatVolume_Impl
@@ -237,50 +231,48 @@ int32 OS_FileSysStopVolume_Impl (uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysFormatVolume_Impl (uint32 filesys_id)
+int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id)
 {
-    OS_filesys_internal_record_t  *local = &OS_filesys_table[filesys_id];
-    int32 return_code = OS_ERR_NOT_IMPLEMENTED;
-    int status;
+    OS_filesys_internal_record_t *local       = &OS_filesys_table[filesys_id];
+    int32                         return_code = OS_ERR_NOT_IMPLEMENTED;
+    int                           status;
 
-    switch(local->fstype)
+    switch (local->fstype)
     {
-    case OS_FILESYS_TYPE_FS_BASED:
-    {
-        /*
-         * The "format" operation is a no-op on FS_BASED types.
-         * Return success to allow the operation to continue.
-         */
-        return_code = OS_SUCCESS;
-        break;
-    }
-    case OS_FILESYS_TYPE_VOLATILE_DISK:
-    case OS_FILESYS_TYPE_NORMAL_DISK:
-    {
-        /*
-        ** Call the dos format routine
-        */
-        status = dosFsVolFormat(local->system_mountpt, DOS_OPT_BLANK, NULL);
-        if ( status == -1 )
+        case OS_FILESYS_TYPE_FS_BASED:
         {
-            OS_DEBUG("OSAL: dosFsVolFormat failed. Errno = %d\n",errnoGet());
-            return_code = OS_FS_ERR_DRIVE_NOT_CREATED;
-        }
-        else
-        {
+            /*
+             * The "format" operation is a no-op on FS_BASED types.
+             * Return success to allow the operation to continue.
+             */
             return_code = OS_SUCCESS;
+            break;
         }
-        break;
-    }
-    default:
-        break;
+        case OS_FILESYS_TYPE_VOLATILE_DISK:
+        case OS_FILESYS_TYPE_NORMAL_DISK:
+        {
+            /*
+            ** Call the dos format routine
+            */
+            status = dosFsVolFormat(local->system_mountpt, DOS_OPT_BLANK, NULL);
+            if (status == -1)
+            {
+                OS_DEBUG("OSAL: dosFsVolFormat failed. Errno = %d\n", errnoGet());
+                return_code = OS_FS_ERR_DRIVE_NOT_CREATED;
+            }
+            else
+            {
+                return_code = OS_SUCCESS;
+            }
+            break;
+        }
+        default:
+            break;
     }
 
     return return_code;
 
 } /* end OS_FileSysFormatVolume_Impl */
-
-
 
 /*----------------------------------------------------------------
  *
@@ -290,18 +282,18 @@ int32 OS_FileSysFormatVolume_Impl (uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysMountVolume_Impl (uint32 filesys_id)
+int32 OS_FileSysMountVolume_Impl(uint32 filesys_id)
 {
-    OS_filesys_internal_record_t  *local = &OS_filesys_table[filesys_id];
-    int32 status;
-    int fd;
+    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    int32                         status;
+    int                           fd;
 
     /*
      * Calling open() on the physical device path
      * mounts the device.
      */
-    fd = open ( local->system_mountpt, O_RDONLY, 0644 );
-    if ( fd < 0 )
+    fd = open(local->system_mountpt, O_RDONLY, 0644);
+    if (fd < 0)
     {
         status = OS_ERROR;
     }
@@ -315,7 +307,6 @@ int32 OS_FileSysMountVolume_Impl (uint32 filesys_id)
 
 } /* end OS_FileSysMountVolume_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_FileSysUnmountVolume_Impl
@@ -324,23 +315,23 @@ int32 OS_FileSysMountVolume_Impl (uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysUnmountVolume_Impl (uint32 filesys_id)
+int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id)
 {
-    OS_filesys_internal_record_t  *local = &OS_filesys_table[filesys_id];
-    int32 status;
-    int fd;
+    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    int32                         status;
+    int                           fd;
 
     /*
     ** vxWorks uses an ioctl to unmount
     */
-    fd = open ( local->system_mountpt, O_RDONLY, 0644 );
-    if ( fd < 0 )
+    fd = open(local->system_mountpt, O_RDONLY, 0644);
+    if (fd < 0)
     {
         status = OS_ERROR;
     }
     else
     {
-        if ( ioctl( fd, FIOUNMOUNT,0) < 0 )
+        if (ioctl(fd, FIOUNMOUNT, 0) < 0)
         {
             status = OS_ERROR;
         }
@@ -356,7 +347,6 @@ int32 OS_FileSysUnmountVolume_Impl (uint32 filesys_id)
 
 } /* end OS_FileSysUnmountVolume_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_FileSysStatVolume_Impl
@@ -365,30 +355,28 @@ int32 OS_FileSysUnmountVolume_Impl (uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStatVolume_Impl (uint32 filesys_id, OS_statvfs_t *result)
+int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result)
 {
-   OS_filesys_internal_record_t  *local = &OS_filesys_table[filesys_id];
-   struct statfs stat_buf;
-   int return_code;
+    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    struct statfs                 stat_buf;
+    int                           return_code;
 
-   if (statfs(local->system_mountpt, &stat_buf) != 0)
-   {
-       return_code = OS_ERROR;
-       memset(result, 0, sizeof(*result));
-   }
-   else
-   {
-       result->block_size = stat_buf.f_bsize;
-       result->blocks_free = stat_buf.f_bfree;
-       result->total_blocks = stat_buf.f_blocks;
-       return_code = OS_SUCCESS;
-   }
+    if (statfs(local->system_mountpt, &stat_buf) != 0)
+    {
+        return_code = OS_ERROR;
+        memset(result, 0, sizeof(*result));
+    }
+    else
+    {
+        result->block_size   = stat_buf.f_bsize;
+        result->blocks_free  = stat_buf.f_bfree;
+        result->total_blocks = stat_buf.f_blocks;
+        return_code          = OS_SUCCESS;
+    }
 
-   return return_code;
+    return return_code;
 
 } /* end OS_FileSysStatVolume_Impl */
-
-
 
 /*----------------------------------------------------------------
  *
@@ -398,14 +386,14 @@ int32 OS_FileSysStatVolume_Impl (uint32 filesys_id, OS_statvfs_t *result)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysCheckVolume_Impl (uint32 filesys_id, bool repair)
+int32 OS_FileSysCheckVolume_Impl(uint32 filesys_id, bool repair)
 {
-    OS_filesys_internal_record_t  *local = &OS_filesys_table[filesys_id];
-    STATUS chk_status;
-    int    flags;
-    int    fd;
+    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    STATUS                        chk_status;
+    int                           flags;
+    int                           fd;
 
-    fd = open (local->system_mountpt, O_RDONLY, 0);
+    fd = open(local->system_mountpt, O_RDONLY, 0);
     if (fd < 0)
     {
         return OS_ERROR;
@@ -435,7 +423,3 @@ int32 OS_FileSysCheckVolume_Impl (uint32 filesys_id, bool repair)
     return OS_SUCCESS;
 
 } /* end OS_FileSysCheckVolume_Impl */
-
-
-
-

@@ -35,12 +35,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 /*
  * User defined include files
  */
 #include "os-shared-clock.h"
-
 
 /*----------------------------------------------------------------
  *
@@ -54,13 +52,12 @@ int32 OS_GetLocalTime(OS_time_t *time_struct)
 {
     if (time_struct == NULL)
     {
-       return OS_INVALID_POINTER;
+        return OS_INVALID_POINTER;
     }
 
     return OS_GetLocalTime_Impl(time_struct);
 
 } /* end OS_GetLocalTime */
-
 
 /*----------------------------------------------------------------
  *
@@ -74,7 +71,7 @@ int32 OS_SetLocalTime(OS_time_t *time_struct)
 {
     if (time_struct == NULL)
     {
-       return OS_INVALID_POINTER;
+        return OS_INVALID_POINTER;
     }
 
     return OS_SetLocalTime_Impl(time_struct);

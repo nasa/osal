@@ -31,19 +31,16 @@
 #include <osconfig.h>
 #include <taskLib.h>
 
-
 /*tasks */
 typedef struct
 {
-    WIND_TCB tcb;           /* Must be first */
-    TASK_ID vxid;
-    void *heap_block;    /* set non-null if the stack was obtained with malloc() */
-    long heap_block_size;
+    WIND_TCB tcb; /* Must be first */
+    TASK_ID  vxid;
+    void *   heap_block; /* set non-null if the stack was obtained with malloc() */
+    long     heap_block_size;
 } OS_impl_task_internal_record_t;
 
-
 /* Tables where the OS object information is stored */
-extern OS_impl_task_internal_record_t      OS_impl_task_table          [OS_MAX_TASKS];
+extern OS_impl_task_internal_record_t OS_impl_task_table[OS_MAX_TASKS];
 
-#endif  /* INCLUDE_OS_IMPL_TASKS_H_ */
-
+#endif /* INCLUDE_OS_IMPL_TASKS_H_ */

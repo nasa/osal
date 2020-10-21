@@ -25,7 +25,6 @@
  *
  */
 
-
 /* pull in the OSAL configuration */
 #include "osconfig.h"
 #include "ut-adaptor-portable-posix-files.h"
@@ -41,4 +40,3 @@ unsigned int UT_PortablePosixFileTest_GetSelfEGID(void)
 {
     return OS_IMPL_SELF_EGID;
 }
-

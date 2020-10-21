@@ -31,7 +31,6 @@
 #ifndef INCLUDE_OS_RTEMS_H_
 #define INCLUDE_OS_RTEMS_H_
 
-
 /****************************************************************************************
                                     COMMON INCLUDE FILES
  ***************************************************************************************/
@@ -60,17 +59,15 @@
 
 typedef struct
 {
-   uint32        ClockAccuracyNsec;
-   rtems_id      IdleTaskId;
+    uint32   ClockAccuracyNsec;
+    rtems_id IdleTaskId;
 } RTEMS_GlobalVars_t;
-
 
 /****************************************************************************************
                                    GLOBAL DATA
  ***************************************************************************************/
 
 extern RTEMS_GlobalVars_t RTEMS_GlobalVars;
-
 
 /****************************************************************************************
                        RTEMS IMPLEMENTATION FUNCTION PROTOTYPES
@@ -87,9 +84,6 @@ int32 OS_Rtems_StreamAPI_Impl_Init(void);
 int32 OS_Rtems_DirAPI_Impl_Init(void);
 int32 OS_Rtems_FileSysAPI_Impl_Init(void);
 
-
 int32 OS_Rtems_TableMutex_Init(uint32 idtype);
 
-
-#endif  /* INCLUDE_OS_RTEMS_H_ */
-
+#endif /* INCLUDE_OS_RTEMS_H_ */

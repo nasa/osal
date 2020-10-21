@@ -27,7 +27,6 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-heap.h"
 
-
 void Test_OS_HeapGetInfo(void)
 {
     /*
@@ -35,8 +34,8 @@ void Test_OS_HeapGetInfo(void)
      * int32 OS_HeapGetInfo(OS_heap_prop_t *heap_prop)
      */
     OS_heap_prop_t heap_prop;
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_HeapGetInfo(&heap_prop);
+    int32          expected = OS_SUCCESS;
+    int32          actual   = OS_HeapGetInfo(&heap_prop);
 
     UtAssert_True(actual == expected, "OS_HeapGetInfo() (%ld) == OS_SUCCESS", (long)actual);
 
@@ -44,7 +43,6 @@ void Test_OS_HeapGetInfo(void)
     actual   = OS_HeapGetInfo(NULL);
 
     UtAssert_True(actual == expected, "OS_HeapGetInfo() (%ld) == OS_INVALID_POINTER", (long)actual);
-
 }
 /* Osapi_Test_Setup
  *
@@ -62,10 +60,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /*
  * Register the test cases to execute with the unit test tool
@@ -74,7 +69,3 @@ void UtTest_Setup(void)
 {
     ADD_TEST(OS_HeapGetInfo);
 }
-
-
-
-

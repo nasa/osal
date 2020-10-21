@@ -32,7 +32,7 @@
  */
 
 #ifndef _utassert_
-#define	_utassert_
+#define _utassert_
 
 /*
  * Includes
@@ -53,19 +53,19 @@
  */
 typedef enum
 {
-    UTASSERT_CASETYPE_NONE,          /**< Reserved value, No messages should be used with this */
-    UTASSERT_CASETYPE_ABORT,         /**< Test sequence abort (major failure, cannot continue) */
-    UTASSERT_CASETYPE_FAILURE,       /**< Test case failure status messages */
-    UTASSERT_CASETYPE_TSF,           /**< Test Setup Failure (TSF) status messages */
-    UTASSERT_CASETYPE_TTF,           /**< Test Teardown Failure (TTF) status messages */
-    UTASSERT_CASETYPE_MIR,           /**< Manual Inspection Required (MIR) status messages */
-    UTASSERT_CASETYPE_NA,            /**< Test Not Applicable (NA) status messages */
-    UTASSERT_CASETYPE_BEGIN,         /**< Beginning of test status messages */
-    UTASSERT_CASETYPE_END,           /**< End of test status messages */
-    UTASSERT_CASETYPE_INFO,          /**< All other informational status messages */
-    UTASSERT_CASETYPE_PASS,          /**< Test case passed (normal) status messages */
-    UTASSERT_CASETYPE_DEBUG,         /**< Debugging messages */
-    UTASSERT_CASETYPE_MAX            /**< Reserved value, No messages should be used with this */
+    UTASSERT_CASETYPE_NONE,    /**< Reserved value, No messages should be used with this */
+    UTASSERT_CASETYPE_ABORT,   /**< Test sequence abort (major failure, cannot continue) */
+    UTASSERT_CASETYPE_FAILURE, /**< Test case failure status messages */
+    UTASSERT_CASETYPE_TSF,     /**< Test Setup Failure (TSF) status messages */
+    UTASSERT_CASETYPE_TTF,     /**< Test Teardown Failure (TTF) status messages */
+    UTASSERT_CASETYPE_MIR,     /**< Manual Inspection Required (MIR) status messages */
+    UTASSERT_CASETYPE_NA,      /**< Test Not Applicable (NA) status messages */
+    UTASSERT_CASETYPE_BEGIN,   /**< Beginning of test status messages */
+    UTASSERT_CASETYPE_END,     /**< End of test status messages */
+    UTASSERT_CASETYPE_INFO,    /**< All other informational status messages */
+    UTASSERT_CASETYPE_PASS,    /**< Test case passed (normal) status messages */
+    UTASSERT_CASETYPE_DEBUG,   /**< Debugging messages */
+    UTASSERT_CASETYPE_MAX      /**< Reserved value, No messages should be used with this */
 } UtAssert_CaseType_t;
 
 /**
@@ -79,168 +79,162 @@ typedef struct
     uint32 CaseCount[UTASSERT_CASETYPE_MAX];
 } UtAssert_TestCounter_t;
 
-
 /*
  * Macro Definitions
  */
 
 /* A simplified UtAssert that uses the expression itself as the description */
-#define     UtAssert_Simple(Expression)      \
-        UtAssert(Expression, #Expression, __FILE__, __LINE__)
+#define UtAssert_Simple(Expression) UtAssert(Expression, #Expression, __FILE__, __LINE__)
 
 /* Evaluates a expression as either true or false.  true means the test passed, false means the test failed. */
-#define     UtAssert_True(Expression, ...) \
-        UtAssertEx(Expression, UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_True(Expression, ...) UtAssertEx(Expression, UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Evaluates a expression as either true or false.  true means the test passed, false means the test failed. */
-#define     UtAssert_Bool(Expression, Description) \
-        UtAssert(Expression, Description, __FILE__, __LINE__)
+#define UtAssert_Bool(Expression, Description) UtAssert(Expression, Description, __FILE__, __LINE__)
 
 /* Asserts a test failure */
-#define     UtAssert_Failed(...) \
-        UtAssertEx(false, UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_Failed(...) UtAssertEx(false, UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Compares two integers and determines if they are equal within a specified absolute tolerance. */
-#define     UtAssert_IntegerCmpAbs(x, y, Tolerance, Description) \
-                UtAssert((abs((x) - (y)) <= (Tolerance)), Description, __FILE__, __LINE__)
+#define UtAssert_IntegerCmpAbs(x, y, Tolerance, Description) \
+    UtAssert((abs((x) - (y)) <= (Tolerance)), Description, __FILE__, __LINE__)
 
 /* Compares two floating point numbers and determines if they are equal within a specified absolute tolerance. */
-#define     UtAssert_DoubleCmpAbs(x, y, Tolerance, Description) \
-                UtAssert((fabs((x) - (y)) <= (Tolerance)), Description, __FILE__, __LINE__)
+#define UtAssert_DoubleCmpAbs(x, y, Tolerance, Description) \
+    UtAssert((fabs((x) - (y)) <= (Tolerance)), Description, __FILE__, __LINE__)
 
 /* Compares two floating point numbers and determines if they are equal within a specified relative tolerance. */
-#define     UtAssert_DoubleCmpRel(x, y, Ratio, Description) \
-                UtAssert((fabs((x) - (y))/(x) <= (Ratio)), Description, __FILE__, __LINE__)
+#define UtAssert_DoubleCmpRel(x, y, Ratio, Description) \
+    UtAssert((fabs((x) - (y)) / (x) <= (Ratio)), Description, __FILE__, __LINE__)
 
 /* Compares two strings and determines if they are equal. */
-#define     UtAssert_StrCmp(String1, String2, Description) \
-                UtAssert((strcmp(String1, String2) == 0), Description, __FILE__, __LINE__)
+#define UtAssert_StrCmp(String1, String2, Description) \
+    UtAssert((strcmp(String1, String2) == 0), Description, __FILE__, __LINE__)
 
 /* Compares at most Length characters of two strings and determines if they are equal. */
-#define     UtAssert_StrnCmp(String1, String2, Length, Description) \
-                UtAssert((strncmp(String1, String2, Length) == 0), Description, __FILE__, __LINE__)
+#define UtAssert_StrnCmp(String1, String2, Length, Description) \
+    UtAssert((strncmp(String1, String2, Length) == 0), Description, __FILE__, __LINE__)
 
 /* Compares two regions of memory and determines if they are equal. */
-#define     UtAssert_MemCmp(Memory1, Memory2, Length, Description) \
-                UtAssert((memcmp(Memory1, Memory2, Length) == 0), Description, __FILE__, __LINE__)
+#define UtAssert_MemCmp(Memory1, Memory2, Length, Description) \
+    UtAssert((memcmp(Memory1, Memory2, Length) == 0), Description, __FILE__, __LINE__)
 
 /* Compares a region of memory to a static pattern and determines if they are equal.  Note: Use UtMemSet to
  * fill a region of memory with a static pattern. */
-#define     UtAssert_MemCmpValue(Memory, Value, Length, Description) \
-                UtAssert((UtMemCmpValue(Memory, Value, Length)), Description, __FILE__, __LINE__)
+#define UtAssert_MemCmpValue(Memory, Value, Length, Description) \
+    UtAssert((UtMemCmpValue(Memory, Value, Length)), Description, __FILE__, __LINE__)
 
 /* Compares a region of memory to a byte count pattern and determines if they are equal.  Note: Use UtMemFill to
  * fill a region of memory with a byte count pattern. */
-#define     UtAssert_MemCmpCount(Memory, Length, Description) \
-                UtAssert((UtMemCmpCount(Memory, Length)), Description, __FILE__, __LINE__)
+#define UtAssert_MemCmpCount(Memory, Length, Description) \
+    UtAssert((UtMemCmpCount(Memory, Length)), Description, __FILE__, __LINE__)
 
 /* Compares a region of memory with the contents of a binary file and determines if they are equal.  Note: Use
  * UtMem2BinFile to copy a region of memory to a binary file. */
-#define     UtAssert_Mem2BinFileCmp(Memory, Filename, Description) \
-                UtAssert((UtMem2BinFileCmp(Memory, Filename)), Description, __FILE__, __LINE__)
+#define UtAssert_Mem2BinFileCmp(Memory, Filename, Description) \
+    UtAssert((UtMem2BinFileCmp(Memory, Filename)), Description, __FILE__, __LINE__)
 
 /* A wrapper around UtAssertEx that allows the user to specify the failure type and a more descriptive message */
-#define     UtAssert_Type(Type,Expression,...)      \
-                UtAssertEx(Expression, UTASSERT_CASETYPE_##Type, __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_Type(Type, Expression, ...) \
+    UtAssertEx(Expression, UTASSERT_CASETYPE_##Type, __FILE__, __LINE__, __VA_ARGS__)
 
 /**
  * \brief Compare addresses for equality with an auto-generated description message
  */
-#define UtAssert_ADDRESS_EQ(actual,expect)   do       \
-{                                                     \
-    void *exp = (void*)(expect);                      \
-    void *act = (void*)(actual);                      \
-    UtAssert_True(act == exp, "%s (%p) == %s (%p)",   \
-                  #actual, act, #expect, exp);        \
-} while(0)                                            \
+#define UtAssert_ADDRESS_EQ(actual, expect)                                          \
+    do                                                                               \
+    {                                                                                \
+        void *exp = (void *)(expect);                                                \
+        void *act = (void *)(actual);                                                \
+        UtAssert_True(act == exp, "%s (%p) == %s (%p)", #actual, act, #expect, exp); \
+    } while (0)
 
 /**
  * \brief Compare two values for equality with an auto-generated description message
  * Values will be compared in an "int32" type context.
  */
-#define UtAssert_INT32_EQ(actual,expect)  do    \
-{                                               \
-    int32 rcexp = (int32)(expect);              \
-    int32 rcact = (int32)(actual);              \
-    UtAssert_True(rcact == rcexp, "%s (%ld) == %s (%ld)",   \
-        #actual, (long)rcact,                               \
-        #expect, (long)rcexp);                              \
-} while(0)
+#define UtAssert_INT32_EQ(actual, expect)                                                                  \
+    do                                                                                                     \
+    {                                                                                                      \
+        int32 rcexp = (int32)(expect);                                                                     \
+        int32 rcact = (int32)(actual);                                                                     \
+        UtAssert_True(rcact == rcexp, "%s (%ld) == %s (%ld)", #actual, (long)rcact, #expect, (long)rcexp); \
+    } while (0)
 
 /**
  * \brief Compare two values for equality with an auto-generated description message
  * Values will be compared in an "uint32" type context.
  */
-#define UtAssert_UINT32_EQ(actual,expect) do    \
-{                                               \
-    uint32 rcexp = (uint32)(expect);            \
-    uint32 rcact = (uint32)(actual);            \
-    UtAssert_True(rcact == rcexp, "%s (%lu) == %s (%lu)",   \
-        #actual, (unsigned long)rcact,                      \
-        #expect, (unsigned long)rcexp);                     \
-} while(0)
+#define UtAssert_UINT32_EQ(actual, expect)                                                            \
+    do                                                                                                \
+    {                                                                                                 \
+        uint32 rcexp = (uint32)(expect);                                                              \
+        uint32 rcact = (uint32)(actual);                                                              \
+        UtAssert_True(rcact == rcexp, "%s (%lu) == %s (%lu)", #actual, (unsigned long)rcact, #expect, \
+                      (unsigned long)rcexp);                                                          \
+    } while (0)
 
 /**
  * \brief Confirm a pointer value is not NULL
  */
-#define UtAssert_NOT_NULL(actual) do            \
-{                                               \
-    void* ptr = (void*)(actual);                \
-    UtAssert_True(ptr != NULL, "%s (%p) != NULL",   \
-            #actual, ptr);                          \
-} while(0)
+#define UtAssert_NOT_NULL(actual)                                    \
+    do                                                               \
+    {                                                                \
+        void *ptr = (void *)(actual);                                \
+        UtAssert_True(ptr != NULL, "%s (%p) != NULL", #actual, ptr); \
+    } while (0)
 
 /**
  * \brief Confirm a pointer value is NULL
  */
-#define UtAssert_NULL(actual) do                \
-{                                               \
-    void* ptr = (void*)(actual);                \
-    UtAssert_True(ptr == NULL, "%s (%p) == NULL",   \
-            #actual, ptr);                          \
-} while(0)
+#define UtAssert_NULL(actual)                                        \
+    do                                                               \
+    {                                                                \
+        void *ptr = (void *)(actual);                                \
+        UtAssert_True(ptr == NULL, "%s (%p) == NULL", #actual, ptr); \
+    } while (0)
 
 /**
  * \brief Confirm an integer value is nonzero
  */
-#define UtAssert_NONZERO(actual) do             \
-{                                               \
-    long val = (long)(actual);                  \
-    UtAssert_True(val != 0, "%s (%ld) != 0",    \
-            #actual, val);                      \
-} while(0)
+#define UtAssert_NONZERO(actual)                                \
+    do                                                          \
+    {                                                           \
+        long val = (long)(actual);                              \
+        UtAssert_True(val != 0, "%s (%ld) != 0", #actual, val); \
+    } while (0)
 
 /**
  * \brief Confirm an integer value is nonzero
  */
-#define UtAssert_ZERO(actual) do               \
-{                                              \
-   long val = (long)(actual);                  \
-   UtAssert_True(val == 0, "%s (%ld) == 0",    \
-           #actual, val);                      \
-} while(0)
+#define UtAssert_ZERO(actual)                                   \
+    do                                                          \
+    {                                                           \
+        long val = (long)(actual);                              \
+        UtAssert_True(val == 0, "%s (%ld) == 0", #actual, val); \
+    } while (0)
 
 /**
  * \brief Confirm that a stub function has been invoked the expected number of times
  */
-#define UtAssert_STUB_COUNT(stub,expected) do  \
-{                                              \
-   uint32 expval = (uint32)(expected);         \
-   uint32 actval = UT_GetStubCount(UT_KEY(stub));                   \
-   UtAssert_True(actval == expval, "%s() count (%lu) == %s (%lu)",  \
-           #stub, (unsigned long)actval,                            \
-           #expected, (unsigned long)expval);                       \
-} while(0)
+#define UtAssert_STUB_COUNT(stub, expected)                                                                      \
+    do                                                                                                           \
+    {                                                                                                            \
+        uint32 expval = (uint32)(expected);                                                                      \
+        uint32 actval = UT_GetStubCount(UT_KEY(stub));                                                           \
+        UtAssert_True(actval == expval, "%s() count (%lu) == %s (%lu)", #stub, (unsigned long)actval, #expected, \
+                      (unsigned long)expval);                                                                    \
+    } while (0)
 
 /*
  * Exported Functions
  */
 
 /* Returns the number of asserts that have passed. */
-uint32      UtAssert_GetPassCount(void);
+uint32 UtAssert_GetPassCount(void);
 
 /* Returns the number of asserts that have failed. */
-uint32      UtAssert_GetFailCount(void);
+uint32 UtAssert_GetFailCount(void);
 
 /* Returns the full status of UtAssert counters */
 const UtAssert_TestCounter_t *UtAssert_GetCounters(void);
@@ -261,13 +255,14 @@ UtAssert_CaseType_t UtAssert_GetContext(void);
 const char *UtAssert_GetSegmentName(void);
 
 /* Base assert function.  All asserts must call this function. */
-bool    UtAssert(bool Expression, const char *Description, const char *File, uint32 Line);
+bool UtAssert(bool Expression, const char *Description, const char *File, uint32 Line);
 
 /*
  * Assert function with CaseType (supports MIR, TSF, NA in addition to FAIL).
  * Also supports printf-style message strings to allow more dynamic content in the messages
  */
-bool    UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File, uint32 Line, const char *MessageFormat, ...) OS_PRINTF(5,6);
+bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File, uint32 Line, const char *MessageFormat,
+                ...) OS_PRINTF(5, 6);
 
 /*
  * Aborts the entire test
@@ -284,7 +279,7 @@ void UtAssert_Abort(const char *Message);
  * to the current output device.  This may be the console or a log file
  * or something else depending on what BSP is in use.
  */
-void UtAssert_Message(uint8 MessageType, const char *File, uint32 Line, const char *Spec, ...) OS_PRINTF(4,5);
+void UtAssert_Message(uint8 MessageType, const char *File, uint32 Line, const char *Spec, ...) OS_PRINTF(4, 5);
 
 /**
  * The BSP single test case reporting function.
@@ -303,7 +298,7 @@ void UtAssert_Message(uint8 MessageType, const char *File, uint32 Line, const ch
  * \param TestDescr    Sequence within the current test Segment
  */
 void UtAssert_DoReport(const char *File, uint32 LineNum, uint32 SegmentNum, uint32 SegmentSeq, uint8 MessageType,
-                     const char *SubsysName, const char *ShortDesc);
+                       const char *SubsysName, const char *ShortDesc);
 
 /**
  * The BSP overall test reporting function.
@@ -317,6 +312,5 @@ void UtAssert_DoReport(const char *File, uint32 LineNum, uint32 SegmentNum, uint
  * \param TestCounters  Counter object for the completed test
  */
 void UtAssert_DoTestSegmentReport(const char *SegmentName, const UtAssert_TestCounter_t *TestCounters);
-
 
 #endif

@@ -34,8 +34,7 @@
 
 #include "utstub-helpers.h"
 
-
-UT_DEFAULT_STUB(OS_FileAPI_Init,(void))
+UT_DEFAULT_STUB(OS_FileAPI_Init, (void))
 
 /*****************************************************************************
  *
@@ -44,7 +43,7 @@ UT_DEFAULT_STUB(OS_FileAPI_Init,(void))
  *****************************************************************************/
 static int32 UT_GenericReadStub(const char *fname, UT_EntryKey_t fkey, void *buffer, uint32 bsize)
 {
-    int32 status;
+    int32  status;
     uint32 CopySize;
 
     status = UT_DefaultStubImpl(fname, fkey, 0x7FFFFFFF);
@@ -82,8 +81,8 @@ static int32 UT_GenericReadStub(const char *fname, UT_EntryKey_t fkey, void *buf
  *****************************************************************************/
 static int32 UT_GenericWriteStub(const char *fname, UT_EntryKey_t fkey, const void *buffer, uint32 bsize)
 {
-    int32   status;
-    uint32  CopySize;
+    int32  status;
+    uint32 CopySize;
 
     status = UT_DefaultStubImpl(fname, fkey, 0x7FFFFFFF);
 
@@ -119,17 +118,17 @@ int32 OS_creat(const char *path, int32 access)
     UT_Stub_RegisterContext(UT_KEY(OS_creat), path);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_creat), access);
     osal_id_t objid;
-    int32 status;
+    int32     status;
 
     status = UT_DEFAULT_IMPL(OS_creat);
 
     if (status == OS_SUCCESS)
     {
-        objid = UT_AllocStubObjId(UT_OBJTYPE_FILESTREAM);
+        objid  = UT_AllocStubObjId(UT_OBJTYPE_FILESTREAM);
         status = OS_ObjectIdToInteger(objid);
     }
 
-   return status;
+    return status;
 }
 
 /*****************************************************************************
@@ -143,13 +142,13 @@ int32 OS_open(const char *path, int32 access, uint32 mode)
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_open), access);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_open), mode);
     osal_id_t objid;
-    int32 status;
+    int32     status;
 
     status = UT_DEFAULT_IMPL(OS_open);
 
     if (status == OS_SUCCESS)
     {
-        objid = UT_AllocStubObjId(UT_OBJTYPE_FILESTREAM);
+        objid  = UT_AllocStubObjId(UT_OBJTYPE_FILESTREAM);
         status = OS_ObjectIdToInteger(objid);
     }
 
@@ -184,7 +183,6 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
     return status;
 }
 
-
 /*****************************************************************************
  *
  * Stub function for OS_close()
@@ -211,9 +209,9 @@ int32 OS_close(osal_id_t filedes)
  * Stub function for OS_StreamRead()
  *
  *****************************************************************************/
-int32 OS_StreamRead(osal_id_t  filedes, void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_StreamRead(osal_id_t filedes, void *buffer, uint32 nbytes, int32 timeout)
 {
-    return UT_GenericReadStub(__func__,UT_KEY(OS_StreamRead),buffer,nbytes);
+    return UT_GenericReadStub(__func__, UT_KEY(OS_StreamRead), buffer, nbytes);
 }
 
 /*****************************************************************************
@@ -221,9 +219,9 @@ int32 OS_StreamRead(osal_id_t  filedes, void *buffer, uint32 nbytes, int32 timeo
  * Stub function for OS_StreamWrite()
  *
  *****************************************************************************/
-int32 OS_StreamWrite(osal_id_t  filedes, const void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_StreamWrite(osal_id_t filedes, const void *buffer, uint32 nbytes, int32 timeout)
 {
-    return UT_GenericWriteStub(__func__,UT_KEY(OS_StreamWrite),buffer,nbytes);
+    return UT_GenericWriteStub(__func__, UT_KEY(OS_StreamWrite), buffer, nbytes);
 }
 
 /*****************************************************************************
@@ -237,7 +235,7 @@ int32 OS_read(osal_id_t filedes, void *buffer, uint32 nbytes)
     UT_Stub_RegisterContext(UT_KEY(OS_read), buffer);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_read), nbytes);
 
-    return UT_GenericReadStub(__func__,UT_KEY(OS_read),buffer,nbytes);
+    return UT_GenericReadStub(__func__, UT_KEY(OS_read), buffer, nbytes);
 }
 
 /*****************************************************************************
@@ -251,7 +249,7 @@ int32 OS_write(osal_id_t filedes, const void *buffer, uint32 nbytes)
     UT_Stub_RegisterContext(UT_KEY(OS_write), buffer);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_write), nbytes);
 
-    return UT_GenericWriteStub(__func__,UT_KEY(OS_write),buffer,nbytes);
+    return UT_GenericWriteStub(__func__, UT_KEY(OS_write), buffer, nbytes);
 }
 
 /*****************************************************************************
@@ -259,14 +257,14 @@ int32 OS_write(osal_id_t filedes, const void *buffer, uint32 nbytes)
  * Stub function for OS_TimedRead()
  *
  *****************************************************************************/
-int32 OS_TimedRead(osal_id_t  filedes, void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_TimedRead(osal_id_t filedes, void *buffer, uint32 nbytes, int32 timeout)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimedRead), filedes);
     UT_Stub_RegisterContext(UT_KEY(OS_TimedRead), buffer);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimedRead), nbytes);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimedRead), timeout);
 
-    return UT_GenericReadStub(__func__,UT_KEY(OS_TimedRead),buffer,nbytes);
+    return UT_GenericReadStub(__func__, UT_KEY(OS_TimedRead), buffer, nbytes);
 }
 
 /*****************************************************************************
@@ -274,23 +272,22 @@ int32 OS_TimedRead(osal_id_t  filedes, void *buffer, uint32 nbytes, int32 timeou
  * Stub function for OS_TimedWrite()
  *
  *****************************************************************************/
-int32 OS_TimedWrite(osal_id_t  filedes, const void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, uint32 nbytes, int32 timeout)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimedWrite), filedes);
     UT_Stub_RegisterContext(UT_KEY(OS_TimedWrite), buffer);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimedWrite), nbytes);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimedWrite), timeout);
 
-    return UT_GenericWriteStub(__func__,UT_KEY(OS_TimedWrite),buffer,nbytes);
+    return UT_GenericWriteStub(__func__, UT_KEY(OS_TimedWrite), buffer, nbytes);
 }
-
 
 /*****************************************************************************
  *
  * Stub function for OS_chmod()
  *
  *****************************************************************************/
-int32 OS_chmod  (const char *path, uint32 access)
+int32 OS_chmod(const char *path, uint32 access)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_chmod), path);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_chmod), access);
@@ -302,13 +299,12 @@ int32 OS_chmod  (const char *path, uint32 access)
     return Status;
 }
 
-
 /*****************************************************************************
  *
  * Stub function for OS_stat()
  *
  *****************************************************************************/
-int32 OS_stat   (const char *path, os_fstat_t *filestats)
+int32 OS_stat(const char *path, os_fstat_t *filestats)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_stat), path);
     UT_Stub_RegisterContext(UT_KEY(OS_stat), filestats);
@@ -347,7 +343,7 @@ int32 OS_lseek(osal_id_t filedes, int32 offset, uint32 whence)
  * Stub function for OS_remove()
  *
  *****************************************************************************/
-int32 OS_remove (const char *path)
+int32 OS_remove(const char *path)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_remove), path);
 
@@ -363,7 +359,7 @@ int32 OS_remove (const char *path)
  * Stub function for OS_rename()
  *
  *****************************************************************************/
-int32 OS_rename (const char *old_filename, const char *new_filename)
+int32 OS_rename(const char *old_filename, const char *new_filename)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_rename), old_filename);
     UT_Stub_RegisterContext(UT_KEY(OS_rename), new_filename);
@@ -380,7 +376,7 @@ int32 OS_rename (const char *old_filename, const char *new_filename)
  * Stub function for OS_cp()
  *
  *****************************************************************************/
-int32 OS_cp (const char *src, const char *dest)
+int32 OS_cp(const char *src, const char *dest)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_cp), src);
     UT_Stub_RegisterContext(UT_KEY(OS_cp), dest);
@@ -397,7 +393,7 @@ int32 OS_cp (const char *src, const char *dest)
  * Stub function for OS_mv()
  *
  *****************************************************************************/
-int32 OS_mv (const char *src, const char *dest)
+int32 OS_mv(const char *src, const char *dest)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_mv), src);
     UT_Stub_RegisterContext(UT_KEY(OS_mv), dest);
@@ -409,18 +405,17 @@ int32 OS_mv (const char *src, const char *dest)
     return Status;
 }
 
-
 /*****************************************************************************
  *
  * Stub function for OS_FDGetInfo()
  *
  *****************************************************************************/
-int32 OS_FDGetInfo (osal_id_t filedes, OS_file_prop_t *fd_prop)
+int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_FDGetInfo), filedes);
     UT_Stub_RegisterContext(UT_KEY(OS_FDGetInfo), fd_prop);
 
-    int32 status;
+    int32  status;
     uint32 CopySize;
 
     status = UT_DEFAULT_IMPL(OS_FDGetInfo);
@@ -439,7 +434,6 @@ int32 OS_FDGetInfo (osal_id_t filedes, OS_file_prop_t *fd_prop)
 
     return status;
 }
-
 
 /*****************************************************************************
  *
@@ -492,7 +486,7 @@ int32 OS_CloseAllFiles(void)
  * Stub function for OS_ShellOutputToFile()
  *
  *****************************************************************************/
-int32 OS_ShellOutputToFile(const char* Cmd, osal_id_t filedes)
+int32 OS_ShellOutputToFile(const char *Cmd, osal_id_t filedes)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_ShellOutputToFile), Cmd);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_ShellOutputToFile), filedes);
@@ -507,5 +501,3 @@ int32 OS_ShellOutputToFile(const char* Cmd, osal_id_t filedes)
 
     return status;
 }
-
-

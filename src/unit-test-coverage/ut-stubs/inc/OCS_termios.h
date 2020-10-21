@@ -36,7 +36,4 @@
 /* prototypes normally declared in termios.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_TERMIOS_H_ */
-

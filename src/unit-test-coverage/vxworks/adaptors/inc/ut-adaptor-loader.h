@@ -33,11 +33,9 @@
 #include <OCS_taskLib.h>
 #include <OCS_semLib.h>
 
-
-extern void*  const UT_Ref_OS_impl_module_table;
+extern void *const  UT_Ref_OS_impl_module_table;
 extern size_t const UT_Ref_OS_impl_module_table_SIZE;
 
 extern int32 UT_Call_OS_VxWorks_ModuleAPI_Impl_Init(void);
 
-#endif  /* INCLUDE_UT_ADAPTOR_LOADER_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_LOADER_H_ */

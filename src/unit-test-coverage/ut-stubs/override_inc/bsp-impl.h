@@ -43,5 +43,4 @@
    END bsp-impl.h
  *********************/
 
-#endif  /* INCLUDE_BSP_IMPL_H_ */
-
+#endif /* INCLUDE_BSP_IMPL_H_ */

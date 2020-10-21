@@ -52,13 +52,13 @@ void Test_OS_SymTableIterator_Impl(void)
      */
     uint32 Data = 0;
 
-    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut",&Data,100,1000), true);
-    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut",&Data,100,101), false);
+    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000), true);
+    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 101), false);
     UT_SetForceFail(UT_KEY(OCS_strlen), OS_MAX_SYM_LEN + 10);
-    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut",&Data,100,1000), false);
+    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000), false);
     UT_ClearForceFail(UT_KEY(OCS_strlen));
     UT_SetForceFail(UT_KEY(OCS_write), -1);
-    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut",&Data,100,1000), false);
+    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000), false);
     UT_ClearForceFail(UT_KEY(OCS_write));
 }
 
@@ -67,12 +67,11 @@ void Test_OS_SymbolTableDump_Impl(void)
     /* Test Case For:
      * int32 OS_SymbolTableDump_Impl ( const char *filename, uint32 SizeLimit )
      */
-    OSAPI_TEST_FUNCTION_RC(OS_SymbolTableDump_Impl("file",10000), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_SymbolTableDump_Impl("file", 10000), OS_SUCCESS);
     UT_SetForceFail(UT_KEY(OCS_open), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_SymbolTableDump_Impl("file",10000), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_SymbolTableDump_Impl("file", 10000), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_open));
 }
-
 
 /* ------------------- End of test cases --------------------------------------*/
 
@@ -92,11 +91,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
-
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -109,5 +104,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_SymbolLookup_Impl);
     ADD_TEST(OS_SymbolTableDump_Impl);
 }
-
-

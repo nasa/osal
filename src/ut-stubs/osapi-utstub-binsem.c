@@ -34,7 +34,7 @@
 
 #include "utstub-helpers.h"
 
-UT_DEFAULT_STUB(OS_BinSemAPI_Init,(void))
+UT_DEFAULT_STUB(OS_BinSemAPI_Init, (void))
 
 /*****************************************************************************/
 /**
@@ -87,7 +87,7 @@ int32 OS_BinSemFlush(osal_id_t sem_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_BinSemFlush), sem_id);
 
-    int32   status;
+    int32 status;
 
     status = UT_DEFAULT_IMPL(OS_BinSemFlush);
 
@@ -117,8 +117,7 @@ int32 OS_BinSemFlush(osal_id_t sem_id)
 **        Returns either a user-defined status flag, OS_ERROR, or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_BinSemCreate(osal_id_t *sem_id, const char *sem_name,
-                      uint32 sem_initial_value, uint32 options)
+int32 OS_BinSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_initial_value, uint32 options)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_BinSemCreate), sem_id);
     UT_Stub_RegisterContext(UT_KEY(OS_BinSemCreate), sem_name);
@@ -194,7 +193,7 @@ int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
     status = UT_DEFAULT_IMPL(OS_BinSemGetInfo);
 
     if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_BinSemGetInfo), bin_prop, sizeof(*bin_prop)) < sizeof(*bin_prop))
+        UT_Stub_CopyToLocal(UT_KEY(OS_BinSemGetInfo), bin_prop, sizeof(*bin_prop)) < sizeof(*bin_prop))
     {
         UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &bin_prop->creator);
         strncpy(bin_prop->name, "Name", OS_MAX_API_NAME - 1);
@@ -203,7 +202,6 @@ int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
 
     return status;
 }
-
 
 /*****************************************************************************/
 /**
@@ -277,7 +275,7 @@ int32 OS_BinSemTimedWait(osal_id_t sem_id, uint32 msecs)
  * Stub function for OS_BinSemGetIdByName()
  *
  *****************************************************************************/
-int32 OS_BinSemGetIdByName (osal_id_t *sem_id, const char *sem_name)
+int32 OS_BinSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_BinSemGetIdByName), sem_id);
     UT_Stub_RegisterContext(UT_KEY(OS_BinSemGetIdByName), sem_name);
@@ -287,11 +285,10 @@ int32 OS_BinSemGetIdByName (osal_id_t *sem_id, const char *sem_name)
     status = UT_DEFAULT_IMPL(OS_BinSemGetIdByName);
 
     if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_BinSemGetIdByName), sem_id, sizeof(*sem_id)) < sizeof(*sem_id))
+        UT_Stub_CopyToLocal(UT_KEY(OS_BinSemGetIdByName), sem_id, sizeof(*sem_id)) < sizeof(*sem_id))
     {
         UT_ObjIdCompose(1, UT_OBJTYPE_BINSEM, sem_id);
     }
 
     return status;
 }
-

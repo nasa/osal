@@ -28,10 +28,9 @@
 /* mappings for declarations in dlfcn.h */
 /* ----------------------------------------- */
 
-#define dlclose                    OCS_dlclose
-#define dlerror                    OCS_dlerror
-#define dlopen                     OCS_dlopen
-#define dlsym                      OCS_dlsym
-
+#define dlclose OCS_dlclose
+#define dlerror OCS_dlerror
+#define dlopen  OCS_dlopen
+#define dlsym   OCS_dlsym
 
 #endif /* _OSAL_OVERRIDE_DLFCN_H_ */

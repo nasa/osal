@@ -55,30 +55,17 @@
 **  External Declarations
 */
 extern rtems_status_code rtems_ide_part_table_initialize(const char *);
-extern int rtems_rtl_shell_command (int argc, char* argv[]);
+extern int               rtems_rtl_shell_command(int argc, char *argv[]);
 
 /*
  * Additional shell commands for the RTL functionality
  */
 rtems_shell_cmd_t rtems_shell_RTL_Command = {
-  .name = "rtl",
-  .usage = "rtl COMMAND...",
-  .topic = "misc",
-  .command = rtems_rtl_shell_command
-};
+    .name = "rtl", .usage = "rtl COMMAND...", .topic = "misc", .command = rtems_rtl_shell_command};
 rtems_shell_cmd_t rtems_shell_dlopen_Command = {
-  .name = "dlopen",
-  .usage = "dlopen COMMAND...",
-  .topic = "misc",
-  .command = shell_dlopen
-};
+    .name = "dlopen", .usage = "dlopen COMMAND...", .topic = "misc", .command = shell_dlopen};
 rtems_shell_cmd_t rtems_shell_dlsym_Command = {
-  .name = "dlsym",
-  .usage = "dlsym COMMAND...",
-  .topic = "misc",
-  .command = shell_dlsym
-};
-
+    .name = "dlsym", .usage = "dlsym COMMAND...", .topic = "misc", .command = shell_dlsym};
 
 /*
 ** Global variables
@@ -87,11 +74,11 @@ OS_BSP_PcRtemsGlobalData_t OS_BSP_PcRtemsGlobal;
 
 void OS_BSP_Setup(void)
 {
-    int          status;
-    struct stat  statbuf;
-    const char * cmdlinestr;
-    const char * cmdp;
-    char *       cmdi, *cmdo;
+    int         status;
+    struct stat statbuf;
+    const char *cmdlinestr;
+    const char *cmdp;
+    char *      cmdi, *cmdo;
 
     cmdlinestr = bsp_cmdline();
 
@@ -218,8 +205,8 @@ void OS_BSP_Setup(void)
     }
     else
     {
-        status = mount("/dev/hda1", RTEMS_USER_FS_MOUNTPOINT, RTEMS_FILESYSTEM_TYPE_DOSFS,
-                       RTEMS_FILESYSTEM_READ_WRITE, NULL);
+        status = mount("/dev/hda1", RTEMS_USER_FS_MOUNTPOINT, RTEMS_FILESYSTEM_TYPE_DOSFS, RTEMS_FILESYSTEM_READ_WRITE,
+                       NULL);
         if (status < 0)
         {
             BSP_DEBUG("mount failed: %s\n", strerror(errno));
@@ -233,7 +220,6 @@ void OS_BSP_Setup(void)
      * it will be an IMFS dir, but should generally work.
      */
     chdir(RTEMS_USER_FS_MOUNTPOINT);
-
 
     /*
      * Start the shell now, before any application starts.
@@ -275,18 +261,18 @@ rtems_status_code OS_BSP_GetReturnStatus(void)
 
     switch (OS_BSP_Global.AppStatus)
     {
-    case OS_SUCCESS:
-        /* translate OS_SUCCESS to the system RTEMS_SUCCESSFUL value */
-        StatusStr = "SUCCESS";
-        retcode = RTEMS_SUCCESSFUL;
-        break;
+        case OS_SUCCESS:
+            /* translate OS_SUCCESS to the system RTEMS_SUCCESSFUL value */
+            StatusStr = "SUCCESS";
+            retcode   = RTEMS_SUCCESSFUL;
+            break;
 
-    default:
-        /* translate anything else to a generic non-success code,
-         * this basically just means the main task exited */
-        StatusStr = "ERROR";
-        retcode = RTEMS_TASK_EXITTED;
-        break;
+        default:
+            /* translate anything else to a generic non-success code,
+             * this basically just means the main task exited */
+            StatusStr = "ERROR";
+            retcode   = RTEMS_TASK_EXITTED;
+            break;
     }
 
     printf("\nApplication exit status: %s (%d)\n\n", StatusStr, (int)OS_BSP_Global.AppStatus);
@@ -364,9 +350,10 @@ rtems_task Init(rtems_task_argument ignored)
 */
 #define TASK_INTLEVEL 0
 #define CONFIGURE_INIT
-#define CONFIGURE_INIT_TASK_ATTRIBUTES  (RTEMS_FLOATING_POINT | RTEMS_PREEMPT | RTEMS_NO_TIMESLICE | RTEMS_ASR | RTEMS_INTERRUPT_LEVEL(TASK_INTLEVEL))
-#define CONFIGURE_INIT_TASK_STACK_SIZE  (20*1024)
-#define CONFIGURE_INIT_TASK_PRIORITY    10
+#define CONFIGURE_INIT_TASK_ATTRIBUTES \
+    (RTEMS_FLOATING_POINT | RTEMS_PREEMPT | RTEMS_NO_TIMESLICE | RTEMS_ASR | RTEMS_INTERRUPT_LEVEL(TASK_INTLEVEL))
+#define CONFIGURE_INIT_TASK_STACK_SIZE (20 * 1024)
+#define CONFIGURE_INIT_TASK_PRIORITY   10
 
 /*
  * Note that these resources are shared with RTEMS itself (e.g. the init task, the shell)
@@ -383,13 +370,13 @@ rtems_task Init(rtems_task_argument ignored)
  *   16 internal semaphores
  *
  */
-#define CONFIGURE_MAXIMUM_TASKS                      (OS_MAX_TASKS + 8)
-#define CONFIGURE_MAXIMUM_TIMERS                     (OS_MAX_TIMERS + 2)
-#define CONFIGURE_MAXIMUM_SEMAPHORES                 (OS_MAX_BIN_SEMAPHORES + OS_MAX_COUNT_SEMAPHORES + OS_MAX_MUTEXES + 16)
-#define CONFIGURE_MAXIMUM_MESSAGE_QUEUES             (OS_MAX_QUEUES + 4)
-#define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS     (OS_MAX_NUM_OPEN_FILES + 8)
-#define CONFIGURE_MAXIMUM_DRIVERS                    10
-#define CONFIGURE_MAXIMUM_POSIX_KEYS                 4
+#define CONFIGURE_MAXIMUM_TASKS                  (OS_MAX_TASKS + 8)
+#define CONFIGURE_MAXIMUM_TIMERS                 (OS_MAX_TIMERS + 2)
+#define CONFIGURE_MAXIMUM_SEMAPHORES             (OS_MAX_BIN_SEMAPHORES + OS_MAX_COUNT_SEMAPHORES + OS_MAX_MUTEXES + 16)
+#define CONFIGURE_MAXIMUM_MESSAGE_QUEUES         (OS_MAX_QUEUES + 4)
+#define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS (OS_MAX_NUM_OPEN_FILES + 8)
+#define CONFIGURE_MAXIMUM_DRIVERS                10
+#define CONFIGURE_MAXIMUM_POSIX_KEYS             4
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
 #define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
@@ -403,9 +390,9 @@ rtems_task Init(rtems_task_argument ignored)
 #define CONFIGURE_APPLICATION_NEEDS_IDE_DRIVER
 #define CONFIGURE_APPLICATION_NEEDS_ATA_DRIVER
 
-#define CONFIGURE_EXECUTIVE_RAM_SIZE                 (8*1024*1024)
-#define CONFIGURE_MICROSECONDS_PER_TICK              10000
-#define CONFIGURE_ATA_DRIVER_TASK_PRIORITY           9
+#define CONFIGURE_EXECUTIVE_RAM_SIZE       (8 * 1024 * 1024)
+#define CONFIGURE_MICROSECONDS_PER_TICK    10000
+#define CONFIGURE_ATA_DRIVER_TASK_PRIORITY 9
 
 #include <rtems/confdefs.h>
 
@@ -413,10 +400,6 @@ rtems_task Init(rtems_task_argument ignored)
 #define CONFIGURE_SHELL_COMMANDS_ALL
 #define CONFIGURE_SHELL_MOUNT_MSDOS
 
-#define CONFIGURE_SHELL_USER_COMMANDS   \
-    &rtems_shell_RTL_Command,           \
-    &rtems_shell_dlopen_Command,        \
-    &rtems_shell_dlsym_Command
-
+#define CONFIGURE_SHELL_USER_COMMANDS &rtems_shell_RTL_Command, &rtems_shell_dlopen_Command, &rtems_shell_dlsym_Command
 
 #include <rtems/shellconfig.h>

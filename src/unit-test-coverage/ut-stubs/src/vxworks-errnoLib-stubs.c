@@ -25,8 +25,7 @@
 
 #include <OCS_errnoLib.h>
 
-
-int OCS_errnoGet (void)
+int OCS_errnoGet(void)
 {
     return UT_DEFAULT_IMPL(OCS_errnoGet);
 }

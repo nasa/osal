@@ -24,11 +24,9 @@
 
 #include <OCS_ulimit.h>
 
-
 /* ----------------------------------------- */
 /* mappings for declarations in ulimit.h */
 /* ----------------------------------------- */
-#define ulimit      OCS_ulimit
-
+#define ulimit OCS_ulimit
 
 #endif /* _OSAL_OVERRIDE_ULIMIT_H_ */

@@ -36,11 +36,9 @@
 /* prototypes normally declared in dlfcn.h */
 /* ----------------------------------------- */
 
-extern int OCS_dlclose (void * handle);
-extern char *OCS_dlerror (void);
-extern void *OCS_dlopen (const char * file, int flags);
-extern void *OCS_dlsym (void * handle, const char * name);
-
+extern int   OCS_dlclose(void *handle);
+extern char *OCS_dlerror(void);
+extern void *OCS_dlopen(const char *file, int flags);
+extern void *OCS_dlsym(void *handle, const char *name);
 
 #endif /* _OSAL_STUB_DLFCN_H_ */
-

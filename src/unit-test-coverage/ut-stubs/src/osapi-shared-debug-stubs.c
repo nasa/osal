@@ -32,6 +32,4 @@
  * This is only relevant when building OSAL with OSAL_CONFIG_DEBUG_PRINTF enabled
  *
  *****************************************************************************/
-void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const char *Format, ...)
-{
-}
+void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const char *Format, ...) {}

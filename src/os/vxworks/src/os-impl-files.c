@@ -40,7 +40,6 @@
  */
 OS_VxWorks_filehandle_entry_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FILES];
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_VxWorks_StreamAPI_Impl_Init
@@ -56,13 +55,11 @@ int32 OS_VxWorks_StreamAPI_Impl_Init(void)
      * init all filehandles to -1, which is always invalid.
      * this isn't strictly necessary but helps when debugging.
      */
-    for (local_id = 0; local_id <  OS_MAX_NUM_OPEN_FILES; ++local_id)
+    for (local_id = 0; local_id < OS_MAX_NUM_OPEN_FILES; ++local_id)
     {
-        OS_impl_filehandle_table[local_id].fd = -1;
+        OS_impl_filehandle_table[local_id].fd         = -1;
         OS_impl_filehandle_table[local_id].selectable = false;
     }
 
     return OS_SUCCESS;
 } /* end OS_VxWorks_StreamAPI_Impl_Init */
-
-

@@ -33,7 +33,7 @@ void Test_OS_ShellOutputToFile_Impl(void)
     /* Test Case For:
      * int32 OS_ShellOutputToFile_Impl(uint32 stream_id, const char* Cmd)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_ShellOutputToFile_Impl, (0,"ut"), OS_ERR_NOT_IMPLEMENTED);
+    OSAPI_TEST_FUNCTION_RC(OS_ShellOutputToFile_Impl, (0, "ut"), OS_ERR_NOT_IMPLEMENTED);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
@@ -54,11 +54,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
-
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -69,5 +65,3 @@ void UtTest_Setup(void)
 {
     ADD_TEST(OS_ShellOutputToFile_Impl);
 }
-
-

@@ -43,11 +43,11 @@
                                      DEFINES
  ***************************************************************************************/
 
-#define OSAL_CONSOLE_STREAM         stdout
+#define OSAL_CONSOLE_STREAM stdout
 /*
  * By default use the stdout stream for the console (OS_printf)
  */
-#define OSAL_CONSOLE_FILENO     STDOUT_FILENO
+#define OSAL_CONSOLE_FILENO STDOUT_FILENO
 
 /*
  * By default the console output is always asynchronous
@@ -56,10 +56,9 @@
  * This option was removed from osconfig.h and now is
  * assumed to always be on.
  */
-#define OS_CONSOLE_ASYNC                true
-#define OS_CONSOLE_TASK_PRIORITY        OS_UTILITYTASK_PRIORITY
-#define OS_CONSOLE_TASK_STACKSIZE       OS_UTILITYTASK_STACK_SIZE
-
+#define OS_CONSOLE_ASYNC          true
+#define OS_CONSOLE_TASK_PRIORITY  OS_UTILITYTASK_PRIORITY
+#define OS_CONSOLE_TASK_STACKSIZE OS_UTILITYTASK_STACK_SIZE
 
 /****************************************************************************************
                                    GLOBAL DATA
@@ -67,15 +66,13 @@
 /* Console device */
 typedef struct
 {
-    bool            is_async;
-    rtems_id        data_sem;
-    int             out_fd;
+    bool     is_async;
+    rtems_id data_sem;
+    int      out_fd;
 } OS_impl_console_internal_record_t;
 
-
 /* Tables where the OS object information is stored */
-OS_impl_console_internal_record_t   OS_impl_console_table       [OS_MAX_CONSOLES];
-
+OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
 
 /********************************************************************/
 /*                 CONSOLE OUTPUT                                   */
@@ -89,7 +86,7 @@ OS_impl_console_internal_record_t   OS_impl_console_table       [OS_MAX_CONSOLES
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void  OS_ConsoleWakeup_Impl(uint32 local_id)
+void OS_ConsoleWakeup_Impl(uint32 local_id)
 {
     OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
 
@@ -105,7 +102,6 @@ void  OS_ConsoleWakeup_Impl(uint32 local_id)
     }
 } /* end OS_ConsoleWakeup_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ConsoleTask_Entry
@@ -115,7 +111,7 @@ void  OS_ConsoleWakeup_Impl(uint32 local_id)
  *-----------------------------------------------------------------*/
 static void OS_ConsoleTask_Entry(rtems_task_argument arg)
 {
-    uint32 local_id = arg;
+    uint32                             local_id = arg;
     OS_impl_console_internal_record_t *local;
 
     local = &OS_impl_console_table[local_id];
@@ -137,16 +133,16 @@ static void OS_ConsoleTask_Entry(rtems_task_argument arg)
 int32 OS_ConsoleCreate_Impl(uint32 local_id)
 {
     OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
-    int32 return_code;
-    rtems_name r_name;
-    rtems_id r_task_id;
-    rtems_status_code status;
+    int32                              return_code;
+    rtems_name                         r_name;
+    rtems_id                           r_task_id;
+    rtems_status_code                  status;
 
     if (local_id == 0)
     {
-        return_code = OS_SUCCESS;
+        return_code     = OS_SUCCESS;
         local->is_async = OS_CONSOLE_ASYNC;
-        local->out_fd = OSAL_CONSOLE_FILENO;
+        local->out_fd   = OSAL_CONSOLE_FILENO;
 
         if (local->is_async)
         {
@@ -157,26 +153,19 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id)
             ** and trying to use the real name would be less than useful (only 4 chars)
             */
             r_name = OS_ObjectIdToInteger(OS_global_console_table[local_id].active_id);
-            status = rtems_semaphore_create( r_name, 0,
-                                             RTEMS_PRIORITY,
-                                             0,
-                                             &local->data_sem);
+            status = rtems_semaphore_create(r_name, 0, RTEMS_PRIORITY, 0, &local->data_sem);
             if (status != RTEMS_SUCCESSFUL)
             {
                 return_code = OS_SEM_FAILURE;
             }
             else
             {
-                status = rtems_task_create(
-                             r_name,
-                             OS_CONSOLE_TASK_PRIORITY,
-                             OS_CONSOLE_TASK_STACKSIZE,
-                             RTEMS_PREEMPT | RTEMS_NO_ASR | RTEMS_NO_TIMESLICE | RTEMS_INTERRUPT_LEVEL(0),
-                             RTEMS_LOCAL,
-                             &r_task_id);
+                status = rtems_task_create(r_name, OS_CONSOLE_TASK_PRIORITY, OS_CONSOLE_TASK_STACKSIZE,
+                                           RTEMS_PREEMPT | RTEMS_NO_ASR | RTEMS_NO_TIMESLICE | RTEMS_INTERRUPT_LEVEL(0),
+                                           RTEMS_LOCAL, &r_task_id);
 
                 /* check if task_create failed */
-                if (status != RTEMS_SUCCESSFUL )
+                if (status != RTEMS_SUCCESSFUL)
                 {
                     /* Provide some freedback as to why this failed */
                     OS_DEBUG("rtems_task_create failed: %s\n", rtems_status_text(status));
@@ -186,11 +175,11 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id)
                 else
                 {
                     /* will place the task in 'ready for scheduling' state */
-                    status = rtems_task_start (r_task_id, /*rtems task id*/
-                            OS_ConsoleTask_Entry, /* task entry point */
-                            (rtems_task_argument)local_id );  /* passed argument  */
+                    status = rtems_task_start(r_task_id,                      /*rtems task id*/
+                                              OS_ConsoleTask_Entry,           /* task entry point */
+                                              (rtems_task_argument)local_id); /* passed argument  */
 
-                    if (status != RTEMS_SUCCESSFUL )
+                    if (status != RTEMS_SUCCESSFUL)
                     {
                         OS_printf("rtems_task_start failed: %s\n", rtems_status_text(status));
                         rtems_task_delete(r_task_id);
@@ -209,5 +198,3 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id)
 
     return return_code;
 } /* end OS_ConsoleCreate_Impl */
-
-

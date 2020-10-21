@@ -28,6 +28,4 @@
 /* mappings for declarations in tgmath.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_OVERRIDE_TGMATH_H_ */

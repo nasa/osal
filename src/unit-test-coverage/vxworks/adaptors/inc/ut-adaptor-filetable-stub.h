@@ -31,10 +31,7 @@
 #include <common_types.h>
 #include <utstubs.h>
 
-
-extern void*  const UT_FileTableTest_OS_impl_filehandle_table;
+extern void *const  UT_FileTableTest_OS_impl_filehandle_table;
 extern size_t const UT_FileTableTest_OS_impl_filehandle_table_SIZE;
 
-
-#endif  /* INCLUDE_UT_ADAPTOR_FILETABLE_STUB_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_FILETABLE_STUB_H_ */

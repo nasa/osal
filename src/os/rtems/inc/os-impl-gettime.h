@@ -31,9 +31,6 @@
 #include <osconfig.h>
 #include <time.h>
 
+#define OSAL_GETTIME_SOURCE_CLOCK CLOCK_MONOTONIC
 
-#define OSAL_GETTIME_SOURCE_CLOCK       CLOCK_MONOTONIC
-
-
-#endif  /* INCLUDE_OS_IMPL_GETTIME_H_ */
-
+#endif /* INCLUDE_OS_IMPL_GETTIME_H_ */

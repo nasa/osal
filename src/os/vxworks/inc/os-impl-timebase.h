@@ -44,17 +44,16 @@ enum OS_TimerState
 typedef struct
 {
     VX_MUTEX_SEMAPHORE(mmem);
-    SEM_ID              handler_mutex;
-    int                 assigned_signal;
-    sigset_t            timer_sigset;
-    TASK_ID             handler_task;
-    timer_t             host_timerid;
-    enum OS_TimerState  timer_state;
-    uint32              configured_start_time;
-    uint32              configured_interval_time;
-    bool                reset_flag;
+    SEM_ID             handler_mutex;
+    int                assigned_signal;
+    sigset_t           timer_sigset;
+    TASK_ID            handler_task;
+    timer_t            host_timerid;
+    enum OS_TimerState timer_state;
+    uint32             configured_start_time;
+    uint32             configured_interval_time;
+    bool               reset_flag;
 } OS_impl_timebase_internal_record_t;
-
 
 /****************************************************************************************
                                    GLOBAL DATA
@@ -62,6 +61,4 @@ typedef struct
 
 extern OS_impl_timebase_internal_record_t OS_impl_timebase_table[OS_MAX_TIMEBASES];
 
-
-#endif  /* INCLUDE_OS_IMPL_TIMEBASE_H_ */
-
+#endif /* INCLUDE_OS_IMPL_TIMEBASE_H_ */

@@ -35,29 +35,25 @@
 #include "uttest.h"
 #include "utbsp.h"
 
-#define NUMBER_OF_TIMERS 4
+#define NUMBER_OF_TIMERS  4
 #define TASK_1_STACK_SIZE 4096
 #define TASK_1_PRIORITY   101
 
-OS_time_t        StartTime;
-OS_time_t        EndTime;
-uint32           TimerStart[NUMBER_OF_TIMERS] = {1000, 2000000, 3000000, 4000000 };
-uint32           TimerInterval[NUMBER_OF_TIMERS] = {500000, 400000, 800000, 600000 };
+OS_time_t StartTime;
+OS_time_t EndTime;
+uint32    TimerStart[NUMBER_OF_TIMERS]    = {1000, 2000000, 3000000, 4000000};
+uint32    TimerInterval[NUMBER_OF_TIMERS] = {500000, 400000, 800000, 600000};
 
 uint32 TimerTestTaskStack[TASK_1_STACK_SIZE];
 uint32 timer_counter[NUMBER_OF_TIMERS];
 
-
-void counter_func(osal_id_t timer_id , void *arg)
+void counter_func(osal_id_t timer_id, void *arg)
 {
-   uint32 *counter = arg;
-   ++(*counter);
+    uint32 *counter = arg;
+    ++(*counter);
 }
 
-void null_func(osal_id_t timer_id , void *arg)
-{
-
-}
+void null_func(osal_id_t timer_id, void *arg) {}
 
 /* *************************************** MAIN ************************************** */
 
@@ -65,147 +61,144 @@ void TestTimerAddApi(void)
 {
     /*
      * Test Case For:
-     * int32 OS_TimerAdd(uint32 *timer_id, const char *timer_name, uint32 timebase_ref_id, OS_ArgCallback_t  callback_ptr, void *callback_arg)
+     * int32 OS_TimerAdd(uint32 *timer_id, const char *timer_name, uint32 timebase_ref_id, OS_ArgCallback_t
+     * callback_ptr, void *callback_arg)
      */
 
-    int32    actual;
-    int32    expected;
-    int32    tbc_ret_val;
-    int32    tbs_ret_val;
-    osal_id_t   timer_id;
-    osal_id_t   time_base_id;
-    int      i = 0;
-    int32    TimerStatus[NUMBER_OF_TIMERS];
-    osal_id_t   TimerID[NUMBER_OF_TIMERS];
-    char     TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1","TIMER2","TIMER3","TIMER4"};
-    uint32   microsecs;
+    int32     actual;
+    int32     expected;
+    int32     tbc_ret_val;
+    int32     tbs_ret_val;
+    osal_id_t timer_id;
+    osal_id_t time_base_id;
+    int       i = 0;
+    int32     TimerStatus[NUMBER_OF_TIMERS];
+    osal_id_t TimerID[NUMBER_OF_TIMERS];
+    char      TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4"};
+    uint32    microsecs;
 
-   /* Create and set the TimeBase obj and verify success */
+    /* Create and set the TimeBase obj and verify success */
 
-    tbc_ret_val = OS_TimeBaseCreate( &time_base_id, "TimeBase", 0);
-    expected = OS_SUCCESS; 
+    tbc_ret_val = OS_TimeBaseCreate(&time_base_id, "TimeBase", 0);
+    expected    = OS_SUCCESS;
     UtAssert_True(tbc_ret_val == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)tbc_ret_val);
 
     tbs_ret_val = OS_TimeBaseSet(time_base_id, 10000, 10000); /* ms */
-    expected = OS_SUCCESS; 
+    expected    = OS_SUCCESS;
     UtAssert_True(tbs_ret_val == expected, "OS_TimeBaseSet() (%ld) == OS_SUCCESS", (long)tbs_ret_val);
 
+    for (i = 0; i < NUMBER_OF_TIMERS; i++)
+    {
+        TimerStatus[i] = OS_TimerAdd(&TimerID[i], TimerName[i], time_base_id, &counter_func, &timer_counter[i]);
+        UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d Created RC=%d ID=%lx", i, (int)TimerStatus[i],
+                      OS_ObjectIdToInteger(TimerID[i]));
+    }
 
-   for ( i = 0; i < NUMBER_OF_TIMERS; i++ )
-   {
-      TimerStatus[i] = OS_TimerAdd(&TimerID[i], TimerName[i], time_base_id, &counter_func, &timer_counter[i]);
-      UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d Created RC=%d ID=%lx", i, (int)TimerStatus[i],
-              OS_ObjectIdToInteger(TimerID[i]));
+    /* Sample the clock now, before starting any timer */
+    OS_GetLocalTime(&StartTime);
+    for (i = 0; i < NUMBER_OF_TIMERS; i++)
+    {
+        /*
+         * to ensure that all timers are started as closely as possible,
+         * this just stores the result and does not assert/printf now
+         */
+        TimerStatus[i] = OS_TimerSet(TimerID[i], TimerStart[i], TimerInterval[i]);
+    }
 
-   }
+    /*
+     * Now the actual OS_TimerSet() return code can be checked.
+     */
+    for (i = 0; i < NUMBER_OF_TIMERS; i++)
+    {
+        UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d programmed RC=%d", i, (int)TimerStatus[i]);
+    }
 
-   /* Sample the clock now, before starting any timer */
-   OS_GetLocalTime(&StartTime);
-   for ( i = 0; i < NUMBER_OF_TIMERS; i++ )
-   {
-      /*
-       * to ensure that all timers are started as closely as possible,
-       * this just stores the result and does not assert/printf now
-       */
-      TimerStatus[i]  =  OS_TimerSet(TimerID[i], TimerStart[i], TimerInterval[i]);
-   }
-
-   /*
-    * Now the actual OS_TimerSet() return code can be checked.
+    /*
+    ** Let the main thread sleep
     */
-   for ( i = 0; i < NUMBER_OF_TIMERS; i++ )
-   {
-       UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d programmed RC=%d", i, (int)TimerStatus[i]);
-   }
+    UtPrintf("Starting Delay loop.\n");
+    for (i = 0; i < 30; i++)
+    {
+        /*
+        ** Even though this sleep call is for 1 second,
+        ** the sigalarm timer for the 1hz will keep waking
+        ** it up. Keep that in mind when setting the timer down
+        ** to something very small.
+        */
+        OS_TaskDelay(1000);
+    }
 
-   /*
-   ** Let the main thread sleep 
-   */     
-   UtPrintf("Starting Delay loop.\n");
-   for (i = 0 ; i < 30; i++ )
-   {
-      /* 
-      ** Even though this sleep call is for 1 second,
-      ** the sigalarm timer for the 1hz will keep waking
-      ** it up. Keep that in mind when setting the timer down
-      ** to something very small.
-      */
-      OS_TaskDelay(1000);
-   }
+    OS_GetLocalTime(&EndTime);
 
-   OS_GetLocalTime(&EndTime);
+    for (i = 0; i < NUMBER_OF_TIMERS; i++)
+    {
+        TimerStatus[i] = OS_TimerDelete(TimerID[i]);
+    }
 
-   for ( i = 0; i < NUMBER_OF_TIMERS; i++ )
-   {
-       TimerStatus[i] =  OS_TimerDelete(TimerID[i]);
-   }
+    for (i = 0; i < NUMBER_OF_TIMERS; i++)
+    {
+        UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d delete RC=%d. Count total = %d", i, (int)TimerStatus[i],
+                      (int)timer_counter[i]);
+    }
 
-   for ( i = 0; i < NUMBER_OF_TIMERS; i++ )
-   {
-       UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d delete RC=%d. Count total = %d",
-               i, (int)TimerStatus[i], (int)timer_counter[i]);
-   }
+    /*
+     * Time limited test
+     */
+    microsecs = 1000000 * (EndTime.seconds - StartTime.seconds);
+    if (EndTime.microsecs < StartTime.microsecs)
+    {
+        microsecs -= StartTime.microsecs - EndTime.microsecs;
+    }
+    else
+    {
+        microsecs += EndTime.microsecs - StartTime.microsecs;
+    }
 
-   /*
-    * Time limited test 
-    */
-   microsecs = 1000000 * (EndTime.seconds - StartTime.seconds);
-   if (EndTime.microsecs < StartTime.microsecs)
-   {
-      microsecs -= StartTime.microsecs - EndTime.microsecs;
-   }
-   else
-   {
-      microsecs += EndTime.microsecs - StartTime.microsecs;
-   }
+    /* Make sure the ratio of the timers are OK */
+    for (i = 0; i < NUMBER_OF_TIMERS; i++)
+    {
+        /*
+         * Expect one tick after the start time (i.e. first tick)
+         * Plus one tick for every interval that occurred during the test
+         */
+        expected = 1 + (microsecs - TimerStart[i]) / TimerInterval[i];
+        UtAssert_True(expected > 0, "Expected ticks = %u", (unsigned int)expected);
 
-   /* Make sure the ratio of the timers are OK */
-   for ( i = 0; i < NUMBER_OF_TIMERS; i++ )
-   {
-      /*
-       * Expect one tick after the start time (i.e. first tick)
-       * Plus one tick for every interval that occurred during the test
-       */
-      expected = 1 + (microsecs - TimerStart[i]) / TimerInterval[i];
-      UtAssert_True(expected > 0, "Expected ticks = %u", (unsigned int)expected);
-
-      /*
-       * Since all these counts are affected by test system load,
-       * allow for some fudge factor before declaring failure
-       */
-      UtAssert_True(timer_counter[i] >= (expected - 3), "Timer %d count >= %d", (int)i, (int)(expected - 3));
-      UtAssert_True(timer_counter[i] <= (expected + 3), "Timer %d count <= %d", (int)i, (int)(expected + 3));
-   }
+        /*
+         * Since all these counts are affected by test system load,
+         * allow for some fudge factor before declaring failure
+         */
+        UtAssert_True(timer_counter[i] >= (expected - 3), "Timer %d count >= %d", (int)i, (int)(expected - 3));
+        UtAssert_True(timer_counter[i] <= (expected + 3), "Timer %d count <= %d", (int)i, (int)(expected + 3));
+    }
 
     /* Test nominal inputs */
-    expected = OS_SUCCESS; 
-    actual = OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL);
+    expected = OS_SUCCESS;
+    actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Test invalid inputs */
     expected = OS_INVALID_POINTER;
-    actual = OS_TimerAdd(NULL, "Timer", time_base_id, null_func, NULL);
+    actual   = OS_TimerAdd(NULL, "Timer", time_base_id, null_func, NULL);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_ERR_INVALID_ID;
-    actual = OS_TimerAdd(&timer_id, "Timer", OS_OBJECT_ID_UNDEFINED, null_func, NULL);
+    actual   = OS_TimerAdd(&timer_id, "Timer", OS_OBJECT_ID_UNDEFINED, null_func, NULL);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
     expected = OS_TIMER_ERR_INVALID_ARGS;
-    actual = OS_TimerAdd(&timer_id, "Timer",time_base_id , NULL, NULL);
+    actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, NULL, NULL);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
 
     expected = OS_ERR_NAME_TAKEN;
-    actual = OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL);
+    actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_NAME_TAKEN", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_TimerAdd(&timer_id, 0, time_base_id, null_func, NULL);
+    actual   = OS_TimerAdd(&timer_id, 0, time_base_id, null_func, NULL);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-
 } /* end TestTimerAddApi */
-
 
 void UtTest_Setup(void)
 {
@@ -219,4 +212,3 @@ void UtTest_Setup(void)
      */
     UtTest_Add(TestTimerAddApi, NULL, NULL, "TestTimerAddApi");
 }
-

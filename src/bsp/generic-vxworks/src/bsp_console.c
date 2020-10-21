@@ -58,5 +58,3 @@ void OS_BSP_ConsoleSetMode_Impl(uint32 ModeBits)
 {
     /* ignored; not implemented */
 }
-
-

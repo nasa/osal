@@ -40,7 +40,7 @@
                                 INTERNAL FUNCTION PROTOTYPES
  ***************************************************************************************/
 
-void  OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks);
+void OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks);
 
 /****************************************************************************************
                                      DEFINES
@@ -51,14 +51,12 @@ void  OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks);
  * the time like the REALTIME clock will.
  */
 #ifndef OS_PREFERRED_CLOCK
-#ifdef  _POSIX_MONOTONIC_CLOCK
-#define OS_PREFERRED_CLOCK      CLOCK_MONOTONIC
+#ifdef _POSIX_MONOTONIC_CLOCK
+#define OS_PREFERRED_CLOCK CLOCK_MONOTONIC
 #else
-#define OS_PREFERRED_CLOCK      CLOCK_REALTIME
+#define OS_PREFERRED_CLOCK CLOCK_REALTIME
 #endif
 #endif
-
-
 
 /****************************************************************************************
                                     LOCAL TYPEDEFS
@@ -66,15 +64,15 @@ void  OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks);
 
 typedef struct
 {
-    rtems_id            rtems_timer_id;
-    rtems_id            tick_sem;
-    rtems_id            handler_mutex;
-    rtems_id            handler_task;
-    uint8               simulate_flag;
-    uint8               reset_flag;
-    rtems_interval      interval_ticks;
-    uint32              configured_start_time;
-    uint32              configured_interval_time;
+    rtems_id       rtems_timer_id;
+    rtems_id       tick_sem;
+    rtems_id       handler_mutex;
+    rtems_id       handler_task;
+    uint8          simulate_flag;
+    uint8          reset_flag;
+    rtems_interval interval_ticks;
+    uint32         configured_start_time;
+    uint32         configured_interval_time;
 } OS_impl_timebase_internal_record_t;
 
 /****************************************************************************************
@@ -109,7 +107,6 @@ void OS_TimeBaseUnlock_Impl(uint32 local_id)
     rtems_semaphore_release(OS_impl_timebase_table[local_id].handler_mutex);
 } /* end OS_TimeBaseUnlock_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_TimeBase_ISR
@@ -121,8 +118,8 @@ void OS_TimeBaseUnlock_Impl(uint32 local_id)
  *-----------------------------------------------------------------*/
 static rtems_timer_service_routine OS_TimeBase_ISR(rtems_id rtems_timer_id, void *arg)
 {
-    OS_U32ValueWrapper_t user_data;
-    uint32 local_id;
+    OS_U32ValueWrapper_t                user_data;
+    uint32                              local_id;
     OS_impl_timebase_internal_record_t *local;
 
     user_data.opaque_arg = arg;
@@ -135,8 +132,7 @@ static rtems_timer_service_routine OS_TimeBase_ISR(rtems_id rtems_timer_id, void
          */
         if (local->interval_ticks > 0)
         {
-            rtems_timer_fire_after(rtems_timer_id, local->interval_ticks,
-                    OS_TimeBase_ISR, user_data.opaque_arg);
+            rtems_timer_fire_after(rtems_timer_id, local->interval_ticks, OS_TimeBase_ISR, user_data.opaque_arg);
         }
 
         /*
@@ -150,7 +146,6 @@ static rtems_timer_service_routine OS_TimeBase_ISR(rtems_id rtems_timer_id, void
 
 } /* end OS_TimeBase_ISR */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_TimeBase_WaitImpl
@@ -162,7 +157,7 @@ static rtems_timer_service_routine OS_TimeBase_ISR(rtems_id rtems_timer_id, void
 static uint32 OS_TimeBase_WaitImpl(uint32 local_id)
 {
     OS_impl_timebase_internal_record_t *local;
-    uint32 tick_time;
+    uint32                              tick_time;
 
     local = &OS_impl_timebase_table[local_id];
 
@@ -184,14 +179,12 @@ static uint32 OS_TimeBase_WaitImpl(uint32 local_id)
     }
     else
     {
-        tick_time = local->configured_start_time;
+        tick_time         = local->configured_start_time;
         local->reset_flag = 0;
     }
 
-
     return tick_time;
 } /* end OS_TimeBase_WaitImpl */
-
 
 /****************************************************************************************
                                 INITIALIZATION FUNCTION
@@ -204,46 +197,44 @@ static uint32 OS_TimeBase_WaitImpl(uint32 local_id)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-int32  OS_Rtems_TimeBaseAPI_Impl_Init ( void )
+int32 OS_Rtems_TimeBaseAPI_Impl_Init(void)
 {
-   /*
-   ** Store the clock accuracy for 1 tick.
-   */
-   rtems_interval ticks_per_sec = rtems_clock_get_ticks_per_second();
-
-   if (ticks_per_sec <= 0)
-   {
-      return OS_ERROR;
-   }
-
-   /*
-    * For the global ticks per second, use the value direct from RTEMS
+    /*
+    ** Store the clock accuracy for 1 tick.
     */
-   OS_SharedGlobalVars.TicksPerSecond = (int32)ticks_per_sec;
+    rtems_interval ticks_per_sec = rtems_clock_get_ticks_per_second();
 
-   /*
-    * Compute the clock accuracy in Nanoseconds (ns per tick)
-    * This really should be an exact/whole number result; otherwise this
-    * will round to the nearest nanosecond.
-    */
-   RTEMS_GlobalVars.ClockAccuracyNsec = (1000000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) /
-         OS_SharedGlobalVars.TicksPerSecond;
+    if (ticks_per_sec <= 0)
+    {
+        return OS_ERROR;
+    }
 
+    /*
+     * For the global ticks per second, use the value direct from RTEMS
+     */
+    OS_SharedGlobalVars.TicksPerSecond = (int32)ticks_per_sec;
 
-   /*
-    * Finally compute the Microseconds per tick
-    * This must further round again to the nearest microsecond, so it is undesirable to use
-    * this for time computations if the result is not exact.
-    */
-   OS_SharedGlobalVars.MicroSecPerTick = (RTEMS_GlobalVars.ClockAccuracyNsec + 500) / 1000;
+    /*
+     * Compute the clock accuracy in Nanoseconds (ns per tick)
+     * This really should be an exact/whole number result; otherwise this
+     * will round to the nearest nanosecond.
+     */
+    RTEMS_GlobalVars.ClockAccuracyNsec =
+        (1000000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) / OS_SharedGlobalVars.TicksPerSecond;
 
-   return(OS_SUCCESS);
+    /*
+     * Finally compute the Microseconds per tick
+     * This must further round again to the nearest microsecond, so it is undesirable to use
+     * this for time computations if the result is not exact.
+     */
+    OS_SharedGlobalVars.MicroSecPerTick = (RTEMS_GlobalVars.ClockAccuracyNsec + 500) / 1000;
+
+    return (OS_SUCCESS);
 } /* end OS_Rtems_TimeBaseAPI_Impl_Init */
 
 /****************************************************************************************
                                 INTERNAL FUNCTIONS
  ***************************************************************************************/
-
 
 /*----------------------------------------------------------------
  *
@@ -252,38 +243,34 @@ int32  OS_Rtems_TimeBaseAPI_Impl_Init ( void )
  *  Purpose:  Convert Microseconds to a number of ticks.
  *
  *-----------------------------------------------------------------*/
-void  OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks)
+void OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks)
 {
-   uint32 result;
+    uint32 result;
 
-   /*
-    * In order to compute without overflowing a 32 bit integer,
-    * this is done in 2 parts -
-    * the fractional seconds first then add any whole seconds.
-    * the fractions are rounded UP so that this is guaranteed to produce
-    * a nonzero number of ticks for a nonzero number of microseconds.
-    */
+    /*
+     * In order to compute without overflowing a 32 bit integer,
+     * this is done in 2 parts -
+     * the fractional seconds first then add any whole seconds.
+     * the fractions are rounded UP so that this is guaranteed to produce
+     * a nonzero number of ticks for a nonzero number of microseconds.
+     */
 
-   result = (1000 * (usecs % 1000000) + RTEMS_GlobalVars.ClockAccuracyNsec - 1) /
-         RTEMS_GlobalVars.ClockAccuracyNsec;
+    result = (1000 * (usecs % 1000000) + RTEMS_GlobalVars.ClockAccuracyNsec - 1) / RTEMS_GlobalVars.ClockAccuracyNsec;
 
-   if (usecs >= 1000000)
-   {
-      result += (usecs / 1000000) * OS_SharedGlobalVars.TicksPerSecond;
-   }
+    if (usecs >= 1000000)
+    {
+        result += (usecs / 1000000) * OS_SharedGlobalVars.TicksPerSecond;
+    }
 
-   *ticks = (rtems_interval)result;
+    *ticks = (rtems_interval)result;
 } /* end OS_UsecsToTicks */
-
-
 
 /****************************************************************************************
                                    Time Base API
  ***************************************************************************************/
 
 /* The user may specify whether to use priority inheritance on mutexes via osconfig.h */
-#define OSAL_TIMEBASE_MUTEX_ATTRIBS            RTEMS_PRIORITY | RTEMS_BINARY_SEMAPHORE | RTEMS_INHERIT_PRIORITY
-
+#define OSAL_TIMEBASE_MUTEX_ATTRIBS RTEMS_PRIORITY | RTEMS_BINARY_SEMAPHORE | RTEMS_INHERIT_PRIORITY
 
 /*----------------------------------------------------------------
  *
@@ -295,16 +282,15 @@ void  OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks)
  *-----------------------------------------------------------------*/
 int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
 {
-    int32  return_code;
-    rtems_status_code rtems_sc;
+    int32                               return_code;
+    rtems_status_code                   rtems_sc;
     OS_impl_timebase_internal_record_t *local;
-    OS_common_record_t *global;
-    rtems_name           r_name;
-
+    OS_common_record_t *                global;
+    rtems_name                          r_name;
 
     return_code = OS_SUCCESS;
-    local = &OS_impl_timebase_table[timer_id];
-    global = &OS_global_timebase_table[timer_id];
+    local       = &OS_impl_timebase_table[timer_id];
+    global      = &OS_global_timebase_table[timer_id];
 
     /*
      * The RTEMS classic name for dependent resources
@@ -329,33 +315,32 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
          * The tick_sem is a simple semaphore posted by the ISR and taken by the
          * timebase helper task (created later).
          */
-        rtems_sc = rtems_semaphore_create (r_name, 0, RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_PRIORITY, 0,
-                                           &local->tick_sem);
-        if ( rtems_sc != RTEMS_SUCCESSFUL )
+        rtems_sc =
+            rtems_semaphore_create(r_name, 0, RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_PRIORITY, 0, &local->tick_sem);
+        if (rtems_sc != RTEMS_SUCCESSFUL)
         {
-            OS_DEBUG("Error: Tick Sem could not be created: %d\n",(int)rtems_sc);
+            OS_DEBUG("Error: Tick Sem could not be created: %d\n", (int)rtems_sc);
             return_code = OS_TIMER_ERR_INTERNAL;
         }
 
         /*
          * The handler_mutex is deals with access to the callback list for this timebase
          */
-        rtems_sc = rtems_semaphore_create (r_name, 1, OSAL_TIMEBASE_MUTEX_ATTRIBS, 0,
-                                           &local->handler_mutex);
+        rtems_sc = rtems_semaphore_create(r_name, 1, OSAL_TIMEBASE_MUTEX_ATTRIBS, 0, &local->handler_mutex);
 
-        if ( rtems_sc != RTEMS_SUCCESSFUL )
+        if (rtems_sc != RTEMS_SUCCESSFUL)
         {
-            OS_DEBUG("Error: Handler Mutex could not be created: %d\n",(int)rtems_sc);
-            rtems_semaphore_delete (local->tick_sem);
+            OS_DEBUG("Error: Handler Mutex could not be created: %d\n", (int)rtems_sc);
+            rtems_semaphore_delete(local->tick_sem);
             return_code = OS_TIMER_ERR_INTERNAL;
         }
 
         rtems_sc = rtems_timer_create(r_name, &local->rtems_timer_id);
-        if ( rtems_sc != RTEMS_SUCCESSFUL )
+        if (rtems_sc != RTEMS_SUCCESSFUL)
         {
-            OS_DEBUG("Error: Timer object could not be created: %d\n",(int)rtems_sc);
-            rtems_semaphore_delete (local->handler_mutex);
-            rtems_semaphore_delete (local->tick_sem);
+            OS_DEBUG("Error: Timer object could not be created: %d\n", (int)rtems_sc);
+            rtems_semaphore_delete(local->handler_mutex);
+            rtems_semaphore_delete(local->tick_sem);
             return_code = OS_TIMER_ERR_UNAVAILABLE;
         }
     }
@@ -377,16 +362,12 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
          * Using "RTEMS_MINIMUM_PRIORITY + 1" because rtems seems to not schedule it at all if
          * the priority is set to RTEMS_MINIMUM_PRIORITY.
          */
-        rtems_sc = rtems_task_create(
-                     r_name,
-                     RTEMS_MINIMUM_PRIORITY + 1,
-                     0,
-                     RTEMS_PREEMPT | RTEMS_NO_ASR | RTEMS_NO_TIMESLICE | RTEMS_INTERRUPT_LEVEL(0),
-                     RTEMS_LOCAL,
-                     &local->handler_task);
+        rtems_sc = rtems_task_create(r_name, RTEMS_MINIMUM_PRIORITY + 1, 0,
+                                     RTEMS_PREEMPT | RTEMS_NO_ASR | RTEMS_NO_TIMESLICE | RTEMS_INTERRUPT_LEVEL(0),
+                                     RTEMS_LOCAL, &local->handler_task);
 
         /* check if task_create failed */
-        if (rtems_sc != RTEMS_SUCCESSFUL )
+        if (rtems_sc != RTEMS_SUCCESSFUL)
         {
             /* Provide some freedback as to why this failed */
             OS_printf("rtems_task_create failed: %s\n", rtems_status_text(rtems_sc));
@@ -395,11 +376,12 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
         else
         {
             /* will place the task in 'ready for scheduling' state */
-            rtems_sc = rtems_task_start (local->handler_task, /*rtems task id*/
-                         (rtems_task_entry) OS_TimeBase_CallbackThread, /* task entry point */
-                         (rtems_task_argument) OS_ObjectIdToInteger(global->active_id) );  /* passed argument  */
+            rtems_sc =
+                rtems_task_start(local->handler_task,                                           /*rtems task id*/
+                                 (rtems_task_entry)OS_TimeBase_CallbackThread,                  /* task entry point */
+                                 (rtems_task_argument)OS_ObjectIdToInteger(global->active_id)); /* passed argument  */
 
-            if (rtems_sc != RTEMS_SUCCESSFUL )
+            if (rtems_sc != RTEMS_SUCCESSFUL)
             {
                 OS_printf("rtems_task_start failed: %s\n", rtems_status_text(rtems_sc));
                 rtems_task_delete(local->handler_task);
@@ -411,15 +393,14 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
         {
             /* Also delete the resources we allocated earlier */
             rtems_timer_delete(local->rtems_timer_id);
-            rtems_semaphore_delete (local->handler_mutex);
-            rtems_semaphore_delete (local->tick_sem);
+            rtems_semaphore_delete(local->handler_mutex);
+            rtems_semaphore_delete(local->tick_sem);
             return return_code;
         }
     }
 
     return return_code;
 } /* end OS_TimeBaseCreate_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -431,13 +412,13 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
  *-----------------------------------------------------------------*/
 int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time)
 {
-    OS_U32ValueWrapper_t user_data;
+    OS_U32ValueWrapper_t                user_data;
     OS_impl_timebase_internal_record_t *local;
-    int32 return_code;
-    int status;
-    rtems_interval start_ticks;
+    int32                               return_code;
+    int                                 status;
+    rtems_interval                      start_ticks;
 
-    local = &OS_impl_timebase_table[timer_id];
+    local       = &OS_impl_timebase_table[timer_id];
     return_code = OS_SUCCESS;
 
     /* There is only something to do here if we are generating a simulated tick */
@@ -453,7 +434,7 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
 
         if (start_time <= 0)
         {
-            interval_time = 0;  /* cannot have interval without start */
+            interval_time = 0; /* cannot have interval without start */
         }
 
         if (interval_time <= 0)
@@ -469,53 +450,50 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
         ** The defined behavior is to not arm the timer if the start time is zero
         ** If the interval time is zero, then the timer will not be re-armed.
         */
-        if ( start_time > 0 )
+        if (start_time > 0)
         {
-           /*
-           ** Convert from Microseconds to the timeout
-           */
-           OS_UsecsToTicks(start_time, &start_ticks);
+            /*
+            ** Convert from Microseconds to the timeout
+            */
+            OS_UsecsToTicks(start_time, &start_ticks);
 
-           user_data.opaque_arg = NULL;
-           user_data.id = OS_global_timebase_table[timer_id].active_id;
+            user_data.opaque_arg = NULL;
+            user_data.id         = OS_global_timebase_table[timer_id].active_id;
 
-           status = rtems_timer_fire_after(local->rtems_timer_id, start_ticks,
-                   OS_TimeBase_ISR, user_data.opaque_arg );
-           if ( status != RTEMS_SUCCESSFUL )
-           {
-               return_code = OS_TIMER_ERR_INTERNAL;
-           }
-           else
-           {
-               local->configured_start_time = (10000 * start_ticks) / OS_SharedGlobalVars.TicksPerSecond;
-               local->configured_interval_time = (10000 * local->interval_ticks) / OS_SharedGlobalVars.TicksPerSecond;
-               local->configured_start_time *= 100;
-               local->configured_interval_time *= 100;
+            status = rtems_timer_fire_after(local->rtems_timer_id, start_ticks, OS_TimeBase_ISR, user_data.opaque_arg);
+            if (status != RTEMS_SUCCESSFUL)
+            {
+                return_code = OS_TIMER_ERR_INTERNAL;
+            }
+            else
+            {
+                local->configured_start_time    = (10000 * start_ticks) / OS_SharedGlobalVars.TicksPerSecond;
+                local->configured_interval_time = (10000 * local->interval_ticks) / OS_SharedGlobalVars.TicksPerSecond;
+                local->configured_start_time *= 100;
+                local->configured_interval_time *= 100;
 
-               if (local->configured_start_time != start_time)
-               {
-                   OS_DEBUG("WARNING: timer %lu start_time requested=%luus, configured=%luus\n",
-                           (unsigned long)timer_id,
-                           (unsigned long)start_time,
-                           (unsigned long)local->configured_start_time);
-               }
-               if (local->configured_interval_time != interval_time)
-               {
-                   OS_DEBUG("WARNING: timer %lu interval_time requested=%luus, configured=%luus\n",
-                           (unsigned long)timer_id,
-                           (unsigned long)interval_time,
-                           (unsigned long)local->configured_interval_time);
-               }
+                if (local->configured_start_time != start_time)
+                {
+                    OS_DEBUG("WARNING: timer %lu start_time requested=%luus, configured=%luus\n",
+                             (unsigned long)timer_id, (unsigned long)start_time,
+                             (unsigned long)local->configured_start_time);
+                }
+                if (local->configured_interval_time != interval_time)
+                {
+                    OS_DEBUG("WARNING: timer %lu interval_time requested=%luus, configured=%luus\n",
+                             (unsigned long)timer_id, (unsigned long)interval_time,
+                             (unsigned long)local->configured_interval_time);
+                }
 
-               if (local->interval_ticks > 0)
-               {
-                   OS_timebase_table[timer_id].accuracy_usec = local->configured_interval_time;
-               }
-               else
-               {
-                   OS_timebase_table[timer_id].accuracy_usec = local->configured_start_time;
-               }
-           }
+                if (local->interval_ticks > 0)
+                {
+                    OS_timebase_table[timer_id].accuracy_usec = local->configured_interval_time;
+                }
+                else
+                {
+                    OS_timebase_table[timer_id].accuracy_usec = local->configured_start_time;
+                }
+            }
         }
     }
 
@@ -525,8 +503,6 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
     }
     return return_code;
 } /* end OS_TimeBaseSet_Impl */
-
-
 
 /*----------------------------------------------------------------
  *
@@ -538,11 +514,11 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
  *-----------------------------------------------------------------*/
 int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
 {
-    rtems_status_code rtems_sc;
+    rtems_status_code                   rtems_sc;
     OS_impl_timebase_internal_record_t *local;
-    int32 return_code;
+    int32                               return_code;
 
-    local = &OS_impl_timebase_table[timer_id];
+    local       = &OS_impl_timebase_table[timer_id];
     return_code = OS_SUCCESS;
 
     /*
@@ -572,7 +548,7 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
      */
     if (return_code == OS_SUCCESS)
     {
-        rtems_sc = rtems_semaphore_delete (local->handler_mutex);
+        rtems_sc = rtems_semaphore_delete(local->handler_mutex);
         if (rtems_sc != RTEMS_SUCCESSFUL)
         {
             OS_DEBUG("Error deleting handler mutex: %s\n", rtems_status_text(rtems_sc));
@@ -580,7 +556,7 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
 
         if (local->simulate_flag)
         {
-            rtems_sc = rtems_semaphore_delete (local->tick_sem);
+            rtems_sc = rtems_semaphore_delete(local->tick_sem);
             if (rtems_sc != RTEMS_SUCCESSFUL)
             {
                 OS_DEBUG("Error deleting tick semaphore: %s\n", rtems_status_text(rtems_sc));
@@ -592,7 +568,6 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
     return return_code;
 } /* end OS_TimeBaseDelete_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_TimeBaseGetInfo_Impl
@@ -601,9 +576,8 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseGetInfo_Impl (uint32 timer_id, OS_timebase_prop_t *timer_prop)
+int32 OS_TimeBaseGetInfo_Impl(uint32 timer_id, OS_timebase_prop_t *timer_prop)
 {
     return OS_SUCCESS;
 
 } /* end OS_TimeBaseGetInfo_Impl */
-

@@ -34,7 +34,7 @@
 
 typedef struct
 {
-    int fd;
+    int  fd;
     bool selectable;
 } OS_Rtems_filehandle_entry_t;
 
@@ -46,6 +46,4 @@ typedef struct
  */
 extern OS_Rtems_filehandle_entry_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FILES];
 
-
-#endif  /* INCLUDE_OS_IMPL_IO_H_ */
-
+#endif /* INCLUDE_OS_IMPL_IO_H_ */

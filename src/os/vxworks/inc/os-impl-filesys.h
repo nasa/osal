@@ -35,14 +35,11 @@
 
 typedef struct
 {
-    BLK_DEV     *blkDev;
-    device_t    xbd;
-    uint32      xbdMaxPartitions;
+    BLK_DEV *blkDev;
+    device_t xbd;
+    uint32   xbdMaxPartitions;
 } OS_impl_filesys_internal_record_t;
-
 
 extern OS_impl_filesys_internal_record_t OS_impl_filesys_table[OS_MAX_FILE_SYSTEMS];
 
-
-#endif  /* INCLUDE_OS_IMPL_FILESYS_H_ */
-
+#endif /* INCLUDE_OS_IMPL_FILESYS_H_ */

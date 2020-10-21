@@ -59,7 +59,7 @@ void UT_os_select_multi_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* _UT_OSCORE_SELECT_TEST_H_ */
+#endif /* _UT_OSCORE_SELECT_TEST_H_ */
 
 /*================================================================================*
 ** End of File: ut_oscore_select_test.h

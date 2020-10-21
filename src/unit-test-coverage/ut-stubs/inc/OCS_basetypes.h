@@ -31,11 +31,9 @@
  * potential re-mapping (#define) statements are done.
  */
 
-#include <stddef.h>   /* for correct size_t and ptrdiff_t types */
-#include <stdint.h>   /* for correct fixed-width integer types */
-#include <limits.h>   /* for correct INT_MAX, etc. */
-#include <stdbool.h>  /* for correct boolean semantics */
-
+#include <stddef.h>  /* for correct size_t and ptrdiff_t types */
+#include <stdint.h>  /* for correct fixed-width integer types */
+#include <limits.h>  /* for correct INT_MAX, etc. */
+#include <stdbool.h> /* for correct boolean semantics */
 
 #endif /* _OSAL_STUB_BASETYPES_H_ */
-

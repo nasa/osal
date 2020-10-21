@@ -32,7 +32,7 @@
 
 #include <OCS_sys_select.h>
 
-int OCS_select (int nfds, OCS_fd_set * readfds, OCS_fd_set * writefds, OCS_fd_set * exceptfds, struct OCS_timeval * timeout)
+int OCS_select(int nfds, OCS_fd_set *readfds, OCS_fd_set *writefds, OCS_fd_set *exceptfds, struct OCS_timeval *timeout)
 {
     return UT_DEFAULT_IMPL_RC(OCS_select, 1);
 }
@@ -56,4 +56,3 @@ void OCS_FD_ZERO(OCS_fd_set *set)
 {
     UT_DEFAULT_IMPL(OCS_FD_ZERO);
 }
-

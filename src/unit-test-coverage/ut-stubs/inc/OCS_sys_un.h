@@ -36,7 +36,4 @@
 /* prototypes normally declared in sys/un.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_SYS_UN_H_ */
-

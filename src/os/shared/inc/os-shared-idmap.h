@@ -30,35 +30,32 @@
 
 #include <os-shared-globaldefs.h>
 
+#define OS_OBJECT_EXCL_REQ_FLAG 0x0001
 
-#define OS_OBJECT_EXCL_REQ_FLAG     0x0001
-
-#define OS_OBJECT_ID_RESERVED       ((osal_id_t){0xFFFFFFFF})
+#define OS_OBJECT_ID_RESERVED ((osal_id_t) {0xFFFFFFFF})
 
 /*
  * This supplies a non-abstract definition of "OS_common_record_t"
  */
 struct OS_common_record
 {
-   const char *name_entry;
-   osal_id_t     active_id;
-   osal_id_t     creator;
-   uint16     refcount;
-   uint16     flags;
+    const char *name_entry;
+    osal_id_t   active_id;
+    osal_id_t   creator;
+    uint16      refcount;
+    uint16      flags;
 };
-
 
 /*
  * Type of locking that should occur when checking IDs.
  */
 typedef enum
 {
-   OS_LOCK_MODE_NONE,           /**< Do not lock global table at all (use with caution) */
-   OS_LOCK_MODE_GLOBAL,         /**< Lock during operation, and if successful, leave global table locked */
-   OS_LOCK_MODE_EXCLUSIVE,      /**< Like OS_LOCK_MODE_GLOBAL but must be exclusive (refcount == zero)  */
-   OS_LOCK_MODE_REFCOUNT,       /**< If operation succeeds, increment refcount and unlock global table */
+    OS_LOCK_MODE_NONE,      /**< Do not lock global table at all (use with caution) */
+    OS_LOCK_MODE_GLOBAL,    /**< Lock during operation, and if successful, leave global table locked */
+    OS_LOCK_MODE_EXCLUSIVE, /**< Like OS_LOCK_MODE_GLOBAL but must be exclusive (refcount == zero)  */
+    OS_LOCK_MODE_REFCOUNT,  /**< If operation succeeds, increment refcount and unlock global table */
 } OS_lock_mode_t;
-
 
 /*
  * A function to perform arbitrary record matching.
@@ -74,21 +71,18 @@ typedef bool (*OS_ObjectMatchFunc_t)(void *ref, uint32 local_id, const OS_common
  * Global instantiations
  */
 /* The following are quick-access pointers to the various sections of the common table */
-extern OS_common_record_t * const OS_global_task_table;
-extern OS_common_record_t * const OS_global_queue_table;
-extern OS_common_record_t * const OS_global_bin_sem_table;
-extern OS_common_record_t * const OS_global_count_sem_table;
-extern OS_common_record_t * const OS_global_mutex_table;
-extern OS_common_record_t * const OS_global_stream_table;
-extern OS_common_record_t * const OS_global_dir_table;
-extern OS_common_record_t * const OS_global_timebase_table;
-extern OS_common_record_t * const OS_global_timecb_table;
-extern OS_common_record_t * const OS_global_module_table;
-extern OS_common_record_t * const OS_global_filesys_table;
-extern OS_common_record_t * const OS_global_console_table;
-
-
-
+extern OS_common_record_t *const OS_global_task_table;
+extern OS_common_record_t *const OS_global_queue_table;
+extern OS_common_record_t *const OS_global_bin_sem_table;
+extern OS_common_record_t *const OS_global_count_sem_table;
+extern OS_common_record_t *const OS_global_mutex_table;
+extern OS_common_record_t *const OS_global_stream_table;
+extern OS_common_record_t *const OS_global_dir_table;
+extern OS_common_record_t *const OS_global_timebase_table;
+extern OS_common_record_t *const OS_global_timecb_table;
+extern OS_common_record_t *const OS_global_module_table;
+extern OS_common_record_t *const OS_global_filesys_table;
+extern OS_common_record_t *const OS_global_console_table;
 
 /****************************************************************************************
                                 ID MAPPING FUNCTIONS
@@ -101,14 +95,12 @@ extern OS_common_record_t * const OS_global_console_table;
 
    returns: OS_SUCCESS on success, or relevant error code
 ---------------------------------------------------------------------------------------*/
-int32 OS_ObjectIdInit                (void);
-
+int32 OS_ObjectIdInit(void);
 
 /*
  * Table locking and unlocking for global objects can be done at the shared code
  * layer but the actual implementation is OS-specific
  */
-
 
 /*----------------------------------------------------------------
    Function: OS_Lock_Global
@@ -137,7 +129,6 @@ int32 OS_Lock_Global_Impl(uint32 idtype);
  ------------------------------------------------------------------*/
 void OS_Unlock_Global(uint32 idtype);
 
-
 /*----------------------------------------------------------------
    Function: OS_Unlock_Global
 
@@ -146,8 +137,6 @@ void OS_Unlock_Global(uint32 idtype);
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
 int32 OS_Unlock_Global_Impl(uint32 idtype);
-
-
 
 /*
    Function prototypes for routines implemented in common layers but private to OSAL
@@ -177,7 +166,6 @@ static inline uint32 OS_ObjectIdToType_Impl(osal_id_t id)
     return (OS_ObjectIdToInteger(id) >> OS_OBJECT_TYPE_SHIFT);
 }
 
-
 /*----------------------------------------------------------------
    Function: OS_ObjectIdCompose
 
@@ -187,7 +175,6 @@ static inline void OS_ObjectIdCompose_Impl(uint32 idtype, uint32 idserial, osal_
 {
     *result = OS_ObjectIdFromInteger((idtype << OS_OBJECT_TYPE_SHIFT) | idserial);
 }
-
 
 /*----------------------------------------------------------------
    Function: OS_GetMaxForObjectType
@@ -214,7 +201,7 @@ uint32 OS_GetBaseForObjectType(uint32 idtype);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdFindByName (uint32 idtype, const char *name, osal_id_t *object_id);
+int32 OS_ObjectIdFindByName(uint32 idtype, const char *name, osal_id_t *object_id);
 
 /*----------------------------------------------------------------
    Function: OS_ObjectIdGetBySearch
@@ -225,7 +212,8 @@ int32 OS_ObjectIdFindByName (uint32 idtype, const char *name, osal_id_t *object_
 
    Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_common_record_t **record);
+int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg,
+                             OS_common_record_t **record);
 
 /*----------------------------------------------------------------
    Function: OS_ObjectIdGetByName
@@ -235,7 +223,7 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectM
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdGetByName (OS_lock_mode_t lock_mode, uint32 idtype, const char *name, OS_common_record_t **record);
+int32 OS_ObjectIdGetByName(OS_lock_mode_t lock_mode, uint32 idtype, const char *name, OS_common_record_t **record);
 
 /*----------------------------------------------------------------
    Function: OS_ObjectIdGetById
@@ -245,7 +233,8 @@ int32 OS_ObjectIdGetByName (OS_lock_mode_t lock_mode, uint32 idtype, const char 
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t id, uint32 *array_index, OS_common_record_t **record);
+int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t id, uint32 *array_index,
+                         OS_common_record_t **record);
 
 /*----------------------------------------------------------------
    Function: OS_ObjectIdAllocateNew
@@ -283,7 +272,6 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record,
  ------------------------------------------------------------------*/
 int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *record);
 
-
 /*----------------------------------------------------------------
    Function: OS_ObjectIdRefcountDecr
 
@@ -299,11 +287,10 @@ int32 OS_ObjectIdRefcountDecr(OS_common_record_t *record);
  * These are not normally called outside this unit, but need
  * to be exposed for unit testing.
  */
-bool OS_ObjectNameMatch(void *ref, uint32 local_id, const OS_common_record_t *obj);
-void OS_ObjectIdInitiateLock(OS_lock_mode_t lock_mode, uint32 idtype);
+bool  OS_ObjectNameMatch(void *ref, uint32 local_id, const OS_common_record_t *obj);
+void  OS_ObjectIdInitiateLock(OS_lock_mode_t lock_mode, uint32 idtype);
 int32 OS_ObjectIdConvertLock(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t reference_id, OS_common_record_t *obj);
 int32 OS_ObjectIdSearch(uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_common_record_t **record);
 int32 OS_ObjectIdFindNext(uint32 idtype, uint32 *array_index, OS_common_record_t **record);
 
-#endif  /* INCLUDE_OS_SHARED_IDMAP_H_ */
-
+#endif /* INCLUDE_OS_SHARED_IDMAP_H_ */

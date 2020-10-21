@@ -36,7 +36,4 @@
 /* prototypes normally declared in math.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_MATH_H_ */
-

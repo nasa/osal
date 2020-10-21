@@ -29,4 +29,3 @@
 #include "utstubs.h"
 
 UT_DEFAULT_STUB(OS_VxWorks_TableMutex_Init, (uint32 idtype))
-

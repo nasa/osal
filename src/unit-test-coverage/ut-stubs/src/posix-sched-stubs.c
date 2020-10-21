@@ -25,25 +25,20 @@
 
 #include <OCS_sched.h>
 
-
 int OCS_sched_get_priority_max(int policy)
 {
     int32 Status;
 
-    Status = UT_DEFAULT_IMPL_RC(OCS_sched_get_priority_max,9);
+    Status = UT_DEFAULT_IMPL_RC(OCS_sched_get_priority_max, 9);
 
     return Status;
 }
-
 
 int OCS_sched_get_priority_min(int policy)
 {
     int32 Status;
 
-    Status = UT_DEFAULT_IMPL_RC(OCS_sched_get_priority_min,1);
+    Status = UT_DEFAULT_IMPL_RC(OCS_sched_get_priority_min, 1);
 
     return Status;
 }
-
-
-

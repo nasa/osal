@@ -18,7 +18,6 @@
  *  limitations under the License.
  */
 
-
 /**
  * \file     osapi-utstub-idmap.c
  * \author   joseph.p.hickey@nasa.gov
@@ -40,7 +39,7 @@
 #include "utstub-helpers.h"
 #include "os-shared-idmap.h"
 
-UT_DEFAULT_STUB(OS_ObjectIdInit,(void))
+UT_DEFAULT_STUB(OS_ObjectIdInit, (void))
 
 /* Lock/Unlock for global tables */
 void OS_Lock_Global(uint32 idtype)
@@ -101,13 +100,13 @@ uint32 OS_GetBaseForObjectType(uint32 idtype)
  *****************************************************************************/
 int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t id, uint32 *ArrayIndex)
 {
-    int32 Status;
+    int32        Status;
     UT_ObjType_t checktype;
 
     Status = UT_DEFAULT_IMPL(OS_ObjectIdToArrayIndex);
 
     if (Status == 0 &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdToArrayIndex), ArrayIndex, sizeof(*ArrayIndex)) < sizeof(*ArrayIndex))
+        UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdToArrayIndex), ArrayIndex, sizeof(*ArrayIndex)) < sizeof(*ArrayIndex))
     {
         /* this needs to output something valid or code will break */
         UT_ObjIdDecompose(id, ArrayIndex, &checktype);
@@ -129,7 +128,7 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record,
 
     /* need to actually write something to the output buffer */
     if (Status == OS_SUCCESS && record != NULL && outid != NULL &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdFinalizeNew), outid, sizeof(*outid)) < sizeof(*outid))
+        UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdFinalizeNew), outid, sizeof(*outid)) < sizeof(*outid))
     {
         *outid = record->active_id;
     }
@@ -151,15 +150,15 @@ int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *reco
     return Status;
 }
 
-
 /*****************************************************************************
  *
  * Stub function for OS_ObjectIdFindMatch()
  *
  *****************************************************************************/
-int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_common_record_t **record)
+int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg,
+                             OS_common_record_t **record)
 {
-    int32 Status;
+    int32                     Status;
     static OS_common_record_t fake_record;
 
     /* by default this stub should return NAME_NOT_FOUND
@@ -170,7 +169,7 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectM
     Status = UT_DEFAULT_IMPL(OS_ObjectIdGetBySearch);
 
     if (Status == OS_SUCCESS && record != NULL &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdGetBySearch), record, sizeof(*record)) < sizeof(*record))
+        UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdGetBySearch), record, sizeof(*record)) < sizeof(*record))
     {
         memset(&fake_record, 0, sizeof(fake_record));
         UT_ObjIdCompose(1, idtype, &fake_record.active_id);
@@ -185,7 +184,7 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectM
  * Stub function for OS_ObjectIdFindByName(, &fake_record.active_id)
  *
  *****************************************************************************/
-int32 OS_ObjectIdFindByName (uint32 idtype, const char *name, osal_id_t *object_id)
+int32 OS_ObjectIdFindByName(uint32 idtype, const char *name, osal_id_t *object_id)
 {
     int32 Status;
 
@@ -194,10 +193,10 @@ int32 OS_ObjectIdFindByName (uint32 idtype, const char *name, osal_id_t *object_
      * up a success response, just register a buffer for
      * the function
      */
-    Status = UT_DEFAULT_IMPL_RC(OS_ObjectIdFindByName,OS_ERR_NAME_NOT_FOUND);
+    Status = UT_DEFAULT_IMPL_RC(OS_ObjectIdFindByName, OS_ERR_NAME_NOT_FOUND);
 
     if (Status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdFindByName), object_id, sizeof(*object_id)) < sizeof(*object_id))
+        UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdFindByName), object_id, sizeof(*object_id)) < sizeof(*object_id))
     {
         UT_ObjIdCompose(1, idtype, object_id);
     }
@@ -210,17 +209,18 @@ int32 OS_ObjectIdFindByName (uint32 idtype, const char *name, osal_id_t *object_
  * Stub function for OS_ObjectIdGetByName(,object_id)
  *
  *****************************************************************************/
-int32 OS_ObjectIdGetByName (OS_lock_mode_t lock_mode, uint32 idtype, const char *name, OS_common_record_t **record)
+int32 OS_ObjectIdGetByName(OS_lock_mode_t lock_mode, uint32 idtype, const char *name, OS_common_record_t **record)
 {
-    int32 Status;
-    OS_common_record_t *local_record;
+    int32                     Status;
+    OS_common_record_t *      local_record;
     static OS_common_record_t fake_record;
 
     Status = UT_DEFAULT_IMPL(OS_ObjectIdGetByName);
 
     if (Status == 0)
     {
-        if (UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdGetByName), &local_record, sizeof(local_record)) < sizeof(local_record))
+        if (UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdGetByName), &local_record, sizeof(local_record)) <
+            sizeof(local_record))
         {
             memset(&fake_record, 0, sizeof(fake_record));
             local_record = &fake_record;
@@ -242,12 +242,13 @@ int32 OS_ObjectIdGetByName (OS_lock_mode_t lock_mode, uint32 idtype, const char 
  * Stub function for OS_ObjectIdGetById(, &fake_record.active_id)
  *
  *****************************************************************************/
-int32 OS_ObjectIdGetById(OS_lock_mode_t check_mode, uint32 idtype, osal_id_t id, uint32 *array_index, OS_common_record_t **record)
+int32 OS_ObjectIdGetById(OS_lock_mode_t check_mode, uint32 idtype, osal_id_t id, uint32 *array_index,
+                         OS_common_record_t **record)
 {
-    int32 Status;
-    uint32 local_id;
-    UT_ObjType_t checktype;
-    OS_common_record_t *local_record;
+    int32                     Status;
+    uint32                    local_id;
+    UT_ObjType_t              checktype;
+    OS_common_record_t *      local_record;
     static OS_common_record_t fake_record;
 
     Status = UT_DEFAULT_IMPL(OS_ObjectIdGetById);
@@ -263,7 +264,7 @@ int32 OS_ObjectIdGetById(OS_lock_mode_t check_mode, uint32 idtype, osal_id_t id,
         {
             memset(&fake_record, 0, sizeof(fake_record));
             fake_record.active_id = id;
-            local_record = &fake_record;
+            local_record          = &fake_record;
         }
 
         /* this needs to output something valid or code will break */
@@ -301,9 +302,9 @@ int32 OS_ObjectIdRefcountDecr(OS_common_record_t *record)
  *****************************************************************************/
 int32 OS_ObjectIdGetNext(uint32 idtype, uint32 *curr_index, OS_common_record_t **record)
 {
-    int32 Status;
-    uint32 local_id;
-    OS_common_record_t *local_record;
+    int32                     Status;
+    uint32                    local_id;
+    OS_common_record_t *      local_record;
     static OS_common_record_t fake_record;
 
     Status = UT_DEFAULT_IMPL(OS_ObjectIdGetNext);
@@ -321,7 +322,8 @@ int32 OS_ObjectIdGetNext(uint32 idtype, uint32 *curr_index, OS_common_record_t *
         }
         else
         {
-            if (UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdGetNext), &local_record, sizeof(local_record)) < sizeof(local_record))
+            if (UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdGetNext), &local_record, sizeof(local_record)) <
+                sizeof(local_record))
             {
                 memset(&fake_record, 0, sizeof(fake_record));
                 UT_ObjIdCompose(local_id, idtype, &fake_record.active_id);
@@ -350,9 +352,9 @@ int32 OS_ObjectIdGetNext(uint32 idtype, uint32 *curr_index, OS_common_record_t *
  *****************************************************************************/
 int32 OS_ObjectIdAllocateNew(uint32 idtype, const char *name, uint32 *array_index, OS_common_record_t **record)
 {
-    int32 Status;
-    uint32 local_id;
-    OS_common_record_t *local_record;
+    int32                     Status;
+    uint32                    local_id;
+    OS_common_record_t *      local_record;
     static OS_common_record_t fake_record;
 
     Status = UT_DEFAULT_IMPL(OS_ObjectIdAllocateNew);
@@ -364,14 +366,15 @@ int32 OS_ObjectIdAllocateNew(uint32 idtype, const char *name, uint32 *array_inde
             local_id = UT_GetStubCount(UT_KEY(OS_ObjectIdAllocateNew)) & 0xFFFF;
         }
 
-        if (UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdAllocateNew), &local_record, sizeof(local_record)) < sizeof(local_record))
+        if (UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdAllocateNew), &local_record, sizeof(local_record)) <
+            sizeof(local_record))
         {
             memset(&fake_record, 0, sizeof(fake_record));
             UT_ObjIdCompose(local_id, idtype, &fake_record.active_id);
             local_record = &fake_record;
         }
 
-        *record = local_record;
+        *record      = local_record;
         *array_index = local_id;
     }
 
@@ -398,8 +401,7 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size)
 
     if (return_code == OS_SUCCESS)
     {
-        if (buffer_size > 0 &&
-                UT_Stub_CopyToLocal(UT_KEY(OS_GetResourceName), buffer, buffer_size) == 0)
+        if (buffer_size > 0 && UT_Stub_CopyToLocal(UT_KEY(OS_GetResourceName), buffer, buffer_size) == 0)
         {
             /* return an empty string by default */
             buffer[0] = 0;
@@ -424,29 +426,29 @@ int32 OS_ConvertToArrayIndex(osal_id_t object_id, uint32 *ArrayIndex)
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_ConvertToArrayIndex), object_id);
     UT_Stub_RegisterContext(UT_KEY(OS_ConvertToArrayIndex), ArrayIndex);
 
-   int32 return_code;
+    int32 return_code;
 
-   return_code = UT_DEFAULT_IMPL(OS_ConvertToArrayIndex);
+    return_code = UT_DEFAULT_IMPL(OS_ConvertToArrayIndex);
 
-   if (return_code == OS_SUCCESS)
-   {
-       UT_ObjType_t ObjType;
-       UT_ObjIdDecompose(object_id, ArrayIndex, &ObjType);
-       if (ObjType != UT_OBJTYPE_NONE && ObjType < UT_OBJTYPE_MAX)
-       {
-           *ArrayIndex %= UT_MAXOBJS[ObjType];
-       }
-   }
-   else
-   {
-      /*
-       * If set to fail, then set the output to something bizarre - if the code
-       * actually tries to use this, chances are it will segfault and be fixed
-       */
-      *ArrayIndex = 0xDEADBEEFU;
-   }
+    if (return_code == OS_SUCCESS)
+    {
+        UT_ObjType_t ObjType;
+        UT_ObjIdDecompose(object_id, ArrayIndex, &ObjType);
+        if (ObjType != UT_OBJTYPE_NONE && ObjType < UT_OBJTYPE_MAX)
+        {
+            *ArrayIndex %= UT_MAXOBJS[ObjType];
+        }
+    }
+    else
+    {
+        /*
+         * If set to fail, then set the output to something bizarre - if the code
+         * actually tries to use this, chances are it will segfault and be fixed
+         */
+        *ArrayIndex = 0xDEADBEEFU;
+    }
 
-   return return_code;
+    return return_code;
 } /* end OS_ConvertToArrayIndex */
 
 /*--------------------------------------------------------------------------------------
@@ -456,7 +458,7 @@ int32 OS_ConvertToArrayIndex(osal_id_t object_id, uint32 *ArrayIndex)
 
     returns: None
 ---------------------------------------------------------------------------------------*/
-void OS_ForEachObjectOfType     (uint32 objtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
+void OS_ForEachObjectOfType(uint32 objtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_ForEachObjectOfType), objtype);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_ForEachObjectOfType), creator_id);
@@ -464,7 +466,7 @@ void OS_ForEachObjectOfType     (uint32 objtype, osal_id_t creator_id, OS_ArgCal
     UT_Stub_RegisterContext(UT_KEY(OS_ForEachObjectOfType), callback_arg);
 
     osal_id_t NextId;
-    uint32 IdSize;
+    uint32    IdSize;
 
     /* Although this is "void", Invoke the default impl to log it and invoke any hooks */
     UT_DEFAULT_IMPL(OS_ForEachObjectOfType);
@@ -488,14 +490,14 @@ void OS_ForEachObjectOfType     (uint32 objtype, osal_id_t creator_id, OS_ArgCal
 
     returns: None
 ---------------------------------------------------------------------------------------*/
-void OS_ForEachObject (osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
+void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_ForEachObject), creator_id);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_ForEachObject), callback_ptr);
     UT_Stub_RegisterContext(UT_KEY(OS_ForEachObject), callback_arg);
 
     osal_id_t NextId;
-    uint32 IdSize;
+    uint32    IdSize;
 
     /* Although this is "void", Invoke the default impl to log it and invoke any hooks */
     UT_DEFAULT_IMPL(OS_ForEachObject);
@@ -518,54 +520,54 @@ void OS_ForEachObject (osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void
 
    returns: The type of object that the ID represents
 ---------------------------------------------------------------------------------------*/
-uint32 OS_IdentifyObject       (osal_id_t object_id)
+uint32 OS_IdentifyObject(osal_id_t object_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_IdentifyObject), object_id);
 
     UT_ObjType_t ObjType;
-    uint32 checkindx;
-    int32 DefaultType;
+    uint32       checkindx;
+    int32        DefaultType;
 
     UT_ObjIdDecompose(object_id, &checkindx, &ObjType);
 
     switch (ObjType)
     {
-    case UT_OBJTYPE_TASK:
-        DefaultType = OS_OBJECT_TYPE_OS_TASK;
-        break;
-    case UT_OBJTYPE_QUEUE:
-        DefaultType = OS_OBJECT_TYPE_OS_QUEUE;
-        break;
-    case UT_OBJTYPE_COUNTSEM:
-        DefaultType = OS_OBJECT_TYPE_OS_COUNTSEM;
-        break;
-    case UT_OBJTYPE_BINSEM:
-        DefaultType = OS_OBJECT_TYPE_OS_BINSEM;
-        break;
-    case UT_OBJTYPE_MUTEX:
-        DefaultType = OS_OBJECT_TYPE_OS_MUTEX;
-        break;
-    case UT_OBJTYPE_TIMECB:
-        DefaultType = OS_OBJECT_TYPE_OS_TIMECB;
-        break;
-    case UT_OBJTYPE_MODULE:
-        DefaultType = OS_OBJECT_TYPE_OS_MODULE;
-        break;
-    case UT_OBJTYPE_FILESTREAM:
-        DefaultType = OS_OBJECT_TYPE_OS_STREAM;
-        break;
-    case UT_OBJTYPE_TIMEBASE:
-        DefaultType = OS_OBJECT_TYPE_OS_TIMEBASE;
-        break;
-    case UT_OBJTYPE_DIR:
-        DefaultType = OS_OBJECT_TYPE_OS_DIR;
-        break;
-    case UT_OBJTYPE_FILESYS:
-        DefaultType = OS_OBJECT_TYPE_OS_FILESYS;
-        break;
-    default:
-        DefaultType = OS_OBJECT_TYPE_UNDEFINED;
-        break;
+        case UT_OBJTYPE_TASK:
+            DefaultType = OS_OBJECT_TYPE_OS_TASK;
+            break;
+        case UT_OBJTYPE_QUEUE:
+            DefaultType = OS_OBJECT_TYPE_OS_QUEUE;
+            break;
+        case UT_OBJTYPE_COUNTSEM:
+            DefaultType = OS_OBJECT_TYPE_OS_COUNTSEM;
+            break;
+        case UT_OBJTYPE_BINSEM:
+            DefaultType = OS_OBJECT_TYPE_OS_BINSEM;
+            break;
+        case UT_OBJTYPE_MUTEX:
+            DefaultType = OS_OBJECT_TYPE_OS_MUTEX;
+            break;
+        case UT_OBJTYPE_TIMECB:
+            DefaultType = OS_OBJECT_TYPE_OS_TIMECB;
+            break;
+        case UT_OBJTYPE_MODULE:
+            DefaultType = OS_OBJECT_TYPE_OS_MODULE;
+            break;
+        case UT_OBJTYPE_FILESTREAM:
+            DefaultType = OS_OBJECT_TYPE_OS_STREAM;
+            break;
+        case UT_OBJTYPE_TIMEBASE:
+            DefaultType = OS_OBJECT_TYPE_OS_TIMEBASE;
+            break;
+        case UT_OBJTYPE_DIR:
+            DefaultType = OS_OBJECT_TYPE_OS_DIR;
+            break;
+        case UT_OBJTYPE_FILESYS:
+            DefaultType = OS_OBJECT_TYPE_OS_FILESYS;
+            break;
+        default:
+            DefaultType = OS_OBJECT_TYPE_UNDEFINED;
+            break;
     }
 
     return UT_DEFAULT_IMPL_RC(OS_IdentifyObject, DefaultType);

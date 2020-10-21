@@ -38,7 +38,5 @@
  * Table locking and unlocking for global objects can be done at the shared code
  * layer but the actual implementation is OS-specific
  */
-UT_DEFAULT_STUB(OS_Lock_Global_Impl,(uint32 idtype))
-UT_DEFAULT_STUB(OS_Unlock_Global_Impl,(uint32 idtype))
-
-
+UT_DEFAULT_STUB(OS_Lock_Global_Impl, (uint32 idtype))
+UT_DEFAULT_STUB(OS_Unlock_Global_Impl, (uint32 idtype))

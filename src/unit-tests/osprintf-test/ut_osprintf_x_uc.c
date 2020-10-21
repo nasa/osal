@@ -36,21 +36,20 @@ extern char trunc_buf[];
 void UT_osprintf_X(void)
 {
     char *test_fmt = "x"; /* Test format character(s) */
-    int i;
+    int   i;
 
 #ifdef OSP_ARINC653
 #pragma ghs nowarning 68
 #endif
     struct
     {
-        char *test_num;        /* Test identifier; sequential numbers */
-        unsigned int test_val; /* Test value */
-        int  max_len;          /* Maximum output string length */
-        char *format;          /* Format string */
-        char *expected;        /* Expected result */
-        char *description;     /* Test description */
-    } osp_tests[] =
-    {
+        char *       test_num;    /* Test identifier; sequential numbers */
+        unsigned int test_val;    /* Test value */
+        int          max_len;     /* Maximum output string length */
+        char *       format;      /* Format string */
+        char *       expected;    /* Expected result */
+        char *       description; /* Test description */
+    } osp_tests[] = {
         {"01", 0xa8b7, 3, "%X", "A8B7", "%X"},
         {"02", 0xff123, 10, "$$$%X$$$", "$$$FF123$$$", "%X embedded"},
         {"03", 0xd1827, 5, "%3X", "D1827", "%X with minimum field size < number of digits"},
@@ -71,10 +70,7 @@ void UT_osprintf_X(void)
         /* Perform sprintf test */
         init_test();
         sprintf(strg_buf, osp_tests[i].format, osp_tests[i].test_val);
-        UT_Report(check_test(osp_tests[i].expected, strg_buf),
-                  "SPRINTF",
-                  osp_tests[i].description,
-                  test_fmt,
+        UT_Report(check_test(osp_tests[i].expected, strg_buf), "SPRINTF", osp_tests[i].description, test_fmt,
                   osp_tests[i].test_num);
 
         /* Truncate expected string in preparation for snprintf test */
@@ -87,12 +83,8 @@ void UT_osprintf_X(void)
 
         /* Perform snprintf test */
         init_test();
-        snprintf(strg_buf, osp_tests[i].max_len,
-                 osp_tests[i].format, osp_tests[i].test_val);
-        UT_Report(check_test(trunc_buf, strg_buf),
-                  "SNPRINTF",
-                  osp_tests[i].description,
-                  test_fmt,
+        snprintf(strg_buf, osp_tests[i].max_len, osp_tests[i].format, osp_tests[i].test_val);
+        UT_Report(check_test(trunc_buf, strg_buf), "SNPRINTF", osp_tests[i].description, test_fmt,
                   osp_tests[i].test_num);
     }
 }

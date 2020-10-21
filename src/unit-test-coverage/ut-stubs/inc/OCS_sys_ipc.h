@@ -36,7 +36,4 @@
 /* prototypes normally declared in sys/ipc.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_SYS_IPC_H_ */
-

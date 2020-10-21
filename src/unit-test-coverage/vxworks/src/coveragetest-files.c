@@ -44,7 +44,6 @@ void Test_OS_VxWorks_StreamAPI_Impl_Init(void)
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_StreamAPI_Impl_Init(), OS_SUCCESS);
 }
 
-
 /* ------------------- End of test cases --------------------------------------*/
 
 /* Osapi_Test_Setup
@@ -63,10 +62,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -77,5 +73,3 @@ void UtTest_Setup(void)
 {
     ADD_TEST(OS_VxWorks_StreamAPI_Impl_Init);
 }
-
-

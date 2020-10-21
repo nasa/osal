@@ -35,7 +35,6 @@
 
 OCS_SEM TestGlobalSem;
 
-
 void Test_OS_API_Impl_Init(void)
 {
     /*
@@ -90,7 +89,6 @@ void Test_OS_VxWorks_GenericSemGive(void)
     OSAPI_TEST_FUNCTION_RC(OS_VxWorks_GenericSemGive(SemID), OS_SEM_FAILURE);
 } /* end OS_VxWorks_GenericSemGive */
 
-
 void Test_OS_VxWorks_GenericSemTake(void)
 {
     /*
@@ -107,7 +105,6 @@ void Test_OS_VxWorks_GenericSemTake(void)
     OSAPI_TEST_FUNCTION_RC(OS_VxWorks_GenericSemTake(SemID, 0), OS_SEM_FAILURE);
 
 } /* end OS_VxWorks_GenericSemTake */
-
 
 /* ------------------- End of test cases --------------------------------------*/
 
@@ -128,10 +125,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -146,5 +140,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_VxWorks_GenericSemGive);
     ADD_TEST(OS_VxWorks_GenericSemTake);
 }
-
-

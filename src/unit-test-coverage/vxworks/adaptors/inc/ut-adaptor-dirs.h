@@ -39,11 +39,9 @@
  *
  *****************************************************/
 
-
 /*
  * Prototype for table init function (needs to be called from UT)
  */
 extern int32 UT_Call_OS_VxWorks_DirAPI_Impl_Init(void);
 
-#endif  /* INCLUDE_UT_ADAPTOR_DIRS_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_DIRS_H_ */

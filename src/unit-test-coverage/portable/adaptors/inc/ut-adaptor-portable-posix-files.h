@@ -33,5 +33,4 @@
 unsigned int UT_PortablePosixFileTest_GetSelfEUID(void);
 unsigned int UT_PortablePosixFileTest_GetSelfEGID(void);
 
-#endif  /* INCLUDE_UT_ADAPTOR_PORTABLE_POSIX_FILES_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_PORTABLE_POSIX_FILES_H_ */

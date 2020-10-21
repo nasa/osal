@@ -36,8 +36,6 @@
 /* prototypes normally declared in sys/ioctl.h */
 /* ----------------------------------------- */
 
-extern int OCS_ioctl (int fd, unsigned long request, ...);
-
+extern int OCS_ioctl(int fd, unsigned long request, ...);
 
 #endif /* _OSAL_STUB_SYS_IOCTL_H_ */
-

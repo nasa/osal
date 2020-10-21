@@ -36,7 +36,4 @@
 /* prototypes normally declared in wchar.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_WCHAR_H_ */
-

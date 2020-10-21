@@ -58,21 +58,20 @@
 
 typedef enum
 {
-   OS_TASK_BASE = 0,
-   OS_QUEUE_BASE = OS_TASK_BASE + OS_MAX_TASKS,
-   OS_BINSEM_BASE = OS_QUEUE_BASE + OS_MAX_QUEUES,
-   OS_COUNTSEM_BASE = OS_BINSEM_BASE + OS_MAX_BIN_SEMAPHORES,
-   OS_MUTEX_BASE = OS_COUNTSEM_BASE + OS_MAX_COUNT_SEMAPHORES,
-   OS_STREAM_BASE = OS_MUTEX_BASE + OS_MAX_MUTEXES,
-   OS_DIR_BASE = OS_STREAM_BASE + OS_MAX_NUM_OPEN_FILES,
-   OS_TIMEBASE_BASE = OS_DIR_BASE + OS_MAX_NUM_OPEN_DIRS,
-   OS_TIMECB_BASE = OS_TIMEBASE_BASE + OS_MAX_TIMEBASES,
-   OS_MODULE_BASE = OS_TIMECB_BASE + OS_MAX_TIMERS,
-   OS_FILESYS_BASE = OS_MODULE_BASE + OS_MAX_MODULES,
-   OS_CONSOLE_BASE = OS_FILESYS_BASE + OS_MAX_FILE_SYSTEMS,
-   OS_MAX_TOTAL_RECORDS = OS_CONSOLE_BASE + OS_MAX_CONSOLES
+    OS_TASK_BASE         = 0,
+    OS_QUEUE_BASE        = OS_TASK_BASE + OS_MAX_TASKS,
+    OS_BINSEM_BASE       = OS_QUEUE_BASE + OS_MAX_QUEUES,
+    OS_COUNTSEM_BASE     = OS_BINSEM_BASE + OS_MAX_BIN_SEMAPHORES,
+    OS_MUTEX_BASE        = OS_COUNTSEM_BASE + OS_MAX_COUNT_SEMAPHORES,
+    OS_STREAM_BASE       = OS_MUTEX_BASE + OS_MAX_MUTEXES,
+    OS_DIR_BASE          = OS_STREAM_BASE + OS_MAX_NUM_OPEN_FILES,
+    OS_TIMEBASE_BASE     = OS_DIR_BASE + OS_MAX_NUM_OPEN_DIRS,
+    OS_TIMECB_BASE       = OS_TIMEBASE_BASE + OS_MAX_TIMEBASES,
+    OS_MODULE_BASE       = OS_TIMECB_BASE + OS_MAX_TIMERS,
+    OS_FILESYS_BASE      = OS_MODULE_BASE + OS_MAX_MODULES,
+    OS_CONSOLE_BASE      = OS_FILESYS_BASE + OS_MAX_FILE_SYSTEMS,
+    OS_MAX_TOTAL_RECORDS = OS_CONSOLE_BASE + OS_MAX_CONSOLES
 } OS_ObjectIndex_t;
-
 
 /*
  * Global ID storage tables
@@ -92,19 +91,18 @@ typedef struct
 
 OS_objtype_state_t OS_objtype_state[OS_OBJECT_TYPE_USER];
 
-
-OS_common_record_t * const OS_global_task_table       = &OS_common_table[OS_TASK_BASE];
-OS_common_record_t * const OS_global_queue_table      = &OS_common_table[OS_QUEUE_BASE];
-OS_common_record_t * const OS_global_bin_sem_table    = &OS_common_table[OS_BINSEM_BASE];
-OS_common_record_t * const OS_global_count_sem_table  = &OS_common_table[OS_COUNTSEM_BASE];
-OS_common_record_t * const OS_global_mutex_table      = &OS_common_table[OS_MUTEX_BASE];
-OS_common_record_t * const OS_global_stream_table     = &OS_common_table[OS_STREAM_BASE];
-OS_common_record_t * const OS_global_dir_table        = &OS_common_table[OS_DIR_BASE];
-OS_common_record_t * const OS_global_timebase_table   = &OS_common_table[OS_TIMEBASE_BASE];
-OS_common_record_t * const OS_global_timecb_table     = &OS_common_table[OS_TIMECB_BASE];
-OS_common_record_t * const OS_global_module_table     = &OS_common_table[OS_MODULE_BASE];
-OS_common_record_t * const OS_global_filesys_table    = &OS_common_table[OS_FILESYS_BASE];
-OS_common_record_t * const OS_global_console_table    = &OS_common_table[OS_CONSOLE_BASE];
+OS_common_record_t *const OS_global_task_table      = &OS_common_table[OS_TASK_BASE];
+OS_common_record_t *const OS_global_queue_table     = &OS_common_table[OS_QUEUE_BASE];
+OS_common_record_t *const OS_global_bin_sem_table   = &OS_common_table[OS_BINSEM_BASE];
+OS_common_record_t *const OS_global_count_sem_table = &OS_common_table[OS_COUNTSEM_BASE];
+OS_common_record_t *const OS_global_mutex_table     = &OS_common_table[OS_MUTEX_BASE];
+OS_common_record_t *const OS_global_stream_table    = &OS_common_table[OS_STREAM_BASE];
+OS_common_record_t *const OS_global_dir_table       = &OS_common_table[OS_DIR_BASE];
+OS_common_record_t *const OS_global_timebase_table  = &OS_common_table[OS_TIMEBASE_BASE];
+OS_common_record_t *const OS_global_timecb_table    = &OS_common_table[OS_TIMECB_BASE];
+OS_common_record_t *const OS_global_module_table    = &OS_common_table[OS_MODULE_BASE];
+OS_common_record_t *const OS_global_filesys_table   = &OS_common_table[OS_FILESYS_BASE];
+OS_common_record_t *const OS_global_console_table   = &OS_common_table[OS_CONSOLE_BASE];
 
 /*
  *********************************************************************************
@@ -136,24 +134,36 @@ int32 OS_ObjectIdInit(void)
  *-----------------------------------------------------------------*/
 uint32 OS_GetMaxForObjectType(uint32 idtype)
 {
-   switch(idtype)
-   {
-   case OS_OBJECT_TYPE_OS_TASK:     return OS_MAX_TASKS;
-   case OS_OBJECT_TYPE_OS_QUEUE:    return OS_MAX_QUEUES;
-   case OS_OBJECT_TYPE_OS_BINSEM:   return OS_MAX_BIN_SEMAPHORES;
-   case OS_OBJECT_TYPE_OS_COUNTSEM: return OS_MAX_COUNT_SEMAPHORES;
-   case OS_OBJECT_TYPE_OS_MUTEX:    return OS_MAX_MUTEXES;
-   case OS_OBJECT_TYPE_OS_STREAM:   return OS_MAX_NUM_OPEN_FILES;
-   case OS_OBJECT_TYPE_OS_DIR:      return OS_MAX_NUM_OPEN_DIRS;
-   case OS_OBJECT_TYPE_OS_TIMEBASE: return OS_MAX_TIMEBASES;
-   case OS_OBJECT_TYPE_OS_TIMECB:   return OS_MAX_TIMERS;
-   case OS_OBJECT_TYPE_OS_MODULE:   return OS_MAX_MODULES;
-   case OS_OBJECT_TYPE_OS_FILESYS:  return OS_MAX_FILE_SYSTEMS;
-   case OS_OBJECT_TYPE_OS_CONSOLE:  return OS_MAX_CONSOLES;
-   default:                         return 0;
-   }
+    switch (idtype)
+    {
+        case OS_OBJECT_TYPE_OS_TASK:
+            return OS_MAX_TASKS;
+        case OS_OBJECT_TYPE_OS_QUEUE:
+            return OS_MAX_QUEUES;
+        case OS_OBJECT_TYPE_OS_BINSEM:
+            return OS_MAX_BIN_SEMAPHORES;
+        case OS_OBJECT_TYPE_OS_COUNTSEM:
+            return OS_MAX_COUNT_SEMAPHORES;
+        case OS_OBJECT_TYPE_OS_MUTEX:
+            return OS_MAX_MUTEXES;
+        case OS_OBJECT_TYPE_OS_STREAM:
+            return OS_MAX_NUM_OPEN_FILES;
+        case OS_OBJECT_TYPE_OS_DIR:
+            return OS_MAX_NUM_OPEN_DIRS;
+        case OS_OBJECT_TYPE_OS_TIMEBASE:
+            return OS_MAX_TIMEBASES;
+        case OS_OBJECT_TYPE_OS_TIMECB:
+            return OS_MAX_TIMERS;
+        case OS_OBJECT_TYPE_OS_MODULE:
+            return OS_MAX_MODULES;
+        case OS_OBJECT_TYPE_OS_FILESYS:
+            return OS_MAX_FILE_SYSTEMS;
+        case OS_OBJECT_TYPE_OS_CONSOLE:
+            return OS_MAX_CONSOLES;
+        default:
+            return 0;
+    }
 } /* end OS_GetMaxForObjectType */
-
 
 /*----------------------------------------------------------------
  *
@@ -164,29 +174,41 @@ uint32 OS_GetMaxForObjectType(uint32 idtype)
  *-----------------------------------------------------------------*/
 uint32 OS_GetBaseForObjectType(uint32 idtype)
 {
-   switch(idtype)
-   {
-   case OS_OBJECT_TYPE_OS_TASK:     return OS_TASK_BASE;
-   case OS_OBJECT_TYPE_OS_QUEUE:    return OS_QUEUE_BASE;
-   case OS_OBJECT_TYPE_OS_BINSEM:   return OS_BINSEM_BASE;
-   case OS_OBJECT_TYPE_OS_COUNTSEM: return OS_COUNTSEM_BASE;
-   case OS_OBJECT_TYPE_OS_MUTEX:    return OS_MUTEX_BASE;
-   case OS_OBJECT_TYPE_OS_STREAM:   return OS_STREAM_BASE;
-   case OS_OBJECT_TYPE_OS_DIR:      return OS_DIR_BASE;
-   case OS_OBJECT_TYPE_OS_TIMEBASE: return OS_TIMEBASE_BASE;
-   case OS_OBJECT_TYPE_OS_TIMECB:   return OS_TIMECB_BASE;
-   case OS_OBJECT_TYPE_OS_MODULE:   return OS_MODULE_BASE;
-   case OS_OBJECT_TYPE_OS_FILESYS:  return OS_FILESYS_BASE;
-   case OS_OBJECT_TYPE_OS_CONSOLE:  return OS_CONSOLE_BASE;
-   default:                         return 0;
-   }
+    switch (idtype)
+    {
+        case OS_OBJECT_TYPE_OS_TASK:
+            return OS_TASK_BASE;
+        case OS_OBJECT_TYPE_OS_QUEUE:
+            return OS_QUEUE_BASE;
+        case OS_OBJECT_TYPE_OS_BINSEM:
+            return OS_BINSEM_BASE;
+        case OS_OBJECT_TYPE_OS_COUNTSEM:
+            return OS_COUNTSEM_BASE;
+        case OS_OBJECT_TYPE_OS_MUTEX:
+            return OS_MUTEX_BASE;
+        case OS_OBJECT_TYPE_OS_STREAM:
+            return OS_STREAM_BASE;
+        case OS_OBJECT_TYPE_OS_DIR:
+            return OS_DIR_BASE;
+        case OS_OBJECT_TYPE_OS_TIMEBASE:
+            return OS_TIMEBASE_BASE;
+        case OS_OBJECT_TYPE_OS_TIMECB:
+            return OS_TIMECB_BASE;
+        case OS_OBJECT_TYPE_OS_MODULE:
+            return OS_MODULE_BASE;
+        case OS_OBJECT_TYPE_OS_FILESYS:
+            return OS_FILESYS_BASE;
+        case OS_OBJECT_TYPE_OS_CONSOLE:
+            return OS_CONSOLE_BASE;
+        default:
+            return 0;
+    }
 } /* end OS_GetBaseForObjectType */
 
 /**************************************************************
  * LOCAL HELPER FUNCTIONS
  * (not used outside of this unit)
  **************************************************************/
-
 
 /*----------------------------------------------------------------
  *
@@ -204,10 +226,8 @@ uint32 OS_GetBaseForObjectType(uint32 idtype)
  *-----------------------------------------------------------------*/
 bool OS_ObjectNameMatch(void *ref, uint32 local_id, const OS_common_record_t *obj)
 {
-    return (obj->name_entry != NULL &&
-            strcmp((const char*)ref, obj->name_entry) == 0);
+    return (obj->name_entry != NULL && strcmp((const char *)ref, obj->name_entry) == 0);
 } /* end OS_ObjectNameMatch */
-
 
 /*----------------------------------------------------------------
  *
@@ -232,7 +252,6 @@ void OS_ObjectIdInitiateLock(OS_lock_mode_t lock_mode, uint32 idtype)
         OS_Lock_Global(idtype);
     }
 } /* end OS_ObjectIdInitiateLock */
-
 
 /*----------------------------------------------------------------
  *
@@ -274,11 +293,11 @@ void OS_ObjectIdInitiateLock(OS_lock_mode_t lock_mode, uint32 idtype)
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdConvertLock(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t reference_id, OS_common_record_t *obj)
 {
-    int32 return_code = OS_ERROR;
+    int32  return_code    = OS_ERROR;
     uint32 exclusive_bits = 0;
-    uint32 attempts = 0;
+    uint32 attempts       = 0;
 
-    while(true)
+    while (true)
     {
         /* Validate the integrity of the ID.  As the "active_id" is a single
          * integer, we can do this check regardless of whether global is locked or not. */
@@ -335,7 +354,6 @@ int32 OS_ObjectIdConvertLock(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t 
             break;
         }
 
-
         /*
          * If we get this far, it means there is contention for access to the object.
          *  a) we want to increment refcount but an exclusive is pending
@@ -378,8 +396,7 @@ int32 OS_ObjectIdConvertLock(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t 
          * style lock.  For other styles (GLOBAL or EXCLUSIVE) the global lock
          * should be maintained and returned to the caller.
          */
-        if (return_code != OS_SUCCESS ||
-                lock_mode == OS_LOCK_MODE_REFCOUNT)
+        if (return_code != OS_SUCCESS || lock_mode == OS_LOCK_MODE_REFCOUNT)
         {
             OS_Unlock_Global(idtype);
         }
@@ -405,15 +422,15 @@ int32 OS_ObjectIdConvertLock(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t 
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdSearch(uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_common_record_t **record)
 {
-    int32 return_code;
-    uint32 obj_count;
-    uint32 local_id;
+    int32               return_code;
+    uint32              obj_count;
+    uint32              local_id;
     OS_common_record_t *obj;
 
     return_code = OS_ERR_NAME_NOT_FOUND;
-    obj = &OS_common_table[OS_GetBaseForObjectType(idtype)];
-    obj_count = OS_GetMaxForObjectType(idtype);
-    local_id = 0;
+    obj         = &OS_common_table[OS_GetBaseForObjectType(idtype)];
+    obj_count   = OS_GetMaxForObjectType(idtype);
+    local_id    = 0;
 
     while (true)
     {
@@ -424,8 +441,7 @@ int32 OS_ObjectIdSearch(uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg
         }
         --obj_count;
 
-        if ( OS_ObjectIdDefined(obj->active_id) &&
-                MatchFunc(arg, local_id, obj))
+        if (OS_ObjectIdDefined(obj->active_id) && MatchFunc(arg, local_id, obj))
         {
             return_code = OS_SUCCESS;
             break;
@@ -461,76 +477,75 @@ int32 OS_ObjectIdSearch(uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdFindNext(uint32 idtype, uint32 *array_index, OS_common_record_t **record)
 {
-   uint32 max_id;
-   uint32 base_id;
-   uint32 local_id = 0;
-   uint32 idvalue;
-   uint32 i;
-   int32 return_code;
-   OS_common_record_t *obj = NULL;
+    uint32              max_id;
+    uint32              base_id;
+    uint32              local_id = 0;
+    uint32              idvalue;
+    uint32              i;
+    int32               return_code;
+    OS_common_record_t *obj = NULL;
 
-   base_id = OS_GetBaseForObjectType(idtype);
-   max_id = OS_GetMaxForObjectType(idtype);
+    base_id = OS_GetBaseForObjectType(idtype);
+    max_id  = OS_GetMaxForObjectType(idtype);
 
-   if (max_id == 0)
-   {
-       /* if the max id is zero, then this build of OSAL
-        * does not include any support for that object type.
-        * Return the "not implemented" to differentiate between
-        * this case vs. running out of valid slots  */
-       return_code = OS_ERR_NOT_IMPLEMENTED;
-       idvalue = 0;
-   }
-   else
-   {
-       return_code = OS_ERR_NO_FREE_IDS;
-       idvalue = OS_ObjectIdToSerialNumber_Impl(OS_objtype_state[idtype].last_id_issued);
-   }
+    if (max_id == 0)
+    {
+        /* if the max id is zero, then this build of OSAL
+         * does not include any support for that object type.
+         * Return the "not implemented" to differentiate between
+         * this case vs. running out of valid slots  */
+        return_code = OS_ERR_NOT_IMPLEMENTED;
+        idvalue     = 0;
+    }
+    else
+    {
+        return_code = OS_ERR_NO_FREE_IDS;
+        idvalue     = OS_ObjectIdToSerialNumber_Impl(OS_objtype_state[idtype].last_id_issued);
+    }
 
-   for (i = 0; i < max_id; ++i)
-   {
-      local_id = (++idvalue) % max_id;
-      if (idvalue >= OS_OBJECT_INDEX_MASK)
-      {
-          /* reset to beginning of ID space */
-          idvalue = local_id;
-      }
-      obj = &OS_common_table[local_id + base_id];
-      if (!OS_ObjectIdDefined(obj->active_id))
-      {
-         return_code = OS_SUCCESS;
-         break;
-      }
-   }
+    for (i = 0; i < max_id; ++i)
+    {
+        local_id = (++idvalue) % max_id;
+        if (idvalue >= OS_OBJECT_INDEX_MASK)
+        {
+            /* reset to beginning of ID space */
+            idvalue = local_id;
+        }
+        obj = &OS_common_table[local_id + base_id];
+        if (!OS_ObjectIdDefined(obj->active_id))
+        {
+            return_code = OS_SUCCESS;
+            break;
+        }
+    }
 
-   if(return_code == OS_SUCCESS)
-   {
-       OS_ObjectIdCompose_Impl(idtype, idvalue, &obj->active_id);
+    if (return_code == OS_SUCCESS)
+    {
+        OS_ObjectIdCompose_Impl(idtype, idvalue, &obj->active_id);
 
-       /* Ensure any data in the record has been cleared */
-       obj->name_entry = NULL;
-       obj->creator = OS_TaskGetId();
-       obj->refcount = 0;
-   }
+        /* Ensure any data in the record has been cleared */
+        obj->name_entry = NULL;
+        obj->creator    = OS_TaskGetId();
+        obj->refcount   = 0;
+    }
 
-   if(return_code != OS_SUCCESS)
-   {
-       obj = NULL;
-       local_id = 0;
-   }
+    if (return_code != OS_SUCCESS)
+    {
+        obj      = NULL;
+        local_id = 0;
+    }
 
-   if (array_index != NULL)
-   {
-       *array_index = local_id;
-   }
-   if (record != NULL)
-   {
-       *record = obj;
-   }
+    if (array_index != NULL)
+    {
+        *array_index = local_id;
+    }
+    if (record != NULL)
+    {
+        *record = obj;
+    }
 
-   return return_code;
+    return return_code;
 } /* end OS_ObjectIdFindNext */
-
 
 /*
  *********************************************************************************
@@ -548,13 +563,13 @@ int32 OS_ObjectIdFindNext(uint32 idtype, uint32 *array_index, OS_common_record_t
  ------------------------------------------------------------------*/
 void OS_Lock_Global(uint32 idtype)
 {
-    int32 return_code;
-    osal_id_t self_task_id;
+    int32               return_code;
+    osal_id_t           self_task_id;
     OS_objtype_state_t *objtype;
 
     if (idtype < OS_OBJECT_TYPE_USER)
     {
-        objtype = &OS_objtype_state[idtype];
+        objtype      = &OS_objtype_state[idtype];
         self_task_id = OS_TaskGetId_Impl();
 
         return_code = OS_Lock_Global_Impl(idtype);
@@ -568,7 +583,7 @@ void OS_Lock_Global(uint32 idtype)
              * This is done after successfully locking, so this has exclusive access
              * to the state object.
              */
-            if ( !OS_ObjectIdDefined(self_task_id) )
+            if (!OS_ObjectIdDefined(self_task_id))
             {
                 /*
                  * This just means the calling context is not an OSAL-created task.
@@ -578,13 +593,12 @@ void OS_Lock_Global(uint32 idtype)
                 self_task_id = OS_OBJECT_ID_RESERVED; /* nonzero, but also won't alias a known task */
             }
 
-            if ( OS_ObjectIdDefined(objtype->table_owner) )
+            if (OS_ObjectIdDefined(objtype->table_owner))
             {
                 /* this is almost certainly a bug */
                 OS_DEBUG("ERROR: global %u acquired by task 0x%lx when already owned by task 0x%lx\n",
-                        (unsigned int)idtype,
-                        OS_ObjectIdToInteger(self_task_id),
-                        OS_ObjectIdToInteger(objtype->table_owner));
+                         (unsigned int)idtype, OS_ObjectIdToInteger(self_task_id),
+                         OS_ObjectIdToInteger(objtype->table_owner));
             }
             else
             {
@@ -610,13 +624,13 @@ void OS_Lock_Global(uint32 idtype)
  ------------------------------------------------------------------*/
 void OS_Unlock_Global(uint32 idtype)
 {
-    int32 return_code;
-    osal_id_t self_task_id;
+    int32               return_code;
+    osal_id_t           self_task_id;
     OS_objtype_state_t *objtype;
 
     if (idtype < OS_OBJECT_TYPE_USER)
     {
-        objtype = &OS_objtype_state[idtype];
+        objtype      = &OS_objtype_state[idtype];
         self_task_id = OS_TaskGetId_Impl();
 
         /*
@@ -627,7 +641,7 @@ void OS_Unlock_Global(uint32 idtype)
          * This is done before unlocking, while this has exclusive access
          * to the state object.
          */
-        if ( !OS_ObjectIdDefined(self_task_id) )
+        if (!OS_ObjectIdDefined(self_task_id))
         {
             /*
              * This just means the calling context is not an OSAL-created task.
@@ -637,13 +651,11 @@ void OS_Unlock_Global(uint32 idtype)
             self_task_id = OS_OBJECT_ID_RESERVED; /* nonzero, but also won't alias a known task */
         }
 
-        if ( !OS_ObjectIdEqual(objtype->table_owner, self_task_id) )
+        if (!OS_ObjectIdEqual(objtype->table_owner, self_task_id))
         {
             /* this is almost certainly a bug */
-            OS_DEBUG("ERROR: global %u released by task 0x%lx when owned by task 0x%lx\n",
-                    (unsigned int)idtype,
-                    OS_ObjectIdToInteger(self_task_id),
-                    OS_ObjectIdToInteger(objtype->table_owner));
+            OS_DEBUG("ERROR: global %u released by task 0x%lx when owned by task 0x%lx\n", (unsigned int)idtype,
+                     OS_ObjectIdToInteger(self_task_id), OS_ObjectIdToInteger(objtype->table_owner));
         }
         else
         {
@@ -683,7 +695,7 @@ void OS_Unlock_Global(uint32 idtype)
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record, osal_id_t *outid)
 {
-    uint32 idtype = OS_ObjectIdToType_Impl(record->active_id);
+    uint32    idtype = OS_ObjectIdToType_Impl(record->active_id);
     osal_id_t callback_id;
 
     /* if operation was unsuccessful, then clear
@@ -700,7 +712,7 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record,
     else if (idtype == 0 || idtype >= OS_OBJECT_TYPE_USER)
     {
         /* should never happen - indicates a bug. */
-        operation_status = OS_ERR_INVALID_ID;
+        operation_status  = OS_ERR_INVALID_ID;
         record->active_id = OS_OBJECT_ID_UNDEFINED;
     }
     else
@@ -738,13 +750,13 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record,
  ------------------------------------------------------------------*/
 int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *record)
 {
-    uint32 idtype = OS_ObjectIdToType_Impl(record->active_id);
+    uint32    idtype = OS_ObjectIdToType_Impl(record->active_id);
     osal_id_t callback_id;
 
     /* Clear the OSAL ID if successful - this returns the record to the pool */
     if (operation_status == OS_SUCCESS)
     {
-        callback_id = record->active_id;
+        callback_id       = record->active_id;
         record->active_id = OS_OBJECT_ID_UNDEFINED;
     }
     else
@@ -764,7 +776,6 @@ int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *reco
     return operation_status;
 }
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ObjectIdGetBySearch
@@ -779,9 +790,10 @@ int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *reco
  *  returns: OS_ERR_NAME_NOT_FOUND if not found, OS_SUCCESS if match is found
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_common_record_t **record)
+int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg,
+                             OS_common_record_t **record)
 {
-    int32 return_code;
+    int32               return_code;
     OS_common_record_t *obj;
 
     OS_ObjectIdInitiateLock(lock_mode, idtype);
@@ -810,7 +822,6 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectM
     return return_code;
 } /* end OS_ObjectIdGetBySearch */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ObjectIdGetByName
@@ -825,9 +836,9 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectM
  *  returns: OS_ERR_NAME_NOT_FOUND if not found, OS_SUCCESS if match is found
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdGetByName (OS_lock_mode_t lock_mode, uint32 idtype, const char *name, OS_common_record_t **record)
+int32 OS_ObjectIdGetByName(OS_lock_mode_t lock_mode, uint32 idtype, const char *name, OS_common_record_t **record)
 {
-    return  OS_ObjectIdGetBySearch(lock_mode, idtype, OS_ObjectNameMatch, (void*)name, record);
+    return OS_ObjectIdGetBySearch(lock_mode, idtype, OS_ObjectNameMatch, (void *)name, record);
 
 } /* end OS_ObjectIdGetByName */
 
@@ -842,9 +853,9 @@ int32 OS_ObjectIdGetByName (OS_lock_mode_t lock_mode, uint32 idtype, const char 
  *  returns: OS_ERR_NAME_NOT_FOUND if not found, OS_SUCCESS if match is found
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdFindByName (uint32 idtype, const char *name, osal_id_t *object_id)
+int32 OS_ObjectIdFindByName(uint32 idtype, const char *name, osal_id_t *object_id)
 {
-    int32 return_code;
+    int32               return_code;
     OS_common_record_t *global;
 
     /*
@@ -873,8 +884,6 @@ int32 OS_ObjectIdFindByName (uint32 idtype, const char *name, osal_id_t *object_
 
 } /* end OS_ObjectIdFindByName */
 
-
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ObjectIdGetById
@@ -891,50 +900,47 @@ int32 OS_ObjectIdFindByName (uint32 idtype, const char *name, osal_id_t *object_
  *           If this returns something other than OS_SUCCESS then the global is NOT locked.
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t id, uint32 *array_index, OS_common_record_t **record)
+int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t id, uint32 *array_index,
+                         OS_common_record_t **record)
 {
-   int32 return_code;
+    int32 return_code;
 
-   if (OS_SharedGlobalVars.Initialized == false)
-   {
-       return OS_ERROR;
-   }
+    if (OS_SharedGlobalVars.Initialized == false)
+    {
+        return OS_ERROR;
+    }
 
-   /*
-    * Special case to allow only OS_LOCK_MODE_EXCLUSIVE during shutdowns
-    * (This is the lock mode used to delete objects)
-    */
-   if (OS_SharedGlobalVars.ShutdownFlag == OS_SHUTDOWN_MAGIC_NUMBER &&
-           lock_mode != OS_LOCK_MODE_EXCLUSIVE)
-   {
-       return OS_ERR_INCORRECT_OBJ_STATE;
-   }
+    /*
+     * Special case to allow only OS_LOCK_MODE_EXCLUSIVE during shutdowns
+     * (This is the lock mode used to delete objects)
+     */
+    if (OS_SharedGlobalVars.ShutdownFlag == OS_SHUTDOWN_MAGIC_NUMBER && lock_mode != OS_LOCK_MODE_EXCLUSIVE)
+    {
+        return OS_ERR_INCORRECT_OBJ_STATE;
+    }
 
+    return_code = OS_ObjectIdToArrayIndex(idtype, id, array_index);
+    if (return_code != OS_SUCCESS)
+    {
+        return return_code;
+    }
 
-   return_code = OS_ObjectIdToArrayIndex(idtype, id, array_index);
-   if (return_code != OS_SUCCESS)
-   {
-       return return_code;
-   }
+    *record = &OS_common_table[*array_index + OS_GetBaseForObjectType(idtype)];
 
+    OS_ObjectIdInitiateLock(lock_mode, idtype);
 
-   *record = &OS_common_table[*array_index + OS_GetBaseForObjectType(idtype)];
+    /*
+     * The "ConvertLock" routine will return with the global lock
+     * in a state appropriate for returning to the caller, as indicated
+     * by the "check_mode" paramter.
+     *
+     * Note If this operation fails, then it always unlocks the global for
+     * all check_mode's other than NONE.
+     */
+    return_code = OS_ObjectIdConvertLock(lock_mode, idtype, id, *record);
 
-   OS_ObjectIdInitiateLock(lock_mode, idtype);
-
-   /*
-    * The "ConvertLock" routine will return with the global lock
-    * in a state appropriate for returning to the caller, as indicated
-    * by the "check_mode" paramter.
-    *
-    * Note If this operation fails, then it always unlocks the global for
-    * all check_mode's other than NONE.
-    */
-   return_code = OS_ObjectIdConvertLock(lock_mode, idtype, id, *record);
-
-   return return_code;
+    return return_code;
 } /* end OS_ObjectIdGetById */
-
 
 /*----------------------------------------------------------------
  *
@@ -949,31 +955,31 @@ int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t id, 
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdRefcountDecr(OS_common_record_t *record)
 {
-   int32 return_code;
-   uint32 idtype = OS_ObjectIdToType_Impl(record->active_id);
+    int32  return_code;
+    uint32 idtype = OS_ObjectIdToType_Impl(record->active_id);
 
-   if (idtype == 0 || !OS_ObjectIdDefined(record->active_id))
-   {
-      return_code = OS_ERR_INVALID_ID;
-   }
-   else
-   {
-      OS_Lock_Global(idtype);
+    if (idtype == 0 || !OS_ObjectIdDefined(record->active_id))
+    {
+        return_code = OS_ERR_INVALID_ID;
+    }
+    else
+    {
+        OS_Lock_Global(idtype);
 
-      if (record->refcount > 0)
-      {
-         --record->refcount;
-         return_code = OS_SUCCESS;
-      }
-      else
-      {
-         return_code = OS_ERR_INCORRECT_OBJ_STATE;
-      }
+        if (record->refcount > 0)
+        {
+            --record->refcount;
+            return_code = OS_SUCCESS;
+        }
+        else
+        {
+            return_code = OS_ERR_INCORRECT_OBJ_STATE;
+        }
 
-      OS_Unlock_Global(idtype);
-   }
+        OS_Unlock_Global(idtype);
+    }
 
-   return return_code;
+    return return_code;
 } /* end OS_ObjectIdRefcountDecr */
 
 /*----------------------------------------------------------------
@@ -1008,56 +1014,55 @@ int32 OS_ObjectIdRefcountDecr(OS_common_record_t *record)
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdAllocateNew(uint32 idtype, const char *name, uint32 *array_index, OS_common_record_t **record)
 {
-   int32 return_code;
+    int32 return_code;
 
-   if (OS_SharedGlobalVars.Initialized == false ||
-         OS_SharedGlobalVars.ShutdownFlag == OS_SHUTDOWN_MAGIC_NUMBER)
-   {
-       return OS_ERROR;
-   }
+    if (OS_SharedGlobalVars.Initialized == false || OS_SharedGlobalVars.ShutdownFlag == OS_SHUTDOWN_MAGIC_NUMBER)
+    {
+        return OS_ERROR;
+    }
 
-   if (idtype >= OS_OBJECT_TYPE_USER)
-   {
-       return OS_ERR_INCORRECT_OBJ_TYPE;
-   }
+    if (idtype >= OS_OBJECT_TYPE_USER)
+    {
+        return OS_ERR_INCORRECT_OBJ_TYPE;
+    }
 
-   OS_Lock_Global(idtype);
+    OS_Lock_Global(idtype);
 
-   /*
-    * Check if an object of the same name already exits.
-    * If so, a new object cannot be allocated.
-    */
-   if (name != NULL)
-   {
-       return_code = OS_ObjectIdSearch(idtype, OS_ObjectNameMatch, (void*)name, record);
-   }
-   else
-   {
-       return_code = OS_ERR_NAME_NOT_FOUND;
-   }
+    /*
+     * Check if an object of the same name already exits.
+     * If so, a new object cannot be allocated.
+     */
+    if (name != NULL)
+    {
+        return_code = OS_ObjectIdSearch(idtype, OS_ObjectNameMatch, (void *)name, record);
+    }
+    else
+    {
+        return_code = OS_ERR_NAME_NOT_FOUND;
+    }
 
-   if (return_code == OS_SUCCESS)
-   {
-      return_code = OS_ERR_NAME_TAKEN;
-   }
-   else
-   {
-      return_code = OS_ObjectIdFindNext(idtype, array_index, record);
-   }
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_ERR_NAME_TAKEN;
+    }
+    else
+    {
+        return_code = OS_ObjectIdFindNext(idtype, array_index, record);
+    }
 
-   if (return_code == OS_SUCCESS)
-   {
-       return_code = OS_NotifyEvent(OS_EVENT_RESOURCE_ALLOCATED, (*record)->active_id, NULL);
-   }
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_NotifyEvent(OS_EVENT_RESOURCE_ALLOCATED, (*record)->active_id, NULL);
+    }
 
-   /* If allocation failed for any reason, unlock the global.
-    * otherwise the global should stay locked so remaining initialization can be done */
-   if (return_code != OS_SUCCESS)
-   {
-      OS_Unlock_Global(idtype);
-   }
+    /* If allocation failed for any reason, unlock the global.
+     * otherwise the global should stay locked so remaining initialization can be done */
+    if (return_code != OS_SUCCESS)
+    {
+        OS_Unlock_Global(idtype);
+    }
 
-   return return_code;
+    return return_code;
 } /* end OS_ObjectIdAllocateNew */
 
 /*
@@ -1080,7 +1085,6 @@ int32 OS_ConvertToArrayIndex(osal_id_t object_id, uint32 *ArrayIndex)
     return OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_UNDEFINED, object_id, ArrayIndex);
 } /* end OS_ConvertToArrayIndex */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ForEachObject
@@ -1089,7 +1093,7 @@ int32 OS_ConvertToArrayIndex(osal_id_t object_id, uint32 *ArrayIndex)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-void OS_ForEachObject (osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
+void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
 {
     uint32 idtype;
 
@@ -1107,10 +1111,10 @@ void OS_ForEachObject (osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-void OS_ForEachObjectOfType     (uint32 idtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
+void OS_ForEachObjectOfType(uint32 idtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
 {
-    uint32 obj_index;
-    uint32 obj_max;
+    uint32    obj_index;
+    uint32    obj_max;
     osal_id_t obj_id;
 
     obj_max = OS_GetMaxForObjectType(idtype);
@@ -1125,9 +1129,8 @@ void OS_ForEachObjectOfType     (uint32 idtype, osal_id_t creator_id, OS_ArgCall
              * the specified creator_id
              */
             obj_id = OS_common_table[obj_index].active_id;
-            if (OS_ObjectIdDefined(obj_id) &&
-                    !OS_ObjectIdEqual(creator_id, OS_OBJECT_CREATOR_ANY) &&
-                    !OS_ObjectIdEqual(OS_common_table[obj_index].creator, creator_id))
+            if (OS_ObjectIdDefined(obj_id) && !OS_ObjectIdEqual(creator_id, OS_OBJECT_CREATOR_ANY) &&
+                !OS_ObjectIdEqual(OS_common_table[obj_index].creator, creator_id))
             {
                 /* valid object but not a creator match -
                  * skip the callback for this object */
@@ -1167,7 +1170,7 @@ void OS_ForEachObjectOfType     (uint32 idtype, osal_id_t creator_id, OS_ArgCall
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-uint32 OS_IdentifyObject       (osal_id_t object_id)
+uint32 OS_IdentifyObject(osal_id_t object_id)
 {
     return OS_ObjectIdToType_Impl(object_id);
 } /* end OS_IdentifyObject */
@@ -1182,11 +1185,11 @@ uint32 OS_IdentifyObject       (osal_id_t object_id)
  *-----------------------------------------------------------------*/
 int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size)
 {
-    uint32 idtype;
+    uint32              idtype;
     OS_common_record_t *record;
-    int32 return_code;
-    uint32 name_len;
-    uint32 local_id;
+    int32               return_code;
+    uint32              name_len;
+    uint32              local_id;
 
     /* sanity check the passed-in buffer and size */
     if (buffer == NULL || buffer_size == 0)
@@ -1201,7 +1204,7 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size)
      */
     buffer[0] = 0;
 
-    idtype = OS_ObjectIdToType_Impl(object_id);
+    idtype      = OS_ObjectIdToType_Impl(object_id);
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, idtype, object_id, &local_id, &record);
     if (return_code == OS_SUCCESS)
     {
@@ -1212,7 +1215,7 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size)
             {
                 /* indicates the name does not fit into supplied buffer */
                 return_code = OS_ERR_NAME_TOO_LONG;
-                name_len = buffer_size - 1;
+                name_len    = buffer_size - 1;
             }
             memcpy(buffer, record->name_entry, name_len);
             buffer[name_len] = 0;
@@ -1222,7 +1225,6 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size)
 
     return return_code;
 } /* end OS_GetResourceName */
-
 
 /*----------------------------------------------------------------
  *
@@ -1241,37 +1243,35 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size)
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t object_id, uint32 *ArrayIndex)
 {
-   uint32 max_id;
-   uint32 obj_index;
-   uint32 actual_type;
-   int32 return_code;
+    uint32 max_id;
+    uint32 obj_index;
+    uint32 actual_type;
+    int32  return_code;
 
-   obj_index = OS_ObjectIdToSerialNumber_Impl(object_id);
-   actual_type = OS_ObjectIdToType_Impl(object_id);
+    obj_index   = OS_ObjectIdToSerialNumber_Impl(object_id);
+    actual_type = OS_ObjectIdToType_Impl(object_id);
 
-   /*
-    * If requested by the caller, enforce that the ID is of the correct type.
-    * If the caller passed OS_OBJECT_TYPE_UNDEFINED, then anything is allowed.
-    */
-   if (idtype != OS_OBJECT_TYPE_UNDEFINED && actual_type != idtype)
-   {
-       return_code = OS_ERR_INVALID_ID;
-   }
-   else
-   {
-       max_id = OS_GetMaxForObjectType(actual_type);
-       if (max_id == 0)
-       {
-           return_code = OS_ERR_INVALID_ID;
-       }
-       else
-       {
-           return_code = OS_SUCCESS;
-           *ArrayIndex = obj_index % max_id;
-       }
-   }
+    /*
+     * If requested by the caller, enforce that the ID is of the correct type.
+     * If the caller passed OS_OBJECT_TYPE_UNDEFINED, then anything is allowed.
+     */
+    if (idtype != OS_OBJECT_TYPE_UNDEFINED && actual_type != idtype)
+    {
+        return_code = OS_ERR_INVALID_ID;
+    }
+    else
+    {
+        max_id = OS_GetMaxForObjectType(actual_type);
+        if (max_id == 0)
+        {
+            return_code = OS_ERR_INVALID_ID;
+        }
+        else
+        {
+            return_code = OS_SUCCESS;
+            *ArrayIndex = obj_index % max_id;
+        }
+    }
 
-   return return_code;
+    return return_code;
 } /* end OS_ObjectIdToArrayIndex */
-
-

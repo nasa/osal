@@ -25,11 +25,9 @@
 
 #include <OCS_unistd.h>
 
+#define OCS_MAX_RDWR_SIZE 0x01000000 /* 16MB */
 
-#define OCS_MAX_RDWR_SIZE       0x01000000  /* 16MB */
-
-
-int OCS_close (int fd)
+int OCS_close(int fd)
 {
     int32 Status;
 
@@ -38,8 +36,7 @@ int OCS_close (int fd)
     return Status;
 }
 
-
-OCS_gid_t OCS_getegid (void)
+OCS_gid_t OCS_getegid(void)
 {
     int32 Status;
 
@@ -48,8 +45,7 @@ OCS_gid_t OCS_getegid (void)
     return Status;
 }
 
-
-OCS_uid_t OCS_geteuid (void)
+OCS_uid_t OCS_geteuid(void)
 {
     int32 Status;
 
@@ -58,8 +54,7 @@ OCS_uid_t OCS_geteuid (void)
     return Status;
 }
 
-
-long int OCS_gethostid (void)
+long int OCS_gethostid(void)
 {
     int32 Status;
 
@@ -68,8 +63,7 @@ long int OCS_gethostid (void)
     return Status;
 }
 
-
-int OCS_gethostname (char * name, size_t len)
+int OCS_gethostname(char *name, size_t len)
 {
     int32 Status;
 
@@ -77,15 +71,14 @@ int OCS_gethostname (char * name, size_t len)
 
     if (Status == 0 && len > 0)
     {
-        strncpy(name, "ut", len-1);
-        name[len-1] = 0;
+        strncpy(name, "ut", len - 1);
+        name[len - 1] = 0;
     }
 
     return Status;
 }
 
-
-OCS_pid_t OCS_getpid (void)
+OCS_pid_t OCS_getpid(void)
 {
     int32 Status;
 
@@ -94,8 +87,7 @@ OCS_pid_t OCS_getpid (void)
     return Status;
 }
 
-
-OCS_off_t OCS_lseek (int fd, OCS_off_t offset, int whence)
+OCS_off_t OCS_lseek(int fd, OCS_off_t offset, int whence)
 {
     int32 Status;
 
@@ -104,10 +96,9 @@ OCS_off_t OCS_lseek (int fd, OCS_off_t offset, int whence)
     return Status;
 }
 
-
-OCS_ssize_t OCS_read (int fd, void * buf, size_t n)
+OCS_ssize_t OCS_read(int fd, void *buf, size_t n)
 {
-    int32 Status;
+    int32  Status;
     uint32 CopySize;
 
     Status = UT_DEFAULT_IMPL_RC(OCS_read, OCS_MAX_RDWR_SIZE);
@@ -147,8 +138,7 @@ OCS_ssize_t OCS_read (int fd, void * buf, size_t n)
     return Status;
 }
 
-
-int OCS_rmdir (const char * path)
+int OCS_rmdir(const char *path)
 {
     int32 Status;
 
@@ -157,8 +147,7 @@ int OCS_rmdir (const char * path)
     return Status;
 }
 
-
-long int OCS_sysconf (int name)
+long int OCS_sysconf(int name)
 {
     int32 Status;
 
@@ -167,10 +156,9 @@ long int OCS_sysconf (int name)
     return Status;
 }
 
-
-OCS_ssize_t OCS_write (int fd, const void * buf, size_t n)
+OCS_ssize_t OCS_write(int fd, const void *buf, size_t n)
 {
-    int32 Status;
+    int32  Status;
     uint32 CopySize;
 
     Status = UT_DEFAULT_IMPL_RC(OCS_write, OCS_MAX_RDWR_SIZE);
@@ -200,5 +188,3 @@ OCS_ssize_t OCS_write (int fd, const void * buf, size_t n)
 
     return Status;
 }
-
-

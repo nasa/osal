@@ -30,7 +30,6 @@
 
 #include <os-shared-globaldefs.h>
 
-
 /*
  * Clock API low-level handlers
  * These simply get/set the kernel RTC (if it has one)
@@ -54,6 +53,4 @@ int32 OS_GetLocalTime_Impl(OS_time_t *time_struct);
  ------------------------------------------------------------------*/
 int32 OS_SetLocalTime_Impl(const OS_time_t *time_struct);
 
-
-#endif  /* INCLUDE_OS_SHARED_CLOCK_H_ */
-
+#endif /* INCLUDE_OS_SHARED_CLOCK_H_ */

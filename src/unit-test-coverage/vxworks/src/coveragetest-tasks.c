@@ -37,7 +37,7 @@
  * A chunk of memory usable as a heap for malloc() emulation
  */
 unsigned long TestHeap[4096];
-int TestGlobalSem;
+int           TestGlobalSem;
 
 void Test_OS_VxWorks_TaskAPI_Impl_Init(void)
 {
@@ -54,7 +54,7 @@ void Test_OS_VxWorksEntry(void)
      * Test Case For:
      * static int OS_VxWorksEntry(int arg)
      */
-    OSAPI_TEST_FUNCTION_RC(UT_TaskTest_CallEntryPoint(0),OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(UT_TaskTest_CallEntryPoint(0), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_TaskEntryPoint)) == 1, "OS_TaskEntryPoint() called");
 }
 
@@ -71,10 +71,10 @@ void Test_OS_TaskCreate_Impl(void)
      * The first call checks the failure path and ensures that a malloc failure gets handled */
     OS_task_table[0].stack_size = 250;
     UT_SetForceFail(UT_KEY(OCS_malloc), OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(0,0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(0, 0), OS_ERROR);
 
     UT_ClearForceFail(UT_KEY(OCS_malloc));
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(0,OS_FP_ENABLED), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(0, OS_FP_ENABLED), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 2, "malloc() called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 0, "free() not called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 1, "taskInit() called");
@@ -82,7 +82,7 @@ void Test_OS_TaskCreate_Impl(void)
 
     /* create again with smaller stack - this should re-use existing buffer */
     OS_task_table[0].stack_size = 100;
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(0,OS_FP_ENABLED), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(0, OS_FP_ENABLED), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 2, "malloc() not called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 0, "free() not called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 2, "taskInit() called");
@@ -90,17 +90,15 @@ void Test_OS_TaskCreate_Impl(void)
 
     /* create again with larger stack - this should free existing and malloc() new buffer */
     OS_task_table[0].stack_size = 400;
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(0,OS_FP_ENABLED), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(0, OS_FP_ENABLED), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 3, "malloc() called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 1, "free() called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 3, "taskInit() called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskActivate)) == 3, "taskActivate() called");
 
-
     /* other failure modes */
     UT_SetForceFail(UT_KEY(OCS_taskInit), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(0,0), OS_ERROR);
-
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(0, 0), OS_ERROR);
 }
 
 void Test_OS_TaskMatch_Impl(void)
@@ -181,12 +179,12 @@ void Test_OS_TaskGetId_Impl(void)
      * uint32 OS_TaskGetId_Impl (void)
      */
     OCS_WIND_TCB *TaskTcb;
-    osal_id_t id1;
-    osal_id_t id2;
+    osal_id_t     id1;
+    osal_id_t     id2;
 
     memset(&id1, 0x11, sizeof(osal_id_t));
     OS_global_task_table[1].active_id = id1;
-    TaskTcb = UT_TaskTest_GetTaskTcb(1);
+    TaskTcb                           = UT_TaskTest_GetTaskTcb(1);
     UT_SetDataBuffer(UT_KEY(OCS_taskTcb), &TaskTcb, sizeof(TaskTcb), false);
     id2 = OS_TaskGetId_Impl();
     UtAssert_MemCmp(&id1, &id2, sizeof(osal_id_t), "OS_TaskGetId_Impl()");
@@ -200,7 +198,7 @@ void Test_OS_TaskGetInfo_Impl(void)
      */
     OS_task_prop_t task_prop;
     memset(&task_prop, 0xEE, sizeof(task_prop));
-    OSAPI_TEST_FUNCTION_RC(OS_TaskGetInfo_Impl(0,&task_prop), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskGetInfo_Impl(0, &task_prop), OS_SUCCESS);
 }
 
 void Test_OS_TaskValidateSystemData_Impl(void)
@@ -215,7 +213,7 @@ void Test_OS_TaskValidateSystemData_Impl(void)
 
     OSAPI_TEST_FUNCTION_RC(OS_TaskValidateSystemData_Impl(&test_sys_id, sizeof(test_sys_id)), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_TaskValidateSystemData_Impl(NULL, sizeof(test_sys_id)), OS_INVALID_POINTER);
-    OSAPI_TEST_FUNCTION_RC(OS_TaskValidateSystemData_Impl(&test_sys_id, sizeof(test_sys_id)-1), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskValidateSystemData_Impl(&test_sys_id, sizeof(test_sys_id) - 1), OS_INVALID_POINTER);
 }
 
 void Test_OS_TaskIdMatchSystemData_Impl(void)
@@ -234,7 +232,6 @@ void Test_OS_TaskIdMatchSystemData_Impl(void)
     memset(&test_sys_id, 'y', sizeof(test_sys_id));
     OSAPI_TEST_FUNCTION_RC(OS_TaskIdMatchSystemData_Impl(&test_sys_id, 0, NULL), false);
 }
-
 
 /* ------------------- End of test cases --------------------------------------*/
 
@@ -258,10 +255,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -284,5 +278,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_TaskValidateSystemData_Impl);
     ADD_TEST(OS_TaskIdMatchSystemData_Impl);
 }
-
-

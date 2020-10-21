@@ -37,7 +37,4 @@
 /* prototypes normally declared in ramDiskCbio.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_RAMDISKCBIO_H_ */
-

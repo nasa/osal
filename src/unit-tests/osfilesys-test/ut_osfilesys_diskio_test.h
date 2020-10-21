@@ -37,7 +37,7 @@
 ** Macros
 **--------------------------------------------------------------------------------*/
 
-#define UT_OS_FILESYS_LIST_LEN  (OS_MAX_FILE_SYSTEMS + 10)
+#define UT_OS_FILESYS_LIST_LEN (OS_MAX_FILE_SYSTEMS + 10)
 
 /*--------------------------------------------------------------------------------*
 ** Data types
@@ -74,7 +74,7 @@ void UT_os_fsbytesfree_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* _UT_OSFILESYS_DISKIO_TEST_H_ */
+#endif /* _UT_OSFILESYS_DISKIO_TEST_H_ */
 
 /*================================================================================*
 ** End of File: ut_osfilesys_diskio_test.h

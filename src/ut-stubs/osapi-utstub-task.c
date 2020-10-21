@@ -34,8 +34,7 @@
 
 #include "utstub-helpers.h"
 
-UT_DEFAULT_STUB(OS_TaskAPI_Init,(void))
-
+UT_DEFAULT_STUB(OS_TaskAPI_Init, (void))
 
 /*****************************************************************************/
 /**
@@ -53,11 +52,8 @@ UT_DEFAULT_STUB(OS_TaskAPI_Init,(void))
 **        Returns either OS_SUCCESS or OS_ERROR.
 **
 ******************************************************************************/
-int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name,
-                    osal_task_entry function_pointer,
-                    uint32 *stack_pointer,
-                    uint32 stack_size, uint32 priority,
-                    uint32 flags)
+int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry function_pointer, uint32 *stack_pointer,
+                    uint32 stack_size, uint32 priority, uint32 flags)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_TaskCreate), task_id);
     UT_Stub_RegisterContext(UT_KEY(OS_TaskCreate), task_name);
@@ -79,7 +75,6 @@ int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name,
     {
         *task_id = UT_STUB_FAKE_OBJECT_ID;
     }
-
 
     return status;
 }
@@ -115,7 +110,6 @@ int32 OS_TaskDelete(osal_id_t task_id)
 
     return status;
 }
-
 
 /*****************************************************************************/
 /**
@@ -171,7 +165,7 @@ int32 OS_TaskDelay(uint32 millisecond)
  * Stub function for OS_TaskSetPriority()
  *
  *****************************************************************************/
-int32 OS_TaskSetPriority (osal_id_t task_id, uint32 new_priority)
+int32 OS_TaskSetPriority(osal_id_t task_id, uint32 new_priority)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskSetPriority), task_id);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskSetPriority), new_priority);
@@ -208,7 +202,6 @@ int32 OS_TaskRegister(void)
     return status;
 }
 
-
 /*****************************************************************************/
 /**
 ** \brief OS_TaskGetId stub function
@@ -227,7 +220,7 @@ int32 OS_TaskRegister(void)
 osal_id_t OS_TaskGetId(void)
 {
     osal_id_t TaskId;
-    int32 status;
+    int32     status;
 
     status = UT_DEFAULT_IMPL_RC(OS_TaskGetId, 1);
     UT_ObjIdCompose(status, UT_OBJTYPE_TASK, &TaskId);
@@ -235,13 +228,12 @@ osal_id_t OS_TaskGetId(void)
     return TaskId;
 }
 
-
 /*****************************************************************************
  *
  * Stub function for OS_TaskGetIdByName()
  *
  *****************************************************************************/
-int32 OS_TaskGetIdByName (osal_id_t *task_id, const char *task_name)
+int32 OS_TaskGetIdByName(osal_id_t *task_id, const char *task_name)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_TaskGetIdByName), task_id);
     UT_Stub_RegisterContext(UT_KEY(OS_TaskGetIdByName), task_name);
@@ -251,14 +243,13 @@ int32 OS_TaskGetIdByName (osal_id_t *task_id, const char *task_name)
     status = UT_DEFAULT_IMPL(OS_TaskGetIdByName);
 
     if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_TaskGetIdByName), task_id, sizeof(*task_id)) < sizeof(*task_id))
+        UT_Stub_CopyToLocal(UT_KEY(OS_TaskGetIdByName), task_id, sizeof(*task_id)) < sizeof(*task_id))
     {
         UT_ObjIdCompose(1, UT_OBJTYPE_TASK, task_id);
     }
 
     return status;
 }
-
 
 /*****************************************************************************/
 /**
@@ -287,11 +278,11 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
     status = UT_DEFAULT_IMPL(OS_TaskGetInfo);
 
     if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_TaskGetInfo), task_prop, sizeof(*task_prop)) < sizeof(*task_prop))
+        UT_Stub_CopyToLocal(UT_KEY(OS_TaskGetInfo), task_prop, sizeof(*task_prop)) < sizeof(*task_prop))
     {
         UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &task_prop->creator);
         task_prop->stack_size = 100;
-        task_prop->priority = 150;
+        task_prop->priority   = 150;
         strncpy(task_prop->name, "UnitTest", OS_MAX_API_NAME - 1);
         task_prop->name[OS_MAX_API_NAME - 1] = '\0';
     }
@@ -322,7 +313,7 @@ int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t 
     status = UT_DEFAULT_IMPL(OS_TaskFindIdBySystemData);
 
     if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_TaskFindIdBySystemData), task_id, sizeof(*task_id)) < sizeof(*task_id))
+        UT_Stub_CopyToLocal(UT_KEY(OS_TaskFindIdBySystemData), task_id, sizeof(*task_id)) < sizeof(*task_id))
     {
         UT_ObjIdCompose(1, UT_OBJTYPE_TASK, task_id);
     }

@@ -46,8 +46,8 @@
 ** Global variables
 **--------------------------------------------------------------------------------*/
 
-const char* g_task_names[UT_OS_TASK_LIST_LEN];
-char  g_long_task_name[UT_OS_NAME_BUFF_SIZE];
+const char *g_task_names[UT_OS_TASK_LIST_LEN];
+char        g_long_task_name[UT_OS_NAME_BUFF_SIZE];
 
 /*--------------------------------------------------------------------------------*
 ** External function prototypes
@@ -76,7 +76,7 @@ void UT_os_init_task_get_info_test(void);
 void UT_os_init_task_misc()
 {
     memset(g_long_task_name, 'X', sizeof(g_long_task_name));
-    g_long_task_name[sizeof(g_long_task_name)-1] = '\0';
+    g_long_task_name[sizeof(g_long_task_name) - 1] = '\0';
 }
 
 /*--------------------------------------------------------------------------------*/
@@ -229,61 +229,18 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_select_single_test, NULL, NULL, "OS_SelectSingle");
     UtTest_Add(UT_os_select_multi_test, NULL, NULL, "OS_SelectMultiple");
 
-    UtTest_Add(
-            NULL,
-            UT_os_init_task_misc,
-            NULL,
-            "UT_os_init_task_misc");
-    UtTest_Add(
-            UT_os_task_create_test,
-            UT_os_init_task_create_test,
-            NULL,
-            "OS_TaskCreate");
-    UtTest_Add(
-            UT_os_task_delete_test,
-            UT_os_init_task_delete_test,
-            NULL,
-            "OS_TaskDelete");
-    UtTest_Add(
-            UT_os_task_install_delete_handler_test,
-            UT_os_setup_install_delete_handler_test,
-            NULL,
-            "OS_TaskInstallDeleteHandler");
-    UtTest_Add(
-            UT_os_task_exit_test,
-            UT_os_init_task_exit_test,
-            NULL,
-            "OS_TaskExit");
-    UtTest_Add(
-            UT_os_task_delay_test,
-            UT_os_init_task_delay_test,
-            NULL,
-            "OS_TaskDelay");
-    UtTest_Add(
-            UT_os_task_set_priority_test,
-            UT_os_init_task_set_priority_test,
-            NULL,
-            "OS_TaskSetPriority");
-    UtTest_Add(
-            UT_os_task_register_test,
-            UT_os_init_task_register_test,
-            NULL,
-            "OS_TaskRegister");
-    UtTest_Add(
-            UT_os_task_get_id_test,
-            UT_os_init_task_get_id_test,
-            NULL,
-            "OS_TaskGetId");
-    UtTest_Add(
-            UT_os_task_get_id_by_name_test,
-            UT_os_init_task_get_id_by_name_test,
-            NULL,
-            "OS_TaskGetIdByName");
-    UtTest_Add(
-            UT_os_task_get_info_test,
-            UT_os_init_task_get_info_test,
-            NULL,
-            "OS_TaskGetInfo");
+    UtTest_Add(NULL, UT_os_init_task_misc, NULL, "UT_os_init_task_misc");
+    UtTest_Add(UT_os_task_create_test, UT_os_init_task_create_test, NULL, "OS_TaskCreate");
+    UtTest_Add(UT_os_task_delete_test, UT_os_init_task_delete_test, NULL, "OS_TaskDelete");
+    UtTest_Add(UT_os_task_install_delete_handler_test, UT_os_setup_install_delete_handler_test, NULL,
+               "OS_TaskInstallDeleteHandler");
+    UtTest_Add(UT_os_task_exit_test, UT_os_init_task_exit_test, NULL, "OS_TaskExit");
+    UtTest_Add(UT_os_task_delay_test, UT_os_init_task_delay_test, NULL, "OS_TaskDelay");
+    UtTest_Add(UT_os_task_set_priority_test, UT_os_init_task_set_priority_test, NULL, "OS_TaskSetPriority");
+    UtTest_Add(UT_os_task_register_test, UT_os_init_task_register_test, NULL, "OS_TaskRegister");
+    UtTest_Add(UT_os_task_get_id_test, UT_os_init_task_get_id_test, NULL, "OS_TaskGetId");
+    UtTest_Add(UT_os_task_get_id_by_name_test, UT_os_init_task_get_id_by_name_test, NULL, "OS_TaskGetIdByName");
+    UtTest_Add(UT_os_task_get_info_test, UT_os_init_task_get_info_test, NULL, "OS_TaskGetInfo");
 
     UtTest_Add(UT_os_geterrorname_test, NULL, NULL, "OS_GetErrorName");
 

@@ -45,7 +45,6 @@
 #ifndef INCLUDE_OCS_BSP_IMPL_H_
 #define INCLUDE_OCS_BSP_IMPL_H_
 
-
 #include <OCS_basetypes.h>
 
 #define OCS_OS_BSP_CONSOLEMODE_NORMAL    0x2101
@@ -91,6 +90,4 @@ extern void OCS_OS_BSP_ConsoleOutput_Impl(const char *Str, uint32_t DataLen);
  ------------------------------------------------------------------*/
 extern void OCS_OS_BSP_ConsoleSetMode_Impl(uint32_t ModeBits);
 
-
-#endif  /* INCLUDE_OCS_BSP_IMPL_H_ */
-
+#endif /* INCLUDE_OCS_BSP_IMPL_H_ */

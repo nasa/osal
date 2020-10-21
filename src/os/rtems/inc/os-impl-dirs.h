@@ -40,12 +40,9 @@ typedef struct
     DIR *dp;
 } OS_impl_dir_internal_record_t;
 
-
 /*
  * The directory handle table.
  */
 extern OS_impl_dir_internal_record_t OS_impl_dir_table[OS_MAX_NUM_OPEN_DIRS];
 
-
-#endif  /* INCLUDE_OS_IMPL_DIRS_H_ */
-
+#endif /* INCLUDE_OS_IMPL_DIRS_H_ */

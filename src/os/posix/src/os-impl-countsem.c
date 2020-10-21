@@ -37,12 +37,11 @@
  * Added SEM_VALUE_MAX Define
  */
 #ifndef SEM_VALUE_MAX
-#define SEM_VALUE_MAX       (UINT32_MAX/2)
+#define SEM_VALUE_MAX (UINT32_MAX / 2)
 #endif
 
 /* Tables where the OS object information is stored */
-OS_impl_countsem_internal_record_t  OS_impl_count_sem_table     [OS_MAX_COUNT_SEMAPHORES];
-
+OS_impl_countsem_internal_record_t OS_impl_count_sem_table[OS_MAX_COUNT_SEMAPHORES];
 
 /****************************************************************************************
                                COUNTING SEMAPHORE API
@@ -63,10 +62,9 @@ OS_impl_countsem_internal_record_t  OS_impl_count_sem_table     [OS_MAX_COUNT_SE
 ---------------------------------------------------------------------------------------*/
 int32 OS_Posix_CountSemAPI_Impl_Init(void)
 {
-   memset(OS_impl_count_sem_table, 0, sizeof(OS_impl_count_sem_table));
-   return OS_SUCCESS;
+    memset(OS_impl_count_sem_table, 0, sizeof(OS_impl_count_sem_table));
+    return OS_SUCCESS;
 } /* end OS_Posix_CountSemAPI_Impl_Init */
-
 
 /*----------------------------------------------------------------
  *
@@ -76,7 +74,7 @@ int32 OS_Posix_CountSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 options)
+int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options)
 {
     if (sem_initial_value > SEM_VALUE_MAX)
     {
@@ -92,7 +90,6 @@ int32 OS_CountSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 op
 
 } /* end OS_CountSemCreate_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_CountSemDelete_Impl
@@ -101,7 +98,7 @@ int32 OS_CountSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 op
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemDelete_Impl (uint32 sem_id)
+int32 OS_CountSemDelete_Impl(uint32 sem_id)
 {
     if (sem_destroy(&OS_impl_count_sem_table[sem_id].id) < 0)
     {
@@ -112,7 +109,6 @@ int32 OS_CountSemDelete_Impl (uint32 sem_id)
 
 } /* end OS_CountSemDelete_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_CountSemGive_Impl
@@ -121,7 +117,7 @@ int32 OS_CountSemDelete_Impl (uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGive_Impl ( uint32 sem_id )
+int32 OS_CountSemGive_Impl(uint32 sem_id)
 {
     if (sem_post(&OS_impl_count_sem_table[sem_id].id) < 0)
     {
@@ -132,7 +128,6 @@ int32 OS_CountSemGive_Impl ( uint32 sem_id )
 
 } /* end OS_CountSemGive_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_CountSemTake_Impl
@@ -141,7 +136,7 @@ int32 OS_CountSemGive_Impl ( uint32 sem_id )
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTake_Impl ( uint32 sem_id )
+int32 OS_CountSemTake_Impl(uint32 sem_id)
 {
     if (sem_wait(&OS_impl_count_sem_table[sem_id].id) < 0)
     {
@@ -151,7 +146,6 @@ int32 OS_CountSemTake_Impl ( uint32 sem_id )
     return OS_SUCCESS;
 } /* end OS_CountSemTake_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_CountSemTimedWait_Impl
@@ -160,33 +154,32 @@ int32 OS_CountSemTake_Impl ( uint32 sem_id )
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTimedWait_Impl ( uint32 sem_id, uint32 msecs )
+int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
 {
-   struct timespec ts;
-   int result;
+    struct timespec ts;
+    int             result;
 
-   /*
-    ** Compute an absolute time for the delay
-    */
-   OS_Posix_CompAbsDelayTime(msecs, &ts);
+    /*
+     ** Compute an absolute time for the delay
+     */
+    OS_Posix_CompAbsDelayTime(msecs, &ts);
 
-   if (sem_timedwait(&OS_impl_count_sem_table[sem_id].id, &ts) == 0)
-   {
-       result = OS_SUCCESS;
-   }
-   else if (errno == ETIMEDOUT)
-   {
-       result = OS_SEM_TIMEOUT;
-   }
-   else
-   {
-       /* unspecified failure */
-       result = OS_SEM_FAILURE;
-   }
+    if (sem_timedwait(&OS_impl_count_sem_table[sem_id].id, &ts) == 0)
+    {
+        result = OS_SUCCESS;
+    }
+    else if (errno == ETIMEDOUT)
+    {
+        result = OS_SEM_TIMEOUT;
+    }
+    else
+    {
+        /* unspecified failure */
+        result = OS_SEM_FAILURE;
+    }
 
-   return result;
+    return result;
 } /* end OS_CountSemTimedWait_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -196,7 +189,7 @@ int32 OS_CountSemTimedWait_Impl ( uint32 sem_id, uint32 msecs )
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGetInfo_Impl (uint32 sem_id, OS_count_sem_prop_t *count_prop)
+int32 OS_CountSemGetInfo_Impl(uint32 sem_id, OS_count_sem_prop_t *count_prop)
 {
     int sval;
 
@@ -206,7 +199,6 @@ int32 OS_CountSemGetInfo_Impl (uint32 sem_id, OS_count_sem_prop_t *count_prop)
     }
 
     /* put the info into the stucture */
-    count_prop -> value = sval;
+    count_prop->value = sval;
     return OS_SUCCESS;
 } /* end OS_CountSemGetInfo_Impl */
-

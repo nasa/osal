@@ -33,16 +33,14 @@
 /* other objects that have only an API name and no other data */
 typedef struct
 {
-   char      obj_name[OS_MAX_API_NAME];
+    char obj_name[OS_MAX_API_NAME];
 } OS_bin_sem_internal_record_t;
-
-
 
 /*
  * These record types have extra information with each entry.  These tables are used
  * to share extra data between the common layer and the OS-specific implementation.
  */
-extern OS_bin_sem_internal_record_t        OS_bin_sem_table[OS_MAX_BIN_SEMAPHORES];
+extern OS_bin_sem_internal_record_t OS_bin_sem_table[OS_MAX_BIN_SEMAPHORES];
 
 /****************************************************************************************
                  SEMAPHORE API LOW-LEVEL IMPLEMENTATION FUNCTIONS
@@ -55,8 +53,7 @@ extern OS_bin_sem_internal_record_t        OS_bin_sem_table[OS_MAX_BIN_SEMAPHORE
 
    returns: OS_SUCCESS on success, or relevant error code
 ---------------------------------------------------------------------------------------*/
-int32 OS_BinSemAPI_Init              (void);
-
+int32 OS_BinSemAPI_Init(void);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemCreate_Impl
@@ -65,7 +62,7 @@ int32 OS_BinSemAPI_Init              (void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemCreate_Impl          (uint32 sem_id, uint32 sem_initial_value, uint32 options);
+int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemFlush_Impl
@@ -75,7 +72,7 @@ int32 OS_BinSemCreate_Impl          (uint32 sem_id, uint32 sem_initial_value, ui
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemFlush_Impl           (uint32 sem_id);
+int32 OS_BinSemFlush_Impl(uint32 sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemGive_Impl
@@ -84,7 +81,7 @@ int32 OS_BinSemFlush_Impl           (uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemGive_Impl            (uint32 sem_id);
+int32 OS_BinSemGive_Impl(uint32 sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemTake_Impl
@@ -94,7 +91,7 @@ int32 OS_BinSemGive_Impl            (uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemTake_Impl            (uint32 sem_id);
+int32 OS_BinSemTake_Impl(uint32 sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemTimedWait_Impl
@@ -104,7 +101,7 @@ int32 OS_BinSemTake_Impl            (uint32 sem_id);
     Returns: OS_SUCCESS on success, or relevant error code
              OS_SEM_TIMEOUT must be returned if the time limit was reached
  ------------------------------------------------------------------*/
-int32 OS_BinSemTimedWait_Impl       (uint32 sem_id, uint32 msecs);
+int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemDelete_Impl
@@ -113,7 +110,7 @@ int32 OS_BinSemTimedWait_Impl       (uint32 sem_id, uint32 msecs);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemDelete_Impl          (uint32 sem_id);
+int32 OS_BinSemDelete_Impl(uint32 sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemGetInfo_Impl
@@ -122,8 +119,6 @@ int32 OS_BinSemDelete_Impl          (uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemGetInfo_Impl         (uint32 sem_id, OS_bin_sem_prop_t *bin_prop);
+int32 OS_BinSemGetInfo_Impl(uint32 sem_id, OS_bin_sem_prop_t *bin_prop);
 
-
-#endif  /* INCLUDE_OS_SHARED_BINSEM_H_ */
-
+#endif /* INCLUDE_OS_SHARED_BINSEM_H_ */

@@ -50,7 +50,8 @@
 #include "common_types.h"
 
 #ifdef __cplusplus
-   extern "C" {
+extern "C"
+{
 #endif
 
 /** @defgroup OSReturnCodes OSAL Return Code Defines
@@ -88,14 +89,15 @@
 #define OS_ERR_INCORRECT_OBJ_STATE     (-35) /**< @brief Incorrect object state */
 #define OS_ERR_INCORRECT_OBJ_TYPE      (-36) /**< @brief Incorrect object type */
 #define OS_ERR_STREAM_DISCONNECTED     (-37) /**< @brief Stream disconnected */
-#define OS_ERR_OPERATION_NOT_SUPPORTED (-38) /**< @brief Requested operation is not support on the supplied object(s) */
+#define OS_ERR_OPERATION_NOT_SUPPORTED (-38) /**< @brief Requested operation is not support on the supplied object(s) \
+                                              */
 /**@}*/
 
 /*
 ** Defines for Queue Timeout parameters
 */
-#define OS_PEND   (-1)
-#define OS_CHECK  (0)
+#define OS_PEND  (-1)
+#define OS_CHECK (0)
 
 #include "osapi-version.h"
 
@@ -113,16 +115,15 @@
 #include "osapi-os-loader.h"
 #include "osapi-os-timer.h"
 
-/*
- ******************************************************************************
- * Items below here are internal OSAL-use definitions and are not part of the
- * OSAL API
- *****************************************************************************
- */
+    /*
+     ******************************************************************************
+     * Items below here are internal OSAL-use definitions and are not part of the
+     * OSAL API
+     *****************************************************************************
+     */
 
 #ifdef __cplusplus
-   }
+}
 #endif
 
 #endif
-

@@ -39,7 +39,7 @@ void Test_OS_ConsoleAPI_Init(void)
      * int32 OS_ConsoleAPI_Init(void)
      */
     uint32 CallCount = 0;
-    uint32 local_id = 0;
+    uint32 local_id  = 0;
 
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdAllocateNew), &local_id, sizeof(local_id), false);
 
@@ -49,7 +49,6 @@ void Test_OS_ConsoleAPI_Init(void)
     CallCount = UT_GetStubCount(UT_KEY(OS_ConsoleCreate_Impl));
     UtAssert_True(CallCount == 1, "OS_ConsoleCreate_Impl() call count (%lu) == 1", (unsigned long)CallCount);
 }
-
 
 void Test_OS_printf(void)
 {
@@ -63,29 +62,32 @@ void Test_OS_printf(void)
 
     /* catch case where OS_printf called before init */
     OS_SharedGlobalVars.PrintfConsoleId = OS_OBJECT_ID_UNDEFINED;
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.Initialized     = false;
     OS_printf("UnitTest1");
-    UtAssert_True(OS_console_table[0].WritePos == 0, "WritePos (%lu) >= 0", (unsigned long)OS_console_table[0].WritePos);
+    UtAssert_True(OS_console_table[0].WritePos == 0, "WritePos (%lu) >= 0",
+                  (unsigned long)OS_console_table[0].WritePos);
 
     /* because printf is disabled, the call count should _not_ increase here */
     OS_SharedGlobalVars.Initialized = true;
     OS_printf_disable();
     OS_printf("UnitTest2");
-    UtAssert_True(OS_console_table[0].WritePos == 0, "WritePos (%lu) >= 0", (unsigned long)OS_console_table[0].WritePos);
+    UtAssert_True(OS_console_table[0].WritePos == 0, "WritePos (%lu) >= 0",
+                  (unsigned long)OS_console_table[0].WritePos);
 
     /* normal case */
     OS_printf_enable();
     OS_printf("UnitTest3");
     CallCount = UT_GetStubCount(UT_KEY(OS_ConsoleWakeup_Impl));
     UtAssert_True(CallCount == 1, "OS_ConsoleWakeup_Impl() call count (%lu) == 1", (unsigned long)CallCount);
-    UtAssert_True(OS_console_table[0].WritePos >= 9, "WritePos (%lu) >= 9", (unsigned long)OS_console_table[0].WritePos);
+    UtAssert_True(OS_console_table[0].WritePos >= 9, "WritePos (%lu) >= 9",
+                  (unsigned long)OS_console_table[0].WritePos);
 
     /* print a long string that does not fit in the 16-char buffer */
     OS_printf_enable();
     OS_printf("UnitTest4BufferLengthExceeded");
 
     /* test writing with a non-empty console name */
-    strncpy(OS_console_table[0].device_name,"ut",sizeof(OS_console_table[0].device_name)-1);
+    strncpy(OS_console_table[0].device_name, "ut", sizeof(OS_console_table[0].device_name) - 1);
     OS_printf("UnitTest5");
 
     /*
@@ -94,7 +96,7 @@ void Test_OS_printf(void)
     UT_SetForceFail(UT_KEY(OCS_vsnprintf), -1);
     OS_printf("UnitTest6");
 
-    UT_SetForceFail(UT_KEY(OCS_vsnprintf), OS_BUFFER_SIZE+10);
+    UT_SetForceFail(UT_KEY(OCS_vsnprintf), OS_BUFFER_SIZE + 10);
     OS_printf("UnitTest7");
 }
 
@@ -118,10 +120,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /*
  * Register the test cases to execute with the unit test tool
@@ -131,7 +130,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_ConsoleAPI_Init);
     ADD_TEST(OS_printf);
 }
-
-
-
-

@@ -41,22 +41,21 @@ static uint32 UT_TimerSync(uint32 timer_id)
     return 1;
 }
 
-
 /* *************************************** MAIN ************************************** */
 
 void TestTimeBaseApi(void)
 {
-    int32 expected;
-    int32 actual; 
-    int32 TimeBaseNum;
-    int32 tbc_results[OS_MAX_TIMEBASES];
-    uint32 freerun;
-    osal_id_t objid;
-    osal_id_t time_base_id;
-    osal_id_t time_base_id2;
-    osal_id_t tb_id[OS_MAX_TIMEBASES];
-    char overMaxTimeBase[12];
-    char TimeBaseIter[OS_MAX_TIMEBASES][12];
+    int32              expected;
+    int32              actual;
+    int32              TimeBaseNum;
+    int32              tbc_results[OS_MAX_TIMEBASES];
+    uint32             freerun;
+    osal_id_t          objid;
+    osal_id_t          time_base_id;
+    osal_id_t          time_base_id2;
+    osal_id_t          tb_id[OS_MAX_TIMEBASES];
+    char               overMaxTimeBase[12];
+    char               TimeBaseIter[OS_MAX_TIMEBASES][12];
     OS_timebase_prop_t timebase_prop;
 
     /*
@@ -67,7 +66,7 @@ void TestTimeBaseApi(void)
     /* Test for nominal inputs */
     expected = OS_SUCCESS;
 
-    actual= OS_TimeBaseCreate(&time_base_id, "TimeBaseA", 0);
+    actual = OS_TimeBaseCreate(&time_base_id, "TimeBaseA", 0);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)actual);
 
     actual = OS_TimeBaseCreate(&time_base_id2, "TimeBaseB", NULL);
@@ -77,13 +76,12 @@ void TestTimeBaseApi(void)
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Test for nominal, max/min cases */
-    objid = OS_OBJECT_ID_UNDEFINED;
+    objid  = OS_OBJECT_ID_UNDEFINED;
     actual = OS_TimeBaseCreate(&objid, "TimeBaseD", 0);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)actual);
 
-
     /* Checking for OS_MAX_TIMEBASES */
-    for ( int i = 0; i < OS_MAX_TIMEBASES; i++ )
+    for (int i = 0; i < OS_MAX_TIMEBASES; i++)
     {
         snprintf(TimeBaseIter[i], 12, "TimeBase%d", i);
         tbc_results[i] = OS_TimeBaseCreate(&tb_id[i], TimeBaseIter[i], 0);
@@ -92,37 +90,34 @@ void TestTimeBaseApi(void)
         OS_TimeBaseDelete(tb_id[i]);
     }
 
-
     /* Test for invalid inputs */
     expected = OS_INVALID_POINTER;
-    actual = OS_TimeBaseCreate(NULL, NULL, NULL);
+    actual   = OS_TimeBaseCreate(NULL, NULL, NULL);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_TimeBaseCreate(NULL, "TimeBase6", 0);
+    actual   = OS_TimeBaseCreate(NULL, "TimeBase6", 0);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_TimeBaseCreate(&time_base_id, NULL, 0);
+    actual   = OS_TimeBaseCreate(&time_base_id, NULL, 0);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_ERR_NAME_TAKEN;
-    actual= OS_TimeBaseCreate(&time_base_id, "TimeBaseA", 0);
+    actual   = OS_TimeBaseCreate(&time_base_id, "TimeBaseA", 0);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_ERR_NAME_TAKEN", (long)actual);
 
     /* Checking OS_MAX_TIMEBASES + 1 */
-    for ( int i = 0; i < OS_MAX_TIMEBASES; i++ )
+    for (int i = 0; i < OS_MAX_TIMEBASES; i++)
     {
         snprintf(TimeBaseIter[i], sizeof(TimeBaseIter[i]), "TimeBase%d", i);
         tbc_results[i] = OS_TimeBaseCreate(&tb_id[i], TimeBaseIter[i], 0);
     }
-    TimeBaseNum = OS_MAX_TIMEBASES+1;
+    TimeBaseNum = OS_MAX_TIMEBASES + 1;
     snprintf(overMaxTimeBase, sizeof(overMaxTimeBase), "TimeBase%d", (int)TimeBaseNum);
     expected = OS_ERR_NO_FREE_IDS;
-    actual= OS_TimeBaseCreate(&time_base_id, "overMaxTimeBase", 0);
+    actual   = OS_TimeBaseCreate(&time_base_id, "overMaxTimeBase", 0);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_ERR_NO_FREE_IDS", (long)actual);
-
-
 
     /*
      * Test Case For:
@@ -131,35 +126,34 @@ void TestTimeBaseApi(void)
 
     /* Test for nominal inputs */
     expected = OS_SUCCESS;
-    actual = OS_TimeBaseSet(time_base_id, 1000, 1000);
+    actual   = OS_TimeBaseSet(time_base_id, 1000, 1000);
     UtAssert_True(actual == expected, "OS_TimeBaseSet() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_SUCCESS;
-    actual = OS_TimeBaseSet(time_base_id, 0, 0);
+    actual   = OS_TimeBaseSet(time_base_id, 0, 0);
     UtAssert_True(actual == expected, "OS_TimeBaseSet() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Test for invalid inputs */
     /* overflow on input */
     expected = OS_TIMER_ERR_INVALID_ARGS;
-    actual = OS_TimeBaseSet(time_base_id, UINT32_MAX, UINT32_MAX);
+    actual   = OS_TimeBaseSet(time_base_id, UINT32_MAX, UINT32_MAX);
     UtAssert_True(actual == expected, "OS_TimeBaseSet() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
 
     expected = OS_TIMER_ERR_INVALID_ARGS;
-    actual = OS_TimeBaseSet(time_base_id, -1000, -1000);
+    actual   = OS_TimeBaseSet(time_base_id, -1000, -1000);
     UtAssert_True(actual == expected, "OS_TimeBaseSet() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
 
     expected = OS_TIMER_ERR_INVALID_ARGS;
-    actual = OS_TimeBaseSet(time_base_id, 1000, -1000);
+    actual   = OS_TimeBaseSet(time_base_id, 1000, -1000);
     UtAssert_True(actual == expected, "OS_TimeBaseSet() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
 
     expected = OS_TIMER_ERR_INVALID_ARGS;
-    actual = OS_TimeBaseSet(time_base_id, -1000, 1000);
+    actual   = OS_TimeBaseSet(time_base_id, -1000, 1000);
     UtAssert_True(actual == expected, "OS_TimeBaseSet() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
 
     expected = OS_ERR_INVALID_ID;
-    actual = OS_TimeBaseSet(OS_OBJECT_ID_UNDEFINED, 1000, 1000);
+    actual   = OS_TimeBaseSet(OS_OBJECT_ID_UNDEFINED, 1000, 1000);
     UtAssert_True(actual == expected, "OS_TimeBaseSet() (%ld) == OS_ERR_INVALID_ID", (long)actual);
-
 
     /*
      * Test Case For:
@@ -168,12 +162,12 @@ void TestTimeBaseApi(void)
 
     /* Test for nominal inputs */
     expected = OS_SUCCESS;
-    actual = OS_TimeBaseDelete(time_base_id);
+    actual   = OS_TimeBaseDelete(time_base_id);
     UtAssert_True(actual == expected, "OS_TimeBaseDelete() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Test for invalid inputs */
     expected = OS_ERR_INVALID_ID;
-    actual = OS_TimeBaseDelete(OS_OBJECT_ID_UNDEFINED);
+    actual   = OS_TimeBaseDelete(OS_OBJECT_ID_UNDEFINED);
     UtAssert_True(actual == expected, "OS_TimeBaseDelete() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
     /*
@@ -184,25 +178,23 @@ void TestTimeBaseApi(void)
     /* Test for nominal inputs */
     /* Note: TimeBase2 was created above using TimeBaseCreate and id was set to time_base_id2 */
     expected = OS_SUCCESS;
-    objid = OS_OBJECT_ID_UNDEFINED;
-    actual = OS_TimeBaseGetIdByName(&objid, "TimeBaseB");
+    objid    = OS_OBJECT_ID_UNDEFINED;
+    actual   = OS_TimeBaseGetIdByName(&objid, "TimeBaseB");
     UtAssert_True(actual == expected, "OS_TimeBaseGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     UtAssert_True(OS_ObjectIdEqual(objid, time_base_id2), "OS_TimeBaseGetIdByName() objid (%lu) Matches!",
-            OS_ObjectIdToInteger(objid));
-
+                  OS_ObjectIdToInteger(objid));
 
     /* Test for invalid inputs */
     expected = OS_ERR_NAME_NOT_FOUND;
-    objid = OS_OBJECT_ID_UNDEFINED;
-    actual = OS_TimeBaseGetIdByName(&objid, "NF");
-    UtAssert_True(actual == expected, "OS_TimeBaseGetIdByName() (%ld) == OS_ERR_NAME_NOT_FOUND",(long)actual);
+    objid    = OS_OBJECT_ID_UNDEFINED;
+    actual   = OS_TimeBaseGetIdByName(&objid, "NF");
+    UtAssert_True(actual == expected, "OS_TimeBaseGetIdByName() (%ld) == OS_ERR_NAME_NOT_FOUND", (long)actual);
     UtAssert_True(!OS_ObjectIdDefined(objid), "OS_TimeBaseGetIdByName() objid (%lu) still OS_OBJECT_ID_UNDEFINED",
-            OS_ObjectIdToInteger(objid));
+                  OS_ObjectIdToInteger(objid));
 
     expected = OS_INVALID_POINTER;
-    actual = OS_TimeBaseGetIdByName(NULL, NULL);
+    actual   = OS_TimeBaseGetIdByName(NULL, NULL);
     UtAssert_True(actual == expected, "OS_TimeBaseGetIdByName() (%ld) == OS_INVALID_POINTER", (long)actual);
-
 
     /*
      * Test Case For:
@@ -221,26 +213,23 @@ void TestTimeBaseApi(void)
     UtAssert_True(actual == expected, "OS_TimeBaseGetInfo() (%ld) == OS_SUCCESS", (long)actual);
 
     UtAssert_True(!OS_ObjectIdDefined(timebase_prop.creator), "timebase_prop.creator (%lu) undefined",
-            OS_ObjectIdToInteger(timebase_prop.creator));
+                  OS_ObjectIdToInteger(timebase_prop.creator));
     UtAssert_True(strcmp(timebase_prop.name, "TimeBaseB") == 0, "timebase_prop.name (%s) == TimeBase2",
-            timebase_prop.name);
-    UtAssert_True(timebase_prop.nominal_interval_time == 0,
-            "timebase_prop.nominal_interval_time (%lu) == 0",
-            (unsigned long)timebase_prop.nominal_interval_time);
-    UtAssert_True(timebase_prop.freerun_time == 0,
-            "timebase_prop.freerun_time (%lu) == 0",
-            (unsigned long)timebase_prop.freerun_time);
-    UtAssert_True(timebase_prop.accuracy >= 0,
-            "timebase_prop.accuracy (%lu) >= 0",
-            (unsigned long)timebase_prop.accuracy);
+                  timebase_prop.name);
+    UtAssert_True(timebase_prop.nominal_interval_time == 0, "timebase_prop.nominal_interval_time (%lu) == 0",
+                  (unsigned long)timebase_prop.nominal_interval_time);
+    UtAssert_True(timebase_prop.freerun_time == 0, "timebase_prop.freerun_time (%lu) == 0",
+                  (unsigned long)timebase_prop.freerun_time);
+    UtAssert_True(timebase_prop.accuracy >= 0, "timebase_prop.accuracy (%lu) >= 0",
+                  (unsigned long)timebase_prop.accuracy);
 
     /* Test for invalid inputs */
     expected = OS_ERR_INVALID_ID;
-    actual = OS_TimeBaseGetInfo(OS_OBJECT_ID_UNDEFINED, &timebase_prop);
+    actual   = OS_TimeBaseGetInfo(OS_OBJECT_ID_UNDEFINED, &timebase_prop);
     UtAssert_True(actual == expected, "OS_TimeBaseGetInfo() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_TimeBaseGetInfo(time_base_id2, NULL);
+    actual   = OS_TimeBaseGetInfo(time_base_id2, NULL);
     UtAssert_True(actual == expected, "OS_TimeBaseGetInfo() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     /*
@@ -253,24 +242,20 @@ void TestTimeBaseApi(void)
     expected = OS_SUCCESS;
 
     freerun = 0xFFFFFFFF;
-    actual = OS_TimeBaseGetFreeRun(time_base_id2, &freerun);
+    actual  = OS_TimeBaseGetFreeRun(time_base_id2, &freerun);
     UtAssert_True(actual == expected, "OS_TimeBaseGetFreeRun() (%ld) == OS_SUCCESS", (long)actual);
 
     freerun = 0x0000000;
-    actual = OS_TimeBaseGetFreeRun(time_base_id2, &freerun);
+    actual  = OS_TimeBaseGetFreeRun(time_base_id2, &freerun);
     UtAssert_True(actual == expected, "OS_TimeBaseGetFreeRun() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Test for invalid inputs */
     expected = OS_ERR_INVALID_ID;
-    freerun = 0xFFFFFFFF;
-    actual = OS_TimeBaseGetFreeRun(OS_OBJECT_ID_UNDEFINED, &freerun);
+    freerun  = 0xFFFFFFFF;
+    actual   = OS_TimeBaseGetFreeRun(OS_OBJECT_ID_UNDEFINED, &freerun);
     UtAssert_True(actual == expected, "OS_TimeBaseGetFreeRun() (%ld) == OS_SUCCESS", (long)actual);
 
-
-
-
 } /* end TestTimeBaseApi */
-
 
 void UtTest_Setup(void)
 {
@@ -284,4 +269,3 @@ void UtTest_Setup(void)
      */
     UtTest_Add(TestTimeBaseApi, NULL, NULL, "TestTimeBaseApi");
 }
-

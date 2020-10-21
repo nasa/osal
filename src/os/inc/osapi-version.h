@@ -18,19 +18,19 @@
  *  limitations under the License.
  */
 
- /*! @file osapi-version.h
-  * @brief Purpose:
-  *  @details Provide version identifiers for cFS' Operating System Abstraction Layer
-  *  See @ref cfsversions for version and build number and description
-  *
-  */
+/*! @file osapi-version.h
+ * @brief Purpose:
+ *  @details Provide version identifiers for cFS' Operating System Abstraction Layer
+ *  See @ref cfsversions for version and build number and description
+ *
+ */
 #ifndef _osapi_version_h_
 #define _osapi_version_h_
 
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER 55 
+#define OS_BUILD_NUMBER   60
 #define OS_BUILD_BASELINE "v5.1.0-rc1"
 
 /*
@@ -38,25 +38,27 @@
  */
 #define OS_MAJOR_VERSION 5 /*!< @brief ONLY APPLY for OFFICIAL releases. Major version number. */
 #define OS_MINOR_VERSION 0 /*!< @brief ONLY APPLY for OFFICIAL releases. Minor version number. */
-#define OS_REVISION      99/*!< @brief ONLY APPLY for OFFICIAL releases. Revision version number. If set to "99" it indicates a development version.  */
-#define OS_MISSION_REV   0 /*!< @brief ONLY USED by MISSION Implementations. Mission revision */
+#define OS_REVISION                                                                                         \
+    99 /*!< @brief ONLY APPLY for OFFICIAL releases. Revision version number. If set to "99" it indicates a \
+          development version.  */
+#define OS_MISSION_REV 0 /*!< @brief ONLY USED by MISSION Implementations. Mission revision */
 
 /*
  * Tools to construct version string
  */
-#define OS_STR_HELPER(x) #x /*!< @brief Helper function to concatenate strings from integer */
+#define OS_STR_HELPER(x) #x               /*!< @brief Helper function to concatenate strings from integer */
 #define OS_STR(x)        OS_STR_HELPER(x) /*!< @brief Helper function to concatenate strings from integer */
 
 /*! @brief Development Build Version Number.
  * @details Baseline git tag + Number of commits since baseline. @n
  * See @ref cfsversions for format differences between development and release versions.
  */
-#define OS_VERSION OS_BUILD_BASELINE "+dev" OS_STR(OS_BUILD_NUMBER) 
+#define OS_VERSION OS_BUILD_BASELINE "+dev" OS_STR(OS_BUILD_NUMBER)
 
 /*! @brief Development Build Version String.
- * @details Reports the current development build's baseline, number, and name. Also includes a note about the latest official version. @n
- * See @ref cfsversions for format differences between development and release versions.
-*/
+ * @details Reports the current development build's baseline, number, and name. Also includes a note about the latest
+ * official version. @n See @ref cfsversions for format differences between development and release versions.
+ */
 #define OS_VERSION_STRING                                                          \
     " OSAL Development Build\n"                                                    \
     " " OS_VERSION " (Codename: Bootes)\n"  /* Codename for current development */ \

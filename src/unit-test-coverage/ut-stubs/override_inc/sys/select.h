@@ -42,13 +42,12 @@
 /* mappings for declarations in sys/select.h */
 /* ----------------------------------------- */
 
-#define fd_set  OCS_fd_set
-#define select  OCS_select
+#define fd_set OCS_fd_set
+#define select OCS_select
 
-#define FD_SET      OCS_FD_SET
-#define FD_ISSET    OCS_FD_ISSET
-#define FD_CLR      OCS_FD_CLR
-#define FD_ZERO     OCS_FD_ZERO
+#define FD_SET   OCS_FD_SET
+#define FD_ISSET OCS_FD_ISSET
+#define FD_CLR   OCS_FD_CLR
+#define FD_ZERO  OCS_FD_ZERO
 
-#endif  /* INCLUDE_SELECT_H_ */
-
+#endif /* INCLUDE_SELECT_H_ */

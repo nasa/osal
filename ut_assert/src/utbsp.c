@@ -211,8 +211,7 @@ void UT_BSP_EndTest(const UtAssert_TestCounter_t *TestCounters)
     OS_BSP_ConsoleOutput_Impl(Message, strlen(Message));
 
     if ((TestCounters->CaseCount[UTASSERT_CASETYPE_FAILURE] > 0) ||
-        (TestCounters->CaseCount[UTASSERT_CASETYPE_TSF] > 0) ||
-        (TestCounters->CaseCount[UTASSERT_CASETYPE_TTF] > 0))
+        (TestCounters->CaseCount[UTASSERT_CASETYPE_TSF] > 0) || (TestCounters->CaseCount[UTASSERT_CASETYPE_TTF] > 0))
     {
         OS_BSP_SetExitCode(OS_ERROR);
     }
@@ -253,6 +252,3 @@ void OS_Application_Startup(void)
     UtTest_Setup();
     UtAssert_EndTest();
 }
-
-
-

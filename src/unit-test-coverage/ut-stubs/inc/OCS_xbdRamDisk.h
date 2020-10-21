@@ -37,7 +37,4 @@
 /* prototypes normally declared in xbdRamDisk.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_XBDRAMDISK_H_ */
-

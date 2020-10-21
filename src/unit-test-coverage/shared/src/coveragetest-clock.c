@@ -34,15 +34,14 @@ void Test_OS_GetLocalTime(void)
      * int32 OS_GetLocalTime(OS_time_t *time_struct)
      */
     OS_time_t time_struct;
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_GetLocalTime(&time_struct);
+    int32     expected = OS_SUCCESS;
+    int32     actual   = OS_GetLocalTime(&time_struct);
 
     UtAssert_True(actual == expected, "OS_GetLocalTime() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
     actual   = OS_GetLocalTime(NULL);
     UtAssert_True(actual == expected, "OS_GetLocalTime() (%ld) == OS_INVALID_POINTER", (long)actual);
-
 }
 
 void Test_OS_SetLocalTime(void)
@@ -52,8 +51,8 @@ void Test_OS_SetLocalTime(void)
      * int32 OS_SetLocalTime(OS_time_t *time_struct)
      */
     OS_time_t time_struct;
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_SetLocalTime(&time_struct);
+    int32     expected = OS_SUCCESS;
+    int32     actual   = OS_SetLocalTime(&time_struct);
 
     UtAssert_True(actual == expected, "OS_SetLocalTime() (%ld) == OS_SUCCESS", (long)actual);
 
@@ -78,10 +77,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /*
  * Register the test cases to execute with the unit test tool
@@ -91,7 +87,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_GetLocalTime);
     ADD_TEST(OS_SetLocalTime);
 }
-
-
-
-

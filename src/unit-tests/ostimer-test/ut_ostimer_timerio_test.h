@@ -37,7 +37,7 @@
 ** Macros
 **--------------------------------------------------------------------------------*/
 
-#define UT_OS_TIMER_LIST_LEN  (OS_MAX_TIMERS + 10)
+#define UT_OS_TIMER_LIST_LEN (OS_MAX_TIMERS + 10)
 
 /*--------------------------------------------------------------------------------*
 ** Data types
@@ -64,7 +64,7 @@ void UT_os_timergetinfo_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* _UT_OSTIMER_TIMERIO_TEST_H_ */
+#endif /* _UT_OSTIMER_TIMERIO_TEST_H_ */
 
 /*================================================================================*
 ** End of File: ut_ostimer_timerio_test.h

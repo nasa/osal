@@ -34,7 +34,7 @@
 
 #include "utstub-helpers.h"
 
-int32 OS_GetErrorName(int32 error_num, os_err_name_t* err_name)
+int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_GetErrorName), error_num);
     UT_Stub_RegisterContext(UT_KEY(OS_GetErrorName), err_name);
@@ -43,10 +43,9 @@ int32 OS_GetErrorName(int32 error_num, os_err_name_t* err_name)
 
     status = UT_DEFAULT_IMPL(OS_GetErrorName);
 
-    if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_GetErrorName), *err_name, sizeof(*err_name)) == 0)
+    if (status == OS_SUCCESS && UT_Stub_CopyToLocal(UT_KEY(OS_GetErrorName), *err_name, sizeof(*err_name)) == 0)
     {
-        snprintf(*err_name,sizeof(*err_name),"ut%d",(int)error_num);
+        snprintf(*err_name, sizeof(*err_name), "ut%d", (int)error_num);
     }
 
     return status;

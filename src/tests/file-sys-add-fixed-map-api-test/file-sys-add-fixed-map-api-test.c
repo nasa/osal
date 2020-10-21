@@ -18,7 +18,6 @@
  *  limitations under the License.
  */
 
-
 /*
  * Filename: file-sys-add-fixed-map-api-test.c
  *
@@ -35,15 +34,14 @@
 #include "uttest.h"
 #include "utbsp.h"
 
-
 /* *************************************** MAIN ************************************** */
 
 void TestFileSysAddFixedMapApi(void)
 {
-    int32 expected;
-    int32 actual;
+    int32     expected;
+    int32     actual;
     osal_id_t fs_id;
-    char translated_path[OS_MAX_LOCAL_PATH_LEN];
+    char      translated_path[OS_MAX_LOCAL_PATH_LEN];
 
     /* Test for nominal inputs */
 
@@ -53,45 +51,43 @@ void TestFileSysAddFixedMapApi(void)
      */
 
     expected = OS_FS_ERR_PATH_INVALID;
-    actual = OS_TranslatePath("/test/myfile.txt", translated_path);
+    actual   = OS_TranslatePath("/test/myfile.txt", translated_path);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_SUCCESS;
-    actual = OS_FileSysAddFixedMap(&fs_id, "./test", "/test");
+    actual   = OS_FileSysAddFixedMap(&fs_id, "./test", "/test");
     UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_SUCCESS;
-    actual = OS_TranslatePath("/test/myfile.txt", translated_path);
+    actual   = OS_TranslatePath("/test/myfile.txt", translated_path);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Test for invalid inputs */
     expected = OS_ERR_NAME_TAKEN;
-    actual = OS_FileSysAddFixedMap(NULL, "./test", "/test");
+    actual   = OS_FileSysAddFixedMap(NULL, "./test", "/test");
     UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_FileSysAddFixedMap(&fs_id, NULL, "/test");
+    actual   = OS_FileSysAddFixedMap(&fs_id, NULL, "/test");
     UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_FileSysAddFixedMap(&fs_id, "./test", NULL);
+    actual   = OS_FileSysAddFixedMap(&fs_id, "./test", NULL);
     UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_FileSysAddFixedMap(NULL, NULL, NULL);
+    actual   = OS_FileSysAddFixedMap(NULL, NULL, NULL);
     UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_FileSysAddFixedMap(&fs_id, NULL, NULL);
+    actual   = OS_FileSysAddFixedMap(&fs_id, NULL, NULL);
     UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_FileSysAddFixedMap(NULL, "./test", NULL);
+    actual   = OS_FileSysAddFixedMap(NULL, "./test", NULL);
     UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
-
 
 } /* end TestFileSysAddFixedMapApi */
-
 
 void UtTest_Setup(void)
 {
@@ -105,4 +101,3 @@ void UtTest_Setup(void)
      */
     UtTest_Add(TestFileSysAddFixedMapApi, NULL, NULL, "TestFileSysAddFixedMapApi");
 }
-

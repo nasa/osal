@@ -36,7 +36,4 @@
 /* prototypes normally declared in poll.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_POLL_H_ */
-

@@ -32,7 +32,7 @@
 
 #include <OCS_hostLib.h>
 
-int   OCS_hostGetByName (char *name)
+int OCS_hostGetByName(char *name)
 {
     return (UT_DEFAULT_IMPL(OCS_hostGetByName));
 }

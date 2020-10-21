@@ -34,4 +34,3 @@
 #include "ut-adaptor-common.h"
 
 const UT_EntryKey_t UT_StubKey_OS_VxWorks_TableMutex_Init = UT_KEY(OS_VxWorks_TableMutex_Init);
-

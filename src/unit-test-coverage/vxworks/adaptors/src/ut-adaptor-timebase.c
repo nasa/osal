@@ -32,15 +32,13 @@
 #include <os-vxworks.h>
 #include <os-impl-timebase.h>
 
-
-void*  const UT_Ref_OS_impl_timebase_table = OS_impl_timebase_table;
+void *const  UT_Ref_OS_impl_timebase_table      = OS_impl_timebase_table;
 size_t const UT_Ref_OS_impl_timebase_table_SIZE = sizeof(OS_impl_timebase_table);
 
 int32 UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(void)
 {
     return OS_VxWorks_TimeBaseAPI_Impl_Init();
 }
-
 
 int32 UT_TimeBaseTest_CallSigWaitFunc(uint32 local_id)
 {
@@ -95,11 +93,10 @@ void UT_TimeBaseTest_UsecToTimespec(uint32 usecs, struct OCS_timespec *time_spec
 void UT_TimeBaseTest_Setup(uint32 local_id, int signo, bool reset_flag)
 {
     static OCS_WIND_TCB FAKE_TASK;
-    static OCS_SEM FAKE_SEM;
+    static OCS_SEM      FAKE_SEM;
 
     OS_impl_timebase_table[local_id].assigned_signal = signo;
-    OS_impl_timebase_table[local_id].handler_task = &FAKE_TASK;
-    OS_impl_timebase_table[local_id].handler_mutex = &FAKE_SEM;
-    OS_impl_timebase_table[local_id].reset_flag = reset_flag;
+    OS_impl_timebase_table[local_id].handler_task    = &FAKE_TASK;
+    OS_impl_timebase_table[local_id].handler_mutex   = &FAKE_SEM;
+    OS_impl_timebase_table[local_id].reset_flag      = reset_flag;
 }
-

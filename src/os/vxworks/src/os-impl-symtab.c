@@ -48,8 +48,8 @@
 
 typedef struct
 {
-    char     SymbolName[OS_MAX_SYM_LEN];
-    cpuaddr  SymbolAddress;
+    char    SymbolName[OS_MAX_SYM_LEN];
+    cpuaddr SymbolAddress;
 } SymbolRecord_t;
 
 /* A global for storing the state in a SymbolDump call */
@@ -70,40 +70,39 @@ extern SYMTAB_ID sysSymTbl;
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolLookup_Impl( cpuaddr *SymbolAddress, const char *SymbolName )
+int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 {
-   STATUS    vxStatus;
-   SYMBOL_DESC SymDesc;
+    STATUS      vxStatus;
+    SYMBOL_DESC SymDesc;
 
-   /*
-   ** Check parameters
-   */
-   if (( SymbolAddress == NULL ) || (SymbolName == NULL ))
-   {
-      return(OS_INVALID_POINTER);
-   }
+    /*
+    ** Check parameters
+    */
+    if ((SymbolAddress == NULL) || (SymbolName == NULL))
+    {
+        return (OS_INVALID_POINTER);
+    }
 
-   /*
-   ** Lookup the entry point
-   **
-   ** VxWorks 6.9 has deprecated the "symFindByName" API and it is replaced
-   ** with a "symFind" API instead.
-   */
+    /*
+    ** Lookup the entry point
+    **
+    ** VxWorks 6.9 has deprecated the "symFindByName" API and it is replaced
+    ** with a "symFind" API instead.
+    */
 
-   memset (&SymDesc, 0, sizeof (SYMBOL_DESC));
-   SymDesc.mask = SYM_FIND_BY_NAME;
-   SymDesc.name = (char*)SymbolName;
+    memset(&SymDesc, 0, sizeof(SYMBOL_DESC));
+    SymDesc.mask = SYM_FIND_BY_NAME;
+    SymDesc.name = (char *)SymbolName;
 
-   vxStatus = symFind(sysSymTbl,&SymDesc);
-   *SymbolAddress = (cpuaddr)SymDesc.value;
+    vxStatus       = symFind(sysSymTbl, &SymDesc);
+    *SymbolAddress = (cpuaddr)SymDesc.value;
 
-   if (vxStatus == ERROR)
-   {
-      return(OS_ERROR);
-   }
+    if (vxStatus == ERROR)
+    {
+        return (OS_ERROR);
+    }
 
-
-   return(OS_SUCCESS);
+    return (OS_SUCCESS);
 
 } /* end OS_SymbolLookup_Impl */
 
@@ -127,70 +126,69 @@ int32 OS_SymbolLookup_Impl( cpuaddr *SymbolAddress, const char *SymbolName )
  *           The address of the symbol will be stored in the pointer that is passed in.
  *
  *-----------------------------------------------------------------*/
-BOOL  OS_SymTableIterator_Impl ( char *name, SYM_VALUE val,  SYM_TYPE type,  _Vx_usr_arg_t arg, SYM_GROUP group )
+BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_arg_t arg, SYM_GROUP group)
 {
-   SymbolRecord_t symRecord;
-   uint32         NextSize;
-   int            status;
-   SymbolDumpState_t *state;
+    SymbolRecord_t     symRecord;
+    uint32             NextSize;
+    int                status;
+    SymbolDumpState_t *state;
 
-   /*
-    * Rather than passing the state pointer through the generic "int" arg,
-    * use a global.  This is OK because dumps are serialized externally.
+    /*
+     * Rather than passing the state pointer through the generic "int" arg,
+     * use a global.  This is OK because dumps are serialized externally.
+     */
+    state = &OS_VxWorks_SymbolDumpState;
+
+    if (strlen(name) >= OS_MAX_SYM_LEN)
+    {
+        OS_DEBUG("%s(): symbol name too long\n", __func__);
+        state->StatusCode = OS_ERROR;
+        return (false);
+    }
+
+    /*
+    ** Check to see if the maximum size of the file has been reached
     */
-   state = &OS_VxWorks_SymbolDumpState;
+    NextSize = state->CurrSize + sizeof(symRecord);
+    if (NextSize > state->Sizelimit)
+    {
+        /*
+        ** We exceeded the maximum size, so tell vxWorks to stop
+        ** However this is not considered an error, just a stop condition.
+        */
+        OS_DEBUG("%s(): symbol table size exceeded\n", __func__);
+        return (false);
+    }
 
-   if (strlen(name) >= OS_MAX_SYM_LEN)
-   {
-       OS_DEBUG("%s(): symbol name too long\n", __func__);
-       state->StatusCode = OS_ERROR;
-       return(false);
-   }
+    /*
+    ** Copy symbol name
+    */
+    strncpy(symRecord.SymbolName, name, OS_MAX_SYM_LEN);
 
-   /*
-   ** Check to see if the maximum size of the file has been reached
-   */
-   NextSize = state->CurrSize + sizeof(symRecord);
-   if ( NextSize > state->Sizelimit )
-   {
-       /*
-       ** We exceeded the maximum size, so tell vxWorks to stop
-       ** However this is not considered an error, just a stop condition.
-       */
-       OS_DEBUG("%s(): symbol table size exceeded\n", __func__);
-       return(false);
-   }
+    /*
+    ** Save symbol address
+    */
+    symRecord.SymbolAddress = (cpuaddr)val;
 
-   /*
-   ** Copy symbol name
-   */
-   strncpy(symRecord.SymbolName, name, OS_MAX_SYM_LEN);
+    /*
+    ** Write entry in file
+    */
+    status = write(state->fd, (char *)&symRecord, sizeof(symRecord));
+    /* There is a problem if not all bytes were written OR if we get an error
+     * value, < 0. */
+    if (status < (int)sizeof(symRecord))
+    {
+        state->StatusCode = OS_ERROR;
+        return (false);
+    }
 
-   /*
-   ** Save symbol address
-   */
-   symRecord.SymbolAddress = (cpuaddr)val;
+    state->CurrSize = NextSize;
 
-   /*
-   ** Write entry in file
-   */
-   status = write(state->fd, (char *)&symRecord, sizeof(symRecord));
-   /* There is a problem if not all bytes were written OR if we get an error
-    * value, < 0. */
-   if ( status < (int)sizeof(symRecord) )
-   {
-       state->StatusCode = OS_ERROR;
-       return(false);
-   }
-
-   state->CurrSize = NextSize;
-
-   /*
-   ** It's OK to continue
-   */
-   return(true);
+    /*
+    ** It's OK to continue
+    */
+    return (true);
 } /* end OS_SymTableIterator_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -200,7 +198,7 @@ BOOL  OS_SymTableIterator_Impl ( char *name, SYM_VALUE val,  SYM_TYPE type,  _Vx
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolTableDump_Impl ( const char *local_filename, uint32 SizeLimit )
+int32 OS_SymbolTableDump_Impl(const char *local_filename, uint32 SizeLimit)
 {
     SymbolDumpState_t *state;
 
@@ -217,7 +215,7 @@ int32 OS_SymbolTableDump_Impl ( const char *local_filename, uint32 SizeLimit )
     ** Open file
     */
     state->fd = open(local_filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-    if ( state->fd  < 0 )
+    if (state->fd < 0)
     {
         OS_DEBUG("open(%s): error: %s\n", local_filename, strerror(errno));
         state->StatusCode = OS_ERROR;
@@ -227,12 +225,11 @@ int32 OS_SymbolTableDump_Impl ( const char *local_filename, uint32 SizeLimit )
         /*
         ** Iterate the symbol table
         */
-        (void) symEach( sysSymTbl, OS_SymTableIterator_Impl, 0 );
+        (void)symEach(sysSymTbl, OS_SymTableIterator_Impl, 0);
 
         close(state->fd);
     }
 
-   return(state->StatusCode);
+    return (state->StatusCode);
 
 } /* end OS_SymbolTableDump_Impl */
-

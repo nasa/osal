@@ -36,7 +36,4 @@
 /* prototypes normally declared in strings.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_STRINGS_H_ */
-

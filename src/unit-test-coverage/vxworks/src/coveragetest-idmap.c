@@ -35,7 +35,6 @@
 
 OCS_SEM TestGlobalSem;
 
-
 void Test_OS_Lock_Global_Impl(void)
 {
     /*
@@ -86,7 +85,6 @@ void Test_OS_API_Impl_Init(void)
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
 }
 
-
 /* ------------------- End of test cases --------------------------------------*/
 
 /* Osapi_Test_Setup
@@ -105,10 +103,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -121,5 +116,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_Unlock_Global_Impl);
     ADD_TEST(OS_API_Impl_Init);
 }
-
-

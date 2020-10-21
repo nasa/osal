@@ -28,5 +28,4 @@
 /* mappings for declarations in sys/ipc.h */
 /* ----------------------------------------- */
 
-
 #endif /* _OSAL_OVERRIDE_SYS_IPC_H_ */

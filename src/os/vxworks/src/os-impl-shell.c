@@ -44,8 +44,6 @@
 #define OS_SHELL_CMD_TASK_STACK_SIZE 16384
 #define OS_SHELL_CMD_TASK_PRIORITY   250
 
-
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ShellOutputToFile_Impl
@@ -56,14 +54,15 @@
  *-----------------------------------------------------------------*/
 int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char *Cmd)
 {
-    int32 ReturnCode = OS_ERROR;
-    int32 Result;
+    int32     ReturnCode = OS_ERROR;
+    int32     Result;
     osal_id_t fdCmd;
-    uint32 cmdidx;
-    char * shellName;
+    uint32    cmdidx;
+    char *    shellName;
 
     /* Create a file to write the command to (or write over the old one) */
-    Result = OS_OpenCreate(&fdCmd, OS_SHELL_CMD_INPUT_FILE_NAME, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
+    Result =
+        OS_OpenCreate(&fdCmd, OS_SHELL_CMD_INPUT_FILE_NAME, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
 
     if (Result < OS_SUCCESS)
     {
@@ -74,13 +73,12 @@ int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char *Cmd)
     {
         /* copy the command to the file, and then seek back to the beginning of the file */
         OS_write(fdCmd, Cmd, strlen(Cmd));
-        OS_lseek(fdCmd,0,OS_SEEK_SET);
+        OS_lseek(fdCmd, 0, OS_SEEK_SET);
 
         /* Create a shell task the will run the command in the file, push output to OS_fd */
-        Result = shellGenericInit("INTERPRETER=Cmd", 0, NULL, &shellName, false, false,
-                OS_impl_filehandle_table[cmdidx].fd,
-                OS_impl_filehandle_table[file_id].fd,
-                OS_impl_filehandle_table[file_id].fd);
+        Result =
+            shellGenericInit("INTERPRETER=Cmd", 0, NULL, &shellName, false, false, OS_impl_filehandle_table[cmdidx].fd,
+                             OS_impl_filehandle_table[file_id].fd, OS_impl_filehandle_table[file_id].fd);
     }
 
     if (Result == OK)
@@ -89,10 +87,9 @@ int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char *Cmd)
         do
         {
             taskDelay(sysClkRateGet());
-        }
-        while (taskNameToId(shellName) != ((TASK_ID)ERROR));
+        } while (taskNameToId(shellName) != ((TASK_ID)ERROR));
 
-        ReturnCode =  OS_SUCCESS;
+        ReturnCode = OS_SUCCESS;
     }
 
     /* Close the file descriptor */
@@ -101,4 +98,3 @@ int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char *Cmd)
     return ReturnCode;
 
 } /* end OS_ShellOutputToFile_Impl */
-

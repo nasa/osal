@@ -41,7 +41,6 @@
 
 OS_impl_module_internal_record_t OS_impl_module_table[OS_MAX_MODULES];
 
-
 /****************************************************************************************
                                 INITIALIZATION FUNCTION
  ***************************************************************************************/
@@ -55,10 +54,9 @@ OS_impl_module_internal_record_t OS_impl_module_table[OS_MAX_MODULES];
  *-----------------------------------------------------------------*/
 int32 OS_Rtems_ModuleAPI_Impl_Init(void)
 {
-   memset(OS_impl_module_table, 0, sizeof(OS_impl_module_table));
-   return(OS_SUCCESS);
+    memset(OS_impl_module_table, 0, sizeof(OS_impl_module_table));
+    return (OS_SUCCESS);
 } /* end OS_Rtems_ModuleAPI_Impl_Init */
-
 
 /****************************************************************************************
                                 HELPER ROUTINES
@@ -75,31 +73,28 @@ int32 OS_Rtems_ModuleAPI_Impl_Init(void)
  * This could be fine-tuned later.
  *
  *-----------------------------------------------------------------*/
-static bool OS_rtems_rtl_check_unresolved (rtems_rtl_unresolv_rec_t* rec,
-        void*                     data)
+static bool OS_rtems_rtl_check_unresolved(rtems_rtl_unresolv_rec_t *rec, void *data)
 {
     int32 *status = data;
 
-    switch(rec->type)
+    switch (rec->type)
     {
-    case rtems_rtl_unresolved_name:
-        OS_DEBUG("unresolved name: %s\n", rec->rec.name.name);
-        *status = OS_ERROR;
-        break;
-    case rtems_rtl_unresolved_reloc:
-        *status = OS_ERROR;
-        break;
-    default:
-        break;
+        case rtems_rtl_unresolved_name:
+            OS_DEBUG("unresolved name: %s\n", rec->rec.name.name);
+            *status = OS_ERROR;
+            break;
+        case rtems_rtl_unresolved_reloc:
+            *status = OS_ERROR;
+            break;
+        default:
+            break;
     }
     return false;
 } /* end OS_rtems_rtl_check_unresolved */
 
-
 /****************************************************************************************
                                     Module Loader API
  ***************************************************************************************/
-
 
 /*----------------------------------------------------------------
  *
@@ -109,10 +104,10 @@ static bool OS_rtems_rtl_check_unresolved (rtems_rtl_unresolv_rec_t* rec,
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleLoad_Impl ( uint32 module_id, const char *translated_path )
+int32 OS_ModuleLoad_Impl(uint32 module_id, const char *translated_path)
 {
     int32 status = OS_ERROR;
-    int unresolved;
+    int   unresolved;
     void *dl_handle;
 
     dlerror();
@@ -122,7 +117,7 @@ int32 OS_ModuleLoad_Impl ( uint32 module_id, const char *translated_path )
         OS_DEBUG("Error loading shared library: %s\n", dlerror());
         status = OS_ERROR;
     }
-    else if (dlinfo (dl_handle, RTLD_DI_UNRESOLVED, &unresolved) < 0)
+    else if (dlinfo(dl_handle, RTLD_DI_UNRESOLVED, &unresolved) < 0)
     {
         /* should never happen */
         OS_DEBUG("dlinfo error checking unresolved status\n");
@@ -147,13 +142,12 @@ int32 OS_ModuleLoad_Impl ( uint32 module_id, const char *translated_path )
 
         OS_DEBUG("module has has unresolved externals\n");
         status = OS_SUCCESS; /* note - not final, probably overridden */
-        rtems_rtl_unresolved_interate (OS_rtems_rtl_check_unresolved, &status);
+        rtems_rtl_unresolved_interate(OS_rtems_rtl_check_unresolved, &status);
     }
     else
     {
         status = OS_SUCCESS;
     }
-
 
     if (status == OS_SUCCESS)
     {
@@ -175,7 +169,6 @@ int32 OS_ModuleLoad_Impl ( uint32 module_id, const char *translated_path )
 
 } /* end OS_ModuleLoad_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ModuleUnload_Impl
@@ -184,7 +177,7 @@ int32 OS_ModuleLoad_Impl ( uint32 module_id, const char *translated_path )
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleUnload_Impl ( uint32 module_id )
+int32 OS_ModuleUnload_Impl(uint32 module_id)
 {
     int32 status = OS_ERROR;
 
@@ -195,7 +188,7 @@ int32 OS_ModuleUnload_Impl ( uint32 module_id )
     if (dlclose(OS_impl_module_table[module_id].dl_handle) == 0)
     {
         OS_impl_module_table[module_id].dl_handle = NULL;
-        status = OS_SUCCESS;
+        status                                    = OS_SUCCESS;
     }
     else
     {
@@ -206,7 +199,6 @@ int32 OS_ModuleUnload_Impl ( uint32 module_id )
 
 } /* end OS_ModuleUnload_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ModuleGetInfo_Impl
@@ -215,14 +207,12 @@ int32 OS_ModuleUnload_Impl ( uint32 module_id )
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleGetInfo_Impl ( uint32 module_id, OS_module_prop_t *module_prop )
+int32 OS_ModuleGetInfo_Impl(uint32 module_id, OS_module_prop_t *module_prop)
 {
-   /*
-   ** RTEMS does not specify a way to get these values
-   ** Everything left at zero
-   */
-   return(OS_SUCCESS);
+    /*
+    ** RTEMS does not specify a way to get these values
+    ** Everything left at zero
+    */
+    return (OS_SUCCESS);
 
 } /* end OS_ModuleGetInfo_Impl */
-
-

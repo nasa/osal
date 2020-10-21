@@ -33,7 +33,6 @@
 #include "os-impl-sockets.h"
 #include "os-shared-network.h"
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_NetworkGetID_Impl
@@ -42,14 +41,13 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_NetworkGetID_Impl          (int32 *IdBuf)
+int32 OS_NetworkGetID_Impl(int32 *IdBuf)
 {
     /* RTEMS does not have the GetHostId call -
      * it is deprecated in other OS's anyway and not a good idea to use it
      */
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_NetworkGetID_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -59,11 +57,11 @@ int32 OS_NetworkGetID_Impl          (int32 *IdBuf)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_NetworkGetHostName_Impl       (char *host_name, uint32 name_len)
+int32 OS_NetworkGetHostName_Impl(char *host_name, uint32 name_len)
 {
     int32 return_code;
 
-    if ( gethostname(host_name, name_len) < 0 )
+    if (gethostname(host_name, name_len) < 0)
     {
         return_code = OS_ERROR;
     }
@@ -74,10 +72,8 @@ int32 OS_NetworkGetHostName_Impl       (char *host_name, uint32 name_len)
          * null terminated, so its worthwhile to ensure it
          */
         host_name[name_len - 1] = 0;
-        return_code = OS_SUCCESS;
+        return_code             = OS_SUCCESS;
     }
 
-    return(return_code);
+    return (return_code);
 } /* end OS_NetworkGetHostName_Impl */
-
-

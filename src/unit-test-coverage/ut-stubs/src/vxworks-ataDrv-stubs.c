@@ -25,11 +25,11 @@
 
 #include <OCS_drv_hdisk_ataDrv.h>
 
-static OCS_BLK_DEV LOCAL_ATADEV = { 0 };
+static OCS_BLK_DEV LOCAL_ATADEV = {0};
 
 OCS_BLK_DEV *OCS_ataDevCreate(int ctrl, int drive, unsigned int nBlocks, unsigned int blkOffset)
 {
-    int32 Status;
+    int32        Status;
     OCS_BLK_DEV *retval = NULL;
 
     Status = UT_DEFAULT_IMPL(OCS_ataDevCreate);
@@ -40,6 +40,3 @@ OCS_BLK_DEV *OCS_ataDevCreate(int ctrl, int drive, unsigned int nBlocks, unsigne
 
     return retval;
 }
-
-
-
