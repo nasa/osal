@@ -49,8 +49,6 @@
 #include "utassert.h"
 #include "uttools.h"
 
-
-
 typedef enum
 {
     UT_OBJTYPE_NONE = 0,
@@ -72,7 +70,7 @@ typedef enum
 /*
  * A constant to use in stubs where no other value is applicable
  */
-#define UT_STUB_FAKE_OBJECT_ID     ((osal_id_t){0xDEADBEEFU})
+#define UT_STUB_FAKE_OBJECT_ID ((osal_id_t) {0xDEADBEEFU})
 
 /*
  * Size of the bitmask for the OSAL fake object ID validity table
@@ -84,14 +82,13 @@ typedef enum
  * (Default value of 16 allows for up to 128 objects to be created in
  * a single test case, far more than anything I've seen yet)
  */
-#define OSAL_MAX_VALID_PER_TYPE     16
+#define OSAL_MAX_VALID_PER_TYPE 16
 
 typedef struct
 {
     uint32 LastIssueNumber;
-    uint8 ValidBits[OSAL_MAX_VALID_PER_TYPE];
+    uint8  ValidBits[OSAL_MAX_VALID_PER_TYPE];
 } UT_ObjTypeState_t;
-
 
 /**
  * Table lookup for the maximum number of OSAL objects by object type
@@ -128,5 +125,3 @@ void UT_ObjIdCompose(uint32 indx, UT_ObjType_t objtype, osal_id_t *id);
 void UT_ObjIdDecompose(osal_id_t id, uint32 *indx, UT_ObjType_t *objtype);
 
 #endif
-
-

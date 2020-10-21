@@ -36,7 +36,7 @@
 
 typedef struct
 {
-    int fd;
+    int  fd;
     bool selectable;
 } OS_VxWorks_filehandle_entry_t;
 
@@ -53,8 +53,6 @@ extern OS_VxWorks_filehandle_entry_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FI
  * This can be turned off in a future version if the vendor fixes the
  * prototype to be standards-compliant
  */
-#define GENERIC_IO_CONST_DATA_CAST  (void*)
+#define GENERIC_IO_CONST_DATA_CAST (void *)
 
-
-#endif  /* INCLUDE_OS_IMPL_IO_H_ */
-
+#endif /* INCLUDE_OS_IMPL_IO_H_ */

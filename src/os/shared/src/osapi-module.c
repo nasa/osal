@@ -52,11 +52,10 @@
 #error "osconfig.h must define OS_MAX_MODULES to a valid value"
 #endif
 
-
 enum
 {
-   LOCAL_NUM_OBJECTS = OS_MAX_MODULES,
-   LOCAL_OBJID_TYPE = OS_OBJECT_TYPE_OS_MODULE
+    LOCAL_NUM_OBJECTS = OS_MAX_MODULES,
+    LOCAL_OBJID_TYPE  = OS_OBJECT_TYPE_OS_MODULE
 };
 
 OS_module_internal_record_t OS_module_table[OS_MAX_MODULES];
@@ -72,7 +71,7 @@ OS_module_internal_record_t OS_module_table[OS_MAX_MODULES];
  */
 #if !defined(OS_STATIC_SYMTABLE_SOURCE) && defined(OSAL_CONFIG_INCLUDE_STATIC_LOADER)
 /* use default symbol name for static table */
-#define OS_STATIC_SYMTABLE_SOURCE   OS_STATIC_SYMBOL_TABLE
+#define OS_STATIC_SYMTABLE_SOURCE OS_STATIC_SYMBOL_TABLE
 #endif
 
 #ifdef OS_STATIC_SYMTABLE_SOURCE
@@ -80,7 +79,7 @@ OS_module_internal_record_t OS_module_table[OS_MAX_MODULES];
 extern OS_static_symbol_record_t OS_STATIC_SYMTABLE_SOURCE[];
 #else
 /* there is no static symbol table, use NULL */
-#define OS_STATIC_SYMTABLE_SOURCE   NULL
+#define OS_STATIC_SYMTABLE_SOURCE NULL
 #endif /* OS_STATIC_SYMTABLE_SOURCE */
 
 /*----------------------------------------------------------------
@@ -93,8 +92,8 @@ extern OS_static_symbol_record_t OS_STATIC_SYMTABLE_SOURCE[];
  *-----------------------------------------------------------------*/
 int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName)
 {
-    int32 return_code = OS_ERR_NOT_IMPLEMENTED;
-    OS_static_symbol_record_t *StaticSym = OS_STATIC_SYMTABLE_SOURCE;
+    int32                      return_code = OS_ERR_NOT_IMPLEMENTED;
+    OS_static_symbol_record_t *StaticSym   = OS_STATIC_SYMTABLE_SOURCE;
 
     while (StaticSym != NULL)
     {
@@ -110,7 +109,7 @@ int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName)
         {
             /* found matching symbol */
             *SymbolAddress = (cpuaddr)StaticSym->Address;
-            return_code = OS_SUCCESS;
+            return_code    = OS_SUCCESS;
             break;
         }
 
@@ -119,7 +118,6 @@ int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName)
 
     return return_code;
 } /* end OS_SymbolLookup_Static */
-
 
 /*----------------------------------------------------------------
  *
@@ -131,8 +129,8 @@ int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName)
  *-----------------------------------------------------------------*/
 int32 OS_ModuleLoad_Static(const char *ModuleName)
 {
-    int32 return_code = OS_ERR_NAME_NOT_FOUND;
-    OS_static_symbol_record_t *StaticSym = OS_STATIC_SYMTABLE_SOURCE;
+    int32                      return_code = OS_ERR_NAME_NOT_FOUND;
+    OS_static_symbol_record_t *StaticSym   = OS_STATIC_SYMTABLE_SOURCE;
 
     while (StaticSym != NULL)
     {
@@ -141,8 +139,7 @@ int32 OS_ModuleLoad_Static(const char *ModuleName)
             /* end of list  */
             break;
         }
-        if (StaticSym->Module != NULL &&
-                strcmp(StaticSym->Module, ModuleName) == 0)
+        if (StaticSym->Module != NULL && strcmp(StaticSym->Module, ModuleName) == 0)
         {
             /* found matching module name */
             return_code = OS_SUCCESS;
@@ -159,7 +156,6 @@ int32 OS_ModuleLoad_Static(const char *ModuleName)
                                    Module API
  ***************************************************************************************/
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ModuleAPI_Init
@@ -170,10 +166,9 @@ int32 OS_ModuleLoad_Static(const char *ModuleName)
  *-----------------------------------------------------------------*/
 int32 OS_ModuleAPI_Init(void)
 {
-   memset(OS_module_table, 0, sizeof(OS_module_table));
-   return OS_SUCCESS;
+    memset(OS_module_table, 0, sizeof(OS_module_table));
+    return OS_SUCCESS;
 } /* end OS_ModuleAPI_Init */
-
 
 /*----------------------------------------------------------------
  *
@@ -183,12 +178,12 @@ int32 OS_ModuleAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleLoad ( osal_id_t *module_id, const char *module_name, const char *filename )
+int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *filename)
 {
-    char        translated_path[OS_MAX_LOCAL_PATH_LEN];
-    int32       return_code;
-    int32       filename_status;
-    uint32      local_id;
+    char                translated_path[OS_MAX_LOCAL_PATH_LEN];
+    int32               return_code;
+    int32               filename_status;
+    uint32              local_id;
     OS_common_record_t *record;
 
     /*
@@ -197,14 +192,14 @@ int32 OS_ModuleLoad ( osal_id_t *module_id, const char *module_name, const char 
      ** Note "filename" is not checked, because in certain configurations it can be validly
      ** null.  filename is checked for NULL-ness by the OS_TranslatePath() later.
      */
-    if ((module_id == NULL ) || (module_name == NULL))
+    if ((module_id == NULL) || (module_name == NULL))
     {
-        return(OS_INVALID_POINTER);
+        return (OS_INVALID_POINTER);
     }
 
     if (strlen(module_name) >= OS_MAX_API_NAME)
     {
-        return(OS_ERR_NAME_TOO_LONG);
+        return (OS_ERR_NAME_TOO_LONG);
     }
 
     /*
@@ -220,7 +215,7 @@ int32 OS_ModuleLoad ( osal_id_t *module_id, const char *module_name, const char 
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
     return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, module_name, &local_id, &record);
-    if(return_code == OS_SUCCESS)
+    if (return_code == OS_SUCCESS)
     {
         memset(&OS_module_table[local_id], 0, sizeof(OS_module_internal_record_t));
         strncpy(OS_module_table[local_id].module_name, module_name, OS_MAX_API_NAME);
@@ -263,7 +258,7 @@ int32 OS_ModuleLoad ( osal_id_t *module_id, const char *module_name, const char 
         return_code = OS_ObjectIdFinalizeNew(return_code, record, module_id);
     }
 
-    return(return_code);
+    return (return_code);
 
 } /* end OS_ModuleLoad */
 
@@ -275,13 +270,13 @@ int32 OS_ModuleLoad ( osal_id_t *module_id, const char *module_name, const char 
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleUnload ( osal_id_t module_id )
+int32 OS_ModuleUnload(osal_id_t module_id)
 {
     OS_common_record_t *record;
-    int32             return_code;
-    uint32            local_id;
+    int32               return_code;
+    uint32              local_id;
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE,LOCAL_OBJID_TYPE, module_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, module_id, &local_id, &record);
     if (return_code == OS_SUCCESS)
     {
         /*
@@ -304,11 +299,11 @@ int32 OS_ModuleUnload ( osal_id_t module_id )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleInfo ( osal_id_t module_id, OS_module_prop_t *module_prop )
+int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_prop)
 {
     OS_common_record_t *record;
-    int32             return_code;
-    uint32            local_id;
+    int32               return_code;
+    uint32              local_id;
 
     /* Check parameters */
     if (module_prop == NULL)
@@ -316,9 +311,9 @@ int32 OS_ModuleInfo ( osal_id_t module_id, OS_module_prop_t *module_prop )
         return OS_INVALID_POINTER;
     }
 
-    memset(module_prop,0,sizeof(OS_module_prop_t));
+    memset(module_prop, 0, sizeof(OS_module_prop_t));
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL,LOCAL_OBJID_TYPE, module_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, module_id, &local_id, &record);
     if (return_code == OS_SUCCESS)
     {
         strncpy(module_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
@@ -333,7 +328,6 @@ int32 OS_ModuleInfo ( osal_id_t module_id, OS_module_prop_t *module_prop )
 
 } /* end OS_ModuleInfo */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_SymbolLookup
@@ -342,7 +336,7 @@ int32 OS_ModuleInfo ( osal_id_t module_id, OS_module_prop_t *module_prop )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolLookup( cpuaddr *SymbolAddress, const char *SymbolName )
+int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
 {
     int32 return_code;
     int32 status;
@@ -350,9 +344,9 @@ int32 OS_SymbolLookup( cpuaddr *SymbolAddress, const char *SymbolName )
     /*
     ** Check parameters
     */
-    if (( SymbolAddress == NULL ) || (SymbolName == NULL ))
+    if ((SymbolAddress == NULL) || (SymbolName == NULL))
     {
-        return(OS_INVALID_POINTER);
+        return (OS_INVALID_POINTER);
     }
 
     /*
@@ -378,8 +372,7 @@ int32 OS_SymbolLookup( cpuaddr *SymbolAddress, const char *SymbolName )
          * If either of these are implemented then the returned
          * value should be OS_ERROR for a not-found result.
          */
-        if (status == OS_SUCCESS ||
-                return_code == OS_ERR_NOT_IMPLEMENTED)
+        if (status == OS_SUCCESS || return_code == OS_ERR_NOT_IMPLEMENTED)
         {
             return_code = status;
         }
@@ -397,28 +390,27 @@ int32 OS_SymbolLookup( cpuaddr *SymbolAddress, const char *SymbolName )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolTableDump ( const char *filename, uint32 SizeLimit )
+int32 OS_SymbolTableDump(const char *filename, uint32 SizeLimit)
 {
     int32 return_code;
-    char translated_path[OS_MAX_LOCAL_PATH_LEN];
+    char  translated_path[OS_MAX_LOCAL_PATH_LEN];
 
     /*
     ** Check parameters
     */
     if (filename == NULL)
     {
-       return(OS_INVALID_POINTER);
+        return (OS_INVALID_POINTER);
     }
 
     /*
      ** Translate the filename to the Host System
      */
     return_code = OS_TranslatePath(filename, translated_path);
-    if ( return_code != OS_SUCCESS )
+    if (return_code != OS_SUCCESS)
     {
-        return(return_code);
+        return (return_code);
     }
-
 
     /*
      * Locking the global ensures only one symbol table dump
@@ -435,9 +427,6 @@ int32 OS_SymbolTableDump ( const char *filename, uint32 SizeLimit )
 
     OS_Unlock_Global(LOCAL_OBJID_TYPE);
 
-    return(return_code);
+    return (return_code);
 
 } /* end OS_SymbolTableDump */
-
-
-

@@ -43,13 +43,13 @@ FILE *UT_logfile;
 ** Global variables
 */
 unsigned OS_printf_enabled = 1;
-int ut_passed;
-int ut_failed;
-char cMsg[UT_MAX_MESSAGE_LENGTH];
-char cNum[UT_MAX_MESSAGE_LENGTH];
-char strg_buf[BUF_LEN];
-char trunc_buf[BUF_LEN];
-char fill_strg[BUF_LEN];
+int      ut_passed;
+int      ut_failed;
+char     cMsg[UT_MAX_MESSAGE_LENGTH];
+char     cNum[UT_MAX_MESSAGE_LENGTH];
+char     strg_buf[BUF_LEN];
+char     trunc_buf[BUF_LEN];
+char     fill_strg[BUF_LEN];
 
 /*
 ** Functions
@@ -168,8 +168,7 @@ void UT_Text(char *out_text)
 /*
 ** Output result of a test
 */
-void UT_Report(int test, char *fun_name, char *info,
-               char *test_num, char *test_seq)
+void UT_Report(int test, char *fun_name, char *info, char *test_num, char *test_seq)
 {
     if (test == UT_PASS)
     {
@@ -208,21 +207,21 @@ void UT_Report(int test, char *fun_name, char *info,
 */
 void UT_itoa(int value, char *string, int radix, int out_len)
 {
-    char revertedStr[50];
-    int revertedLength = 0;
-    unsigned int length = 0;
-    unsigned int neg = 0;
-    unsigned int digit_value = 0;
+    char         revertedStr[50];
+    int          revertedLength = 0;
+    unsigned int length         = 0;
+    unsigned int neg            = 0;
+    unsigned int digit_value    = 0;
     unsigned int uvalue;
 
     if ((radix == 10) && (value < 0))
     {
-        neg = 1;
+        neg    = 1;
         uvalue = -value;
     }
     else
     {
-        uvalue = (unsigned int) value;
+        uvalue = (unsigned int)value;
     }
 
     revertedLength = 0;
@@ -296,8 +295,7 @@ void UT_ReportFailures(void)
     UT_Text(cMsg);
 
 #ifndef OSP_ARINC653
-    printf("\nosprintf PASSED %d tests.\nosprintf FAILED %d tests.\n\n",
-            ut_passed, ut_failed);
+    printf("\nosprintf PASSED %d tests.\nosprintf FAILED %d tests.\n\n", ut_passed, ut_failed);
 #endif
 }
 

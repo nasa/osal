@@ -25,14 +25,14 @@
 
 #include <OCS_xbdBlkDev.h>
 
-OCS_device_t OCS_xbdBlkDevCreateSync  (OCS_BLK_DEV *bd, const char *name)
+OCS_device_t OCS_xbdBlkDevCreateSync(OCS_BLK_DEV *bd, const char *name)
 {
-    int32 status = UT_DEFAULT_IMPL(OCS_xbdBlkDevCreateSync);
+    int32        status = UT_DEFAULT_IMPL(OCS_xbdBlkDevCreateSync);
     OCS_device_t res;
 
     if (status != 0)
     {
-        res = OCS_NULLDEV;  /* NULLDEV (0) means error */
+        res = OCS_NULLDEV; /* NULLDEV (0) means error */
     }
     else
     {
@@ -42,8 +42,7 @@ OCS_device_t OCS_xbdBlkDevCreateSync  (OCS_BLK_DEV *bd, const char *name)
     return res;
 }
 
-OCS_STATUS OCS_xbdBlkDevDelete  (OCS_device_t dev, OCS_BLK_DEV **ppbd)
+OCS_STATUS OCS_xbdBlkDevDelete(OCS_device_t dev, OCS_BLK_DEV **ppbd)
 {
     return (UT_DEFAULT_IMPL(OCS_xbdBlkDevDelete));
 }
-

@@ -39,11 +39,11 @@
 
 struct OCS_stat
 {
-    OCS_mode_t   st_mode;
-    OCS_off_t    st_size;
-    OCS_time_t   st_mtime;
-    OCS_uid_t    st_uid;
-    OCS_gid_t    st_gid;
+    OCS_mode_t st_mode;
+    OCS_off_t  st_size;
+    OCS_time_t st_mtime;
+    OCS_uid_t  st_uid;
+    OCS_gid_t  st_gid;
 };
 
 /* ----------------------------------------- */
@@ -60,19 +60,15 @@ struct OCS_statvfs
 /* prototypes normally declared in sys/stat.h */
 /* ----------------------------------------- */
 
-extern int OCS_fchmod (int fd, OCS_mode_t mode);
-extern int OCS_chmod (const char *path, OCS_mode_t mode);
-extern int OCS_mkdir (const char * path, ...);
-extern int OCS_stat (const char * file, struct OCS_stat * buf);
-
+extern int OCS_fchmod(int fd, OCS_mode_t mode);
+extern int OCS_chmod(const char *path, OCS_mode_t mode);
+extern int OCS_mkdir(const char *path, ...);
+extern int OCS_stat(const char *file, struct OCS_stat *buf);
 
 /* ----------------------------------------- */
 /* prototypes normally declared in sys/statvfs.h */
 /* ----------------------------------------- */
 
-extern int OCS_statvfs (const char * file, struct OCS_statvfs * buf);
-
-
+extern int OCS_statvfs(const char *file, struct OCS_statvfs *buf);
 
 #endif /* _OSAL_STUB_STAT_H_ */
-

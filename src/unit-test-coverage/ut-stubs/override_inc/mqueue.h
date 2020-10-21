@@ -29,15 +29,14 @@
 /* mappings for declarations in mqueue.h */
 /* ----------------------------------------- */
 
-#define mqd_t                OCS_mqd_t
-#define mq_attr              OCS_mq_attr
+#define mqd_t   OCS_mqd_t
+#define mq_attr OCS_mq_attr
 
-#define mq_close             OCS_mq_close
-#define mq_open              OCS_mq_open
-#define mq_receive           OCS_mq_receive
-#define mq_timedreceive      OCS_mq_timedreceive
-#define mq_timedsend         OCS_mq_timedsend
-#define mq_unlink            OCS_mq_unlink
-
+#define mq_close        OCS_mq_close
+#define mq_open         OCS_mq_open
+#define mq_receive      OCS_mq_receive
+#define mq_timedreceive OCS_mq_timedreceive
+#define mq_timedsend    OCS_mq_timedsend
+#define mq_unlink       OCS_mq_unlink
 
 #endif /* _OSAL_OVERRIDE_MQUEUE_H_ */

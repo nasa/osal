@@ -55,5 +55,3 @@ void OS_BSP_ConsoleSetMode_Impl(uint32 ModeBits)
 {
     /* no-op on RTEMS */
 }
-
-

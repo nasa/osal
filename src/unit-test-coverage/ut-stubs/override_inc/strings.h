@@ -28,5 +28,4 @@
 /* mappings for declarations in strings.h */
 /* ----------------------------------------- */
 
-
 #endif /* _OSAL_OVERRIDE_STRINGS_H_ */

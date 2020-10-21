@@ -36,11 +36,7 @@ typedef struct
     rtems_id id;
 } OS_impl_queue_internal_record_t;
 
-
-
 /* Tables where the OS object information is stored */
-extern OS_impl_queue_internal_record_t     OS_impl_queue_table         [OS_MAX_QUEUES];
+extern OS_impl_queue_internal_record_t OS_impl_queue_table[OS_MAX_QUEUES];
 
-
-#endif  /* INCLUDE_OS_IMPL_QUEUES_H_ */
-
+#endif /* INCLUDE_OS_IMPL_QUEUES_H_ */

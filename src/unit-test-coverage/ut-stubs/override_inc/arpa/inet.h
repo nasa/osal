@@ -27,8 +27,7 @@
 /* ----------------------------------------- */
 /* mappings for declarations in arpa/inet.h */
 /* ----------------------------------------- */
-#define inet_ntop    OCS_inet_ntop
-#define inet_pton    OCS_inet_pton
-
+#define inet_ntop OCS_inet_ntop
+#define inet_pton OCS_inet_pton
 
 #endif /* _OSAL_OVERRIDE_ARPA_INET_H_ */

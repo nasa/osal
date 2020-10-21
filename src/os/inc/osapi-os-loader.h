@@ -34,7 +34,6 @@
 ** Defines
 */
 
-
 /*
 ** Typedefs
 */
@@ -42,24 +41,24 @@
 /** @brief OSAL module address properties */
 typedef struct
 {
-   uint32 valid;
-   uint32 flags;  
-   cpuaddr code_address;
-   cpuaddr code_size;
-   cpuaddr data_address;
-   cpuaddr data_size;
-   cpuaddr bss_address;
-   cpuaddr bss_size;
+    uint32  valid;
+    uint32  flags;
+    cpuaddr code_address;
+    cpuaddr code_size;
+    cpuaddr data_address;
+    cpuaddr data_size;
+    cpuaddr bss_address;
+    cpuaddr bss_size;
 } OS_module_address_t;
 
 /** @brief OSAL module properties */
 typedef struct
 {
-   cpuaddr             entry_point;
-   cpuaddr             host_module_id;
-   char                filename[OS_MAX_PATH_LEN];
-   char                name[OS_MAX_API_NAME];
-   OS_module_address_t addr;
+    cpuaddr             entry_point;
+    cpuaddr             host_module_id;
+    char                filename[OS_MAX_PATH_LEN];
+    char                name[OS_MAX_API_NAME];
+    OS_module_address_t addr;
 } OS_module_prop_t;
 
 /**
@@ -77,9 +76,9 @@ typedef struct
  */
 typedef const struct
 {
-   const char *Name;
-   void (*Address)(void);
-   const char *Module;
+    const char *Name;
+    void (*Address)(void);
+    const char *Module;
 } OS_static_symbol_record_t;
 
 /** @defgroup OSAPILoader OSAL Dynamic Loader and Symbol APIs
@@ -104,7 +103,7 @@ typedef const struct
  * @retval #OS_ERROR if the symbol could not be found
  * @retval #OS_INVALID_POINTER if one of the pointers passed in are NULL
  */
-int32 OS_SymbolLookup (cpuaddr *symbol_address, const char *symbol_name );
+int32 OS_SymbolLookup(cpuaddr *symbol_address, const char *symbol_name);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -120,7 +119,7 @@ int32 OS_SymbolLookup (cpuaddr *symbol_address, const char *symbol_name );
  * @retval #OS_ERR_NOT_IMPLEMENTED @copybrief OS_ERR_NOT_IMPLEMENTED
  * @retval #OS_ERROR if the symbol table could not be read or dumped
  */
-int32 OS_SymbolTableDump ( const char *filename, uint32 size_limit );
+int32 OS_SymbolTableDump(const char *filename, uint32 size_limit);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -139,7 +138,7 @@ int32 OS_SymbolTableDump ( const char *filename, uint32 size_limit );
  * @retval #OS_ERR_NO_FREE_IDS if the module table is full
  * @retval #OS_ERR_NAME_TAKEN if the name is in use
  */
-int32 OS_ModuleLoad ( osal_id_t *module_id, const char *module_name, const char *filename );
+int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *filename);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -153,7 +152,7 @@ int32 OS_ModuleLoad ( osal_id_t *module_id, const char *module_name, const char 
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERROR if the module is invalid or cannot be unloaded
  */
-int32 OS_ModuleUnload ( osal_id_t module_id );
+int32 OS_ModuleUnload(osal_id_t module_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -169,7 +168,7 @@ int32 OS_ModuleUnload ( osal_id_t module_id );
  * @retval #OS_ERR_INVALID_ID if the module id invalid
  * @retval #OS_INVALID_POINTER if the pointer to the ModuleInfo structure is invalid
  */
-int32 OS_ModuleInfo ( osal_id_t module_id, OS_module_prop_t *module_info );
+int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_info);
 /**@}*/
 
 #endif

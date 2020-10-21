@@ -25,12 +25,11 @@
 
 #include <OCS_ramDrv.h>
 
-static OCS_BLK_DEV LOCAL_RAMDEV = { 0 };
+static OCS_BLK_DEV LOCAL_RAMDEV = {0};
 
-OCS_BLK_DEV *OCS_ramDevCreate (char *ramAddr, int bytesPerSec, int secPerTrack,
-                       int nSectors, int secOffset)
+OCS_BLK_DEV *OCS_ramDevCreate(char *ramAddr, int bytesPerSec, int secPerTrack, int nSectors, int secOffset)
 {
-    int32 Status;
+    int32        Status;
     OCS_BLK_DEV *retval = NULL;
 
     Status = UT_DEFAULT_IMPL(OCS_ramDevCreate);
@@ -41,6 +40,3 @@ OCS_BLK_DEV *OCS_ramDevCreate (char *ramAddr, int bytesPerSec, int secPerTrack,
 
     return retval;
 }
-
-
-

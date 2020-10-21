@@ -37,19 +37,19 @@
 /*
  * BSP compile-time tuning
  */
-#define RTEMS_MAX_USER_OPTIONS   4
-#define RTEMS_MAX_CMDLINE        256
+#define RTEMS_MAX_USER_OPTIONS 4
+#define RTEMS_MAX_CMDLINE      256
 
 /*
  * The location which the general purpose file system will be mounted
  */
-#define RTEMS_USER_FS_MOUNTPOINT    "/mnt"
+#define RTEMS_USER_FS_MOUNTPOINT "/mnt"
 
 /*
  * By default put the shell at the same priority
  * as the utility task which handles OS_printf()
  */
-#define RTEMS_SHELL_PRIORITY     OS_UTILITYTASK_PRIORITY
+#define RTEMS_SHELL_PRIORITY OS_UTILITYTASK_PRIORITY
 
 /*
 ** BSP types

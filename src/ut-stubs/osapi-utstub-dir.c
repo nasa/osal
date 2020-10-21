@@ -34,15 +34,14 @@
 
 #include "utstub-helpers.h"
 
-
-UT_DEFAULT_STUB(OS_DirAPI_Init,(void))
+UT_DEFAULT_STUB(OS_DirAPI_Init, (void))
 
 /*****************************************************************************
  *
  * Stub for OS_mkdir() function
  *
  *****************************************************************************/
-int32 OS_mkdir (const char *path, uint32 access)
+int32 OS_mkdir(const char *path, uint32 access)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_mkdir), path);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_mkdir), access);
@@ -59,7 +58,7 @@ int32 OS_mkdir (const char *path, uint32 access)
  * Stub for OS_rmdir() function
  *
  *****************************************************************************/
-int32  OS_rmdir (const char *path)
+int32 OS_rmdir(const char *path)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_rmdir), path);
 
@@ -69,8 +68,6 @@ int32  OS_rmdir (const char *path)
 
     return Status;
 }
-
-
 
 /*****************************************************************************
  *
@@ -94,7 +91,6 @@ int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
     {
         *dir_id = UT_STUB_FAKE_OBJECT_ID;
     }
-
 
     return Status;
 }
@@ -146,7 +142,7 @@ int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_DirectoryRead), dir_id);
     UT_Stub_RegisterContext(UT_KEY(OS_DirectoryRead), dirent);
 
-    int32 Status;
+    int32  Status;
     uint32 CopySize;
 
     Status = UT_DEFAULT_IMPL(OS_DirectoryRead);
@@ -162,5 +158,3 @@ int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
 
     return Status;
 }
-
-

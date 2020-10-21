@@ -30,7 +30,6 @@
 /* mappings for declarations in loadLib.h */
 /* ----------------------------------------- */
 
-#define loadModule  OCS_loadModule
-
+#define loadModule OCS_loadModule
 
 #endif /* _OSAL_OVERRIDE_LOADLIB_H_ */

@@ -62,7 +62,6 @@
                                    GLOBAL DATA
  ***************************************************************************************/
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_DirCreate_Impl
@@ -73,28 +72,28 @@
  *-----------------------------------------------------------------*/
 int32 OS_DirCreate_Impl(const char *local_path, uint32 access)
 {
-   struct stat st;
-   int32 return_code;
+    struct stat st;
+    int32       return_code;
 
-   if ( mkdir(local_path, S_IFDIR |S_IRWXU | S_IRWXG | S_IRWXO) < 0 )
-   {
-      return_code = OS_ERROR;
+    if (mkdir(local_path, S_IFDIR | S_IRWXU | S_IRWXG | S_IRWXO) < 0)
+    {
+        return_code = OS_ERROR;
 
-      if (errno == EEXIST)
-      {
-         /* it exists, but not necessarily a directory */
-         if ( stat(local_path, &st) == 0  && S_ISDIR(st.st_mode) )
-         {
-            return_code = OS_SUCCESS;
-         }
-      }
-   }
-   else
-   {
-      return_code = OS_SUCCESS;
-   }
+        if (errno == EEXIST)
+        {
+            /* it exists, but not necessarily a directory */
+            if (stat(local_path, &st) == 0 && S_ISDIR(st.st_mode))
+            {
+                return_code = OS_SUCCESS;
+            }
+        }
+    }
+    else
+    {
+        return_code = OS_SUCCESS;
+    }
 
-   return return_code;
+    return return_code;
 } /* end OS_DirCreate_Impl */
 
 /*----------------------------------------------------------------
@@ -107,13 +106,13 @@ int32 OS_DirCreate_Impl(const char *local_path, uint32 access)
  *-----------------------------------------------------------------*/
 int32 OS_DirOpen_Impl(uint32 local_id, const char *local_path)
 {
-   DIR *dp = opendir(local_path);
-   if (dp == NULL)
-   {
-      return OS_ERROR;
-   }
-   OS_impl_dir_table[local_id].dp = dp;
-   return OS_SUCCESS;
+    DIR *dp = opendir(local_path);
+    if (dp == NULL)
+    {
+        return OS_ERROR;
+    }
+    OS_impl_dir_table[local_id].dp = dp;
+    return OS_SUCCESS;
 } /* end OS_DirOpen_Impl */
 
 /*----------------------------------------------------------------
@@ -126,9 +125,9 @@ int32 OS_DirOpen_Impl(uint32 local_id, const char *local_path)
  *-----------------------------------------------------------------*/
 int32 OS_DirClose_Impl(uint32 local_id)
 {
-   closedir(OS_impl_dir_table[local_id].dp);
-   OS_impl_dir_table[local_id].dp = NULL;
-   return OS_SUCCESS;
+    closedir(OS_impl_dir_table[local_id].dp);
+    OS_impl_dir_table[local_id].dp = NULL;
+    return OS_SUCCESS;
 } /* end OS_DirClose_Impl */
 
 /*----------------------------------------------------------------
@@ -141,27 +140,27 @@ int32 OS_DirClose_Impl(uint32 local_id)
  *-----------------------------------------------------------------*/
 int32 OS_DirRead_Impl(uint32 local_id, os_dirent_t *dirent)
 {
-   struct dirent *de;
+    struct dirent *de;
 
-   /* NOTE - the readdir() call is non-reentrant ....
-    * However, this is performed while the global dir table lock is taken.
-    * Therefore this ensures that only one such call can occur at any given time.
-    *
-    * Static analysis tools may warn about this because they do not know
-    * this function is externally serialized via the global lock.
-    */
-   /* cppcheck-suppress readdirCalled */
-   /* cppcheck-suppress nonreentrantFunctionsreaddir */
-   de = readdir(OS_impl_dir_table[local_id].dp);
-   if (de == NULL)
-   {
-      return OS_ERROR;
-   }
+    /* NOTE - the readdir() call is non-reentrant ....
+     * However, this is performed while the global dir table lock is taken.
+     * Therefore this ensures that only one such call can occur at any given time.
+     *
+     * Static analysis tools may warn about this because they do not know
+     * this function is externally serialized via the global lock.
+     */
+    /* cppcheck-suppress readdirCalled */
+    /* cppcheck-suppress nonreentrantFunctionsreaddir */
+    de = readdir(OS_impl_dir_table[local_id].dp);
+    if (de == NULL)
+    {
+        return OS_ERROR;
+    }
 
-   strncpy(dirent->FileName, de->d_name, sizeof(dirent->FileName) - 1);
-   dirent->FileName[sizeof(dirent->FileName) - 1] = 0;
+    strncpy(dirent->FileName, de->d_name, sizeof(dirent->FileName) - 1);
+    dirent->FileName[sizeof(dirent->FileName) - 1] = 0;
 
-   return OS_SUCCESS;
+    return OS_SUCCESS;
 } /* end OS_DirRead_Impl */
 
 /*----------------------------------------------------------------
@@ -174,8 +173,8 @@ int32 OS_DirRead_Impl(uint32 local_id, os_dirent_t *dirent)
  *-----------------------------------------------------------------*/
 int32 OS_DirRewind_Impl(uint32 local_id)
 {
-   rewinddir(OS_impl_dir_table[local_id].dp);
-   return OS_SUCCESS;
+    rewinddir(OS_impl_dir_table[local_id].dp);
+    return OS_SUCCESS;
 } /* end OS_DirRewind_Impl */
 
 /*----------------------------------------------------------------
@@ -188,10 +187,10 @@ int32 OS_DirRewind_Impl(uint32 local_id)
  *-----------------------------------------------------------------*/
 int32 OS_DirRemove_Impl(const char *local_path)
 {
-   if ( rmdir(local_path) < 0 )
-   {
-      return OS_ERROR;
-   }
+    if (rmdir(local_path) < 0)
+    {
+        return OS_ERROR;
+    }
 
-   return OS_SUCCESS;
+    return OS_SUCCESS;
 } /* end OS_DirRemove_Impl */

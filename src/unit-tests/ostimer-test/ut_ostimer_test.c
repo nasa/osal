@@ -46,14 +46,14 @@
 ** Global variables
 **--------------------------------------------------------------------------------*/
 
-const char*  g_timerNames[UT_OS_TIMER_LIST_LEN];
-char   g_longTimerName[UT_OS_NAME_BUFF_SIZE];
+const char *g_timerNames[UT_OS_TIMER_LIST_LEN];
+char        g_longTimerName[UT_OS_NAME_BUFF_SIZE];
 
-uint32  g_cbLoopCntMax = 5;
-uint32  g_toleranceVal = 0;
-uint32  g_timerFirst   = 0;
-int32   g_status  = 0;
-osal_id_t  g_timerId;
+uint32    g_cbLoopCntMax = 5;
+uint32    g_toleranceVal = 0;
+uint32    g_timerFirst   = 0;
+int32     g_status       = 0;
+osal_id_t g_timerId;
 
 /*--------------------------------------------------------------------------------*
 ** Local function prototypes
@@ -74,28 +74,27 @@ void UT_os_setup_timerset_test(void);
 
 void UT_os_timercallback(osal_id_t timerId)
 {
-    int deltaTime = 0;
-    static int32 loopCnt = 0, res = 0;
-    static uint32 prevIntervalTime = 0;
-    static uint32 currIntervalTime = 0;
-    static OS_time_t currTime = {0,0}, endTime = {0,0};
+    int              deltaTime = 0;
+    static int32     loopCnt = 0, res = 0;
+    static uint32    prevIntervalTime = 0;
+    static uint32    currIntervalTime = 0;
+    static OS_time_t currTime = {0, 0}, endTime = {0, 0};
 
     if (OS_ObjectIdEqual(timerId, g_timerId))
     {
         if (g_timerFirst)
         {
-            g_timerFirst = 0;
-            g_status = 0;
+            g_timerFirst     = 0;
+            g_status         = 0;
             prevIntervalTime = 0;
-            res = 0;
-            loopCnt = 0;
+            res              = 0;
+            loopCnt          = 0;
             OS_GetLocalTime(&currTime);
         }
 
         OS_GetLocalTime(&endTime);
 
-        currIntervalTime = 1000000 * (endTime.seconds - currTime.seconds) +
-            endTime.microsecs - currTime.microsecs;
+        currIntervalTime = 1000000 * (endTime.seconds - currTime.seconds) + endTime.microsecs - currTime.microsecs;
 
         if (currIntervalTime >= prevIntervalTime)
             deltaTime = currIntervalTime - prevIntervalTime;
@@ -106,7 +105,7 @@ void UT_os_timercallback(osal_id_t timerId)
             res = -1;
 
         loopCnt++;
-        currTime = endTime;
+        currTime         = endTime;
         prevIntervalTime = currIntervalTime;
 
         if (loopCnt == g_cbLoopCntMax)
@@ -121,7 +120,7 @@ void UT_os_timercallback(osal_id_t timerId)
 void UT_os_init_timer_misc()
 {
     memset(g_longTimerName, 'Y', sizeof(g_longTimerName));
-    g_longTimerName[sizeof(g_longTimerName)-1] = '\0';
+    g_longTimerName[sizeof(g_longTimerName) - 1] = '\0';
 }
 
 /*--------------------------------------------------------------------------------*/
@@ -129,7 +128,7 @@ void UT_os_init_timer_misc()
 void UT_os_setup_timercreate_test()
 {
     memset(g_longTimerName, 'Y', sizeof(g_longTimerName));
-    g_longTimerName[sizeof(g_longTimerName)-1] = '\0';
+    g_longTimerName[sizeof(g_longTimerName) - 1] = '\0';
 
     g_timerNames[0] = "Create_NotImpl";
     g_timerNames[1] = "Create_NullPtr";
@@ -183,7 +182,6 @@ void UT_os_setup_timerset_test()
     g_timerNames[4] = "Set_Nominal";
 }
 
-
 /*--------------------------------------------------------------------------------*
 ** Main
 **--------------------------------------------------------------------------------*/
@@ -197,32 +195,11 @@ void UtTest_Setup(void)
 
     UT_os_init_timer_misc();
 
-    UtTest_Add(
-            UT_os_timercreate_test,
-            UT_os_setup_timercreate_test,
-            NULL,
-            "OS_TimerCreate");
-    UtTest_Add(
-            UT_os_timerdelete_test,
-            UT_os_setup_timerdelete_test,
-            NULL,
-            "OS_TimerDelete");
-    UtTest_Add(
-            UT_os_timergetidbyname_test,
-            UT_os_setup_timergetidbyname_test,
-            NULL,
-            "OS_TimerGetIdByName");
-    UtTest_Add(
-            UT_os_timergetinfo_test,
-            UT_os_setup_timergetinfo_test,
-            NULL,
-            "OS_TimerGetInfo");
-    UtTest_Add(
-            UT_os_timerset_test,
-            UT_os_setup_timerset_test,
-            NULL,
-            "OS_TimerSet");
-
+    UtTest_Add(UT_os_timercreate_test, UT_os_setup_timercreate_test, NULL, "OS_TimerCreate");
+    UtTest_Add(UT_os_timerdelete_test, UT_os_setup_timerdelete_test, NULL, "OS_TimerDelete");
+    UtTest_Add(UT_os_timergetidbyname_test, UT_os_setup_timergetidbyname_test, NULL, "OS_TimerGetIdByName");
+    UtTest_Add(UT_os_timergetinfo_test, UT_os_setup_timergetinfo_test, NULL, "OS_TimerGetInfo");
+    UtTest_Add(UT_os_timerset_test, UT_os_setup_timerset_test, NULL, "OS_TimerSet");
 }
 
 /*================================================================================*

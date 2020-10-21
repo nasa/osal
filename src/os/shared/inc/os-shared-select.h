@@ -30,7 +30,6 @@
 
 #include <os-shared-globaldefs.h>
 
-
 /*
  * Select API
  * Blocks until specified readable/writable conditions
@@ -78,6 +77,4 @@ int32 OS_SelectSingle_Impl(uint32 stream_id, uint32 *SelectFlags, int32 msecs);
  ------------------------------------------------------------------*/
 int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
 
-
-#endif  /* INCLUDE_OS_SHARED_SELECT_H_ */
-
+#endif /* INCLUDE_OS_SHARED_SELECT_H_ */

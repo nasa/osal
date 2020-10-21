@@ -78,4 +78,3 @@ void OCS_OS_BSP_ConsoleSetMode_Impl(uint32_t ModeBits)
         UT_Stub_CopyFromLocal(UT_KEY(OCS_OS_BSP_ConsoleSetMode_Impl), &ModeBits, sizeof(ModeBits));
     }
 }
-

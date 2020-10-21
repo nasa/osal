@@ -38,9 +38,8 @@
 */
 extern void OS_CleanUpObject(osal_id_t object_id, void *arg);
 
-
 int32 Test_MicroSecPerTick = 0;
-int32 Test_TicksPerSecond = 0;
+int32 Test_TicksPerSecond  = 0;
 
 /*
 **********************************************************************************
@@ -52,13 +51,13 @@ int32 Test_TicksPerSecond = 0;
 static int32 TimeBaseInitGlobal(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context)
 {
     OS_SharedGlobalVars.MicroSecPerTick = Test_MicroSecPerTick;
-    OS_SharedGlobalVars.TicksPerSecond = Test_TicksPerSecond;
+    OS_SharedGlobalVars.TicksPerSecond  = Test_TicksPerSecond;
     return StubRetcode;
 }
 
 static int32 ObjectDeleteCountHook(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context)
 {
-    uint32 *counter = (uint32*)Context->ArgPtr[1];
+    uint32 *counter = (uint32 *)Context->ArgPtr[1];
 
     if (CallCount == 0)
     {
@@ -78,8 +77,6 @@ static int32 SetShutdownFlagHook(void *UserObj, int32 StubRetcode, uint32 CallCo
     return StubRetcode;
 }
 
-
-
 /*
 **********************************************************************************
 **          PUBLIC API FUNCTIONS
@@ -91,18 +88,18 @@ void Test_OS_API_Init(void)
     UT_SetHookFunction(UT_KEY(OS_TimeBaseAPI_Init), TimeBaseInitGlobal, NULL);
 
     /* Execute Test */
-    Test_MicroSecPerTick = 0;
-    Test_TicksPerSecond = 0;
+    Test_MicroSecPerTick            = 0;
+    Test_TicksPerSecond             = 0;
     OS_SharedGlobalVars.Initialized = false;
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_ERROR);
 
-    Test_MicroSecPerTick = 1000;
-    Test_TicksPerSecond = 1000;
+    Test_MicroSecPerTick            = 1000;
+    Test_TicksPerSecond             = 1000;
     OS_SharedGlobalVars.Initialized = false;
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_SUCCESS);
 
-    Test_MicroSecPerTick = 1000;
-    Test_TicksPerSecond = 1001;
+    Test_MicroSecPerTick            = 1000;
+    Test_TicksPerSecond             = 1001;
     OS_SharedGlobalVars.Initialized = false;
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_SUCCESS);
 
@@ -124,7 +121,6 @@ void Test_OS_API_Init(void)
     UT_SetForceFail(UT_KEY(OS_TaskAPI_Init), -444);
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), -444);
     UT_ResetState(UT_KEY(OS_TaskAPI_Init));
-
 }
 
 void Test_OS_ApplicationExit(void)
@@ -143,55 +139,55 @@ void Test_OS_ApplicationExit(void)
 
 void Test_OS_CleanUpObject(void)
 {
-    uint32 objtype;
-    uint32 CallCount;
-    uint32 ActualObjs;
-    uint32 ExpObjs;
+    uint32        objtype;
+    uint32        CallCount;
+    uint32        ActualObjs;
+    uint32        ExpObjs;
     UT_EntryKey_t delhandler;
 
     ActualObjs = 0;
-    ExpObjs = 0;
-    objtype = OS_OBJECT_TYPE_UNDEFINED;
+    ExpObjs    = 0;
+    objtype    = OS_OBJECT_TYPE_UNDEFINED;
     while (objtype < OS_OBJECT_TYPE_USER)
     {
         UT_ResetState(0);
         UT_SetForceFail(UT_KEY(OS_IdentifyObject), objtype);
 
-        switch(objtype)
+        switch (objtype)
         {
-        case OS_OBJECT_TYPE_OS_TASK:
-            delhandler = UT_KEY(OS_TaskDelete);
-            break;
-        case OS_OBJECT_TYPE_OS_QUEUE:
-            delhandler = UT_KEY(OS_QueueDelete);
-            break;
-        case OS_OBJECT_TYPE_OS_BINSEM:
-            delhandler = UT_KEY(OS_BinSemDelete);
-            break;
-        case OS_OBJECT_TYPE_OS_COUNTSEM:
-            delhandler = UT_KEY(OS_CountSemDelete);
-            break;
-        case OS_OBJECT_TYPE_OS_MUTEX:
-            delhandler = UT_KEY(OS_MutSemDelete);
-            break;
-        case OS_OBJECT_TYPE_OS_MODULE:
-            delhandler = UT_KEY(OS_ModuleUnload);
-            break;
-        case OS_OBJECT_TYPE_OS_TIMEBASE:
-            delhandler = UT_KEY(OS_TimeBaseDelete);
-            break;
-        case OS_OBJECT_TYPE_OS_TIMECB:
-            delhandler = UT_KEY(OS_TimerDelete);
-            break;
-        case OS_OBJECT_TYPE_OS_STREAM:
-            delhandler = UT_KEY(OS_close);
-            break;
-        case OS_OBJECT_TYPE_OS_DIR:
-            delhandler = UT_KEY(OS_DirectoryClose);
-            break;
-        default:
-            delhandler = 0;
-            break;
+            case OS_OBJECT_TYPE_OS_TASK:
+                delhandler = UT_KEY(OS_TaskDelete);
+                break;
+            case OS_OBJECT_TYPE_OS_QUEUE:
+                delhandler = UT_KEY(OS_QueueDelete);
+                break;
+            case OS_OBJECT_TYPE_OS_BINSEM:
+                delhandler = UT_KEY(OS_BinSemDelete);
+                break;
+            case OS_OBJECT_TYPE_OS_COUNTSEM:
+                delhandler = UT_KEY(OS_CountSemDelete);
+                break;
+            case OS_OBJECT_TYPE_OS_MUTEX:
+                delhandler = UT_KEY(OS_MutSemDelete);
+                break;
+            case OS_OBJECT_TYPE_OS_MODULE:
+                delhandler = UT_KEY(OS_ModuleUnload);
+                break;
+            case OS_OBJECT_TYPE_OS_TIMEBASE:
+                delhandler = UT_KEY(OS_TimeBaseDelete);
+                break;
+            case OS_OBJECT_TYPE_OS_TIMECB:
+                delhandler = UT_KEY(OS_TimerDelete);
+                break;
+            case OS_OBJECT_TYPE_OS_STREAM:
+                delhandler = UT_KEY(OS_close);
+                break;
+            case OS_OBJECT_TYPE_OS_DIR:
+                delhandler = UT_KEY(OS_DirectoryClose);
+                break;
+            default:
+                delhandler = 0;
+                break;
         }
 
         if (delhandler != 0)
@@ -203,8 +199,8 @@ void Test_OS_CleanUpObject(void)
             OS_CleanUpObject(OS_OBJECT_ID_UNDEFINED, &ActualObjs);
 
             CallCount = UT_GetStubCount(delhandler);
-            UtAssert_True(CallCount == 1, "Objtype %lu call count (%lu) == 1",
-                    (unsigned long)objtype, (unsigned long)CallCount);
+            UtAssert_True(CallCount == 1, "Objtype %lu call count (%lu) == 1", (unsigned long)objtype,
+                          (unsigned long)CallCount);
         }
         else
         {
@@ -214,9 +210,8 @@ void Test_OS_CleanUpObject(void)
         ++ExpObjs;
     }
 
-
-    UtAssert_True(ActualObjs == ExpObjs, "Total objects cleaned up (%lu) == %lu",
-            (unsigned long)ActualObjs, (unsigned long)ExpObjs);
+    UtAssert_True(ActualObjs == ExpObjs, "Total objects cleaned up (%lu) == %lu", (unsigned long)ActualObjs,
+                  (unsigned long)ExpObjs);
 }
 
 void Test_OS_DeleteAllObjects(void)
@@ -232,7 +227,6 @@ void Test_OS_DeleteAllObjects(void)
      * OS_CleanUpObject() will be covered separately.
      */
 
-
     /*
      * The "ForEachObject" API will be invoked in a loop.
      * For the first pass, have it output nonzero
@@ -240,15 +234,12 @@ void Test_OS_DeleteAllObjects(void)
      */
     UT_SetHookFunction(UT_KEY(OS_ForEachObject), ObjectDeleteCountHook, NULL);
 
-
     /*
      * This gets coverage of the function but
      * there is nothing to assert/verify for postconditions here
      */
     OS_DeleteAllObjects();
-
 }
-
 
 void Test_OS_IdleLoopAndShutdown(void)
 {
@@ -264,9 +255,7 @@ void Test_OS_IdleLoopAndShutdown(void)
 
     CallCount = UT_GetStubCount(UT_KEY(OS_ApplicationShutdown_Impl));
 
-    UtAssert_True(CallCount == 1, "OS_ApplicationShutdown_Impl() call count (%lu) == 1",
-            (unsigned long)CallCount);
-
+    UtAssert_True(CallCount == 1, "OS_ApplicationShutdown_Impl() call count (%lu) == 1", (unsigned long)CallCount);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
@@ -287,10 +276,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /*
  * Register the test cases to execute with the unit test tool
@@ -303,8 +289,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_IdleLoopAndShutdown);
     ADD_TEST(OS_ApplicationExit);
 }
-
-
-
-
-

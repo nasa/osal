@@ -29,8 +29,6 @@
 /* mappings for declarations in taskVarLib.h */
 /* ----------------------------------------- */
 
-#define taskVarAdd   OCS_taskVarAdd
-
-
+#define taskVarAdd OCS_taskVarAdd
 
 #endif /* _OSAL_OVERRIDE_TASKVARLIB_H_ */

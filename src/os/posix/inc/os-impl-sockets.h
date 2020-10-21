@@ -35,16 +35,12 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 
-
 #define OS_NETWORK_SUPPORTS_IPV6
 
 /*
  * A full POSIX-compliant I/O layer should support using
  * nonblocking I/O calls in combination with select().
  */
-#define OS_IMPL_SOCKET_FLAGS        O_NONBLOCK
+#define OS_IMPL_SOCKET_FLAGS O_NONBLOCK
 
-
-
-#endif  /* INCLUDE_OS_IMPL_SOCKETS_H_ */
-
+#endif /* INCLUDE_OS_IMPL_SOCKETS_H_ */

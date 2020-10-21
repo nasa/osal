@@ -36,7 +36,4 @@
 /* prototypes normally declared in net/if.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_NET_IF_H_ */
-

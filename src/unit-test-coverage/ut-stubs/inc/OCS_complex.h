@@ -36,7 +36,4 @@
 /* prototypes normally declared in complex.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_COMPLEX_H_ */
-

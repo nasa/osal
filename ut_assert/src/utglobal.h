@@ -44,19 +44,19 @@
 
 typedef struct
 {
-    void    (*Test)(void);
-    void    (*Setup)(void);
-    void    (*Teardown)(void);
+    void (*Test)(void);
+    void (*Setup)(void);
+    void (*Teardown)(void);
 
     /* Note - the name entry should be long enough to support a GroupName.TestName pattern,
      * hence why it uses double the OS_MAX_API_NAME length */
-    char    TestName[OS_MAX_API_NAME*2];
+    char TestName[OS_MAX_API_NAME * 2];
 } UtTestDataBaseEntry_t;
 
 typedef struct
 {
-    UtListHead_t   *DataBasePtr;
-    uint32          ExecutedCount;
+    UtListHead_t *DataBasePtr;
+    uint32        ExecutedCount;
 } UtAssert_Global_t;
 
 /*
@@ -65,4 +65,3 @@ typedef struct
 extern UtAssert_Global_t UtAssert_Global;
 
 #endif /* INCLUDE_UTASSERT_GLOBAL_H_ */
-

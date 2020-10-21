@@ -28,5 +28,4 @@
 /* mappings for declarations in float.h */
 /* ----------------------------------------- */
 
-
 #endif /* _OSAL_OVERRIDE_FLOAT_H_ */

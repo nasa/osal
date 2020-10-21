@@ -36,7 +36,4 @@
 /* prototypes normally declared in fenv.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_FENV_H_ */
-

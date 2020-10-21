@@ -28,11 +28,11 @@
 /* mappings for declarations in dirent.h */
 /* ----------------------------------------- */
 
-#define DIR                             OCS_DIR
-#define dirent                          OCS_dirent
-#define closedir                        OCS_closedir
-#define opendir                         OCS_opendir
-#define readdir                         OCS_readdir
-#define rewinddir                       OCS_rewinddir
+#define DIR       OCS_DIR
+#define dirent    OCS_dirent
+#define closedir  OCS_closedir
+#define opendir   OCS_opendir
+#define readdir   OCS_readdir
+#define rewinddir OCS_rewinddir
 
 #endif /* _OSAL_OVERRIDE_DIRENT_H_ */

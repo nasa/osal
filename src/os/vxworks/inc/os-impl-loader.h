@@ -51,6 +51,4 @@ typedef struct
  */
 extern OS_impl_module_internal_record_t OS_impl_module_table[OS_MAX_MODULES];
 
-
-#endif  /* INCLUDE_OS_IMPL_LOADER_H_ */
-
+#endif /* INCLUDE_OS_IMPL_LOADER_H_ */

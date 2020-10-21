@@ -28,9 +28,8 @@
 /* ---------------------------------------*/
 /* mappings for declarations in blkIo.h */
 /* ---------------------------------------*/
-#define NULLDEV        OCS_NULLDEV
-#define BLK_DEV        OCS_BLK_DEV
-#define BLK_DEV_ID     OCS_BLK_DEV_ID
-
+#define NULLDEV    OCS_NULLDEV
+#define BLK_DEV    OCS_BLK_DEV
+#define BLK_DEV_ID OCS_BLK_DEV_ID
 
 #endif /* _OSAL_OVERRIDE_BLKIO_H_ */

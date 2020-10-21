@@ -28,12 +28,11 @@
 /* ----------------------------------------- */
 /* mappings for declarations in memPartLib.h */
 /* ----------------------------------------- */
-#define PART_ID         OCS_PART_ID
-#define MEM_PART_STATS  OCS_MEM_PART_STATS
+#define PART_ID        OCS_PART_ID
+#define MEM_PART_STATS OCS_MEM_PART_STATS
 
 #define memPartShow    OCS_memPartShow
 #define memPartInfoGet OCS_memPartInfoGet
 #define memSysPartId   OCS_memSysPartId
-
 
 #endif /* _OSAL_OVERRIDE_MEMPARTLIB_H_ */

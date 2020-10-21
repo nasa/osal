@@ -41,9 +41,6 @@
  * A RTEMS socket I/O layer should support using
  * nonblocking I/O calls in combination with select().
  */
-#define OS_IMPL_SOCKET_FLAGS        O_NONBLOCK
+#define OS_IMPL_SOCKET_FLAGS O_NONBLOCK
 
-
-
-#endif  /* INCLUDE_OS_IMPL_SOCKETS_H_ */
-
+#endif /* INCLUDE_OS_IMPL_SOCKETS_H_ */

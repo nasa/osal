@@ -67,14 +67,14 @@
 **--------------------------------------------------------------------------------*/
 void UT_os_module_load_test()
 {
-    int i;
-    int32 res = 0;
-    const char* testDesc;
-    uint32  test_setup_invalid = 0;
-    osal_id_t  module_id;
-    osal_id_t  module_id2;
-    char    module_name[UT_OS_NAME_BUFF_SIZE];
-    char    module_file_name[UT_OS_PATH_BUFF_SIZE];
+    int         i;
+    int32       res = 0;
+    const char *testDesc;
+    uint32      test_setup_invalid = 0;
+    osal_id_t   module_id;
+    osal_id_t   module_id2;
+    char        module_name[UT_OS_NAME_BUFF_SIZE];
+    char        module_file_name[UT_OS_PATH_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
     testDesc = "API Not implemented";
@@ -82,7 +82,7 @@ void UT_os_module_load_test()
     res = OS_ModuleLoad(0, "TestModule", UT_OS_GENERIC_MODULE_NAME1);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
         goto UT_os_module_load_test_exit_tag;
     }
 
@@ -91,54 +91,53 @@ void UT_os_module_load_test()
 
     res = OS_ModuleLoad(0, "TestModule", UT_OS_GENERIC_MODULE_NAME1);
     if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#2 Null-pointer-arg-2";
 
     res = OS_ModuleLoad(&module_id, 0, UT_OS_GENERIC_MODULE_NAME1);
     if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#3 Null-pointer-arg-3";
 
     res = OS_ModuleLoad(&module_id, "TestModule", 0);
     if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#4 No-free-IDs";
 
     /* Setup */
-    for ( i = 0; i< OS_MAX_MODULES; i++ )
+    for (i = 0; i < OS_MAX_MODULES; i++)
     {
         snprintf(module_name, sizeof(module_name), UT_OS_GENERIC_MODULE_NAME_TEMPLATE, i);
         snprintf(module_file_name, sizeof(module_file_name), UT_OS_GENERIC_MODULE_FILE_TEMPLATE, i);
         res = OS_ModuleLoad(&module_id, module_name, module_file_name);
-        if ( res != OS_SUCCESS )
+        if (res != OS_SUCCESS)
         {
             testDesc = "#4 No-free-IDs - Module Load failed";
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
             test_setup_invalid = 1;
             break;
         }
     }
 
-    if ( test_setup_invalid == 0 )
+    if (test_setup_invalid == 0)
     {
         res = OS_ModuleLoad(&module_id, "OneTooMany", UT_OS_GENERIC_MODULE_NAME2);
         if (res == OS_ERR_NO_FREE_IDS)
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
-
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
     }
     /* Reset test environment */
     OS_DeleteAllObjects();
@@ -148,18 +147,18 @@ void UT_os_module_load_test()
 
     /* Setup */
     res = OS_ModuleLoad(&module_id2, "DUPLICATE", UT_OS_GENERIC_MODULE_NAME2);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#5 Duplicate-name - Module Load failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
     }
     else
     {
         res = OS_ModuleLoad(&module_id, "DUPLICATE", UT_OS_GENERIC_MODULE_NAME2);
         if (res == OS_ERR_NAME_TAKEN)
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
         /* Reset test environment */
         res = OS_ModuleUnload(module_id2);
@@ -168,23 +167,22 @@ void UT_os_module_load_test()
     /*-----------------------------------------------------*/
     testDesc = "#6 OS-call-failure";
 
-    UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_INFO);
+    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
 
     /*-----------------------------------------------------*/
     testDesc = "#7 Nominal";
 
     res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2);
-    if ( res == OS_SUCCESS )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_SUCCESS)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /* Reset test environment */
     res = OS_ModuleUnload(module_id);
 
 UT_os_module_load_test_exit_tag:
     return;
-    
 }
 
 /*--------------------------------------------------------------------------------*
@@ -197,9 +195,9 @@ UT_os_module_load_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_module_unload_test()
 {
-    int32 res = 0;
-    const char* testDesc;
-    osal_id_t  module_id;
+    int32       res = 0;
+    const char *testDesc;
+    osal_id_t   module_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API Not implemented";
@@ -207,7 +205,7 @@ void UT_os_module_unload_test()
     res = OS_ModuleUnload(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
         goto UT_os_module_unload_test_exit_tag;
     }
 
@@ -215,38 +213,37 @@ void UT_os_module_unload_test()
     testDesc = "#1 Invalid-ID-arg";
 
     res = OS_ModuleUnload(UT_OBJID_INCORRECT);
-    if ( res == OS_ERR_INVALID_ID )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_ERR_INVALID_ID)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#2 OS-call-failure";
 
-    UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_INFO);
+    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
 
     /*-----------------------------------------------------*/
     testDesc = "#3 Nominal";
 
     /* Setup */
     res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#3 Nominal - Module Load failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
     }
     else
     {
         res = OS_ModuleUnload(module_id);
-        if ( res == OS_SUCCESS )
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        if (res == OS_SUCCESS)
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
     }
 
 UT_os_module_unload_test_exit_tag:
     return;
-    
 }
 
 /*--------------------------------------------------------------------------------*
@@ -259,10 +256,10 @@ UT_os_module_unload_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_module_info_test()
 {
-    int32              res = 0;
-    const char*        testDesc;
-    osal_id_t          module_id;
-    OS_module_prop_t   module_info;
+    int32            res = 0;
+    const char *     testDesc;
+    osal_id_t        module_id;
+    OS_module_prop_t module_info;
 
     /*-----------------------------------------------------*/
     testDesc = "API Not implemented";
@@ -270,7 +267,7 @@ void UT_os_module_info_test()
     res = OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, &module_info);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
         goto UT_os_module_info_test_exit_tag;
     }
 
@@ -278,44 +275,43 @@ void UT_os_module_info_test()
     testDesc = "#1 Invalid-pointer-arg";
 
     res = OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, NULL);
-    if ( res == OS_INVALID_POINTER )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_INVALID_POINTER)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#2 Invalid-ID-arg";
 
     res = OS_ModuleInfo(UT_OBJID_INCORRECT, &module_info);
-    if ( res == OS_ERR_INVALID_ID )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_ERR_INVALID_ID)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#3 Nominal";
 
     /* Setup */
     res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#3 Nominal - Module Load failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
     }
     else
     {
         res = OS_ModuleInfo(module_id, &module_info);
-        if ( res == OS_SUCCESS )
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        if (res == OS_SUCCESS)
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
         res = OS_ModuleUnload(module_id);
     }
 
 UT_os_module_info_test_exit_tag:
     return;
-    
 }
 
 /*================================================================================*

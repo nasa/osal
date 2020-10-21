@@ -28,18 +28,15 @@
 /* mappings for declarations in sys/stat.h */
 /* ----------------------------------------- */
 
-#define stat          OCS_stat
-#define fchmod        OCS_fchmod
-#define chmod         OCS_chmod
-#define mkdir         OCS_mkdir
-
+#define stat   OCS_stat
+#define fchmod OCS_fchmod
+#define chmod  OCS_chmod
+#define mkdir  OCS_mkdir
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/statvfs.h */
 /* ----------------------------------------- */
-#define statvfs     OCS_statvfs
-#define statfs      OCS_statvfs
-
-
+#define statvfs OCS_statvfs
+#define statfs  OCS_statvfs
 
 #endif /* _OSAL_OVERRIDE_STAT_H_ */

@@ -26,7 +26,7 @@
 #include <OCS_taskLib.h>
 #include <OCS_errnoLib.h>
 
-static OCS_WIND_TCB OCS_LOCAL_TASK = { 0 };
+static OCS_WIND_TCB OCS_LOCAL_TASK = {0};
 
 void OCS_taskExit(int code)
 {
@@ -81,43 +81,15 @@ OCS_STATUS OCS_taskPrioritySet(OCS_TASK_ID tid, int newPriority)
     return (UT_DEFAULT_IMPL(OCS_taskPrioritySet));
 }
 
-OCS_STATUS OCS_taskInit(OCS_WIND_TCB *pTcb,
-        char *name,
-        int priority,
-        int options,
-        char * pStackBase,
-        int stackSize,
-        OCS_FUNCPTR entryPt,
-        int arg1,
-        int arg2,
-        int arg3,
-        int arg4,
-        int arg5,
-        int arg6,
-        int arg7,
-        int arg8,
-        int arg9,
-        int arg10
-)
+OCS_STATUS OCS_taskInit(OCS_WIND_TCB *pTcb, char *name, int priority, int options, char *pStackBase, int stackSize,
+                        OCS_FUNCPTR entryPt, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
+                        int arg8, int arg9, int arg10)
 {
     return (UT_DEFAULT_IMPL(OCS_taskInit));
 }
 
-OCS_TASK_ID OCS_taskSpawn(char *  name,
-              int     priority,
-              int     options,
-              int     stackSize,
-              OCS_FUNCPTR entryPt,
-              int     arg1,
-              int     arg2,
-              int     arg3,
-              int     arg4,
-              int     arg5,
-              int     arg6,
-              int     arg7,
-              int     arg8,
-              int     arg9,
-              int     arg10)
+OCS_TASK_ID OCS_taskSpawn(char *name, int priority, int options, int stackSize, OCS_FUNCPTR entryPt, int arg1, int arg2,
+                          int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10)
 
 {
     int32 Status;
@@ -142,7 +114,7 @@ OCS_STATUS OCS_taskActivate(OCS_TASK_ID tid)
 
 OCS_WIND_TCB *OCS_taskTcb(OCS_TASK_ID tid)
 {
-    int32 Status;
+    int32         Status;
     OCS_WIND_TCB *LocalTcb;
 
     Status = UT_DEFAULT_IMPL(OCS_taskTcb);
@@ -164,4 +136,3 @@ OCS_WIND_TCB *OCS_taskTcb(OCS_TASK_ID tid)
 
     return LocalTcb;
 }
-

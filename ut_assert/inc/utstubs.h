@@ -36,7 +36,6 @@
  *
  */
 
-
 #ifndef _UTSTUBS_H_
 #define _UTSTUBS_H_
 
@@ -56,8 +55,7 @@ typedef cpuaddr UT_EntryKey_t;
 /**
  * Macro to obtain a UT_EntryKey_t value from any function name
  */
-#define UT_KEY(Func)         ((UT_EntryKey_t)&Func)
-
+#define UT_KEY(Func) ((UT_EntryKey_t)&Func)
 
 /**
  * Maximum size of a callback hook context list
@@ -65,7 +63,7 @@ typedef cpuaddr UT_EntryKey_t;
  * This is the maximum number of function arguments that can be passed to a hook
  * Note that OS_TaskCreate() has (possibly) the highest parameter count in OSAL with 7 parameters
  */
-#define UT_STUBCONTEXT_MAXSIZE      8
+#define UT_STUBCONTEXT_MAXSIZE 8
 
 /**
  * Identifies the type of value stored in the ArgPtr field of a UT_StubContext_t object
@@ -73,8 +71,8 @@ typedef cpuaddr UT_EntryKey_t;
 typedef enum
 {
     UT_STUBCONTEXT_ARG_TYPE_UNSPECIFIED = 0,
-    UT_STUBCONTEXT_ARG_TYPE_DIRECT,      /**< Indicates "ArgPtr" is a direct copy of the actual parameter value */
-    UT_STUBCONTEXT_ARG_TYPE_INDIRECT     /**< Indicates "ArgPtr" is a pointer to the argument value on the stack */
+    UT_STUBCONTEXT_ARG_TYPE_DIRECT,  /**< Indicates "ArgPtr" is a direct copy of the actual parameter value */
+    UT_STUBCONTEXT_ARG_TYPE_INDIRECT /**< Indicates "ArgPtr" is a pointer to the argument value on the stack */
 } UT_StubContext_Arg_Type_t;
 
 /**
@@ -83,8 +81,8 @@ typedef enum
 typedef struct
 {
     UT_StubContext_Arg_Type_t Type;
-    const char *Name;
-    size_t Size;
+    const char *              Name;
+    size_t                    Size;
 } UT_StubArgMetaData_t;
 
 /**
@@ -92,8 +90,8 @@ typedef struct
  */
 typedef struct
 {
-    uint32 ArgCount;
-    const void *ArgPtr[UT_STUBCONTEXT_MAXSIZE];
+    uint32               ArgCount;
+    const void *         ArgPtr[UT_STUBCONTEXT_MAXSIZE];
     UT_StubArgMetaData_t Meta[UT_STUBCONTEXT_MAXSIZE];
 } UT_StubContext_t;
 
@@ -101,8 +99,8 @@ typedef struct
  * Function pointer for user-specified hooks/stub callbacks
  */
 typedef int32 (*UT_HookFunc_t)(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context);
-typedef int32 (*UT_VaHookFunc_t)(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context, va_list va);
-
+typedef int32 (*UT_VaHookFunc_t)(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context,
+                                 va_list va);
 
 /**************************************************************
  * Functions for use within test code implementation
@@ -226,7 +224,7 @@ void UT_SetHookFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *Use
  * contents of the arguments but the types of arguments aren't known.
  *
  * However, some systems have limited support for va_list, so this might not be
- * available on those systems.  Tests should use the generic (non-va) hook function 
+ * available on those systems.  Tests should use the generic (non-va) hook function
  * unless the arguments are truly necessary.
  *
  * \param FuncKey  The stub function to add the hook to.
@@ -255,8 +253,6 @@ bool UT_GetStubRetcodeAndCount(UT_EntryKey_t FuncKey, int32 *Retcode, int32 *Cou
  * \return The number of times the stub was invoked
  */
 uint32 UT_GetStubCount(UT_EntryKey_t FuncKey);
-
-
 
 /**************************************************************
  * Functions for use within stub function implementation
@@ -348,8 +344,8 @@ uint32 UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, uin
  * \param FuncKey   The stub function to entry to use.
  * \param Parameter Arbitrary parameter to pass.
  */
-#define UT_Stub_RegisterContext(FuncKey, Parameter)     \
-        UT_Stub_RegisterContextWithMetaData(FuncKey, #Parameter, UT_STUBCONTEXT_ARG_TYPE_UNSPECIFIED, Parameter, 0)
+#define UT_Stub_RegisterContext(FuncKey, Parameter) \
+    UT_Stub_RegisterContextWithMetaData(FuncKey, #Parameter, UT_STUBCONTEXT_ARG_TYPE_UNSPECIFIED, Parameter, 0)
 
 /**
  * Registers a single value argument into the context for the hook callback
@@ -357,8 +353,9 @@ uint32 UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, uin
  * A pointer to the stack value is actually stored into the context,
  * which can be dereferenced in the hook.
  */
-#define UT_Stub_RegisterContextGenericArg(FuncKey, Parameter)     \
-        UT_Stub_RegisterContextWithMetaData(FuncKey, #Parameter, UT_STUBCONTEXT_ARG_TYPE_INDIRECT, &Parameter, sizeof(Parameter))
+#define UT_Stub_RegisterContextGenericArg(FuncKey, Parameter)                                              \
+    UT_Stub_RegisterContextWithMetaData(FuncKey, #Parameter, UT_STUBCONTEXT_ARG_TYPE_INDIRECT, &Parameter, \
+                                        sizeof(Parameter))
 
 /**
  * Registers a single context element for the hook callback
@@ -374,8 +371,8 @@ uint32 UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, uin
  * \param ParamPtr  Pointer to argument data
  * \param ParamSize The size of the object pointed to, or zero if not known
  */
-void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t FuncKey, const char *Name, 
-    UT_StubContext_Arg_Type_t ParamType, const void *ParamPtr, size_t ParamSize);
+void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t FuncKey, const char *Name, UT_StubContext_Arg_Type_t ParamType,
+                                         const void *ParamPtr, size_t ParamSize);
 
 /**
  * Retrieve a context argument value by name
@@ -395,7 +392,7 @@ void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t FuncKey, const char *Name
  * \param ExpectedSize The size of the expected object type
  * \returns Pointer to buffer containing the value.
  */
-const void* UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Name, size_t ExpectedTypeSize);
+const void *UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Name, size_t ExpectedTypeSize);
 
 /**
  * Macro which retrieves a value argument by name.
@@ -404,8 +401,8 @@ const void* UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Na
  * associated with an argument as the correct/expected type.
  *
  */
-#define UT_Hook_GetArgValueByName(ContextPtr,Name,Type)     \
-    (*(Type const *)UT_Hook_GetArgPtr(ContextPtr,Name,sizeof(Type)))
+#define UT_Hook_GetArgValueByName(ContextPtr, Name, Type) \
+    (*(Type const *)UT_Hook_GetArgPtr(ContextPtr, Name, sizeof(Type)))
 
 /**
  * Default implementation for a stub function that takes a va_list of arguments.
@@ -421,7 +418,6 @@ const void* UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Na
  */
 int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey, int32 DefaultRc, va_list va);
 
-
 /**
  * Default implementation for a stub function that should be useful for most cases.
  *
@@ -434,7 +430,6 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
  */
 int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 DefaultRc, ...);
 
-
 /**
  * Macro to simplify usage of the UT_DefaultStubImpl() function
  *
@@ -445,7 +440,7 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
  * This version should be used on stubs that take no arguments
  * and are expected to return 0 in the nominal case
  */
-#define UT_DEFAULT_IMPL(FuncName)           UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), 0)
+#define UT_DEFAULT_IMPL(FuncName) UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), 0)
 
 /**
  * Macro to simplify usage of the UT_DefaultStubImpl() function
@@ -457,7 +452,7 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
  * This version should be used on stubs that take no arguments
  * and are expected to return nonzero in the nominal case
  */
-#define UT_DEFAULT_IMPL_RC(FuncName, Rc)    UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), Rc)
+#define UT_DEFAULT_IMPL_RC(FuncName, Rc) UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), Rc)
 
 /**
  * Macro to simplify usage of the UT_DefaultStubImpl() function
@@ -469,8 +464,7 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
  * This version should be used on stubs that do take arguments
  * and are expected to return 0 in the nominal case
  */
-#define UT_DEFAULT_IMPL_ARGS(FuncName,...)  UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), 0, __VA_ARGS__)
-
+#define UT_DEFAULT_IMPL_ARGS(FuncName, ...) UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), 0, __VA_ARGS__)
 
 /**
  * Macro to simplify usage of the UT_DefaultStubImpl() function
@@ -479,14 +473,14 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
  * where the default items of deferred return codes / force fails are
  * checked first, then additional functionality is added.
  */
-#define UT_DEFAULT_IMPL_RC_ARGS(FuncName,Rc,...)  UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), Rc, __VA_ARGS__)
+#define UT_DEFAULT_IMPL_RC_ARGS(FuncName, Rc, ...) UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), Rc, __VA_ARGS__)
 
 /**
  * Macro to simplify usage of the UT_DefaultStubImplWithArgs() function
  *
  * This function accepts a list of arguments as a va_list
  */
-#define UT_DEFAULT_IMPL_VARARGS(FuncName,va)  UT_DefaultStubImplWithArgs(#FuncName, UT_KEY(FuncName), 0, va)
+#define UT_DEFAULT_IMPL_VARARGS(FuncName, va) UT_DefaultStubImplWithArgs(#FuncName, UT_KEY(FuncName), 0, va)
 
 /**
  * Macro to simplify usage of the UT_DefaultStubImplWithArgs() function
@@ -494,8 +488,7 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
  * This function accepts a list of arguments as a va_list and
  * a nonzero default return code
  */
-#define UT_DEFAULT_IMPL_RC_VARARGS(FuncName,Rc,va)  UT_DefaultStubImplWithArgs(#FuncName, UT_KEY(FuncName), Rc, va)
-
+#define UT_DEFAULT_IMPL_RC_VARARGS(FuncName, Rc, va) UT_DefaultStubImplWithArgs(#FuncName, UT_KEY(FuncName), Rc, va)
 
 /**
  * Macro to simplify usage of the UT_DefaultStubImpl() function
@@ -503,8 +496,10 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
  * The UT_DEFAULT_STUB can be used as a complete stub implementation
  * when only deferred return codes / force fails are in use.
  */
-#define UT_DEFAULT_STUB(FuncName, Args)     int32 FuncName Args { return UT_DEFAULT_IMPL(FuncName); }
-
-
+#define UT_DEFAULT_STUB(FuncName, Args)   \
+    int32 FuncName Args                   \
+    {                                     \
+        return UT_DEFAULT_IMPL(FuncName); \
+    }
 
 #endif /* _UTSTUBS_H_ */

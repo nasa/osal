@@ -28,5 +28,4 @@
 /* mappings for declarations in locale.h */
 /* ----------------------------------------- */
 
-
 #endif /* _OSAL_OVERRIDE_LOCALE_H_ */

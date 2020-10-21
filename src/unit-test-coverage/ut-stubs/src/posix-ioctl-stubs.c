@@ -25,7 +25,7 @@
 
 #include <OCS_sys_ioctl.h>
 
-int OCS_ioctl (int fd, unsigned long req, ...)
+int OCS_ioctl(int fd, unsigned long req, ...)
 {
     int32 Status;
 
@@ -33,4 +33,3 @@ int OCS_ioctl (int fd, unsigned long req, ...)
 
     return Status;
 }
-

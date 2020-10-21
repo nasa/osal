@@ -57,21 +57,20 @@ VX_MUTEX_SEMAPHORE(OS_module_table_mut_mem);
 VX_MUTEX_SEMAPHORE(OS_filesys_table_mut_mem);
 VX_MUTEX_SEMAPHORE(OS_console_mut_mem);
 
-VxWorks_GlobalMutex_t VX_MUTEX_TABLE[] =
-{
-        [OS_OBJECT_TYPE_UNDEFINED] = { NULL },
-        [OS_OBJECT_TYPE_OS_TASK] = { .mem = OS_task_table_mut_mem },
-        [OS_OBJECT_TYPE_OS_QUEUE] = { .mem = OS_queue_table_mut_mem },
-        [OS_OBJECT_TYPE_OS_COUNTSEM] = { .mem = OS_count_sem_table_mut_mem },
-        [OS_OBJECT_TYPE_OS_BINSEM] = { .mem = OS_bin_sem_table_mut_mem },
-        [OS_OBJECT_TYPE_OS_MUTEX] = { .mem = OS_mutex_table_mut_mem },
-        [OS_OBJECT_TYPE_OS_STREAM] = { .mem = OS_stream_table_mut_mem },
-        [OS_OBJECT_TYPE_OS_DIR] = { .mem = OS_dir_table_mut_mem },
-        [OS_OBJECT_TYPE_OS_TIMEBASE] = { .mem = OS_timebase_table_mut_mem },
-        [OS_OBJECT_TYPE_OS_TIMECB] = { .mem = OS_timecb_table_mut_mem },
-        [OS_OBJECT_TYPE_OS_MODULE] = { .mem = OS_module_table_mut_mem },
-        [OS_OBJECT_TYPE_OS_FILESYS] = { .mem = OS_filesys_table_mut_mem },
-        [OS_OBJECT_TYPE_OS_CONSOLE] = { .mem = OS_console_mut_mem },
+VxWorks_GlobalMutex_t VX_MUTEX_TABLE[] = {
+    [OS_OBJECT_TYPE_UNDEFINED]   = {NULL},
+    [OS_OBJECT_TYPE_OS_TASK]     = {.mem = OS_task_table_mut_mem},
+    [OS_OBJECT_TYPE_OS_QUEUE]    = {.mem = OS_queue_table_mut_mem},
+    [OS_OBJECT_TYPE_OS_COUNTSEM] = {.mem = OS_count_sem_table_mut_mem},
+    [OS_OBJECT_TYPE_OS_BINSEM]   = {.mem = OS_bin_sem_table_mut_mem},
+    [OS_OBJECT_TYPE_OS_MUTEX]    = {.mem = OS_mutex_table_mut_mem},
+    [OS_OBJECT_TYPE_OS_STREAM]   = {.mem = OS_stream_table_mut_mem},
+    [OS_OBJECT_TYPE_OS_DIR]      = {.mem = OS_dir_table_mut_mem},
+    [OS_OBJECT_TYPE_OS_TIMEBASE] = {.mem = OS_timebase_table_mut_mem},
+    [OS_OBJECT_TYPE_OS_TIMECB]   = {.mem = OS_timecb_table_mut_mem},
+    [OS_OBJECT_TYPE_OS_MODULE]   = {.mem = OS_module_table_mut_mem},
+    [OS_OBJECT_TYPE_OS_FILESYS]  = {.mem = OS_filesys_table_mut_mem},
+    [OS_OBJECT_TYPE_OS_CONSOLE]  = {.mem = OS_console_mut_mem},
 };
 
 enum
@@ -104,7 +103,7 @@ int32 OS_Lock_Global_Impl(uint32 idtype)
 
     if (semTake(mut->vxid, WAIT_FOREVER) != OK)
     {
-        OS_DEBUG("semTake() - vxWorks errno %d\n",errno);
+        OS_DEBUG("semTake() - vxWorks errno %d\n", errno);
         return OS_ERROR;
     }
 
@@ -136,14 +135,12 @@ int32 OS_Unlock_Global_Impl(uint32 idtype)
 
     if (semGive(mut->vxid) != OK)
     {
-        OS_DEBUG("semGive() - vxWorks errno %d\n",errno);
+        OS_DEBUG("semGive() - vxWorks errno %d\n", errno);
         return OS_ERROR;
     }
 
     return OS_SUCCESS;
 } /* end OS_Unlock_Global_Impl */
-
-
 
 /****************************************************************************************
                                 INITIALIZATION FUNCTION
@@ -159,17 +156,17 @@ int32 OS_Unlock_Global_Impl(uint32 idtype)
  *-----------------------------------------------------------------*/
 int32 OS_VxWorks_TableMutex_Init(uint32 idtype)
 {
-    int32    return_code = OS_SUCCESS;
-    SEM_ID   semid;
+    int32  return_code = OS_SUCCESS;
+    SEM_ID semid;
 
     /* Initialize the table mutex for the given idtype */
     if (idtype < VX_MUTEX_TABLE_SIZE && VX_MUTEX_TABLE[idtype].mem != NULL)
     {
-        semid = semMInitialize (VX_MUTEX_TABLE[idtype].mem, SEM_Q_PRIORITY | SEM_INVERSION_SAFE);
+        semid = semMInitialize(VX_MUTEX_TABLE[idtype].mem, SEM_Q_PRIORITY | SEM_INVERSION_SAFE);
 
-        if ( semid == (SEM_ID)0 )
+        if (semid == (SEM_ID)0)
         {
-            OS_DEBUG("Error: semMInitialize() failed - vxWorks errno %d\n",errno);
+            OS_DEBUG("Error: semMInitialize() failed - vxWorks errno %d\n", errno);
             return_code = OS_ERROR;
         }
         else
@@ -178,6 +175,5 @@ int32 OS_VxWorks_TableMutex_Init(uint32 idtype)
         }
     }
 
-    return(return_code);
+    return (return_code);
 } /* end OS_VxWorks_TableMutex_Init */
-

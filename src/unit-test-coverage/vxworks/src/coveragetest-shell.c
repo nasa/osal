@@ -55,12 +55,11 @@ void Test_OS_ShellOutputToFile_Impl(void)
     /* failure to open the output file */
     UT_SetForceFail(UT_KEY(OS_OpenCreate), OS_ERROR);
     expected = OS_ERROR;
-    actual = OS_ShellOutputToFile_Impl(0, "TestCmd");
+    actual   = OS_ShellOutputToFile_Impl(0, "TestCmd");
     UtAssert_True(actual == expected, "OS_ShellOutputToFile_Impl() (%ld) == OS_ERROR", (long)actual);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
-
 
 /* Osapi_Test_Setup
  *
@@ -79,10 +78,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -93,4 +89,3 @@ void UtTest_Setup(void)
 {
     ADD_TEST(OS_ShellOutputToFile_Impl);
 }
-

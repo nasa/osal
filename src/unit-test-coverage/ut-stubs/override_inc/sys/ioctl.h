@@ -30,5 +30,4 @@
 
 #define ioctl OCS_ioctl
 
-
 #endif /* _OSAL_OVERRIDE_SYS_IOCTL_H_ */

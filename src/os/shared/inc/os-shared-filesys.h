@@ -38,8 +38,7 @@
  * The filesystem should be configured and mounted at the right
  * spot prior to starting OSAL.
  */
-#define OS_FILESYS_FLAG_IS_FIXED               0x01
-
+#define OS_FILESYS_FLAG_IS_FIXED 0x01
 
 /**
  * This flag will be set on the internal record to indicate
@@ -51,21 +50,21 @@
  * On VxWorks, this means that the low-level block device
  * is registered in the kernel and XBD layers.
  */
-#define OS_FILESYS_FLAG_IS_READY               0x02
+#define OS_FILESYS_FLAG_IS_READY 0x02
 
 /**
  * This flag will be set on the internal record to indicate
  * that the file system is accessible within the underlying
  * operating system, i.e. that the system_mountpt is valid.
  */
-#define OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM      0x10
+#define OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM 0x10
 
 /**
  * This flag will be set on the internal record to indicate
  * that the file system is mounted within the virtualized
  * file system exposed to applications.
  */
-#define OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL     0x20
+#define OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL 0x20
 
 /**
  * These definitions apply to the "type" field within
@@ -76,11 +75,11 @@
  */
 enum
 {
-    OS_FILESYS_TYPE_UNKNOWN = 0,    /**< Unspecified or unknown file system type */
-    OS_FILESYS_TYPE_FS_BASED,       /**< A emulated virtual file system that maps to another file system location */
-    OS_FILESYS_TYPE_NORMAL_DISK,    /**< A traditional disk drive or something that emulates one */
-    OS_FILESYS_TYPE_VOLATILE_DISK,  /**< A temporary/volatile file system or RAM disk */
-    OS_FILESYS_TYPE_MTD,            /**< A "memory technology device" such as FLASH or EEPROM */
+    OS_FILESYS_TYPE_UNKNOWN = 0,   /**< Unspecified or unknown file system type */
+    OS_FILESYS_TYPE_FS_BASED,      /**< A emulated virtual file system that maps to another file system location */
+    OS_FILESYS_TYPE_NORMAL_DISK,   /**< A traditional disk drive or something that emulates one */
+    OS_FILESYS_TYPE_VOLATILE_DISK, /**< A temporary/volatile file system or RAM disk */
+    OS_FILESYS_TYPE_MTD,           /**< A "memory technology device" such as FLASH or EEPROM */
     OS_FILESYS_TYPE_MAX
 };
 
@@ -100,26 +99,26 @@ typedef struct
     uint64 blocks_free;
 } OS_statvfs_t;
 
-
 typedef struct
 {
-    char device_name[OS_FS_DEV_NAME_LEN];      /**< The name of the underlying block device, if applicable */
+    char device_name[OS_FS_DEV_NAME_LEN]; /**< The name of the underlying block device, if applicable */
     char volume_name[OS_FS_VOL_NAME_LEN];
-    char system_mountpt[OS_MAX_LOCAL_PATH_LEN]; /**< The name/prefix where the contents are accessible in the host operating system */
-    char virtual_mountpt[OS_MAX_PATH_LEN];  /**< The name/prefix in the OSAL Virtual File system exposed to applications */
-    char *address;
+    char system_mountpt[OS_MAX_LOCAL_PATH_LEN]; /**< The name/prefix where the contents are accessible in the host
+                                                   operating system */
+    char virtual_mountpt[OS_MAX_PATH_LEN]; /**< The name/prefix in the OSAL Virtual File system exposed to applications
+                                            */
+    char * address;
     uint32 blocksize;
     uint32 numblocks;
-    uint8 flags;
-    uint8 fstype;
+    uint8  flags;
+    uint8  fstype;
 } OS_filesys_internal_record_t;
 
 /*
  * These record types have extra information with each entry.  These tables are used
  * to share extra data between the common layer and the OS-specific implementation.
  */
-extern OS_filesys_internal_record_t        OS_filesys_table[OS_MAX_FILE_SYSTEMS];
-
+extern OS_filesys_internal_record_t OS_filesys_table[OS_MAX_FILE_SYSTEMS];
 
 /*
  * File system abstraction layer
@@ -132,9 +131,7 @@ extern OS_filesys_internal_record_t        OS_filesys_table[OS_MAX_FILE_SYSTEMS]
 
    returns: OS_SUCCESS on success, or relevant error code
 ---------------------------------------------------------------------------------------*/
-int32 OS_FileSysAPI_Init             (void);
-
-
+int32 OS_FileSysAPI_Init(void);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysStartVolume_Impl
@@ -143,7 +140,7 @@ int32 OS_FileSysAPI_Init             (void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStartVolume_Impl (uint32 filesys_id);
+int32 OS_FileSysStartVolume_Impl(uint32 filesys_id);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysStopVolume_Impl
@@ -152,7 +149,7 @@ int32 OS_FileSysStartVolume_Impl (uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStopVolume_Impl (uint32 filesys_id);
+int32 OS_FileSysStopVolume_Impl(uint32 filesys_id);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysFormatVolume_Impl
@@ -161,7 +158,7 @@ int32 OS_FileSysStopVolume_Impl (uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysFormatVolume_Impl (uint32 filesys_id);
+int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysCheckVolume_Impl
@@ -170,7 +167,7 @@ int32 OS_FileSysFormatVolume_Impl (uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysCheckVolume_Impl (uint32 filesys_id, bool repair);
+int32 OS_FileSysCheckVolume_Impl(uint32 filesys_id, bool repair);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysStatVolume_Impl
@@ -179,7 +176,7 @@ int32 OS_FileSysCheckVolume_Impl (uint32 filesys_id, bool repair);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStatVolume_Impl (uint32 filesys_id, OS_statvfs_t *result);
+int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysMountVolume_Impl
@@ -188,7 +185,7 @@ int32 OS_FileSysStatVolume_Impl (uint32 filesys_id, OS_statvfs_t *result);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysMountVolume_Impl (uint32 filesys_id);
+int32 OS_FileSysMountVolume_Impl(uint32 filesys_id);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysUnmountVolume_Impl
@@ -197,8 +194,7 @@ int32 OS_FileSysMountVolume_Impl (uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysUnmountVolume_Impl (uint32 filesys_id);
-
+int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id);
 
 /*
  * Internal helper functions
@@ -206,9 +202,8 @@ int32 OS_FileSysUnmountVolume_Impl (uint32 filesys_id);
  * Not normally invoked outside this unit, except for unit testing
  */
 
-bool OS_FileSys_FindVirtMountPoint(void *ref, uint32 local_id, const OS_common_record_t *obj);
-int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char * fsvolname, uint32 blocksize,
-               uint32 numblocks, bool should_format);
+bool  OS_FileSys_FindVirtMountPoint(void *ref, uint32 local_id, const OS_common_record_t *obj);
+int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, uint32 blocksize,
+                            uint32 numblocks, bool should_format);
 
-#endif  /* INCLUDE_OS_SHARED_FILESYS_H_ */
-
+#endif /* INCLUDE_OS_SHARED_FILESYS_H_ */

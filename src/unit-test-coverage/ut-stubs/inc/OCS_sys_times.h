@@ -37,7 +37,4 @@
 /* prototypes normally declared in sys/times.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_SYS_TIMES_H_ */
-

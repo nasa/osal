@@ -28,4 +28,3 @@ int OCS_isgraph(int c)
 {
     return UT_DEFAULT_IMPL_RC(OCS_isgraph, isgraph(c));
 }
-

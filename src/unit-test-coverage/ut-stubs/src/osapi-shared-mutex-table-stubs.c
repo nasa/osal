@@ -31,4 +31,4 @@
 
 #include "os-shared-mutex.h"
 
-OS_mutex_internal_record_t          OS_mutex_table[OS_MAX_MUTEXES];
+OS_mutex_internal_record_t OS_mutex_table[OS_MAX_MUTEXES];

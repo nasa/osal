@@ -30,13 +30,9 @@
 
 #include <os-shared-globaldefs.h>
 
-
-
-
 /****************************************************************************************
                  SHELL API LOW-LEVEL IMPLEMENTATION FUNCTIONS
  ****************************************************************************************/
-
 
 /*----------------------------------------------------------------
    Function: OS_ShellOutputToFile_Impl
@@ -45,7 +41,6 @@
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ShellOutputToFile_Impl(uint32 stream_id, const char* Cmd);
+int32 OS_ShellOutputToFile_Impl(uint32 stream_id, const char *Cmd);
 
-#endif  /* INCLUDE_OS_SHARED_SHELL_H_ */
-
+#endif /* INCLUDE_OS_SHARED_SHELL_H_ */

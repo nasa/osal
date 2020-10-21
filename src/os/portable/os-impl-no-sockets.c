@@ -33,17 +33,13 @@
 #include <osapi.h>
 #include "os-shared-sockets.h"
 
-
 /****************************************************************************************
                                      DEFINES
 ****************************************************************************************/
 
-
 /****************************************************************************************
                                     Socket API
  ***************************************************************************************/
-
-
 
 /*----------------------------------------------------------------
  *
@@ -58,7 +54,6 @@ int32 OS_SocketOpen_Impl(uint32 sock_id)
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_SocketOpen_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_SocketBind_Impl
@@ -71,7 +66,6 @@ int32 OS_SocketBind_Impl(uint32 sock_id, const OS_SockAddr_t *Addr)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_SocketBind_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -86,7 +80,6 @@ int32 OS_SocketConnect_Impl(uint32 sock_id, const OS_SockAddr_t *Addr, int32 tim
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_SocketConnect_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_SocketAccept_Impl
@@ -99,7 +92,6 @@ int32 OS_SocketAccept_Impl(uint32 sock_id, uint32 connsock_id, OS_SockAddr_t *Ad
 {
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_SocketAccept_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -114,7 +106,6 @@ int32 OS_SocketRecvFrom_Impl(uint32 sock_id, void *buffer, uint32 buflen, OS_Soc
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_SocketRecvFrom_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_SocketSendTo_Impl
@@ -128,8 +119,6 @@ int32 OS_SocketSendTo_Impl(uint32 sock_id, const void *buffer, uint32 buflen, co
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_SocketSendTo_Impl */
 
-
-
 /*----------------------------------------------------------------
  *
  * Function: OS_SocketGetInfo_Impl
@@ -138,11 +127,10 @@ int32 OS_SocketSendTo_Impl(uint32 sock_id, const void *buffer, uint32 buflen, co
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketGetInfo_Impl (uint32 sock_id, OS_socket_prop_t *sock_prop)
+int32 OS_SocketGetInfo_Impl(uint32 sock_id, OS_socket_prop_t *sock_prop)
 {
-   return OS_SUCCESS;
+    return OS_SUCCESS;
 } /* end OS_SocketGetInfo_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -157,7 +145,6 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_SocketAddrInit_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_SocketAddrToString_Impl
@@ -170,7 +157,6 @@ int32 OS_SocketAddrToString_Impl(char *buffer, uint32 buflen, const OS_SockAddr_
 {
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_SocketAddrToString_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -185,7 +171,6 @@ int32 OS_SocketAddrFromString_Impl(OS_SockAddr_t *Addr, const char *string)
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_SocketAddrFromString_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_SocketAddrGetPort_Impl
@@ -199,7 +184,6 @@ int32 OS_SocketAddrGetPort_Impl(uint16 *PortNum, const OS_SockAddr_t *Addr)
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_SocketAddrGetPort_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_SocketAddrSetPort_Impl
@@ -212,7 +196,3 @@ int32 OS_SocketAddrSetPort_Impl(OS_SockAddr_t *Addr, uint16 PortNum)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_SocketAddrSetPort_Impl */
-
-
-
-

@@ -25,11 +25,7 @@
 
 #include <OCS_taskVarLib.h>
 
-
 OCS_STATUS OCS_taskVarAdd(int tid, int *pVar)
 {
     return (UT_DEFAULT_IMPL(OCS_taskVarAdd));
 }
-
-
-

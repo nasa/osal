@@ -25,5 +25,4 @@
 /* alias to stat.h */
 #include <stat.h>
 
-
 #endif /* _OSAL_OVERRIDE_SYS_STATVFS_H_ */

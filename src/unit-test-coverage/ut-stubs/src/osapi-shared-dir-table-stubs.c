@@ -30,4 +30,4 @@
 
 #include "os-shared-dir.h"
 
-OS_dir_internal_record_t            OS_dir_table[OS_MAX_NUM_OPEN_DIRS];
+OS_dir_internal_record_t OS_dir_table[OS_MAX_NUM_OPEN_DIRS];

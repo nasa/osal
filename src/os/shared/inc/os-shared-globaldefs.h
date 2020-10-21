@@ -56,15 +56,13 @@ typedef struct OS_shared_global_vars OS_SharedGlobalVars_t;
  */
 typedef union
 {
-   void *opaque_arg;
-   OS_ArgCallback_t arg_callback_func;
-   OS_TimerCallback_t timer_callback_func;
-   osal_task_entry entry_func;
-   osal_id_t id;
-   uint32 value;
+    void *             opaque_arg;
+    OS_ArgCallback_t   arg_callback_func;
+    OS_TimerCallback_t timer_callback_func;
+    osal_task_entry    entry_func;
+    osal_id_t          id;
+    uint32             value;
 } OS_U32ValueWrapper_t;
-
-
 
 /*
  * The "OS_DEBUG" is a no-op unless OSAL_CONFIG_DEBUG_PRINTF is enabled.
@@ -74,14 +72,11 @@ typedef union
 extern void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const char *Format, ...);
 /* Debug printfs are compiled in, but also can be disabled by a run-time flag.
  * Note that the ##__VA_ARGS__ syntax works on GCC but might need tweaks for other compilers... */
-#define OS_DEBUG_LEV(l,...)   OS_DebugPrintf(l, __func__, __LINE__, __VA_ARGS__);
-#define OS_DEBUG(...)         OS_DEBUG_LEV(1,__VA_ARGS__)
+#define OS_DEBUG_LEV(l, ...) OS_DebugPrintf(l, __func__, __LINE__, __VA_ARGS__);
+#define OS_DEBUG(...)        OS_DEBUG_LEV(1, __VA_ARGS__)
 #else
 /* Debug printfs are not compiled in at all */
 #define OS_DEBUG(...)
 #endif
 
-
-
-#endif  /* INCLUDE_OS_SHARED_GLOBALDEFS_H_ */
-
+#endif /* INCLUDE_OS_SHARED_GLOBALDEFS_H_ */

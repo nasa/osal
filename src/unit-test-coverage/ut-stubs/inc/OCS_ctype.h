@@ -38,6 +38,4 @@
 
 extern int OCS_isgraph(int c);
 
-
 #endif /* _OSAL_STUB_CTYPE_H_ */
-

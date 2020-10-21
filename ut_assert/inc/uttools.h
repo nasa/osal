@@ -25,7 +25,7 @@
  */
 
 #ifndef _uttools_
-#define	_uttools_
+#define _uttools_
 
 /*
  * Includes
@@ -40,42 +40,38 @@
 
 /* Copies a region of memory to a binary file.  This file can be reloaded by calling UtBinFile2Mem or it can be
  * used to verify test results by calling UtMem2BinFileCmp. */
-bool             UtMem2BinFile(const void *Memory, const char *Filename, uint32 Length);
+bool UtMem2BinFile(const void *Memory, const char *Filename, uint32 Length);
 
 /* Copies a binary file to a region of memory. */
-bool             UtBinFile2Mem(void *Memory, const char *Filename, uint32 Length);
+bool UtBinFile2Mem(void *Memory, const char *Filename, uint32 Length);
 
 /* Copies a region of memory to a hex file */
-bool             UtMem2HexFile(const void *Memory, const char *Filename, uint32 Length);
+bool UtMem2HexFile(const void *Memory, const char *Filename, uint32 Length);
 
 /* Fills a region of memory with a byte count pattern. */
-void                UtMemFill(void *Memory, uint32 Length);
+void UtMemFill(void *Memory, uint32 Length);
 
 /* Just like the standard sprintf except it returns a pointer to the result string.  The result string
  * cannot be larger than 256 bytes.  */
-char               *UtSprintf(const char *Spec, ...);
+char *UtSprintf(const char *Spec, ...);
 
 /* Calls UtPrintf to print a range of memory as hex bytes. */
-void                UtPrintx(const void *Memory, uint32 Length);
+void UtPrintx(const void *Memory, uint32 Length);
 
 /* Compares a region of memory to a static pattern and determines if they are equal.  Note: Use UtMemSet to
  * fill a region of memory with a static pattern. */
-bool             UtMemCmpValue(const void *Memory, uint8 Value, uint32 Length);
+bool UtMemCmpValue(const void *Memory, uint8 Value, uint32 Length);
 
 /* Compares a region of memory to a byte count pattern and determines if they are equal.  Note: Use UtMemFill to
  * fill a region of memory with a byte count pattern. */
-bool             UtMemCmpCount(const void *Memory, uint32 Length);
+bool UtMemCmpCount(const void *Memory, uint32 Length);
 
 /* Compares a region of memory with the contents of a binary file and determines if they are equal.  Note: Use
  * UtMem2BinFile to copy a region of memory to a binary file. */
-bool             UtMem2BinFileCmp(const void *Memory, const char *Filename);
-
+bool UtMem2BinFileCmp(const void *Memory, const char *Filename);
 
 /* Macros to implement simple printf-like functions for unit testing */
-#define UtPrintf(...)   UtAssert_Message(UTASSERT_CASETYPE_INFO, __FILE__, __LINE__, __VA_ARGS__)
-#define UtDebug(...)    UtAssert_Message(UTASSERT_CASETYPE_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
-
-
+#define UtPrintf(...) UtAssert_Message(UTASSERT_CASETYPE_INFO, __FILE__, __LINE__, __VA_ARGS__)
+#define UtDebug(...)  UtAssert_Message(UTASSERT_CASETYPE_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
 
 #endif
-

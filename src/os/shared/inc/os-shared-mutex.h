@@ -30,17 +30,16 @@
 
 #include <os-shared-globaldefs.h>
 
-
 typedef struct
 {
-   char      obj_name[OS_MAX_API_NAME];
+    char obj_name[OS_MAX_API_NAME];
 } OS_mutex_internal_record_t;
 
 /*
  * These record types have extra information with each entry.  These tables are used
  * to share extra data between the common layer and the OS-specific implementation.
  */
-extern OS_mutex_internal_record_t        OS_mutex_table[OS_MAX_MUTEXES];
+extern OS_mutex_internal_record_t OS_mutex_table[OS_MAX_MUTEXES];
 
 /*---------------------------------------------------------------------------------------
    Name: OS_MutexAPI_Init
@@ -49,8 +48,7 @@ extern OS_mutex_internal_record_t        OS_mutex_table[OS_MAX_MUTEXES];
 
    returns: OS_SUCCESS on success, or relevant error code
 ---------------------------------------------------------------------------------------*/
-int32 OS_MutexAPI_Init               (void);
-
+int32 OS_MutexAPI_Init(void);
 
 /*----------------------------------------------------------------
    Function: OS_MutSemCreate_Impl
@@ -59,7 +57,7 @@ int32 OS_MutexAPI_Init               (void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_MutSemCreate_Impl           (uint32 sem_id, uint32 options);
+int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options);
 
 /*----------------------------------------------------------------
    Function: OS_MutSemGive_Impl
@@ -68,7 +66,7 @@ int32 OS_MutSemCreate_Impl           (uint32 sem_id, uint32 options);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_MutSemGive_Impl             (uint32 sem_id);
+int32 OS_MutSemGive_Impl(uint32 sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_MutSemTake_Impl
@@ -77,7 +75,7 @@ int32 OS_MutSemGive_Impl             (uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_MutSemTake_Impl             (uint32 sem_id);
+int32 OS_MutSemTake_Impl(uint32 sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_MutSemDelete_Impl
@@ -86,7 +84,7 @@ int32 OS_MutSemTake_Impl             (uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_MutSemDelete_Impl           (uint32 sem_id);
+int32 OS_MutSemDelete_Impl(uint32 sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_MutSemGetInfo_Impl
@@ -95,8 +93,6 @@ int32 OS_MutSemDelete_Impl           (uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_MutSemGetInfo_Impl          (uint32 sem_id, OS_mut_sem_prop_t *mut_prop);
+int32 OS_MutSemGetInfo_Impl(uint32 sem_id, OS_mut_sem_prop_t *mut_prop);
 
-
-#endif  /* INCLUDE_OS_SHARED_MUTEX_H_ */
-
+#endif /* INCLUDE_OS_SHARED_MUTEX_H_ */

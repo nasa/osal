@@ -49,7 +49,6 @@
 #include "os-shared-file.h"
 #include "os-shared-select.h"
 
-
 /* some OS libraries (e.g. VxWorks) do not declare the API to be const-correct
  * It can still use this generic implementation but the call to write() must be
  * cast to a void* to avoid a warning.  The includer can define this if needed.
@@ -58,7 +57,6 @@
 #ifndef GENERIC_IO_CONST_DATA_CAST
 #define GENERIC_IO_CONST_DATA_CAST
 #endif
-
 
 /*----------------------------------------------------------------
  *
@@ -70,26 +68,26 @@
  *-----------------------------------------------------------------*/
 int32 OS_GenericClose_Impl(uint32 local_id)
 {
-   int result;
+    int result;
 
-   result = close (OS_impl_filehandle_table[local_id].fd);
-   if (result < 0)
-   {
-       /*
-        * close() can technically fail for various reasons, but
-        * there isn't much recourse if this call fails.  Just log
-        * the failure for debugging.
-        *
-        * POSIX also does not specify the state of the filehandle
-        * after a close() with an error.
-        *
-        * At least in  Linux/glibc the filehandle is always closed
-        * in the kernel and should not be used again or re-closed.
-        */
-       OS_DEBUG("close: %s\n",strerror(errno));
-   }
-   OS_impl_filehandle_table[local_id].fd = -1;
-   return OS_SUCCESS;
+    result = close(OS_impl_filehandle_table[local_id].fd);
+    if (result < 0)
+    {
+        /*
+         * close() can technically fail for various reasons, but
+         * there isn't much recourse if this call fails.  Just log
+         * the failure for debugging.
+         *
+         * POSIX also does not specify the state of the filehandle
+         * after a close() with an error.
+         *
+         * At least in  Linux/glibc the filehandle is always closed
+         * in the kernel and should not be used again or re-closed.
+         */
+        OS_DEBUG("close: %s\n", strerror(errno));
+    }
+    OS_impl_filehandle_table[local_id].fd = -1;
+    return OS_SUCCESS;
 } /* end OS_GenericClose_Impl */
 
 /*----------------------------------------------------------------
@@ -100,51 +98,51 @@ int32 OS_GenericClose_Impl(uint32 local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GenericSeek_Impl (uint32 local_id, int32 offset, uint32 whence)
+int32 OS_GenericSeek_Impl(uint32 local_id, int32 offset, uint32 whence)
 {
-   int where;
-   int32 result;
+    int   where;
+    int32 result;
 
-   switch(whence)
-   {
-   case OS_SEEK_SET:
-      where = SEEK_SET;
-      break;
-   case OS_SEEK_CUR:
-      where = SEEK_CUR;
-      break;
-   case OS_SEEK_END:
-      where = SEEK_END;
-      break;
-   default:
-      return OS_ERROR;
-   }
+    switch (whence)
+    {
+        case OS_SEEK_SET:
+            where = SEEK_SET;
+            break;
+        case OS_SEEK_CUR:
+            where = SEEK_CUR;
+            break;
+        case OS_SEEK_END:
+            where = SEEK_END;
+            break;
+        default:
+            return OS_ERROR;
+    }
 
-   result = lseek(OS_impl_filehandle_table[local_id].fd, (off_t)offset, where);
-   if (result < 0)
-   {
-       if (errno == ESPIPE)
-       {
-           /*
-            * this means the user tried to seek on a pipe, socket,
-            * or other fifo-like handle that doesn't support seeking.
-            *
-            * Use a different error code to differentiate from an
-            * error involving a bad whence/offset
-            */
-           result = OS_ERR_NOT_IMPLEMENTED;
-       }
-       else
-       {
-           /*
-            * Most likely the "whence" and/or "offset" combo was not valid.
-            */
-           OS_DEBUG("lseek: %s\n",strerror(errno));
-           result = OS_ERROR;
-       }
-   }
+    result = lseek(OS_impl_filehandle_table[local_id].fd, (off_t)offset, where);
+    if (result < 0)
+    {
+        if (errno == ESPIPE)
+        {
+            /*
+             * this means the user tried to seek on a pipe, socket,
+             * or other fifo-like handle that doesn't support seeking.
+             *
+             * Use a different error code to differentiate from an
+             * error involving a bad whence/offset
+             */
+            result = OS_ERR_NOT_IMPLEMENTED;
+        }
+        else
+        {
+            /*
+             * Most likely the "whence" and/or "offset" combo was not valid.
+             */
+            OS_DEBUG("lseek: %s\n", strerror(errno));
+            result = OS_ERROR;
+        }
+    }
 
-   return result;
+    return result;
 } /* end OS_GenericSeek_Impl */
 
 /*----------------------------------------------------------------
@@ -155,47 +153,47 @@ int32 OS_GenericSeek_Impl (uint32 local_id, int32 offset, uint32 whence)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GenericRead_Impl (uint32 local_id, void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_GenericRead_Impl(uint32 local_id, void *buffer, uint32 nbytes, int32 timeout)
 {
-   int32 return_code;
-   int os_result;
-   uint32 operation;
+    int32  return_code;
+    int    os_result;
+    uint32 operation;
 
-   return_code = OS_SUCCESS;
+    return_code = OS_SUCCESS;
 
-   if (nbytes > 0)
-   {
-       operation = OS_STREAM_STATE_READABLE;
+    if (nbytes > 0)
+    {
+        operation = OS_STREAM_STATE_READABLE;
 
-       /*
-        * If filehandle is set with O_NONBLOCK, then must call select() here.
-        *
-        * The "selectable" field should be set false for those file handles
-        * which the underlying OS does not support select() on.
-        *
-        * Note that a timeout will not work unless selectable is true.
-        */
-       if (OS_impl_filehandle_table[local_id].selectable)
-       {
-           return_code = OS_SelectSingle_Impl(local_id, &operation, timeout);
-       }
+        /*
+         * If filehandle is set with O_NONBLOCK, then must call select() here.
+         *
+         * The "selectable" field should be set false for those file handles
+         * which the underlying OS does not support select() on.
+         *
+         * Note that a timeout will not work unless selectable is true.
+         */
+        if (OS_impl_filehandle_table[local_id].selectable)
+        {
+            return_code = OS_SelectSingle_Impl(local_id, &operation, timeout);
+        }
 
-       if (return_code == OS_SUCCESS && (operation & OS_STREAM_STATE_READABLE) != 0)
-       {
-           os_result = read(OS_impl_filehandle_table[local_id].fd, buffer, nbytes);
-           if (os_result < 0)
-           {
-               OS_DEBUG("read: %s\n",strerror(errno));
-               return_code = OS_ERROR;
-           }
-           else
-           {
-               return_code = os_result;
-           }
-       }
-   }
+        if (return_code == OS_SUCCESS && (operation & OS_STREAM_STATE_READABLE) != 0)
+        {
+            os_result = read(OS_impl_filehandle_table[local_id].fd, buffer, nbytes);
+            if (os_result < 0)
+            {
+                OS_DEBUG("read: %s\n", strerror(errno));
+                return_code = OS_ERROR;
+            }
+            else
+            {
+                return_code = os_result;
+            }
+        }
+    }
 
-   return (return_code);
+    return (return_code);
 } /* end OS_GenericRead_Impl */
 
 /*----------------------------------------------------------------
@@ -208,47 +206,45 @@ int32 OS_GenericRead_Impl (uint32 local_id, void *buffer, uint32 nbytes, int32 t
  *-----------------------------------------------------------------*/
 int32 OS_GenericWrite_Impl(uint32 local_id, const void *buffer, uint32 nbytes, int32 timeout)
 {
-   int32 return_code;
-   int os_result;
-   uint32 operation;
+    int32  return_code;
+    int    os_result;
+    uint32 operation;
 
-   return_code = OS_SUCCESS;
+    return_code = OS_SUCCESS;
 
-   if (nbytes > 0)
-   {
-       operation = OS_STREAM_STATE_WRITABLE;
+    if (nbytes > 0)
+    {
+        operation = OS_STREAM_STATE_WRITABLE;
 
-       /*
-        * If filehandle is set with O_NONBLOCK, then must call select() here.
-        *
-        * The "selectable" field should be set false for those file handles
-        * which the underlying OS does not support select() on.
-        *
-        * Note that a timeout will not work unless selectable is true.
-        */
-       if (OS_impl_filehandle_table[local_id].selectable)
-       {
-           return_code = OS_SelectSingle_Impl(local_id, &operation, timeout);
-       }
+        /*
+         * If filehandle is set with O_NONBLOCK, then must call select() here.
+         *
+         * The "selectable" field should be set false for those file handles
+         * which the underlying OS does not support select() on.
+         *
+         * Note that a timeout will not work unless selectable is true.
+         */
+        if (OS_impl_filehandle_table[local_id].selectable)
+        {
+            return_code = OS_SelectSingle_Impl(local_id, &operation, timeout);
+        }
 
-       if (return_code == OS_SUCCESS && (operation & OS_STREAM_STATE_WRITABLE) != 0)
-       {
-           /* on some system libraries for which the write() argument is not
-            * qualified correctly, it needs to be case to a void* here */
-           os_result = write(OS_impl_filehandle_table[local_id].fd,
-                  GENERIC_IO_CONST_DATA_CAST buffer, nbytes);
-           if (os_result < 0)
-           {
-               OS_DEBUG("write: %s\n",strerror(errno));
-               return_code = OS_ERROR;
-           }
-           else
-           {
-               return_code = os_result;
-           }
-       }
-   }
+        if (return_code == OS_SUCCESS && (operation & OS_STREAM_STATE_WRITABLE) != 0)
+        {
+            /* on some system libraries for which the write() argument is not
+             * qualified correctly, it needs to be case to a void* here */
+            os_result = write(OS_impl_filehandle_table[local_id].fd, GENERIC_IO_CONST_DATA_CAST buffer, nbytes);
+            if (os_result < 0)
+            {
+                OS_DEBUG("write: %s\n", strerror(errno));
+                return_code = OS_ERROR;
+            }
+            else
+            {
+                return_code = os_result;
+            }
+        }
+    }
 
-   return (return_code);
+    return (return_code);
 } /* end OS_GenericWrite_Impl */
-

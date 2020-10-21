@@ -34,16 +34,14 @@
 
 #include "os-shared-idmap.h"
 
+#define OSAPI_TEST_FUNCTION_RC(func, exp)                                                             \
+    {                                                                                                 \
+        int32 rcexp = exp;                                                                            \
+        int32 rcact = func;                                                                           \
+        UtAssert_True(rcact == rcexp, "%s (%ld) == %s (%ld)", #func, (long)rcact, #exp, (long)rcexp); \
+    }
 
-#define OSAPI_TEST_FUNCTION_RC(func,exp)        \
-{                                               \
-    int32 rcexp = exp;                          \
-    int32 rcact = func;                         \
-    UtAssert_True(rcact == rcexp, "%s (%ld) == %s (%ld)",   \
-        #func, (long)rcact, #exp, (long)rcexp);             \
-}
-
-#define ADD_TEST(test) UtTest_Add((Test_ ## test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
+#define ADD_TEST(test) UtTest_Add((Test_##test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
 
 /* Osapi_Test_Setup
  *
@@ -53,6 +51,4 @@
 void Osapi_Test_Setup(void);
 void Osapi_Test_Teardown(void);
 
-
-#endif  /* INCLUDE_OS_VXWORKS_COVERAGETEST_H_ */
-
+#endif /* INCLUDE_OS_VXWORKS_COVERAGETEST_H_ */

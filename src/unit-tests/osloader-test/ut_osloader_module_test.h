@@ -59,7 +59,7 @@ void UT_os_module_info_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* _UT_OSLOADER_MODULE_TEST_H_ */
+#endif /* _UT_OSLOADER_MODULE_TEST_H_ */
 
 /*================================================================================*
 ** End of File: ut_osloader_module_test.h

@@ -25,7 +25,7 @@
 
 #include <OCS_semaphore.h>
 
-int OCS_sem_destroy (OCS_sem_t * sem)
+int OCS_sem_destroy(OCS_sem_t *sem)
 {
     int32 Status;
 
@@ -34,7 +34,7 @@ int OCS_sem_destroy (OCS_sem_t * sem)
     return Status;
 }
 
-int OCS_sem_getvalue (OCS_sem_t * sem, int * sval)
+int OCS_sem_getvalue(OCS_sem_t *sem, int *sval)
 {
     int32 Status;
 
@@ -43,7 +43,7 @@ int OCS_sem_getvalue (OCS_sem_t * sem, int * sval)
     return Status;
 }
 
-int OCS_sem_init (OCS_sem_t * sem, int pshared, unsigned int value)
+int OCS_sem_init(OCS_sem_t *sem, int pshared, unsigned int value)
 {
     int32 Status;
 
@@ -52,7 +52,7 @@ int OCS_sem_init (OCS_sem_t * sem, int pshared, unsigned int value)
     return Status;
 }
 
-int OCS_sem_post (OCS_sem_t * sem)
+int OCS_sem_post(OCS_sem_t *sem)
 {
     int32 Status;
 
@@ -61,7 +61,7 @@ int OCS_sem_post (OCS_sem_t * sem)
     return Status;
 }
 
-int OCS_sem_timedwait (OCS_sem_t * sem, const struct OCS_timespec * abstime)
+int OCS_sem_timedwait(OCS_sem_t *sem, const struct OCS_timespec *abstime)
 {
     int32 Status;
 
@@ -70,7 +70,7 @@ int OCS_sem_timedwait (OCS_sem_t * sem, const struct OCS_timespec * abstime)
     return Status;
 }
 
-int OCS_sem_wait (OCS_sem_t * sem)
+int OCS_sem_wait(OCS_sem_t *sem)
 {
     int32 Status;
 
@@ -78,5 +78,3 @@ int OCS_sem_wait (OCS_sem_t * sem)
 
     return Status;
 }
-
-

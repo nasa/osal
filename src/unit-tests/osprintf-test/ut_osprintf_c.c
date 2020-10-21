@@ -36,18 +36,17 @@ extern char trunc_buf[];
 void UT_osprintf_c(void)
 {
     char *test_fmt = "c"; /* Test format character(s) */
-    int i;
+    int   i;
 
     struct
     {
         char *test_num;    /* Test identifier; sequential numbers */
-        char test_val;     /* Test value */
-        int  max_len;      /* Maximum output string length */
+        char  test_val;    /* Test value */
+        int   max_len;     /* Maximum output string length */
         char *format;      /* Format string */
         char *expected;    /* Expected result */
         char *description; /* Test description */
-    } osp_tests[] =
-    {
+    } osp_tests[] = {
         {"01", 'k', 1, "%c", "k", "%c"},
         {"02", 'w', 5, "$$$%c$$$", "$$$w$$$", "%c embedded"},
         {"03", '?', 19, "%20c", "                   ?", "%c with minimum field size"},
@@ -63,10 +62,7 @@ void UT_osprintf_c(void)
         /* Perform sprintf test */
         init_test();
         sprintf(strg_buf, osp_tests[i].format, osp_tests[i].test_val);
-        UT_Report(check_test(osp_tests[i].expected, strg_buf),
-                  "SPRINTF",
-                  osp_tests[i].description,
-                  test_fmt,
+        UT_Report(check_test(osp_tests[i].expected, strg_buf), "SPRINTF", osp_tests[i].description, test_fmt,
                   osp_tests[i].test_num);
 
         /* Truncate expected string in preparation for snprintf test */
@@ -79,12 +75,8 @@ void UT_osprintf_c(void)
 
         /* Perform snprintf test */
         init_test();
-        snprintf(strg_buf, osp_tests[i].max_len,
-                 osp_tests[i].format, osp_tests[i].test_val);
-        UT_Report(check_test(trunc_buf, strg_buf),
-                  "SNPRINTF",
-                  osp_tests[i].description,
-                  test_fmt,
+        snprintf(strg_buf, osp_tests[i].max_len, osp_tests[i].format, osp_tests[i].test_val);
+        UT_Report(check_test(trunc_buf, strg_buf), "SNPRINTF", osp_tests[i].description, test_fmt,
                   osp_tests[i].test_num);
     }
 }

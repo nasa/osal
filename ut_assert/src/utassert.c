@@ -39,17 +39,17 @@
  * Local Data
  */
 
-UtAssert_CaseType_t DefaultContext = UTASSERT_CASETYPE_FAILURE;
-UtAssert_TestCounter_t UT_SegmentCounters = { 0 };
-UtAssert_TestCounter_t UT_TotalCounters = { 0 };
-static char CurrentSegment[64];
+UtAssert_CaseType_t    DefaultContext     = UTASSERT_CASETYPE_FAILURE;
+UtAssert_TestCounter_t UT_SegmentCounters = {0};
+UtAssert_TestCounter_t UT_TotalCounters   = {0};
+static char            CurrentSegment[64];
 
 /*
  * Function Definitions
  */
 
 void UtAssert_DoReport(const char *File, uint32 LineNum, uint32 SegmentNum, uint32 TestSeq, uint8 MessageType,
-                     const char *SubsysName, const char *ShortDesc)
+                       const char *SubsysName, const char *ShortDesc)
 {
     uint32      FileLen;
     const char *BasePtr;
@@ -90,15 +90,14 @@ void UtAssert_DoTestSegmentReport(const char *SegmentName, const UtAssert_TestCo
     UT_BSP_DoText(UTASSERT_CASETYPE_END, ReportBuffer);
 }
 
-
 uint32 UtAssert_GetPassCount(void)
 {
-    return(UT_TotalCounters.CaseCount[UTASSERT_CASETYPE_PASS]);
+    return (UT_TotalCounters.CaseCount[UTASSERT_CASETYPE_PASS]);
 }
 
 uint32 UtAssert_GetFailCount(void)
 {
-    return(UT_TotalCounters.CaseCount[UTASSERT_CASETYPE_FAILURE]);
+    return (UT_TotalCounters.CaseCount[UTASSERT_CASETYPE_FAILURE]);
 }
 
 const UtAssert_TestCounter_t *UtAssert_GetCounters(void)
@@ -108,7 +107,7 @@ const UtAssert_TestCounter_t *UtAssert_GetCounters(void)
 
 void UtAssert_BeginTest(const char *SegmentName)
 {
-    memset(&UT_SegmentCounters, 0, sizeof (UT_SegmentCounters));
+    memset(&UT_SegmentCounters, 0, sizeof(UT_SegmentCounters));
     strncpy(CurrentSegment, SegmentName, sizeof(CurrentSegment) - 1);
     CurrentSegment[sizeof(CurrentSegment) - 1] = 0;
     UT_BSP_StartTestSegment(1 + UT_TotalCounters.TestSegmentCount, SegmentName);
@@ -126,7 +125,7 @@ void UtAssert_EndTest(void)
     if (UT_SegmentCounters.TotalTestCases > 0)
     {
         ++UT_TotalCounters.TestSegmentCount;
-        UT_SegmentCounters.TestSegmentCount =  UT_TotalCounters.TestSegmentCount;
+        UT_SegmentCounters.TestSegmentCount = UT_TotalCounters.TestSegmentCount;
         UT_TotalCounters.TotalTestCases += UT_SegmentCounters.TotalTestCases;
         for (Ct = 0; Ct < UTASSERT_CASETYPE_MAX; ++Ct)
         {
@@ -139,7 +138,7 @@ void UtAssert_EndTest(void)
         UT_BSP_DoText(UTASSERT_CASETYPE_END, "No test cases\n");
     }
 
-    memset(&UT_SegmentCounters, 0, sizeof (UT_SegmentCounters));
+    memset(&UT_SegmentCounters, 0, sizeof(UT_SegmentCounters));
 }
 
 void UtAssert_SetContext(UtAssert_CaseType_t Context)
@@ -157,10 +156,11 @@ bool UtAssert(bool Expression, const char *Description, const char *File, uint32
     return UtAssertEx(Expression, UtAssert_GetContext(), File, Line, "%s", Description);
 }
 
-bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File, uint32 Line, const char *MessageFormat, ...)
+bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File, uint32 Line, const char *MessageFormat,
+                ...)
 {
     va_list va;
-    char FinalMessage[256];
+    char    FinalMessage[256];
 
     ++UT_SegmentCounters.TotalTestCases;
 
@@ -178,7 +178,8 @@ bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File,
     vsnprintf(FinalMessage, sizeof(FinalMessage), MessageFormat, va);
     va_end(va);
 
-    UtAssert_DoReport(File, Line, 1 + UT_TotalCounters.TestSegmentCount, UT_SegmentCounters.TotalTestCases, CaseType, CurrentSegment, FinalMessage);
+    UtAssert_DoReport(File, Line, 1 + UT_TotalCounters.TestSegmentCount, UT_SegmentCounters.TotalTestCases, CaseType,
+                      CurrentSegment, FinalMessage);
 
     return Expression;
 }
@@ -190,10 +191,10 @@ void UtAssert_Abort(const char *Message)
 
 void UtAssert_Message(uint8 MessageType, const char *File, uint32 Line, const char *Spec, ...)
 {
-    va_list va;
-    char FinalMessage[256];
+    va_list     va;
+    char        FinalMessage[256];
     const char *BaseName;
-    size_t MsgLen;
+    size_t      MsgLen;
 
     if (File != NULL)
     {

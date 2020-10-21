@@ -31,9 +31,8 @@
 #include <common_types.h>
 #include <OCS_msgQLib.h>
 
-extern void*  const UT_Ref_OS_impl_queue_table;
+extern void *const  UT_Ref_OS_impl_queue_table;
 extern size_t const UT_Ref_OS_impl_queue_table_SIZE;
-
 
 /*****************************************************
  *
@@ -46,6 +45,4 @@ extern size_t const UT_Ref_OS_impl_queue_table_SIZE;
 
 int32 UT_Call_OS_VxWorks_QueueAPI_Impl_Init(void);
 
-
-#endif  /* INCLUDE_UT_ADAPTOR_QUEUES_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_QUEUES_H_ */

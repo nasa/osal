@@ -37,7 +37,6 @@
                                      DEFINES
  ***************************************************************************************/
 
-
 /****************************************************************************************
                                      GLOBALS
  ***************************************************************************************/
@@ -49,8 +48,6 @@
  */
 /* The file/stream table is referenced by multiple entities, i.e. sockets, select, etc */
 OS_Rtems_filehandle_entry_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FILES];
-
-
 
 /****************************************************************************************
                          IMPLEMENTATION-SPECIFIC ROUTINES
@@ -72,11 +69,10 @@ int32 OS_Rtems_StreamAPI_Impl_Init(void)
      * init all filehandles to -1, which is always invalid.
      * this isn't strictly necessary but helps when debugging.
      */
-    for (local_id = 0; local_id <  OS_MAX_NUM_OPEN_FILES; ++local_id)
+    for (local_id = 0; local_id < OS_MAX_NUM_OPEN_FILES; ++local_id)
     {
         OS_impl_filehandle_table[local_id].fd = -1;
     }
 
     return OS_SUCCESS;
 } /* end OS_Rtems_StreamAPI_Impl_Init */
-

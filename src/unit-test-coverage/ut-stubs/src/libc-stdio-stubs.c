@@ -31,9 +31,9 @@ struct OCS_FILE
     int f;
 };
 
-#define OCS_STDIO_MAX_SIZE      0x01000000
+#define OCS_STDIO_MAX_SIZE 0x01000000
 
-int OCS_fclose (OCS_FILE * stream)
+int OCS_fclose(OCS_FILE *stream)
 {
     int32 Status;
 
@@ -42,9 +42,9 @@ int OCS_fclose (OCS_FILE * stream)
     return Status;
 }
 
-char *OCS_fgets (char * s, int n, OCS_FILE * stream)
+char *OCS_fgets(char *s, int n, OCS_FILE *stream)
 {
-    int32 Status;
+    int32  Status;
     uint32 CopySize;
 
     Status = UT_DEFAULT_IMPL_RC(OCS_fgets, OCS_STDIO_MAX_SIZE);
@@ -89,11 +89,11 @@ char *OCS_fgets (char * s, int n, OCS_FILE * stream)
     return s;
 }
 
-OCS_FILE *OCS_fopen (const char * filename, const char * modes)
+OCS_FILE *OCS_fopen(const char *filename, const char *modes)
 {
-    int32 Status;
-    OCS_FILE *retval;
-    static OCS_FILE FOPEN_FP = { 0 };
+    int32           Status;
+    OCS_FILE *      retval;
+    static OCS_FILE FOPEN_FP = {0};
 
     Status = UT_DEFAULT_IMPL(OCS_fopen);
 
@@ -109,7 +109,7 @@ OCS_FILE *OCS_fopen (const char * filename, const char * modes)
     return retval;
 }
 
-int OCS_fputs (const char * s, OCS_FILE * stream)
+int OCS_fputs(const char *s, OCS_FILE *stream)
 {
     int32 Status;
 
@@ -118,7 +118,7 @@ int OCS_fputs (const char * s, OCS_FILE * stream)
     return Status;
 }
 
-int OCS_putchar (int c)
+int OCS_putchar(int c)
 {
     int32 Status;
 
@@ -127,8 +127,7 @@ int OCS_putchar (int c)
     return Status;
 }
 
-
-int OCS_remove (const char * filename)
+int OCS_remove(const char *filename)
 {
     int32 Status;
 
@@ -137,7 +136,7 @@ int OCS_remove (const char * filename)
     return Status;
 }
 
-int OCS_rename (const char * old, const char * nw)
+int OCS_rename(const char *old, const char *nw)
 {
     int32 Status;
 
@@ -146,10 +145,10 @@ int OCS_rename (const char * old, const char * nw)
     return Status;
 }
 
-int OCS_snprintf (char * s, size_t maxlen, const char * format, ...)
+int OCS_snprintf(char *s, size_t maxlen, const char *format, ...)
 {
-    int32 Status;
-    int actual = 0;
+    int32   Status;
+    int     actual = 0;
     va_list ap;
 
     Status = UT_DEFAULT_IMPL(OCS_snprintf);
@@ -158,7 +157,7 @@ int OCS_snprintf (char * s, size_t maxlen, const char * format, ...)
     if (Status >= 0)
     {
         va_start(ap, format);
-        actual = vsnprintf(s,maxlen,format,ap);
+        actual = vsnprintf(s, maxlen, format, ap);
         va_end(ap);
     }
 
@@ -170,10 +169,10 @@ int OCS_snprintf (char * s, size_t maxlen, const char * format, ...)
     return actual;
 }
 
-int OCS_vsnprintf (char * s, size_t maxlen, const char * format, OCS_va_list arg)
+int OCS_vsnprintf(char *s, size_t maxlen, const char *format, OCS_va_list arg)
 {
     int32 Status;
-    int actual = 0;
+    int   actual = 0;
 
     Status = UT_DEFAULT_IMPL(OCS_vsnprintf);
 
@@ -181,7 +180,7 @@ int OCS_vsnprintf (char * s, size_t maxlen, const char * format, OCS_va_list arg
      * cannot do the real vsnprintf because we lost the args. */
     if (Status >= 0)
     {
-        actual = snprintf(s,maxlen,"%s",format);
+        actual = snprintf(s, maxlen, "%s", format);
     }
 
     if (Status != 0)
@@ -192,16 +191,13 @@ int OCS_vsnprintf (char * s, size_t maxlen, const char * format, OCS_va_list arg
     return actual;
 }
 
-int OCS_printf (const char * format, ...)
+int OCS_printf(const char *format, ...)
 {
     return UT_DEFAULT_IMPL(OCS_printf);
 }
 
+static OCS_FILE LOCAL_FP[3] = {{10}, {11}, {12}};
 
-static OCS_FILE LOCAL_FP[3] = { { 10 }, { 11 }, { 12 } };
-
-OCS_FILE*    OCS_stdin = &LOCAL_FP[0];
-OCS_FILE*    OCS_stdout = &LOCAL_FP[1];
-OCS_FILE*    OCS_stderr = &LOCAL_FP[2];
-
-
+OCS_FILE *OCS_stdin  = &LOCAL_FP[0];
+OCS_FILE *OCS_stdout = &LOCAL_FP[1];
+OCS_FILE *OCS_stderr = &LOCAL_FP[2];

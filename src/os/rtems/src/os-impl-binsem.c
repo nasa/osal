@@ -41,7 +41,6 @@
 #include "os-shared-idmap.h"
 #include "os-shared-timebase.h"
 
-
 /****************************************************************************************
                                      DEFINES
  ***************************************************************************************/
@@ -55,22 +54,17 @@
 
 #define OSAL_BINARY_SEM_ATTRIBS (RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_PRIORITY)
 
-
-
 /****************************************************************************************
                                    GLOBAL DATA
  ***************************************************************************************/
 /*  tables for the properties of objects */
 
-
 /* Tables where the OS object information is stored */
-OS_impl_binsem_internal_record_t    OS_impl_bin_sem_table       [OS_MAX_BIN_SEMAPHORES];
-
+OS_impl_binsem_internal_record_t OS_impl_bin_sem_table[OS_MAX_BIN_SEMAPHORES];
 
 /****************************************************************************************
                                   SEMAPHORE API
  ***************************************************************************************/
-
 
 /*----------------------------------------------------------------
  *
@@ -85,7 +79,6 @@ int32 OS_Rtems_BinSemAPI_Impl_Init(void)
     return (OS_SUCCESS);
 } /* end OS_Rtems_BinSemAPI_Impl_Init */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_BinSemCreate_Impl
@@ -94,7 +87,7 @@ int32 OS_Rtems_BinSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 options)
+int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options)
 {
     rtems_status_code status;
     rtems_name        r_name;
@@ -113,23 +106,19 @@ int32 OS_BinSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 opti
     }
 
     /* Create RTEMS Semaphore */
-    status = rtems_semaphore_create( r_name, sem_initial_value,
-                                     OSAL_BINARY_SEM_ATTRIBS,
-                                     0,
-                                     &(OS_impl_bin_sem_table[sem_id].id));
+    status = rtems_semaphore_create(r_name, sem_initial_value, OSAL_BINARY_SEM_ATTRIBS, 0,
+                                    &(OS_impl_bin_sem_table[sem_id].id));
 
     /* check if Create failed */
-    if ( status != RTEMS_SUCCESSFUL )
+    if (status != RTEMS_SUCCESSFUL)
     {
-        OS_DEBUG("Unhandled semaphore_create error: %s\n",rtems_status_text(status));
+        OS_DEBUG("Unhandled semaphore_create error: %s\n", rtems_status_text(status));
         return OS_SEM_FAILURE;
     }
 
     return OS_SUCCESS;
 
 } /* end OS_BinSemCreate_Impl */
-
-
 
 /*----------------------------------------------------------------
  *
@@ -139,21 +128,20 @@ int32 OS_BinSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 opti
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemDelete_Impl (uint32 sem_id)
+int32 OS_BinSemDelete_Impl(uint32 sem_id)
 {
     rtems_status_code status;
 
     status = rtems_semaphore_delete(OS_impl_bin_sem_table[sem_id].id);
-    if(status != RTEMS_SUCCESSFUL)
+    if (status != RTEMS_SUCCESSFUL)
     {
-        OS_DEBUG("Unhandled semaphore_delete error: %s\n",rtems_status_text(status));
+        OS_DEBUG("Unhandled semaphore_delete error: %s\n", rtems_status_text(status));
         return OS_SEM_FAILURE;
     }
 
     return OS_SUCCESS;
 
 } /* end OS_BinSemDelete_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -163,20 +151,19 @@ int32 OS_BinSemDelete_Impl (uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGive_Impl (uint32 sem_id)
+int32 OS_BinSemGive_Impl(uint32 sem_id)
 {
     rtems_status_code status;
 
     status = rtems_semaphore_release(OS_impl_bin_sem_table[sem_id].id);
-    if(status != RTEMS_SUCCESSFUL)
+    if (status != RTEMS_SUCCESSFUL)
     {
-        OS_DEBUG("Unhandled semaphore_release error: %s\n",rtems_status_text(status));
+        OS_DEBUG("Unhandled semaphore_release error: %s\n", rtems_status_text(status));
         return OS_SEM_FAILURE;
     }
 
-    return  OS_SUCCESS;
+    return OS_SUCCESS;
 } /* end OS_BinSemGive_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -186,22 +173,21 @@ int32 OS_BinSemGive_Impl (uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemFlush_Impl (uint32 sem_id)
+int32 OS_BinSemFlush_Impl(uint32 sem_id)
 {
     rtems_status_code status;
 
     /* Give Semaphore */
     status = rtems_semaphore_flush(OS_impl_bin_sem_table[sem_id].id);
-    if(status != RTEMS_SUCCESSFUL)
+    if (status != RTEMS_SUCCESSFUL)
     {
-        OS_DEBUG("Unhandled semaphore_flush error: %s\n",rtems_status_text(status));
+        OS_DEBUG("Unhandled semaphore_flush error: %s\n", rtems_status_text(status));
         return OS_SEM_FAILURE;
     }
 
-	return  OS_SUCCESS;
+    return OS_SUCCESS;
 
 } /* end OS_BinSemFlush_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -211,7 +197,7 @@ int32 OS_BinSemFlush_Impl (uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTake_Impl (uint32 sem_id)
+int32 OS_BinSemTake_Impl(uint32 sem_id)
 {
     rtems_status_code status;
 
@@ -224,9 +210,9 @@ int32 OS_BinSemTake_Impl (uint32 sem_id)
     ** I currently do not know of any other reasons this call would return
     **  RTEMS_UNSATISFIED, so I think it is OK.
     */
-    if ( status != RTEMS_SUCCESSFUL && status != RTEMS_UNSATISFIED )
+    if (status != RTEMS_SUCCESSFUL && status != RTEMS_UNSATISFIED)
     {
-        OS_DEBUG("Unhandled semaphore_obtain error: %s\n",rtems_status_text(status));
+        OS_DEBUG("Unhandled semaphore_obtain error: %s\n", rtems_status_text(status));
         return OS_SEM_FAILURE;
     }
 
@@ -242,7 +228,7 @@ int32 OS_BinSemTake_Impl (uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTimedWait_Impl (uint32 sem_id, uint32 msecs)
+int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
 {
     rtems_status_code status;
     int               TimeInTicks;
@@ -252,24 +238,23 @@ int32 OS_BinSemTimedWait_Impl (uint32 sem_id, uint32 msecs)
         return OS_ERROR;
     }
 
-    status  = 	rtems_semaphore_obtain(OS_impl_bin_sem_table[sem_id].id, RTEMS_WAIT, TimeInTicks) ;
+    status = rtems_semaphore_obtain(OS_impl_bin_sem_table[sem_id].id, RTEMS_WAIT, TimeInTicks);
 
-    if ( status == RTEMS_TIMEOUT )
+    if (status == RTEMS_TIMEOUT)
     {
         return OS_SEM_TIMEOUT;
     }
 
     /* See BinSemWait regarding UNSATISFIED */
-    if ( status != RTEMS_SUCCESSFUL && status != RTEMS_UNSATISFIED )
+    if (status != RTEMS_SUCCESSFUL && status != RTEMS_UNSATISFIED)
     {
-        OS_DEBUG("Unhandled semaphore_obtain error: %s\n",rtems_status_text(status));
+        OS_DEBUG("Unhandled semaphore_obtain error: %s\n", rtems_status_text(status));
         return OS_SEM_FAILURE;
     }
 
     return OS_SUCCESS;
 
 } /* end OS_BinSemTimedWait_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -279,9 +264,8 @@ int32 OS_BinSemTimedWait_Impl (uint32 sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGetInfo_Impl (uint32 sem_id, OS_bin_sem_prop_t *bin_prop)
+int32 OS_BinSemGetInfo_Impl(uint32 sem_id, OS_bin_sem_prop_t *bin_prop)
 {
     /* RTEMS has no API for obtaining the current value of a semaphore */
     return OS_SUCCESS;
 } /* end OS_BinSemGetInfo_Impl */
-

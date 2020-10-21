@@ -28,7 +28,6 @@
 /* ----------------------------------------- */
 /* mappings for declarations in sysLib.h */
 /* ----------------------------------------- */
-#define sysClkRateGet   OCS_sysClkRateGet
-
+#define sysClkRateGet OCS_sysClkRateGet
 
 #endif /* _OSAL_OVERRIDE_SYSLIB_H_ */

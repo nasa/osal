@@ -46,14 +46,14 @@
 ** Global variables
 **--------------------------------------------------------------------------------*/
 
-char* g_fsAddrPtr = NULL;
+char *g_fsAddrPtr = NULL;
 
-char  g_longPathName[UT_OS_PATH_BUFF_SIZE];
-char  g_longFileName[UT_OS_PATH_BUFF_SIZE];
-char  g_invalidPath[UT_OS_PATH_BUFF_SIZE];
+char g_longPathName[UT_OS_PATH_BUFF_SIZE];
+char g_longFileName[UT_OS_PATH_BUFF_SIZE];
+char g_invalidPath[UT_OS_PATH_BUFF_SIZE];
 
-const char* g_devName = "/ramdev3";
-const char* g_mntName = "/drive3";
+const char *g_devName = "/ramdev3";
+const char *g_mntName = "/drive3";
 
 /*--------------------------------------------------------------------------------*
 ** External function prototypes
@@ -64,7 +64,7 @@ const char* g_mntName = "/drive3";
 **--------------------------------------------------------------------------------*/
 
 int32 UT_os_setup_fs(void);
-void UT_os_teardown_fs(void);
+void  UT_os_teardown_fs(void);
 
 void UT_os_init_file_misc(void);
 
@@ -79,14 +79,16 @@ int32 UT_os_setup_fs()
     res = OS_mkfs(g_fsAddrPtr, g_devName, "RAM3", 512, 64);
     if (res != OS_SUCCESS)
     {
-        UT_OS_LOG("OS_mkfs() returns %d\n", (int)res);;
+        UT_OS_LOG("OS_mkfs() returns %d\n", (int)res);
+        ;
         goto UT_os_setup_fs_exit_tag;
     }
 
     res = OS_mount(g_devName, g_mntName);
     if (res != OS_SUCCESS)
     {
-        UT_OS_LOG("OS_mount() returns %d\n", (int)res);;
+        UT_OS_LOG("OS_mount() returns %d\n", (int)res);
+        ;
         OS_rmfs(g_devName);
         goto UT_os_setup_fs_exit_tag;
     }
@@ -108,17 +110,17 @@ void UT_os_teardown_fs()
 void UT_os_init_file_misc()
 {
     memset(g_longPathName, 'Y', sizeof(g_longPathName));
-    g_longPathName[0]  = '/';
-    g_longPathName[sizeof(g_longPathName)-1] = '\0';
+    g_longPathName[0]                          = '/';
+    g_longPathName[sizeof(g_longPathName) - 1] = '\0';
 
     /*
      * The "g_longFileName" should be within the OS_MAX_PATH_LEN limit,
      * but the filename portion of it exceeds the OS_MAX_FILE_NAME limit.
      */
     memset(g_longFileName, 'Z', sizeof(g_longFileName));
-    g_longFileName[0] = '/';
-    g_longFileName[4] = '/';
-    g_longFileName[OS_MAX_FILE_NAME+9] = '\0';
+    g_longFileName[0]                    = '/';
+    g_longFileName[4]                    = '/';
+    g_longFileName[OS_MAX_FILE_NAME + 9] = '\0';
 
     memset(g_invalidPath, '\0', sizeof(g_invalidPath));
     strcpy(g_invalidPath, "/InvalidMnt/log1.txt");

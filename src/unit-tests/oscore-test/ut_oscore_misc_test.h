@@ -68,7 +68,7 @@ void UT_os_heapgetinfo_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* _UT_OSCORE_MISC_TEST_H_ */
+#endif /* _UT_OSCORE_MISC_TEST_H_ */
 
 /*================================================================================*
 ** End of File: ut_oscore_misc_test.h

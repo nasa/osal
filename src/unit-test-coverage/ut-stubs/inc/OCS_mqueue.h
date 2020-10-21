@@ -46,13 +46,13 @@ struct OCS_mq_attr
 /* prototypes normally declared in mqueue.h */
 /* ----------------------------------------- */
 
-extern int OCS_mq_close (OCS_mqd_t mqdes);
-extern OCS_mqd_t OCS_mq_open (const char * name, int oflag, ...);
-extern OCS_ssize_t OCS_mq_receive (OCS_mqd_t mqdes, char * msg_ptr, size_t msg_len, unsigned int * msg_prio);
-extern OCS_ssize_t OCS_mq_timedreceive (OCS_mqd_t mqdes, char * msg_ptr, size_t msg_len, unsigned int * msg_prio, const struct OCS_timespec * abs_timeout);
-extern int OCS_mq_timedsend (OCS_mqd_t mqdes, const char * msg_ptr, size_t msg_len, unsigned int msg_prio, const struct OCS_timespec * abs_timeout);
-extern int OCS_mq_unlink (const char * name);
-
+extern int         OCS_mq_close(OCS_mqd_t mqdes);
+extern OCS_mqd_t   OCS_mq_open(const char *name, int oflag, ...);
+extern OCS_ssize_t OCS_mq_receive(OCS_mqd_t mqdes, char *msg_ptr, size_t msg_len, unsigned int *msg_prio);
+extern OCS_ssize_t OCS_mq_timedreceive(OCS_mqd_t mqdes, char *msg_ptr, size_t msg_len, unsigned int *msg_prio,
+                                       const struct OCS_timespec *abs_timeout);
+extern int         OCS_mq_timedsend(OCS_mqd_t mqdes, const char *msg_ptr, size_t msg_len, unsigned int msg_prio,
+                                    const struct OCS_timespec *abs_timeout);
+extern int         OCS_mq_unlink(const char *name);
 
 #endif /* _OSAL_STUB_MQUEUE_H_ */
-

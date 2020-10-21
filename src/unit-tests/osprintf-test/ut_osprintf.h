@@ -66,18 +66,18 @@ int putchar(int);
 /*
 ** Macro Definitions
 */
-#define BUF_LEN 200
+#define BUF_LEN               200
 #define UT_MAX_MESSAGE_LENGTH 300
-#define UT_TRUE 1
-#define UT_FALSE 0
-#define UT_PASS 0
-#define UT_FAIL 1
+#define UT_TRUE               1
+#define UT_FALSE              0
+#define UT_PASS               0
+#define UT_FAIL               1
 
 /*
 ** Function prototypes
 */
 void init_test(void);
-int check_test(char *expected, char *actual);
+int  check_test(char *expected, char *actual);
 
 void UT_osprintf_d(void);
 void UT_osprintf_i(void);
@@ -104,8 +104,7 @@ void UT_osprintf_printf(void);
 #endif
 
 void UT_Text(char *out_text);
-void UT_Report(int test, char *fun_name, char *info,
-               char *test_num, char *test_seq);
+void UT_Report(int test, char *fun_name, char *info, char *test_num, char *test_seq);
 void UT_itoa(int value, char *string, int radix, int out_len);
 void UT_ReportFailures(void);
 

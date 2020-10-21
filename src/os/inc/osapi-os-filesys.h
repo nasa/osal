@@ -33,28 +33,28 @@
 /** @defgroup OSFileAccess OSAL File Access Option Defines
  * @{
  */
-#define OS_READ_ONLY        0  /**< Read only file access */
-#define OS_WRITE_ONLY       1  /**< Write only file access */
-#define OS_READ_WRITE       2  /**< Read write file access */
+#define OS_READ_ONLY  0 /**< Read only file access */
+#define OS_WRITE_ONLY 1 /**< Write only file access */
+#define OS_READ_WRITE 2 /**< Read write file access */
 /**@}*/
 
 /** @defgroup OSFileOffset OSAL Refernce Point For Seek Offset Defines
  * @{
  */
-#define OS_SEEK_SET         0  /**< Seek offset set */
-#define OS_SEEK_CUR         1  /**< Seek offset current */
-#define OS_SEEK_END         2  /**< Seek offset end */
+#define OS_SEEK_SET 0 /**< Seek offset set */
+#define OS_SEEK_CUR 1 /**< Seek offset current */
+#define OS_SEEK_END 2 /**< Seek offset end */
 /**@}*/
 
-#define OS_CHK_ONLY         0  /**< Unused, API takes bool */
-#define OS_REPAIR           1  /**< Unused, API takes bool */
+#define OS_CHK_ONLY 0 /**< Unused, API takes bool */
+#define OS_REPAIR   1 /**< Unused, API takes bool */
 
 /*
 ** Length of a Device and Volume name
 */
-#define OS_FS_DEV_NAME_LEN  32  /**< Device name length */
-#define OS_FS_PHYS_NAME_LEN 64  /**< Physical drive name length */
-#define OS_FS_VOL_NAME_LEN  32  /**< Volume name length */
+#define OS_FS_DEV_NAME_LEN  32 /**< Device name length */
+#define OS_FS_PHYS_NAME_LEN 64 /**< Physical drive name length */
+#define OS_FS_VOL_NAME_LEN  32 /**< Volume name length */
 
 /**
  * @brief Maximum length of a local/native path name string
@@ -62,8 +62,7 @@
  * This is a concatenation of the OSAL virtual path with the system
  * mount point or device name
  */
-#define OS_MAX_LOCAL_PATH_LEN       (OS_MAX_PATH_LEN + OS_FS_PHYS_NAME_LEN)
-
+#define OS_MAX_LOCAL_PATH_LEN (OS_MAX_PATH_LEN + OS_FS_PHYS_NAME_LEN)
 
 /** @addtogroup OSReturnCodes
  * @{
@@ -76,31 +75,30 @@
  * other OSAPI error codes.  They now start at -100
  * to avoid this overlap.
  */
-#define OS_FS_ERR_PATH_TOO_LONG        (-103)  /**< @brief FS path too long */
-#define OS_FS_ERR_NAME_TOO_LONG        (-104)  /**< @brief FS name too long */
-#define OS_FS_ERR_DRIVE_NOT_CREATED    (-106)  /**< @brief FS drive not created */
-#define OS_FS_ERR_DEVICE_NOT_FREE      (-107)  /**< @brief FS device not free */
-#define OS_FS_ERR_PATH_INVALID         (-108)  /**< @brief FS path invalid */
+#define OS_FS_ERR_PATH_TOO_LONG     (-103) /**< @brief FS path too long */
+#define OS_FS_ERR_NAME_TOO_LONG     (-104) /**< @brief FS name too long */
+#define OS_FS_ERR_DRIVE_NOT_CREATED (-106) /**< @brief FS drive not created */
+#define OS_FS_ERR_DEVICE_NOT_FREE   (-107) /**< @brief FS device not free */
+#define OS_FS_ERR_PATH_INVALID      (-108) /**< @brief FS path invalid */
 
 /**@}*/
-
 
 /** @brief OSAL file system info */
 typedef struct
 {
-   uint32   MaxFds;                /**< @brief Total number of file descriptors */
-   uint32   FreeFds;               /**< @brief Total number that are free */
-   uint32   MaxVolumes;            /**< @brief Maximum number of volumes */
-   uint32   FreeVolumes;           /**< @brief Total number of volumes free */
+    uint32 MaxFds;      /**< @brief Total number of file descriptors */
+    uint32 FreeFds;     /**< @brief Total number that are free */
+    uint32 MaxVolumes;  /**< @brief Maximum number of volumes */
+    uint32 FreeVolumes; /**< @brief Total number of volumes free */
 } os_fsinfo_t;
 
 /** @brief OSAL file properties */
 typedef struct
 {
-    char Path[OS_MAX_PATH_LEN];
+    char      Path[OS_MAX_PATH_LEN];
     osal_id_t User;
-    uint8 IsValid;                /* For backward compatibility -- always true if OS_FDGetInfo returned true */
-}OS_file_prop_t;
+    uint8     IsValid; /* For backward compatibility -- always true if OS_FDGetInfo returned true */
+} OS_file_prop_t;
 
 /**
  * @brief File system status
@@ -112,9 +110,9 @@ typedef struct
  */
 typedef struct
 {
-   uint32   FileModeBits;
-   int32    FileTime;
-   uint32   FileSize;
+    uint32 FileModeBits;
+    int32  FileTime;
+    uint32 FileSize;
 } os_fstat_t;
 
 /**
@@ -127,31 +125,31 @@ typedef struct
  */
 enum
 {
-   OS_FILESTAT_MODE_EXEC  = 0x00001,
-   OS_FILESTAT_MODE_WRITE = 0x00002,
-   OS_FILESTAT_MODE_READ =  0x00004,
-   OS_FILESTAT_MODE_DIR =   0x10000
+    OS_FILESTAT_MODE_EXEC  = 0x00001,
+    OS_FILESTAT_MODE_WRITE = 0x00002,
+    OS_FILESTAT_MODE_READ  = 0x00004,
+    OS_FILESTAT_MODE_DIR   = 0x10000
 };
 
 /** @brief Access file stat mode bits */
-#define OS_FILESTAT_MODE(x)   ((x).FileModeBits)
+#define OS_FILESTAT_MODE(x) ((x).FileModeBits)
 /** @brief File stat is directory logical */
-#define OS_FILESTAT_ISDIR(x)  ((x).FileModeBits & OS_FILESTAT_MODE_DIR)
+#define OS_FILESTAT_ISDIR(x) ((x).FileModeBits & OS_FILESTAT_MODE_DIR)
 /** @brief File stat is executable logical */
-#define OS_FILESTAT_EXEC(x)   ((x).FileModeBits & OS_FILESTAT_MODE_EXEC)
+#define OS_FILESTAT_EXEC(x) ((x).FileModeBits & OS_FILESTAT_MODE_EXEC)
 /** @brief File stat is write enabled logical */
-#define OS_FILESTAT_WRITE(x)  ((x).FileModeBits & OS_FILESTAT_MODE_WRITE)
+#define OS_FILESTAT_WRITE(x) ((x).FileModeBits & OS_FILESTAT_MODE_WRITE)
 /** @brief File stat is read enabled logical */
-#define OS_FILESTAT_READ(x)   ((x).FileModeBits & OS_FILESTAT_MODE_READ)
+#define OS_FILESTAT_READ(x) ((x).FileModeBits & OS_FILESTAT_MODE_READ)
 /** @brief Access file stat size field */
-#define OS_FILESTAT_SIZE(x)   ((x).FileSize)
+#define OS_FILESTAT_SIZE(x) ((x).FileSize)
 /** @brief Access file stat time field */
-#define OS_FILESTAT_TIME(x)   ((x).FileTime)
+#define OS_FILESTAT_TIME(x) ((x).FileTime)
 
 /** @brief Directory entry */
 typedef struct
 {
-   char FileName[OS_MAX_FILE_NAME];
+    char FileName[OS_MAX_FILE_NAME];
 } os_dirent_t;
 
 /**
@@ -159,20 +157,17 @@ typedef struct
  */
 typedef enum
 {
-   OS_FILE_FLAG_NONE,
-   OS_FILE_FLAG_CREATE = 0x01,
-   OS_FILE_FLAG_TRUNCATE = 0x02,
+    OS_FILE_FLAG_NONE,
+    OS_FILE_FLAG_CREATE   = 0x01,
+    OS_FILE_FLAG_TRUNCATE = 0x02,
 } OS_file_flag_t;
 
-
-
-
 /** @brief Access filename part of the dirent structure */
-#define OS_DIRENTRY_NAME(x)   ((x).FileName)
+#define OS_DIRENTRY_NAME(x) ((x).FileName)
 
 /*
  * Exported Functions
-*/
+ */
 
 /** @defgroup OSAPIFile OSAL Standard File APIs
  * @{
@@ -205,8 +200,7 @@ typedef enum
  * @deprecated Replaced by OS_OpenCreate() with flags set to
  *             OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE.
  */
-int32           OS_creat  (const char *path, int32  access);
-
+int32 OS_creat(const char *path, int32 access);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -234,7 +228,7 @@ int32           OS_creat  (const char *path, int32  access);
  * @deprecated Replaced by OS_OpenCreate() with flags set to
  *             OS_FILE_FLAG_NONE.
  */
-int32           OS_open   (const char *path,  int32 access,  uint32 mode);
+int32 OS_open(const char *path, int32 access, uint32 mode);
 
 #endif
 
@@ -271,8 +265,7 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
  * @retval #OS_ERROR if file descriptor could not be closed
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  */
-int32           OS_close  (osal_id_t  filedes);
-
+int32 OS_close(osal_id_t filedes);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -292,8 +285,7 @@ int32           OS_close  (osal_id_t  filedes);
  * @retval #OS_ERROR if OS call failed
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  */
-int32           OS_read   (osal_id_t  filedes, void *buffer, uint32 nbytes);
-
+int32 OS_read(osal_id_t filedes, void *buffer, uint32 nbytes);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -314,7 +306,7 @@ int32           OS_read   (osal_id_t  filedes, void *buffer, uint32 nbytes);
  * @retval #OS_ERROR if OS call failed
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  */
-int32           OS_write  (osal_id_t  filedes, const void *buffer, uint32 nbytes);
+int32 OS_write(osal_id_t filedes, const void *buffer, uint32 nbytes);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -345,8 +337,7 @@ int32           OS_write  (osal_id_t  filedes, const void *buffer, uint32 nbytes
  * @return Byte count on success, zero for timeout, or appropriate error code,
  *         see @ref OSReturnCodes
  */
-int32           OS_TimedRead(osal_id_t  filedes, void *buffer, uint32 nbytes, int32 timeout);
-
+int32 OS_TimedRead(osal_id_t filedes, void *buffer, uint32 nbytes, int32 timeout);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -377,8 +368,7 @@ int32           OS_TimedRead(osal_id_t  filedes, void *buffer, uint32 nbytes, in
  * @return Byte count on success, zero for timeout, or appropriate error code,
  *         see @ref OSReturnCodes
  */
-int32           OS_TimedWrite(osal_id_t  filedes, const void *buffer, uint32 nbytes, int32 timeout);
-
+int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, uint32 nbytes, int32 timeout);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -391,8 +381,7 @@ int32           OS_TimedWrite(osal_id_t  filedes, const void *buffer, uint32 nby
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32           OS_chmod  (const char *path, uint32 access);
-
+int32 OS_chmod(const char *path, uint32 access);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -411,8 +400,7 @@ int32           OS_chmod  (const char *path, uint32 access);
  * @retval #OS_FS_ERR_PATH_INVALID if path cannot be parsed
  * @retval #OS_ERROR if the OS call failed
  */
-int32           OS_stat   (const char *path, os_fstat_t  *filestats);
-
+int32 OS_stat(const char *path, os_fstat_t *filestats);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -429,8 +417,7 @@ int32           OS_stat   (const char *path, os_fstat_t  *filestats);
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  * @retval #OS_ERROR if OS call failed
  */
-int32           OS_lseek  (osal_id_t  filedes, int32 offset, uint32 whence);
-
+int32 OS_lseek(osal_id_t filedes, int32 offset, uint32 whence);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -453,8 +440,7 @@ int32           OS_lseek  (osal_id_t  filedes, int32 offset, uint32 whence);
  * @retval #OS_FS_ERR_PATH_INVALID if path cannot be parsed
  * @retval #OS_FS_ERR_NAME_TOO_LONG if the name of the file to remove is too long
  */
-int32           OS_remove (const char *path);
-
+int32 OS_remove(const char *path);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -479,8 +465,7 @@ int32           OS_remove (const char *path);
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the paths given are too long to be stored locally
  * @retval #OS_FS_ERR_NAME_TOO_LONG if the new name is too long to be stored locally
  */
-int32           OS_rename (const char *old_filename, const char *new_filename);
-
+int32 OS_rename(const char *old_filename, const char *new_filename);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -502,8 +487,7 @@ int32           OS_rename (const char *old_filename, const char *new_filename);
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the paths given are too long to be stored locally
  * @retval #OS_FS_ERR_NAME_TOO_LONG if the dest name is too long to be stored locally
  */
-int32 OS_cp (const char *src, const char *dest);
-
+int32 OS_cp(const char *src, const char *dest);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -531,8 +515,7 @@ int32 OS_cp (const char *src, const char *dest);
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the paths given are too long to be stored locally
  * @retval #OS_FS_ERR_NAME_TOO_LONG if the dest name is too long to be stored locally
  */
-int32 OS_mv (const char *src, const char *dest);
-
+int32 OS_mv(const char *src, const char *dest);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -547,7 +530,7 @@ int32 OS_mv (const char *src, const char *dest);
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  */
-int32 OS_FDGetInfo (osal_id_t filedes, OS_file_prop_t *fd_prop);
+int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -563,7 +546,6 @@ int32 OS_FDGetInfo (osal_id_t filedes, OS_file_prop_t *fd_prop);
  */
 int32 OS_FileOpenCheck(const char *Filename);
 
-
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Close all open files
@@ -575,7 +557,6 @@ int32 OS_FileOpenCheck(const char *Filename);
  * @retval #OS_ERROR   if one or more file close returned an error
  */
 int32 OS_CloseAllFiles(void);
-
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -610,8 +591,7 @@ int32 OS_CloseFileByName(const char *Filename);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32           OS_DirectoryOpen(osal_id_t *dir_id, const char *path);
-
+int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -623,8 +603,7 @@ int32           OS_DirectoryOpen(osal_id_t *dir_id, const char *path);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32           OS_DirectoryClose(osal_id_t dir_id);
-
+int32 OS_DirectoryClose(osal_id_t dir_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -636,8 +615,7 @@ int32           OS_DirectoryClose(osal_id_t dir_id);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32           OS_DirectoryRewind(osal_id_t dir_id);
-
+int32 OS_DirectoryRewind(osal_id_t dir_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -650,8 +628,7 @@ int32           OS_DirectoryRewind(osal_id_t dir_id);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32           OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent);
-
+int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -673,8 +650,7 @@ int32           OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent);
  * @retval #OS_FS_ERR_PATH_INVALID if path cannot be parsed
  * @retval #OS_ERROR if the OS call fails
  */
-int32           OS_mkdir   (const char *path, uint32 access);
-
+int32 OS_mkdir(const char *path, uint32 access);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -692,7 +668,7 @@ int32           OS_mkdir   (const char *path, uint32 access);
  * @retval #OS_FS_ERR_PATH_TOO_LONG
  * @retval #OS_ERROR if the directory remove operation failed
  */
-int32           OS_rmdir   (const char *path);
+int32 OS_rmdir(const char *path);
 /**@}*/
 
 /** @defgroup OSAPIFileSys OSAL File System Level APIs
@@ -712,8 +688,7 @@ int32           OS_rmdir   (const char *path);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32           OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path,
-                                const char *virt_path);
+int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const char *virt_path);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -740,8 +715,7 @@ int32           OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_pa
  * @retval #OS_FS_ERR_DEVICE_NOT_FREE if the volume table is full
  * @retval #OS_SUCCESS on creating the disk
  */
-int32           OS_mkfs        (char *address, const char *devname, const char *volname,
-                                uint32 blocksize, uint32 numblocks);
+int32 OS_mkfs(char *address, const char *devname, const char *volname, uint32 blocksize, uint32 numblocks);
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Mounts a file system
@@ -753,7 +727,7 @@ int32           OS_mkfs        (char *address, const char *devname, const char *
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32           OS_mount       (const char *devname, const char *mountpoint);
+int32 OS_mount(const char *devname, const char *mountpoint);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -780,8 +754,7 @@ int32           OS_mount       (const char *devname, const char *mountpoint);
  * @retval #OS_FS_ERR_DEVICE_NOT_FREE if the volume table is full
  * @retval #OS_FS_ERR_DRIVE_NOT_CREATED on error
  */
-int32           OS_initfs      (char *address, const char *devname, const char *volname,
-                                uint32 blocksize, uint32 numblocks);
+int32 OS_initfs(char *address, const char *devname, const char *volname, uint32 blocksize, uint32 numblocks);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -797,7 +770,7 @@ int32           OS_initfs      (char *address, const char *devname, const char *
  * @retval #OS_INVALID_POINTER if devname is NULL
  * @retval #OS_ERROR is the drive specified cannot be located
  */
-int32           OS_rmfs        (const char *devname);
+int32 OS_rmfs(const char *devname);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -817,7 +790,7 @@ int32           OS_rmfs        (const char *devname);
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the absolute path given is too long
  * @retval #OS_ERROR if the OS calls failed
  */
-int32           OS_unmount     (const char *mountpoint);
+int32 OS_unmount(const char *mountpoint);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -832,7 +805,7 @@ int32           OS_unmount     (const char *mountpoint);
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the name is too long
  * @retval #OS_ERROR if the OS call failed
  */
-int32           OS_fsBlocksFree (const char *name);
+int32 OS_fsBlocksFree(const char *name);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -852,7 +825,7 @@ int32           OS_fsBlocksFree (const char *name);
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the name is too long
  * @retval #OS_ERROR if the OS call failed
  */
-int32 OS_fsBytesFree (const char *name, uint64 *bytes_free);
+int32 OS_fsBytesFree(const char *name, uint64 *bytes_free);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -871,7 +844,7 @@ int32 OS_fsBytesFree (const char *name, uint64 *bytes_free);
  * @retval #OS_ERR_NOT_IMPLEMENTED @copybrief OS_ERR_NOT_IMPLEMENTED
  * @retval #OS_ERROR               @copybrief OS_ERROR
  */
-int32   OS_chkfs       (const char *name, bool repair);
+int32 OS_chkfs(const char *name, bool repair);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -888,7 +861,7 @@ int32   OS_chkfs       (const char *name, bool repair);
  * @retval #OS_INVALID_POINTER if either parameter is NULL
  * @retval #OS_ERROR if the mountpoint could not be found
  */
-int32       OS_FS_GetPhysDriveName  (char * PhysDriveName, const char * MountPoint);
+int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -903,7 +876,7 @@ int32       OS_FS_GetPhysDriveName  (char * PhysDriveName, const char * MountPoi
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if either parameter is NULL
  */
-int32       OS_TranslatePath ( const char *VirtualPath, char *LocalPath);
+int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -918,7 +891,7 @@ int32       OS_TranslatePath ( const char *VirtualPath, char *LocalPath);
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if filesys_info is NULL
  */
-int32       OS_GetFsInfo(os_fsinfo_t  *filesys_info);
+int32 OS_GetFsInfo(os_fsinfo_t *filesys_info);
 /**@}*/
 
 /** @defgroup OSAPIShell OSAL Shell APIs
@@ -940,10 +913,8 @@ int32       OS_GetFsInfo(os_fsinfo_t  *filesys_info);
  * @retval #OS_ERROR if the command was not executed properly
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  */
-int32 OS_ShellOutputToFile(const char* Cmd, osal_id_t filedes);
-
+int32 OS_ShellOutputToFile(const char *Cmd, osal_id_t filedes);
 
 /**@}*/
-
 
 #endif

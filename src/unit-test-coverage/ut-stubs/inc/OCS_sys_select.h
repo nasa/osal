@@ -38,18 +38,21 @@
 /* ----------------------------------------- */
 /* types normally defined in sys/select.h */
 /* ----------------------------------------- */
-typedef struct { unsigned int fds; }    OCS_fd_set;
+typedef struct
+{
+    unsigned int fds;
+} OCS_fd_set;
 
 /* ----------------------------------------- */
 /* prototypes normally declared in sys/select.h */
 /* ----------------------------------------- */
 
-extern int OCS_select (int nfds, OCS_fd_set * readfds, OCS_fd_set * writefds, OCS_fd_set * exceptfds, struct OCS_timeval * timeout);
+extern int OCS_select(int nfds, OCS_fd_set *readfds, OCS_fd_set *writefds, OCS_fd_set *exceptfds,
+                      struct OCS_timeval *timeout);
 
 extern void OCS_FD_SET(int fd, OCS_fd_set *set);
-extern int OCS_FD_ISSET(int fd, OCS_fd_set *set);
+extern int  OCS_FD_ISSET(int fd, OCS_fd_set *set);
 extern void OCS_FD_CLR(int fd, OCS_fd_set *set);
 extern void OCS_FD_ZERO(OCS_fd_set *set);
 
-#endif  /* INCLUDE_OCS_SYS_SELECT_H_ */
-
+#endif /* INCLUDE_OCS_SYS_SELECT_H_ */

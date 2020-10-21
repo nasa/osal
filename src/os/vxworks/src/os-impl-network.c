@@ -33,7 +33,7 @@
 #include "os-impl-network.h"
 #include "os-shared-network.h"
 
-#define OS_HOST_NAME_LEN                48
+#define OS_HOST_NAME_LEN 48
 
 /*----------------------------------------------------------------
  *
@@ -43,25 +43,22 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_NetworkGetHostName_Impl       (char *host_name, uint32 name_len)
+int32 OS_NetworkGetHostName_Impl(char *host_name, uint32 name_len)
 {
     int32 return_code;
 
-    if ( gethostname(host_name, name_len) < 0 )
+    if (gethostname(host_name, name_len) < 0)
     {
         return_code = OS_ERROR;
     }
     else
     {
         host_name[name_len - 1] = 0;
-        return_code = OS_SUCCESS;
+        return_code             = OS_SUCCESS;
     }
 
-    return(return_code);
+    return (return_code);
 } /* end OS_NetworkGetHostName_Impl */
-
-
-
 
 /*----------------------------------------------------------------
  *
@@ -71,11 +68,11 @@ int32 OS_NetworkGetHostName_Impl       (char *host_name, uint32 name_len)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_NetworkGetID_Impl             (int32 *IdBuf)
+int32 OS_NetworkGetID_Impl(int32 *IdBuf)
 {
-    int    host_id;
-    int32  status;
-    char   host_name [OS_HOST_NAME_LEN];
+    int   host_id;
+    int32 status;
+    char  host_name[OS_HOST_NAME_LEN];
 
     status = OS_NetworkGetHostName_Impl(host_name, sizeof(host_name));
     if (status == OS_SUCCESS)
@@ -95,4 +92,3 @@ int32 OS_NetworkGetID_Impl             (int32 *IdBuf)
     return status;
 
 } /* end OS_NetworkGetID_Impl */
-

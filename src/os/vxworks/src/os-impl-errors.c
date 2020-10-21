@@ -39,5 +39,4 @@
                                    GLOBAL DATA
 ****************************************************************************************/
 
-const OS_ErrorTable_Entry_t OS_IMPL_ERROR_NAME_TABLE[] = { { 0, NULL } };
-
+const OS_ErrorTable_Entry_t OS_IMPL_ERROR_NAME_TABLE[] = {{0, NULL}};

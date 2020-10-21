@@ -42,8 +42,6 @@
 #include "os-shared-file.h"
 #include "os-shared-idmap.h"
 
-
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ShellOutputToFile
@@ -52,25 +50,24 @@
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ShellOutputToFile(const char* Cmd, osal_id_t filedes)
+int32 OS_ShellOutputToFile(const char *Cmd, osal_id_t filedes)
 {
-   OS_common_record_t *record;
-   uint32 local_id;
-   int32 return_code;
+    OS_common_record_t *record;
+    uint32              local_id;
+    int32               return_code;
 
-   /* Check Parameters */
-   if (Cmd == NULL)
-   {
-       return OS_INVALID_POINTER;
-   }
+    /* Check Parameters */
+    if (Cmd == NULL)
+    {
+        return OS_INVALID_POINTER;
+    }
 
-   return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, filedes, &local_id, &record);
-   if (return_code == OS_SUCCESS)
-   {
-      return_code = OS_ShellOutputToFile_Impl(local_id, Cmd);
-      OS_ObjectIdRefcountDecr(record);
-   }
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, filedes, &local_id, &record);
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_ShellOutputToFile_Impl(local_id, Cmd);
+        OS_ObjectIdRefcountDecr(record);
+    }
 
-   return return_code;
+    return return_code;
 } /* end OS_ShellOutputToFile */
-

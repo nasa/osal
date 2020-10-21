@@ -36,7 +36,4 @@
 /* prototypes normally declared in wctype.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_WCTYPE_H_ */
-

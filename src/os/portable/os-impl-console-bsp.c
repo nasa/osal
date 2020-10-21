@@ -44,7 +44,6 @@
                                 CONSOLE OUTPUT
  ***************************************************************************************/
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ConsoleOutput_Impl
@@ -53,16 +52,16 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void  OS_ConsoleOutput_Impl(uint32 local_id)
+void OS_ConsoleOutput_Impl(uint32 local_id)
 {
-    uint32 StartPos;
-    uint32 EndPos;
-    long WriteSize;
+    uint32                        StartPos;
+    uint32                        EndPos;
+    long                          WriteSize;
     OS_console_internal_record_t *console;
 
-    console = &OS_console_table[local_id];
+    console  = &OS_console_table[local_id];
     StartPos = console->ReadPos;
-    EndPos = console->WritePos;
+    EndPos   = console->WritePos;
     while (StartPos != EndPos)
     {
         if (StartPos > EndPos)
@@ -75,8 +74,7 @@ void  OS_ConsoleOutput_Impl(uint32 local_id)
             WriteSize = EndPos - StartPos;
         }
 
-        OS_BSP_ConsoleOutput_Impl(&console->BufBase[StartPos],
-                WriteSize);
+        OS_BSP_ConsoleOutput_Impl(&console->BufBase[StartPos], WriteSize);
 
         StartPos += WriteSize;
         if (StartPos >= console->BufSize)
@@ -89,8 +87,3 @@ void  OS_ConsoleOutput_Impl(uint32 local_id)
     /* Update the global with the new read location */
     console->ReadPos = StartPos;
 } /* end OS_ConsoleOutput_Impl */
-
-
-
-
-

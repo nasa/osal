@@ -40,8 +40,6 @@
  *
  *****************************************************/
 int32 UT_Call_OS_VxWorks_TableMutex_Init(uint32 idtype);
-void UT_IdMapTest_SetImplTableMutex(uint32 idtype, OCS_SEM_ID vxid);
+void  UT_IdMapTest_SetImplTableMutex(uint32 idtype, OCS_SEM_ID vxid);
 
-
-#endif  /* INCLUDE_UT_ADAPTOR_IDMAP_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_IDMAP_H_ */

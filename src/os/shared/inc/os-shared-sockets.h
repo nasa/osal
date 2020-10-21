@@ -41,7 +41,7 @@
 
    returns: OS_SUCCESS on success, or relevant error code
 ---------------------------------------------------------------------------------------*/
-int32 OS_SocketAPI_Init              (void);
+int32 OS_SocketAPI_Init(void);
 
 /*----------------------------------------------------------------
    Function: OS_SocketOpen_Impl
@@ -114,7 +114,7 @@ int32 OS_SocketSendTo_Impl(uint32 sock_id, const void *buffer, uint32 buflen, co
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SocketGetInfo_Impl (uint32 sock_id, OS_socket_prop_t *sock_prop);
+int32 OS_SocketGetInfo_Impl(uint32 sock_id, OS_socket_prop_t *sock_prop);
 
 /*----------------------------------------------------------------
 
@@ -176,5 +176,4 @@ int32 OS_SocketAddrSetPort_Impl(OS_SockAddr_t *Addr, uint16 PortNum);
  */
 void OS_CreateSocketName(uint32 local_id, const OS_SockAddr_t *Addr, const char *parent_name);
 
-#endif  /* INCLUDE_OS_SHARED_SOCKETS_H_ */
-
+#endif /* INCLUDE_OS_SHARED_SOCKETS_H_ */

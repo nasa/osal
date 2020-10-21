@@ -97,13 +97,9 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
+void Osapi_Test_Teardown(void) {}
 
-}
-
-
-#define ADD_TEST(test) UtTest_Add((Test_ ## test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
+#define ADD_TEST(test) UtTest_Add((Test_##test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
 
 /* UtTest_Setup
  *
@@ -115,5 +111,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_ConsoleCreate_Impl);
     ADD_TEST(OS_ConsoleWakeup_Impl);
 }
-
-

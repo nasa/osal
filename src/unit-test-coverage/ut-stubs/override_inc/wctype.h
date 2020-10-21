@@ -28,6 +28,4 @@
 /* mappings for declarations in wctype.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_OVERRIDE_WCTYPE_H_ */

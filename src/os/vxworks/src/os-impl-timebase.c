@@ -42,7 +42,6 @@
 #include <sysLib.h>
 #include <errnoLib.h>
 
-
 /****************************************************************************************
                                      DEFINES
 ****************************************************************************************/
@@ -53,24 +52,22 @@
  *
  * This should run at the highest priority to reduce latency.
  */
-#define OSAL_TIMEBASE_TASK_STACK_SIZE       4096
-#define OSAL_TIMEBASE_TASK_PRIORITY         0
-#define OSAL_TIMEBASE_TASK_OPTION_WORD      0
+#define OSAL_TIMEBASE_TASK_STACK_SIZE  4096
+#define OSAL_TIMEBASE_TASK_PRIORITY    0
+#define OSAL_TIMEBASE_TASK_OPTION_WORD 0
 
-#define OSAL_TIMEBASE_REG_WAIT_LIMIT        100
+#define OSAL_TIMEBASE_REG_WAIT_LIMIT 100
 /*
  * Prefer to use the MONOTONIC clock if available, as it will not get distrupted by setting
  * the time like the REALTIME clock will.
  */
 #ifndef OS_PREFERRED_CLOCK
-#ifdef  _POSIX_MONOTONIC_CLOCK
-#define OS_PREFERRED_CLOCK      CLOCK_MONOTONIC
+#ifdef _POSIX_MONOTONIC_CLOCK
+#define OS_PREFERRED_CLOCK CLOCK_MONOTONIC
 #else
-#define OS_PREFERRED_CLOCK      CLOCK_REALTIME
+#define OS_PREFERRED_CLOCK CLOCK_REALTIME
 #endif
 #endif
-
-
 
 /****************************************************************************************
                                     LOCAL TYPEDEFS
@@ -82,12 +79,11 @@
 
 OS_impl_timebase_internal_record_t OS_impl_timebase_table[OS_MAX_TIMEBASES];
 
-static uint32      OS_ClockAccuracyNsec;
+static uint32 OS_ClockAccuracyNsec;
 
 /****************************************************************************************
                                 INTERNAL FUNCTIONS
 ****************************************************************************************/
-
 
 /*----------------------------------------------------------------
  *
@@ -115,7 +111,6 @@ void OS_TimeBaseUnlock_Impl(uint32 local_id)
     semGive(OS_impl_timebase_table[local_id].handler_mutex);
 } /* end OS_TimeBaseUnlock_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_Impl_UsecToTimespec
@@ -125,18 +120,17 @@ void OS_TimeBaseUnlock_Impl(uint32 local_id)
  *-----------------------------------------------------------------*/
 void OS_VxWorks_UsecToTimespec(uint32 usecs, struct timespec *time_spec)
 {
-   if ( usecs < 1000000 )
-   {
-      time_spec->tv_nsec = (usecs * 1000);
-      time_spec->tv_sec = 0;
-   }
-   else
-   {
-      time_spec->tv_sec = usecs / 1000000;
-      time_spec->tv_nsec = (usecs % 1000000) * 1000;
-   }
+    if (usecs < 1000000)
+    {
+        time_spec->tv_nsec = (usecs * 1000);
+        time_spec->tv_sec  = 0;
+    }
+    else
+    {
+        time_spec->tv_sec  = usecs / 1000000;
+        time_spec->tv_nsec = (usecs % 1000000) * 1000;
+    }
 } /* end OS_Impl_UsecToTimespec */
-
 
 /*----------------------------------------------------------------
  *
@@ -149,14 +143,14 @@ void OS_VxWorks_UsecToTimespec(uint32 usecs, struct timespec *time_spec)
 uint32 OS_VxWorks_SigWait(uint32 local_id)
 {
     OS_impl_timebase_internal_record_t *local;
-    OS_common_record_t *global;
-    osal_id_t active_id;
-    uint32 tick_time;
-    int signo;
-    int ret;
+    OS_common_record_t *                global;
+    osal_id_t                           active_id;
+    uint32                              tick_time;
+    int                                 signo;
+    int                                 ret;
 
-    local = &OS_impl_timebase_table[local_id];
-    global = &OS_global_timebase_table[local_id];
+    local     = &OS_impl_timebase_table[local_id];
+    global    = &OS_global_timebase_table[local_id];
     active_id = global->active_id;
     tick_time = 0;
 
@@ -185,13 +179,12 @@ uint32 OS_VxWorks_SigWait(uint32 local_id)
          * conditions.  Samples from before/after a reconfig
          * are generally not comparable.
          */
-        if (ret == OK && signo == local->assigned_signal &&
-                OS_ObjectIdEqual(global->active_id, active_id))
+        if (ret == OK && signo == local->assigned_signal && OS_ObjectIdEqual(global->active_id, active_id))
         {
             if (local->reset_flag)
             {
                 /* first interval after reset, use start time */
-                tick_time = local->configured_start_time;
+                tick_time         = local->configured_start_time;
                 local->reset_flag = false;
             }
             else
@@ -204,7 +197,6 @@ uint32 OS_VxWorks_SigWait(uint32 local_id)
     return tick_time;
 } /* end OS_VxWorks_SigWait */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_VxWorks_RegisterTimer
@@ -215,16 +207,14 @@ uint32 OS_VxWorks_SigWait(uint32 local_id)
 void OS_VxWorks_RegisterTimer(uint32 local_id)
 {
     OS_impl_timebase_internal_record_t *local;
-    struct sigevent   evp;
-    int status;
+    struct sigevent                     evp;
+    int                                 status;
 
     local = &OS_impl_timebase_table[local_id];
 
-
     memset(&evp, 0, sizeof(evp));
     evp.sigev_notify = SIGEV_SIGNAL;
-    evp.sigev_signo = local->assigned_signal;
-
+    evp.sigev_signo  = local->assigned_signal;
 
     /*
     ** Create the timer
@@ -263,7 +253,7 @@ void OS_VxWorks_RegisterTimer(uint32 local_id)
 int OS_VxWorks_TimeBaseTask(int arg)
 {
     VxWorks_ID_Buffer_t id;
-    uint32 local_id;
+    uint32              local_id;
 
     id.arg = arg;
     if (OS_ConvertToArrayIndex(id.id, &local_id) == OS_SUCCESS)
@@ -274,9 +264,6 @@ int OS_VxWorks_TimeBaseTask(int arg)
 
     return 0;
 } /* end OS_VxWorks_TimeBaseTask */
-
-
-
 
 /****************************************************************************************
                                 INITIALIZATION FUNCTION
@@ -289,7 +276,7 @@ int OS_VxWorks_TimeBaseTask(int arg)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-int32  OS_VxWorks_TimeBaseAPI_Impl_Init ( void )
+int32 OS_VxWorks_TimeBaseAPI_Impl_Init(void)
 {
     int clockRate;
 
@@ -300,7 +287,7 @@ int32  OS_VxWorks_TimeBaseAPI_Impl_Init ( void )
 
     if (clockRate <= 0)
     {
-       return OS_ERROR;
+        return OS_ERROR;
     }
 
     OS_SharedGlobalVars.TicksPerSecond = clockRate;
@@ -312,9 +299,7 @@ int32  OS_VxWorks_TimeBaseAPI_Impl_Init ( void )
      * This really should be an exact/whole number result; otherwise this
      * will round to the nearest nanosecond.
      */
-    OS_ClockAccuracyNsec = (1000000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) /
-            OS_SharedGlobalVars.TicksPerSecond;
-
+    OS_ClockAccuracyNsec = (1000000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) / OS_SharedGlobalVars.TicksPerSecond;
 
     /*
      * Finally compute the Microseconds per tick
@@ -323,13 +308,12 @@ int32  OS_VxWorks_TimeBaseAPI_Impl_Init ( void )
      */
     OS_SharedGlobalVars.MicroSecPerTick = (OS_ClockAccuracyNsec + 500) / 1000;
 
-    return(OS_SUCCESS);
+    return (OS_SUCCESS);
 } /* end OS_VxWorks_TimeBaseAPI_Impl_Init */
 
 /****************************************************************************************
                                    Time Base API
 ****************************************************************************************/
-
 
 /*----------------------------------------------------------------
  *
@@ -345,25 +329,25 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
      * The tick_sem is a simple semaphore posted by the ISR and taken by the
      * timebase helper task (created later).
      */
-    int32  return_code;
+    int32                               return_code;
     OS_impl_timebase_internal_record_t *local;
-    OS_common_record_t *global;
-    int signo;
-    sigset_t inuse;
-    uint32 i;
-    VxWorks_ID_Buffer_t idbuf;
+    OS_common_record_t *                global;
+    int                                 signo;
+    sigset_t                            inuse;
+    uint32                              i;
+    VxWorks_ID_Buffer_t                 idbuf;
 
     return_code = OS_SUCCESS;
-    local = &OS_impl_timebase_table[timer_id];
-    global = &OS_global_timebase_table[timer_id];
+    local       = &OS_impl_timebase_table[timer_id];
+    global      = &OS_global_timebase_table[timer_id];
 
     sigemptyset(&local->timer_sigset);
     local->assigned_signal = 0;
-    local->handler_task = 0;
-    local->handler_mutex = (SEM_ID)0;
-    local->host_timerid = 0;
-    local->timer_state = OS_TimerRegState_INIT;
-    local->reset_flag = false;
+    local->handler_task    = 0;
+    local->handler_mutex   = (SEM_ID)0;
+    local->host_timerid    = 0;
+    local->timer_state     = OS_TimerRegState_INIT;
+    local->reset_flag      = false;
 
     /*
      * Set up the necessary OS constructs
@@ -383,19 +367,17 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
          */
         sigemptyset(&inuse);
 
-        for(i = 0; i < OS_MAX_TIMEBASES; ++i)
+        for (i = 0; i < OS_MAX_TIMEBASES; ++i)
         {
             if (OS_ObjectIdDefined(OS_global_timebase_table[i].active_id) &&
-                    OS_impl_timebase_table[i].assigned_signal > 0)
+                OS_impl_timebase_table[i].assigned_signal > 0)
             {
                 /* mark signal as in-use */
                 sigaddset(&inuse, OS_impl_timebase_table[i].assigned_signal);
             }
         }
 
-        for (signo = SIGRTMIN;
-                signo <= SIGRTMAX;
-                ++signo)
+        for (signo = SIGRTMIN; signo <= SIGRTMAX; ++signo)
         {
             if (!sigismember(&inuse, signo))
             {
@@ -442,9 +424,9 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
          * occurs there is no need to free the memory later.
          */
         local->handler_mutex = semMInitialize(local->mmem, SEM_Q_PRIORITY | SEM_INVERSION_SAFE);
-        if ( local->handler_mutex == (SEM_ID)0 )
+        if (local->handler_mutex == (SEM_ID)0)
         {
-            OS_DEBUG("Error: Handler Mutex could not be initialized: errno=%d\n",errno);
+            OS_DEBUG("Error: Handler Mutex could not be initialized: errno=%d\n", errno);
             return_code = OS_TIMER_ERR_INTERNAL;
         }
     }
@@ -461,20 +443,17 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
      */
     if (return_code == OS_SUCCESS)
     {
-        idbuf.id = global->active_id;
-        local->handler_task = taskSpawn(
-                (char*)global->name_entry,
-                OSAL_TIMEBASE_TASK_PRIORITY,    /* priority */
-                OSAL_TIMEBASE_TASK_OPTION_WORD, /* task option word */
-                OSAL_TIMEBASE_TASK_STACK_SIZE,  /* size (bytes) of stack needed */
-                (FUNCPTR)OS_VxWorks_TimeBaseTask,
-                idbuf.arg,                      /* 1st arg is ID */
-                0,0,0,0,0,0,0,0,0);
+        idbuf.id            = global->active_id;
+        local->handler_task = taskSpawn((char *)global->name_entry, OSAL_TIMEBASE_TASK_PRIORITY, /* priority */
+                                        OSAL_TIMEBASE_TASK_OPTION_WORD,                          /* task option word */
+                                        OSAL_TIMEBASE_TASK_STACK_SIZE,               /* size (bytes) of stack needed */
+                                        (FUNCPTR)OS_VxWorks_TimeBaseTask, idbuf.arg, /* 1st arg is ID */
+                                        0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         /* check if taskSpawn failed */
         if (local->handler_task == ((TASK_ID)ERROR))
         {
-            OS_DEBUG("taskSpawn() - vxWorks errno: %d\n",errno);
+            OS_DEBUG("taskSpawn() - vxWorks errno: %d\n", errno);
             return_code = OS_TIMER_ERR_INTERNAL;
         }
         else
@@ -491,7 +470,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
              * is necessary.
              */
             i = OSAL_TIMEBASE_REG_WAIT_LIMIT;
-            while(local->timer_state == OS_TimerRegState_INIT && i > 0)
+            while (local->timer_state == OS_TimerRegState_INIT && i > 0)
             {
                 OS_TaskDelay(1);
                 --i;
@@ -510,10 +489,8 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
         }
     }
 
-
     return return_code;
 } /* end OS_TimeBaseCreate_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -526,9 +503,9 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
 int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time)
 {
     OS_impl_timebase_internal_record_t *local;
-    struct itimerspec timeout;
-    int32 return_code;
-    int status;
+    struct itimerspec                   timeout;
+    int32                               return_code;
+    int                                 status;
 
     local = &OS_impl_timebase_table[timer_id];
 
@@ -546,10 +523,9 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
         /*
         ** Program the real timer
         */
-        status = timer_settime(local->host_timerid,
-                0,             /* Flags field can be zero */
-                &timeout,      /* struct itimerspec */
-                NULL);         /* Oldvalue */
+        status = timer_settime(local->host_timerid, 0, /* Flags field can be zero */
+                               &timeout,               /* struct itimerspec */
+                               NULL);                  /* Oldvalue */
 
         if (status == OK)
         {
@@ -572,36 +548,28 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
             status = timer_gettime(local->host_timerid, &timeout);
             if (status == OK)
             {
-                local->configured_start_time =
-                    (timeout.it_value.tv_sec * 1000000) +
-                        (timeout.it_value.tv_nsec / 1000);
+                local->configured_start_time = (timeout.it_value.tv_sec * 1000000) + (timeout.it_value.tv_nsec / 1000);
                 local->configured_interval_time =
-                        (timeout.it_interval.tv_sec * 1000000) +
-                            (timeout.it_interval.tv_nsec / 1000);
+                    (timeout.it_interval.tv_sec * 1000000) + (timeout.it_interval.tv_nsec / 1000);
 
                 if (local->configured_start_time != start_time)
                 {
                     OS_DEBUG("WARNING: timer %lu start_time requested=%luus, configured=%luus\n",
-                            (unsigned long)timer_id,
-                            (unsigned long)start_time,
-                            (unsigned long)local->configured_start_time);
+                             (unsigned long)timer_id, (unsigned long)start_time,
+                             (unsigned long)local->configured_start_time);
                 }
                 if (local->configured_interval_time != interval_time)
                 {
                     OS_DEBUG("WARNING: timer %lu interval_time requested=%luus, configured=%luus\n",
-                            (unsigned long)timer_id,
-                            (unsigned long)interval_time,
-                            (unsigned long)local->configured_interval_time);
+                             (unsigned long)timer_id, (unsigned long)interval_time,
+                             (unsigned long)local->configured_interval_time);
                 }
-
             }
-
         }
         else
         {
             return_code = OS_TIMER_ERR_INVALID_ARGS;
         }
-
     }
 
     if (!local->reset_flag && return_code == OS_SUCCESS)
@@ -611,8 +579,6 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
 
     return return_code;
 } /* end OS_TimeBaseSet_Impl */
-
-
 
 /*----------------------------------------------------------------
  *
@@ -625,9 +591,9 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
 int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
 {
     OS_impl_timebase_internal_record_t *local;
-    int32 return_code;
+    int32                               return_code;
 
-    local = &OS_impl_timebase_table[timer_id];
+    local       = &OS_impl_timebase_table[timer_id];
     return_code = OS_SUCCESS;
 
     /* An assigned_signal value indicates the OS timer needs deletion too */
@@ -635,7 +601,7 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
     {
         /* this also implies the sync sem needs delete too */
         timer_delete(local->host_timerid);
-        local->host_timerid = 0;
+        local->host_timerid    = 0;
         local->assigned_signal = 0;
     }
 
@@ -648,7 +614,6 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
     return return_code;
 } /* end OS_TimeBaseDelete_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_TimeBaseGetInfo_Impl
@@ -657,9 +622,8 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseGetInfo_Impl (uint32 timer_id, OS_timebase_prop_t *timer_prop)
+int32 OS_TimeBaseGetInfo_Impl(uint32 timer_id, OS_timebase_prop_t *timer_prop)
 {
     return OS_SUCCESS;
 
 } /* end OS_TimeBaseGetInfo_Impl */
-

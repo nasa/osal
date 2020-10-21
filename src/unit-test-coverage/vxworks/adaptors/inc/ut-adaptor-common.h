@@ -55,5 +55,4 @@ extern int32 OS_VxWorks_GenericSemGive(OCS_SEM_ID vxid);
  */
 extern const UT_EntryKey_t UT_StubKey_OS_VxWorks_TableMutex_Init;
 
-#endif  /* INCLUDE_UT_ADAPTOR_COMMON_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_COMMON_H_ */

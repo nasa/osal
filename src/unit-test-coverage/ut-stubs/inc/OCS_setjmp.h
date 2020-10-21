@@ -36,7 +36,4 @@
 /* prototypes normally declared in setjmp.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_SETJMP_H_ */
-

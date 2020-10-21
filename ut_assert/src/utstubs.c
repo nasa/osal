@@ -44,56 +44,56 @@
 #include "utstubs.h"
 #include "utbsp.h"
 
-#define UT_MAX_FUNC_STUBS        200
-#define UT_APPNAME_MAX_LEN       80
-#define UT_SUBSYS_MAX_LEN        5
-#define UT_MODEFLAG_ALLOC_BUF    0x1U
+#define UT_MAX_FUNC_STUBS     200
+#define UT_APPNAME_MAX_LEN    80
+#define UT_SUBSYS_MAX_LEN     5
+#define UT_MODEFLAG_ALLOC_BUF 0x1U
 
 typedef enum
 {
-    UT_ENTRYTYPE_UNUSED,            /**< Unused/available table entries */
-    UT_ENTRYTYPE_COUNTER,           /**< Records a usage count plus most recent return code */
-    UT_ENTRYTYPE_FORCE_FAIL,        /**< Always return a designated code from stub */
-    UT_ENTRYTYPE_DEFERRED_RC,       /**< Return a designated code from stub after "N" calls */
-    UT_ENTRYTYPE_DATA_BUFFER,       /**< Storage for data buffers to simulate read/write or queue ops */
-    UT_ENTRYTYPE_CALLBACK_HOOK,     /**< Pointer to a custom callback/hook function */
-    UT_ENTRYTYPE_CALLBACK_CONTEXT,  /**< Context data for callback/hook function */
-    UT_ENTRYTYPE_CALL_ONCE,         /**< Records a "call once" directive */
+    UT_ENTRYTYPE_UNUSED,           /**< Unused/available table entries */
+    UT_ENTRYTYPE_COUNTER,          /**< Records a usage count plus most recent return code */
+    UT_ENTRYTYPE_FORCE_FAIL,       /**< Always return a designated code from stub */
+    UT_ENTRYTYPE_DEFERRED_RC,      /**< Return a designated code from stub after "N" calls */
+    UT_ENTRYTYPE_DATA_BUFFER,      /**< Storage for data buffers to simulate read/write or queue ops */
+    UT_ENTRYTYPE_CALLBACK_HOOK,    /**< Pointer to a custom callback/hook function */
+    UT_ENTRYTYPE_CALLBACK_CONTEXT, /**< Context data for callback/hook function */
+    UT_ENTRYTYPE_CALL_ONCE,        /**< Records a "call once" directive */
 } UT_EntryType_t;
 
 typedef struct
 {
-    uint32          Count;
-    int32           Value;
+    uint32 Count;
+    int32  Value;
 } UT_RetcodeEntry_t;
 
 typedef struct
 {
-    uint32          Position;
-    uint32          TotalSize;
-    uint8           *BasePtr;
+    uint32 Position;
+    uint32 TotalSize;
+    uint8 *BasePtr;
 } UT_BufferEntry_t;
 
 typedef union
 {
-    void            *Addr;
+    void *          Addr;
     UT_HookFunc_t   Simple;
     UT_VaHookFunc_t Va;
 } UT_HookFuncPtr_t;
 
 typedef struct
 {
-    UT_HookFuncPtr_t    Ptr;
-    void                *CallbackArg;
-    bool                IsVarg;
+    UT_HookFuncPtr_t Ptr;
+    void *           CallbackArg;
+    bool             IsVarg;
 } UT_CallbackEntry_t;
 
 typedef union
 {
-    UT_RetcodeEntry_t   Rc;
-    UT_BufferEntry_t    Buff;
-    UT_CallbackEntry_t  Cb;
-    UT_StubContext_t    Context;
+    UT_RetcodeEntry_t  Rc;
+    UT_BufferEntry_t   Buff;
+    UT_CallbackEntry_t Cb;
+    UT_StubContext_t   Context;
 } UT_EntryData_t;
 
 /*
@@ -101,14 +101,14 @@ typedef union
  */
 typedef struct
 {
-    UT_EntryType_t  EntryType;
-    UT_EntryKey_t   FuncKey;
-    uint32          ModeFlags;
-    UT_EntryData_t  Data;
+    UT_EntryType_t EntryType;
+    UT_EntryKey_t  FuncKey;
+    uint32         ModeFlags;
+    UT_EntryData_t Data;
 } UT_StubTableEntry_t;
 
-static UT_StubTableEntry_t UT_StubTable[UT_MAX_FUNC_STUBS] = {{ 0 }};
-static uint32 UT_MaxStubSearchLen = 0;
+static UT_StubTableEntry_t UT_StubTable[UT_MAX_FUNC_STUBS] = {{0}};
+static uint32              UT_MaxStubSearchLen             = 0;
 
 /**
  * Helper function to clear an entry in the stub table.
@@ -118,9 +118,8 @@ static uint32 UT_MaxStubSearchLen = 0;
 static void UT_ClearStubEntry(UT_StubTableEntry_t *StubPtr)
 {
     /* Be sure to call free() on any malloc'ed buffers before clearing */
-    if (StubPtr->EntryType == UT_ENTRYTYPE_DATA_BUFFER &&
-            StubPtr->Data.Buff.BasePtr != NULL &&
-            (StubPtr->ModeFlags & UT_MODEFLAG_ALLOC_BUF) != 0)
+    if (StubPtr->EntryType == UT_ENTRYTYPE_DATA_BUFFER && StubPtr->Data.Buff.BasePtr != NULL &&
+        (StubPtr->ModeFlags & UT_MODEFLAG_ALLOC_BUF) != 0)
     {
         free(StubPtr->Data.Buff.BasePtr);
     }
@@ -133,26 +132,26 @@ static void UT_ClearStubEntry(UT_StubTableEntry_t *StubPtr)
 
 static UT_StubTableEntry_t *UT_GetStubEntry(UT_EntryKey_t FuncKey, UT_EntryType_t TestMode)
 {
-    UT_StubTableEntry_t *StubPtr = NULL;
-    uint32 Idx = FuncKey % (UT_MAX_FUNC_STUBS-1);   /* hash the key to determine the start point */
-    uint32 SearchLen = 0;
-    uint32 SearchLimit;
-    UT_EntryKey_t SearchKey;
+    UT_StubTableEntry_t *StubPtr   = NULL;
+    uint32               Idx       = FuncKey % (UT_MAX_FUNC_STUBS - 1); /* hash the key to determine the start point */
+    uint32               SearchLen = 0;
+    uint32               SearchLimit;
+    UT_EntryKey_t        SearchKey;
 
     /* If searching for an unused entry, look through the entire table.
      * Otherwise bound the search */
     if (TestMode == UT_ENTRYTYPE_UNUSED)
     {
         SearchLimit = UT_MAX_FUNC_STUBS;
-        SearchKey = 0;
+        SearchKey   = 0;
     }
     else
     {
         SearchLimit = UT_MaxStubSearchLen;
-        SearchKey = FuncKey;
+        SearchKey   = FuncKey;
     }
 
-    while(1)
+    while (1)
     {
         if (SearchLen >= SearchLimit)
         {
@@ -187,10 +186,10 @@ static UT_StubTableEntry_t *UT_GetStubEntry(UT_EntryKey_t FuncKey, UT_EntryType_
 void UT_ResetState(UT_EntryKey_t FuncKey)
 {
     UT_StubTableEntry_t *StubPtr;
-    int32 i;
+    int32                i;
 
     StubPtr = UT_StubTable;
-    for (i=0; i < UT_MAX_FUNC_STUBS; ++i)
+    for (i = 0; i < UT_MAX_FUNC_STUBS; ++i)
     {
         if (FuncKey == 0 || StubPtr->FuncKey == FuncKey)
         {
@@ -208,8 +207,8 @@ void UT_Stub_CallOnce(void (*Func)(void))
 {
     UT_StubTableEntry_t *StubPtr;
     UT_StubTableEntry_t *OnceEnt;
-    UT_EntryKey_t FuncKey;
-    int32 i;
+    UT_EntryKey_t        FuncKey;
+    int32                i;
 
     if (Func == NULL)
     {
@@ -219,14 +218,13 @@ void UT_Stub_CallOnce(void (*Func)(void))
     FuncKey = (UT_EntryKey_t)Func;
     OnceEnt = NULL;
     StubPtr = UT_StubTable;
-    for (i=0; i < UT_MAX_FUNC_STUBS; ++i)
+    for (i = 0; i < UT_MAX_FUNC_STUBS; ++i)
     {
         if (StubPtr->EntryType == UT_ENTRYTYPE_UNUSED && OnceEnt == NULL)
         {
             OnceEnt = StubPtr;
         }
-        else if (StubPtr->EntryType == UT_ENTRYTYPE_CALL_ONCE &&
-                StubPtr->FuncKey == FuncKey)
+        else if (StubPtr->EntryType == UT_ENTRYTYPE_CALL_ONCE && StubPtr->FuncKey == FuncKey)
         {
             OnceEnt = StubPtr;
             break;
@@ -242,7 +240,7 @@ void UT_Stub_CallOnce(void (*Func)(void))
     else if (OnceEnt->EntryType == UT_ENTRYTYPE_UNUSED)
     {
         OnceEnt->EntryType = UT_ENTRYTYPE_CALL_ONCE;
-        OnceEnt->FuncKey = FuncKey;
+        OnceEnt->FuncKey   = FuncKey;
 
         Func();
     }
@@ -262,8 +260,8 @@ void UT_SetDeferredRetcode(UT_EntryKey_t FuncKey, int32 Count, int32 Retcode)
         }
         else
         {
-            StubPtr->FuncKey = FuncKey;
-            StubPtr->EntryType = UT_ENTRYTYPE_DEFERRED_RC;
+            StubPtr->FuncKey       = FuncKey;
+            StubPtr->EntryType     = UT_ENTRYTYPE_DEFERRED_RC;
             StubPtr->Data.Rc.Count = Count;
             StubPtr->Data.Rc.Value = Retcode;
         }
@@ -287,7 +285,7 @@ void UT_ClearDeferredRetcode(UT_EntryKey_t FuncKey)
 
 bool UT_Stub_CheckDeferredRetcode(UT_EntryKey_t FuncKey, int32 *Retcode)
 {
-    bool Result = false;
+    bool                 Result = false;
     UT_StubTableEntry_t *StubPtr;
 
     StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_DEFERRED_RC);
@@ -299,7 +297,7 @@ bool UT_Stub_CheckDeferredRetcode(UT_EntryKey_t FuncKey, int32 *Retcode)
         }
         if (StubPtr->Data.Rc.Count == 0)
         {
-            Result = true;
+            Result   = true;
             *Retcode = StubPtr->Data.Rc.Value;
 
             /* Once the count has reached zero, void the entry */
@@ -327,8 +325,8 @@ void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value)
 
     if (Rc != NULL)
     {
-        Rc->FuncKey = FuncKey;
-        Rc->EntryType = UT_ENTRYTYPE_FORCE_FAIL;
+        Rc->FuncKey       = FuncKey;
+        Rc->EntryType     = UT_ENTRYTYPE_FORCE_FAIL;
         Rc->Data.Rc.Value = Value;
     }
     else
@@ -351,14 +349,14 @@ void UT_ClearForceFail(UT_EntryKey_t FuncKey)
 bool UT_GetStubRetcodeAndCount(UT_EntryKey_t FuncKey, int32 *Retcode, int32 *Count)
 {
     UT_StubTableEntry_t *StubPtr;
-    bool Result;
+    bool                 Result;
 
     StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_COUNTER);
     if (StubPtr != NULL)
     {
-        *Count = StubPtr->Data.Rc.Count;
+        *Count   = StubPtr->Data.Rc.Count;
         *Retcode = StubPtr->Data.Rc.Value;
-        Result = true;
+        Result   = true;
     }
     else
     {
@@ -371,7 +369,7 @@ bool UT_GetStubRetcodeAndCount(UT_EntryKey_t FuncKey, int32 *Retcode, int32 *Cou
 uint32 UT_GetStubCount(UT_EntryKey_t FuncKey)
 {
     UT_StubTableEntry_t *StubPtr;
-    uint32 Count;
+    uint32               Count;
 
     StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_COUNTER);
     if (StubPtr != NULL)
@@ -388,7 +386,7 @@ uint32 UT_GetStubCount(UT_EntryKey_t FuncKey)
 
 bool UT_Stub_CheckForceFail(UT_EntryKey_t FuncKey, int32 *Value)
 {
-    bool Result = false;
+    bool                 Result = false;
     UT_StubTableEntry_t *StubPtr;
 
     StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FORCE_FAIL);
@@ -417,7 +415,7 @@ void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, uint32 BufferSize
         }
         else
         {
-            StubPtr->FuncKey = FuncKey;
+            StubPtr->FuncKey   = FuncKey;
             StubPtr->EntryType = UT_ENTRYTYPE_DATA_BUFFER;
             if (AllocateCopy)
             {
@@ -438,7 +436,7 @@ void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, uint32 BufferSize
                 StubPtr->Data.Buff.BasePtr = DataBuffer;
             }
             StubPtr->Data.Buff.TotalSize = BufferSize;
-            StubPtr->Data.Buff.Position = 0;
+            StubPtr->Data.Buff.Position  = 0;
         }
     }
 }
@@ -446,23 +444,23 @@ void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, uint32 BufferSize
 void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, uint32 *MaxSize, uint32 *Position)
 {
     UT_StubTableEntry_t *StubPtr;
-    void *ResultDataBuffer;
-    uint32 ResultMaxSize;
-    uint32 ResultPosition;
+    void *               ResultDataBuffer;
+    uint32               ResultMaxSize;
+    uint32               ResultPosition;
 
     StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_DATA_BUFFER);
 
     if (StubPtr == NULL)
     {
         ResultDataBuffer = NULL;
-        ResultMaxSize = 0;
-        ResultPosition = 0;
+        ResultMaxSize    = 0;
+        ResultPosition   = 0;
     }
     else
     {
         ResultDataBuffer = StubPtr->Data.Buff.BasePtr;
-        ResultMaxSize = StubPtr->Data.Buff.TotalSize;
-        ResultPosition = StubPtr->Data.Buff.Position;
+        ResultMaxSize    = StubPtr->Data.Buff.TotalSize;
+        ResultPosition   = StubPtr->Data.Buff.Position;
     }
 
     if (DataBuffer != NULL)
@@ -481,11 +479,11 @@ void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, uint32 *MaxSize,
 
 uint32 UT_Stub_CopyToLocal(UT_EntryKey_t FuncKey, void *LocalBuffer, uint32 MaxSize)
 {
-    uint32 ActualCopy;
+    uint32               ActualCopy;
     UT_StubTableEntry_t *StubPtr;
 
     ActualCopy = 0;
-    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_DATA_BUFFER);
+    StubPtr    = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_DATA_BUFFER);
 
     if (StubPtr != NULL)
     {
@@ -514,11 +512,11 @@ uint32 UT_Stub_CopyToLocal(UT_EntryKey_t FuncKey, void *LocalBuffer, uint32 MaxS
 
 uint32 UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, uint32 MaxSize)
 {
-    uint32 ActualCopy;
+    uint32               ActualCopy;
     UT_StubTableEntry_t *StubPtr;
 
     ActualCopy = 0;
-    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_DATA_BUFFER);
+    StubPtr    = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_DATA_BUFFER);
 
     if (StubPtr != NULL)
     {
@@ -575,11 +573,11 @@ static void UT_DoSetHookFunction(UT_EntryKey_t FuncKey, UT_HookFuncPtr_t Value, 
     else if (StubPtr != NULL && Value.Addr != NULL)
     {
         /* Caller wants to set the entry */
-        StubPtr->FuncKey = FuncKey;
-        StubPtr->EntryType = UT_ENTRYTYPE_CALLBACK_HOOK;
+        StubPtr->FuncKey             = FuncKey;
+        StubPtr->EntryType           = UT_ENTRYTYPE_CALLBACK_HOOK;
         StubPtr->Data.Cb.CallbackArg = UserObj;
-        StubPtr->Data.Cb.Ptr = Value;
-        StubPtr->Data.Cb.IsVarg = IsVarg;
+        StubPtr->Data.Cb.Ptr         = Value;
+        StubPtr->Data.Cb.IsVarg      = IsVarg;
     }
 }
 
@@ -601,18 +599,18 @@ void UT_SetVaHookFunction(UT_EntryKey_t FuncKey, UT_VaHookFunc_t HookFunc, void 
     UT_DoSetHookFunction(FuncKey, Value, UserObj, true);
 }
 
-const void* UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Name, size_t ExpectedTypeSize)
+const void *UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Name, size_t ExpectedTypeSize)
 {
-    uint32 i;
-    const void* Result;
+    uint32                      i;
+    const void *                Result;
     const UT_StubArgMetaData_t *MetaPtr;
 
     static const union
     {
         unsigned long AsInt;
-        void *AsPtr;
-        double AsFloat;
-    } ARG_DEFAULT_ZERO_VALUE = { 0 };
+        void *        AsPtr;
+        double        AsFloat;
+    } ARG_DEFAULT_ZERO_VALUE = {0};
 
     Result = NULL;
     for (i = 0; i < ContextPtr->ArgCount; ++i)
@@ -620,8 +618,7 @@ const void* UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Na
         MetaPtr = &ContextPtr->Meta[i];
         if (MetaPtr->Name != NULL)
         {
-            if (strcmp(MetaPtr->Name, Name) == 0 &&
-                    (MetaPtr->Size == 0 || MetaPtr->Size == ExpectedTypeSize))
+            if (strcmp(MetaPtr->Name, Name) == 0 && (MetaPtr->Size == 0 || MetaPtr->Size == ExpectedTypeSize))
             {
                 if (MetaPtr->Type == UT_STUBCONTEXT_ARG_TYPE_DIRECT)
                 {
@@ -643,8 +640,8 @@ const void* UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Na
      */
     if (Result == NULL)
     {
-        UtAssert_Failed("Requested parameter %s of size %lu which was not provided by the stub",
-                Name, (unsigned long)ExpectedTypeSize);
+        UtAssert_Failed("Requested parameter %s of size %lu which was not provided by the stub", Name,
+                        (unsigned long)ExpectedTypeSize);
 
         if (ExpectedTypeSize <= sizeof(ARG_DEFAULT_ZERO_VALUE))
         {
@@ -663,10 +660,10 @@ const void* UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Na
     return Result;
 }
 
-void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t FuncKey, const char *Name,
-        UT_StubContext_Arg_Type_t ParamType, const void *ParamPtr, size_t ParamSize)
+void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t FuncKey, const char *Name, UT_StubContext_Arg_Type_t ParamType,
+                                         const void *ParamPtr, size_t ParamSize)
 {
-    UT_StubTableEntry_t *StubPtr;
+    UT_StubTableEntry_t * StubPtr;
     UT_StubArgMetaData_t *MetaPtr;
 
     /*
@@ -686,13 +683,13 @@ void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t FuncKey, const char *Name
     }
     else
     {
-        StubPtr->FuncKey = FuncKey;
+        StubPtr->FuncKey   = FuncKey;
         StubPtr->EntryType = UT_ENTRYTYPE_CALLBACK_CONTEXT;
         if (StubPtr->Data.Context.ArgCount < UT_STUBCONTEXT_MAXSIZE)
         {
             StubPtr->Data.Context.ArgPtr[StubPtr->Data.Context.ArgCount] = ParamPtr;
 
-            MetaPtr = &StubPtr->Data.Context.Meta[StubPtr->Data.Context.ArgCount];
+            MetaPtr       = &StubPtr->Data.Context.Meta[StubPtr->Data.Context.ArgCount];
             MetaPtr->Size = ParamSize;
             MetaPtr->Type = ParamType;
 
@@ -730,7 +727,6 @@ void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t FuncKey, const char *Name
                 {
                     MetaPtr->Type = UT_STUBCONTEXT_ARG_TYPE_DIRECT;
                 }
-
             }
             ++StubPtr->Data.Context.ArgCount;
         }
@@ -744,90 +740,90 @@ void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t FuncKey, const char *Name
  */
 int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey, int32 DefaultRc, va_list va)
 {
-   int32 Retcode;
-   const char *RetcodeString;
-   UT_StubTableEntry_t *StubPtr;
-   UT_StubTableEntry_t *ContextTblPtr;
-   const UT_StubContext_t *ContextPtr;
-   uint32 Counter;
+    int32                   Retcode;
+    const char *            RetcodeString;
+    UT_StubTableEntry_t *   StubPtr;
+    UT_StubTableEntry_t *   ContextTblPtr;
+    const UT_StubContext_t *ContextPtr;
+    uint32                  Counter;
 
-   if (!UT_Stub_CheckDeferredRetcode(FuncKey, &Retcode))
-   {
-      if (!UT_Stub_CheckForceFail(FuncKey, &Retcode))
-      {
-         Retcode = DefaultRc;
-      }
-   }
+    if (!UT_Stub_CheckDeferredRetcode(FuncKey, &Retcode))
+    {
+        if (!UT_Stub_CheckForceFail(FuncKey, &Retcode))
+        {
+            Retcode = DefaultRc;
+        }
+    }
 
-   if (FunctionName != NULL)
-   {
-      if (Retcode == DefaultRc)
-      {
-         RetcodeString = "DEFAULT";
-      }
-      else
-      {
-         /* Indicate that this invocation got a non-default return code */
-         RetcodeString = "*SPECIAL*";
-      }
+    if (FunctionName != NULL)
+    {
+        if (Retcode == DefaultRc)
+        {
+            RetcodeString = "DEFAULT";
+        }
+        else
+        {
+            /* Indicate that this invocation got a non-default return code */
+            RetcodeString = "*SPECIAL*";
+        }
 
-      UtDebug("%s called (%s,%d)", FunctionName, RetcodeString, (int)Retcode);
-   }
+        UtDebug("%s called (%s,%d)", FunctionName, RetcodeString, (int)Retcode);
+    }
 
-   Counter = 0;
-   StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_COUNTER);
-   if (StubPtr == NULL)
-   {
-       /* Creating counter entry - repeat search and grab any unused slot */
-       StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
-   }
+    Counter = 0;
+    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_COUNTER);
+    if (StubPtr == NULL)
+    {
+        /* Creating counter entry - repeat search and grab any unused slot */
+        StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
+    }
 
-   if (StubPtr == NULL)
-   {
-       UtAssert_Abort("Cannot set counter - UT_MAX_FUNC_STUBS too low?");
-   }
-   else
-   {
-       StubPtr->EntryType = UT_ENTRYTYPE_COUNTER;
-       StubPtr->FuncKey = FuncKey;
-       Counter = StubPtr->Data.Rc.Count;
-       ++StubPtr->Data.Rc.Count;
-       StubPtr->Data.Rc.Value = Retcode;
-   }
+    if (StubPtr == NULL)
+    {
+        UtAssert_Abort("Cannot set counter - UT_MAX_FUNC_STUBS too low?");
+    }
+    else
+    {
+        StubPtr->EntryType = UT_ENTRYTYPE_COUNTER;
+        StubPtr->FuncKey   = FuncKey;
+        Counter            = StubPtr->Data.Rc.Count;
+        ++StubPtr->Data.Rc.Count;
+        StubPtr->Data.Rc.Value = Retcode;
+    }
 
-   /* Handle a user-requested callback hook.
-    * First see if the stub has a registered context.
-    */
-   ContextTblPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_CALLBACK_CONTEXT);
-   if (ContextTblPtr == NULL)
-   {
-       ContextPtr = NULL;
-   }
-   else
-   {
-       ContextPtr = &ContextTblPtr->Data.Context;
-   }
+    /* Handle a user-requested callback hook.
+     * First see if the stub has a registered context.
+     */
+    ContextTblPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_CALLBACK_CONTEXT);
+    if (ContextTblPtr == NULL)
+    {
+        ContextPtr = NULL;
+    }
+    else
+    {
+        ContextPtr = &ContextTblPtr->Data.Context;
+    }
 
-   StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_CALLBACK_HOOK);
-   if (StubPtr != NULL)
-   {
-       if (StubPtr->Data.Cb.IsVarg)
-       {
-           Retcode = (*StubPtr->Data.Cb.Ptr.Va)(StubPtr->Data.Cb.CallbackArg, Retcode, Counter, ContextPtr, va);
-       }
-       else
-       {
-           Retcode = (*StubPtr->Data.Cb.Ptr.Simple)(StubPtr->Data.Cb.CallbackArg, Retcode, Counter, ContextPtr);
-       }
-   }
+    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_CALLBACK_HOOK);
+    if (StubPtr != NULL)
+    {
+        if (StubPtr->Data.Cb.IsVarg)
+        {
+            Retcode = (*StubPtr->Data.Cb.Ptr.Va)(StubPtr->Data.Cb.CallbackArg, Retcode, Counter, ContextPtr, va);
+        }
+        else
+        {
+            Retcode = (*StubPtr->Data.Cb.Ptr.Simple)(StubPtr->Data.Cb.CallbackArg, Retcode, Counter, ContextPtr);
+        }
+    }
 
-   /* Always clear the context entry -- the next call will have a different one */
-   if (ContextTblPtr != NULL)
-   {
-       UT_ClearStubEntry(ContextTblPtr);
-   }
+    /* Always clear the context entry -- the next call will have a different one */
+    if (ContextTblPtr != NULL)
+    {
+        UT_ClearStubEntry(ContextTblPtr);
+    }
 
-   return Retcode;
+    return Retcode;
 }
 
 /**
@@ -836,13 +832,12 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
  */
 int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 DefaultRc, ...)
 {
-    int32 Retcode;
+    int32   Retcode;
     va_list va;
 
-    va_start(va,DefaultRc);
+    va_start(va, DefaultRc);
     Retcode = UT_DefaultStubImplWithArgs(FunctionName, FuncKey, DefaultRc, va);
     va_end(va);
 
     return Retcode;
 }
-

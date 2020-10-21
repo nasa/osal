@@ -37,7 +37,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 /*
  * User defined include files
  */
@@ -58,19 +57,17 @@
 #include "os-shared-timebase.h"
 #include "os-shared-time.h"
 
-OS_SharedGlobalVars_t OS_SharedGlobalVars =
-      {
-            .Initialized = false,
-            .PrintfEnabled = false,
-            .ShutdownFlag = 0,
-            .MicroSecPerTick = 0, /* invalid, _must_ be set by implementation init */
-            .TicksPerSecond = 0,  /* invalid, _must_ be set by implementation init */
-            .EventHandler = NULL,
+OS_SharedGlobalVars_t OS_SharedGlobalVars = {
+    .Initialized     = false,
+    .PrintfEnabled   = false,
+    .ShutdownFlag    = 0,
+    .MicroSecPerTick = 0, /* invalid, _must_ be set by implementation init */
+    .TicksPerSecond  = 0, /* invalid, _must_ be set by implementation init */
+    .EventHandler    = NULL,
 #if defined(OSAL_CONFIG_DEBUG_PRINTF)
-            .DebugLevel = 1,
+    .DebugLevel = 1,
 #endif
-      };
-
+};
 
 /*----------------------------------------------------------------
  *
@@ -101,8 +98,6 @@ int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data)
  *********************************************************************************
  */
 
-
-
 /*----------------------------------------------------------------
  *
  * Function: OS_API_Init
@@ -113,115 +108,115 @@ int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data)
  *-----------------------------------------------------------------*/
 int32 OS_API_Init(void)
 {
-   int32  return_code = OS_SUCCESS;
-   uint32 idtype;
-   uint32 microSecPerSec;
+    int32  return_code = OS_SUCCESS;
+    uint32 idtype;
+    uint32 microSecPerSec;
 
-   if (OS_SharedGlobalVars.Initialized != false)
-   {
-       OS_DEBUG("WARNING: BUG - initialization function called multiple times\n");
-       return OS_ERROR;
-   }
+    if (OS_SharedGlobalVars.Initialized != false)
+    {
+        OS_DEBUG("WARNING: BUG - initialization function called multiple times\n");
+        return OS_ERROR;
+    }
 
-   OS_SharedGlobalVars.Initialized = true;
+    OS_SharedGlobalVars.Initialized = true;
 
-   /* Initialize the common table that everything shares */
-   return_code = OS_ObjectIdInit();
-   if (return_code != OS_SUCCESS)
-   {
-       return return_code;
-   }
+    /* Initialize the common table that everything shares */
+    return_code = OS_ObjectIdInit();
+    if (return_code != OS_SUCCESS)
+    {
+        return return_code;
+    }
 
-   for (idtype = 0; idtype < OS_OBJECT_TYPE_USER; ++idtype)
-   {
-       /* Initialize the implementation first, as the shared layer depends on it */
-       return_code = OS_API_Impl_Init(idtype);
-       if (return_code != OS_SUCCESS)
-       {
-           OS_DEBUG("OS_API_Impl_Init(0x%x) failed to initialize: %d\n",(unsigned int)idtype,(int)return_code);
-           break;
-       }
+    for (idtype = 0; idtype < OS_OBJECT_TYPE_USER; ++idtype)
+    {
+        /* Initialize the implementation first, as the shared layer depends on it */
+        return_code = OS_API_Impl_Init(idtype);
+        if (return_code != OS_SUCCESS)
+        {
+            OS_DEBUG("OS_API_Impl_Init(0x%x) failed to initialize: %d\n", (unsigned int)idtype, (int)return_code);
+            break;
+        }
 
-       switch(idtype)
-       {
-       case OS_OBJECT_TYPE_OS_TASK:
-           return_code = OS_TaskAPI_Init();
-           break;
-       case OS_OBJECT_TYPE_OS_QUEUE:
-           return_code = OS_QueueAPI_Init();
-           break;
-       case OS_OBJECT_TYPE_OS_BINSEM:
-           return_code = OS_BinSemAPI_Init();
-           break;
-       case OS_OBJECT_TYPE_OS_COUNTSEM:
-           return_code = OS_CountSemAPI_Init();
-           break;
-       case OS_OBJECT_TYPE_OS_MUTEX:
-           return_code = OS_MutexAPI_Init();
-           break;
-       case OS_OBJECT_TYPE_OS_MODULE:
-           return_code = OS_ModuleAPI_Init();
-           break;
-       case OS_OBJECT_TYPE_OS_TIMEBASE:
-           return_code = OS_TimeBaseAPI_Init();
-           break;
-       case OS_OBJECT_TYPE_OS_TIMECB:
-           return_code = OS_TimerCbAPI_Init();
-           break;
-       case OS_OBJECT_TYPE_OS_STREAM:
-           return_code = OS_FileAPI_Init();
-           break;
-       case OS_OBJECT_TYPE_OS_DIR:
-           return_code = OS_DirAPI_Init();
-           break;
-       case OS_OBJECT_TYPE_OS_FILESYS:
-           return_code = OS_FileSysAPI_Init();
-           break;
-       case OS_OBJECT_TYPE_OS_CONSOLE:
-           return_code = OS_ConsoleAPI_Init();
-           break;
-       default:
-           break;
-       }
-       if (return_code != OS_SUCCESS)
-       {
-           OS_DEBUG("ID type 0x%x shared layer failed to initialize: %d\n",(unsigned int)idtype,(int)return_code);
-           break;
-       }
+        switch (idtype)
+        {
+            case OS_OBJECT_TYPE_OS_TASK:
+                return_code = OS_TaskAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_QUEUE:
+                return_code = OS_QueueAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_BINSEM:
+                return_code = OS_BinSemAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_COUNTSEM:
+                return_code = OS_CountSemAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_MUTEX:
+                return_code = OS_MutexAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_MODULE:
+                return_code = OS_ModuleAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_TIMEBASE:
+                return_code = OS_TimeBaseAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_TIMECB:
+                return_code = OS_TimerCbAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_STREAM:
+                return_code = OS_FileAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_DIR:
+                return_code = OS_DirAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_FILESYS:
+                return_code = OS_FileSysAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_CONSOLE:
+                return_code = OS_ConsoleAPI_Init();
+                break;
+            default:
+                break;
+        }
+        if (return_code != OS_SUCCESS)
+        {
+            OS_DEBUG("ID type 0x%x shared layer failed to initialize: %d\n", (unsigned int)idtype, (int)return_code);
+            break;
+        }
+    }
 
-   }
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_NetworkAPI_Init();
+    }
 
-   if (return_code == OS_SUCCESS)
-   {
-       return_code = OS_NetworkAPI_Init();
-   }
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_SocketAPI_Init();
+    }
 
-   if (return_code == OS_SUCCESS)
-   {
-       return_code = OS_SocketAPI_Init();
-   }
+    /*
+     * Confirm that somewhere during initialization,
+     * the time variables got set to something valid
+     */
+    if (return_code == OS_SUCCESS &&
+        (OS_SharedGlobalVars.MicroSecPerTick == 0 || OS_SharedGlobalVars.TicksPerSecond == 0))
+    {
+        OS_DEBUG("Implementation failed to initialize tick time globals\n");
+        return_code = OS_ERROR;
+    }
 
-   /*
-    * Confirm that somewhere during initialization,
-    * the time variables got set to something valid
-    */
-   if (return_code == OS_SUCCESS &&
-         (OS_SharedGlobalVars.MicroSecPerTick == 0 ||
-         OS_SharedGlobalVars.TicksPerSecond == 0))
-   {
-      OS_DEBUG("Implementation failed to initialize tick time globals\n");
-      return_code = OS_ERROR;
-   }
+    microSecPerSec = OS_SharedGlobalVars.MicroSecPerTick * OS_SharedGlobalVars.TicksPerSecond;
 
-   microSecPerSec = OS_SharedGlobalVars.MicroSecPerTick * OS_SharedGlobalVars.TicksPerSecond;
+    if (microSecPerSec != 1000000)
+    {
+        OS_DEBUG("Warning: Microsecs per sec value of %lu does not equal 1000000 (MicroSecPerTick: %ld   "
+                 "TicksPerSecond: %ld)\n",
+                 (unsigned long)microSecPerSec, (long)OS_SharedGlobalVars.MicroSecPerTick,
+                 (long)OS_SharedGlobalVars.TicksPerSecond);
+    }
 
-   if ( microSecPerSec != 1000000 )
-   {
-      OS_DEBUG("Warning: Microsecs per sec value of %lu does not equal 1000000 (MicroSecPerTick: %ld   TicksPerSecond: %ld)\n",
-                (unsigned long) microSecPerSec, (long) OS_SharedGlobalVars.MicroSecPerTick, (long) OS_SharedGlobalVars.TicksPerSecond);
-   }
-
-   return(return_code);
+    return (return_code);
 } /* end OS_API_Init */
 
 /*----------------------------------------------------------------
@@ -232,7 +227,7 @@ int32 OS_API_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_RegisterEventHandler (OS_EventHandler_t handler)
+int32 OS_RegisterEventHandler(OS_EventHandler_t handler)
 {
     if (handler == NULL)
     {
@@ -253,14 +248,14 @@ int32 OS_RegisterEventHandler (OS_EventHandler_t handler)
  *-----------------------------------------------------------------*/
 void OS_ApplicationExit(int32 Status)
 {
-   if (Status == OS_SUCCESS)
-   {
-      exit(EXIT_SUCCESS);
-   }
-   else
-   {
-      exit(EXIT_FAILURE);
-   }
+    if (Status == OS_SUCCESS)
+    {
+        exit(EXIT_SUCCESS);
+    }
+    else
+    {
+        exit(EXIT_FAILURE);
+    }
 } /* end OS_ApplicationExit */
 
 /*---------------------------------------------------------------------------------------
@@ -286,43 +281,42 @@ void OS_CleanUpObject(osal_id_t object_id, void *arg)
 
     ObjectCount = (uint32 *)arg;
     ++(*ObjectCount);
-    switch(OS_IdentifyObject(object_id))
+    switch (OS_IdentifyObject(object_id))
     {
-    case OS_OBJECT_TYPE_OS_TASK:
-        OS_TaskDelete(object_id);
-        break;
-    case OS_OBJECT_TYPE_OS_QUEUE:
-        OS_QueueDelete(object_id);
-        break;
-    case OS_OBJECT_TYPE_OS_BINSEM:
-        OS_BinSemDelete(object_id);
-        break;
-    case OS_OBJECT_TYPE_OS_COUNTSEM:
-        OS_CountSemDelete(object_id);
-        break;
-    case OS_OBJECT_TYPE_OS_MUTEX:
-        OS_MutSemDelete(object_id);
-        break;
-    case OS_OBJECT_TYPE_OS_MODULE:
-        OS_ModuleUnload(object_id);
-        break;
-    case OS_OBJECT_TYPE_OS_TIMEBASE:
-        OS_TimeBaseDelete(object_id);
-        break;
-    case OS_OBJECT_TYPE_OS_TIMECB:
-        OS_TimerDelete(object_id);
-        break;
-    case OS_OBJECT_TYPE_OS_STREAM:
-        OS_close(object_id);
-        break;
-    case OS_OBJECT_TYPE_OS_DIR:
-        OS_DirectoryClose(object_id);
-        break;
-    default:
-        break;
+        case OS_OBJECT_TYPE_OS_TASK:
+            OS_TaskDelete(object_id);
+            break;
+        case OS_OBJECT_TYPE_OS_QUEUE:
+            OS_QueueDelete(object_id);
+            break;
+        case OS_OBJECT_TYPE_OS_BINSEM:
+            OS_BinSemDelete(object_id);
+            break;
+        case OS_OBJECT_TYPE_OS_COUNTSEM:
+            OS_CountSemDelete(object_id);
+            break;
+        case OS_OBJECT_TYPE_OS_MUTEX:
+            OS_MutSemDelete(object_id);
+            break;
+        case OS_OBJECT_TYPE_OS_MODULE:
+            OS_ModuleUnload(object_id);
+            break;
+        case OS_OBJECT_TYPE_OS_TIMEBASE:
+            OS_TimeBaseDelete(object_id);
+            break;
+        case OS_OBJECT_TYPE_OS_TIMECB:
+            OS_TimerDelete(object_id);
+            break;
+        case OS_OBJECT_TYPE_OS_STREAM:
+            OS_close(object_id);
+            break;
+        case OS_OBJECT_TYPE_OS_DIR:
+            OS_DirectoryClose(object_id);
+            break;
+        default:
+            break;
     }
 } /* end OS_CleanUpObject */
-
 
 /*----------------------------------------------------------------
  *
@@ -342,20 +336,20 @@ void OS_DeleteAllObjects(void)
      * and you will not be able to delete the object until the ref count becomes zero.
      */
     TryCount = 0;
-    while(true)
+    while (true)
     {
         ObjectCount = 0;
         ++TryCount;
         OS_ForEachObject(OS_OBJECT_CREATOR_ANY, OS_CleanUpObject, &ObjectCount);
         if (ObjectCount == 0 || TryCount > 4)
         {
-           break;
+            break;
         }
         OS_TaskDelay(5);
     }
-    while (ObjectCount > 0 && TryCount < 5);
+    while (ObjectCount > 0 && TryCount < 5)
+        ;
 } /* end OS_DeleteAllObjects */
-
 
 /*----------------------------------------------------------------
  *
@@ -372,13 +366,11 @@ void OS_IdleLoop()
      * In most "real" embedded systems, this will never happen.
      * However it will happen in debugging situations (CTRL+C, etc).
      */
-   while (OS_SharedGlobalVars.ShutdownFlag != OS_SHUTDOWN_MAGIC_NUMBER)
-   {
-      OS_IdleLoop_Impl();
-   }
+    while (OS_SharedGlobalVars.ShutdownFlag != OS_SHUTDOWN_MAGIC_NUMBER)
+    {
+        OS_IdleLoop_Impl();
+    }
 } /* end OS_IdleLoop */
-
-
 
 /*----------------------------------------------------------------
  *
@@ -390,16 +382,15 @@ void OS_IdleLoop()
  *-----------------------------------------------------------------*/
 void OS_ApplicationShutdown(uint8 flag)
 {
-   if (flag == true)
-   {
-      OS_SharedGlobalVars.ShutdownFlag = OS_SHUTDOWN_MAGIC_NUMBER;
-   }
+    if (flag == true)
+    {
+        OS_SharedGlobalVars.ShutdownFlag = OS_SHUTDOWN_MAGIC_NUMBER;
+    }
 
-   /*
-    * Hook to allow the underlying implementation to do something.
-    * Assuming the main task is sitting in OS_IdleLoop(), this implementation
-    * should do whatever is needed to wake that task up.
-    */
-   OS_ApplicationShutdown_Impl();
+    /*
+     * Hook to allow the underlying implementation to do something.
+     * Assuming the main task is sitting in OS_IdleLoop(), this implementation
+     * should do whatever is needed to wake that task up.
+     */
+    OS_ApplicationShutdown_Impl();
 } /* end OS_ApplicationShutdown */
-

@@ -28,6 +28,6 @@
 /* ----------------------------------------- */
 /* mappings for declarations in shellLib.h */
 /* ----------------------------------------- */
-#define shellGenericInit  OCS_shellGenericInit
+#define shellGenericInit OCS_shellGenericInit
 
 #endif /* _OSAL_OVERRIDE_SHELLLIB_H_ */

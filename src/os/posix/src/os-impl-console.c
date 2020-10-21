@@ -41,13 +41,11 @@
  * This option was removed from osconfig.h and now is
  * assumed to always be on.
  */
-#define OS_CONSOLE_ASYNC                true
-#define OS_CONSOLE_TASK_PRIORITY        OS_UTILITYTASK_PRIORITY
-
+#define OS_CONSOLE_ASYNC         true
+#define OS_CONSOLE_TASK_PRIORITY OS_UTILITYTASK_PRIORITY
 
 /* Tables where the OS object information is stored */
-OS_impl_console_internal_record_t   OS_impl_console_table       [OS_MAX_CONSOLES];
-
+OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
 
 /********************************************************************/
 /*                 CONSOLE OUTPUT                                   */
@@ -61,7 +59,7 @@ OS_impl_console_internal_record_t   OS_impl_console_table       [OS_MAX_CONSOLES
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void  OS_ConsoleWakeup_Impl(uint32 local_id)
+void OS_ConsoleWakeup_Impl(uint32 local_id)
 {
     OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
 
@@ -85,13 +83,13 @@ void  OS_ConsoleWakeup_Impl(uint32 local_id)
  *           Implements the console output task
  *
  *-----------------------------------------------------------------*/
-static void*  OS_ConsoleTask_Entry(void* arg)
+static void *OS_ConsoleTask_Entry(void *arg)
 {
-    OS_U32ValueWrapper_t local_arg;
+    OS_U32ValueWrapper_t               local_arg;
     OS_impl_console_internal_record_t *local;
 
     local_arg.opaque_arg = arg;
-    local = &OS_impl_console_table[local_arg.value];
+    local                = &OS_impl_console_table[local_arg.value];
     while (true)
     {
         OS_ConsoleOutput_Impl(local_arg.value);
@@ -111,13 +109,13 @@ static void*  OS_ConsoleTask_Entry(void* arg)
 int32 OS_ConsoleCreate_Impl(uint32 local_id)
 {
     OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
-    pthread_t consoletask;
-    int32 return_code;
-    OS_U32ValueWrapper_t local_arg = { 0 };
+    pthread_t                          consoletask;
+    int32                              return_code;
+    OS_U32ValueWrapper_t               local_arg = {0};
 
     if (local_id == 0)
     {
-        return_code = OS_SUCCESS;
+        return_code     = OS_SUCCESS;
         local->is_async = OS_CONSOLE_ASYNC;
 
         if (local->is_async)
@@ -129,8 +127,8 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id)
             else
             {
                 local_arg.value = local_id;
-                return_code = OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
-                    OS_ConsoleTask_Entry, local_arg.opaque_arg);
+                return_code     = OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
+                                                               OS_ConsoleTask_Entry, local_arg.opaque_arg);
 
                 if (return_code != OS_SUCCESS)
                 {
@@ -147,4 +145,3 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id)
 
     return return_code;
 } /* end OS_ConsoleCreate_Impl */
-

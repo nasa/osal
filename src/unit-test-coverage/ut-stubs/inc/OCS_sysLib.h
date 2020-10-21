@@ -38,7 +38,4 @@
 /* ----------------------------------------- */
 extern int OCS_sysClkRateGet(void);
 
-
-
 #endif /* _OSAL_STUB_SYSLIB_H_ */
-

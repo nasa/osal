@@ -39,7 +39,6 @@
  *
  *****************************************************/
 
-
 /*
  * Prototype for table init function (needs to be called from UT)
  */
@@ -56,5 +55,4 @@ unsigned int UT_FileTest_GetSelfEGID(void);
 
 void UT_FileTest_Set_Selectable(uint32 local_id, bool is_selectable);
 
-#endif  /* INCLUDE_UT_ADAPTOR_FILES_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_FILES_H_ */

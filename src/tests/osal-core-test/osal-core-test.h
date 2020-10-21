@@ -24,7 +24,7 @@
  * This is a simple header file used to remove a lot of the task definitions
  * from the example1.c file so as to make that code easier to read
  *
- * 
+ *
  *
  *
  */
@@ -216,8 +216,6 @@ uint32 task_20_stack[TASK_20_STACK_SIZE];
 
 void task_20(void);
 
-
-
 /* Global Data */
 
 /* Task Id's for testing the number of tasks that can be created */
@@ -236,36 +234,32 @@ osal_id_t msgq_10;
 
 osal_id_t msgq_id;
 
-
-osal_id_t bin_0, bin_1, bin_2, bin_3, bin_4,bin_5, bin_6;
+osal_id_t bin_0, bin_1, bin_2, bin_3, bin_4, bin_5, bin_6;
 osal_id_t bin_7, bin_8, bin_9, bin_10;
 
-
-osal_id_t mut_0, mut_1, mut_2, mut_3, mut_4,mut_5, mut_6;
-osal_id_t mut_7, mut_8 ,mut_9, mut_10;
+osal_id_t mut_0, mut_1, mut_2, mut_3, mut_4, mut_5, mut_6;
+osal_id_t mut_7, mut_8, mut_9, mut_10;
 osal_id_t mutex_id;
 
 uint32 shared_resource_x;
 
-#define MSGQ_DEPTH        50
-#define MSGQ_SIZE         4
+#define MSGQ_DEPTH 50
+#define MSGQ_SIZE  4
 
-#define PASS              0
-#define FAIL              1
-
-
+#define PASS 0
+#define FAIL 1
 
 /* ********************** TASK 0 **************************** */
 
 void task_0(void)
-{   
+{
     OS_TaskRegister();
-    
-    while(1);
 
-    return; 
+    while (1)
+        ;
+
+    return;
 } /* end task_0 */
-
 
 /* ********************** TASK 1 **************************** */
 
@@ -274,19 +268,20 @@ void task_1(void)
 
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
-} /* end task_1 */
+    while (1)
+        ;
 
+    return;
+} /* end task_1 */
 
 /* ********************** TASK 2 **************************** */
 
 void task_2(void)
-{   
+{
     OS_TaskRegister();
-    
-    while(1);
+
+    while (1)
+        ;
 
     return;
 } /* end task_2 */
@@ -297,11 +292,11 @@ void task_3(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 } /* end task_3 */
- 
 
 /* ********************** TASK 4 **************************** */
 
@@ -309,11 +304,11 @@ void task_4(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
-}/* end task_4 */
- 
+    while (1)
+        ;
+
+    return;
+} /* end task_4 */
 
 /* ********************** TASK 0 **************************** */
 
@@ -321,12 +316,12 @@ void task_5(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
 
-}/* end task_5 */
- 
+    return;
+
+} /* end task_5 */
 
 /* ********************** TASK 6 **************************** */
 
@@ -334,12 +329,12 @@ void task_6(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_6 */
- 
 
 /* ********************** TASK 7 **************************** */
 
@@ -347,12 +342,12 @@ void task_7(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_7 */
- 
 
 /* ********************** TASK 8 **************************** */
 
@@ -360,13 +355,12 @@ void task_8(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_8 */
- 
-
 
 /* ********************** TASK 9 **************************** */
 
@@ -374,13 +368,12 @@ void task_9(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_9 */
- 
-
 
 /* ********************** TASK 10 **************************** */
 
@@ -388,13 +381,12 @@ void task_10(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_10 */
- 
- 
 
 /* ********************** TASK 11 **************************** */
 
@@ -402,13 +394,12 @@ void task_11(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_11 */
- 
-
 
 /* ********************** TASK 12 **************************** */
 
@@ -416,12 +407,12 @@ void task_12(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_12 */
- 
 
 /* ********************** TASK 13 ****************************  */
 
@@ -429,12 +420,12 @@ void task_13(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
 
-}/* end task_13 */
- 
+    return;
+
+} /* end task_13 */
 
 /* ********************** TASK 14 **************************** */
 
@@ -442,13 +433,12 @@ void task_14(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_14 */
- 
-
 
 /* ********************** TASK 15 **************************** */
 
@@ -456,13 +446,12 @@ void task_15(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_15 */
- 
-
 
 /* ********************** TASK 16 **************************** */
 
@@ -470,13 +459,12 @@ void task_16(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_16 */
- 
-
 
 /* ********************** TASK 17 **************************** */
 
@@ -484,12 +472,12 @@ void task_17(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_17 */
- 
 
 /* ********************** TASK 18 **************************** */
 
@@ -497,13 +485,12 @@ void task_18(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_18 */
- 
-
 
 /* ********************** TASK 19 **************************** */
 
@@ -511,13 +498,12 @@ void task_19(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_19 */
- 
-
 
 /* ********************** TASK 20 **************************** */
 
@@ -525,13 +511,9 @@ void task_20(void)
 {
     OS_TaskRegister();
 
-    while(1);
-    
-    return; 
+    while (1)
+        ;
+
+    return;
 
 } /* end task_20 */
- 
-
-
-
-

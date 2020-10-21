@@ -28,8 +28,6 @@
 #ifndef INCLUDE_OS_PORTABLE_COVERAGETEST_H_
 #define INCLUDE_OS_PORTABLE_COVERAGETEST_H_
 
-
-
 /**
  * \file     os-vxworks-coveragetest.h
  * \ingroup  vxworks
@@ -48,19 +46,16 @@
 #include <uttest.h>
 #include <utstubs.h>
 
-
 #include "os-shared-globaldefs.h"
 
+#define OSAPI_TEST_FUNCTION_RC(func, args, exp)                                                                \
+    {                                                                                                          \
+        int32 rcexp = exp;                                                                                     \
+        int32 rcact = func args;                                                                               \
+        UtAssert_True(rcact == rcexp, "%s%s (%ld) == %s (%ld)", #func, #args, (long)rcact, #exp, (long)rcexp); \
+    }
 
-#define OSAPI_TEST_FUNCTION_RC(func,args,exp)   \
-{                                               \
-    int32 rcexp = exp;                          \
-    int32 rcact = func args;                    \
-    UtAssert_True(rcact == rcexp, "%s%s (%ld) == %s (%ld)", \
-        #func, #args, (long)rcact, #exp, (long)rcexp);      \
-}
-
-#define ADD_TEST(test) UtTest_Add((Test_ ## test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
+#define ADD_TEST(test) UtTest_Add((Test_##test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
 
 /* Osapi_Test_Setup
  *
@@ -70,9 +65,6 @@
 void Osapi_Test_Setup(void);
 void Osapi_Test_Teardown(void);
 
+#endif /* _OS_PORTABLE_COVERAGETEST_H_ */
 
-#endif  /* _OS_PORTABLE_COVERAGETEST_H_ */
-
-
-#endif  /* INCLUDE_OS_PORTABLE_COVERAGETEST_H_ */
-
+#endif /* INCLUDE_OS_PORTABLE_COVERAGETEST_H_ */
