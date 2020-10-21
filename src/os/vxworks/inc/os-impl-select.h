@@ -31,6 +31,4 @@
 #include "os-impl-io.h"
 #include <selectLib.h>
 
-
-#endif  /* INCLUDE_OS_IMPL_SELECT_H_ */
-
+#endif /* INCLUDE_OS_IMPL_SELECT_H_ */

@@ -28,7 +28,6 @@
 #ifndef INCLUDE_OS_VXWORKS_H_
 #define INCLUDE_OS_VXWORKS_H_
 
-
 /****************************************************************************************
                                     COMMON INCLUDE FILES
 ****************************************************************************************/
@@ -44,7 +43,6 @@
 
 #include <os-shared-globaldefs.h>
 
-
 /****************************************************************************************
                                      DEFINES
 ****************************************************************************************/
@@ -55,8 +53,8 @@
 
 typedef struct
 {
-    void * const mem;
-    SEM_ID vxid;
+    void *const mem;
+    SEM_ID      vxid;
 } VxWorks_GlobalMutex_t;
 
 /*
@@ -68,16 +66,14 @@ typedef struct
 typedef union
 {
     osal_id_t id;
-    int arg;
+    int       arg;
 } VxWorks_ID_Buffer_t;
-
 
 /****************************************************************************************
                                    GLOBAL DATA
 ****************************************************************************************/
 
 extern VxWorks_GlobalMutex_t VX_MUTEX_TABLE[];
-
 
 /****************************************************************************************
                        VXWORKS IMPLEMENTATION FUNCTION PROTOTYPES
@@ -97,15 +93,13 @@ int OS_VxWorks_TaskEntry(int arg);
 int OS_VxWorks_ConsoleTask_Entry(int arg);
 
 uint32 OS_VxWorks_SigWait(uint32 local_id);
-int OS_VxWorks_TimeBaseTask(int arg);
-void OS_VxWorks_RegisterTimer(uint32 local_id);
-void OS_VxWorks_UsecToTimespec(uint32 usecs, struct timespec *time_spec);
+int    OS_VxWorks_TimeBaseTask(int arg);
+void   OS_VxWorks_RegisterTimer(uint32 local_id);
+void   OS_VxWorks_UsecToTimespec(uint32 usecs, struct timespec *time_spec);
 
 int32 OS_VxWorks_GenericSemTake(SEM_ID vxid, int sys_ticks);
 int32 OS_VxWorks_GenericSemGive(SEM_ID vxid);
 
-
 int32 OS_VxWorks_TableMutex_Init(uint32 idtype);
 
-#endif  /* INCLUDE_OS_VXWORKS_H_ */
-
+#endif /* INCLUDE_OS_VXWORKS_H_ */

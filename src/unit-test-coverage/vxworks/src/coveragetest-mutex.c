@@ -43,10 +43,10 @@ void Test_OS_MutSemCreate_Impl(void)
      * Test Case For:
      * int32 OS_MutSemCreate_Impl (uint32 sem_id, uint32 options)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate_Impl(0,0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate_Impl(0, 0), OS_SUCCESS);
 
     UT_SetForceFail(UT_KEY(OCS_semMInitialize), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate_Impl(0,0), OS_SEM_FAILURE);
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate_Impl(0, 0), OS_SEM_FAILURE);
 }
 
 void Test_OS_MutSemDelete_Impl(void)
@@ -84,9 +84,8 @@ void Test_OS_MutSemGetInfo_Impl(void)
      */
     OS_mut_sem_prop_t mut_prop;
     memset(&mut_prop, 0xEE, sizeof(mut_prop));
-    OSAPI_TEST_FUNCTION_RC(OS_MutSemGetInfo_Impl(0,&mut_prop), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemGetInfo_Impl(0, &mut_prop), OS_SUCCESS);
 }
-
 
 /* ------------------- End of test cases --------------------------------------*/
 
@@ -106,10 +105,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -125,5 +121,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_MutSemTake_Impl);
     ADD_TEST(OS_MutSemGetInfo_Impl);
 }
-
-

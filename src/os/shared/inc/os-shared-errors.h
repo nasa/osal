@@ -30,15 +30,13 @@
 
 #include <os-shared-globaldefs.h>
 
-
 /* Mapping of integer error number to name */
 typedef struct
 {
-   int32 Number;
-   const char *Name;
+    int32       Number;
+    const char *Name;
 } OS_ErrorTable_Entry_t;
 
-extern const OS_ErrorTable_Entry_t  OS_IMPL_ERROR_NAME_TABLE[];
+extern const OS_ErrorTable_Entry_t OS_IMPL_ERROR_NAME_TABLE[];
 
-#endif  /* INCLUDE_OS_SHARED_ERRORS_H_ */
-
+#endif /* INCLUDE_OS_SHARED_ERRORS_H_ */

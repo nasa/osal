@@ -33,8 +33,7 @@
 #include <OCS_taskLib.h>
 #include <OCS_semLib.h>
 
-
-extern void*  const UT_Ref_OS_impl_bin_sem_table;
+extern void *const  UT_Ref_OS_impl_bin_sem_table;
 extern size_t const UT_Ref_OS_impl_bin_sem_table_SIZE;
 
 /*
@@ -49,5 +48,4 @@ extern const UT_EntryKey_t UT_StubKey_GenericSemGive;
 
 extern int32 UT_Call_OS_VxWorks_BinSemAPI_Impl_Init(void);
 
-#endif  /* INCLUDE_UT_ADAPTOR_BINSEM_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_BINSEM_H_ */

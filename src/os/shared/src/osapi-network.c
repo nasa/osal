@@ -34,12 +34,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 /*
  * User defined include files
  */
 #include "os-shared-network.h"
-
 
 /****************************************************************************************
                                   NETWORK API
@@ -57,8 +55,6 @@ int32 OS_NetworkAPI_Init(void)
     return OS_SUCCESS;
 } /* end OS_NetworkAPI_Init */
 
-
-
 /*----------------------------------------------------------------
  *
  * Function: OS_NetworkGetHostName
@@ -67,35 +63,32 @@ int32 OS_NetworkAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_NetworkGetHostName (char *host_name, uint32 name_len)
+int32 OS_NetworkGetHostName(char *host_name, uint32 name_len)
 {
-   uint32 return_code;
+    uint32 return_code;
 
-   if ( host_name == NULL)
-   {
-      return_code = OS_INVALID_POINTER;
-   }
-   else if ( name_len == 0 )
-   {
-      return_code = OS_ERROR;
-   }
-   else
-   {
-      /* delegate to low-level API */
-      return_code = OS_NetworkGetHostName_Impl(host_name, name_len);
+    if (host_name == NULL)
+    {
+        return_code = OS_INVALID_POINTER;
+    }
+    else if (name_len == 0)
+    {
+        return_code = OS_ERROR;
+    }
+    else
+    {
+        /* delegate to low-level API */
+        return_code = OS_NetworkGetHostName_Impl(host_name, name_len);
 
-      if (return_code != OS_SUCCESS)
-      {
-          /* return an empty string on failure, just in case */
-          host_name[0] = 0;
-      }
-   }
+        if (return_code != OS_SUCCESS)
+        {
+            /* return an empty string on failure, just in case */
+            host_name[0] = 0;
+        }
+    }
 
-   return(return_code);
+    return (return_code);
 } /* end OS_NetworkGetHostName */
-
-
-
 
 /*----------------------------------------------------------------
  *
@@ -105,7 +98,7 @@ int32 OS_NetworkGetHostName (char *host_name, uint32 name_len)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_NetworkGetID             (void)
+int32 OS_NetworkGetID(void)
 {
     int32 IdBuf;
 
@@ -119,5 +112,3 @@ int32 OS_NetworkGetID             (void)
     return IdBuf;
 
 } /* end OS_NetworkGetID */
-
-

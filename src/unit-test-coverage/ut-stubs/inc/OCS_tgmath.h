@@ -36,7 +36,4 @@
 /* prototypes normally declared in tgmath.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_TGMATH_H_ */
-

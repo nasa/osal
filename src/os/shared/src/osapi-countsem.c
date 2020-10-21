@@ -35,13 +35,11 @@
 #include <string.h>
 #include <time.h>
 
-
 /*
  * User defined include files
  */
 #include "os-shared-countsem.h"
 #include "os-shared-idmap.h"
-
 
 /*
  * Sanity checks on the user-supplied configuration
@@ -51,23 +49,20 @@
 #error "osconfig.h must define OS_MAX_COUNT_SEMAPHORES to a valid value"
 #endif
 
-
 /*
  * Global data for the API
  */
 enum
 {
-   LOCAL_NUM_OBJECTS = OS_MAX_COUNT_SEMAPHORES,
-   LOCAL_OBJID_TYPE = OS_OBJECT_TYPE_OS_COUNTSEM
+    LOCAL_NUM_OBJECTS = OS_MAX_COUNT_SEMAPHORES,
+    LOCAL_OBJID_TYPE  = OS_OBJECT_TYPE_OS_COUNTSEM
 };
 
-OS_count_sem_internal_record_t    OS_count_sem_table          [LOCAL_NUM_OBJECTS];
-
+OS_count_sem_internal_record_t OS_count_sem_table[LOCAL_NUM_OBJECTS];
 
 /****************************************************************************************
                                   SEMAPHORE API
  ***************************************************************************************/
-
 
 /*----------------------------------------------------------------
  *
@@ -79,11 +74,9 @@ OS_count_sem_internal_record_t    OS_count_sem_table          [LOCAL_NUM_OBJECTS
  *-----------------------------------------------------------------*/
 int32 OS_CountSemAPI_Init(void)
 {
-   memset(OS_count_sem_table, 0, sizeof(OS_count_sem_table));
-   return OS_SUCCESS;
+    memset(OS_count_sem_table, 0, sizeof(OS_count_sem_table));
+    return OS_SUCCESS;
 } /* end OS_CountSemAPI_Init */
-
-
 
 /*----------------------------------------------------------------
  *
@@ -93,43 +86,41 @@ int32 OS_CountSemAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemCreate (osal_id_t *sem_id, const char *sem_name, uint32 sem_initial_value,
-                        uint32 options)
+int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_initial_value, uint32 options)
 {
-   OS_common_record_t *record;
-   int32             return_code;
-   uint32            local_id;
+    OS_common_record_t *record;
+    int32               return_code;
+    uint32              local_id;
 
-   /* Check for NULL pointers */
-   if (sem_id == NULL || sem_name == NULL)
-   {
-      return OS_INVALID_POINTER;
-   }
+    /* Check for NULL pointers */
+    if (sem_id == NULL || sem_name == NULL)
+    {
+        return OS_INVALID_POINTER;
+    }
 
-   if ( strlen (sem_name) >= OS_MAX_API_NAME )
-   {
-      return OS_ERR_NAME_TOO_LONG;
-   }
+    if (strlen(sem_name) >= OS_MAX_API_NAME)
+    {
+        return OS_ERR_NAME_TOO_LONG;
+    }
 
-   /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
-   return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, sem_name, &local_id, &record);
-   if(return_code == OS_SUCCESS)
-   {
-      /* Save all the data to our own internal table */
-      strcpy(OS_count_sem_table[local_id].obj_name, sem_name);
-      record->name_entry = OS_count_sem_table[local_id].obj_name;
+    /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
+    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, sem_name, &local_id, &record);
+    if (return_code == OS_SUCCESS)
+    {
+        /* Save all the data to our own internal table */
+        strcpy(OS_count_sem_table[local_id].obj_name, sem_name);
+        record->name_entry = OS_count_sem_table[local_id].obj_name;
 
-      /* Now call the OS-specific implementation.  This reads info from the table. */
-      return_code = OS_CountSemCreate_Impl(local_id, sem_initial_value, options);
+        /* Now call the OS-specific implementation.  This reads info from the table. */
+        return_code = OS_CountSemCreate_Impl(local_id, sem_initial_value, options);
 
-      /* Check result, finalize record, and unlock global table. */
-      return_code = OS_ObjectIdFinalizeNew(return_code, record, sem_id);
-   }
+        /* Check result, finalize record, and unlock global table. */
+        return_code = OS_ObjectIdFinalizeNew(return_code, record, sem_id);
+    }
 
-   return return_code;
+    return return_code;
 
 } /* end OS_CountSemCreate */
-
 
 /*----------------------------------------------------------------
  *
@@ -139,26 +130,24 @@ int32 OS_CountSemCreate (osal_id_t *sem_id, const char *sem_name, uint32 sem_ini
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemDelete (osal_id_t sem_id)
+int32 OS_CountSemDelete(osal_id_t sem_id)
 {
-   OS_common_record_t *record;
-   uint32 local_id;
-   int32 return_code;
+    OS_common_record_t *record;
+    uint32              local_id;
+    int32               return_code;
 
-   return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
-   if (return_code == OS_SUCCESS)
-   {
-      return_code = OS_CountSemDelete_Impl(local_id);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_CountSemDelete_Impl(local_id);
 
-      /* Complete the operation via the common routine */
-      return_code = OS_ObjectIdFinalizeDelete(return_code, record);
-   }
+        /* Complete the operation via the common routine */
+        return_code = OS_ObjectIdFinalizeDelete(return_code, record);
+    }
 
-   return return_code;
+    return return_code;
 
 } /* end OS_CountSemDelete */
-
-
 
 /*----------------------------------------------------------------
  *
@@ -168,23 +157,22 @@ int32 OS_CountSemDelete (osal_id_t sem_id)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGive ( osal_id_t sem_id )
+int32 OS_CountSemGive(osal_id_t sem_id)
 {
-   OS_common_record_t *record;
-   uint32 local_id;
-   int32 return_code;
+    OS_common_record_t *record;
+    uint32              local_id;
+    int32               return_code;
 
     /* Check Parameters */
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
     if (return_code == OS_SUCCESS)
     {
-       return_code = OS_CountSemGive_Impl (local_id);
+        return_code = OS_CountSemGive_Impl(local_id);
     }
 
     return return_code;
 
 } /* end OS_CountSemGive */
-
 
 /*----------------------------------------------------------------
  *
@@ -194,22 +182,21 @@ int32 OS_CountSemGive ( osal_id_t sem_id )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTake ( osal_id_t sem_id )
+int32 OS_CountSemTake(osal_id_t sem_id)
 {
-   OS_common_record_t *record;
-   uint32 local_id;
-   int32 return_code;
+    OS_common_record_t *record;
+    uint32              local_id;
+    int32               return_code;
 
-   /* Check Parameters */
-   return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
-   if (return_code == OS_SUCCESS)
-   {
-      return_code = OS_CountSemTake_Impl (local_id);
-   }
+    /* Check Parameters */
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_CountSemTake_Impl(local_id);
+    }
 
-   return return_code;
+    return return_code;
 } /* end OS_CountSemTake */
-
 
 /*----------------------------------------------------------------
  *
@@ -219,22 +206,21 @@ int32 OS_CountSemTake ( osal_id_t sem_id )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTimedWait ( osal_id_t sem_id, uint32 msecs )
+int32 OS_CountSemTimedWait(osal_id_t sem_id, uint32 msecs)
 {
-   OS_common_record_t *record;
-   uint32 local_id;
-   int32 return_code;
+    OS_common_record_t *record;
+    uint32              local_id;
+    int32               return_code;
 
-   /* Check Parameters */
-   return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
-   if (return_code == OS_SUCCESS)
-   {
-      return_code = OS_CountSemTimedWait_Impl (local_id, msecs);
-   }
+    /* Check Parameters */
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_CountSemTimedWait_Impl(local_id, msecs);
+    }
 
-   return return_code;
+    return return_code;
 } /* end OS_CountSemTimedWait */
-
 
 /*----------------------------------------------------------------
  *
@@ -244,20 +230,19 @@ int32 OS_CountSemTimedWait ( osal_id_t sem_id, uint32 msecs )
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGetIdByName (osal_id_t *sem_id, const char *sem_name)
+int32 OS_CountSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
 {
-   int32 return_code;
+    int32 return_code;
 
-   if (sem_id == NULL || sem_name == NULL)
-   {
-       return OS_INVALID_POINTER;
-   }
+    if (sem_id == NULL || sem_name == NULL)
+    {
+        return OS_INVALID_POINTER;
+    }
 
-   return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, sem_name, sem_id);
+    return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, sem_name, sem_id);
 
-   return return_code;
+    return return_code;
 } /* end OS_CountSemGetIdByName */
-
 
 /*----------------------------------------------------------------
  *
@@ -267,31 +252,30 @@ int32 OS_CountSemGetIdByName (osal_id_t *sem_id, const char *sem_name)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGetInfo (osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
+int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
 {
-   OS_common_record_t *record;
-   uint32 local_id;
-   int32 return_code;
+    OS_common_record_t *record;
+    uint32              local_id;
+    int32               return_code;
 
-   /* Check parameters */
-   if (count_prop == NULL)
-   {
-      return OS_INVALID_POINTER;
-   }
+    /* Check parameters */
+    if (count_prop == NULL)
+    {
+        return OS_INVALID_POINTER;
+    }
 
-   memset(count_prop,0,sizeof(OS_count_sem_prop_t));
+    memset(count_prop, 0, sizeof(OS_count_sem_prop_t));
 
-   /* Check Parameters */
-   return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
-   if (return_code == OS_SUCCESS)
-   {
-      strncpy(count_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
-      count_prop->creator = record->creator;
+    /* Check Parameters */
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    if (return_code == OS_SUCCESS)
+    {
+        strncpy(count_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        count_prop->creator = record->creator;
 
-      return_code = OS_CountSemGetInfo_Impl (local_id, count_prop);
-      OS_Unlock_Global(LOCAL_OBJID_TYPE);
-   }
+        return_code = OS_CountSemGetInfo_Impl(local_id, count_prop);
+        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+    }
 
-   return return_code;
+    return return_code;
 } /* end OS_CountSemGetInfo */
-

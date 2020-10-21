@@ -18,7 +18,6 @@
  *  limitations under the License.
  */
 
-
 /**
  * \file     osapi-utstub-bsp.c
  * \author   joseph.p.hickey@nasa.gov
@@ -54,17 +53,15 @@ uint32 OS_BSP_GetArgC(void)
    OS_BSP_GetArgV
    See full description in header
  ------------------------------------------------------------------*/
-char * const * OS_BSP_GetArgV(void)
+char *const *OS_BSP_GetArgV(void)
 {
     void *buffer;
     int32 status;
 
     status = UT_DEFAULT_IMPL(OS_BSP_GetArgV);
-    if (status == 0 &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_BSP_GetArgV), &buffer, sizeof(buffer)) < sizeof(buffer))
+    if (status == 0 && UT_Stub_CopyToLocal(UT_KEY(OS_BSP_GetArgV), &buffer, sizeof(buffer)) < sizeof(buffer))
     {
         buffer = NULL;
     }
     return buffer;
 }
-

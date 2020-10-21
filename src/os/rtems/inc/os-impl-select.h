@@ -33,6 +33,4 @@
 #include <sys/select.h>
 #include <sys/time.h>
 
-
-#endif  /* INCLUDE_OS_IMPL_SELECT_H_ */
-
+#endif /* INCLUDE_OS_IMPL_SELECT_H_ */

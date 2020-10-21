@@ -44,18 +44,15 @@ typedef struct
 {
     char device_name[OS_MAX_API_NAME];
 
-    char *BufBase;                    /**< Start of the buffer memory */
-    uint32 BufSize;                   /**< Total size of the buffer */
-    volatile uint32 ReadPos;          /**< Offset of next byte to read */
-    volatile uint32 WritePos;         /**< Offset of next byte to write */
-    uint32 OverflowEvents;            /**< Number of lines dropped due to overflow */
+    char *          BufBase;        /**< Start of the buffer memory */
+    uint32          BufSize;        /**< Total size of the buffer */
+    volatile uint32 ReadPos;        /**< Offset of next byte to read */
+    volatile uint32 WritePos;       /**< Offset of next byte to write */
+    uint32          OverflowEvents; /**< Number of lines dropped due to overflow */
 
 } OS_console_internal_record_t;
 
-
-extern OS_console_internal_record_t        OS_console_table[OS_MAX_CONSOLES];
-
-
+extern OS_console_internal_record_t OS_console_table[OS_MAX_CONSOLES];
 
 /****************************************************************************************
                  CONSOLE / DEBUG API LOW-LEVEL IMPLEMENTATION FUNCTIONS
@@ -68,9 +65,7 @@ extern OS_console_internal_record_t        OS_console_table[OS_MAX_CONSOLES];
 
    returns: OS_SUCCESS on success, or relevant error code
 ---------------------------------------------------------------------------------------*/
-int32 OS_ConsoleAPI_Init             (void);
-
-
+int32 OS_ConsoleAPI_Init(void);
 
 /*----------------------------------------------------------------
    Function: OS_ConsoleCreate_Impl
@@ -90,7 +85,7 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id);
 
    The data is already formatted, this just writes the characters.
  ------------------------------------------------------------------*/
-void  OS_ConsoleOutput_Impl(uint32 local_id);
+void OS_ConsoleOutput_Impl(uint32 local_id);
 
 /*----------------------------------------------------------------
    Function: OS_ConsoleOutput_Impl
@@ -105,8 +100,6 @@ void  OS_ConsoleOutput_Impl(uint32 local_id);
    service, this should wakeup the actual console servicing
    thread.
  ------------------------------------------------------------------*/
-void  OS_ConsoleWakeup_Impl(uint32 local_id);
+void OS_ConsoleWakeup_Impl(uint32 local_id);
 
-
-#endif  /* INCLUDE_OS_SHARED_PRINTF_H_ */
-
+#endif /* INCLUDE_OS_SHARED_PRINTF_H_ */

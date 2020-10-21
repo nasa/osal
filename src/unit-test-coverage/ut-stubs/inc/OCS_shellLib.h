@@ -37,17 +37,7 @@
 /* prototypes normally declared in shellLib.h */
 /* ----------------------------------------- */
 
-extern OCS_STATUS OCS_shellGenericInit(
-        const char * config,
-        int stackSize,
-        const char * shellName,
-        char **pShellName,
-        OCS_BOOL interactive,
-        OCS_BOOL loginAccess,
-        int fdin,
-        int fdout,
-        int fderr
-);
+extern OCS_STATUS OCS_shellGenericInit(const char *config, int stackSize, const char *shellName, char **pShellName,
+                                       OCS_BOOL interactive, OCS_BOOL loginAccess, int fdin, int fdout, int fderr);
 
 #endif /* _OSAL_STUB_SHELLLIB_H_ */
-

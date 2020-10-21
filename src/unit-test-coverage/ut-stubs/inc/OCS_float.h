@@ -36,7 +36,4 @@
 /* prototypes normally declared in float.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_FLOAT_H_ */
-

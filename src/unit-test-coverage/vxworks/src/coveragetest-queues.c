@@ -47,10 +47,10 @@ void Test_OS_QueueCreate_Impl(void)
      * Test Case For:
      * int32 OS_QueueCreate_Impl (uint32 queue_id, uint32 flags)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate_Impl(0,0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate_Impl(0, 0), OS_SUCCESS);
 
     UT_SetForceFail(UT_KEY(OCS_msgQCreate), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate_Impl(0,0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate_Impl(0, 0), OS_ERROR);
 }
 
 void Test_OS_QueueDelete_Impl(void)
@@ -71,7 +71,7 @@ void Test_OS_QueueGet_Impl(void)
      * Test Case For:
      * int32 OS_QueueGet_Impl (uint32 queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout)
      */
-    char Data[16];
+    char   Data[16];
     uint32 ActSz;
 
     OSAPI_TEST_FUNCTION_RC(OS_QueueGet_Impl(0, &Data, sizeof(Data), &ActSz, OS_PEND), OS_SUCCESS);
@@ -114,9 +114,8 @@ void Test_OS_QueueGetInfo_Impl(void)
      */
     OS_queue_prop_t queue_prop;
     memset(&queue_prop, 0xEE, sizeof(queue_prop));
-    OSAPI_TEST_FUNCTION_RC(OS_QueueGetInfo_Impl(0,&queue_prop), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGetInfo_Impl(0, &queue_prop), OS_SUCCESS);
 }
-
 
 /* ------------------- End of test cases --------------------------------------*/
 
@@ -141,10 +140,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -160,5 +156,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_QueuePut_Impl);
     ADD_TEST(OS_QueueGetInfo_Impl);
 }
-
-

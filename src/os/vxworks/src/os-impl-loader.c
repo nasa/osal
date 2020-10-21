@@ -40,7 +40,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-
 OS_impl_module_internal_record_t OS_impl_module_table[OS_MAX_MODULES];
 
 /****************************************************************************************
@@ -56,17 +55,13 @@ OS_impl_module_internal_record_t OS_impl_module_table[OS_MAX_MODULES];
  *-----------------------------------------------------------------*/
 int32 OS_VxWorks_ModuleAPI_Impl_Init(void)
 {
-   memset(&OS_impl_module_table, 0, sizeof(OS_impl_module_table));
-   return(OS_SUCCESS);
+    memset(&OS_impl_module_table, 0, sizeof(OS_impl_module_table));
+    return (OS_SUCCESS);
 } /* end OS_VxWorks_ModuleAPI_Impl_Init */
-
-
-
 
 /****************************************************************************************
                                     Module Loader API
 ****************************************************************************************/
-
 
 /*----------------------------------------------------------------
  *
@@ -76,53 +71,52 @@ int32 OS_VxWorks_ModuleAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleLoad_Impl ( uint32 local_id, const char *translated_path )
+int32 OS_ModuleLoad_Impl(uint32 local_id, const char *translated_path)
 {
-   int32       return_code;
-   int         fd;
-   MODULE_ID   vxModuleId;
+    int32     return_code;
+    int       fd;
+    MODULE_ID vxModuleId;
 
-   /*
-   ** File is ready to load
-   */
+    /*
+    ** File is ready to load
+    */
 
-   /*
-   ** Open the file
-   */
-   fd = open (translated_path, O_RDONLY, 0);
-   if( fd < 0 )
-   {
-       OS_DEBUG("OSAL: Error, cannot open application file: %s\n",translated_path);
-       return_code = OS_ERROR;
-   }
-   else
-   {
-       /*
-       ** Load the module
-       */
-       vxModuleId = loadModule (fd, LOAD_ALL_SYMBOLS);
+    /*
+    ** Open the file
+    */
+    fd = open(translated_path, O_RDONLY, 0);
+    if (fd < 0)
+    {
+        OS_DEBUG("OSAL: Error, cannot open application file: %s\n", translated_path);
+        return_code = OS_ERROR;
+    }
+    else
+    {
+        /*
+        ** Load the module
+        */
+        vxModuleId = loadModule(fd, LOAD_ALL_SYMBOLS);
 
-       if( vxModuleId == (MODULE_ID)0 )
-       {
-           OS_DEBUG("OSAL: Error, cannot load module: %s\n",translated_path);
-           return_code = OS_ERROR;
-       }
-       else
-       {
-           OS_impl_module_table[local_id].moduleID = vxModuleId;
-           return_code = OS_SUCCESS;
-       }
+        if (vxModuleId == (MODULE_ID)0)
+        {
+            OS_DEBUG("OSAL: Error, cannot load module: %s\n", translated_path);
+            return_code = OS_ERROR;
+        }
+        else
+        {
+            OS_impl_module_table[local_id].moduleID = vxModuleId;
+            return_code                             = OS_SUCCESS;
+        }
 
-       /*
-       ** Close the file
-       */
-       close(fd);
-   }
+        /*
+        ** Close the file
+        */
+        close(fd);
+    }
 
-   return(return_code);
+    return (return_code);
 
 } /* end OS_ModuleLoad_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -132,24 +126,23 @@ int32 OS_ModuleLoad_Impl ( uint32 local_id, const char *translated_path )
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleUnload_Impl ( uint32 local_id )
+int32 OS_ModuleUnload_Impl(uint32 local_id)
 {
-   STATUS vxStatus;
+    STATUS vxStatus;
 
-   /*
-   ** Attempt to close/unload the module
-   */
-   vxStatus = unldByModuleId(OS_impl_module_table[local_id].moduleID, 0);
-   if ( vxStatus == ERROR )
-   {
-      OS_DEBUG("OSAL: Error, Cannot Close/Unload application file: %d\n",vxStatus);
-      return(OS_ERROR);
-   }
+    /*
+    ** Attempt to close/unload the module
+    */
+    vxStatus = unldByModuleId(OS_impl_module_table[local_id].moduleID, 0);
+    if (vxStatus == ERROR)
+    {
+        OS_DEBUG("OSAL: Error, Cannot Close/Unload application file: %d\n", vxStatus);
+        return (OS_ERROR);
+    }
 
-   return(OS_SUCCESS);
+    return (OS_SUCCESS);
 
 } /* end OS_ModuleUnload_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -159,34 +152,32 @@ int32 OS_ModuleUnload_Impl ( uint32 local_id )
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleGetInfo_Impl ( uint32 local_id, OS_module_prop_t *module_prop )
+int32 OS_ModuleGetInfo_Impl(uint32 local_id, OS_module_prop_t *module_prop)
 {
-   MODULE_INFO  vxModuleInfo;
-   STATUS       vxStatus;
+    MODULE_INFO vxModuleInfo;
+    STATUS      vxStatus;
 
+    module_prop->host_module_id = (cpuaddr)OS_impl_module_table[local_id].moduleID;
 
-   module_prop->host_module_id = (cpuaddr)OS_impl_module_table[local_id].moduleID;
+    /*
+    ** Get the module info from vxWorks
+    */
+    vxStatus = moduleInfoGet(OS_impl_module_table[local_id].moduleID, &vxModuleInfo);
+    if (vxStatus == ERROR)
+    {
+        OS_DEBUG("OSAL: OS_ModuleInfoGet Error from vxWorks: %d\n", vxStatus);
+    }
+    else
+    {
+        module_prop->addr.valid        = true;
+        module_prop->addr.code_address = (cpuaddr)vxModuleInfo.segInfo.textAddr;
+        module_prop->addr.code_size    = vxModuleInfo.segInfo.textSize;
+        module_prop->addr.data_address = (cpuaddr)vxModuleInfo.segInfo.dataAddr;
+        module_prop->addr.data_size    = vxModuleInfo.segInfo.dataSize;
+        module_prop->addr.bss_address  = (cpuaddr)vxModuleInfo.segInfo.bssAddr;
+        module_prop->addr.bss_size     = vxModuleInfo.segInfo.bssSize;
+    }
 
-   /*
-   ** Get the module info from vxWorks
-   */
-   vxStatus = moduleInfoGet(OS_impl_module_table[local_id].moduleID, &vxModuleInfo);
-   if ( vxStatus == ERROR )
-   {
-      OS_DEBUG("OSAL: OS_ModuleInfoGet Error from vxWorks: %d\n",vxStatus);
-   }
-   else
-   {
-       module_prop->addr.valid = true;
-       module_prop->addr.code_address = (cpuaddr)vxModuleInfo.segInfo.textAddr;
-       module_prop->addr.code_size = vxModuleInfo.segInfo.textSize;
-       module_prop->addr.data_address = (cpuaddr)vxModuleInfo.segInfo.dataAddr;
-       module_prop->addr.data_size = vxModuleInfo.segInfo.dataSize;
-       module_prop->addr.bss_address = (cpuaddr)vxModuleInfo.segInfo.bssAddr;
-       module_prop->addr.bss_size = vxModuleInfo.segInfo.bssSize;
-   }
-
-   return(OS_SUCCESS);
+    return (OS_SUCCESS);
 
 } /* end OS_ModuleGetInfo_Impl */
-

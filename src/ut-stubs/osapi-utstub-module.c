@@ -34,8 +34,7 @@
 
 #include "utstub-helpers.h"
 
-
-UT_DEFAULT_STUB(OS_ModuleAPI_Init,(void))
+UT_DEFAULT_STUB(OS_ModuleAPI_Init, (void))
 
 /*****************************************************************************/
 /**
@@ -60,8 +59,6 @@ int32 dummy_function(void)
 
     return status;
 }
-
-
 
 /*****************************************************************************/
 /**
@@ -171,7 +168,7 @@ int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_info)
     status = UT_DEFAULT_IMPL(OS_ModuleInfo);
 
     if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_ModuleInfo), module_info, sizeof(*module_info)) < sizeof(*module_info))
+        UT_Stub_CopyToLocal(UT_KEY(OS_ModuleInfo), module_info, sizeof(*module_info)) < sizeof(*module_info))
     {
         memset(module_info, 0, sizeof(*module_info));
     }
@@ -216,10 +213,11 @@ int32 OS_SymbolLookup(cpuaddr *symbol_address, const char *symbol_name)
     {
         *symbol_address = 0xDEADBEEFU;
     }
-    else if (UT_Stub_CopyToLocal(UT_KEY(OS_SymbolLookup), symbol_address, sizeof(*symbol_address)) < sizeof(*symbol_address))
+    else if (UT_Stub_CopyToLocal(UT_KEY(OS_SymbolLookup), symbol_address, sizeof(*symbol_address)) <
+             sizeof(*symbol_address))
     {
         /* return the dummy function when test didn't register anything else */
-        *symbol_address = (cpuaddr) &dummy_function;
+        *symbol_address = (cpuaddr)&dummy_function;
     }
 
     return status;
@@ -230,7 +228,7 @@ int32 OS_SymbolLookup(cpuaddr *symbol_address, const char *symbol_name)
  * Stub function for OS_SymbolTableDump()
  *
  *****************************************************************************/
-int32 OS_SymbolTableDump ( const char *filename, uint32 size_limit )
+int32 OS_SymbolTableDump(const char *filename, uint32 size_limit)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_SymbolTableDump), filename);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SymbolTableDump), size_limit);

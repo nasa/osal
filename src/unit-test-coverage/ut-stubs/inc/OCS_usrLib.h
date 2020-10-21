@@ -37,7 +37,4 @@
 /* prototypes normally declared in usrLib.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_USRLIB_H_ */
-

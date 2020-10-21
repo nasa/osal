@@ -28,8 +28,6 @@
 #ifndef INCLUDE_UT_ADAPTOR_PORTABLE_POSIX_IO_H_
 #define INCLUDE_UT_ADAPTOR_PORTABLE_POSIX_IO_H_
 
-
-
 /**
  * \file     ut-osfileapi.h
  * \ingroup  adaptors
@@ -52,8 +50,6 @@
  *****************************************************/
 void UT_PortablePosixIOTest_Set_Selectable(uint32 local_id, bool is_selectable);
 
-#endif  /* _UT_OSFILEAPI_H_ */
+#endif /* _UT_OSFILEAPI_H_ */
 
-
-#endif  /* INCLUDE_UT_ADAPTOR_PORTABLE_POSIX_IO_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_PORTABLE_POSIX_IO_H_ */

@@ -51,7 +51,7 @@
  * the executive (init) task.  Otherwise, the SemRun()
  * function may may never get CPU time to stop the test.
  */
-#define SEMTEST_TASK_PRIORITY   150
+#define SEMTEST_TASK_PRIORITY 150
 
 /*
  * A limit for the maximum amount
@@ -62,8 +62,7 @@
  * work correctly.  See note above
  * about priority requirements.
  */
-#define SEMTEST_WORK_LIMIT      10000000
-
+#define SEMTEST_WORK_LIMIT 10000000
 
 /* Define setup and test functions for UT assert */
 void SemSetup(void);
@@ -74,75 +73,75 @@ void SemRun(void);
  *
  * This resolves to a function name like e.g. OS_BinSemTake.
  */
-#define SEMCALL(type,op)    OS_ ## type ## Sem ## op
+#define SEMCALL(type, op) OS_##type##Sem##op
 
 /*
  * This test works with either binary or counting
  * semaphores.  To switch between them, set this
  * to either "Bin" or "Count" without quotes.
  */
-#define SEMOP(op)           SEMCALL(Count,op)
+#define SEMOP(op) SEMCALL(Count, op)
 
 osal_id_t task_1_id;
-uint32 task_1_work;
+uint32    task_1_work;
 
 osal_id_t task_2_id;
-uint32 task_2_work;
+uint32    task_2_work;
 
 osal_id_t sem_id_1;
 osal_id_t sem_id_2;
 
 void task_1(void)
 {
-    uint32             status;
+    uint32 status;
 
     OS_printf("Starting task 1\n");
     OS_TaskRegister();
 
-    while(task_1_work < SEMTEST_WORK_LIMIT)
+    while (task_1_work < SEMTEST_WORK_LIMIT)
     {
-       status = SEMOP(Take)(sem_id_1);
-       if ( status != OS_SUCCESS )
-       {
-          OS_printf("TASK 1: Error calling SemTake 1: %d\n", (int)status);
-          break;
-       }
+        status = SEMOP(Take)(sem_id_1);
+        if (status != OS_SUCCESS)
+        {
+            OS_printf("TASK 1: Error calling SemTake 1: %d\n", (int)status);
+            break;
+        }
 
-       ++task_1_work;
+        ++task_1_work;
 
-       status = SEMOP(Give)(sem_id_2);
-       if ( status != OS_SUCCESS )
-       {
-          OS_printf("TASK 1: Error calling SemGive 2: %d\n", (int)status);
-          break;
-       }
+        status = SEMOP(Give)(sem_id_2);
+        if (status != OS_SUCCESS)
+        {
+            OS_printf("TASK 1: Error calling SemGive 2: %d\n", (int)status);
+            break;
+        }
     }
 }
 
 void task_2(void)
 {
-    uint32             status;
+    uint32 status;
 
     OS_printf("Starting task 2\n");
     OS_TaskRegister();
 
-    while(task_2_work < SEMTEST_WORK_LIMIT)
+    while (task_2_work < SEMTEST_WORK_LIMIT)
     {
-       status = SEMOP(Take)(sem_id_2);
-       if ( status != OS_SUCCESS )
-       {
-          OS_printf("TASK 2: Error calling SemTake 2: %d\n", (int)status);
-          break;
-       }
+        status = SEMOP(Take)(sem_id_2);
+        if (status != OS_SUCCESS)
+        {
+            OS_printf("TASK 2: Error calling SemTake 2: %d\n", (int)status);
+            break;
+        }
 
-       ++task_2_work;
+        ++task_2_work;
 
-       status = SEMOP(Give)(sem_id_1);
-       if ( status != OS_SUCCESS )
-       {
-          OS_printf("TASK 2: Error calling SemGive 1: %d\n", (int)status);
-          break;
-       }
+        status = SEMOP(Give)(sem_id_1);
+        if (status != OS_SUCCESS)
+        {
+            OS_printf("TASK 2: Error calling SemGive 1: %d\n", (int)status);
+            break;
+        }
     }
 }
 
@@ -161,35 +160,31 @@ void UtTest_Setup(void)
 
 void SemSetup(void)
 {
-   uint32 status;
+    uint32 status;
 
-   task_1_work = 0;
-   task_2_work = 0;
+    task_1_work = 0;
+    task_2_work = 0;
 
-   /*
-   ** Create the Bin semaphore
-   */
-   status = SEMOP(Create)( &sem_id_1, "Sem1", 0, 0);
-   UtAssert_True(status == OS_SUCCESS, "Sem 1 create Id=%lx Rc=%d",
-           OS_ObjectIdToInteger(sem_id_1), (int)status);
-   status = SEMOP(Create)( &sem_id_2, "Sem2", 0, 0);
-   UtAssert_True(status == OS_SUCCESS, "Sem 2 create Id=%lx Rc=%d",
-           OS_ObjectIdToInteger(sem_id_2), (int)status);
+    /*
+    ** Create the Bin semaphore
+    */
+    status = SEMOP(Create)(&sem_id_1, "Sem1", 0, 0);
+    UtAssert_True(status == OS_SUCCESS, "Sem 1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(sem_id_1), (int)status);
+    status = SEMOP(Create)(&sem_id_2, "Sem2", 0, 0);
+    UtAssert_True(status == OS_SUCCESS, "Sem 2 create Id=%lx Rc=%d", OS_ObjectIdToInteger(sem_id_2), (int)status);
 
-   /*
-   ** Create the tasks
-   */
-   status = OS_TaskCreate( &task_1_id, "Task 1", task_1, NULL, 4096, SEMTEST_TASK_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d",
-           OS_ObjectIdToInteger(task_1_id), (int)status);
+    /*
+    ** Create the tasks
+    */
+    status = OS_TaskCreate(&task_1_id, "Task 1", task_1, NULL, 4096, SEMTEST_TASK_PRIORITY, 0);
+    UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_1_id), (int)status);
 
-   status = OS_TaskCreate( &task_2_id, "Task 2", task_2, NULL, 4096, SEMTEST_TASK_PRIORITY, 0);
-   UtAssert_True(status == OS_SUCCESS, "Task 2 create Id=%lx Rc=%d",
-           OS_ObjectIdToInteger(task_2_id), (int)status);
+    status = OS_TaskCreate(&task_2_id, "Task 2", task_2, NULL, 4096, SEMTEST_TASK_PRIORITY, 0);
+    UtAssert_True(status == OS_SUCCESS, "Task 2 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_2_id), (int)status);
 
-   /* A small delay just to allow the tasks
-    * to start and pend on the sem */
-   OS_TaskDelay(10);
+    /* A small delay just to allow the tasks
+     * to start and pend on the sem */
+    OS_TaskDelay(10);
 }
 
 void SemRun(void)
@@ -208,20 +203,18 @@ void SemRun(void)
     ** NOTE: if the work limit was reached, the
     ** OS_TaskDelete calls may return non-success.
     */
-    status = OS_TaskDelete( task_1_id );
+    status = OS_TaskDelete(task_1_id);
     UtAssert_True(status == OS_SUCCESS, "Task 1 delete Rc=%d", (int)status);
 
-    status = OS_TaskDelete( task_2_id );
+    status = OS_TaskDelete(task_2_id);
     UtAssert_True(status == OS_SUCCESS, "Task 2 delete Rc=%d", (int)status);
 
-    status = SEMOP(Delete)( sem_id_1 );
+    status = SEMOP(Delete)(sem_id_1);
     UtAssert_True(status == OS_SUCCESS, "Sem 1 delete Rc=%d", (int)status);
-    status = SEMOP(Delete)( sem_id_2 );
+    status = SEMOP(Delete)(sem_id_2);
     UtAssert_True(status == OS_SUCCESS, "Sem 2 delete Rc=%d", (int)status);
-
 
     /* Task 1 and 2 should have both executed */
     UtAssert_True(task_1_work != 0, "Task 1 work counter = %u", (unsigned int)task_1_work);
     UtAssert_True(task_2_work != 0, "Task 2 work counter = %u", (unsigned int)task_2_work);
 }
-

@@ -28,7 +28,4 @@
 /* mappings for declarations in sys/un.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_OVERRIDE_SYS_UN_H_ */
-

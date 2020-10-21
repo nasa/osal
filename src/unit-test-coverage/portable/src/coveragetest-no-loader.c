@@ -32,7 +32,7 @@ void Test_OS_ModuleLoad_Impl(void)
     /* Test Case For:
      * int32 OS_ModuleLoad_Impl ( uint32 module_id, char *translated_path )
      */
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl, (0,"local"), OS_ERR_NOT_IMPLEMENTED);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl, (0, "local"), OS_ERR_NOT_IMPLEMENTED);
 }
 
 void Test_OS_ModuleUnload_Impl(void)
@@ -51,9 +51,8 @@ void Test_OS_ModuleGetInfo_Impl(void)
     OS_module_prop_t module_prop;
 
     memset(&module_prop, 0, sizeof(module_prop));
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleGetInfo_Impl, (0,&module_prop), OS_ERR_NOT_IMPLEMENTED);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleGetInfo_Impl, (0, &module_prop), OS_ERR_NOT_IMPLEMENTED);
 }
-
 
 /* ------------------- End of test cases --------------------------------------*/
 
@@ -73,11 +72,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
-
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -90,5 +85,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_ModuleUnload_Impl);
     ADD_TEST(OS_ModuleGetInfo_Impl);
 }
-
-

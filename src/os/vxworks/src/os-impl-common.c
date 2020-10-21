@@ -46,9 +46,7 @@
                                    GLOBAL DATA
 ****************************************************************************************/
 
-
-static TASK_ID     OS_idle_task_id;
-
+static TASK_ID OS_idle_task_id;
 
 /****************************************************************************************
                                 INITIALIZATION FUNCTION
@@ -64,7 +62,7 @@ static TASK_ID     OS_idle_task_id;
  *-----------------------------------------------------------------*/
 int32 OS_API_Impl_Init(uint32 idtype)
 {
-    int32    return_code;
+    int32 return_code;
 
     return_code = OS_VxWorks_TableMutex_Init(idtype);
     if (return_code != OS_SUCCESS)
@@ -72,42 +70,41 @@ int32 OS_API_Impl_Init(uint32 idtype)
         return return_code;
     }
 
-    switch(idtype)
+    switch (idtype)
     {
-    case OS_OBJECT_TYPE_OS_TASK:
-        return_code = OS_VxWorks_TaskAPI_Impl_Init();
-        break;
-    case OS_OBJECT_TYPE_OS_QUEUE:
-        return_code = OS_VxWorks_QueueAPI_Impl_Init();
-        break;
-    case OS_OBJECT_TYPE_OS_BINSEM:
-        return_code = OS_VxWorks_BinSemAPI_Impl_Init();
-        break;
-    case OS_OBJECT_TYPE_OS_COUNTSEM:
-        return_code = OS_VxWorks_CountSemAPI_Impl_Init();
-        break;
-    case OS_OBJECT_TYPE_OS_MUTEX:
-        return_code = OS_VxWorks_MutexAPI_Impl_Init();
-        break;
-    case OS_OBJECT_TYPE_OS_MODULE:
-        return_code = OS_VxWorks_ModuleAPI_Impl_Init();
-        break;
-    case OS_OBJECT_TYPE_OS_TIMEBASE:
-        return_code = OS_VxWorks_TimeBaseAPI_Impl_Init();
-        break;
-    case OS_OBJECT_TYPE_OS_STREAM:
-        return_code = OS_VxWorks_StreamAPI_Impl_Init();
-        break;
-    case OS_OBJECT_TYPE_OS_DIR:
-        return_code = OS_VxWorks_DirAPI_Impl_Init();
-        break;
-    default:
-        break;
+        case OS_OBJECT_TYPE_OS_TASK:
+            return_code = OS_VxWorks_TaskAPI_Impl_Init();
+            break;
+        case OS_OBJECT_TYPE_OS_QUEUE:
+            return_code = OS_VxWorks_QueueAPI_Impl_Init();
+            break;
+        case OS_OBJECT_TYPE_OS_BINSEM:
+            return_code = OS_VxWorks_BinSemAPI_Impl_Init();
+            break;
+        case OS_OBJECT_TYPE_OS_COUNTSEM:
+            return_code = OS_VxWorks_CountSemAPI_Impl_Init();
+            break;
+        case OS_OBJECT_TYPE_OS_MUTEX:
+            return_code = OS_VxWorks_MutexAPI_Impl_Init();
+            break;
+        case OS_OBJECT_TYPE_OS_MODULE:
+            return_code = OS_VxWorks_ModuleAPI_Impl_Init();
+            break;
+        case OS_OBJECT_TYPE_OS_TIMEBASE:
+            return_code = OS_VxWorks_TimeBaseAPI_Impl_Init();
+            break;
+        case OS_OBJECT_TYPE_OS_STREAM:
+            return_code = OS_VxWorks_StreamAPI_Impl_Init();
+            break;
+        case OS_OBJECT_TYPE_OS_DIR:
+            return_code = OS_VxWorks_DirAPI_Impl_Init();
+            break;
+        default:
+            break;
     }
 
-    return(return_code);
+    return (return_code);
 } /* end OS_API_Impl_Init */
-
 
 /*----------------------------------------------------------------
  *
@@ -119,11 +116,10 @@ int32 OS_API_Impl_Init(uint32 idtype)
  *-----------------------------------------------------------------*/
 void OS_IdleLoop_Impl(void)
 {
-    TASK_ID tid = taskIdSelf();
+    TASK_ID tid     = taskIdSelf();
     OS_idle_task_id = tid;
     taskSuspend(tid);
 } /* end OS_IdleLoop_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -137,9 +133,6 @@ void OS_ApplicationShutdown_Impl(void)
 {
     taskResume(OS_idle_task_id);
 } /* end OS_ApplicationShutdown_Impl */
-
-
-
 
 /****************************************************************************************
                               GENERIC SEMAPHORE API
@@ -164,14 +157,13 @@ void OS_ApplicationShutdown_Impl(void)
 int32 OS_VxWorks_GenericSemGive(SEM_ID vxid)
 {
     /* Give VxWorks Semaphore */
-    if(semGive(vxid) != OK)
+    if (semGive(vxid) != OK)
     {
-        OS_DEBUG("semGive() - vxWorks errno %d\n",errno);
+        OS_DEBUG("semGive() - vxWorks errno %d\n", errno);
         return OS_SEM_FAILURE;
     }
     return OS_SUCCESS;
 } /* end OS_VxWorks_GenericSemGive */
-
 
 /*----------------------------------------------------------------
  *
@@ -195,13 +187,12 @@ int32 OS_VxWorks_GenericSemTake(SEM_ID vxid, int sys_ticks)
          */
         if (errno == S_objLib_OBJ_TIMEOUT)
         {
-           return OS_SEM_TIMEOUT;
+            return OS_SEM_TIMEOUT;
         }
 
-        OS_DEBUG("semTake() - vxWorks errno %d\n",errno);
+        OS_DEBUG("semTake() - vxWorks errno %d\n", errno);
         return OS_SEM_FAILURE;
     }
 
     return OS_SUCCESS;
 } /* end OS_VxWorks_GenericSemTake */
-

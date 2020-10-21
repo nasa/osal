@@ -40,6 +40,4 @@
 
 extern OCS_MODULE_ID OCS_loadModule(int fd, unsigned int symFlag);
 
-
 #endif /* _OSAL_STUB_LOADLIB_H_ */
-

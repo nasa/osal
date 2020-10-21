@@ -34,7 +34,6 @@
 
 #include "utstub-helpers.h"
 
-
 /*****************************************************************************
  *
  * Stub function for OS_GetLocalTime()
@@ -44,22 +43,22 @@ int32 OS_GetLocalTime(OS_time_t *time_struct)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_GetLocalTime), time_struct);
 
-    int32 status;
+    int32  status;
     uint32 count;
 
     status = UT_DEFAULT_IMPL(OS_GetLocalTime);
 
     if (status == OS_SUCCESS &&
-            UT_Stub_CopyToLocal(UT_KEY(OS_GetLocalTime), time_struct, sizeof(*time_struct)) < sizeof(*time_struct))
+        UT_Stub_CopyToLocal(UT_KEY(OS_GetLocalTime), time_struct, sizeof(*time_struct)) < sizeof(*time_struct))
     {
-        count = UT_GetStubCount(UT_KEY(OS_GetLocalTime));
+        count                  = UT_GetStubCount(UT_KEY(OS_GetLocalTime));
         time_struct->microsecs = 10000 * (count % 100);
-        time_struct->seconds = 1 + (count / 100);
+        time_struct->seconds   = 1 + (count / 100);
     }
 
     return status;
 
-}/* end OS_GetLocalTime */
+} /* end OS_GetLocalTime */
 
 /*****************************************************************************
  *
@@ -77,4 +76,3 @@ int32 OS_SetLocalTime(OS_time_t *time_struct)
     return status;
 
 } /*end OS_SetLocalTime */
-

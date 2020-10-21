@@ -30,7 +30,6 @@
 
 #include <common_types.h>
 
-int32 UT_SymTabTest_CallIteratorFunc(const char *name, void* val, uint32 TestSize, uint32 SizeLimit);
+int32 UT_SymTabTest_CallIteratorFunc(const char *name, void *val, uint32 TestSize, uint32 SizeLimit);
 
-#endif  /* INCLUDE_UT_ADAPTOR_SYMTAB_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_SYMTAB_H_ */

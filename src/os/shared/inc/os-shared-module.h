@@ -30,21 +30,19 @@
 
 #include <os-shared-globaldefs.h>
 
-
 typedef struct
 {
-   char                module_name[OS_MAX_API_NAME];
-   char                file_name[OS_MAX_PATH_LEN];
-   uint32              flags;
-   cpuaddr             entry_point;
+    char    module_name[OS_MAX_API_NAME];
+    char    file_name[OS_MAX_PATH_LEN];
+    uint32  flags;
+    cpuaddr entry_point;
 } OS_module_internal_record_t;
-
 
 /*
  * These record types have extra information with each entry.  These tables are used
  * to share extra data between the common layer and the OS-specific implementation.
  */
-extern OS_module_internal_record_t         OS_module_table[OS_MAX_MODULES];
+extern OS_module_internal_record_t OS_module_table[OS_MAX_MODULES];
 
 /****************************************************************************************
                  MODULE LOADER API LOW-LEVEL IMPLEMENTATION FUNCTIONS
@@ -57,8 +55,7 @@ extern OS_module_internal_record_t         OS_module_table[OS_MAX_MODULES];
 
    returns: OS_SUCCESS on success, or relevant error code
 ---------------------------------------------------------------------------------------*/
-int32 OS_ModuleAPI_Init              (void);
-
+int32 OS_ModuleAPI_Init(void);
 
 /*----------------------------------------------------------------
    Function: OS_ModuleLoad_Impl
@@ -67,7 +64,7 @@ int32 OS_ModuleAPI_Init              (void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ModuleLoad_Impl ( uint32 module_id, const char *translated_path );
+int32 OS_ModuleLoad_Impl(uint32 module_id, const char *translated_path);
 
 /*----------------------------------------------------------------
 
@@ -77,7 +74,7 @@ int32 OS_ModuleLoad_Impl ( uint32 module_id, const char *translated_path );
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ModuleUnload_Impl ( uint32 module_id );
+int32 OS_ModuleUnload_Impl(uint32 module_id);
 
 /*----------------------------------------------------------------
    Function: OS_ModuleGetInfo_Impl
@@ -86,7 +83,7 @@ int32 OS_ModuleUnload_Impl ( uint32 module_id );
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ModuleGetInfo_Impl ( uint32 module_id, OS_module_prop_t *module_prop );
+int32 OS_ModuleGetInfo_Impl(uint32 module_id, OS_module_prop_t *module_prop);
 
 /*----------------------------------------------------------------
    Function: OS_SymbolLookup_Impl
@@ -96,7 +93,7 @@ int32 OS_ModuleGetInfo_Impl ( uint32 module_id, OS_module_prop_t *module_prop );
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SymbolLookup_Impl ( cpuaddr *SymbolAddress, const char *SymbolName );
+int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName);
 
 /*----------------------------------------------------------------
    Function: OS_SymbolTableDump_Impl
@@ -105,8 +102,7 @@ int32 OS_SymbolLookup_Impl ( cpuaddr *SymbolAddress, const char *SymbolName );
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SymbolTableDump_Impl ( const char *filename, uint32 size_limit );
-
+int32 OS_SymbolTableDump_Impl(const char *filename, uint32 size_limit);
 
 /*
  * Helper functions within the shared layer that are not normally invoked outside the local module
@@ -115,5 +111,4 @@ int32 OS_SymbolTableDump_Impl ( const char *filename, uint32 size_limit );
 int32 OS_ModuleLoad_Static(const char *ModuleName);
 int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName);
 
-#endif  /* INCLUDE_OS_SHARED_MODULE_H_ */
-
+#endif /* INCLUDE_OS_SHARED_MODULE_H_ */

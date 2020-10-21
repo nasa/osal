@@ -38,20 +38,12 @@ void UT_osprintf_printf(void)
 {
     /* Perform printf enabled test */
     OS_printf("%s", "printf_test_string\n");
-    UT_Report(UT_PASS,
-              "PRINTF",
-              "Output to console",
-              "%s",
-              "01");
+    UT_Report(UT_PASS, "PRINTF", "Output to console", "%s", "01");
 
     /* Perform printf disabled test */
     OS_printf_enabled = 0;
     OS_printf("%s", "printf_test_string_disabled\n");
-    UT_Report(UT_PASS,
-              "PRINTF",
-              "Output to console disabled",
-              "%s",
-              "02");
+    UT_Report(UT_PASS, "PRINTF", "Output to console disabled", "%s", "02");
     OS_printf_enabled = 1;
 }
 #endif

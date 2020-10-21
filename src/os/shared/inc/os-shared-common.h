@@ -34,41 +34,37 @@
  * A "magic number" that when written to the "ShutdownFlag" member
  * of the global state structure indicates an active shutdown request.
  */
-#define OS_SHUTDOWN_MAGIC_NUMBER    0xABADC0DE
-
-
+#define OS_SHUTDOWN_MAGIC_NUMBER 0xABADC0DE
 
 /* Global variables that are common between implementations */
 struct OS_shared_global_vars
 {
-   bool              Initialized;
+    bool Initialized;
 
-   /*
-    * The console device ID used for OS_printf() calls
-    */
-   osal_id_t         PrintfConsoleId;
+    /*
+     * The console device ID used for OS_printf() calls
+     */
+    osal_id_t PrintfConsoleId;
 
-   /*
-    * PrintfEnabled and ShutdownFlag are marked "volatile"
-    * because they are updated and read by different threads
-    */
-   volatile bool     PrintfEnabled;
-   volatile uint32   ShutdownFlag;
-   int32             MicroSecPerTick;
-   int32             TicksPerSecond;
+    /*
+     * PrintfEnabled and ShutdownFlag are marked "volatile"
+     * because they are updated and read by different threads
+     */
+    volatile bool   PrintfEnabled;
+    volatile uint32 ShutdownFlag;
+    int32           MicroSecPerTick;
+    int32           TicksPerSecond;
 
-   /*
-    * The event handler is an application-defined callback
-    * that gets invoked as resources are created/configured/deleted.
-    */
-   OS_EventHandler_t EventHandler;
+    /*
+     * The event handler is an application-defined callback
+     * that gets invoked as resources are created/configured/deleted.
+     */
+    OS_EventHandler_t EventHandler;
 
 #ifdef OSAL_CONFIG_DEBUG_PRINTF
-   uint8             DebugLevel;
+    uint8 DebugLevel;
 #endif
-
 };
-
 
 /*
  * Shared data structure for global values
@@ -84,7 +80,6 @@ extern OS_SharedGlobalVars_t OS_SharedGlobalVars;
 ---------------------------------------------------------------------------------------*/
 int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data);
 
-
 /*---------------------------------------------------------------------------------------
    Name: OS_API_Impl_Init
 
@@ -92,16 +87,13 @@ int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data);
 
    returns: OS_SUCCESS on success, or relevant error code
 ---------------------------------------------------------------------------------------*/
-int32 OS_API_Impl_Init               (uint32 idtype);
-
-
+int32 OS_API_Impl_Init(uint32 idtype);
 
 /*
  * This functions implement a the OS-specific portion
  * of various OSAL functions.  They are defined in
  * OS-specific source files.
  */
-
 
 /*----------------------------------------------------------------
 
@@ -116,7 +108,7 @@ int32 OS_API_Impl_Init               (uint32 idtype);
    event happens.
 
  ------------------------------------------------------------------*/
-void  OS_IdleLoop_Impl               (void);
+void OS_IdleLoop_Impl(void);
 
 /*----------------------------------------------------------------
 
@@ -133,7 +125,6 @@ void  OS_IdleLoop_Impl               (void);
    depending on priority levels.
 
  ------------------------------------------------------------------*/
-void  OS_ApplicationShutdown_Impl    (void);
+void OS_ApplicationShutdown_Impl(void);
 
-#endif  /* INCLUDE_OS_SHARED_COMMON_H_ */
-
+#endif /* INCLUDE_OS_SHARED_COMMON_H_ */

@@ -36,7 +36,4 @@
 /* prototypes normally declared in inttypes.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_INTTYPES_H_ */
-

@@ -29,8 +29,6 @@
 /* ----------------------------------------- */
 /* mappings for declarations in drv/hdisk/ataDrv.h */
 /* ----------------------------------------- */
-#define ataDevCreate       OCS_ataDevCreate
-
-
+#define ataDevCreate OCS_ataDevCreate
 
 #endif /* _OSAL_OVERRIDE_DRV_HDISK_ATADRV_H_ */

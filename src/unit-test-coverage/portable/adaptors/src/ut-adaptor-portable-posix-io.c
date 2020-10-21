@@ -31,7 +31,6 @@
 
 #include <os-impl-io.h>
 
-
 void UT_PortablePosixIOTest_Set_Selectable(uint32 local_id, bool is_selectable)
 {
     OS_impl_filehandle_table[local_id].selectable = is_selectable;

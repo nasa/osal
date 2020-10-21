@@ -29,7 +29,6 @@
 /* ----------------------------------------- */
 /* mappings for declarations in unldLib.h */
 /* ----------------------------------------- */
-#define unldByModuleId    OCS_unldByModuleId
-
+#define unldByModuleId OCS_unldByModuleId
 
 #endif /* _OSAL_OVERRIDE_UNLDLIB_H_ */

@@ -34,7 +34,6 @@
 
 #include "utstub-helpers.h"
 
-
 /*****************************************************************************
  *
  * Stub function for OS_API_Init()
@@ -72,7 +71,7 @@ int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data)
  * Stub function for OS_RegisterEventHandler()
  *
  *****************************************************************************/
-int32 OS_RegisterEventHandler (OS_EventHandler_t handler)
+int32 OS_RegisterEventHandler(OS_EventHandler_t handler)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_RegisterEventHandler), handler);
 
@@ -82,7 +81,6 @@ int32 OS_RegisterEventHandler (OS_EventHandler_t handler)
 
     return status;
 }
-
 
 /*****************************************************************************
  *
@@ -140,4 +138,3 @@ void OS_ApplicationShutdown(uint8 flag)
 
     UT_DEFAULT_IMPL(OS_ApplicationShutdown);
 }
-

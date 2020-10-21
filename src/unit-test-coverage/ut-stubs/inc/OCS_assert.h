@@ -32,13 +32,10 @@
 /* types normally defined in assert.h */
 /* ----------------------------------------- */
 
-
 /* ----------------------------------------- */
 /* prototypes normally declared in assert.h */
 /* ----------------------------------------- */
 
 void OCS_assert(bool expression);
 
-
 #endif /* _OSAL_STUB_ASSERT_H_ */
-

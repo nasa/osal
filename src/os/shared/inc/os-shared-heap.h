@@ -30,7 +30,6 @@
 
 #include <os-shared-globaldefs.h>
 
-
 /****************************************************************************************
                     MEMORY HEAP API LOW-LEVEL IMPLEMENTATION FUNCTIONS
  ****************************************************************************************/
@@ -48,5 +47,4 @@
  ------------------------------------------------------------------*/
 int32 OS_HeapGetInfo_Impl(OS_heap_prop_t *heap_prop);
 
-#endif  /* INCLUDE_OS_SHARED_HEAP_H_ */
-
+#endif /* INCLUDE_OS_SHARED_HEAP_H_ */

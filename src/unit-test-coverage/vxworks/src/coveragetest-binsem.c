@@ -25,7 +25,6 @@
  *
  */
 
-
 #include "os-vxworks-coveragetest.h"
 #include "ut-adaptor-binsem.h"
 
@@ -51,10 +50,10 @@ void Test_OS_BinSemCreate_Impl(void)
      * Test Case For:
      * int32 OS_BinSemCreate_Impl (uint32 sem_id, uint32 initial_value, uint32 options)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate_Impl(0,0,0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate_Impl(0, 0, 0), OS_SUCCESS);
 
     UT_SetForceFail(UT_KEY(OCS_semBInitialize), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate_Impl(0,0,0), OS_SEM_FAILURE);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate_Impl(0, 0, 0), OS_SEM_FAILURE);
 }
 
 void Test_OS_BinSemDelete_Impl(void)
@@ -105,13 +104,13 @@ void Test_OS_BinSemTimedWait_Impl(void)
      * Test Case For:
      * int32 OS_BinSemTimedWait_Impl ( uint32 sem_id, uint32 msecs )
      */
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(0,100), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(0, 100), OS_SUCCESS);
 
     UT_SetForceFail(UT_StubKey_GenericSemTake, OS_SEM_FAILURE);
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(0,100), OS_SEM_FAILURE);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(0, 100), OS_SEM_FAILURE);
 
     UT_SetForceFail(UT_KEY(OS_Milli2Ticks), OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(0,100), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(0, 100), OS_ERROR);
 }
 
 void Test_OS_BinSemGetInfo_Impl(void)
@@ -122,7 +121,7 @@ void Test_OS_BinSemGetInfo_Impl(void)
      */
     OS_bin_sem_prop_t sem_prop;
     memset(&sem_prop, 0xEE, sizeof(sem_prop));
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo_Impl(0,&sem_prop), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo_Impl(0, &sem_prop), OS_SUCCESS);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
@@ -148,10 +147,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -169,5 +165,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_BinSemTimedWait_Impl);
     ADD_TEST(OS_BinSemGetInfo_Impl);
 }
-
-

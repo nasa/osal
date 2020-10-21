@@ -42,11 +42,11 @@
  * Defines
  */
 #ifndef PTHREAD_STACK_MIN
-#define PTHREAD_STACK_MIN   (8*1024)
+#define PTHREAD_STACK_MIN (8 * 1024)
 #endif
 
 /* Tables where the OS object information is stored */
-OS_impl_task_internal_record_t      OS_impl_task_table          [OS_MAX_TASKS];
+OS_impl_task_internal_record_t OS_impl_task_table[OS_MAX_TASKS];
 
 /*
  * Local Function Prototypes
@@ -94,8 +94,6 @@ static int OS_PriorityRemap(uint32 InputPri)
     return OutputPri;
 } /* end OS_PriorityRemap */
 
-
-
 /*----------------------------------------------------------------
  *
  * Function: OS_NoopSigHandler
@@ -104,11 +102,7 @@ static int OS_PriorityRemap(uint32 InputPri)
  *           A POSIX signal handler that does nothing
  *
  *-----------------------------------------------------------------*/
-static void  OS_NoopSigHandler (int signal)
-{
-} /* end OS_NoopSigHandler */
-
-
+static void OS_NoopSigHandler(int signal) {} /* end OS_NoopSigHandler */
 
 /*---------------------------------------------------------------------------------------
    Name: OS_PthreadEntry
@@ -122,12 +116,12 @@ static void  OS_NoopSigHandler (int signal)
 ---------------------------------------------------------------------------------------*/
 static void *OS_PthreadTaskEntry(void *arg)
 {
-   OS_U32ValueWrapper_t local_arg;
+    OS_U32ValueWrapper_t local_arg;
 
-   local_arg.opaque_arg = arg;
-   OS_TaskEntryPoint(local_arg.id); /* Never returns */
+    local_arg.opaque_arg = arg;
+    OS_TaskEntryPoint(local_arg.id); /* Never returns */
 
-   return NULL;
+    return NULL;
 }
 
 /*---------------------------------------------------------------------------------------
@@ -186,14 +180,14 @@ static bool OS_Posix_GetSchedulerParams(int sched_policy, POSIX_PriorityLimits_t
      */
     if ((PriLim->PriorityMax - PriLim->PriorityMin) < 4)
     {
-        OS_DEBUG("Policy %d: Insufficient spread between priority min-max: %d-%d\n",
-                sched_policy, (int)PriLim->PriorityMin, (int)PriLim->PriorityMax);
+        OS_DEBUG("Policy %d: Insufficient spread between priority min-max: %d-%d\n", sched_policy,
+                 (int)PriLim->PriorityMin, (int)PriLim->PriorityMax);
         return false;
     }
 
     /* If we get here, then the sched_policy is potentially valid */
-    OS_DEBUG("Policy %d: available, min-max: %d-%d\n", sched_policy,
-            (int)PriLim->PriorityMin, (int)PriLim->PriorityMax);
+    OS_DEBUG("Policy %d: available, min-max: %d-%d\n", sched_policy, (int)PriLim->PriorityMin,
+             (int)PriLim->PriorityMax);
     return true;
 } /* end OS_Posix_GetSchedulerParams */
 
@@ -211,223 +205,222 @@ static bool OS_Posix_GetSchedulerParams(int sched_policy, POSIX_PriorityLimits_t
  ----------------------------------------------------------------------------------------*/
 int32 OS_Posix_TaskAPI_Impl_Init(void)
 {
-   int                 ret;
-   int                 sig;
-   struct sched_param  sched_param;
-   int                 sched_policy;
-   POSIX_PriorityLimits_t sched_fifo_limits;
-   bool                   sched_fifo_valid;
-   POSIX_PriorityLimits_t sched_rr_limits;
-   bool                   sched_rr_valid;
+    int                    ret;
+    int                    sig;
+    struct sched_param     sched_param;
+    int                    sched_policy;
+    POSIX_PriorityLimits_t sched_fifo_limits;
+    bool                   sched_fifo_valid;
+    POSIX_PriorityLimits_t sched_rr_limits;
+    bool                   sched_rr_valid;
 
-   /* Initialize Local Tables */
-   memset(OS_impl_task_table, 0, sizeof(OS_impl_task_table));
+    /* Initialize Local Tables */
+    memset(OS_impl_task_table, 0, sizeof(OS_impl_task_table));
 
-   /* Clear the "limits" structs otherwise the compiler may warn
-    * about possibly being used uninitialized (false warning)
+    /* Clear the "limits" structs otherwise the compiler may warn
+     * about possibly being used uninitialized (false warning)
+     */
+    memset(&sched_fifo_limits, 0, sizeof(sched_fifo_limits));
+    memset(&sched_rr_limits, 0, sizeof(sched_rr_limits));
+
+    /*
+     * Create the key used to store OSAL task IDs
+     */
+    ret = pthread_key_create(&POSIX_GlobalVars.ThreadKey, NULL);
+    if (ret != 0)
+    {
+        OS_DEBUG("Error creating thread key: %s (%d)\n", strerror(ret), ret);
+        return OS_ERROR;
+    }
+
+    /*
+    ** Disable Signals to parent thread and therefore all
+    ** child threads create will block all signals
+    ** Note: Timers will not work in the application unless
+    **       threads are spawned in OS_Application_Startup.
     */
-   memset(&sched_fifo_limits, 0, sizeof(sched_fifo_limits));
-   memset(&sched_rr_limits, 0, sizeof(sched_rr_limits));
+    sigfillset(&POSIX_GlobalVars.MaximumSigMask);
 
-   /*
-    * Create the key used to store OSAL task IDs
+    /*
+     * Keep these signals unblocked so the process can be interrupted
+     */
+    sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGINT);  /* CTRL+C */
+    sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGABRT); /* Abort */
+
+    /*
+     * One should not typically block ANY of the synchronous error
+     * signals, i.e. SIGSEGV, SIGFPE, SIGILL, SIGBUS
+     *
+     * The kernel generates these signals in response to hardware events
+     * and they get routed to the _specific thread_ that was executing when
+     * the problem occurred.
+     *
+     * While it is technically possible to block these signals, the result is
+     * undefined, and it makes debugging _REALLY_ hard.  If the kernel ever does
+     * send one it means there really is a major problem, best to listen to it,
+     * and not ignore it.
+     */
+    sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGSEGV); /* Segfault */
+    sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGILL);  /* Illegal instruction */
+    sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGBUS);  /* Bus Error */
+    sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGFPE);  /* Floating Point Exception */
+
+    /*
+     * Set the mask and store the original (default) mask in the POSIX_GlobalVars.NormalSigMask
+     */
+    sigprocmask(SIG_SETMASK, &POSIX_GlobalVars.MaximumSigMask, &POSIX_GlobalVars.NormalSigMask);
+
+    /*
+     * Add all "RT" signals into the POSIX_GlobalVars.NormalSigMask
+     * This will be used for the signal mask of the main thread
+     * (This way it will end up as the default/original signal mask plus all RT sigs)
+     */
+    for (sig = SIGRTMIN; sig <= SIGRTMAX; ++sig)
+    {
+        sigaddset(&POSIX_GlobalVars.NormalSigMask, sig);
+    }
+
+    /*
+     * SIGHUP is used to wake up the main thread when necessary,
+     * so make sure it is NOT in the set.
+     */
+    sigdelset(&POSIX_GlobalVars.NormalSigMask, SIGHUP);
+
+    /*
+    ** Install noop as the signal handler for SIGUP.
     */
-   ret = pthread_key_create(&POSIX_GlobalVars.ThreadKey, NULL );
-   if ( ret != 0 )
-   {
-      OS_DEBUG("Error creating thread key: %s (%d)\n",strerror(ret),ret);
-      return OS_ERROR;
-   }
+    signal(SIGHUP, OS_NoopSigHandler);
 
-   /*
-   ** Disable Signals to parent thread and therefore all
-   ** child threads create will block all signals
-   ** Note: Timers will not work in the application unless
-   **       threads are spawned in OS_Application_Startup.
-   */
-   sigfillset(&POSIX_GlobalVars.MaximumSigMask);
-
-   /*
-    * Keep these signals unblocked so the process can be interrupted
+    /*
+    ** Raise the priority of the current (main) thread so that subsequent
+    ** application initialization will complete.  This had previously been
+    ** done by the BSP and but it is moved here.
+    **
+    ** This will only work if the user owning this process has permission
+    ** to create real time threads.  Otherwise, the default priority will
+    ** be retained.  Typically this is only the root user, but finer grained
+    ** permission controls are out there.  So if it works, great, but if
+    ** a permission denied error is generated, that is OK too - this allows
+    ** easily debugging code as a normal user.
     */
-   sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGINT);  /* CTRL+C */
-   sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGABRT); /* Abort */
+    ret = pthread_getschedparam(pthread_self(), &sched_policy, &sched_param);
+    if (ret == 0)
+    {
+        POSIX_GlobalVars.SelectedRtScheduler = sched_policy; /* Fallback/default */
+        do
+        {
+            sched_fifo_valid = OS_Posix_GetSchedulerParams(SCHED_FIFO, &sched_fifo_limits);
+            sched_rr_valid   = OS_Posix_GetSchedulerParams(SCHED_RR, &sched_rr_limits);
 
-   /*
-    * One should not typically block ANY of the synchronous error
-    * signals, i.e. SIGSEGV, SIGFPE, SIGILL, SIGBUS
-    *
-    * The kernel generates these signals in response to hardware events
-    * and they get routed to the _specific thread_ that was executing when
-    * the problem occurred.
-    *
-    * While it is technically possible to block these signals, the result is
-    * undefined, and it makes debugging _REALLY_ hard.  If the kernel ever does
-    * send one it means there really is a major problem, best to listen to it,
-    * and not ignore it.
-    */
-   sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGSEGV); /* Segfault */
-   sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGILL);  /* Illegal instruction */
-   sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGBUS);  /* Bus Error */
-   sigdelset(&POSIX_GlobalVars.MaximumSigMask, SIGFPE);  /* Floating Point Exception */
+            /*
+             * If both policies are valid, choose the best. In general, FIFO is preferred
+             * since it is simpler.
+             *
+             * But, RR is preferred if mapping several OSAL priority levels into the
+             * same local priority level. For instance, if 2 OSAL tasks are created at priorities
+             * "2" and "1", both may get mapped to local priority 98, and if using FIFO then the
+             * task at priority "2" could run indefinitely, never letting priority "1" execute.
+             *
+             * This violates the original intent, which would be to have priority "1" preempt
+             * priority "2" tasks.  RR is less bad since it at least guarantees both tasks some
+             * CPU time,
+             */
+            if (sched_fifo_valid && sched_rr_valid)
+            {
+                /*
+                 * If the spread from min->max is greater than what OSAL actually needs,
+                 * then FIFO is the preferred scheduler.  Must take into account one extra level
+                 * for the root task.
+                 */
+                if ((sched_fifo_limits.PriorityMax - sched_fifo_limits.PriorityMin) > OS_MAX_TASK_PRIORITY)
+                {
+                    sched_policy               = SCHED_FIFO;
+                    POSIX_GlobalVars.PriLimits = sched_fifo_limits;
+                }
+                else
+                {
+                    sched_policy               = SCHED_RR;
+                    POSIX_GlobalVars.PriLimits = sched_rr_limits;
+                }
+            }
+            else if (sched_fifo_valid)
+            {
+                /* only FIFO is available */
+                sched_policy               = SCHED_FIFO;
+                POSIX_GlobalVars.PriLimits = sched_fifo_limits;
+            }
+            else if (sched_rr_valid)
+            {
+                /* only RR is available */
+                sched_policy               = SCHED_RR;
+                POSIX_GlobalVars.PriLimits = sched_rr_limits;
+            }
+            else
+            {
+                /* Nothing is valid, use default */
+                break;
+            }
 
-   /*
-    * Set the mask and store the original (default) mask in the POSIX_GlobalVars.NormalSigMask
-    */
-   sigprocmask(SIG_SETMASK, &POSIX_GlobalVars.MaximumSigMask, &POSIX_GlobalVars.NormalSigMask);
+            /*
+             * This OSAL POSIX implementation will reserve the absolute highest priority
+             * for the root thread, which ultimately will just pend in sigsuspend() so
+             * it will not actually DO anything, except if sent a signal.  This way,
+             * that thread will still be able to preempt a high-priority user thread that
+             * has gone awry (i.e. using 100% cpu in FIFO mode).
+             */
+            sched_param.sched_priority = POSIX_GlobalVars.PriLimits.PriorityMax;
+            --POSIX_GlobalVars.PriLimits.PriorityMax;
 
-   /*
-    * Add all "RT" signals into the POSIX_GlobalVars.NormalSigMask
-    * This will be used for the signal mask of the main thread
-    * (This way it will end up as the default/original signal mask plus all RT sigs)
-    */
-   for (sig = SIGRTMIN; sig <= SIGRTMAX; ++sig)
-   {
-      sigaddset(&POSIX_GlobalVars.NormalSigMask, sig);
-   }
+            OS_DEBUG("Selected policy %d for RT tasks, root task = %d\n", sched_policy,
+                     (int)sched_param.sched_priority);
 
-   /*
-    * SIGHUP is used to wake up the main thread when necessary,
-    * so make sure it is NOT in the set.
-    */
-   sigdelset(&POSIX_GlobalVars.NormalSigMask, SIGHUP);
+            /*
+             * If the spread from min->max is greater than what OSAL actually needs,
+             * then truncate it at the number of OSAL priorities.  This will end up mapping 1:1.
+             * and leaving the highest priority numbers unused.
+             */
+            if ((POSIX_GlobalVars.PriLimits.PriorityMax - POSIX_GlobalVars.PriLimits.PriorityMin) >
+                OS_MAX_TASK_PRIORITY)
+            {
+                POSIX_GlobalVars.PriLimits.PriorityMax = POSIX_GlobalVars.PriLimits.PriorityMin + OS_MAX_TASK_PRIORITY;
+            }
 
-   /*
-   ** Install noop as the signal handler for SIGUP.
-   */
-   signal(SIGHUP, OS_NoopSigHandler);
+            ret = pthread_setschedparam(pthread_self(), sched_policy, &sched_param);
+            if (ret != 0)
+            {
+                OS_DEBUG("Could not setschedparam in main thread: %s (%d)\n", strerror(ret), ret);
+                break;
+            }
 
-   /*
-   ** Raise the priority of the current (main) thread so that subsequent
-   ** application initialization will complete.  This had previously been
-   ** done by the BSP and but it is moved here.
-   **
-   ** This will only work if the user owning this process has permission
-   ** to create real time threads.  Otherwise, the default priority will
-   ** be retained.  Typically this is only the root user, but finer grained
-   ** permission controls are out there.  So if it works, great, but if
-   ** a permission denied error is generated, that is OK too - this allows
-   ** easily debugging code as a normal user.
-   */
-   ret = pthread_getschedparam(pthread_self(), &sched_policy, &sched_param);
-   if (ret == 0)
-   {
-       POSIX_GlobalVars.SelectedRtScheduler = sched_policy; /* Fallback/default */
-       do
-       {
-           sched_fifo_valid = OS_Posix_GetSchedulerParams(SCHED_FIFO, &sched_fifo_limits);
-           sched_rr_valid = OS_Posix_GetSchedulerParams(SCHED_RR, &sched_rr_limits);
-
-           /*
-            * If both policies are valid, choose the best. In general, FIFO is preferred
-            * since it is simpler.
-            *
-            * But, RR is preferred if mapping several OSAL priority levels into the
-            * same local priority level. For instance, if 2 OSAL tasks are created at priorities
-            * "2" and "1", both may get mapped to local priority 98, and if using FIFO then the
-            * task at priority "2" could run indefinitely, never letting priority "1" execute.
-            *
-            * This violates the original intent, which would be to have priority "1" preempt
-            * priority "2" tasks.  RR is less bad since it at least guarantees both tasks some
-            * CPU time,
-            */
-           if (sched_fifo_valid && sched_rr_valid)
-           {
-               /*
-                * If the spread from min->max is greater than what OSAL actually needs,
-                * then FIFO is the preferred scheduler.  Must take into account one extra level
-                * for the root task.
-                */
-               if ((sched_fifo_limits.PriorityMax - sched_fifo_limits.PriorityMin) > OS_MAX_TASK_PRIORITY)
-               {
-                   sched_policy = SCHED_FIFO;
-                   POSIX_GlobalVars.PriLimits = sched_fifo_limits;
-               }
-               else
-               {
-                   sched_policy = SCHED_RR;
-                   POSIX_GlobalVars.PriLimits = sched_rr_limits;
-               }
-
-           }
-           else if (sched_fifo_valid)
-           {
-               /* only FIFO is available */
-               sched_policy = SCHED_FIFO;
-               POSIX_GlobalVars.PriLimits = sched_fifo_limits;
-           }
-           else if (sched_rr_valid)
-           {
-               /* only RR is available */
-               sched_policy = SCHED_RR;
-               POSIX_GlobalVars.PriLimits = sched_rr_limits;
-           }
-           else
-           {
-               /* Nothing is valid, use default */
-               break;
-           }
-
-           /*
-            * This OSAL POSIX implementation will reserve the absolute highest priority
-            * for the root thread, which ultimately will just pend in sigsuspend() so
-            * it will not actually DO anything, except if sent a signal.  This way,
-            * that thread will still be able to preempt a high-priority user thread that
-            * has gone awry (i.e. using 100% cpu in FIFO mode).
-            */
-           sched_param.sched_priority = POSIX_GlobalVars.PriLimits.PriorityMax;
-           --POSIX_GlobalVars.PriLimits.PriorityMax;
-
-           OS_DEBUG("Selected policy %d for RT tasks, root task = %d\n", sched_policy, (int)sched_param.sched_priority);
-
-           /*
-            * If the spread from min->max is greater than what OSAL actually needs,
-            * then truncate it at the number of OSAL priorities.  This will end up mapping 1:1.
-            * and leaving the highest priority numbers unused.
-            */
-           if ((POSIX_GlobalVars.PriLimits.PriorityMax - POSIX_GlobalVars.PriLimits.PriorityMin) > OS_MAX_TASK_PRIORITY)
-           {
-               POSIX_GlobalVars.PriLimits.PriorityMax = POSIX_GlobalVars.PriLimits.PriorityMin + OS_MAX_TASK_PRIORITY;
-           }
-
-           ret = pthread_setschedparam(pthread_self(), sched_policy, &sched_param);
-           if (ret != 0)
-           {
-               OS_DEBUG("Could not setschedparam in main thread: %s (%d)\n",strerror(ret),ret);
-               break;
-           }
-
-           /*
-            * Set the boolean to indicate that "setschedparam" worked --
-            * This means that it is also expected to work for future calls.
-            */
-           POSIX_GlobalVars.SelectedRtScheduler = sched_policy;
-           POSIX_GlobalVars.EnableTaskPriorities = true;
-       }
-       while (0);
-   }
-   else
-   {
-      OS_DEBUG("Could not getschedparam in main thread: %s (%d)\n",strerror(ret),ret);
-   }
+            /*
+             * Set the boolean to indicate that "setschedparam" worked --
+             * This means that it is also expected to work for future calls.
+             */
+            POSIX_GlobalVars.SelectedRtScheduler  = sched_policy;
+            POSIX_GlobalVars.EnableTaskPriorities = true;
+        } while (0);
+    }
+    else
+    {
+        OS_DEBUG("Could not getschedparam in main thread: %s (%d)\n", strerror(ret), ret);
+    }
 
 #if !defined(OSAL_CONFIG_DEBUG_PERMISSIVE_MODE)
-   /*
-    * In strict (non-permissive) mode, if the task priority setting did not work, fail with an error.
-    * This would be used on a real target where it needs to be ensured that priorities are active
-    * and the "silent fallback" of debug mode operation is not desired.
-    */
-   if (!POSIX_GlobalVars.EnableTaskPriorities)
-   {
-      return OS_ERROR;
-   }
+    /*
+     * In strict (non-permissive) mode, if the task priority setting did not work, fail with an error.
+     * This would be used on a real target where it needs to be ensured that priorities are active
+     * and the "silent fallback" of debug mode operation is not desired.
+     */
+    if (!POSIX_GlobalVars.EnableTaskPriorities)
+    {
+        return OS_ERROR;
+    }
 #endif
 
-   POSIX_GlobalVars.PageSize = sysconf(_SC_PAGESIZE);
+    POSIX_GlobalVars.PageSize = sysconf(_SC_PAGESIZE);
 
-   return OS_SUCCESS;
+    return OS_SUCCESS;
 } /* end OS_Posix_TaskAPI_Impl_Init */
-
 
 /*----------------------------------------------------------------
  *
@@ -436,12 +429,12 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t stacksz, PthreadFuncPtr_t entry, void *entry_arg)
+int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t stacksz, PthreadFuncPtr_t entry,
+                                       void *entry_arg)
 {
     int                return_code = 0;
     pthread_attr_t     custom_attr;
     struct sched_param priority_holder;
-
 
     /*
      ** Initialize the pthread_attr structure.
@@ -449,10 +442,10 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t 
      */
     memset(&custom_attr, 0, sizeof(custom_attr));
     return_code = pthread_attr_init(&custom_attr);
-    if(return_code != 0)
+    if (return_code != 0)
     {
-       OS_DEBUG("pthread_attr_init error in OS_TaskCreate: %s\n",strerror(return_code));
-       return(OS_ERROR);
+        OS_DEBUG("pthread_attr_init error in OS_TaskCreate: %s\n", strerror(return_code));
+        return (OS_ERROR);
     }
 
     /*
@@ -480,8 +473,8 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t 
     return_code = pthread_attr_setstacksize(&custom_attr, stacksz);
     if (return_code != 0)
     {
-        OS_DEBUG("pthread_attr_setstacksize error in OS_TaskCreate: %s\n",strerror(return_code));
-        return(OS_ERROR);
+        OS_DEBUG("pthread_attr_setstacksize error in OS_TaskCreate: %s\n", strerror(return_code));
+        return (OS_ERROR);
     }
 
     /*
@@ -495,41 +488,40 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t 
         ** Set the scheduling inherit attribute to EXPLICIT
         */
         return_code = pthread_attr_setinheritsched(&custom_attr, PTHREAD_EXPLICIT_SCHED);
-        if ( return_code != 0 )
+        if (return_code != 0)
         {
-            OS_DEBUG("pthread_attr_setinheritsched error in OS_TaskCreate, errno = %s\n",strerror(return_code));
-            return(OS_ERROR);
+            OS_DEBUG("pthread_attr_setinheritsched error in OS_TaskCreate, errno = %s\n", strerror(return_code));
+            return (OS_ERROR);
         }
 
+        /*
+        ** Set the scheduling policy
+        ** The best policy is determined during initialization
+        */
+        return_code = pthread_attr_setschedpolicy(&custom_attr, POSIX_GlobalVars.SelectedRtScheduler);
+        if (return_code != 0)
+        {
+            OS_DEBUG("pthread_attr_setschedpolity error in OS_TaskCreate: %s\n", strerror(return_code));
+            return (OS_ERROR);
+        }
 
-       /*
-       ** Set the scheduling policy
-       ** The best policy is determined during initialization
-       */
-       return_code = pthread_attr_setschedpolicy(&custom_attr, POSIX_GlobalVars.SelectedRtScheduler);
-       if (return_code != 0)
-       {
-          OS_DEBUG("pthread_attr_setschedpolity error in OS_TaskCreate: %s\n",strerror(return_code));
-          return(OS_ERROR);
-       }
+        /*
+        ** Set priority
+        */
+        return_code = pthread_attr_getschedparam(&custom_attr, &priority_holder);
+        if (return_code != 0)
+        {
+            OS_DEBUG("pthread_attr_getschedparam error in OS_TaskCreate: %s\n", strerror(return_code));
+            return (OS_ERROR);
+        }
 
-       /*
-       ** Set priority
-       */
-       return_code = pthread_attr_getschedparam(&custom_attr, &priority_holder);
-       if (return_code != 0)
-       {
-          OS_DEBUG("pthread_attr_getschedparam error in OS_TaskCreate: %s\n",strerror(return_code));
-          return(OS_ERROR);
-       }
-
-       priority_holder.sched_priority = OS_PriorityRemap(priority);
-       return_code = pthread_attr_setschedparam(&custom_attr,&priority_holder);
-       if(return_code != 0)
-       {
-          OS_DEBUG("pthread_attr_setschedparam error in OS_TaskCreate: %s\n",strerror(return_code));
-          return(OS_ERROR);
-       }
+        priority_holder.sched_priority = OS_PriorityRemap(priority);
+        return_code                    = pthread_attr_setschedparam(&custom_attr, &priority_holder);
+        if (return_code != 0)
+        {
+            OS_DEBUG("pthread_attr_setschedparam error in OS_TaskCreate: %s\n", strerror(return_code));
+            return (OS_ERROR);
+        }
 
     } /* End if user is root */
 
@@ -539,8 +531,8 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t 
     return_code = pthread_create(pthr, &custom_attr, entry, entry_arg);
     if (return_code != 0)
     {
-       OS_DEBUG("pthread_create error in OS_TaskCreate: %s\n",strerror(return_code));
-       return(OS_ERROR);
+        OS_DEBUG("pthread_create error in OS_TaskCreate: %s\n", strerror(return_code));
+        return (OS_ERROR);
     }
 
     /*
@@ -552,18 +544,17 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t 
     return_code = pthread_detach(*pthr);
     if (return_code != 0)
     {
-       OS_DEBUG("pthread_detach error in OS_TaskCreate: %s\n",strerror(return_code));
+        OS_DEBUG("pthread_detach error in OS_TaskCreate: %s\n", strerror(return_code));
     }
 
     return_code = pthread_attr_destroy(&custom_attr);
     if (return_code != 0)
     {
-       OS_DEBUG("pthread_attr_destroy error in OS_TaskCreate: %s\n",strerror(return_code));
+        OS_DEBUG("pthread_attr_destroy error in OS_TaskCreate: %s\n", strerror(return_code));
     }
 
     return OS_SUCCESS;
 } /* end OS_Posix_InternalTaskCreate_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -573,24 +564,20 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t 
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
+int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
 {
     OS_U32ValueWrapper_t arg;
-    int32 return_code;
+    int32                return_code;
 
     arg.opaque_arg = NULL;
-    arg.id = OS_global_task_table[task_id].active_id;
+    arg.id         = OS_global_task_table[task_id].active_id;
 
-    return_code = OS_Posix_InternalTaskCreate_Impl(
-           &OS_impl_task_table[task_id].id,
-           OS_task_table[task_id].priority,
-           OS_task_table[task_id].stack_size,
-           OS_PthreadTaskEntry,
-           arg.opaque_arg);
+    return_code =
+        OS_Posix_InternalTaskCreate_Impl(&OS_impl_task_table[task_id].id, OS_task_table[task_id].priority,
+                                         OS_task_table[task_id].stack_size, OS_PthreadTaskEntry, arg.opaque_arg);
 
-   return return_code;
+    return return_code;
 } /* end OS_TaskCreate_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -602,14 +589,13 @@ int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
  *-----------------------------------------------------------------*/
 int32 OS_TaskMatch_Impl(uint32 task_id)
 {
-   if (pthread_equal(pthread_self(), OS_impl_task_table[task_id].id) == 0)
-   {
-      return OS_ERROR;
-   }
+    if (pthread_equal(pthread_self(), OS_impl_task_table[task_id].id) == 0)
+    {
+        return OS_ERROR;
+    }
 
-   return OS_SUCCESS;
+    return OS_SUCCESS;
 } /* end OS_TaskMatch_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -619,7 +605,7 @@ int32 OS_TaskMatch_Impl(uint32 task_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskDelete_Impl (uint32 task_id)
+int32 OS_TaskDelete_Impl(uint32 task_id)
 {
     /*
     ** Try to delete the task
@@ -631,7 +617,6 @@ int32 OS_TaskDelete_Impl (uint32 task_id)
     return OS_SUCCESS;
 
 } /* end OS_TaskDelete_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -647,7 +632,6 @@ void OS_TaskExit_Impl()
 
 } /* end OS_TaskExit_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_TaskDelay_Impl
@@ -658,35 +642,33 @@ void OS_TaskExit_Impl()
  *-----------------------------------------------------------------*/
 int32 OS_TaskDelay_Impl(uint32 millisecond)
 {
-   struct timespec sleep_end;
-   int status;
+    struct timespec sleep_end;
+    int             status;
 
-   clock_gettime(CLOCK_MONOTONIC, &sleep_end);
-   sleep_end.tv_sec += millisecond / 1000;
-   sleep_end.tv_nsec += 1000000 * (millisecond % 1000);
+    clock_gettime(CLOCK_MONOTONIC, &sleep_end);
+    sleep_end.tv_sec += millisecond / 1000;
+    sleep_end.tv_nsec += 1000000 * (millisecond % 1000);
 
-   if (sleep_end.tv_nsec >= 1000000000)
-   {
-      sleep_end.tv_nsec -= 1000000000;
-      ++sleep_end.tv_sec;
-   }
+    if (sleep_end.tv_nsec >= 1000000000)
+    {
+        sleep_end.tv_nsec -= 1000000000;
+        ++sleep_end.tv_sec;
+    }
 
-   do
-   {
-      status = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &sleep_end, NULL);
-   }
-   while (status == EINTR);
+    do
+    {
+        status = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &sleep_end, NULL);
+    } while (status == EINTR);
 
-   if (status != 0)
-   {
-     return OS_ERROR;
-   }
-   else
-   {
-     return OS_SUCCESS;
-   }
+    if (status != 0)
+    {
+        return OS_ERROR;
+    }
+    else
+    {
+        return OS_SUCCESS;
+    }
 } /* end OS_TaskDelay_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -696,31 +678,30 @@ int32 OS_TaskDelay_Impl(uint32 millisecond)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskSetPriority_Impl (uint32 task_id, uint32 new_priority)
+int32 OS_TaskSetPriority_Impl(uint32 task_id, uint32 new_priority)
 {
-    int                os_priority;
-    int                ret;
+    int os_priority;
+    int ret;
 
     if (POSIX_GlobalVars.EnableTaskPriorities)
     {
-       /* Change OSAL priority into a priority that will work for this OS */
-       os_priority = OS_PriorityRemap(new_priority);
+        /* Change OSAL priority into a priority that will work for this OS */
+        os_priority = OS_PriorityRemap(new_priority);
 
-       /*
-       ** Set priority
-       */
-       ret = pthread_setschedprio(OS_impl_task_table[task_id].id, os_priority);
-       if( ret != 0 )
-       {
-          OS_DEBUG("pthread_setschedprio: Task ID = %u, prio = %d, err = %s\n",
-                    (unsigned int)task_id,os_priority,strerror(ret));
-          return(OS_ERROR);
-       }
+        /*
+        ** Set priority
+        */
+        ret = pthread_setschedprio(OS_impl_task_table[task_id].id, os_priority);
+        if (ret != 0)
+        {
+            OS_DEBUG("pthread_setschedprio: Task ID = %u, prio = %d, err = %s\n", (unsigned int)task_id, os_priority,
+                     strerror(ret));
+            return (OS_ERROR);
+        }
     }
 
-   return OS_SUCCESS;
+    return OS_SUCCESS;
 } /* end OS_TaskSetPriority_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -732,26 +713,25 @@ int32 OS_TaskSetPriority_Impl (uint32 task_id, uint32 new_priority)
  *-----------------------------------------------------------------*/
 int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
 {
-   int32 return_code;
-   OS_U32ValueWrapper_t arg;
+    int32                return_code;
+    OS_U32ValueWrapper_t arg;
 
-   arg.opaque_arg = 0;
-   arg.id = global_task_id;
+    arg.opaque_arg = 0;
+    arg.id         = global_task_id;
 
-   return_code = pthread_setspecific(POSIX_GlobalVars.ThreadKey, arg.opaque_arg);
-   if (return_code == 0)
-   {
-      return_code = OS_SUCCESS;
-   }
-   else
-   {
-      OS_DEBUG("OS_TaskRegister_Impl failed during pthread_setspecific() error=%s\n",strerror(return_code));
-      return_code = OS_ERROR;
-   }
+    return_code = pthread_setspecific(POSIX_GlobalVars.ThreadKey, arg.opaque_arg);
+    if (return_code == 0)
+    {
+        return_code = OS_SUCCESS;
+    }
+    else
+    {
+        OS_DEBUG("OS_TaskRegister_Impl failed during pthread_setspecific() error=%s\n", strerror(return_code));
+        return_code = OS_ERROR;
+    }
 
-   return return_code;
+    return return_code;
 } /* end OS_TaskRegister_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -761,15 +741,14 @@ int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-osal_id_t OS_TaskGetId_Impl (void)
+osal_id_t OS_TaskGetId_Impl(void)
 {
-   OS_U32ValueWrapper_t self_record;
+    OS_U32ValueWrapper_t self_record;
 
-   self_record.opaque_arg = pthread_getspecific(POSIX_GlobalVars.ThreadKey);
+    self_record.opaque_arg = pthread_getspecific(POSIX_GlobalVars.ThreadKey);
 
-   return(self_record.id);
+    return (self_record.id);
 } /* end OS_TaskGetId_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -779,11 +758,10 @@ osal_id_t OS_TaskGetId_Impl (void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskGetInfo_Impl (uint32 task_id, OS_task_prop_t *task_prop)
+int32 OS_TaskGetInfo_Impl(uint32 task_id, OS_task_prop_t *task_prop)
 {
-   return OS_SUCCESS;
+    return OS_SUCCESS;
 } /* end OS_TaskGetInfo_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -816,6 +794,3 @@ int32 OS_TaskValidateSystemData_Impl(const void *sysdata, uint32 sysdata_size)
     }
     return OS_SUCCESS;
 }
-
-
-

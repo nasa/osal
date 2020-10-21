@@ -52,5 +52,4 @@ void Test_DummyFunc(void);
 int32 Osapi_Call_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName);
 int32 Osapi_Call_ModuleLoad_Static(const char *ModuleName);
 
-#endif  /* INCLUDE_UT_ADAPTOR_MODULE_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_MODULE_H_ */

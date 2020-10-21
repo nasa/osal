@@ -48,17 +48,18 @@ enum
  * Function Definitions
  */
 
-void UtTest_AddCommon(void (*Test)(void), void (*Setup)(void), void (*Teardown)(void), const char *TestName, uint32 EntryType)
+void UtTest_AddCommon(void (*Test)(void), void (*Setup)(void), void (*Teardown)(void), const char *TestName,
+                      uint32 EntryType)
 {
-    UtTestDataBaseEntry_t   UtTestDataBaseEntry;
+    UtTestDataBaseEntry_t UtTestDataBaseEntry;
 
     memset(&UtTestDataBaseEntry, 0, sizeof(UtTestDataBaseEntry));
-    UtTestDataBaseEntry.Test = Test;
-    UtTestDataBaseEntry.Setup = Setup;
+    UtTestDataBaseEntry.Test     = Test;
+    UtTestDataBaseEntry.Setup    = Setup;
     UtTestDataBaseEntry.Teardown = Teardown;
     if (TestName != NULL)
     {
-        strncpy(UtTestDataBaseEntry.TestName, TestName, sizeof(UtTestDataBaseEntry.TestName)-1);
+        strncpy(UtTestDataBaseEntry.TestName, TestName, sizeof(UtTestDataBaseEntry.TestName) - 1);
     }
 
     UtList_Add(UtAssert_Global.DataBasePtr, &UtTestDataBaseEntry, sizeof(UtTestDataBaseEntry_t), EntryType);
@@ -79,13 +80,12 @@ void UtTest_AddTeardown(void (*Teardown)(void), const char *SequenceName)
     UtTest_AddCommon(NULL, NULL, Teardown, SequenceName, UTASSERT_GROUP_TEARDOWN);
 }
 
-
 void UtTest_Run(void)
 {
-    UtListNode_t            *UtListMain;
-    UtListNode_t            *UtListNode;
-    UtTestDataBaseEntry_t   *UtTestDataBaseEntry;
-    
+    UtListNode_t *         UtListMain;
+    UtListNode_t *         UtListNode;
+    UtTestDataBaseEntry_t *UtTestDataBaseEntry;
+
     /*
      * The overall test sequence goes SETUP->TEST->TEARDOWN
      *
@@ -94,31 +94,39 @@ void UtTest_Run(void)
      * This could also (theoretically) randomize the order of the "TEST" group
      * while assembling this list, if there was a portable source of entropy.
      */
-    UtListMain = UtList_GetHead(UtAssert_Global.DataBasePtr,UTASSERT_GROUP_DEFAULT);
-    UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr,UTASSERT_GROUP_SETUP));
-    UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr,UTASSERT_GROUP_TEST));
-    UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr,UTASSERT_GROUP_TEARDOWN));
-
+    UtListMain = UtList_GetHead(UtAssert_Global.DataBasePtr, UTASSERT_GROUP_DEFAULT);
+    UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr, UTASSERT_GROUP_SETUP));
+    UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr, UTASSERT_GROUP_TEST));
+    UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr, UTASSERT_GROUP_TEARDOWN));
 
     /*
      * Run through the merged list in order
      */
-    for (UtListNode = UtList_GetNext(UtListMain);
-            !UtList_IsEnd(UtListMain, UtListNode);
-            UtListNode = UtList_GetNext(UtListNode))
+    for (UtListNode = UtList_GetNext(UtListMain); !UtList_IsEnd(UtListMain, UtListNode);
+         UtListNode = UtList_GetNext(UtListNode))
     {
         UtTestDataBaseEntry = UtList_GetObject(UtListNode);
-        
+
         if (UtTestDataBaseEntry != NULL)
         {
             UtAssert_BeginTest(UtTestDataBaseEntry->TestName);
 
             UtAssert_SetContext(UTASSERT_CASETYPE_TSF);
-            if (UtTestDataBaseEntry->Setup)    { UtTestDataBaseEntry->Setup(); }
+            if (UtTestDataBaseEntry->Setup)
+            {
+                UtTestDataBaseEntry->Setup();
+            }
             UtAssert_SetContext(UTASSERT_CASETYPE_FAILURE);
-            if (UtTestDataBaseEntry->Test)     { UtTestDataBaseEntry->Test(); UtAssert_Global.ExecutedCount++; }
+            if (UtTestDataBaseEntry->Test)
+            {
+                UtTestDataBaseEntry->Test();
+                UtAssert_Global.ExecutedCount++;
+            }
             UtAssert_SetContext(UTASSERT_CASETYPE_TTF);
-            if (UtTestDataBaseEntry->Teardown) { UtTestDataBaseEntry->Teardown(); }
+            if (UtTestDataBaseEntry->Teardown)
+            {
+                UtTestDataBaseEntry->Teardown();
+            }
 
             UtAssert_EndTest();
         }
@@ -137,5 +145,3 @@ void UtTest_EarlyInit(void)
     memset(&UtAssert_Global, 0, sizeof(UtAssert_Global));
     UtAssert_Global.DataBasePtr = UtList_Create(UTASSERT_GROUP_MAX);
 }
-
-

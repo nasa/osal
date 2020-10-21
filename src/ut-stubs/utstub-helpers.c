@@ -34,37 +34,30 @@
 
 #include "utstub-helpers.h"
 
-
-const uint32 UT_MAXOBJS[UT_OBJTYPE_MAX] =
-{
-        [UT_OBJTYPE_TASK] = OS_MAX_TASKS,
-        [UT_OBJTYPE_QUEUE] = OS_MAX_QUEUES,
-        [UT_OBJTYPE_COUNTSEM] = OS_MAX_COUNT_SEMAPHORES,
-        [UT_OBJTYPE_BINSEM] = OS_MAX_BIN_SEMAPHORES,
-        [UT_OBJTYPE_MUTEX] = OS_MAX_MUTEXES,
-        [UT_OBJTYPE_TIMECB] = OS_MAX_TIMERS,
-        [UT_OBJTYPE_MODULE] = OS_MAX_MODULES,
-        [UT_OBJTYPE_FILESTREAM] = OS_MAX_NUM_OPEN_FILES,
-        [UT_OBJTYPE_TIMEBASE] = OS_MAX_TIMEBASES,
-        [UT_OBJTYPE_FILESYS] = OS_MAX_FILE_SYSTEMS,
-        [UT_OBJTYPE_DIR] = OS_MAX_NUM_OPEN_DIRS
-};
-
+const uint32 UT_MAXOBJS[UT_OBJTYPE_MAX] = {[UT_OBJTYPE_TASK]       = OS_MAX_TASKS,
+                                           [UT_OBJTYPE_QUEUE]      = OS_MAX_QUEUES,
+                                           [UT_OBJTYPE_COUNTSEM]   = OS_MAX_COUNT_SEMAPHORES,
+                                           [UT_OBJTYPE_BINSEM]     = OS_MAX_BIN_SEMAPHORES,
+                                           [UT_OBJTYPE_MUTEX]      = OS_MAX_MUTEXES,
+                                           [UT_OBJTYPE_TIMECB]     = OS_MAX_TIMERS,
+                                           [UT_OBJTYPE_MODULE]     = OS_MAX_MODULES,
+                                           [UT_OBJTYPE_FILESTREAM] = OS_MAX_NUM_OPEN_FILES,
+                                           [UT_OBJTYPE_TIMEBASE]   = OS_MAX_TIMEBASES,
+                                           [UT_OBJTYPE_FILESYS]    = OS_MAX_FILE_SYSTEMS,
+                                           [UT_OBJTYPE_DIR]        = OS_MAX_NUM_OPEN_DIRS};
 
 static UT_ObjTypeState_t UT_ObjState[UT_OBJTYPE_MAX];
 
 /**
  * Initialization function
  */
-void UT_ClearAllStubObjects (void)
+void UT_ClearAllStubObjects(void)
 {
-   /*
-    * Reset the fake ID numbers for create/delete operations
-    */
-   memset(UT_ObjState, 0, sizeof(UT_ObjState));
+    /*
+     * Reset the fake ID numbers for create/delete operations
+     */
+    memset(UT_ObjState, 0, sizeof(UT_ObjState));
 }
-
-
 
 /*
  * Helper function - "allocate" a fake object ID of the given type
@@ -72,9 +65,9 @@ void UT_ClearAllStubObjects (void)
 osal_id_t UT_AllocStubObjId(UT_ObjType_t ObjType)
 {
     UT_ObjTypeState_t *StatePtr;
-    uint8 ObjMask;
-    uint32 indx;
-    osal_id_t Result;
+    uint8              ObjMask;
+    uint32             indx;
+    osal_id_t          Result;
 
     UT_Stub_CallOnce(UT_ClearAllStubObjects);
 
@@ -123,10 +116,10 @@ osal_id_t UT_AllocStubObjId(UT_ObjType_t ObjType)
 void UT_DeleteStubObjId(UT_ObjType_t ObjType, osal_id_t ObjId)
 {
     UT_ObjTypeState_t *StatePtr;
-    uint8 ObjMask;
-    UT_ObjType_t checktype;
-    uint32 checkidx;
-    bool ObjWasValid;
+    uint8              ObjMask;
+    UT_ObjType_t       checktype;
+    uint32             checkidx;
+    bool               ObjWasValid;
 
     UT_Stub_CallOnce(UT_ClearAllStubObjects);
 
@@ -151,7 +144,7 @@ void UT_DeleteStubObjId(UT_ObjType_t ObjType, osal_id_t ObjId)
 
     /* Clear out any bit it could have been */
     ObjWasValid = false;
-    ObjMask = 1 << (checkidx & 0x07);
+    ObjMask     = 1 << (checkidx & 0x07);
     if ((StatePtr->ValidBits[checkidx >> 3] & ObjMask) != 0)
     {
         ObjWasValid = true;
@@ -186,11 +179,9 @@ void UT_ObjIdCompose(uint32 indx, UT_ObjType_t objtype, osal_id_t *id)
 void UT_ObjIdDecompose(osal_id_t id, uint32 *indx, UT_ObjType_t *objtype)
 {
     unsigned long idv = OS_ObjectIdToInteger(id);
-    *indx = idv & 0xFFFFUL;
-    *objtype = (idv >> 16) ^ 0x4000UL;
+    *indx             = idv & 0xFFFFUL;
+    *objtype          = (idv >> 16) ^ 0x4000UL;
 }
-
-
 
 /*
 ** Report and close any sockets found open
@@ -203,17 +194,14 @@ void UT_ObjIdDecompose(osal_id_t id, uint32 *indx, UT_ObjType_t *objtype)
 void UT_CheckForOpenSockets(void)
 {
     UT_ObjTypeState_t *StatePtr;
-    uint32 i;
+    uint32             i;
 
     StatePtr = &UT_ObjState[UT_OBJTYPE_QUEUE];
-    for (i=0; i <= StatePtr->LastIssueNumber; ++i)
+    for (i = 0; i <= StatePtr->LastIssueNumber; ++i)
     {
         if ((StatePtr->ValidBits[i >> 3] & (1 << (i & 0x07))) != 0)
         {
             UtAssert_Failed("UT_Queue %d left open.\n", (int)i);
         }
     }
-
 }
-
-

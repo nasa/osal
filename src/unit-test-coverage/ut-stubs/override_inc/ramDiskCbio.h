@@ -29,5 +29,4 @@
 /* mappings for declarations in ramDiskCbio.h */
 /* ----------------------------------------- */
 
-
 #endif /* _OSAL_OVERRIDE_RAMDISKCBIO_H_ */

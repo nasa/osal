@@ -37,8 +37,6 @@
 /* prototypes normally declared in errnoLib.h */
 /* -----------------------------------------  */
 
-extern int OCS_errnoGet (void);
-
+extern int OCS_errnoGet(void);
 
 #endif /* _OSAL_STUB_ERRNOLIB_H_ */
-

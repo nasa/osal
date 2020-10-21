@@ -29,7 +29,6 @@
 
 #include <OCS_memPartLib.h>
 
-
 void Test_OS_HeapGetInfo_Impl(void)
 {
     /*
@@ -44,7 +43,6 @@ void Test_OS_HeapGetInfo_Impl(void)
     UT_SetForceFail(UT_KEY(OCS_memPartInfoGet), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_HeapGetInfo_Impl(&heap_prop), OS_ERROR);
 }
-
 
 /* ------------------- End of test cases --------------------------------------*/
 
@@ -64,10 +62,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -78,5 +73,3 @@ void UtTest_Setup(void)
 {
     ADD_TEST(OS_HeapGetInfo_Impl);
 }
-
-

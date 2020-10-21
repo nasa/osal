@@ -34,7 +34,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-
 /*
  * These two constants (EUID and EGID) are local cache of the
  * euid and egid of the user running the OSAL application.  They
@@ -47,8 +46,6 @@
 extern uid_t OS_IMPL_SELF_EUID;
 extern gid_t OS_IMPL_SELF_EGID;
 
-
 extern const int OS_IMPL_REGULAR_FILE_FLAGS;
 
-#endif  /* INCLUDE_OS_IMPL_FILES_H_ */
-
+#endif /* INCLUDE_OS_IMPL_FILES_H_ */

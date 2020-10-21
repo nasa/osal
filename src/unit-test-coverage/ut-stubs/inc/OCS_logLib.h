@@ -37,7 +37,4 @@
 /* prototypes normally declared in logLib.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_LOGLIB_H_ */
-

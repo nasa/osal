@@ -36,7 +36,4 @@
 /* prototypes normally declared in netinet/tcp.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_NETINET_TCP_H_ */
-

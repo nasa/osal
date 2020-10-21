@@ -25,7 +25,7 @@
 
 #include <OCS_fcntl.h>
 
-int OCS_fcntl (int fd, int cmd, ...)
+int OCS_fcntl(int fd, int cmd, ...)
 {
     int32 Status;
 
@@ -34,7 +34,7 @@ int OCS_fcntl (int fd, int cmd, ...)
     return Status;
 }
 
-int OCS_open (const char * file, int oflag, ...)
+int OCS_open(const char *file, int oflag, ...)
 {
     int32 Status;
 
@@ -42,5 +42,3 @@ int OCS_open (const char * file, int oflag, ...)
 
     return Status;
 }
-
-

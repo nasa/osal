@@ -41,12 +41,9 @@
 /*
  * Use the O_NONBLOCK flag on sockets
  */
-#define  OS_IMPL_SOCKET_FLAGS       O_NONBLOCK
-
+#define OS_IMPL_SOCKET_FLAGS O_NONBLOCK
 
 /* The "in.h" header file supplied in VxWorks 6.9 is missing the "in_port_t" typedef */
 typedef u_short in_port_t;
 
-
-#endif  /* INCLUDE_OS_IMPL_SOCKETS_H_ */
-
+#endif /* INCLUDE_OS_IMPL_SOCKETS_H_ */

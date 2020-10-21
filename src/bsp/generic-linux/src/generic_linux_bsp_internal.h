@@ -36,7 +36,7 @@
 */
 typedef struct
 {
-    bool    EnableTermControl;    /**< Will be set "true" when invoked from a TTY device, false otherwise */
+    bool EnableTermControl; /**< Will be set "true" when invoked from a TTY device, false otherwise */
 } OS_BSP_GenericLinuxGlobalData_t;
 
 /*

@@ -45,10 +45,10 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_HeapGetInfo_Impl       (OS_heap_prop_t *heap_prop)
+int32 OS_HeapGetInfo_Impl(OS_heap_prop_t *heap_prop)
 {
     MEM_PART_STATS stats;
-    STATUS status;
+    STATUS         status;
 
     status = memPartInfoGet(memSysPartId, &stats);
 
@@ -63,4 +63,3 @@ int32 OS_HeapGetInfo_Impl       (OS_heap_prop_t *heap_prop)
 
     return (OS_SUCCESS);
 } /* end OS_HeapGetInfo_Impl */
-

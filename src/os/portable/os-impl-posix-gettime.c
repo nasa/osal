@@ -51,13 +51,9 @@
 #include "os-impl-gettime.h"
 #include "os-shared-clock.h"
 
-
-
-
 /****************************************************************************************
                                 FUNCTIONS
  ***************************************************************************************/
-
 
 /*----------------------------------------------------------------
  *
@@ -77,19 +73,18 @@ int32 OS_GetLocalTime_Impl(OS_time_t *time_struct)
 
     if (Status == 0)
     {
-        time_struct -> seconds = time.tv_sec;
-        time_struct -> microsecs = time.tv_nsec / 1000;
-        ReturnCode = OS_SUCCESS;
+        time_struct->seconds   = time.tv_sec;
+        time_struct->microsecs = time.tv_nsec / 1000;
+        ReturnCode             = OS_SUCCESS;
     }
     else
     {
-        OS_DEBUG("Error calling clock_gettime: %s\n",strerror(errno));
+        OS_DEBUG("Error calling clock_gettime: %s\n", strerror(errno));
         ReturnCode = OS_ERROR;
     }
 
     return ReturnCode;
 } /* end OS_GetLocalTime_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -105,8 +100,8 @@ int32 OS_SetLocalTime_Impl(const OS_time_t *time_struct)
     int32           ReturnCode;
     struct timespec time;
 
-    time.tv_sec = time_struct -> seconds;
-    time.tv_nsec = (time_struct -> microsecs * 1000);
+    time.tv_sec  = time_struct->seconds;
+    time.tv_nsec = (time_struct->microsecs * 1000);
 
     Status = clock_settime(OSAL_GETTIME_SOURCE_CLOCK, &time);
 

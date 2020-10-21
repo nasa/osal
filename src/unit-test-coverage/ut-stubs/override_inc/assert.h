@@ -28,6 +28,6 @@
 /* mappings for declarations in assert.h */
 /* ----------------------------------------- */
 
-#define assert    OCS_assert
+#define assert OCS_assert
 
 #endif /* _OSAL_OVERRIDE_ASSERT_H_ */

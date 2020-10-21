@@ -39,9 +39,6 @@
 #include <OCS_dosFsLib.h>
 #include <OCS_xbdBlkDev.h>
 
-
-
-
 void Test_OS_FileSysStartVolume_Impl(void)
 {
     /*
@@ -117,7 +114,6 @@ void Test_OS_FileSysFormatVolume_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileSysFormatVolume_Impl(0), OS_FS_ERR_DRIVE_NOT_CREATED);
 }
 
-
 void Test_OS_FileSysMountVolume_Impl(void)
 {
     /* Test Case For:
@@ -130,7 +126,6 @@ void Test_OS_FileSysMountVolume_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(0), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_open));
 }
-
 
 void Test_OS_FileSysUnmountVolume_Impl(void)
 {
@@ -156,10 +151,10 @@ void Test_OS_FileSysStatVolume_Impl(void)
      * int32 OS_FileSysStatVolume_Impl (uint32 filesys_id, OS_statvfs_t *result)
      */
     OS_statvfs_t stat;
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStatVolume_Impl(0,&stat), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStatVolume_Impl(0, &stat), OS_SUCCESS);
 
     UT_SetForceFail(UT_KEY(OCS_statvfs), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStatVolume_Impl(0,&stat), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStatVolume_Impl(0, &stat), OS_ERROR);
 }
 
 void Test_OS_FileSysCheckVolume_Impl(void)
@@ -168,15 +163,14 @@ void Test_OS_FileSysCheckVolume_Impl(void)
      * Test Case For:
      * int32 OS_FileSysCheckVolume_Impl (uint32 filesys_id, bool repair)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(0,true), OS_SUCCESS);
-
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(0, true), OS_SUCCESS);
 
     UT_SetForceFail(UT_KEY(OCS_open), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(0,false), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(0, false), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_open));
 
     UT_SetForceFail(UT_KEY(OCS_ioctl), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(0,false), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(0, false), OS_ERROR);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
@@ -202,10 +196,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -222,4 +213,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_FileSysMountVolume_Impl);
     ADD_TEST(OS_FileSysUnmountVolume_Impl);
 }
-

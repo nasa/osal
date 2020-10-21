@@ -42,8 +42,6 @@
 /* ----------------------------------------- */
 /* prototypes normally declared in hostLib.h */
 /* ----------------------------------------- */
-extern int   OCS_hostGetByName (char *name);
+extern int OCS_hostGetByName(char *name);
 
-
-#endif  /* INCLUDE_OCS_HOSTLIB_H_ */
-
+#endif /* INCLUDE_OCS_HOSTLIB_H_ */

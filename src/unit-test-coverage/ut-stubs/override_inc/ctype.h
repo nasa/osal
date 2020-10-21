@@ -28,6 +28,6 @@
 /* mappings for declarations in ctype.h */
 /* ----------------------------------------- */
 
-#define isgraph                  OCS_isgraph
+#define isgraph OCS_isgraph
 
 #endif /* _OSAL_OVERRIDE_CTYPE_H_ */

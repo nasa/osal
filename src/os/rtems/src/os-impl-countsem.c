@@ -46,7 +46,7 @@
                                      DEFINES
  ***************************************************************************************/
 
-#define MAX_SEM_VALUE               0x7FFFFFFF
+#define MAX_SEM_VALUE 0x7FFFFFFF
 
 /*
  * Define all of the RTEMS semaphore attributes
@@ -56,14 +56,12 @@
 
 #define OSAL_COUNT_SEM_ATTRIBS (RTEMS_PRIORITY)
 
-
 /****************************************************************************************
                                    GLOBAL DATA
  ***************************************************************************************/
 
 /*  tables for the properties of objects */
-OS_impl_countsem_internal_record_t    OS_impl_count_sem_table     [OS_MAX_COUNT_SEMAPHORES];
-
+OS_impl_countsem_internal_record_t OS_impl_count_sem_table[OS_MAX_COUNT_SEMAPHORES];
 
 /*----------------------------------------------------------------
  *
@@ -78,8 +76,6 @@ int32 OS_Rtems_CountSemAPI_Impl_Init(void)
     return (OS_SUCCESS);
 } /* end OS_Rtems_CountSemAPI_Impl_Init */
 
-
-
 /*----------------------------------------------------------------
  *
  * Function: OS_CountSemCreate_Impl
@@ -88,7 +84,7 @@ int32 OS_Rtems_CountSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 options)
+int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options)
 {
     rtems_status_code status;
     rtems_name        r_name;
@@ -96,7 +92,7 @@ int32 OS_CountSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 op
     /*
     ** Verify that the semaphore maximum value is not too high
     */
-    if ( sem_initial_value > MAX_SEM_VALUE )
+    if (sem_initial_value > MAX_SEM_VALUE)
     {
         return OS_INVALID_SEM_VALUE;
     }
@@ -107,22 +103,19 @@ int32 OS_CountSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 op
     ** and trying to use the real name would be less than useful (only 4 chars)
     */
     r_name = OS_ObjectIdToInteger(OS_global_count_sem_table[sem_id].active_id);
-    status = rtems_semaphore_create( r_name, sem_initial_value,
-                                     OSAL_COUNT_SEM_ATTRIBS,
-                                     0,
-                                     &(OS_impl_count_sem_table[sem_id].id));
+    status = rtems_semaphore_create(r_name, sem_initial_value, OSAL_COUNT_SEM_ATTRIBS, 0,
+                                    &(OS_impl_count_sem_table[sem_id].id));
 
     /* check if Create failed */
-    if ( status != RTEMS_SUCCESSFUL )
+    if (status != RTEMS_SUCCESSFUL)
     {
-        OS_DEBUG("Unhandled semaphore_create error: %s\n",rtems_status_text(status));
+        OS_DEBUG("Unhandled semaphore_create error: %s\n", rtems_status_text(status));
         return OS_SEM_FAILURE;
     }
 
     return OS_SUCCESS;
 
 } /* end OS_CountSemCreate_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -132,21 +125,20 @@ int32 OS_CountSemCreate_Impl (uint32 sem_id, uint32 sem_initial_value, uint32 op
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemDelete_Impl (uint32 sem_id)
+int32 OS_CountSemDelete_Impl(uint32 sem_id)
 {
     rtems_status_code status;
 
-    status = rtems_semaphore_delete( OS_impl_count_sem_table[sem_id].id);
+    status = rtems_semaphore_delete(OS_impl_count_sem_table[sem_id].id);
     if (status != RTEMS_SUCCESSFUL)
     {
-        OS_DEBUG("Unhandled semaphore_delete error: %s\n",rtems_status_text(status));
+        OS_DEBUG("Unhandled semaphore_delete error: %s\n", rtems_status_text(status));
         return OS_SEM_FAILURE;
     }
 
     return OS_SUCCESS;
 
 } /* end OS_CountSemDelete_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -156,21 +148,20 @@ int32 OS_CountSemDelete_Impl (uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGive_Impl (uint32 sem_id)
+int32 OS_CountSemGive_Impl(uint32 sem_id)
 {
     rtems_status_code status;
 
     status = rtems_semaphore_release(OS_impl_count_sem_table[sem_id].id);
-    if(status != RTEMS_SUCCESSFUL)
+    if (status != RTEMS_SUCCESSFUL)
     {
-        OS_DEBUG("Unhandled semaphore_release error: %s\n",rtems_status_text(status));
+        OS_DEBUG("Unhandled semaphore_release error: %s\n", rtems_status_text(status));
         return OS_SEM_FAILURE;
     }
 
-    return(OS_SUCCESS);
+    return (OS_SUCCESS);
 
 } /* end OS_CountSemGive_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -180,22 +171,20 @@ int32 OS_CountSemGive_Impl (uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTake_Impl (uint32 sem_id)
+int32 OS_CountSemTake_Impl(uint32 sem_id)
 {
     rtems_status_code status;
 
     status = rtems_semaphore_obtain(OS_impl_count_sem_table[sem_id].id, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
     if (status != RTEMS_SUCCESSFUL)
     {
-        OS_DEBUG("Unhandled semaphore_obtain error: %s\n",rtems_status_text(status));
+        OS_DEBUG("Unhandled semaphore_obtain error: %s\n", rtems_status_text(status));
         return OS_SEM_FAILURE;
     }
 
     return OS_SUCCESS;
 
 } /* end OS_CountSemTake_Impl */
-
-
 
 /*----------------------------------------------------------------
  *
@@ -205,7 +194,7 @@ int32 OS_CountSemTake_Impl (uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTimedWait_Impl (uint32 sem_id, uint32 msecs)
+int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
 {
     rtems_status_code status;
     int               TimeInTicks;
@@ -223,14 +212,13 @@ int32 OS_CountSemTimedWait_Impl (uint32 sem_id, uint32 msecs)
 
     if (status != RTEMS_SUCCESSFUL)
     {
-        OS_DEBUG("Unhandled semaphore_obtain error: %s\n",rtems_status_text(status));
+        OS_DEBUG("Unhandled semaphore_obtain error: %s\n", rtems_status_text(status));
         return OS_SEM_FAILURE;
     }
 
     return OS_SUCCESS;
 
 } /* end OS_CountSemTimedWait_Impl */
-
 
 /*----------------------------------------------------------------
  *
@@ -240,10 +228,9 @@ int32 OS_CountSemTimedWait_Impl (uint32 sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGetInfo_Impl (uint32 sem_id, OS_count_sem_prop_t *count_prop)
+int32 OS_CountSemGetInfo_Impl(uint32 sem_id, OS_count_sem_prop_t *count_prop)
 {
     /* RTEMS does not provide an API to get the value */
     return OS_SUCCESS;
 
 } /* end OS_CountSemGetInfo_Impl */
-

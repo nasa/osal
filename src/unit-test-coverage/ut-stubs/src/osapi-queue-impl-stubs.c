@@ -38,9 +38,8 @@
 ** Message Queue API
 */
 
-UT_DEFAULT_STUB(OS_QueueCreate_Impl,(uint32 queue_id, uint32 flags))
-UT_DEFAULT_STUB(OS_QueueDelete_Impl,(uint32 queue_id))
-UT_DEFAULT_STUB(OS_QueueGet_Impl,(uint32 queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout))
-UT_DEFAULT_STUB(OS_QueuePut_Impl,(uint32 queue_id, const void *data, uint32 size, uint32 flags))
-UT_DEFAULT_STUB(OS_QueueGetInfo_Impl,(uint32 queue_id, OS_queue_prop_t *queue_prop))
-
+UT_DEFAULT_STUB(OS_QueueCreate_Impl, (uint32 queue_id, uint32 flags))
+UT_DEFAULT_STUB(OS_QueueDelete_Impl, (uint32 queue_id))
+UT_DEFAULT_STUB(OS_QueueGet_Impl, (uint32 queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout))
+UT_DEFAULT_STUB(OS_QueuePut_Impl, (uint32 queue_id, const void *data, uint32 size, uint32 flags))
+UT_DEFAULT_STUB(OS_QueueGetInfo_Impl, (uint32 queue_id, OS_queue_prop_t *queue_prop))

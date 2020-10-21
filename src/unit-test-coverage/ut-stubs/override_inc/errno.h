@@ -34,6 +34,6 @@
 #define ETIMEDOUT OCS_ETIMEDOUT
 #define ESPIPE    OCS_ESPIPE
 
-#define errno       OCS_errno
+#define errno OCS_errno
 
 #endif /* _OSAL_OVERRIDE_ERRNO_H_ */

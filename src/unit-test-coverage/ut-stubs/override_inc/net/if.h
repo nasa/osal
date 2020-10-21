@@ -28,5 +28,4 @@
 /* mappings for declarations in net/if.h */
 /* ----------------------------------------- */
 
-
 #endif /* _OSAL_OVERRIDE_NET_IF_H_ */

@@ -31,11 +31,7 @@
 #include <os-vxworks.h>
 #include <os-impl-files.h>
 
-
-
-
 OS_VxWorks_filehandle_entry_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FILES];
 
-
-void*  const UT_FileTableTest_OS_impl_filehandle_table = OS_impl_filehandle_table;
+void *const  UT_FileTableTest_OS_impl_filehandle_table      = OS_impl_filehandle_table;
 size_t const UT_FileTableTest_OS_impl_filehandle_table_SIZE = sizeof(OS_impl_filehandle_table);

@@ -46,9 +46,8 @@
  * The user may also provide a tuned value through osconfig.h
  */
 #ifndef OS_SOCKADDR_MAX_LEN
-#define OS_SOCKADDR_MAX_LEN     28
+#define OS_SOCKADDR_MAX_LEN 28
 #endif
-
 
 /*
  * --------------------------------------------------------------------------------------
@@ -64,19 +63,19 @@
 /** @brief Socket domain */
 typedef enum
 {
-   OS_SocketDomain_INVALID,     /**< @brief Invalid */
-   OS_SocketDomain_INET,        /**< @brief IPv4 address family, most commonly used) */
-   OS_SocketDomain_INET6,       /**< @brief IPv6 address family, depends on OS/network stack support */
-   OS_SocketDomain_MAX          /**< @brief Maximum */
+    OS_SocketDomain_INVALID, /**< @brief Invalid */
+    OS_SocketDomain_INET,    /**< @brief IPv4 address family, most commonly used) */
+    OS_SocketDomain_INET6,   /**< @brief IPv6 address family, depends on OS/network stack support */
+    OS_SocketDomain_MAX      /**< @brief Maximum */
 } OS_SocketDomain_t;
 
 /** @brief Socket type */
 typedef enum
 {
-   OS_SocketType_INVALID,       /**< @brief Invalid */
-   OS_SocketType_DATAGRAM,      /**< @brief A connectionless, message-oriented socket */
-   OS_SocketType_STREAM,        /**< @brief A stream-oriented socket with the concept of a connection */
-   OS_SocketType_MAX            /**< @brief Maximum */
+    OS_SocketType_INVALID,  /**< @brief Invalid */
+    OS_SocketType_DATAGRAM, /**< @brief A connectionless, message-oriented socket */
+    OS_SocketType_STREAM,   /**< @brief A stream-oriented socket with the concept of a connection */
+    OS_SocketType_MAX       /**< @brief Maximum */
 } OS_SocketType_t;
 
 /**
@@ -91,7 +90,7 @@ typedef union
 {
     uint8  Buffer[OS_SOCKADDR_MAX_LEN]; /**< @brief Ensures length of at least OS_SOCKADDR_MAX_LEN */
     uint32 AlignU32;                    /**< @brief Ensures uint32 alignment */
-    void*  AlignPtr;                    /**< @brief Ensures pointer alignment */
+    void * AlignPtr;                    /**< @brief Ensures pointer alignment */
 } OS_SockAddrData_t;
 
 /**
@@ -103,8 +102,8 @@ typedef union
  */
 typedef struct
 {
-   uint32 ActualLength;                 /**< @brief Length of the actual address data */
-   OS_SockAddrData_t AddrData;          /**< @brief Abstract Address data */
+    uint32            ActualLength; /**< @brief Length of the actual address data */
+    OS_SockAddrData_t AddrData;     /**< @brief Abstract Address data */
 } OS_SockAddr_t;
 
 /**
@@ -116,8 +115,8 @@ typedef struct
  */
 typedef struct
 {
-    char name [OS_MAX_API_NAME];        /**< @brief Name of the socket */
-    osal_id_t creator;                     /**< @brief OSAL TaskID which opened the socket */
+    char      name[OS_MAX_API_NAME]; /**< @brief Name of the socket */
+    osal_id_t creator;               /**< @brief OSAL TaskID which opened the socket */
 } OS_socket_prop_t;
 
 /**
@@ -218,7 +217,6 @@ int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr);
 int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum);
 /**@}*/
 
-
 /**
  * @defgroup OSALAPISocket OSAL Socket Management APIs
  *
@@ -232,7 +230,7 @@ int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum);
  *
  * Note that all of functions may return #OS_ERR_NOT_IMPLEMENTED if network support
  * is not configured at compile time.
- * 
+ *
  * @{
  */
 
@@ -355,7 +353,7 @@ int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, uint32 buflen, cons
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_NOT_FOUND if the name was not found in the table
  */
-int32 OS_SocketGetIdByName (osal_id_t *sock_id, const char *sock_name);
+int32 OS_SocketGetIdByName(osal_id_t *sock_id, const char *sock_name);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -372,8 +370,7 @@ int32 OS_SocketGetIdByName (osal_id_t *sock_id, const char *sock_name);
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
  * @retval #OS_INVALID_POINTER if the count_prop pointer is null
  */
-int32 OS_SocketGetInfo (osal_id_t sock_id, OS_socket_prop_t *sock_prop);
-
+int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -389,8 +386,7 @@ int32 OS_SocketGetInfo (osal_id_t sock_id, OS_socket_prop_t *sock_prop);
  *         Note it is not possible to differentiate between error codes and valid
  *         network IDs here. It is assumed, however, that -1 is never a valid ID.
  */
-int32 OS_NetworkGetID             (void);
-
+int32 OS_NetworkGetID(void);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -404,7 +400,7 @@ int32 OS_NetworkGetID             (void);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_NetworkGetHostName       (char *host_name, uint32 name_len);
+int32 OS_NetworkGetHostName(char *host_name, uint32 name_len);
 /**@}*/
 
 #endif

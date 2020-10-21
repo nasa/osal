@@ -41,4 +41,3 @@ void UT_IdMapTest_SetImplTableMutex(uint32 idtype, OCS_SEM_ID vxid)
 {
     VX_MUTEX_TABLE[idtype].vxid = vxid;
 }
-

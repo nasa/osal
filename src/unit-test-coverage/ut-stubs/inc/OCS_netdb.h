@@ -36,7 +36,4 @@
 /* prototypes normally declared in netdb.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_NETDB_H_ */
-

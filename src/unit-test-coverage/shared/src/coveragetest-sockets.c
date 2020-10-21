@@ -38,7 +38,7 @@ void Test_OS_SocketAPI_Init(void)
      * int32 OS_SocketAPI_Init(void)
      */
     int32 expected = OS_SUCCESS;
-    int32 actual = OS_SocketAPI_Init();
+    int32 actual   = OS_SocketAPI_Init();
 
     UtAssert_True(actual == expected, "OS_SocketAPI_Init() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -81,17 +81,16 @@ void Test_OS_SocketOpen(void)
      * Test Case For:
      * int32 OS_SocketOpen(uint32 *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t Type)
      */
-    int32 expected = OS_SUCCESS;
+    int32     expected = OS_SUCCESS;
     osal_id_t objid;
-    int32 actual = OS_SocketOpen(&objid, OS_SocketDomain_INET, OS_SocketType_STREAM);
+    int32     actual = OS_SocketOpen(&objid, OS_SocketDomain_INET, OS_SocketType_STREAM);
 
     UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_SUCCESS", (long)actual);
-    OSAPI_TEST_OBJID(objid,!=,OS_OBJECT_ID_UNDEFINED);
+    OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_SocketOpen(NULL, OS_SocketDomain_INVALID, OS_SocketType_INVALID);
+    actual   = OS_SocketOpen(NULL, OS_SocketDomain_INVALID, OS_SocketType_INVALID);
     UtAssert_True(actual == expected, "OS_SocketOpen(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
-
 }
 
 /*****************************************************************************
@@ -105,36 +104,37 @@ void Test_OS_SocketBind(void)
      * Test Case For:
      * int32 OS_SocketBind(uint32 sock_id, const OS_SockAddr_t *Addr)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual = ~OS_SUCCESS;
+    int32         expected = OS_SUCCESS;
+    int32         actual   = ~OS_SUCCESS;
     OS_SockAddr_t Addr;
 
     OS_stream_table[1].socket_domain = OS_SocketDomain_INET;
-    memset(&Addr,0,sizeof(Addr));
+    memset(&Addr, 0, sizeof(Addr));
     actual = OS_SocketBind(UT_OBJID_1, &Addr);
 
     UtAssert_True(actual == expected, "OS_SocketBind() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_SocketBind(UT_OBJID_1, NULL);
+    actual   = OS_SocketBind(UT_OBJID_1, NULL);
     UtAssert_True(actual == expected, "OS_SocketBind(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
 
     /*
      * Should fail if not a socket domain
      */
     OS_stream_table[1].socket_domain = OS_SocketDomain_INVALID;
-    expected = OS_ERR_INCORRECT_OBJ_TYPE;
-    actual = OS_SocketBind(UT_OBJID_1, &Addr);
+    expected                         = OS_ERR_INCORRECT_OBJ_TYPE;
+    actual                           = OS_SocketBind(UT_OBJID_1, &Addr);
     UtAssert_True(actual == expected, "OS_SocketBind() non-socket (%ld) == OS_ERR_INCORRECT_OBJ_TYPE", (long)actual);
 
     /*
      * Should fail if already bound
      */
     OS_stream_table[1].socket_domain = OS_SocketDomain_INET;
-    OS_stream_table[1].stream_state = OS_STREAM_STATE_BOUND;
-    expected = OS_ERR_INCORRECT_OBJ_STATE;
-    actual = OS_SocketBind(UT_OBJID_1, &Addr);
-    UtAssert_True(actual == expected, "OS_SocketBind() already bound (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
+    OS_stream_table[1].stream_state  = OS_STREAM_STATE_BOUND;
+    expected                         = OS_ERR_INCORRECT_OBJ_STATE;
+    actual                           = OS_SocketBind(UT_OBJID_1, &Addr);
+    UtAssert_True(actual == expected, "OS_SocketBind() already bound (%ld) == OS_ERR_INCORRECT_OBJ_STATE",
+                  (long)actual);
 }
 
 /*****************************************************************************
@@ -148,48 +148,49 @@ void Test_OS_SocketAccept(void)
      * Test Case For:
      * int32 OS_SocketAccept(uint32 sock_id, uint32 *connsock_id, OS_SockAddr_t *Addr, int32 timeout)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual = ~OS_SUCCESS;
-    uint32 local_id = 0;
-    osal_id_t connsock_id;
+    int32         expected = OS_SUCCESS;
+    int32         actual   = ~OS_SUCCESS;
+    uint32        local_id = 0;
+    osal_id_t     connsock_id;
     OS_SockAddr_t Addr;
 
     connsock_id = OS_OBJECT_ID_UNDEFINED;
 
-    OS_stream_table[local_id].socket_type = OS_SocketType_STREAM;
+    OS_stream_table[local_id].socket_type  = OS_SocketType_STREAM;
     OS_stream_table[local_id].stream_state = OS_STREAM_STATE_BOUND;
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_id, sizeof(local_id), false);
-    memset(&Addr,0,sizeof(Addr));
+    memset(&Addr, 0, sizeof(Addr));
     actual = OS_SocketAccept(UT_OBJID_1, &connsock_id, &Addr, 0);
 
     UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_SocketAccept(UT_OBJID_1, NULL, NULL, 0);
+    actual   = OS_SocketAccept(UT_OBJID_1, NULL, NULL, 0);
     UtAssert_True(actual == expected, "OS_SocketAccept(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
 
     /*
      * Should fail if not a stream socket
      */
     OS_stream_table[1].socket_type = OS_SocketType_INVALID;
-    expected = OS_ERR_INCORRECT_OBJ_TYPE;
-    actual = OS_SocketAccept(UT_OBJID_1, &connsock_id, &Addr, 0);
+    expected                       = OS_ERR_INCORRECT_OBJ_TYPE;
+    actual                         = OS_SocketAccept(UT_OBJID_1, &connsock_id, &Addr, 0);
     UtAssert_True(actual == expected, "OS_SocketAccept() non-stream (%ld) == OS_ERR_INCORRECT_OBJ_TYPE", (long)actual);
 
     /*
      * Should fail if already connected
      */
-    OS_stream_table[1].socket_type = OS_SocketType_STREAM;
-    OS_stream_table[1].stream_state = OS_STREAM_STATE_BOUND|OS_STREAM_STATE_CONNECTED;
-    expected = OS_ERR_INCORRECT_OBJ_STATE;
-    actual = OS_SocketAccept(UT_OBJID_1, &connsock_id, &Addr, 0);
-    UtAssert_True(actual == expected, "OS_SocketAccept() already bound (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
+    OS_stream_table[1].socket_type  = OS_SocketType_STREAM;
+    OS_stream_table[1].stream_state = OS_STREAM_STATE_BOUND | OS_STREAM_STATE_CONNECTED;
+    expected                        = OS_ERR_INCORRECT_OBJ_STATE;
+    actual                          = OS_SocketAccept(UT_OBJID_1, &connsock_id, &Addr, 0);
+    UtAssert_True(actual == expected, "OS_SocketAccept() already bound (%ld) == OS_ERR_INCORRECT_OBJ_STATE",
+                  (long)actual);
 
     /*
      * Underlying implementation failure test
      */
     OS_stream_table[1].stream_state = OS_STREAM_STATE_BOUND;
-    expected = -1234;
+    expected                        = -1234;
     UT_SetForceFail(UT_KEY(OS_SocketAccept_Impl), -1234);
     actual = OS_SocketAccept(UT_OBJID_1, &connsock_id, &Addr, 0);
     UtAssert_True(actual == expected, "OS_SocketAccept() underlying failure (%ld) == -1234", (long)actual);
@@ -206,45 +207,45 @@ void Test_OS_SocketConnect(void)
      * Test Case For:
      * int32 OS_SocketConnect(uint32 sock_id, const OS_SockAddr_t *Addr, int32 Timeout)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual = ~OS_SUCCESS;
+    int32         expected = OS_SUCCESS;
+    int32         actual   = ~OS_SUCCESS;
     OS_SockAddr_t Addr;
-    uint32 idbuf;
+    uint32        idbuf;
 
-    memset(&Addr,0,sizeof(Addr));
+    memset(&Addr, 0, sizeof(Addr));
     idbuf = 1;
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById),&idbuf, sizeof(idbuf), false);
+    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &idbuf, sizeof(idbuf), false);
     OS_stream_table[idbuf].socket_domain = OS_SocketDomain_INET;
-    OS_stream_table[idbuf].socket_type = OS_SocketType_STREAM;
-    OS_stream_table[idbuf].stream_state = 0;
+    OS_stream_table[idbuf].socket_type   = OS_SocketType_STREAM;
+    OS_stream_table[idbuf].stream_state  = 0;
 
     actual = OS_SocketConnect(UT_OBJID_1, &Addr, 0);
 
     UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_SocketConnect(UT_OBJID_1, NULL, 0);
+    actual   = OS_SocketConnect(UT_OBJID_1, NULL, 0);
     UtAssert_True(actual == expected, "OS_SocketConnect(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
 
     /*
      * Should fail if not a stream socket
      */
     OS_stream_table[1].socket_domain = OS_SocketDomain_INVALID;
-    OS_stream_table[1].socket_type = OS_SocketType_INVALID;
-    expected = OS_ERR_INCORRECT_OBJ_TYPE;
-    actual = OS_SocketConnect(UT_OBJID_1, &Addr, 0);
+    OS_stream_table[1].socket_type   = OS_SocketType_INVALID;
+    expected                         = OS_ERR_INCORRECT_OBJ_TYPE;
+    actual                           = OS_SocketConnect(UT_OBJID_1, &Addr, 0);
     UtAssert_True(actual == expected, "OS_SocketConnect() non-stream (%ld) == OS_ERR_INCORRECT_OBJ_TYPE", (long)actual);
 
     /*
      * Should fail if already connected
      */
     OS_stream_table[1].socket_domain = OS_SocketDomain_INET;
-    OS_stream_table[1].socket_type = OS_SocketType_STREAM;
-    OS_stream_table[1].stream_state = OS_STREAM_STATE_CONNECTED;
-    expected = OS_ERR_INCORRECT_OBJ_STATE;
-    actual = OS_SocketConnect(UT_OBJID_1, &Addr, 0);
-    UtAssert_True(actual == expected, "OS_SocketConnect() already connected (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
-
+    OS_stream_table[1].socket_type   = OS_SocketType_STREAM;
+    OS_stream_table[1].stream_state  = OS_STREAM_STATE_CONNECTED;
+    expected                         = OS_ERR_INCORRECT_OBJ_STATE;
+    actual                           = OS_SocketConnect(UT_OBJID_1, &Addr, 0);
+    UtAssert_True(actual == expected, "OS_SocketConnect() already connected (%ld) == OS_ERR_INCORRECT_OBJ_STATE",
+                  (long)actual);
 }
 
 /*****************************************************************************
@@ -258,41 +259,43 @@ void Test_OS_SocketRecvFrom(void)
      * Test Case For:
      * OS_SocketRecvFrom(uint32 sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
      */
-    char Buf;
-    int32 expected = OS_SUCCESS;
-    int32 actual = ~OS_SUCCESS;
+    char          Buf;
+    int32         expected = OS_SUCCESS;
+    int32         actual   = ~OS_SUCCESS;
     OS_SockAddr_t Addr;
-    uint32 idbuf;
+    uint32        idbuf;
 
-    memset(&Addr,0,sizeof(Addr));
+    memset(&Addr, 0, sizeof(Addr));
     idbuf = 1;
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById),&idbuf, sizeof(idbuf), false);
-    OS_stream_table[idbuf].socket_type = OS_SocketType_DATAGRAM;
+    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &idbuf, sizeof(idbuf), false);
+    OS_stream_table[idbuf].socket_type  = OS_SocketType_DATAGRAM;
     OS_stream_table[idbuf].stream_state = OS_STREAM_STATE_BOUND;
-    actual = OS_SocketRecvFrom(UT_OBJID_1, &Buf, 1, &Addr, 0);
+    actual                              = OS_SocketRecvFrom(UT_OBJID_1, &Buf, 1, &Addr, 0);
 
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_SocketRecvFrom(UT_OBJID_1, NULL, 0, NULL, 0);
+    actual   = OS_SocketRecvFrom(UT_OBJID_1, NULL, 0, NULL, 0);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
 
     /*
      * Should fail if not a datagram socket
      */
     OS_stream_table[1].socket_type = OS_SocketType_INVALID;
-    expected = OS_ERR_INCORRECT_OBJ_TYPE;
-    actual = OS_SocketRecvFrom(UT_OBJID_1, &Buf, 1, &Addr, 0);
-    UtAssert_True(actual == expected, "OS_SocketRecvFrom() non-datagram (%ld) == OS_ERR_INCORRECT_OBJ_TYPE", (long)actual);
+    expected                       = OS_ERR_INCORRECT_OBJ_TYPE;
+    actual                         = OS_SocketRecvFrom(UT_OBJID_1, &Buf, 1, &Addr, 0);
+    UtAssert_True(actual == expected, "OS_SocketRecvFrom() non-datagram (%ld) == OS_ERR_INCORRECT_OBJ_TYPE",
+                  (long)actual);
 
     /*
      * Should fail if not bound
      */
-    OS_stream_table[1].socket_type = OS_SocketType_DATAGRAM;
+    OS_stream_table[1].socket_type  = OS_SocketType_DATAGRAM;
     OS_stream_table[1].stream_state = 0;
-    expected = OS_ERR_INCORRECT_OBJ_STATE;
-    actual = OS_SocketRecvFrom(UT_OBJID_1, &Buf, 1, &Addr, 0);
-    UtAssert_True(actual == expected, "OS_SocketRecvFrom() non-bound (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
+    expected                        = OS_ERR_INCORRECT_OBJ_STATE;
+    actual                          = OS_SocketRecvFrom(UT_OBJID_1, &Buf, 1, &Addr, 0);
+    UtAssert_True(actual == expected, "OS_SocketRecvFrom() non-bound (%ld) == OS_ERR_INCORRECT_OBJ_STATE",
+                  (long)actual);
 }
 
 /*****************************************************************************
@@ -306,65 +309,63 @@ void Test_OS_SocketSendTo(void)
      * Test Case For:
      * int32 OS_SocketSendTo(uint32 sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr)
      */
-    char Buf = 'A';
-    int32 expected = OS_SUCCESS;
-    int32 actual = ~OS_SUCCESS;
+    char          Buf      = 'A';
+    int32         expected = OS_SUCCESS;
+    int32         actual   = ~OS_SUCCESS;
     OS_SockAddr_t Addr;
-    uint32 idbuf;
+    uint32        idbuf;
 
-    memset(&Addr,0,sizeof(Addr));
+    memset(&Addr, 0, sizeof(Addr));
     idbuf = 1;
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById),&idbuf, sizeof(idbuf), false);
-    OS_stream_table[idbuf].socket_type = OS_SocketType_DATAGRAM;
+    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &idbuf, sizeof(idbuf), false);
+    OS_stream_table[idbuf].socket_type  = OS_SocketType_DATAGRAM;
     OS_stream_table[idbuf].stream_state = OS_STREAM_STATE_BOUND;
-    actual = OS_SocketSendTo(UT_OBJID_1, &Buf, 1, &Addr);
+    actual                              = OS_SocketSendTo(UT_OBJID_1, &Buf, 1, &Addr);
 
     UtAssert_True(actual == expected, "OS_SocketSendTo() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_SocketSendTo(UT_OBJID_1, NULL, 0, NULL);
+    actual   = OS_SocketSendTo(UT_OBJID_1, NULL, 0, NULL);
     UtAssert_True(actual == expected, "OS_SocketSendTo(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
 
     /*
      * Should fail if not a datagram socket
      */
     OS_stream_table[1].socket_type = OS_SocketType_INVALID;
-    expected = OS_ERR_INCORRECT_OBJ_TYPE;
-    actual = OS_SocketSendTo(UT_OBJID_1, &Buf, 1, &Addr);
-    UtAssert_True(actual == expected, "OS_SocketSendTo() non-datagram (%ld) == OS_ERR_INCORRECT_OBJ_TYPE", (long)actual);
+    expected                       = OS_ERR_INCORRECT_OBJ_TYPE;
+    actual                         = OS_SocketSendTo(UT_OBJID_1, &Buf, 1, &Addr);
+    UtAssert_True(actual == expected, "OS_SocketSendTo() non-datagram (%ld) == OS_ERR_INCORRECT_OBJ_TYPE",
+                  (long)actual);
 }
-
 
 /*****************************************************************************
  *
  * Test case for OS_SocketGetIdByName()
  *
  *****************************************************************************/
-void Test_OS_SocketGetIdByName (void)
+void Test_OS_SocketGetIdByName(void)
 {
     /*
      * Test Case For:
      * int32 OS_SocketGetIdByName (uint32 *sock_id, const char *sock_name)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual = ~OS_SUCCESS;
+    int32     expected = OS_SUCCESS;
+    int32     actual   = ~OS_SUCCESS;
     osal_id_t objid;
 
     UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_SocketGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_SocketGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
-    OSAPI_TEST_OBJID(objid,!=,OS_OBJECT_ID_UNDEFINED);
+    OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
     UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
-    actual = OS_SocketGetIdByName(&objid, "NF");
-    UtAssert_True(actual == expected, "OS_SocketGetIdByName() (%ld) == %ld",
-            (long)actual, (long)expected);
+    actual   = OS_SocketGetIdByName(&objid, "NF");
+    UtAssert_True(actual == expected, "OS_SocketGetIdByName() (%ld) == %ld", (long)actual, (long)expected);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_SocketGetIdByName(NULL, NULL);
+    actual   = OS_SocketGetIdByName(NULL, NULL);
     UtAssert_True(actual == expected, "Test_OS_SocketGetIdByName(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
-
 }
 
 /*****************************************************************************
@@ -372,38 +373,36 @@ void Test_OS_SocketGetIdByName (void)
  * Test case for OS_SocketGetInfo()
  *
  *****************************************************************************/
-void Test_OS_SocketGetInfo (void)
+void Test_OS_SocketGetInfo(void)
 {
     /*
      * Test Case For:
      * int32 OS_SocketGetInfo (uint32 sock_id, OS_socket_prop_t *sock_prop)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual = ~OS_SUCCESS;
-    OS_socket_prop_t prop;
-    uint32 local_index = 1;
-    OS_common_record_t utrec;
+    int32               expected = OS_SUCCESS;
+    int32               actual   = ~OS_SUCCESS;
+    OS_socket_prop_t    prop;
+    uint32              local_index = 1;
+    OS_common_record_t  utrec;
     OS_common_record_t *rptr = &utrec;
 
     memset(&utrec, 0, sizeof(utrec));
-    utrec.creator = UT_OBJID_OTHER;
+    utrec.creator    = UT_OBJID_OTHER;
     utrec.name_entry = "ABC";
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
     actual = OS_SocketGetInfo(UT_OBJID_1, &prop);
 
     UtAssert_True(actual == expected, "OS_SocketGetInfo() (%ld) == OS_SUCCESS", (long)actual);
-    OSAPI_TEST_OBJID(prop.creator,==,UT_OBJID_OTHER);
-    UtAssert_True(strcmp(prop.name, "ABC") == 0, "prop.name (%s) == ABC",
-            prop.name);
+    OSAPI_TEST_OBJID(prop.creator, ==, UT_OBJID_OTHER);
+    UtAssert_True(strcmp(prop.name, "ABC") == 0, "prop.name (%s) == ABC", prop.name);
 
     expected = OS_INVALID_POINTER;
-    actual = OS_SocketGetInfo(UT_OBJID_1, NULL);
+    actual   = OS_SocketGetInfo(UT_OBJID_1, NULL);
     UtAssert_True(actual == expected, "OS_SocketGetInfo() (%ld) == OS_INVALID_POINTER", (long)actual);
-
 }
 
-void Test_OS_SocketAddr (void)
+void Test_OS_SocketAddr(void)
 {
     /*
      * Test Case For:
@@ -413,10 +412,10 @@ void Test_OS_SocketAddr (void)
      * int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr)
      */
     OS_SockAddr_t Addr;
-    char Buffer[32];
-    uint16 PortNum;
-    int32 expected = OS_SUCCESS;
-    int32 actual = ~OS_SUCCESS;
+    char          Buffer[32];
+    uint16        PortNum;
+    int32         expected = OS_SUCCESS;
+    int32         actual   = ~OS_SUCCESS;
 
     /* First verify nominal case for each function */
     actual = OS_SocketAddrInit(&Addr, OS_SocketDomain_INVALID);
@@ -433,7 +432,6 @@ void Test_OS_SocketAddr (void)
 
     actual = OS_SocketAddrGetPort(&PortNum, &Addr);
     UtAssert_True(actual == expected, "OS_SocketAddrGetPort() (%ld) == OS_SUCCESS", (long)actual);
-
 
     /* Verify invalid pointer checking in each function */
     expected = OS_INVALID_POINTER;
@@ -452,7 +450,6 @@ void Test_OS_SocketAddr (void)
 
     actual = OS_SocketAddrGetPort(NULL, NULL);
     UtAssert_True(actual == expected, "OS_SocketAddrGetPort() (%ld) == OS_INVALID_POINTER", (long)actual);
-
 }
 
 /* Osapi_Test_Setup
@@ -473,11 +470,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
-
+void Osapi_Test_Teardown(void) {}
 
 /*
  * Register the test cases to execute with the unit test tool
@@ -496,8 +489,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_SocketGetInfo);
     ADD_TEST(OS_CreateSocketName);
 }
-
-
-
-
-

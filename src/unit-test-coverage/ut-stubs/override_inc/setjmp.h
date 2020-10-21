@@ -28,6 +28,4 @@
 /* mappings for declarations in setjmp.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_OVERRIDE_SETJMP_H_ */

@@ -36,7 +36,4 @@
 /* prototypes normally declared in sys/wait.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_SYS_WAIT_H_ */
-

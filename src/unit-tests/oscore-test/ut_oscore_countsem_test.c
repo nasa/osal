@@ -67,21 +67,21 @@
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_create_test()
 {
-    int            i;
-    int32          res = 0;
-    const char*    testDesc;
-    osal_id_t      count_sem_ids[OS_MAX_COUNT_SEMAPHORES+1];
-    char           sem_name[UT_OS_NAME_BUFF_SIZE];
-    char           long_sem_name[UT_OS_NAME_BUFF_SIZE];
-    uint32         test_setup_invalid = 0;
+    int         i;
+    int32       res = 0;
+    const char *testDesc;
+    osal_id_t   count_sem_ids[OS_MAX_COUNT_SEMAPHORES + 1];
+    char        sem_name[UT_OS_NAME_BUFF_SIZE];
+    char        long_sem_name[UT_OS_NAME_BUFF_SIZE];
+    uint32      test_setup_invalid = 0;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_CountSemCreate(&count_sem_ids[0], "Good", 1, 0 );
+    res = OS_CountSemCreate(&count_sem_ids[0], "Good", 1, 0);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
         goto UT_os_count_sem_create_test_exit_tag;
     }
 
@@ -93,29 +93,29 @@ void UT_os_count_sem_create_test()
 
     res = OS_CountSemCreate(NULL, "CountSem1", 1, 0);
     if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#2 Null-pointer-arg-2";
 
     res = OS_CountSemCreate(&count_sem_ids[0], NULL, 1, 0);
     if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#3 Name-too-long";
 
     memset(long_sem_name, 'X', sizeof(long_sem_name));
-    long_sem_name[sizeof(long_sem_name)-1] = '\0';
-    res = OS_CountSemCreate(&count_sem_ids[0], long_sem_name, 1, 0);
+    long_sem_name[sizeof(long_sem_name) - 1] = '\0';
+    res                                      = OS_CountSemCreate(&count_sem_ids[0], long_sem_name, 1, 0);
     if (res == OS_ERR_NAME_TOO_LONG)
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#4 Initial-count-too-high";
@@ -128,38 +128,38 @@ void UT_os_count_sem_create_test()
 #ifdef SEM_VALUE_MAX
     res = OS_CountSemCreate(&count_sem_ids[0], "CountSem1", ((uint32)SEM_VALUE_MAX) + 1, 0);
     if (res == OS_INVALID_SEM_VALUE)
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 #else
-    UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
+    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
 #endif
 
     /*-----------------------------------------------------*/
     testDesc = "#5 No-free-IDs";
 
     /* Setup */
-    for ( i = 0; i< OS_MAX_COUNT_SEMAPHORES; i++ )
+    for (i = 0; i < OS_MAX_COUNT_SEMAPHORES; i++)
     {
         memset(sem_name, '\0', sizeof(sem_name));
         UT_os_sprintf(sem_name, "COUNTSEM%d", i);
         res = OS_CountSemCreate(&count_sem_ids[i], sem_name, 1, 0);
-        if ( res != OS_SUCCESS )
+        if (res != OS_SUCCESS)
         {
             testDesc = "#5 No-free-IDs - Count Sem Create failed";
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
             test_setup_invalid = 1;
             break;
         }
     }
 
-    if ( test_setup_invalid == 0 )
+    if (test_setup_invalid == 0)
     {
         res = OS_CountSemCreate(&count_sem_ids[OS_MAX_COUNT_SEMAPHORES], "OneTooMany", 1, 0);
         if (res == OS_ERR_NO_FREE_IDS)
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
     }
 
     /* Reset test environment */
@@ -170,18 +170,18 @@ void UT_os_count_sem_create_test()
 
     /* Setup */
     res = OS_CountSemCreate(&count_sem_ids[0], "DUPLICATE", 1, 0);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#6 Duplicate-name - Count Sem Create failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_INFO);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
     }
     else
     {
         res = OS_CountSemCreate(&count_sem_ids[1], "DUPLICATE", 1, 0);
         if (res == OS_ERR_NAME_TAKEN)
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
         /* Reset test environment */
         OS_CountSemDelete(count_sem_ids[0]);
@@ -191,23 +191,22 @@ void UT_os_count_sem_create_test()
     /*-----------------------------------------------------*/
     testDesc = "#7 OS-call-failure";
 
-    UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_INFO);
+    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
 
     /*-----------------------------------------------------*/
     testDesc = "#8 Nominal";
 
     res = OS_CountSemCreate(&count_sem_ids[0], "Good", 1, 0);
-    if ( res == OS_SUCCESS )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_SUCCESS)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /* Reset test environment */
     res = OS_CountSemDelete(count_sem_ids[0]);
 
 UT_os_count_sem_create_test_exit_tag:
     return;
-    
 }
 
 /*--------------------------------------------------------------------------------*
@@ -220,9 +219,9 @@ UT_os_count_sem_create_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_delete_test()
 {
-    int32          res = 0;
-    const char*    testDesc;
-    osal_id_t      count_sem_id;
+    int32       res = 0;
+    const char *testDesc;
+    osal_id_t   count_sem_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
@@ -230,7 +229,7 @@ void UT_os_count_sem_delete_test()
     res = OS_CountSemDelete(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
         goto UT_os_count_sem_delete_test_exit_tag;
     }
 
@@ -238,38 +237,37 @@ void UT_os_count_sem_delete_test()
     testDesc = "#1 Invalid-ID-arg";
 
     res = OS_CountSemDelete(UT_OBJID_INCORRECT);
-    if ( res == OS_ERR_INVALID_ID )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_ERR_INVALID_ID)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#2 OS-call-failure";
 
-    UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_INFO);
+    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
 
     /*-----------------------------------------------------*/
     testDesc = "#3 Nominal";
 
     /* Setup */
     res = OS_CountSemCreate(&count_sem_id, "DeleteTest", 1, 0);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#3 Nominal - Count Sem Create failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
     }
     else
     {
         res = OS_CountSemDelete(count_sem_id);
-        if ( res == OS_SUCCESS )
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        if (res == OS_SUCCESS)
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
     }
 
 UT_os_count_sem_delete_test_exit_tag:
     return;
-    
 }
 
 /*--------------------------------------------------------------------------------*
@@ -283,9 +281,9 @@ UT_os_count_sem_delete_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_give_test()
 {
-    int32          res = 0;
-    const char*    testDesc;
-    osal_id_t      count_sem_id;
+    int32       res = 0;
+    const char *testDesc;
+    osal_id_t   count_sem_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
@@ -293,7 +291,7 @@ void UT_os_count_sem_give_test()
     res = OS_CountSemGive(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
         goto UT_os_count_sem_give_test_exit_tag;
     }
 
@@ -301,40 +299,39 @@ void UT_os_count_sem_give_test()
     testDesc = "#1 Invalid-ID-arg";
 
     res = OS_CountSemGive(UT_OBJID_INCORRECT);
-    if ( res == OS_ERR_INVALID_ID )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_ERR_INVALID_ID)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#2 OS-call-failure";
 
-    UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_INFO);
+    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
 
     /*-----------------------------------------------------*/
     testDesc = "#3 Nominal";
 
     /* Setup */
     res = OS_CountSemCreate(&count_sem_id, "GiveTest", 1, 0);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#3 Nominal - Count Sem Create failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
     }
     else
     {
         res = OS_CountSemGive(count_sem_id);
-        if ( res == OS_SUCCESS )
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        if (res == OS_SUCCESS)
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
         res = OS_CountSemDelete(count_sem_id);
     }
 
 UT_os_count_sem_give_test_exit_tag:
     return;
-    
 }
 
 /*--------------------------------------------------------------------------------*
@@ -348,9 +345,9 @@ UT_os_count_sem_give_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_take_test()
 {
-    int32          res = 0;
-    const char*    testDesc;
-    osal_id_t      count_sem_id;
+    int32       res = 0;
+    const char *testDesc;
+    osal_id_t   count_sem_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
@@ -358,7 +355,7 @@ void UT_os_count_sem_take_test()
     res = OS_CountSemTake(OS_OBJECT_ID_UNDEFINED);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
         goto UT_os_count_sem_take_test_exit_tag;
     }
 
@@ -366,39 +363,38 @@ void UT_os_count_sem_take_test()
     testDesc = "#1 Invalid-ID-arg";
 
     res = OS_CountSemTake(UT_OBJID_INCORRECT);
-    if ( res == OS_ERR_INVALID_ID )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_ERR_INVALID_ID)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#2 OS-call-failure";
 
-    UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_INFO);
+    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
 
     /*-----------------------------------------------------*/
     testDesc = "#3 Nominal";
 
     /* Setup */
     res = OS_CountSemCreate(&count_sem_id, "TakeTest", 1, 0);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#3 Nominal - Count Sem Create failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
     }
     else
     {
         res = OS_CountSemTake(count_sem_id);
-        if ( res == OS_SUCCESS )
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        if (res == OS_SUCCESS)
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
         res = OS_CountSemDelete(count_sem_id);
     }
 
 UT_os_count_sem_take_test_exit_tag:
     return;
-    
 }
 
 /*--------------------------------------------------------------------------------*
@@ -412,17 +408,17 @@ UT_os_count_sem_take_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_timed_wait_test()
 {
-    int32          res = 0;
-    const char*    testDesc;
-    osal_id_t      count_sem_id;
+    int32       res = 0;
+    const char *testDesc;
+    osal_id_t   count_sem_id;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_CountSemTimedWait(OS_OBJECT_ID_UNDEFINED,1000);
+    res = OS_CountSemTimedWait(OS_OBJECT_ID_UNDEFINED, 1000);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
         goto UT_os_count_sem_timed_wait_test_exit_tag;
     }
 
@@ -430,41 +426,41 @@ void UT_os_count_sem_timed_wait_test()
     testDesc = "#1 Invalid-ID-arg";
 
     res = OS_CountSemTimedWait(UT_OBJID_INCORRECT, 1000);
-    if ( res == OS_ERR_INVALID_ID )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_ERR_INVALID_ID)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#2 OS-call-failure";
 
-    UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_INFO);
+    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
 
     /*-----------------------------------------------------*/
     testDesc = "#3 Sem-take-timed-out";
 
     /* Setup */
     res = OS_CountSemCreate(&count_sem_id, "TimedWait", 1, 0);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#3 Sem-take-timed-out - Count Sem Create failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
     }
     else
     {
         res = OS_CountSemTake(count_sem_id);
-        if ( res != OS_SUCCESS )
+        if (res != OS_SUCCESS)
         {
             testDesc = "#3 Sem-take-timed-out - Count Sem Take failed";
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
         }
         else
         {
             res = OS_CountSemTimedWait(count_sem_id, 1000);
-            if ( res == OS_SEM_TIMEOUT )
-                UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+            if (res == OS_SEM_TIMEOUT)
+                UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
             else
-                UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+                UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
         }
         res = OS_CountSemDelete(count_sem_id);
     }
@@ -474,25 +470,24 @@ void UT_os_count_sem_timed_wait_test()
 
     /* Setup */
     res = OS_CountSemCreate(&count_sem_id, "TimedWait", 1, 0);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#4 Nominal - Count Sem Create failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
     }
     else
     {
         res = OS_CountSemTimedWait(count_sem_id, 1000);
-        if ( res == OS_SUCCESS )
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        if (res == OS_SUCCESS)
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
         res = OS_CountSemDelete(count_sem_id);
     }
 
 UT_os_count_sem_timed_wait_test_exit_tag:
     return;
-    
 }
 
 /*--------------------------------------------------------------------------------*
@@ -507,10 +502,10 @@ UT_os_count_sem_timed_wait_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_get_id_by_name_test()
 {
-    int32          res = 0;
-    const char*    testDesc;
-    osal_id_t      count_sem_id;
-    char           long_sem_name[UT_OS_NAME_BUFF_SIZE];
+    int32       res = 0;
+    const char *testDesc;
+    osal_id_t   count_sem_id;
+    char        long_sem_name[UT_OS_NAME_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
@@ -518,7 +513,7 @@ void UT_os_count_sem_get_id_by_name_test()
     res = OS_CountSemGetIdByName(0, "InvalidName");
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
         goto UT_os_count_sem_get_id_by_name_test_exit_tag;
     }
 
@@ -526,64 +521,63 @@ void UT_os_count_sem_get_id_by_name_test()
     testDesc = "#1 Invalid-pointer-arg-1";
 
     res = OS_CountSemGetIdByName(NULL, "InvalidName");
-    if ( res == OS_INVALID_POINTER )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_INVALID_POINTER)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#2 Invalid-pointer-arg-2";
 
     res = OS_CountSemGetIdByName(&count_sem_id, NULL);
-    if ( res == OS_INVALID_POINTER )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_INVALID_POINTER)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#3 Name-too-long";
 
     memset(long_sem_name, 'Y', sizeof(long_sem_name));
-    long_sem_name[sizeof(long_sem_name)-1] = '\0';
-    res = OS_CountSemGetIdByName(&count_sem_id, long_sem_name);
-    if ( res == OS_ERR_NAME_TOO_LONG )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    long_sem_name[sizeof(long_sem_name) - 1] = '\0';
+    res                                      = OS_CountSemGetIdByName(&count_sem_id, long_sem_name);
+    if (res == OS_ERR_NAME_TOO_LONG)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#4 Name-not-found";
 
     res = OS_CountSemGetIdByName(&count_sem_id, "NameNotFound");
-    if ( res == OS_ERR_NAME_NOT_FOUND )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_ERR_NAME_NOT_FOUND)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#5 Nominal";
 
     /* Setup */
     res = OS_CountSemCreate(&count_sem_id, "GetIDByName", 1, 0);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#5 Nominal - Count Sem Create failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
     }
     else
     {
         res = OS_CountSemGetIdByName(&count_sem_id, "GetIDByName");
-        if ( res == OS_SUCCESS )
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        if (res == OS_SUCCESS)
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
         res = OS_CountSemDelete(count_sem_id);
     }
 
 UT_os_count_sem_get_id_by_name_test_exit_tag:
     return;
-    
 }
 
 /*--------------------------------------------------------------------------------*
@@ -596,18 +590,18 @@ UT_os_count_sem_get_id_by_name_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_get_info_test()
 {
-    int32              res = 0;
-    const char*        testDesc;
-    osal_id_t          count_sem_id;
-    OS_count_sem_prop_t  count_sem_prop;
+    int32               res = 0;
+    const char *        testDesc;
+    osal_id_t           count_sem_id;
+    OS_count_sem_prop_t count_sem_prop;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_CountSemGetInfo(OS_OBJECT_ID_UNDEFINED,&count_sem_prop);
+    res = OS_CountSemGetInfo(OS_OBJECT_ID_UNDEFINED, &count_sem_prop);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_NA);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
         goto UT_os_count_sem_get_info_test_exit_tag;
     }
 
@@ -615,28 +609,28 @@ void UT_os_count_sem_get_info_test()
     testDesc = "#1 Invalid-ID-arg";
 
     res = OS_CountSemGetInfo(UT_OBJID_INCORRECT, &count_sem_prop);
-    if ( res == OS_ERR_INVALID_ID )
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+    if (res == OS_ERR_INVALID_ID)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
     testDesc = "#2 Invalid-pointer-arg";
 
     /* Setup */
     res = OS_CountSemCreate(&count_sem_id, "GetInfo", 1, 0);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#2 Invalid-pointer-arg - Count Sem Create failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
     }
     else
     {
         res = OS_CountSemGetInfo(count_sem_id, NULL);
-        if ( res == OS_INVALID_POINTER )
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        if (res == OS_INVALID_POINTER)
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
         res = OS_CountSemDelete(count_sem_id);
     }
@@ -646,25 +640,24 @@ void UT_os_count_sem_get_info_test()
 
     /* Setup */
     res = OS_CountSemCreate(&count_sem_id, "GetInfo", 1, 0);
-    if ( res != OS_SUCCESS )
+    if (res != OS_SUCCESS)
     {
         testDesc = "#3 Nominal - Count Sem Create failed";
-        UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_TSF);
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
     }
     else
     {
         res = OS_CountSemGetInfo(count_sem_id, &count_sem_prop);
-        if ( res == OS_SUCCESS )
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_PASS);
+        if (res == OS_SUCCESS)
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
-            UT_OS_TEST_RESULT( testDesc, UTASSERT_CASETYPE_FAILURE);
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
         res = OS_CountSemDelete(count_sem_id);
     }
 
 UT_os_count_sem_get_info_test_exit_tag:
     return;
-    
 }
 
 /*================================================================================*

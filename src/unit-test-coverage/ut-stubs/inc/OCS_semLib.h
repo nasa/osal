@@ -28,21 +28,21 @@
 /* ----------------------------------------- */
 /* constants normally defined in semLib.h */
 /* ----------------------------------------- */
-#define OCS_VX_BINARY_SEMAPHORE(x)      OCS_SEM x[1]
-#define OCS_VX_COUNTING_SEMAPHORE(x)    OCS_SEM x[1]
-#define OCS_VX_MUTEX_SEMAPHORE(x)       OCS_SEM x[1]
+#define OCS_VX_BINARY_SEMAPHORE(x)   OCS_SEM x[1]
+#define OCS_VX_COUNTING_SEMAPHORE(x) OCS_SEM x[1]
+#define OCS_VX_MUTEX_SEMAPHORE(x)    OCS_SEM x[1]
 
 /* ----------------------------------------- */
 /* types normally defined in semLib.h */
 /* ----------------------------------------- */
-typedef char OCS_SEM;
-typedef OCS_SEM* OCS_SEM_ID;
+typedef char     OCS_SEM;
+typedef OCS_SEM *OCS_SEM_ID;
 
 /*for binary semaphores */
 typedef enum
 {
     OCS_SEM_EMPTY = 0,
-    OCS_SEM_FULL =  1
+    OCS_SEM_FULL  = 1
 } OCS_SEM_B_STATE;
 
 enum
@@ -53,7 +53,6 @@ enum
     OCS_SEM_INVERSION_SAFE       = 0x8,
     OCS_SEM_EVENTSEND_ERR_NOTIFY = 0x10
 };
-
 
 /* ----------------------------------------- */
 /* prototypes normally declared in semLib.h */
@@ -71,7 +70,4 @@ extern OCS_STATUS OCS_semFlush(OCS_SEM_ID semId);
 extern OCS_STATUS OCS_semTake(OCS_SEM_ID semId, int timeout);
 extern OCS_STATUS OCS_semGive(OCS_SEM_ID semId);
 
-
-
 #endif /* _OSAL_STUB_SEMLIB_H_ */
-

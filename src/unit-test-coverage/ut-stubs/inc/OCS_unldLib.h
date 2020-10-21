@@ -39,7 +39,4 @@
 /* ----------------------------------------- */
 extern OCS_STATUS OCS_unldByModuleId(OCS_MODULE_ID moduleId, int options);
 
-
-
 #endif /* _OSAL_STUB_UNLDLIB_H_ */
-

@@ -36,7 +36,4 @@
 /* prototypes normally declared in timers.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_TIMERS_H_ */
-

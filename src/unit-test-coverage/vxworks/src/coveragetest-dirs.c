@@ -89,7 +89,6 @@ void Test_OS_DirRead_Impl(void)
 
     UT_SetForceFail(UT_KEY(OCS_readdir), -1);
     OSAPI_TEST_FUNCTION_RC(OS_DirRead_Impl(0, &dirent_buff), OS_ERROR);
-
 }
 
 void Test_OS_DirRewind_Impl(void)
@@ -113,7 +112,6 @@ void Test_OS_DirRemove_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_DirRemove_Impl("dir"), OS_ERROR);
 }
 
-
 /* ------------------- End of test cases --------------------------------------*/
 
 /* Osapi_Test_Setup
@@ -132,10 +130,7 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
-
-}
+void Osapi_Test_Teardown(void) {}
 
 /* UtTest_Setup
  *
@@ -152,5 +147,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_DirRewind_Impl);
     ADD_TEST(OS_DirRemove_Impl);
 }
-
-

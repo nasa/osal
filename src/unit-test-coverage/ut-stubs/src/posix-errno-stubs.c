@@ -26,5 +26,3 @@
 #include <OCS_errno.h>
 
 int OCS_errno = 0;
-
-

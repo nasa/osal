@@ -28,10 +28,9 @@
 /* mappings for declarations in netinet/in.h */
 /* ----------------------------------------- */
 
-#define htons    OCS_htons
-#define ntohs    OCS_ntohs
-#define htonl    OCS_htonl
-#define ntohl    OCS_ntohl
-
+#define htons OCS_htons
+#define ntohs OCS_ntohs
+#define htonl OCS_htonl
+#define ntohl OCS_ntohl
 
 #endif /* _OSAL_OVERRIDE_NETINET_IN_H_ */

@@ -50,7 +50,6 @@
  */
 OS_Posix_file_internal_record_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FILES];
 
-
 /*
  * These two constants (EUID and EGID) are local cache of the
  * euid and egid of the user running the OSAL application.  They
@@ -72,7 +71,6 @@ gid_t OS_IMPL_SELF_EGID = 0;
  */
 const int OS_IMPL_REGULAR_FILE_FLAGS = O_NONBLOCK;
 
-
 /****************************************************************************************
                          IMPLEMENTATION-SPECIFIC ROUTINES
              These are specific to this particular operating system
@@ -93,7 +91,7 @@ int32 OS_Posix_StreamAPI_Impl_Init(void)
      * init all filehandles to -1, which is always invalid.
      * this isn't strictly necessary but helps when debugging.
      */
-    for (local_id = 0; local_id <  OS_MAX_NUM_OPEN_FILES; ++local_id)
+    for (local_id = 0; local_id < OS_MAX_NUM_OPEN_FILES; ++local_id)
     {
         OS_impl_filehandle_table[local_id].fd = -1;
     }
@@ -103,4 +101,3 @@ int32 OS_Posix_StreamAPI_Impl_Init(void)
 
     return OS_SUCCESS;
 } /* end OS_Posix_StreamAPI_Impl_Init */
-

@@ -32,7 +32,8 @@
 #define _common_types_
 
 #ifdef __cplusplus
-   extern "C" {
+extern "C"
+{
 #endif
 
 /*
@@ -43,82 +44,79 @@
 ** Macro Definitions
 */
 
-/* 
-** Condition = TRUE is ok, Condition = FALSE is error 
+/*
+** Condition = TRUE is ok, Condition = FALSE is error
 */
 #define CompileTimeAssert(Condition, Message) typedef char Message[(Condition) ? 1 : -1]
-
 
 /*
 ** Define compiler specific macros
 ** The __extension__ compiler pragma is required
 ** for the uint64 type using GCC with the ANSI C90 standard.
-** Other macros can go in here as needed, for example alignment 
+** Other macros can go in here as needed, for example alignment
 ** pragmas.
 **
 ** NOTE: The white-box (coverage) unit testing may need to disable
 ** these extra attributes.  These test builds define the OSAPI_NO_SPECIAL_ATTRIBS
 ** macro to disable this.
 */
-#if defined (__GNUC__) && !defined(OSAPI_NO_SPECIAL_ATTRIBS)
-   #define _EXTENSION_     __extension__
-   #define OS_PACK         __attribute__ ((packed))
-   #define OS_ALIGN(n)     __attribute__((aligned(n)))
-   #define OS_USED         __attribute__((used))
-   #define OS_PRINTF(n,m)  __attribute__ ((format (printf, n, m)))
+#if defined(__GNUC__) && !defined(OSAPI_NO_SPECIAL_ATTRIBS)
+#define _EXTENSION_     __extension__
+#define OS_PACK         __attribute__((packed))
+#define OS_ALIGN(n)     __attribute__((aligned(n)))
+#define OS_USED         __attribute__((used))
+#define OS_PRINTF(n, m) __attribute__((format(printf, n, m)))
 #else
-   #define _EXTENSION_ 
-   #define OS_PACK
-   #define OS_ALIGN(n) 
-   #define OS_USED 
-   #define OS_PRINTF(n,m)
+#define _EXTENSION_
+#define OS_PACK
+#define OS_ALIGN(n)
+#define OS_USED
+#define OS_PRINTF(n, m)
 #endif
 
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
 
-/*
- * NOTE - NOT DEFINING STRUCT_LOW_BIT_FIRST or STRUCT_HIGH_BIT_FIRST
- * We should not make assumptions about the bit order here
- */
+    /*
+     * NOTE - NOT DEFINING STRUCT_LOW_BIT_FIRST or STRUCT_HIGH_BIT_FIRST
+     * We should not make assumptions about the bit order here
+     */
 
-  typedef int8_t                                int8;
-  typedef int16_t                               int16;
-  typedef int32_t                               int32;
-  typedef int64_t                               int64;
-  typedef uint8_t                               uint8;
-  typedef uint16_t                              uint16;
-  typedef uint32_t                              uint32;
-  typedef uint64_t                              uint64;
-  typedef intptr_t                              intptr;
-  typedef uintptr_t                             cpuaddr;
-  typedef size_t                                cpusize;
-  typedef ptrdiff_t                             cpudiff;
+    typedef int8_t    int8;
+    typedef int16_t   int16;
+    typedef int32_t   int32;
+    typedef int64_t   int64;
+    typedef uint8_t   uint8;
+    typedef uint16_t  uint16;
+    typedef uint32_t  uint32;
+    typedef uint64_t  uint64;
+    typedef intptr_t  intptr;
+    typedef uintptr_t cpuaddr;
+    typedef size_t    cpusize;
+    typedef ptrdiff_t cpudiff;
 
-  /**
-   * A type to be used for OSAL resource identifiers.
-   */
-  typedef uint32_t                              osal_id_t;
+    /**
+     * A type to be used for OSAL resource identifiers.
+     */
+    typedef uint32_t osal_id_t;
 
-
-
-#ifndef NULL              /* pointer to nothing */
-   #define NULL ((void *) 0)
+#ifndef NULL /* pointer to nothing */
+#define NULL ((void *)0)
 #endif
 
-/* 
-** Check Sizes 
-*/
-CompileTimeAssert(sizeof(uint8)==1,  TypeUint8WrongSize);
-CompileTimeAssert(sizeof(uint16)==2, TypeUint16WrongSize);
-CompileTimeAssert(sizeof(uint32)==4, TypeUint32WrongSize);
-CompileTimeAssert(sizeof(uint64)==8, TypeUint64WrongSize);
-CompileTimeAssert(sizeof(int8)==1,   Typeint8WrongSize);
-CompileTimeAssert(sizeof(int16)==2,  Typeint16WrongSize);
-CompileTimeAssert(sizeof(int32)==4,  Typeint32WrongSize);
-CompileTimeAssert(sizeof(int64)==8,  Typeint64WrongSize);
-CompileTimeAssert(sizeof(cpuaddr) >= sizeof(void *),  TypePtrWrongSize);
+    /*
+    ** Check Sizes
+    */
+    CompileTimeAssert(sizeof(uint8) == 1, TypeUint8WrongSize);
+    CompileTimeAssert(sizeof(uint16) == 2, TypeUint16WrongSize);
+    CompileTimeAssert(sizeof(uint32) == 4, TypeUint32WrongSize);
+    CompileTimeAssert(sizeof(uint64) == 8, TypeUint64WrongSize);
+    CompileTimeAssert(sizeof(int8) == 1, Typeint8WrongSize);
+    CompileTimeAssert(sizeof(int16) == 2, Typeint16WrongSize);
+    CompileTimeAssert(sizeof(int32) == 4, Typeint32WrongSize);
+    CompileTimeAssert(sizeof(int64) == 8, Typeint64WrongSize);
+    CompileTimeAssert(sizeof(cpuaddr) >= sizeof(void *), TypePtrWrongSize);
 
 /*
  * TEMPORARY COMPATIBILITY MACRO
@@ -136,20 +134,12 @@ CompileTimeAssert(sizeof(cpuaddr) >= sizeof(void *),  TypePtrWrongSize);
  */
 #if !defined(SOFTWARE_BIG_BIT_ORDER) && !defined(SOFTWARE_LITTLE_BIT_ORDER)
 
-#if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || \
-    defined(__BIG_ENDIAN__) || \
-    defined(__ARMEB__) || \
-    defined(__THUMBEB__) || \
-    defined(__AARCH64EB__) || \
-    defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
+#if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || defined(__BIG_ENDIAN__) || defined(__ARMEB__) || \
+    defined(__THUMBEB__) || defined(__AARCH64EB__) || defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
 /* It is a big-endian target architecture */
 #define SOFTWARE_BIG_BIT_ORDER
-#elif defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN || \
-    defined(__LITTLE_ENDIAN__) || \
-    defined(__ARMEL__) || \
-    defined(__THUMBEL__) || \
-    defined(__AARCH64EL__) || \
-    defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
+#elif defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN || defined(__LITTLE_ENDIAN__) || defined(__ARMEL__) || \
+    defined(__THUMBEL__) || defined(__AARCH64EL__) || defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
 /* It is a little-endian target architecture */
 #define SOFTWARE_LITTLE_BIT_ORDER
 #endif
@@ -157,7 +147,7 @@ CompileTimeAssert(sizeof(cpuaddr) >= sizeof(void *),  TypePtrWrongSize);
 #endif /* !defined(SOFTWARE_BIG_BIT_ORDER) && !defined(SOFTWARE_LITTLE_BIT_ORDER) */
 
 #ifdef __cplusplus
-   }
+}
 #endif
 
-#endif  /* _common_types_ */
+#endif /* _common_types_ */

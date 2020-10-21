@@ -21,7 +21,7 @@
 /*
 ** timertest.c
 **
-** This program is an OSAL sample that tests the OSAL timer functions. 
+** This program is an OSAL sample that tests the OSAL timer functions.
 **
 */
 
@@ -33,27 +33,24 @@
 #include "uttest.h"
 #include "utbsp.h"
 
-
 #define NUMBER_OF_TIMERS 4
 
 #define TASK_1_ID         1
 #define TASK_1_STACK_SIZE 4096
 #define TASK_1_PRIORITY   101
 
-
 void TimerTestSetup(void);
 void TimerTestTask(void);
 void TimerTestCheck(void);
 
-OS_time_t        StartTime;
-OS_time_t        EndTime;
-uint32           TimerStart[NUMBER_OF_TIMERS] = {1000, 2000000, 3000000, 4000000 };
-uint32           TimerInterval[NUMBER_OF_TIMERS] = {500000, 400000, 800000, 600000 };
+OS_time_t StartTime;
+OS_time_t EndTime;
+uint32    TimerStart[NUMBER_OF_TIMERS]    = {1000, 2000000, 3000000, 4000000};
+uint32    TimerInterval[NUMBER_OF_TIMERS] = {500000, 400000, 800000, 600000};
 
 uint32 TimerTestTaskStack[TASK_1_STACK_SIZE];
-int32 timer_counter[NUMBER_OF_TIMERS];
+int32  timer_counter[NUMBER_OF_TIMERS];
 uint32 timer_idlookup[OS_MAX_TIMERS];
-
 
 /*
  * Test timer function.
@@ -62,38 +59,38 @@ uint32 timer_idlookup[OS_MAX_TIMERS];
  */
 void test_func(osal_id_t timer_id)
 {
-   uint32 indx;
-   OS_ConvertToArrayIndex(timer_id, &indx);
-   timer_counter[timer_idlookup[indx]]++;
+    uint32 indx;
+    OS_ConvertToArrayIndex(timer_id, &indx);
+    timer_counter[timer_idlookup[indx]]++;
 }
-
 
 /* ********************** MAIN **************************** */
 
 void UtTest_Setup(void)
 {
 
-  if (OS_API_Init() != OS_SUCCESS)
-  {
-      UtAssert_Abort("OS_API_Init() failed");
-  }
+    if (OS_API_Init() != OS_SUCCESS)
+    {
+        UtAssert_Abort("OS_API_Init() failed");
+    }
 
-  /*
-   * Register the timer test setup and check routines in UT assert
-   */
-  UtTest_Add(TimerTestCheck, TimerTestSetup, NULL, "TimerTest");
+    /*
+     * Register the timer test setup and check routines in UT assert
+     */
+    UtTest_Add(TimerTestCheck, TimerTestSetup, NULL, "TimerTest");
 }
 
 void TimerTestSetup(void)
 {
-    int32  status;
+    int32     status;
     osal_id_t TimerTestTaskId;
 
     /*
      * In the new versions of OSAL, timers do NOT work in the "main" thread,
      * so we must create a task to handle them.
      */
-    status = OS_TaskCreate( &TimerTestTaskId, "Task 1", TimerTestTask, TimerTestTaskStack, TASK_1_STACK_SIZE, TASK_1_PRIORITY, 0);
+    status = OS_TaskCreate(&TimerTestTaskId, "Task 1", TimerTestTask, TimerTestTaskStack, TASK_1_STACK_SIZE,
+                           TASK_1_PRIORITY, 0);
     UtAssert_True(status == OS_SUCCESS, "Timer Test Task Created RC=%d", (int)status);
 
     /*
@@ -113,112 +110,110 @@ void TimerTestSetup(void)
 
 void TimerTestTask(void)
 {
-   
-   int              i = 0;
-   int32            TimerStatus[NUMBER_OF_TIMERS];
-   uint32           TableId;
-   osal_id_t        TimerID[NUMBER_OF_TIMERS];
-   char             TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1","TIMER2","TIMER3","TIMER4"};
-   uint32           ClockAccuracy;
 
+    int       i = 0;
+    int32     TimerStatus[NUMBER_OF_TIMERS];
+    uint32    TableId;
+    osal_id_t TimerID[NUMBER_OF_TIMERS];
+    char      TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4"};
+    uint32    ClockAccuracy;
 
-   for ( i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++ )
-   {
-      TimerStatus[i] = OS_TimerCreate(&TimerID[i], TimerName[i], &ClockAccuracy, &(test_func));
-      UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d Created RC=%d ID=%lx", i,
-              (int)TimerStatus[i], OS_ObjectIdToInteger(TimerID[i]));
+    for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
+    {
+        TimerStatus[i] = OS_TimerCreate(&TimerID[i], TimerName[i], &ClockAccuracy, &(test_func));
+        UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d Created RC=%d ID=%lx", i, (int)TimerStatus[i],
+                      OS_ObjectIdToInteger(TimerID[i]));
 
-      UtPrintf("Timer %d Accuracy = %d microseconds \n",i ,(int)ClockAccuracy);
+        UtPrintf("Timer %d Accuracy = %d microseconds \n", i, (int)ClockAccuracy);
 
-      OS_ConvertToArrayIndex(TimerID[i], &TableId);
-      timer_idlookup[TableId] = i;
-   }
+        OS_ConvertToArrayIndex(TimerID[i], &TableId);
+        timer_idlookup[TableId] = i;
+    }
 
-   /* Sample the clock now, before starting any timer */
-   OS_GetLocalTime(&StartTime);
-   for ( i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++ )
-   {
-      /*
-       * to ensure that all timers are started as closely as possible,
-       * this just stores the result and does not assert/printf now
-       */
-      TimerStatus[i]  =  OS_TimerSet(TimerID[i], TimerStart[i], TimerInterval[i]);
-   }
+    /* Sample the clock now, before starting any timer */
+    OS_GetLocalTime(&StartTime);
+    for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
+    {
+        /*
+         * to ensure that all timers are started as closely as possible,
+         * this just stores the result and does not assert/printf now
+         */
+        TimerStatus[i] = OS_TimerSet(TimerID[i], TimerStart[i], TimerInterval[i]);
+    }
 
-   /*
-    * Now the actual OS_TimerSet() return code can be checked.
+    /*
+     * Now the actual OS_TimerSet() return code can be checked.
+     */
+    for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
+    {
+        UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d programmed RC=%d", i, (int)TimerStatus[i]);
+    }
+
+    /*
+    ** Let the main thread sleep
     */
-   for ( i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++ )
-   {
-       UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d programmed RC=%d", i, (int)TimerStatus[i]);
-   }
+    UtPrintf("Starting Delay loop.\n");
+    for (i = 0; i < 30; i++)
+    {
+        /*
+        ** Even though this sleep call is for 1 second,
+        ** the sigalarm timer for the 1hz will keep waking
+        ** it up. Keep that in mind when setting the timer down
+        ** to something very small.
+        */
+        OS_TaskDelay(1000);
+    }
+    OS_GetLocalTime(&EndTime);
 
-   /*
-   ** Let the main thread sleep 
-   */     
-   UtPrintf("Starting Delay loop.\n");
-   for (i = 0 ; i < 30; i++ )
-   {
-      /* 
-      ** Even though this sleep call is for 1 second,
-      ** the sigalarm timer for the 1hz will keep waking
-      ** it up. Keep that in mind when setting the timer down
-      ** to something very small.
-      */
-      OS_TaskDelay(1000);
-   }
-   OS_GetLocalTime(&EndTime);
+    for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
+    {
+        TimerStatus[i] = OS_TimerDelete(TimerID[i]);
+    }
 
-   for ( i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++ )
-   {
-       TimerStatus[i] =  OS_TimerDelete(TimerID[i]);
-   }
+    for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
+    {
+        UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d delete RC=%d. Count total = %d", i, (int)TimerStatus[i],
+                      (int)timer_counter[i]);
+    }
 
-   for ( i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++ )
-   {
-       UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d delete RC=%d. Count total = %d",
-               i, (int)TimerStatus[i], (int)timer_counter[i]);
-   }
-
-   OS_ApplicationShutdown(true);
-   OS_TaskExit();
+    OS_ApplicationShutdown(true);
+    OS_TaskExit();
 }
 
 void TimerTestCheck(void)
 {
-    uint32           microsecs;
-    int32           expected;
-    uint32           i;
+    uint32 microsecs;
+    int32  expected;
+    uint32 i;
 
-   /*
-    * Time limited test - check and exit
-    */
-   microsecs = 1000000 * (EndTime.seconds - StartTime.seconds);
-   if (EndTime.microsecs < StartTime.microsecs)
-   {
-      microsecs -= StartTime.microsecs - EndTime.microsecs;
-   }
-   else
-   {
-      microsecs += EndTime.microsecs - StartTime.microsecs;
-   }
+    /*
+     * Time limited test - check and exit
+     */
+    microsecs = 1000000 * (EndTime.seconds - StartTime.seconds);
+    if (EndTime.microsecs < StartTime.microsecs)
+    {
+        microsecs -= StartTime.microsecs - EndTime.microsecs;
+    }
+    else
+    {
+        microsecs += EndTime.microsecs - StartTime.microsecs;
+    }
 
-   /* Make sure the ratio of the timers are OK */
-   for ( i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++ )
-   {
-      /*
-       * Expect one tick after the start time (i.e. first tick)
-       * Plus one tick for every interval that occurred during the test
-       */
-      expected = 1 + (microsecs - TimerStart[i]) / TimerInterval[i];
-      UtAssert_True(expected > 0, "Expected ticks = %u", (unsigned int)expected);
+    /* Make sure the ratio of the timers are OK */
+    for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
+    {
+        /*
+         * Expect one tick after the start time (i.e. first tick)
+         * Plus one tick for every interval that occurred during the test
+         */
+        expected = 1 + (microsecs - TimerStart[i]) / TimerInterval[i];
+        UtAssert_True(expected > 0, "Expected ticks = %u", (unsigned int)expected);
 
-      /*
-       * Since all these counts are affected by test system load,
-       * allow for some fudge factor before declaring failure
-       */
-      UtAssert_True(timer_counter[i] >= (expected - 3), "Timer %d count >= %d", (int)i, (int)(expected - 3));
-      UtAssert_True(timer_counter[i] <= (expected + 3), "Timer %d count <= %d", (int)i, (int)(expected + 3));
-   }
+        /*
+         * Since all these counts are affected by test system load,
+         * allow for some fudge factor before declaring failure
+         */
+        UtAssert_True(timer_counter[i] >= (expected - 3), "Timer %d count >= %d", (int)i, (int)(expected - 3));
+        UtAssert_True(timer_counter[i] <= (expected + 3), "Timer %d count <= %d", (int)i, (int)(expected + 3));
+    }
 }
-

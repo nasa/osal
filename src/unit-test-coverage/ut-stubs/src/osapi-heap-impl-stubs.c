@@ -37,4 +37,4 @@
 /*
  * Heap API low-level handler
  */
-UT_DEFAULT_STUB(OS_HeapGetInfo_Impl,(OS_heap_prop_t *heap_prop))
+UT_DEFAULT_STUB(OS_HeapGetInfo_Impl, (OS_heap_prop_t * heap_prop))

@@ -36,7 +36,4 @@
 /* prototypes normally declared in locale.h */
 /* ----------------------------------------- */
 
-
-
 #endif /* _OSAL_STUB_LOCALE_H_ */
-

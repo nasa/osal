@@ -25,7 +25,7 @@
 
 #include <OCS_signal.h>
 
-int OCS_kill (OCS_pid_t pid, int sig)
+int OCS_kill(OCS_pid_t pid, int sig)
 {
     int32 Status;
 
@@ -34,8 +34,7 @@ int OCS_kill (OCS_pid_t pid, int sig)
     return Status;
 }
 
-
-int OCS_sigaddset (OCS_sigset_t * set, int signo)
+int OCS_sigaddset(OCS_sigset_t *set, int signo)
 {
     int32 Status;
 
@@ -44,8 +43,7 @@ int OCS_sigaddset (OCS_sigset_t * set, int signo)
     return Status;
 }
 
-
-int OCS_sigdelset (OCS_sigset_t * set, int signo)
+int OCS_sigdelset(OCS_sigset_t *set, int signo)
 {
     int32 Status;
 
@@ -54,8 +52,7 @@ int OCS_sigdelset (OCS_sigset_t * set, int signo)
     return Status;
 }
 
-
-int OCS_sigemptyset (OCS_sigset_t * set)
+int OCS_sigemptyset(OCS_sigset_t *set)
 {
     int32 Status;
 
@@ -64,8 +61,7 @@ int OCS_sigemptyset (OCS_sigset_t * set)
     return Status;
 }
 
-
-int OCS_sigfillset (OCS_sigset_t * set)
+int OCS_sigfillset(OCS_sigset_t *set)
 {
     int32 Status;
 
@@ -74,8 +70,7 @@ int OCS_sigfillset (OCS_sigset_t * set)
     return Status;
 }
 
-
-int OCS_sigismember (const OCS_sigset_t * set, int signo)
+int OCS_sigismember(const OCS_sigset_t *set, int signo)
 {
     int32 Status;
 
@@ -84,15 +79,13 @@ int OCS_sigismember (const OCS_sigset_t * set, int signo)
     return Status;
 }
 
-
 OCS_sighandler_t OCS_signal(int signum, OCS_sighandler_t handler)
 {
     UT_DEFAULT_IMPL(OCS_signal);
     return (OCS_sighandler_t)0;
 }
 
-
-int OCS_sigprocmask (int how, const OCS_sigset_t * set, OCS_sigset_t * oset)
+int OCS_sigprocmask(int how, const OCS_sigset_t *set, OCS_sigset_t *oset)
 {
     int32 Status;
 
@@ -101,8 +94,7 @@ int OCS_sigprocmask (int how, const OCS_sigset_t * set, OCS_sigset_t * oset)
     return Status;
 }
 
-
-int OCS_sigsuspend (const OCS_sigset_t * set)
+int OCS_sigsuspend(const OCS_sigset_t *set)
 {
     int32 Status;
 
@@ -111,8 +103,7 @@ int OCS_sigsuspend (const OCS_sigset_t * set)
     return Status;
 }
 
-
-int OCS_sigwait (const OCS_sigset_t * set, int * sig)
+int OCS_sigwait(const OCS_sigset_t *set, int *sig)
 {
     int32 Status;
 
@@ -122,12 +113,10 @@ int OCS_sigwait (const OCS_sigset_t * set, int * sig)
      * The "sig" value is an output, which the UT test
      * case may need to control.
      */
-    if (UT_Stub_CopyToLocal(UT_KEY(OCS_sigwait),sig,sizeof(*sig)) < sizeof(*sig))
+    if (UT_Stub_CopyToLocal(UT_KEY(OCS_sigwait), sig, sizeof(*sig)) < sizeof(*sig))
     {
         *sig = 1;
     }
 
     return Status;
 }
-
-

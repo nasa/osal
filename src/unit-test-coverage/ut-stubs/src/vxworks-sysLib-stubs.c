@@ -27,8 +27,5 @@
 
 int OCS_sysClkRateGet(void)
 {
-    return (UT_DEFAULT_IMPL_RC(OCS_sysClkRateGet,10000));
+    return (UT_DEFAULT_IMPL_RC(OCS_sysClkRateGet, 10000));
 }
-
-
-

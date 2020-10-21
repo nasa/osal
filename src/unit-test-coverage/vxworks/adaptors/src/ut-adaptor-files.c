@@ -32,8 +32,6 @@
 #include <os-vxworks.h>
 #include <os-impl-files.h>
 
-
-
 int32 UT_Call_OS_VxWorks_StreamAPI_Impl_Init(void)
 {
     return OS_VxWorks_StreamAPI_Impl_Init();

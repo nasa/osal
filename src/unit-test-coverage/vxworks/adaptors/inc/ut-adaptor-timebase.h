@@ -32,9 +32,8 @@
 #include <OCS_symLib.h>
 #include <OCS_time.h>
 
-extern void*  const UT_Ref_OS_impl_timebase_table;
+extern void *const  UT_Ref_OS_impl_timebase_table;
 extern size_t const UT_Ref_OS_impl_timebase_table_SIZE;
-
 
 int32 UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(void);
 
@@ -63,5 +62,4 @@ bool UT_TimeBaseTest_CheckTimeBaseErrorState(uint32 local_id);
 /* Invoke the internal UsecToTimespec API */
 void UT_TimeBaseTest_UsecToTimespec(uint32 usecs, struct OCS_timespec *time_spec);
 
-#endif  /* INCLUDE_UT_ADAPTOR_TIMEBASE_H_ */
-
+#endif /* INCLUDE_UT_ADAPTOR_TIMEBASE_H_ */

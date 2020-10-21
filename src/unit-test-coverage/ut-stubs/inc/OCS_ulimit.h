@@ -37,6 +37,4 @@
 /* ----------------------------------------- */
 long OCS_ulimit(int cmd, long newlimit);
 
-
 #endif /* _OSAL_STUB_ULIMIT_H_ */
-

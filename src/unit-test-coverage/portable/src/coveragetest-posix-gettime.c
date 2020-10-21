@@ -29,7 +29,6 @@
 
 #include <OCS_time.h>
 
-
 void Test_OS_GetLocalTime_Impl(void)
 {
     /*
@@ -37,7 +36,7 @@ void Test_OS_GetLocalTime_Impl(void)
      * int32 OS_GetLocalTime_Impl(OS_time_t *time_struct)
      */
     OS_time_t timeval;
-    timeval.seconds = 1;
+    timeval.seconds   = 1;
     timeval.microsecs = 1;
     OSAPI_TEST_FUNCTION_RC(OS_GetLocalTime_Impl, (&timeval), OS_SUCCESS);
 
@@ -52,14 +51,13 @@ void Test_OS_SetLocalTime_Impl(void)
      * int32 OS_SetLocalTime_Impl(const OS_time_t *time_struct)
      */
     OS_time_t timeval;
-    timeval.seconds = 1;
+    timeval.seconds   = 1;
     timeval.microsecs = 1;
     OSAPI_TEST_FUNCTION_RC(OS_SetLocalTime_Impl, (&timeval), OS_SUCCESS);
 
     UT_SetForceFail(UT_KEY(OCS_clock_settime), -1);
     OSAPI_TEST_FUNCTION_RC(OS_SetLocalTime_Impl, (&timeval), OS_ERROR);
 }
-
 
 /* ------------------- End of test cases --------------------------------------*/
 
@@ -79,13 +77,9 @@ void Osapi_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Osapi_Test_Teardown(void)
-{
+void Osapi_Test_Teardown(void) {}
 
-}
-
-
-#define ADD_TEST(test) UtTest_Add((Test_ ## test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
+#define ADD_TEST(test) UtTest_Add((Test_##test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
 
 /* UtTest_Setup
  *
@@ -97,5 +91,3 @@ void UtTest_Setup(void)
     ADD_TEST(OS_GetLocalTime_Impl);
     ADD_TEST(OS_SetLocalTime_Impl);
 }
-
-

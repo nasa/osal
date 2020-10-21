@@ -63,7 +63,7 @@ uint32 OS_BSP_GetArgC(void)
    OS_BSP_GetArgV
    See full description in header
  ------------------------------------------------------------------*/
-char * const * OS_BSP_GetArgV(void)
+char *const *OS_BSP_GetArgV(void)
 {
     return OS_BSP_Global.ArgV;
 }
@@ -76,4 +76,3 @@ void OS_BSP_SetExitCode(int32 code)
 {
     OS_BSP_Global.AppStatus = code;
 }
-
