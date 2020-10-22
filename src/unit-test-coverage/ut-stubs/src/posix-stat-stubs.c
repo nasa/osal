@@ -66,6 +66,20 @@ int OCS_stat(const char *file, struct OCS_stat *buf)
     return Status;
 }
 
+int OCS_fstat(int fd, struct OCS_stat *buf)
+{
+    int32 Status;
+
+    Status = UT_DEFAULT_IMPL(OCS_fstat);
+
+    if (Status == 0 && UT_Stub_CopyToLocal(UT_KEY(OCS_fstat), buf, sizeof(*buf)) < sizeof(*buf))
+    {
+        memset(buf, 0, sizeof(*buf));
+    }
+
+    return Status;
+}
+
 int OCS_statvfs(const char *file, struct OCS_statvfs *buf)
 {
     int32 Status;
