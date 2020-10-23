@@ -32,7 +32,8 @@
 
 typedef struct
 {
-    char obj_name[OS_MAX_API_NAME];
+   char      obj_name[OS_MAX_API_NAME];
+   osal_id_t last_owner;
 } OS_mutex_internal_record_t;
 
 /*

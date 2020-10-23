@@ -162,11 +162,24 @@ int32 OS_MutSemGive(osal_id_t sem_id)
     OS_common_record_t *record;
     uint32              local_id;
     int32               return_code;
+    osal_id_t           self_task;
 
     /* Check Parameters */
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
     if (return_code == OS_SUCCESS)
     {
+        self_task = OS_TaskGetId();
+
+        if (!OS_ObjectIdEqual(OS_mutex_table[local_id].last_owner, self_task))
+        {
+            OS_DEBUG("WARNING: Task %lu giving mutex %lu while owned by task %lu\n",
+                    OS_ObjectIdToInteger(self_task),
+                    OS_ObjectIdToInteger(sem_id),
+                    OS_ObjectIdToInteger(OS_mutex_table[local_id].last_owner));
+        }
+
+        OS_mutex_table[local_id].last_owner = OS_OBJECT_ID_UNDEFINED;
+
         return_code = OS_MutSemGive_Impl(local_id);
     }
 
@@ -187,12 +200,27 @@ int32 OS_MutSemTake(osal_id_t sem_id)
     OS_common_record_t *record;
     uint32              local_id;
     int32               return_code;
+    osal_id_t           self_task;
 
     /* Check Parameters */
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
     if (return_code == OS_SUCCESS)
     {
         return_code = OS_MutSemTake_Impl(local_id);
+        if (return_code == OS_SUCCESS)
+        {
+            self_task = OS_TaskGetId();
+
+            if (OS_ObjectIdDefined(OS_mutex_table[local_id].last_owner))
+            {
+                OS_DEBUG("WARNING: Task %lu taking mutex %lu while owned by task %lu\n",
+                        OS_ObjectIdToInteger(self_task),
+                        OS_ObjectIdToInteger(sem_id),
+                        OS_ObjectIdToInteger(OS_mutex_table[local_id].last_owner));
+            }
+
+            OS_mutex_table[local_id].last_owner = self_task;
+        }
     }
 
     return return_code;
