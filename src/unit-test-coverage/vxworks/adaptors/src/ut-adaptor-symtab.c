@@ -36,7 +36,7 @@
  * A UT-specific wrapper function to invoke the Symbol Table Iterator.
  * This is normally static so it needs this wrapper to call it.
  */
-int32 UT_SymTabTest_CallIteratorFunc(const char *name, void *val, uint32 TestSize, uint32 SizeLimit)
+int32 UT_SymTabTest_CallIteratorFunc(const char *name, void *val, size_t TestSize, size_t SizeLimit)
 {
     OS_VxWorks_SymbolDumpState.Sizelimit = SizeLimit;
     OS_VxWorks_SymbolDumpState.CurrSize  = TestSize;

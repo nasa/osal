@@ -36,9 +36,9 @@ typedef struct
 {
     char             timer_name[OS_MAX_API_NAME];
     uint32           flags;
-    uint32           timebase_ref;
-    uint32           prev_ref;
-    uint32           next_ref;
+    osal_index_t     timebase_ref;
+    osal_index_t     prev_ref;
+    osal_index_t     next_ref;
     uint32           backlog_resets;
     int32            wait_time;
     int32            interval_time;

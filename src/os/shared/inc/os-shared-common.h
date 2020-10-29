@@ -87,7 +87,7 @@ int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data);
 
    returns: OS_SUCCESS on success, or relevant error code
 ---------------------------------------------------------------------------------------*/
-int32 OS_API_Impl_Init(uint32 idtype);
+int32 OS_API_Impl_Init(osal_objtype_t idtype);
 
 /*
  * This functions implement a the OS-specific portion

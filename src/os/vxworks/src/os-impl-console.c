@@ -66,7 +66,7 @@ OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_ConsoleWakeup_Impl(uint32 local_id)
+void OS_ConsoleWakeup_Impl(osal_index_t local_id)
 {
     OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
 
@@ -94,7 +94,7 @@ void OS_ConsoleWakeup_Impl(uint32 local_id)
  *-----------------------------------------------------------------*/
 int OS_VxWorks_ConsoleTask_Entry(int arg)
 {
-    uint32                             local_id = arg;
+    osal_index_t                       local_id = OSAL_INDEX_C(arg);
     OS_impl_console_internal_record_t *local;
 
     local = &OS_impl_console_table[local_id];
@@ -119,7 +119,7 @@ int OS_VxWorks_ConsoleTask_Entry(int arg)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ConsoleCreate_Impl(uint32 local_id)
+int32 OS_ConsoleCreate_Impl(osal_index_t local_id)
 {
     OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
     int32                              return_code;

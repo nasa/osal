@@ -37,7 +37,7 @@
 /*
 ** Console output API (printf)
 */
-void OS_ConsoleOutput_Impl(uint32 local_id)
+void OS_ConsoleOutput_Impl(osal_index_t local_id)
 {
     UT_DEFAULT_IMPL(OS_ConsoleOutput_Impl);
 }

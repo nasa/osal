@@ -108,9 +108,9 @@ int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data)
  *-----------------------------------------------------------------*/
 int32 OS_API_Init(void)
 {
-    int32  return_code = OS_SUCCESS;
-    uint32 idtype;
-    uint32 microSecPerSec;
+    int32          return_code = OS_SUCCESS;
+    osal_objtype_t idtype;
+    uint32         microSecPerSec;
 
     if (OS_SharedGlobalVars.Initialized != false)
     {

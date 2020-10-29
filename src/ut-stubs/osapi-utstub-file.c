@@ -41,10 +41,10 @@ UT_DEFAULT_STUB(OS_FileAPI_Init, (void))
  * Local Stub helper function for reading
  *
  *****************************************************************************/
-static int32 UT_GenericReadStub(const char *fname, UT_EntryKey_t fkey, void *buffer, uint32 bsize)
+static int32 UT_GenericReadStub(const char *fname, UT_EntryKey_t fkey, void *buffer, size_t bsize)
 {
     int32  status;
-    uint32 CopySize;
+    size_t CopySize;
 
     status = UT_DefaultStubImpl(fname, fkey, 0x7FFFFFFF);
 
@@ -79,10 +79,10 @@ static int32 UT_GenericReadStub(const char *fname, UT_EntryKey_t fkey, void *buf
  * Local Stub helper function for writing
  *
  *****************************************************************************/
-static int32 UT_GenericWriteStub(const char *fname, UT_EntryKey_t fkey, const void *buffer, uint32 bsize)
+static int32 UT_GenericWriteStub(const char *fname, UT_EntryKey_t fkey, const void *buffer, size_t bsize)
 {
     int32  status;
-    uint32 CopySize;
+    size_t CopySize;
 
     status = UT_DefaultStubImpl(fname, fkey, 0x7FFFFFFF);
 
@@ -209,7 +209,7 @@ int32 OS_close(osal_id_t filedes)
  * Stub function for OS_StreamRead()
  *
  *****************************************************************************/
-int32 OS_StreamRead(osal_id_t filedes, void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_StreamRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout)
 {
     return UT_GenericReadStub(__func__, UT_KEY(OS_StreamRead), buffer, nbytes);
 }
@@ -219,7 +219,7 @@ int32 OS_StreamRead(osal_id_t filedes, void *buffer, uint32 nbytes, int32 timeou
  * Stub function for OS_StreamWrite()
  *
  *****************************************************************************/
-int32 OS_StreamWrite(osal_id_t filedes, const void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_StreamWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 timeout)
 {
     return UT_GenericWriteStub(__func__, UT_KEY(OS_StreamWrite), buffer, nbytes);
 }
@@ -229,7 +229,7 @@ int32 OS_StreamWrite(osal_id_t filedes, const void *buffer, uint32 nbytes, int32
  * Stub function for OS_read()
  *
  *****************************************************************************/
-int32 OS_read(osal_id_t filedes, void *buffer, uint32 nbytes)
+int32 OS_read(osal_id_t filedes, void *buffer, size_t nbytes)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_read), filedes);
     UT_Stub_RegisterContext(UT_KEY(OS_read), buffer);
@@ -243,7 +243,7 @@ int32 OS_read(osal_id_t filedes, void *buffer, uint32 nbytes)
  * Stub function for OS_write()
  *
  *****************************************************************************/
-int32 OS_write(osal_id_t filedes, const void *buffer, uint32 nbytes)
+int32 OS_write(osal_id_t filedes, const void *buffer, size_t nbytes)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_write), filedes);
     UT_Stub_RegisterContext(UT_KEY(OS_write), buffer);
@@ -257,7 +257,7 @@ int32 OS_write(osal_id_t filedes, const void *buffer, uint32 nbytes)
  * Stub function for OS_TimedRead()
  *
  *****************************************************************************/
-int32 OS_TimedRead(osal_id_t filedes, void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimedRead), filedes);
     UT_Stub_RegisterContext(UT_KEY(OS_TimedRead), buffer);
@@ -272,7 +272,7 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, uint32 nbytes, int32 timeout
  * Stub function for OS_TimedWrite()
  *
  *****************************************************************************/
-int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 timeout)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TimedWrite), filedes);
     UT_Stub_RegisterContext(UT_KEY(OS_TimedWrite), buffer);
@@ -416,7 +416,7 @@ int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop)
     UT_Stub_RegisterContext(UT_KEY(OS_FDGetInfo), fd_prop);
 
     int32  status;
-    uint32 CopySize;
+    size_t CopySize;
 
     status = UT_DEFAULT_IMPL(OS_FDGetInfo);
 

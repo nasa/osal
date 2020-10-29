@@ -85,7 +85,7 @@ int32 OS_Rtems_MutexAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options)
+int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options)
 {
     rtems_status_code status;
     rtems_name        r_name;
@@ -114,7 +114,7 @@ int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemDelete_Impl(uint32 sem_id)
+int32 OS_MutSemDelete_Impl(osal_index_t sem_id)
 {
     rtems_status_code status;
 
@@ -138,7 +138,7 @@ int32 OS_MutSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGive_Impl(uint32 sem_id)
+int32 OS_MutSemGive_Impl(osal_index_t sem_id)
 {
     rtems_status_code status;
 
@@ -163,7 +163,7 @@ int32 OS_MutSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemTake_Impl(uint32 sem_id)
+int32 OS_MutSemTake_Impl(osal_index_t sem_id)
 {
     rtems_status_code status;
 
@@ -187,7 +187,7 @@ int32 OS_MutSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGetInfo_Impl(uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
+int32 OS_MutSemGetInfo_Impl(osal_index_t sem_id, OS_mut_sem_prop_t *mut_prop)
 {
     /* RTEMS provides no additional info */
     return OS_SUCCESS;

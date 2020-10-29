@@ -74,7 +74,7 @@ const char OS_FILESYS_RAMDISK_VOLNAME_PREFIX[] = "RAM";
  *  Returns: true if the entry matches, false if it does not match
  *
  *-----------------------------------------------------------------*/
-bool OS_FileSys_FindVirtMountPoint(void *ref, uint32 local_id, const OS_common_record_t *obj)
+bool OS_FileSys_FindVirtMountPoint(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
 {
     OS_filesys_internal_record_t *rec    = &OS_filesys_table[local_id];
     const char *                  target = (const char *)ref;
@@ -101,13 +101,13 @@ bool OS_FileSys_FindVirtMountPoint(void *ref, uint32 local_id, const OS_common_r
  *  Returns: OS_SUCCESS on creating the disk, or appropriate error code.
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, uint32 blocksize,
-                            uint32 numblocks, bool should_format)
+int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, size_t blocksize,
+                            osal_blockcount_t numblocks, bool should_format)
 {
     OS_common_record_t *          global;
     OS_filesys_internal_record_t *local;
     int32                         return_code;
-    uint32                        local_id;
+    osal_index_t                  local_id;
 
     /*
     ** Check parameters
@@ -229,7 +229,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
     OS_common_record_t *          global;
     OS_filesys_internal_record_t *local;
     int32                         return_code;
-    uint32                        local_id;
+    osal_index_t                  local_id;
     const char *                  dev_name;
 
     /*
@@ -316,7 +316,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_mkfs(char *address, const char *devname, const char *volname, uint32 blocksize, uint32 numblocks)
+int32 OS_mkfs(char *address, const char *devname, const char *volname, size_t blocksize, osal_blockcount_t numblocks)
 {
     int32 return_code;
 
@@ -349,7 +349,7 @@ int32 OS_mkfs(char *address, const char *devname, const char *volname, uint32 bl
 int32 OS_rmfs(const char *devname)
 {
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
     OS_common_record_t *global;
 
     if (devname == NULL)
@@ -402,7 +402,7 @@ int32 OS_rmfs(const char *devname)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_initfs(char *address, const char *devname, const char *volname, uint32 blocksize, uint32 numblocks)
+int32 OS_initfs(char *address, const char *devname, const char *volname, size_t blocksize, osal_blockcount_t numblocks)
 {
     int32 return_code;
 
@@ -435,7 +435,7 @@ int32 OS_initfs(char *address, const char *devname, const char *volname, uint32 
 int32 OS_mount(const char *devname, const char *mountpoint)
 {
     int32                         return_code;
-    uint32                        local_id;
+    osal_index_t                  local_id;
     OS_common_record_t *          global;
     OS_filesys_internal_record_t *local;
 
@@ -511,7 +511,7 @@ int32 OS_mount(const char *devname, const char *mountpoint)
 int32 OS_unmount(const char *mountpoint)
 {
     int32                         return_code;
-    uint32                        local_id;
+    osal_index_t                  local_id;
     OS_common_record_t *          global;
     OS_filesys_internal_record_t *local;
 
@@ -582,7 +582,7 @@ int32 OS_fsBlocksFree(const char *name)
 {
     int32               return_code;
     OS_statvfs_t        statfs;
-    uint32              local_id;
+    osal_index_t        local_id;
     OS_common_record_t *global;
 
     if (name == NULL)
@@ -633,7 +633,7 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
 {
     int32               return_code;
     OS_statvfs_t        statfs;
-    uint32              local_id;
+    osal_index_t        local_id;
     OS_common_record_t *global;
 
     if (name == NULL || bytes_free == NULL)
@@ -682,7 +682,7 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
  *-----------------------------------------------------------------*/
 int32 OS_chkfs(const char *name, bool repair)
 {
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
     OS_common_record_t *global;
 
@@ -729,7 +729,7 @@ int32 OS_chkfs(const char *name, bool repair)
  *-----------------------------------------------------------------*/
 int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
 {
-    uint32                        local_id;
+    osal_index_t                  local_id;
     int32                         return_code;
     OS_common_record_t *          global;
     OS_filesys_internal_record_t *local;
@@ -783,7 +783,7 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
  *-----------------------------------------------------------------*/
 int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
 {
-    int i;
+    osal_index_t idx;
 
     /*
     ** Check to see if the file pointers are NULL
@@ -800,9 +800,9 @@ int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
 
     OS_Lock_Global(OS_OBJECT_TYPE_OS_STREAM);
 
-    for (i = 0; i < OS_MAX_NUM_OPEN_FILES; i++)
+    for (idx = 0; idx < OS_MAX_NUM_OPEN_FILES; idx++)
     {
-        if (!OS_ObjectIdDefined(OS_global_stream_table[i].active_id))
+        if (!OS_ObjectIdDefined(OS_global_stream_table[idx].active_id))
         {
             filesys_info->FreeFds++;
         }
@@ -812,9 +812,9 @@ int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
 
     OS_Lock_Global(OS_OBJECT_TYPE_OS_FILESYS);
 
-    for (i = 0; i < OS_MAX_FILE_SYSTEMS; i++)
+    for (idx = 0; idx < OS_MAX_FILE_SYSTEMS; idx++)
     {
-        if (!OS_ObjectIdDefined(OS_global_filesys_table[i].active_id))
+        if (!OS_ObjectIdDefined(OS_global_filesys_table[idx].active_id))
         {
             filesys_info->FreeVolumes++;
         }
@@ -835,7 +835,7 @@ int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
  *-----------------------------------------------------------------*/
 int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
 {
-    uint32                        local_id;
+    osal_index_t                  local_id;
     int32                         return_code;
     const char *                  name_ptr;
     OS_common_record_t *          global;

@@ -117,7 +117,7 @@ int32 OS_VxWorks_TaskAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
+int32 OS_TaskCreate_Impl(osal_index_t task_id, uint32 flags)
 {
     STATUS                          status;
     int                             vxflags;
@@ -268,7 +268,7 @@ int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskDelete_Impl(uint32 task_id)
+int32 OS_TaskDelete_Impl(osal_index_t task_id)
 {
     /*
     ** Try to delete the task
@@ -336,7 +336,7 @@ int32 OS_TaskDelay_Impl(uint32 milli_second)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskSetPriority_Impl(uint32 task_id, uint32 new_priority)
+int32 OS_TaskSetPriority_Impl(osal_index_t task_id, osal_priority_t new_priority)
 {
     /* Set VxWorks Task Priority */
     if (taskPrioritySet(OS_impl_task_table[task_id].vxid, new_priority) != OK)
@@ -356,7 +356,7 @@ int32 OS_TaskSetPriority_Impl(uint32 task_id, uint32 new_priority)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskMatch_Impl(uint32 task_id)
+int32 OS_TaskMatch_Impl(osal_index_t task_id)
 {
     /*
     ** Get VxWorks Task Id
@@ -393,7 +393,7 @@ int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
 osal_id_t OS_TaskGetId_Impl(void)
 {
     OS_impl_task_internal_record_t *lrec;
-    size_t                          index;
+    size_t                          idx;
     osal_id_t                       id;
 
     id   = OS_OBJECT_ID_UNDEFINED;
@@ -401,10 +401,10 @@ osal_id_t OS_TaskGetId_Impl(void)
 
     if (lrec != NULL)
     {
-        index = lrec - &OS_impl_task_table[0];
-        if (index < OS_MAX_TASKS)
+        idx = lrec - &OS_impl_task_table[0];
+        if (idx < OS_MAX_TASKS)
         {
-            id = OS_global_task_table[index].active_id;
+            id = OS_global_task_table[idx].active_id;
         }
     }
 
@@ -420,7 +420,7 @@ osal_id_t OS_TaskGetId_Impl(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskGetInfo_Impl(uint32 task_id, OS_task_prop_t *task_prop)
+int32 OS_TaskGetInfo_Impl(osal_index_t task_id, OS_task_prop_t *task_prop)
 {
     return OS_SUCCESS;
 
@@ -434,7 +434,7 @@ int32 OS_TaskGetInfo_Impl(uint32 task_id, OS_task_prop_t *task_prop)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskValidateSystemData_Impl(const void *sysdata, uint32 sysdata_size)
+int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size)
 {
     if (sysdata == NULL || sysdata_size != sizeof(TASK_ID))
     {
@@ -451,7 +451,7 @@ int32 OS_TaskValidateSystemData_Impl(const void *sysdata, uint32 sysdata_size)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-bool OS_TaskIdMatchSystemData_Impl(void *ref, uint32 local_id, const OS_common_record_t *obj)
+bool OS_TaskIdMatchSystemData_Impl(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
 {
     const TASK_ID *target = (const TASK_ID *)ref;
 

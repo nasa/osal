@@ -62,7 +62,7 @@ int32 OS_BinSemAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options);
+int32 OS_BinSemCreate_Impl(osal_index_t sem_id, uint32 sem_initial_value, uint32 options);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemFlush_Impl
@@ -72,7 +72,7 @@ int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 optio
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemFlush_Impl(uint32 sem_id);
+int32 OS_BinSemFlush_Impl(osal_index_t sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemGive_Impl
@@ -81,7 +81,7 @@ int32 OS_BinSemFlush_Impl(uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemGive_Impl(uint32 sem_id);
+int32 OS_BinSemGive_Impl(osal_index_t sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemTake_Impl
@@ -91,7 +91,7 @@ int32 OS_BinSemGive_Impl(uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemTake_Impl(uint32 sem_id);
+int32 OS_BinSemTake_Impl(osal_index_t sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemTimedWait_Impl
@@ -101,7 +101,7 @@ int32 OS_BinSemTake_Impl(uint32 sem_id);
     Returns: OS_SUCCESS on success, or relevant error code
              OS_SEM_TIMEOUT must be returned if the time limit was reached
  ------------------------------------------------------------------*/
-int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs);
+int32 OS_BinSemTimedWait_Impl(osal_index_t sem_id, uint32 msecs);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemDelete_Impl
@@ -110,7 +110,7 @@ int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemDelete_Impl(uint32 sem_id);
+int32 OS_BinSemDelete_Impl(osal_index_t sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemGetInfo_Impl
@@ -119,6 +119,6 @@ int32 OS_BinSemDelete_Impl(uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemGetInfo_Impl(uint32 sem_id, OS_bin_sem_prop_t *bin_prop);
+int32 OS_BinSemGetInfo_Impl(osal_index_t sem_id, OS_bin_sem_prop_t *bin_prop);
 
 #endif /* INCLUDE_OS_SHARED_BINSEM_H_ */

@@ -84,6 +84,6 @@ int32 OS_Rtems_StreamAPI_Impl_Init(void);
 int32 OS_Rtems_DirAPI_Impl_Init(void);
 int32 OS_Rtems_FileSysAPI_Impl_Init(void);
 
-int32 OS_Rtems_TableMutex_Init(uint32 idtype);
+int32 OS_Rtems_TableMutex_Init(osal_objtype_t idtype);
 
 #endif /* INCLUDE_OS_RTEMS_H_ */

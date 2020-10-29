@@ -43,6 +43,10 @@
 
 #define ADD_TEST(test) UtTest_Add((Test_##test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
 
+#define UT_INDEX_0 OSAL_INDEX_C(0)
+#define UT_INDEX_1 OSAL_INDEX_C(1)
+#define UT_INDEX_2 OSAL_INDEX_C(2)
+
 /* Osapi_Test_Setup
  *
  * Purpose:

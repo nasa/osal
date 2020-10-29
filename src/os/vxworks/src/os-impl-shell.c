@@ -52,13 +52,13 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char *Cmd)
+int32 OS_ShellOutputToFile_Impl(osal_index_t file_id, const char *Cmd)
 {
-    int32     ReturnCode = OS_ERROR;
-    int32     Result;
-    osal_id_t fdCmd;
-    uint32    cmdidx;
-    char *    shellName;
+    int32        ReturnCode = OS_ERROR;
+    int32        Result;
+    osal_id_t    fdCmd;
+    osal_index_t cmdidx;
+    char *       shellName;
 
     /* Create a file to write the command to (or write over the old one) */
     Result =

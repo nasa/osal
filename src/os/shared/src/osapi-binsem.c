@@ -98,7 +98,7 @@ int32 OS_BinSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_initia
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     /* Check for NULL pointers */
     if (sem_id == NULL || sem_name == NULL)
@@ -141,7 +141,7 @@ int32 OS_BinSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_initia
 int32 OS_BinSemDelete(osal_id_t sem_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
@@ -168,7 +168,7 @@ int32 OS_BinSemDelete(osal_id_t sem_id)
 int32 OS_BinSemGive(osal_id_t sem_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -193,7 +193,7 @@ int32 OS_BinSemGive(osal_id_t sem_id)
 int32 OS_BinSemFlush(osal_id_t sem_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -217,7 +217,7 @@ int32 OS_BinSemFlush(osal_id_t sem_id)
 int32 OS_BinSemTake(osal_id_t sem_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -241,7 +241,7 @@ int32 OS_BinSemTake(osal_id_t sem_id)
 int32 OS_BinSemTimedWait(osal_id_t sem_id, uint32 msecs)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -287,7 +287,7 @@ int32 OS_BinSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
 int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check parameters */

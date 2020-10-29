@@ -143,7 +143,7 @@ int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
     UT_Stub_RegisterContext(UT_KEY(OS_DirectoryRead), dirent);
 
     int32  Status;
-    uint32 CopySize;
+    size_t CopySize;
 
     Status = UT_DEFAULT_IMPL(OS_DirectoryRead);
 

@@ -102,7 +102,7 @@ typedef union
  */
 typedef struct
 {
-    uint32            ActualLength; /**< @brief Length of the actual address data */
+    size_t            ActualLength; /**< @brief Length of the actual address data */
     OS_SockAddrData_t AddrData;     /**< @brief Abstract Address data */
 } OS_SockAddr_t;
 
@@ -162,7 +162,7 @@ int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_SocketAddrToString(char *buffer, uint32 buflen, const OS_SockAddr_t *Addr);
+int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Addr);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -317,7 +317,7 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
  *
  * @return Count of actual bytes received or error status, see @ref OSReturnCodes
  */
-int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout);
+int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr, int32 timeout);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -334,7 +334,7 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockA
  *
  * @return Count of actual bytes sent or error status, see @ref OSReturnCodes
  */
-int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr);
+int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, size_t buflen, const OS_SockAddr_t *RemoteAddr);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -400,7 +400,7 @@ int32 OS_NetworkGetID(void);
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_NetworkGetHostName(char *host_name, uint32 name_len);
+int32 OS_NetworkGetHostName(char *host_name, size_t name_len);
 /**@}*/
 
 #endif

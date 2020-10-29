@@ -63,7 +63,7 @@ int32 OS_VxWorks_QueueAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueCreate_Impl(uint32 queue_id, uint32 flags)
+int32 OS_QueueCreate_Impl(osal_index_t queue_id, uint32 flags)
 {
     MSG_Q_ID tmp_msgq_id;
     int      queue_depth = OS_queue_table[queue_id].max_depth; /* maximum number of messages in queue (queue depth) */
@@ -92,7 +92,7 @@ int32 OS_QueueCreate_Impl(uint32 queue_id, uint32 flags)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueDelete_Impl(uint32 queue_id)
+int32 OS_QueueDelete_Impl(osal_index_t queue_id)
 {
     /* Try to delete the queue */
     if (msgQDelete(OS_impl_queue_table[queue_id].vxid) != OK)
@@ -114,7 +114,7 @@ int32 OS_QueueDelete_Impl(uint32 queue_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGet_Impl(uint32 queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout)
+int32 OS_QueueGet_Impl(osal_index_t queue_id, void *data, size_t size, size_t *size_copied, int32 timeout)
 {
     int32  return_code;
     STATUS status;
@@ -159,7 +159,7 @@ int32 OS_QueueGet_Impl(uint32 queue_id, void *data, uint32 size, uint32 *size_co
     }
     else
     {
-        *size_copied = status;
+        *size_copied = OSAL_SIZE_C(status);
         return_code  = OS_SUCCESS;
     }
 
@@ -174,7 +174,7 @@ int32 OS_QueueGet_Impl(uint32 queue_id, void *data, uint32 size, uint32 *size_co
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueuePut_Impl(uint32 queue_id, const void *data, uint32 size, uint32 flags)
+int32 OS_QueuePut_Impl(osal_index_t queue_id, const void *data, size_t size, uint32 flags)
 {
     int32 return_code;
 
@@ -204,7 +204,7 @@ int32 OS_QueuePut_Impl(uint32 queue_id, const void *data, uint32 size, uint32 fl
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGetInfo_Impl(uint32 queue_id, OS_queue_prop_t *queue_prop)
+int32 OS_QueueGetInfo_Impl(osal_index_t queue_id, OS_queue_prop_t *queue_prop)
 {
     /* No extra info for queues in the OS implementation */
     return OS_SUCCESS;

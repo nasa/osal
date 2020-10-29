@@ -112,7 +112,7 @@ typedef struct
 {
     uint32 FileModeBits;
     int32  FileTime;
-    uint32 FileSize;
+    size_t FileSize;
 } os_fstat_t;
 
 /**
@@ -285,7 +285,7 @@ int32 OS_close(osal_id_t filedes);
  * @retval #OS_ERROR if OS call failed
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  */
-int32 OS_read(osal_id_t filedes, void *buffer, uint32 nbytes);
+int32 OS_read(osal_id_t filedes, void *buffer, size_t nbytes);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -306,7 +306,7 @@ int32 OS_read(osal_id_t filedes, void *buffer, uint32 nbytes);
  * @retval #OS_ERROR if OS call failed
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  */
-int32 OS_write(osal_id_t filedes, const void *buffer, uint32 nbytes);
+int32 OS_write(osal_id_t filedes, const void *buffer, size_t nbytes);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -337,7 +337,7 @@ int32 OS_write(osal_id_t filedes, const void *buffer, uint32 nbytes);
  * @return Byte count on success, zero for timeout, or appropriate error code,
  *         see @ref OSReturnCodes
  */
-int32 OS_TimedRead(osal_id_t filedes, void *buffer, uint32 nbytes, int32 timeout);
+int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -368,7 +368,7 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, uint32 nbytes, int32 timeout
  * @return Byte count on success, zero for timeout, or appropriate error code,
  *         see @ref OSReturnCodes
  */
-int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, uint32 nbytes, int32 timeout);
+int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 timeout);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -715,7 +715,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
  * @retval #OS_FS_ERR_DEVICE_NOT_FREE if the volume table is full
  * @retval #OS_SUCCESS on creating the disk
  */
-int32 OS_mkfs(char *address, const char *devname, const char *volname, uint32 blocksize, uint32 numblocks);
+int32 OS_mkfs(char *address, const char *devname, const char *volname, size_t blocksize, osal_blockcount_t numblocks);
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Mounts a file system
@@ -754,7 +754,7 @@ int32 OS_mount(const char *devname, const char *mountpoint);
  * @retval #OS_FS_ERR_DEVICE_NOT_FREE if the volume table is full
  * @retval #OS_FS_ERR_DRIVE_NOT_CREATED on error
  */
-int32 OS_initfs(char *address, const char *devname, const char *volname, uint32 blocksize, uint32 numblocks);
+int32 OS_initfs(char *address, const char *devname, const char *volname, size_t blocksize, osal_blockcount_t numblocks);
 
 /*-------------------------------------------------------------------------------------*/
 /**

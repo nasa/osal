@@ -87,7 +87,7 @@
 int32 OS_GenericSymbolLookup_Impl(void *dl_handle, cpuaddr *SymbolAddress, const char *SymbolName)
 {
     const char *dlError; /*  Pointer to error string   */
-    void       *Function;
+    void *      Function;
     int32       status;
 
     status = OS_ERROR;
@@ -157,7 +157,7 @@ int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleSymbolLookup_Impl(uint32 local_id, cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_ModuleSymbolLookup_Impl(osal_index_t local_id, cpuaddr *SymbolAddress, const char *SymbolName)
 {
     int32 status;
 
@@ -177,7 +177,7 @@ int32 OS_ModuleSymbolLookup_Impl(uint32 local_id, cpuaddr *SymbolAddress, const 
  *  POSIX DL does not provide
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolTableDump_Impl(const char *filename, uint32 SizeLimit)
+int32 OS_SymbolTableDump_Impl(const char *filename, size_t SizeLimit)
 {
     /*
      * Limiting strictly to POSIX-defined API means there is no defined

@@ -66,7 +66,7 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GenericClose_Impl(uint32 local_id)
+int32 OS_GenericClose_Impl(osal_index_t local_id)
 {
     int result;
 
@@ -98,7 +98,7 @@ int32 OS_GenericClose_Impl(uint32 local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GenericSeek_Impl(uint32 local_id, int32 offset, uint32 whence)
+int32 OS_GenericSeek_Impl(osal_index_t local_id, int32 offset, uint32 whence)
 {
     int   where;
     int32 result;
@@ -153,7 +153,7 @@ int32 OS_GenericSeek_Impl(uint32 local_id, int32 offset, uint32 whence)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GenericRead_Impl(uint32 local_id, void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_GenericRead_Impl(osal_index_t local_id, void *buffer, size_t nbytes, int32 timeout)
 {
     int32  return_code;
     int    os_result;
@@ -204,7 +204,7 @@ int32 OS_GenericRead_Impl(uint32 local_id, void *buffer, uint32 nbytes, int32 ti
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GenericWrite_Impl(uint32 local_id, const void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_GenericWrite_Impl(osal_index_t local_id, const void *buffer, size_t nbytes, int32 timeout)
 {
     int32  return_code;
     int    os_result;

@@ -40,7 +40,7 @@
    OS_BSP_ConsoleOutput_Impl
    See full description in header
  ------------------------------------------------------------------*/
-void OS_BSP_ConsoleOutput_Impl(const char *Str, uint32 DataLen)
+void OS_BSP_ConsoleOutput_Impl(const char *Str, size_t DataLen)
 {
     while (DataLen > 0)
     {

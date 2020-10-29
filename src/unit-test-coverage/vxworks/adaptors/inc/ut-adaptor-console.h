@@ -42,6 +42,6 @@ extern void UT_ConsoleTest_TaskEntry(int arg);
 /**
  * Force the "is_async" field to a given state for coverage testing
  */
-extern void UT_ConsoleTest_SetConsoleAsync(uint32 local_id, bool is_async);
+extern void UT_ConsoleTest_SetConsoleAsync(osal_index_t local_id, bool is_async);
 
 #endif /* INCLUDE_UT_ADAPTOR_CONSOLE_H_ */

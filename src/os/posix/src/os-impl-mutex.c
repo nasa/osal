@@ -61,7 +61,7 @@ int32 OS_Posix_MutexAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options)
+int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options)
 {
     int                 return_code;
     pthread_mutexattr_t mutex_attr;
@@ -121,7 +121,7 @@ int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemDelete_Impl(uint32 sem_id)
+int32 OS_MutSemDelete_Impl(osal_index_t sem_id)
 {
     int status;
 
@@ -144,7 +144,7 @@ int32 OS_MutSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGive_Impl(uint32 sem_id)
+int32 OS_MutSemGive_Impl(osal_index_t sem_id)
 {
     int status;
 
@@ -168,7 +168,7 @@ int32 OS_MutSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemTake_Impl(uint32 sem_id)
+int32 OS_MutSemTake_Impl(osal_index_t sem_id)
 {
     int status;
 
@@ -192,7 +192,7 @@ int32 OS_MutSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGetInfo_Impl(uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
+int32 OS_MutSemGetInfo_Impl(osal_index_t sem_id, OS_mut_sem_prop_t *mut_prop)
 {
     return OS_SUCCESS;
 

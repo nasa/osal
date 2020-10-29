@@ -71,7 +71,7 @@ int32 OS_VxWorks_ModuleAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleLoad_Impl(uint32 local_id, const char *translated_path)
+int32 OS_ModuleLoad_Impl(osal_index_t local_id, const char *translated_path)
 {
     int32     return_code;
     int       fd;
@@ -126,7 +126,7 @@ int32 OS_ModuleLoad_Impl(uint32 local_id, const char *translated_path)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleUnload_Impl(uint32 local_id)
+int32 OS_ModuleUnload_Impl(osal_index_t local_id)
 {
     STATUS vxStatus;
 
@@ -152,7 +152,7 @@ int32 OS_ModuleUnload_Impl(uint32 local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleGetInfo_Impl(uint32 local_id, OS_module_prop_t *module_prop)
+int32 OS_ModuleGetInfo_Impl(osal_index_t local_id, OS_module_prop_t *module_prop)
 {
     MODULE_INFO vxModuleInfo;
     STATUS      vxStatus;

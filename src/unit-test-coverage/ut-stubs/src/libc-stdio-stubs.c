@@ -45,7 +45,7 @@ int OCS_fclose(OCS_FILE *stream)
 char *OCS_fgets(char *s, int n, OCS_FILE *stream)
 {
     int32  Status;
-    uint32 CopySize;
+    size_t CopySize;
 
     Status = UT_DEFAULT_IMPL_RC(OCS_fgets, OCS_STDIO_MAX_SIZE);
 

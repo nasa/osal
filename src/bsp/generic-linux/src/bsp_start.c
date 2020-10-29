@@ -69,7 +69,7 @@ void OS_BSP_Initialize(void)
         {
             if (fgets(buffer, sizeof(buffer), fp) != NULL)
             {
-                OS_BSP_Global.MaxQueueDepth = strtoul(buffer, NULL, 10);
+                OS_BSP_Global.MaxQueueDepth = OSAL_BLOCKCOUNT_C(strtoul(buffer, NULL, 10));
                 BSP_DEBUG("Maximum user msg queue depth = %u\n", (unsigned int)OS_BSP_Global.MaxQueueDepth);
             }
             fclose(fp);

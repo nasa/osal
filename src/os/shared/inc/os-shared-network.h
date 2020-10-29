@@ -51,7 +51,7 @@ int32 OS_NetworkAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_NetworkGetHostName_Impl(char *host_name, uint32 name_len);
+int32 OS_NetworkGetHostName_Impl(char *host_name, size_t name_len);
 
 /*----------------------------------------------------------------
    Function: OS_NetworkGetID_Impl

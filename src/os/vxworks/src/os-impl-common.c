@@ -60,7 +60,7 @@ static TASK_ID OS_idle_task_id;
  *           about objects
  *
  *-----------------------------------------------------------------*/
-int32 OS_API_Impl_Init(uint32 idtype)
+int32 OS_API_Impl_Init(osal_objtype_t idtype)
 {
     int32 return_code;
 

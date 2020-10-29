@@ -41,14 +41,14 @@ void Test_OS_FileOpen_Impl(void)
      * Test Case For:
      * int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", OS_FILE_FLAG_TRUNCATE, OS_WRITE_ONLY), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", 0, OS_READ_ONLY), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", OS_FILE_FLAG_CREATE, OS_READ_WRITE), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", 0, -1234), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", OS_FILE_FLAG_TRUNCATE, OS_WRITE_ONLY), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, OS_READ_ONLY), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", OS_FILE_FLAG_CREATE, OS_READ_WRITE), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, -1234), OS_ERROR);
 
     /* failure mode */
     UT_SetForceFail(UT_KEY(OCS_open), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", 0, OS_READ_ONLY), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, OS_READ_ONLY), OS_ERROR);
 }
 
 void Test_OS_FileStat_Impl(void)

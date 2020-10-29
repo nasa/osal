@@ -38,7 +38,7 @@ static uint32 TimerSyncCount  = 0;
 static uint32 TimerSyncRetVal = 0;
 static uint32 TimeCB          = 0;
 
-static uint32 UT_TimerSync(uint32 timer_id)
+static uint32 UT_TimerSync(osal_index_t timer_id)
 {
     ++TimerSyncCount;
     return TimerSyncRetVal;
@@ -192,7 +192,7 @@ void Test_OS_TimeBaseGetInfo(void)
     int32               expected = OS_SUCCESS;
     int32               actual   = ~OS_SUCCESS;
     OS_timebase_prop_t  timebase_prop;
-    uint32              local_index = 1;
+    osal_index_t        local_index = UT_INDEX_1;
     OS_common_record_t  utrec;
     OS_common_record_t *rptr = &utrec;
 
@@ -249,8 +249,9 @@ void Test_OS_TimeBase_CallbackThread(void)
      */
     OS_common_record_t  fake_record;
     OS_common_record_t *recptr = &fake_record;
-    osal_id_t           idbuf;
+    osal_index_t        local_index;
 
+    local_index = UT_INDEX_2;
     memset(&fake_record, 0, sizeof(fake_record));
     fake_record.active_id = UT_OBJID_2;
 
@@ -260,8 +261,7 @@ void Test_OS_TimeBase_CallbackThread(void)
     TimerSyncCount                     = 0;
     TimerSyncRetVal                    = 0;
     TimeCB                             = 0;
-    idbuf                              = UT_OBJID_2;
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &idbuf, sizeof(idbuf), false);
+    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &recptr, sizeof(recptr), false);
     UT_SetHookFunction(UT_KEY(OS_TimeBaseLock_Impl), ClearObjectsHook, recptr);
     OS_TimeBase_CallbackThread(UT_OBJID_2);
@@ -272,8 +272,7 @@ void Test_OS_TimeBase_CallbackThread(void)
     TimerSyncCount        = 0;
     TimerSyncRetVal       = 1000;
     fake_record.active_id = UT_OBJID_2;
-    idbuf                 = UT_OBJID_2;
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &idbuf, sizeof(idbuf), false);
+    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &recptr, sizeof(recptr), false);
     UT_SetHookFunction(UT_KEY(OS_TimeBaseLock_Impl), ClearObjectsHook, recptr);
     OS_TimeBase_CallbackThread(UT_OBJID_2);

@@ -108,7 +108,7 @@ static void OS_UsecToTimespec(uint32 usecs, struct timespec *time_spec)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_TimeBaseLock_Impl(uint32 local_id)
+void OS_TimeBaseLock_Impl(osal_index_t local_id)
 {
     pthread_mutex_lock(&OS_impl_timebase_table[local_id].handler_mutex);
 } /* end OS_TimeBaseLock_Impl */
@@ -121,7 +121,7 @@ void OS_TimeBaseLock_Impl(uint32 local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_TimeBaseUnlock_Impl(uint32 local_id)
+void OS_TimeBaseUnlock_Impl(osal_index_t local_id)
 {
     pthread_mutex_unlock(&OS_impl_timebase_table[local_id].handler_mutex);
 } /* end OS_TimeBaseUnlock_Impl */
@@ -133,7 +133,7 @@ void OS_TimeBaseUnlock_Impl(uint32 local_id)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-static uint32 OS_TimeBase_SigWaitImpl(uint32 timer_id)
+static uint32 OS_TimeBase_SigWaitImpl(osal_index_t timer_id)
 {
     int                                 ret;
     OS_impl_timebase_internal_record_t *local;
@@ -190,7 +190,7 @@ static uint32 OS_TimeBase_SigWaitImpl(uint32 timer_id)
 int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
 {
     int                 status;
-    int                 i;
+    osal_index_t        idx;
     pthread_mutexattr_t mutex_attr;
     struct timespec     clock_resolution;
     int32               return_code;
@@ -253,14 +253,14 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
             break;
         }
 
-        for (i = 0; i < OS_MAX_TIMEBASES; ++i)
+        for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
         {
             /*
             ** create the timebase sync mutex
             ** This gives a mechanism to synchronize updates to the timer chain with the
             ** expiration of the timer and processing the chain.
             */
-            status = pthread_mutex_init(&OS_impl_timebase_table[i].handler_mutex, &mutex_attr);
+            status = pthread_mutex_init(&OS_impl_timebase_table[idx].handler_mutex, &mutex_attr);
             if (status != 0)
             {
                 OS_DEBUG("Error: Mutex could not be created: %s\n", strerror(status));
@@ -314,11 +314,12 @@ static void *OS_TimeBasePthreadEntry(void *arg)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
+int32 OS_TimeBaseCreate_Impl(osal_index_t timer_id)
 {
     int32                               return_code;
     int                                 status;
     int                                 i;
+    osal_index_t                        idx;
     struct sigevent                     evp;
     struct timespec                     ts;
     OS_impl_timebase_internal_record_t *local;
@@ -340,8 +341,8 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
      */
     arg.opaque_arg = NULL;
     arg.id         = global->active_id;
-    return_code =
-        OS_Posix_InternalTaskCreate_Impl(&local->handler_thread, 0, 0, OS_TimeBasePthreadEntry, arg.opaque_arg);
+    return_code    = OS_Posix_InternalTaskCreate_Impl(&local->handler_thread, OSAL_PRIORITY_C(0), 0,
+                                                   OS_TimeBasePthreadEntry, arg.opaque_arg);
     if (return_code != OS_SUCCESS)
     {
         return return_code;
@@ -368,12 +369,12 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
          * This is all done while the global lock is held so no chance of the
          * underlying tables changing
          */
-        for (i = 0; i < OS_MAX_TIMEBASES; ++i)
+        for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
         {
-            if (i != timer_id && OS_ObjectIdDefined(OS_global_timebase_table[i].active_id) &&
-                OS_impl_timebase_table[i].assigned_signal != 0)
+            if (idx != timer_id && OS_ObjectIdDefined(OS_global_timebase_table[idx].active_id) &&
+                OS_impl_timebase_table[idx].assigned_signal != 0)
             {
-                sigaddset(&local->sigset, OS_impl_timebase_table[i].assigned_signal);
+                sigaddset(&local->sigset, OS_impl_timebase_table[idx].assigned_signal);
             }
         }
 
@@ -479,7 +480,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time)
+int32 OS_TimeBaseSet_Impl(osal_index_t timer_id, int32 start_time, int32 interval_time)
 {
     OS_impl_timebase_internal_record_t *local;
     struct itimerspec                   timeout;
@@ -533,7 +534,7 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
+int32 OS_TimeBaseDelete_Impl(osal_index_t timer_id)
 {
     OS_impl_timebase_internal_record_t *local;
     int                                 status;
@@ -568,7 +569,7 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseGetInfo_Impl(uint32 timer_id, OS_timebase_prop_t *timer_prop)
+int32 OS_TimeBaseGetInfo_Impl(osal_index_t timer_id, OS_timebase_prop_t *timer_prop)
 {
     return OS_SUCCESS;
 

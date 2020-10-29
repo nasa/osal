@@ -74,7 +74,7 @@ int32 OS_Posix_CountSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options)
+int32 OS_CountSemCreate_Impl(osal_index_t sem_id, uint32 sem_initial_value, uint32 options)
 {
     if (sem_initial_value > SEM_VALUE_MAX)
     {
@@ -98,7 +98,7 @@ int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 opt
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemDelete_Impl(uint32 sem_id)
+int32 OS_CountSemDelete_Impl(osal_index_t sem_id)
 {
     if (sem_destroy(&OS_impl_count_sem_table[sem_id].id) < 0)
     {
@@ -117,7 +117,7 @@ int32 OS_CountSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGive_Impl(uint32 sem_id)
+int32 OS_CountSemGive_Impl(osal_index_t sem_id)
 {
     if (sem_post(&OS_impl_count_sem_table[sem_id].id) < 0)
     {
@@ -136,7 +136,7 @@ int32 OS_CountSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTake_Impl(uint32 sem_id)
+int32 OS_CountSemTake_Impl(osal_index_t sem_id)
 {
     if (sem_wait(&OS_impl_count_sem_table[sem_id].id) < 0)
     {
@@ -154,7 +154,7 @@ int32 OS_CountSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
+int32 OS_CountSemTimedWait_Impl(osal_index_t sem_id, uint32 msecs)
 {
     struct timespec ts;
     int             result;
@@ -189,7 +189,7 @@ int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGetInfo_Impl(uint32 sem_id, OS_count_sem_prop_t *count_prop)
+int32 OS_CountSemGetInfo_Impl(osal_index_t sem_id, OS_count_sem_prop_t *count_prop)
 {
     int sval;
 

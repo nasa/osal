@@ -66,7 +66,7 @@ int32 OS_ModuleSymbolLookup_Impl(uint32 local_id, cpuaddr *SymbolAddress, const 
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolTableDump_Impl(const char *filename, uint32 SizeLimit)
+int32 OS_SymbolTableDump_Impl(const char *filename, size_t SizeLimit)
 {
     return (OS_ERR_NOT_IMPLEMENTED);
 

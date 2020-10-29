@@ -34,7 +34,7 @@
 
 #include "os-shared-common.h"
 
-UT_DEFAULT_STUB(OS_API_Impl_Init, (uint32 idtype))
+UT_DEFAULT_STUB(OS_API_Impl_Init, (osal_objtype_t idtype))
 
 void OS_IdleLoop_Impl(void)
 {

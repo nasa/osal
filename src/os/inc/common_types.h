@@ -101,6 +101,28 @@ extern "C"
      */
     typedef uint32_t osal_id_t;
 
+    /**
+     * A type used to represent a number of blocks or buffers
+     *
+     * This is used with file system and queue implementations.
+     */
+    typedef size_t osal_blockcount_t;
+
+    /**
+     * A type used to represent an index into a table structure
+     *
+     * This is used when referring directly to a table index as
+     * opposed to an object ID.  It is primarily intended for
+     * internal use, but is also output from public APIs such as
+     * OS_ObjectIdToArrayIndex().
+     */
+    typedef uint32 osal_index_t;
+
+    /**
+     * A type used to represent the runtime type or category of an OSAL object
+     */
+    typedef uint32 osal_objtype_t;
+
 #ifndef NULL /* pointer to nothing */
 #define NULL ((void *)0)
 #endif
@@ -149,5 +171,19 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
+
+/*
+ * Type macros for literals
+ *
+ * These macros enforce that a literal or other value is
+ * interpreted as the intended type.  Although implicit
+ * conversions between these types are often possible, using
+ * this makes it explicit in the code where a type conversion
+ * is expected.
+ */
+#define OSAL_SIZE_C(X)       ((size_t) {X})
+#define OSAL_BLOCKCOUNT_C(X) ((osal_blockcount_t) {X})
+#define OSAL_INDEX_C(X)      ((osal_index_t) {X})
+#define OSAL_OBJTYPE_C(X)    ((osal_objtype_t) {X})
 
 #endif /* _common_types_ */

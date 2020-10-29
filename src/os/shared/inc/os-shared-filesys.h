@@ -94,9 +94,9 @@ enum
  */
 typedef struct
 {
-    uint32 block_size;
-    uint64 total_blocks;
-    uint64 blocks_free;
+    size_t            block_size;
+    osal_blockcount_t total_blocks;
+    osal_blockcount_t blocks_free;
 } OS_statvfs_t;
 
 typedef struct
@@ -107,11 +107,11 @@ typedef struct
                                                    operating system */
     char virtual_mountpt[OS_MAX_PATH_LEN]; /**< The name/prefix in the OSAL Virtual File system exposed to applications
                                             */
-    char * address;
-    uint32 blocksize;
-    uint32 numblocks;
-    uint8  flags;
-    uint8  fstype;
+    char *            address;
+    size_t            blocksize;
+    osal_blockcount_t numblocks;
+    uint8             flags;
+    uint8             fstype;
 } OS_filesys_internal_record_t;
 
 /*
@@ -140,7 +140,7 @@ int32 OS_FileSysAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStartVolume_Impl(uint32 filesys_id);
+int32 OS_FileSysStartVolume_Impl(osal_index_t filesys_id);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysStopVolume_Impl
@@ -149,7 +149,7 @@ int32 OS_FileSysStartVolume_Impl(uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStopVolume_Impl(uint32 filesys_id);
+int32 OS_FileSysStopVolume_Impl(osal_index_t filesys_id);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysFormatVolume_Impl
@@ -158,7 +158,7 @@ int32 OS_FileSysStopVolume_Impl(uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id);
+int32 OS_FileSysFormatVolume_Impl(osal_index_t filesys_id);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysCheckVolume_Impl
@@ -167,7 +167,7 @@ int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysCheckVolume_Impl(uint32 filesys_id, bool repair);
+int32 OS_FileSysCheckVolume_Impl(osal_index_t filesys_id, bool repair);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysStatVolume_Impl
@@ -176,7 +176,7 @@ int32 OS_FileSysCheckVolume_Impl(uint32 filesys_id, bool repair);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result);
+int32 OS_FileSysStatVolume_Impl(osal_index_t filesys_id, OS_statvfs_t *result);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysMountVolume_Impl
@@ -185,7 +185,7 @@ int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysMountVolume_Impl(uint32 filesys_id);
+int32 OS_FileSysMountVolume_Impl(osal_index_t filesys_id);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysUnmountVolume_Impl
@@ -194,7 +194,7 @@ int32 OS_FileSysMountVolume_Impl(uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id);
+int32 OS_FileSysUnmountVolume_Impl(osal_index_t filesys_id);
 
 /*
  * Internal helper functions
@@ -202,8 +202,8 @@ int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id);
  * Not normally invoked outside this unit, except for unit testing
  */
 
-bool  OS_FileSys_FindVirtMountPoint(void *ref, uint32 local_id, const OS_common_record_t *obj);
-int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, uint32 blocksize,
-                            uint32 numblocks, bool should_format);
+bool  OS_FileSys_FindVirtMountPoint(void *ref, osal_index_t local_id, const OS_common_record_t *obj);
+int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, size_t blocksize,
+                            osal_blockcount_t numblocks, bool should_format);
 
 #endif /* INCLUDE_OS_SHARED_FILESYS_H_ */
