@@ -30,12 +30,20 @@
 
 #include <os-shared-globaldefs.h>
 
+typedef enum
+{
+    OS_MODULE_TYPE_UNKNOWN = 0, /**< Default/unspecified (reserved value) */
+    OS_MODULE_TYPE_DYNAMIC = 1, /**< Module is dynamically loaded via the OS loader */
+    OS_MODULE_TYPE_STATIC  = 2  /**< Module is statically linked and is a placeholder */
+} OS_module_type_t;
+
 typedef struct
 {
-    char    module_name[OS_MAX_API_NAME];
-    char    file_name[OS_MAX_PATH_LEN];
-    uint32  flags;
-    cpuaddr entry_point;
+    char             module_name[OS_MAX_API_NAME];
+    char             file_name[OS_MAX_PATH_LEN];
+    OS_module_type_t module_type;
+    uint32           flags;
+    cpuaddr          entry_point;
 } OS_module_internal_record_t;
 
 /*
