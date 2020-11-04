@@ -64,6 +64,7 @@ extern int OCS_fchmod(int fd, OCS_mode_t mode);
 extern int OCS_chmod(const char *path, OCS_mode_t mode);
 extern int OCS_mkdir(const char *path, ...);
 extern int OCS_stat(const char *file, struct OCS_stat *buf);
+extern int OCS_fstat(int fd, struct OCS_stat *buf);
 
 /* ----------------------------------------- */
 /* prototypes normally declared in sys/statvfs.h */

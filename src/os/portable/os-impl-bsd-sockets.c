@@ -538,6 +538,7 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
             break;
 #endif
         default:
+            sa_family = 0;
             addrlen = 0;
             break;
     }

@@ -96,15 +96,20 @@ void Test_OS_FileChmod_Impl(void)
      */
     struct OCS_stat RefStat;
 
-    /* failure mode 1 (stat) */
-    UT_SetForceFail(UT_KEY(OCS_stat), -1);
+    /* failure mode 0 (open) */
+    UT_SetForceFail(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_stat));
+    UT_ClearForceFail(UT_KEY(OCS_open));
 
-    /* failure mode 2 (chmod) */
-    UT_SetForceFail(UT_KEY(OCS_chmod), -1);
+    /* failure mode 1 (fstat) */
+    UT_SetForceFail(UT_KEY(OCS_fstat), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_chmod));
+    UT_ClearForceFail(UT_KEY(OCS_fstat));
+
+    /* failure mode 2 (fchmod) */
+    UT_SetForceFail(UT_KEY(OCS_fchmod), -1);
+    OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
+    UT_ClearForceFail(UT_KEY(OCS_fchmod));
 
     /* all permission bits with uid/gid match */
     RefStat.st_uid   = UT_PortablePosixFileTest_GetSelfEUID();
@@ -112,7 +117,7 @@ void Test_OS_FileChmod_Impl(void)
     RefStat.st_mode  = ~0;
     RefStat.st_size  = 1234;
     RefStat.st_mtime = 5678;
-    UT_SetDataBuffer(UT_KEY(OCS_stat), &RefStat, sizeof(RefStat), false);
+    UT_SetDataBuffer(UT_KEY(OCS_fstat), &RefStat, sizeof(RefStat), false);
 
     /* nominal 1 - full permissions with file owned by own uid/gid */
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_SUCCESS);
@@ -124,7 +129,7 @@ void Test_OS_FileChmod_Impl(void)
     /* nominal 3 - non-owned file */
     ++RefStat.st_uid;
     ++RefStat.st_gid;
-    UT_SetDataBuffer(UT_KEY(OCS_stat), &RefStat, sizeof(RefStat), false);
+    UT_SetDataBuffer(UT_KEY(OCS_fstat), &RefStat, sizeof(RefStat), false);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_SUCCESS);
 }
 

@@ -178,9 +178,13 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
             }
             else
             {
-                /* to avoid leaving in an intermediate state,
-                 * this also stops the volume if formatting failed. */
-                OS_FileSysStopVolume_Impl(local_id);
+                /* 
+                 * To avoid leaving in an intermediate state,
+                 * this also stops the volume if formatting failed.
+                 * Cast to void to repress analysis warnings for
+                 * ignored return value.
+                 */
+                (void)OS_FileSysStopVolume_Impl(local_id);
             }
         }
 

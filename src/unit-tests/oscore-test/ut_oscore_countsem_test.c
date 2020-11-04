@@ -121,7 +121,7 @@ void UT_os_count_sem_create_test()
     testDesc = "#4 Initial-count-too-high";
 
     /*
-     * FIXME: This test can only be done if the OS defines a specific "SEM_VALUE_MAX"
+     * This test can only be done if the OS defines a specific "SEM_VALUE_MAX"
      * The OSAL should define this for itself, but it currently does not.
      *  (This macro is not currently defined in RTEMS)
      */

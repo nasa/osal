@@ -90,7 +90,6 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
     int32 return_code;
 
     /*
-     * FIXME:
      * This does not currently increment any refcounts.
      * That means a file/socket can be closed while actively inside a
      * OS_SelectMultiple() call in another thread.

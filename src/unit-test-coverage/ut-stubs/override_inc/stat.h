@@ -29,6 +29,7 @@
 /* ----------------------------------------- */
 
 #define stat   OCS_stat
+#define fstat  OCS_fstat
 #define fchmod OCS_fchmod
 #define chmod  OCS_chmod
 #define mkdir  OCS_mkdir

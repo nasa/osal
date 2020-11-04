@@ -30,7 +30,7 @@
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER   60
+#define OS_BUILD_NUMBER   67
 #define OS_BUILD_BASELINE "v5.1.0-rc1"
 
 /*
@@ -38,9 +38,8 @@
  */
 #define OS_MAJOR_VERSION 5 /*!< @brief ONLY APPLY for OFFICIAL releases. Major version number. */
 #define OS_MINOR_VERSION 0 /*!< @brief ONLY APPLY for OFFICIAL releases. Minor version number. */
-#define OS_REVISION                                                                                         \
-    99 /*!< @brief ONLY APPLY for OFFICIAL releases. Revision version number. If set to "99" it indicates a \
-          development version.  */
+#define OS_REVISION      99 /*!< @brief ONLY APPLY for OFFICIAL releases. Revision version number. A value of "99" indicates an unreleased development version.  */
+
 #define OS_MISSION_REV 0 /*!< @brief ONLY USED by MISSION Implementations. Mission revision */
 
 /*
