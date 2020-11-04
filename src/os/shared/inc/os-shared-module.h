@@ -86,14 +86,24 @@ int32 OS_ModuleUnload_Impl(uint32 module_id);
 int32 OS_ModuleGetInfo_Impl(uint32 module_id, OS_module_prop_t *module_prop);
 
 /*----------------------------------------------------------------
-   Function: OS_SymbolLookup_Impl
+   Function: OS_GlobalSymbolLookup_Impl
 
-    Purpose: Find the Address of a Symbol
+    Purpose: Find the Address of a Symbol in the global symbol table.
              The address of the symbol will be stored in the pointer that is passed in.
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName);
+int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName);
+
+/*----------------------------------------------------------------
+   Function: OS_SymbolLookup_Impl
+
+    Purpose: Find the Address of a Symbol within a specific module.
+             The address of the symbol will be stored in the pointer that is passed in.
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_ModuleSymbolLookup_Impl(uint32 local_id, cpuaddr *SymbolAddress, const char *SymbolName);
 
 /*----------------------------------------------------------------
    Function: OS_SymbolTableDump_Impl
@@ -109,6 +119,6 @@ int32 OS_SymbolTableDump_Impl(const char *filename, uint32 size_limit);
  * These need to be exposed for unit testing
  */
 int32 OS_ModuleLoad_Static(const char *ModuleName);
-int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName);
+int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName, const char *ModuleName);
 
 #endif /* INCLUDE_OS_SHARED_MODULE_H_ */

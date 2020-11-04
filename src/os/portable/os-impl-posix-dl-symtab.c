@@ -60,16 +60,12 @@
  * Otherwise, check if the C library provides an "RTLD_DEFAULT" symbol -
  * This symbol is not POSIX standard but many implementations do provide it.
  *
- * Lastly, if nothing else works, use NULL.  This is technically undefined
- * behavior per POSIX, but most implementations do seem to interpret this
- * as referring to the complete process (base executable + all loaded modules).
+ * Lastly, if nothing no special handle that indicates the global symbol
+ * table is defined, then OS_GlobalSymbolLookup_Impl() will return
+ * OS_ERR_NOT_IMPLEMENTED rather than relying on undefined behavior.
  */
-#ifndef OSAL_DLSYM_DEFAULT_HANDLE
-#ifdef RTLD_DEFAULT
-#define OSAL_DLSYM_DEFAULT_HANDLE RTLD_DEFAULT
-#else
-#define OSAL_DLSYM_DEFAULT_HANDLE NULL
-#endif
+#if !defined(OSAL_DLSYM_GLOBAL_HANDLE) && defined(RTLD_DEFAULT)
+#define OSAL_DLSYM_GLOBAL_HANDLE RTLD_DEFAULT
 #endif
 
 /****************************************************************************************
@@ -78,23 +74,25 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_SymbolLookup_Impl
+ * Function: OS_GenericSymbolLookup_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_GenericSymbolLookup_Impl(void *dl_handle, cpuaddr *SymbolAddress, const char *SymbolName)
 {
-    int32       status = OS_ERROR;
     const char *dlError; /*  Pointer to error string   */
-    void *      Function;
+    void       *Function;
+    int32       status;
+
+    status = OS_ERROR;
 
     /*
      * call dlerror() to clear any prior error that might have occurred.
      */
     dlerror();
-    Function = dlsym(OSAL_DLSYM_DEFAULT_HANDLE, SymbolName);
+    Function = dlsym(dl_handle, SymbolName);
     dlError  = dlerror();
 
     /*
@@ -110,15 +108,64 @@ int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
      * and as such all valid symbols should be non-NULL, so NULL is considered
      * an error even if the C library doesn't consider this an error.
      */
-    if (dlError == NULL && Function != NULL)
+    if (dlError != NULL)
     {
-        *SymbolAddress = (cpuaddr)Function;
-        status         = OS_SUCCESS;
+        OS_DEBUG("Error: %s: %s\n", SymbolName, dlError);
     }
+    else if (Function == NULL)
+    {
+        /* technically not an error per POSIX, but in practice should not happen */
+        OS_DEBUG("Error: %s: dlsym() returned NULL\n", SymbolName);
+    }
+    else
+    {
+        status = OS_SUCCESS;
+    }
+
+    *SymbolAddress = (cpuaddr)Function;
+
+    return status;
+}
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_GlobalSymbolLookup_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+{
+    int32 status;
+
+#ifdef OSAL_DLSYM_DEFAULT_HANDLE
+    status = OS_GenericSymbolLookup_Impl(OSAL_DLSYM_DEFAULT_HANDLE, SymbolAddress, SymbolName);
+#else
+    status = OS_ERR_NOT_IMPLEMENTED;
+#endif
 
     return status;
 
 } /* end OS_SymbolLookup_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_ModuleSymbolLookup_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_ModuleSymbolLookup_Impl(uint32 local_id, cpuaddr *SymbolAddress, const char *SymbolName)
+{
+    int32 status;
+
+    status = OS_GenericSymbolLookup_Impl(OS_impl_module_table[local_id].dl_handle, SymbolAddress, SymbolName);
+
+    return status;
+
+} /* end OS_ModuleSymbolLookup_Impl */
 
 /*----------------------------------------------------------------
  *

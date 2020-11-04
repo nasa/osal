@@ -90,7 +90,7 @@ extern OS_static_symbol_record_t OS_STATIC_SYMTABLE_SOURCE[];
  *           Checks for a symbol name in the static symbol table
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName, const char *ModuleName)
 {
     int32                      return_code = OS_ERR_NOT_IMPLEMENTED;
     OS_static_symbol_record_t *StaticSym   = OS_STATIC_SYMTABLE_SOURCE;
@@ -105,7 +105,8 @@ int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName)
             return_code = OS_ERROR;
             break;
         }
-        if (strcmp(StaticSym->Name, SymbolName) == 0)
+        if (strcmp(StaticSym->Name, SymbolName) == 0 &&
+                (ModuleName == NULL || strcmp(StaticSym->Module, ModuleName) == 0))
         {
             /* found matching symbol */
             *SymbolAddress = (cpuaddr)StaticSym->Address;
@@ -178,7 +179,7 @@ int32 OS_ModuleAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *filename)
+int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *filename, uint32 flags)
 {
     char                translated_path[OS_MAX_LOCAL_PATH_LEN];
     int32               return_code;
@@ -220,6 +221,7 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
         memset(&OS_module_table[local_id], 0, sizeof(OS_module_internal_record_t));
         strncpy(OS_module_table[local_id].module_name, module_name, OS_MAX_API_NAME);
         record->name_entry = OS_module_table[local_id].module_name;
+        OS_module_table[local_id].flags = flags; /* save user-supplied flags */
 
         /*
          * Check the statically-linked module list.
@@ -339,7 +341,7 @@ int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_prop)
 int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
 {
     int32 return_code;
-    int32 status;
+    int32 staticsym_status;
 
     /*
     ** Check parameters
@@ -350,10 +352,9 @@ int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
     }
 
     /*
-     * if the module loader is included, then call the
-     * OS symbol lookup implementation function first.
+     * attempt to find the symbol in the global symbol table.
      */
-    return_code = OS_SymbolLookup_Impl(SymbolAddress, SymbolName);
+    return_code = OS_GlobalSymbolLookup_Impl(SymbolAddress, SymbolName);
 
     /*
      * If the OS call did not find the symbol or the loader is
@@ -361,26 +362,71 @@ int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
      */
     if (return_code != OS_SUCCESS)
     {
-        status = OS_SymbolLookup_Static(SymbolAddress, SymbolName);
+        staticsym_status = OS_SymbolLookup_Static(SymbolAddress, SymbolName, NULL);
 
         /*
-         * NOTE:
-         * The OS_ERR_NOT_IMPLEMENTED code should only be returned
-         * if _neither_ the SymbolLookup_Impl _nor_ the static table
-         * lookup capabilities are implemented.
-         *
-         * If either of these are implemented then the returned
-         * value should be OS_ERROR for a not-found result.
+         * Only overwrite the return code if static lookup was successful.
+         * Otherwise keep the error code from the low level implementation.
          */
-        if (status == OS_SUCCESS || return_code == OS_ERR_NOT_IMPLEMENTED)
+        if (staticsym_status == OS_SUCCESS)
         {
-            return_code = status;
+            return_code = staticsym_status;
         }
     }
 
     return (return_code);
 
 } /* end OS_SymbolLookup */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_ModuleSymbolLookup
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *SymbolAddress, const char *SymbolName)
+{
+    int32               return_code;
+    int32               staticsym_status;
+    OS_common_record_t *record;
+    uint32              local_id;
+
+    /*
+    ** Check parameters
+    */
+    if ((SymbolAddress == NULL) || (SymbolName == NULL))
+    {
+        return (OS_INVALID_POINTER);
+    }
+
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, module_id, &local_id, &record);
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_ModuleSymbolLookup_Impl(local_id, SymbolAddress, SymbolName);
+        if (return_code != OS_SUCCESS)
+        {
+            /* look for a static symbol that also matches this module name */
+            staticsym_status = OS_SymbolLookup_Static(SymbolAddress, SymbolName, record->name_entry);
+
+            /*
+             * Only overwrite the return code if static lookup was successful.
+             * Otherwise keep the error code from the low level implementation.
+             */
+            if (staticsym_status == OS_SUCCESS)
+            {
+                return_code = staticsym_status;
+            }
+        }
+        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+    }
+
+    return (return_code);
+
+} /* end OS_ModuleSymbolLookup */
+
+
 
 /*----------------------------------------------------------------
  *

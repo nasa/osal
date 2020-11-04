@@ -64,13 +64,13 @@ extern SYMTAB_ID sysSymTbl;
 
 /*----------------------------------------------------------------
  *
- * Function: OS_SymbolLookup_Impl
+ * Function: OS_GenericSymbolLookup_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_GenericSymbolLookup_Impl(SYMTAB_ID SymTab, cpuaddr *SymbolAddress, const char *SymbolName)
 {
     STATUS      vxStatus;
     SYMBOL_DESC SymDesc;
@@ -94,7 +94,7 @@ int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
     SymDesc.mask = SYM_FIND_BY_NAME;
     SymDesc.name = (char *)SymbolName;
 
-    vxStatus       = symFind(sysSymTbl, &SymDesc);
+    vxStatus       = symFind(SymTab, &SymDesc);
     *SymbolAddress = (cpuaddr)SymDesc.value;
 
     if (vxStatus == ERROR)
@@ -104,7 +104,43 @@ int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 
     return (OS_SUCCESS);
 
-} /* end OS_SymbolLookup_Impl */
+} /* end OS_GenericSymbolLookup_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_GlobalSymbolLookup_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+{
+    return OS_GenericSymbolLookup_Impl(sysSymTbl, SymbolAddress, SymbolName);
+} /* end OS_GlobalSymbolLookup_Impl */
+
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_ModuleSymbolLookup_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_ModuleSymbolLookup_Impl(uint32 local_id, cpuaddr *SymbolAddress, const char *SymbolName)
+{
+    /*
+     * NOTE: this is currently exactly the same as OS_GlobalSymbolLookup_Impl().
+     *
+     * Ideally this should get a SYMTAB_ID from the MODULE_ID and search only
+     * for the symbols provided by that module - but it is not clear if vxWorks
+     * offers this capability.
+     */
+    return OS_GenericSymbolLookup_Impl(sysSymTbl, SymbolAddress, SymbolName);
+} /* end OS_ModuleSymbolLookup_Impl */
+
+
 
 /*----------------------------------------------------------------
  *
