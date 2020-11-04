@@ -60,12 +60,16 @@
  * Otherwise, check if the C library provides an "RTLD_DEFAULT" symbol -
  * This symbol is not POSIX standard but many implementations do provide it.
  *
- * Lastly, if nothing no special handle that indicates the global symbol
- * table is defined, then OS_GlobalSymbolLookup_Impl() will return
- * OS_ERR_NOT_IMPLEMENTED rather than relying on undefined behavior.
+ * Lastly, if nothing else works, use NULL.  This is technically undefined
+ * behavior per POSIX, but most implementations do seem to interpret this
+ * as referring to the complete process (base executable + all loaded modules).
  */
-#if !defined(OSAL_DLSYM_GLOBAL_HANDLE) && defined(RTLD_DEFAULT)
-#define OSAL_DLSYM_GLOBAL_HANDLE RTLD_DEFAULT
+#ifndef OSAL_DLSYM_DEFAULT_HANDLE
+#ifdef RTLD_DEFAULT
+#define OSAL_DLSYM_DEFAULT_HANDLE RTLD_DEFAULT
+#else
+#define OSAL_DLSYM_DEFAULT_HANDLE NULL
+#endif
 #endif
 
 /****************************************************************************************
@@ -139,11 +143,7 @@ int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 {
     int32 status;
 
-#ifdef OSAL_DLSYM_DEFAULT_HANDLE
     status = OS_GenericSymbolLookup_Impl(OSAL_DLSYM_DEFAULT_HANDLE, SymbolAddress, SymbolName);
-#else
-    status = OS_ERR_NOT_IMPLEMENTED;
-#endif
 
     return status;
 
