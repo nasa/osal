@@ -47,7 +47,7 @@ void Test_OS_ConsoleWakeup_Impl(void)
     OS_ConsoleWakeup_Impl(0);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semGive)) == 1, "semGive() called in async mode");
 
-    UT_SetForceFail(UT_KEY(OCS_semGive), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semGive), -1);
     OS_ConsoleWakeup_Impl(0);
 
     UT_ConsoleTest_SetConsoleAsync(0, false);
@@ -61,11 +61,11 @@ void Test_OS_ConsoleCreate_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(0), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskSpawn)) == 1, "taskSpawn() called");
 
-    UT_SetForceFail(UT_KEY(OCS_semCInitialize), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semCInitialize), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(0), OS_SEM_FAILURE);
     UT_ClearForceFail(UT_KEY(OCS_semCInitialize));
 
-    UT_SetForceFail(UT_KEY(OCS_taskSpawn), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_taskSpawn), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(0), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_taskSpawn));
 

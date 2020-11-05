@@ -41,7 +41,7 @@ void Test_OS_VxWorks_TimeBaseAPI_Impl_Init(void)
      * int32 OS_VxWorks_TimeBaseAPI_Impl_Init(void)
      */
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(), OS_SUCCESS);
-    UT_SetForceFail(UT_KEY(OCS_sysClkRateGet), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_sysClkRateGet), -1);
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(), OS_ERROR);
 }
 
@@ -110,17 +110,17 @@ void Test_OS_TimeBaseCreate_Impl(void)
     memset(&id, 0x01, sizeof(id));
     OS_global_timebase_table[1].active_id = id;
     UT_TimeBaseTest_Setup(1, OCS_SIGRTMIN, false);
-    UT_SetForceFail(UT_KEY(OCS_sigismember), true);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_sigismember), true);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(0), OS_TIMER_ERR_UNAVAILABLE);
     UT_ResetState(UT_KEY(OCS_sigismember));
 
     /* fail to initialize the sem */
-    UT_SetForceFail(UT_KEY(OCS_semMInitialize), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semMInitialize), -1);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(0), OS_TIMER_ERR_INTERNAL);
     UT_ClearForceFail(UT_KEY(OCS_semMInitialize));
 
     /* fail to spawn the task */
-    UT_SetForceFail(UT_KEY(OCS_taskSpawn), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_taskSpawn), -1);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(0), OS_TIMER_ERR_INTERNAL);
     UT_ClearForceFail(UT_KEY(OCS_taskSpawn));
 
@@ -152,7 +152,7 @@ void Test_OS_TimeBaseCreate_Impl(void)
     UtAssert_True(UT_TimeBaseTest_CheckTimeBaseRegisteredState(0), "timer successfully registered");
 
     UT_TimeBaseTest_ClearTimeBaseRegState(0);
-    UT_SetForceFail(UT_KEY(OCS_timer_create), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_timer_create), -1);
     UT_TimeBaseTest_CallRegisterTimer(0);
     UtAssert_True(UT_TimeBaseTest_CheckTimeBaseErrorState(0), "timer registration failure state");
 }
@@ -200,7 +200,7 @@ void Test_OS_TimeBaseSet_Impl(void)
     UT_TimeBaseTest_Setup(0, OCS_SIGRTMIN, false);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(0, 1, 1), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_timer_settime), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_timer_settime), -1);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(0, 1, 1), OS_TIMER_ERR_INVALID_ARGS);
 }
 

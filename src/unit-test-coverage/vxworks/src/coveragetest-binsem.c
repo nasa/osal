@@ -52,7 +52,7 @@ void Test_OS_BinSemCreate_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate_Impl(0, 0, 0), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_semBInitialize), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semBInitialize), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate_Impl(0, 0, 0), OS_SEM_FAILURE);
 }
 
@@ -73,7 +73,7 @@ void Test_OS_BinSemGive_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_BinSemGive_Impl(0), OS_SUCCESS);
 
-    UT_SetForceFail(UT_StubKey_GenericSemGive, OS_SEM_FAILURE);
+    UT_SetDefaultReturnValue(UT_StubKey_GenericSemGive, OS_SEM_FAILURE);
     OSAPI_TEST_FUNCTION_RC(OS_BinSemGive_Impl(0), OS_SEM_FAILURE);
 }
 
@@ -85,7 +85,7 @@ void Test_OS_BinSemFlush_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_BinSemFlush_Impl(0), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_semFlush), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semFlush), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_BinSemFlush_Impl(0), OS_SEM_FAILURE);
 }
 
@@ -106,10 +106,10 @@ void Test_OS_BinSemTimedWait_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(0, 100), OS_SUCCESS);
 
-    UT_SetForceFail(UT_StubKey_GenericSemTake, OS_SEM_FAILURE);
+    UT_SetDefaultReturnValue(UT_StubKey_GenericSemTake, OS_SEM_FAILURE);
     OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(0, 100), OS_SEM_FAILURE);
 
-    UT_SetForceFail(UT_KEY(OS_Milli2Ticks), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_Milli2Ticks), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(0, 100), OS_ERROR);
 }
 

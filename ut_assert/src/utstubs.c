@@ -308,7 +308,7 @@ bool UT_Stub_CheckDeferredRetcode(UT_EntryKey_t FuncKey, int32 *Retcode)
     return (Result);
 }
 
-void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value)
+void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value)
 {
     UT_StubTableEntry_t *Rc;
 
@@ -334,6 +334,13 @@ void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value)
         UtAssert_Abort("Cannot set retcode - UT_MAX_FUNC_STUBS too low?");
     }
 }
+
+#ifndef OSAL_OMIT_DEPRECATED
+void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value)
+{
+    UT_SetDefaultReturnValue(FuncKey, Value);
+}
+#endif
 
 void UT_ClearForceFail(UT_EntryKey_t FuncKey)
 {

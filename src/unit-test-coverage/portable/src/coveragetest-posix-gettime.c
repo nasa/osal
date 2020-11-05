@@ -40,7 +40,7 @@ void Test_OS_GetLocalTime_Impl(void)
     timeval.microsecs = 1;
     OSAPI_TEST_FUNCTION_RC(OS_GetLocalTime_Impl, (&timeval), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_clock_gettime), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_clock_gettime), -1);
     OSAPI_TEST_FUNCTION_RC(OS_GetLocalTime_Impl, (&timeval), OS_ERROR);
 }
 
@@ -55,7 +55,7 @@ void Test_OS_SetLocalTime_Impl(void)
     timeval.microsecs = 1;
     OSAPI_TEST_FUNCTION_RC(OS_SetLocalTime_Impl, (&timeval), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_clock_settime), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_clock_settime), -1);
     OSAPI_TEST_FUNCTION_RC(OS_SetLocalTime_Impl, (&timeval), OS_ERROR);
 }
 

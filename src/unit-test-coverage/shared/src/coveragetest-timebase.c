@@ -99,13 +99,13 @@ void Test_OS_TimeBaseCreate(void)
     actual   = OS_TimeBaseCreate(NULL, NULL, NULL);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OCS_strlen), 2 + OS_MAX_API_NAME);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), 2 + OS_MAX_API_NAME);
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_TimeBaseCreate(&objid, "UT", UT_TimerSync);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
     UT_ClearForceFail(UT_KEY(OCS_strlen));
 
-    UT_SetForceFail(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
     expected = OS_ERR_INCORRECT_OBJ_STATE;
     actual   = OS_TimeBaseCreate(&objid, "UT", UT_TimerSync);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
@@ -128,7 +128,7 @@ void Test_OS_TimeBaseSet(void)
     UtAssert_True(actual == expected, "OS_TimeBaseSet() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
 
     /* test error paths */
-    UT_SetForceFail(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
     expected = OS_ERR_INCORRECT_OBJ_STATE;
     actual   = OS_TimeBaseSet(UT_OBJID_1, 1000, 1000);
     UtAssert_True(actual == expected, "OS_TimeBaseSet() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
@@ -146,7 +146,7 @@ void Test_OS_TimeBaseDelete(void)
     UtAssert_True(actual == expected, "OS_TimeBaseDelete() (%ld) == OS_SUCCESS", (long)actual);
 
     /* test error paths */
-    UT_SetForceFail(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
     expected = OS_ERR_INCORRECT_OBJ_STATE;
     actual   = OS_TimeBaseDelete(UT_OBJID_1);
     UtAssert_True(actual == expected, "OS_TimeBaseDelete() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
@@ -162,7 +162,7 @@ void Test_OS_TimeBaseGetIdByName(void)
     int32     actual   = ~OS_SUCCESS;
     osal_id_t objid;
 
-    UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_TimeBaseGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_TimeBaseGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
@@ -177,7 +177,7 @@ void Test_OS_TimeBaseGetIdByName(void)
     actual   = OS_TimeBaseGetIdByName(NULL, NULL);
     UtAssert_True(actual == expected, "OS_TimeBaseGetIdByName() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
     expected = OS_ERR_INCORRECT_OBJ_STATE;
     actual   = OS_TimeBaseGetIdByName(&objid, "NF");
     UtAssert_True(actual == expected, "OS_TimeBaseGetIdByName() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
@@ -222,7 +222,7 @@ void Test_OS_TimeBaseGetInfo(void)
     actual   = OS_TimeBaseGetInfo(UT_OBJID_1, NULL);
     UtAssert_True(actual == expected, "OS_TimeBaseGetInfo() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
     expected = OS_ERR_INCORRECT_OBJ_STATE;
     actual   = OS_TimeBaseGetInfo(UT_OBJID_1, &timebase_prop);
     UtAssert_True(actual == expected, "OS_TimeBaseGetInfo() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
@@ -281,7 +281,7 @@ void Test_OS_TimeBase_CallbackThread(void)
     /* Check that the TimeCB function was called */
     UtAssert_True(TimeCB > 0, "TimeCB (%lu) > 0", (unsigned long)TimeCB);
 
-    UT_SetForceFail(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
     OS_TimeBase_CallbackThread(UT_OBJID_2);
 }
 

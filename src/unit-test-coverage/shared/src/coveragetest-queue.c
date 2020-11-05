@@ -65,7 +65,7 @@ void Test_OS_QueueCreate(void)
     actual   = OS_QueueCreate(NULL, "UT", 0, 0, 0);
     UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OCS_strlen), 2 + OS_MAX_API_NAME);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), 2 + OS_MAX_API_NAME);
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_QueueCreate(&objid, "UT", 0, 0, 0);
     UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
@@ -146,7 +146,7 @@ void Test_OS_QueueGetIdByName(void)
     int32     actual   = ~OS_SUCCESS;
     osal_id_t objid;
 
-    UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_QueueGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_QueueGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
