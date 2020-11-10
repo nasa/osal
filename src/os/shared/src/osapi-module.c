@@ -232,7 +232,12 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
          * returns OS_ERR_NAME_NOT_FOUND.
          */
         return_code = OS_ModuleLoad_Static(module_name);
-        if (return_code != OS_SUCCESS)
+        if (return_code == OS_SUCCESS)
+        {
+            /* mark this as a statically loaded module */
+            OS_module_table[local_id].module_type = OS_MODULE_TYPE_STATIC;
+        }
+        else
         {
             /*
              * If this is NOT a static module, then the module file must be loaded by normal
@@ -248,6 +253,7 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
             {
                 /* supplied filename was valid, so store a copy for future reference */
                 strncpy(OS_module_table[local_id].file_name, filename, OS_MAX_PATH_LEN);
+                OS_module_table[local_id].module_type = OS_MODULE_TYPE_DYNAMIC;
 
                 /* Now call the OS-specific implementation.  This reads info from the module table. */
                 return_code = OS_ModuleLoad_Impl(local_id, translated_path);
@@ -280,9 +286,14 @@ int32 OS_ModuleUnload(osal_id_t module_id)
     if (return_code == OS_SUCCESS)
     {
         /*
-         * Only call the implementation if the loader is enabled
+         * Only call the implementation if the file was actually loaded.
+         * If this is a static module, then this is just a placeholder and
+         * it means there was no file actually loaded.
          */
-        return_code = OS_ModuleUnload_Impl(local_id);
+        if (OS_module_table[local_id].module_type == OS_MODULE_TYPE_DYNAMIC)
+        {
+            return_code = OS_ModuleUnload_Impl(local_id);
+        }
 
         /* Complete the operation via the common routine */
         return_code = OS_ObjectIdFinalizeDelete(return_code, record);
