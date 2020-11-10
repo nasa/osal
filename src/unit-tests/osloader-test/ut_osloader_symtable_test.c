@@ -109,10 +109,10 @@ void UT_os_symbol_lookup_test()
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
     /*-----------------------------------------------------*/
-    testDesc = "#4 Nominal";
+    testDesc = "#4 Nominal, Global Symbols";
 
     /* Setup */
-    res = OS_ModuleLoad(&module_id, "Mod1", UT_OS_GENERIC_MODULE_NAME2);
+    res = OS_ModuleLoad(&module_id, "Mod1", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_GLOBAL_SYMBOLS);
     if (res != OS_SUCCESS)
     {
         UT_OS_TEST_RESULT("#4 Nominal - Module Load failed", UTASSERT_CASETYPE_TSF);
@@ -122,6 +122,8 @@ void UT_os_symbol_lookup_test()
         res = OS_SymbolLookup(&symbol_addr, "module1");
         if (res == OS_SUCCESS)
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
+        else if (res == OS_ERR_NOT_IMPLEMENTED)
+            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
         else
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
 
@@ -132,6 +134,85 @@ void UT_os_symbol_lookup_test()
 UT_os_symbol_lookup_test_exit_tag:
     return;
 }
+
+/*--------------------------------------------------------------------------------*
+** Syntax: OS_ModuleSymbolLookup
+** Purpose: Returns the memory address of a symbol
+** Parameters: To-be-filled-in
+** Returns: OS_INVALID_POINTER if any of the pointers passed in is null
+**          OS_ERROR if the symbol name is not found
+**          OS_SUCCESS if succeeded
+**--------------------------------------------------------------------------------*/
+
+void UT_os_module_symbol_lookup_test()
+{
+    int32       res = 0;
+    const char *testDesc;
+    cpuaddr     symbol_addr;
+    osal_id_t   module_id;
+
+    /*-----------------------------------------------------*/
+    testDesc = "API Not implemented";
+
+    res = OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symbol_addr, "main");
+    if (res == OS_ERR_NOT_IMPLEMENTED)
+    {
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
+        goto UT_os_module_symbol_lookup_test_exit_tag;
+    }
+
+    /*-----------------------------------------------------*/
+    testDesc = "#1 Invalid-pointer-arg-1";
+
+    res = OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, 0, "main");
+    if (res == OS_INVALID_POINTER)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
+    else
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+
+    /*-----------------------------------------------------*/
+    testDesc = "#2 Invalid-pointer-arg-2";
+
+    res = OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symbol_addr, 0);
+    if (res == OS_INVALID_POINTER)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
+    else
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+
+    /*-----------------------------------------------------*/
+    /* Setup for remainder of tests */
+    res = OS_ModuleLoad(&module_id, "Mod1", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
+    if (res != OS_SUCCESS)
+    {
+        UT_OS_TEST_RESULT("Module Load failed", UTASSERT_CASETYPE_TSF);
+        goto UT_os_module_symbol_lookup_test_exit_tag;
+    }
+
+    /*-----------------------------------------------------*/
+    testDesc = "#3 Symbol-not-found";
+
+    res = OS_ModuleSymbolLookup(module_id, &symbol_addr, "ThisSymbolIsNotFound");
+    if (res == OS_ERROR)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
+    else
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+
+    /*-----------------------------------------------------*/
+    testDesc = "#4 Nominal, Local Symbols";
+
+    res = OS_ModuleSymbolLookup(module_id, &symbol_addr, "module1");
+    if (res == OS_SUCCESS)
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
+    else
+        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+
+    /* Reset test environment */
+    res = OS_ModuleUnload(module_id);
+
+UT_os_module_symbol_lookup_test_exit_tag:
+    return;
+}
+
 
 /*--------------------------------------------------------------------------------*
 ** Syntax: OS_SymbolTableDump
