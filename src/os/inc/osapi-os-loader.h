@@ -160,7 +160,7 @@ int32 OS_SymbolLookup(cpuaddr *symbol_address, const char *symbol_name);
  * @retval #OS_ERROR if the symbol could not be found
  * @retval #OS_INVALID_POINTER if one of the pointers passed in are NULL
  */
-int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *SymbolAddress, const char *SymbolName);
+int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const char *symbol_name);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -184,9 +184,14 @@ int32 OS_SymbolTableDump(const char *filename, uint32 size_limit);
  *
  * Loads an object file into the running operating system
  *
+ * The "flags" parameter may influence how the loaded module symbols are made
+ * available for use in the application.  See #OS_MODULE_FLAG_LOCAL_SYMBOLS
+ * and #OS_MODULE_FLAG_GLOBAL_SYMBOLS for descriptions.
+ *
  * @param[out] module_id    Non-zero OSAL ID corresponding to the loaded module
  * @param[in]  module_name  Name of module
  * @param[in]  filename     File containing the object code to load
+ * @param[in]  flags        Options for the loaded module
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS

@@ -397,7 +397,7 @@ int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const char *symbol_name)
 {
     int32               return_code;
     int32               staticsym_status;
@@ -407,7 +407,7 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *SymbolAddress, const c
     /*
     ** Check parameters
     */
-    if ((SymbolAddress == NULL) || (SymbolName == NULL))
+    if ((symbol_address == NULL) || (symbol_name == NULL))
     {
         return (OS_INVALID_POINTER);
     }
@@ -415,11 +415,11 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *SymbolAddress, const c
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, module_id, &local_id, &record);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_ModuleSymbolLookup_Impl(local_id, SymbolAddress, SymbolName);
+        return_code = OS_ModuleSymbolLookup_Impl(local_id, symbol_address, symbol_name);
         if (return_code != OS_SUCCESS)
         {
             /* look for a static symbol that also matches this module name */
-            staticsym_status = OS_SymbolLookup_Static(SymbolAddress, SymbolName, record->name_entry);
+            staticsym_status = OS_SymbolLookup_Static(symbol_address, symbol_name, record->name_entry);
 
             /*
              * Only overwrite the return code if static lookup was successful.
