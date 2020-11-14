@@ -31,7 +31,11 @@
 #include <stdbool.h>
 #include "osconfig.h"
 #include <unistd.h>
+#ifndef __APPLE__
 #include <semaphore.h>
+#else
+#include <posix-macos-semaphore.h>
+#endif
 
 /* Console device */
 typedef struct

@@ -30,4 +30,4 @@
 
 #include "os-shared-countsem.h"
 
-OS_count_sem_internal_record_t OS_count_sem_table[OS_MAX_COUNT_SEMAPHORES];
+OS_count_sem_internal_record_t OS_count_sem_table[OS_MAX_COUNT_SEMAPHORES] = {0};

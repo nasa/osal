@@ -31,4 +31,4 @@
 
 #include "os-shared-queue.h"
 
-OS_queue_internal_record_t OS_queue_table[OS_MAX_QUEUES];
+OS_queue_internal_record_t OS_queue_table[OS_MAX_QUEUES] = {0};

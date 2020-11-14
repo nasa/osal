@@ -40,7 +40,9 @@
 #include <sys/statvfs.h>
 #include <sys/stat.h>
 #include <sys/mount.h>
+#ifndef __APPLE__
 #include <sys/vfs.h>
+#endif
 
 #include "os-posix.h"
 #include "os-shared-filesys.h"

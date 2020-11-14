@@ -36,6 +36,10 @@
 #include "os-shared-binsem.h"
 #include "os-impl-binsem.h"
 
+#ifdef __APPLE__
+#include <posix-macos-pthread.h>
+#endif
+
 /*
  * This controls the maximum time that the calling thread will wait to
  * acquire the condition mutex before returning an error.

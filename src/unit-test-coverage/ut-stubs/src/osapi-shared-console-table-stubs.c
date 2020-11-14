@@ -30,4 +30,4 @@
 
 #include "os-shared-printf.h"
 
-OS_console_internal_record_t OS_console_table[OS_MAX_CONSOLES];
+OS_console_internal_record_t OS_console_table[OS_MAX_CONSOLES] = {0};

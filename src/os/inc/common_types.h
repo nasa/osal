@@ -60,8 +60,10 @@ extern "C"
 ** macro to disable this.
 */
 #if defined(__GNUC__) && !defined(OSAPI_NO_SPECIAL_ATTRIBS)
-#define _EXTENSION_     __extension__
-#define OS_USED         __attribute__((used))
+#define _EXTENSION_ __extension__
+#ifndef __APPLE__
+#define OS_USED __attribute__((used))
+#endif
 #define OS_PRINTF(n, m) __attribute__((format(printf, n, m)))
 #else
 #define _EXTENSION_

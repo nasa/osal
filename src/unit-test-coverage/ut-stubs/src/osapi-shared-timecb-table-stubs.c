@@ -31,4 +31,4 @@
 
 #include "os-shared-time.h"
 
-OS_timecb_internal_record_t OS_timecb_table[OS_MAX_TIMERS];
+OS_timecb_internal_record_t OS_timecb_table[OS_MAX_TIMERS] = {0};

@@ -45,7 +45,11 @@
 #include <pthread.h>
 #include <mqueue.h>
 #include <fcntl.h>
+#ifndef __APPLE__
 #include <semaphore.h>
+#else
+#include <posix-macos-semaphore.h>
+#endif
 #include <sys/types.h>
 #include <sys/signal.h>
 

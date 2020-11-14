@@ -31,6 +31,9 @@
 #include "osconfig.h"
 #include <pthread.h>
 #include <signal.h>
+#ifdef __APPLE__
+#include <posix-macos-timer.h>
+#endif
 
 typedef struct
 {

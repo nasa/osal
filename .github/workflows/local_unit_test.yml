@@ -8,7 +8,7 @@ jobs:
 
   Local-Unit-Test:
     runs-on: ubuntu-18.04
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     steps:
       - name: Install coverage tools
@@ -26,6 +26,24 @@ jobs:
         run: make -j
 
       # Baseline lcov and run all tests
+
+      # TODO: The timer-add-api-test test is known to fail sometimes on GitHub Actions (both macOS and Linux, but macOS
+      # is more often). The current hypothesis is that the timer cannot catch up when running on the (elastic) VMs.
+      # Run tests more than once to increase the reproducibility.
+      # Revert this change when the macOS branch is ready and create a separate ticket to track this for macOS and
+      # Linux.
+      - name: Test
+        run: make test
+
+      - name: Test
+        run: make test
+
+      - name: Test
+        run: make test
+
+      - name: Test
+        run: make test
+
       - name: Test
         run: make test
 

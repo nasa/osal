@@ -30,4 +30,4 @@
 
 #include "os-shared-filesys.h"
 
-OS_filesys_internal_record_t OS_filesys_table[OS_MAX_FILE_SYSTEMS];
+OS_filesys_internal_record_t OS_filesys_table[OS_MAX_FILE_SYSTEMS] = {0};

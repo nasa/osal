@@ -43,6 +43,14 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(OSAL C)
 
+# TODO: Where to integrate this?
+if (APPLE)
+    add_compile_options(
+        -Wall -Werror
+        -Wno-non-literal-null-conversion
+    )
+endif ()
+
 # The "OSAL_EXT_SOURCE_DIR" cache variable may be set to a path
 # on the host containing extra OS/BSP implementations which are not
 # part of the open source release.
@@ -144,7 +152,9 @@ if (DEFINED OSAL_EXPECTED_OSTYPE)
     elseif(NOT OSAL_SYSTEM_OSTYPE STREQUAL OSAL_EXPECTED_OSTYPE)
         # Generate a warning about the OSTYPE not being expected.
         # Not calling this a fatal error because it could possibly be intended during development
-        message(WARNING "Mismatched BSP/OS: ${OSAL_SYSTEM_BSPTYPE} implies ${OSAL_EXPECTED_OSTYPE}, but ${OSAL_SYSTEM_OSTYPE} is configured")
+
+        # TODO: How to integrate -DOSAL_SYSTEM_BSPTYPE=generic-linux -DOSAL_SYSTEM_OSTYPE=posixmacos?
+        # message(WARNING "Mismatched BSP/OS: ${OSAL_SYSTEM_BSPTYPE} implies ${OSAL_EXPECTED_OSTYPE}, but ${OSAL_SYSTEM_OSTYPE} is configured")
     endif(NOT DEFINED OSAL_SYSTEM_OSTYPE)
 endif (DEFINED OSAL_EXPECTED_OSTYPE)
 

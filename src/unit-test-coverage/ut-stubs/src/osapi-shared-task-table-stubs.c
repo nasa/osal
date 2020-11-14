@@ -31,4 +31,4 @@
 
 #include "os-shared-task.h"
 
-OS_task_internal_record_t OS_task_table[OS_MAX_TASKS];
+OS_task_internal_record_t OS_task_table[OS_MAX_TASKS] = {0};

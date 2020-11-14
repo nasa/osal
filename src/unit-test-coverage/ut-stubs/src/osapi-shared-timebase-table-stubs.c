@@ -31,4 +31,4 @@
 
 #include "os-shared-timebase.h"
 
-OS_timebase_internal_record_t OS_timebase_table[OS_MAX_TIMEBASES];
+OS_timebase_internal_record_t OS_timebase_table[OS_MAX_TIMEBASES] = {0};

@@ -30,4 +30,4 @@
 
 #include "os-shared-common.h"
 
-OS_SharedGlobalVars_t OS_SharedGlobalVars;
+OS_SharedGlobalVars_t OS_SharedGlobalVars = {0};

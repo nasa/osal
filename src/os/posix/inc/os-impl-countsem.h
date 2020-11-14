@@ -29,7 +29,12 @@
 #define OS_IMPL_COUNTSEM_H
 
 #include "osconfig.h"
+
+#ifndef __APPLE__
 #include <semaphore.h>
+#else
+#include <posix-macos-semaphore.h>
+#endif
 
 typedef struct
 {

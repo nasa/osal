@@ -30,4 +30,4 @@
 
 #include "os-shared-binsem.h"
 
-OS_bin_sem_internal_record_t OS_bin_sem_table[OS_MAX_BIN_SEMAPHORES];
+OS_bin_sem_internal_record_t OS_bin_sem_table[OS_MAX_BIN_SEMAPHORES] = {0};

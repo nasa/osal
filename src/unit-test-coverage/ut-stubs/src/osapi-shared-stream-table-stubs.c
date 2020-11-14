@@ -31,4 +31,4 @@
 
 #include "os-shared-file.h"
 
-OS_stream_internal_record_t OS_stream_table[OS_MAX_NUM_OPEN_FILES];
+OS_stream_internal_record_t OS_stream_table[OS_MAX_NUM_OPEN_FILES] = {0};
