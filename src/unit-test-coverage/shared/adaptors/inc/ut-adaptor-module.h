@@ -49,7 +49,7 @@ void Osapi_Internal_ResetState(void);
 /* A dummy function for the static symbol lookup test.  Not called */
 void Test_DummyFunc(void);
 
-int32 Osapi_Call_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName);
+int32 Osapi_Call_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName, const char *ModuleName);
 int32 Osapi_Call_ModuleLoad_Static(const char *ModuleName);
 
 #endif /* INCLUDE_UT_ADAPTOR_MODULE_H_ */

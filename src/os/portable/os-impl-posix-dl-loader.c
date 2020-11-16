@@ -64,9 +64,38 @@
 int32 OS_ModuleLoad_Impl(uint32 module_id, const char *translated_path)
 {
     int32 status = OS_ERROR;
+    int dl_mode;
+
+    /*
+     * RTLD_NOW should instruct dlopen() to resolve all the symbols in the
+     * module immediately, as opposed to waiting until they are used.
+     * The latter (lazy mode) is non-deterministic - a resolution error on
+     * a rarely-used symbol could cause a random failure far in the future.
+     */
+    dl_mode = RTLD_NOW;
+
+    if ((OS_module_table[module_id].flags & OS_MODULE_FLAG_LOCAL_SYMBOLS) != 0)
+    {
+        /*
+         * Do not add the symbols in this module to the global symbol table.
+         * This mode helps prevent any unanticipated references into this
+         * module, which can in turn prevent unloading via dlclose().
+         */
+        dl_mode |= RTLD_LOCAL;
+    }
+    else
+    {
+        /*
+         * Default mode - add symbols to the global symbol table, so they
+         * will be available to resolve symbols in future module loads.
+         * However, any such references will prevent unloading of this
+         * module via dlclose().
+         */
+        dl_mode |= RTLD_GLOBAL;
+    }
 
     dlerror();
-    OS_impl_module_table[module_id].dl_handle = dlopen(translated_path, RTLD_NOW | RTLD_GLOBAL);
+    OS_impl_module_table[module_id].dl_handle = dlopen(translated_path, dl_mode);
     if (OS_impl_module_table[module_id].dl_handle != NULL)
     {
         status = OS_SUCCESS;
