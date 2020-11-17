@@ -51,7 +51,7 @@
 #if defined(_STACK_ALIGN_SIZE)
 #define VX_IMPL_STACK_ALIGN_SIZE _STACK_ALIGN_SIZE
 #else
-#define VX_IMPL_STACK_ALIGN_SIZE 16
+#define VX_IMPL_STACK_ALIGN_SIZE ((size_t)16)
 #endif
 
 #if defined(STACK_ROUND_DOWN)
@@ -122,9 +122,9 @@ int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
     STATUS                          status;
     int                             vxflags;
     int                             vxpri;
-    long                            actualsz;
-    long                            userstackbase;
-    long                            actualstackbase;
+    size_t                          actualsz;
+    unsigned long                   userstackbase;
+    unsigned long                   actualstackbase;
     OS_impl_task_internal_record_t *lrec;
     VxWorks_ID_Buffer_t             id;
 
@@ -147,7 +147,7 @@ int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
      */
     vxpri         = OS_task_table[task_id].priority;
     actualsz      = OS_task_table[task_id].stack_size;
-    userstackbase = (long)OS_task_table[task_id].stack_pointer;
+    userstackbase = (unsigned long)OS_task_table[task_id].stack_pointer;
 
     /*
      * NOTE: Using taskInit() here rather than taskSpawn() allows us
@@ -213,7 +213,7 @@ int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
             }
         }
 
-        userstackbase = (long)lrec->heap_block;
+        userstackbase = (unsigned long)lrec->heap_block;
     }
 
     if (userstackbase == 0)
