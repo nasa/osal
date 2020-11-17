@@ -73,7 +73,7 @@ void Test_OS_FileStat_Impl(void)
     /* all permission bits with uid/gid match */
     RefStat.st_uid   = UT_PortablePosixFileTest_GetSelfEUID();
     RefStat.st_gid   = UT_PortablePosixFileTest_GetSelfEGID();
-    RefStat.st_mode  = ~0;
+    RefStat.st_mode  = ~((OCS_mode_t)0);
     RefStat.st_size  = 1234;
     RefStat.st_mtime = 5678;
     UT_SetDataBuffer(UT_KEY(OCS_stat), &RefStat, sizeof(RefStat), false);
@@ -114,7 +114,7 @@ void Test_OS_FileChmod_Impl(void)
     /* all permission bits with uid/gid match */
     RefStat.st_uid   = UT_PortablePosixFileTest_GetSelfEUID();
     RefStat.st_gid   = UT_PortablePosixFileTest_GetSelfEGID();
-    RefStat.st_mode  = ~0;
+    RefStat.st_mode  = ~((OCS_mode_t)0);
     RefStat.st_size  = 1234;
     RefStat.st_mtime = 5678;
     UT_SetDataBuffer(UT_KEY(OCS_fstat), &RefStat, sizeof(RefStat), false);

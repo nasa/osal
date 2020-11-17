@@ -82,7 +82,7 @@ int32 OS_TimeBaseCreate_Impl(osal_index_t timebase_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_TimeBaseSet_Impl(osal_index_t timebase_id, int32 start_time, int32 interval_time);
+int32 OS_TimeBaseSet_Impl(osal_index_t timebase_id, uint32 start_time, uint32 interval_time);
 
 /*----------------------------------------------------------------
    Function: OS_TimeBaseDelete_Impl

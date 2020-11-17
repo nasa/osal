@@ -101,7 +101,8 @@ int32 OS_GenericClose_Impl(osal_index_t local_id)
 int32 OS_GenericSeek_Impl(osal_index_t local_id, int32 offset, uint32 whence)
 {
     int   where;
-    int32 result;
+    off_t os_result;
+    int32 retval;
 
     switch (whence)
     {
@@ -118,8 +119,8 @@ int32 OS_GenericSeek_Impl(osal_index_t local_id, int32 offset, uint32 whence)
             return OS_ERROR;
     }
 
-    result = lseek(OS_impl_filehandle_table[local_id].fd, (off_t)offset, where);
-    if (result < 0)
+    os_result = lseek(OS_impl_filehandle_table[local_id].fd, (off_t)offset, where);
+    if (os_result == (off_t)-1)
     {
         if (errno == ESPIPE)
         {
@@ -130,7 +131,7 @@ int32 OS_GenericSeek_Impl(osal_index_t local_id, int32 offset, uint32 whence)
              * Use a different error code to differentiate from an
              * error involving a bad whence/offset
              */
-            result = OS_ERR_NOT_IMPLEMENTED;
+            retval = OS_ERR_NOT_IMPLEMENTED;
         }
         else
         {
@@ -138,11 +139,20 @@ int32 OS_GenericSeek_Impl(osal_index_t local_id, int32 offset, uint32 whence)
              * Most likely the "whence" and/or "offset" combo was not valid.
              */
             OS_DEBUG("lseek: %s\n", strerror(errno));
-            result = OS_ERROR;
+            retval = OS_ERROR;
         }
     }
+    else
+    {
+        /*
+         * convert value to int32 type for returning to caller.
+         * Note that this could potentially overflow an int32
+         * for a large file seek.
+         */
+        retval = (int32)os_result;
+    }
 
-    return result;
+    return retval;
 } /* end OS_GenericSeek_Impl */
 
 /*----------------------------------------------------------------
@@ -155,9 +165,9 @@ int32 OS_GenericSeek_Impl(osal_index_t local_id, int32 offset, uint32 whence)
  *-----------------------------------------------------------------*/
 int32 OS_GenericRead_Impl(osal_index_t local_id, void *buffer, size_t nbytes, int32 timeout)
 {
-    int32  return_code;
-    int    os_result;
-    uint32 operation;
+    int32   return_code;
+    ssize_t os_result;
+    uint32  operation;
 
     return_code = OS_SUCCESS;
 
@@ -188,7 +198,8 @@ int32 OS_GenericRead_Impl(osal_index_t local_id, void *buffer, size_t nbytes, in
             }
             else
             {
-                return_code = os_result;
+                /* type conversion from ssize_t to int32 for return */
+                return_code = (int32)os_result;
             }
         }
     }
@@ -206,9 +217,9 @@ int32 OS_GenericRead_Impl(osal_index_t local_id, void *buffer, size_t nbytes, in
  *-----------------------------------------------------------------*/
 int32 OS_GenericWrite_Impl(osal_index_t local_id, const void *buffer, size_t nbytes, int32 timeout)
 {
-    int32  return_code;
-    int    os_result;
-    uint32 operation;
+    int32   return_code;
+    ssize_t os_result;
+    uint32  operation;
 
     return_code = OS_SUCCESS;
 
@@ -241,7 +252,8 @@ int32 OS_GenericWrite_Impl(osal_index_t local_id, const void *buffer, size_t nby
             }
             else
             {
-                return_code = os_result;
+                /* type conversion from ssize_t to int32 for return */
+                return_code = (int32)os_result;
             }
         }
     }

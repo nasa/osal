@@ -52,8 +52,8 @@ struct OS_shared_global_vars
      */
     volatile bool   PrintfEnabled;
     volatile uint32 ShutdownFlag;
-    int32           MicroSecPerTick;
-    int32           TicksPerSecond;
+    uint32          MicroSecPerTick;
+    uint32          TicksPerSecond;
 
     /*
      * The event handler is an application-defined callback

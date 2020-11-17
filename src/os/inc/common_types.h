@@ -181,9 +181,9 @@ extern "C"
  * this makes it explicit in the code where a type conversion
  * is expected.
  */
-#define OSAL_SIZE_C(X)       ((size_t) {X})
-#define OSAL_BLOCKCOUNT_C(X) ((osal_blockcount_t) {X})
-#define OSAL_INDEX_C(X)      ((osal_index_t) {X})
-#define OSAL_OBJTYPE_C(X)    ((osal_objtype_t) {X})
+#define OSAL_SIZE_C(X)       ((size_t)(X))
+#define OSAL_BLOCKCOUNT_C(X) ((osal_blockcount_t)(X))
+#define OSAL_INDEX_C(X)      ((osal_index_t)(X))
+#define OSAL_OBJTYPE_C(X)    ((osal_objtype_t)(X))
 
 #endif /* _common_types_ */

@@ -410,7 +410,7 @@ int32 OS_TimeBaseCreate_Impl(osal_index_t timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseSet_Impl(osal_index_t timer_id, int32 start_time, int32 interval_time)
+int32 OS_TimeBaseSet_Impl(osal_index_t timer_id, uint32 start_time, uint32 interval_time)
 {
     OS_U32ValueWrapper_t                user_data;
     OS_impl_timebase_internal_record_t *local;

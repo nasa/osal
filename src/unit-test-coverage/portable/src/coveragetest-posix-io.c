@@ -69,7 +69,7 @@ void Test_OS_GenericSeek_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, OS_SEEK_END), 333);
 
     /* bad whence */
-    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, -1234), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, 1234), OS_ERROR);
 
     /* generic failure of lseek() */
     UT_SetForceFail(UT_KEY(OCS_lseek), -1);

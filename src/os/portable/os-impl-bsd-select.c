@@ -90,7 +90,7 @@ static int OS_FdSet_ConvertIn_Impl(fd_set *os_set, OS_FdSet *OSAL_set)
         {
             if (objids & 0x01)
             {
-                id   = (offset * 8) + bit;
+                id   = OSAL_INDEX_C((offset * 8) + bit);
                 osfd = OS_impl_filehandle_table[id].fd;
                 if (osfd >= 0 && OS_impl_filehandle_table[id].selectable)
                 {
@@ -136,7 +136,7 @@ static void OS_FdSet_ConvertOut_Impl(fd_set *output, OS_FdSet *Input)
         {
             if (objids & 0x01)
             {
-                id   = (offset * 8) + bit;
+                id   = OSAL_INDEX_C((offset * 8) + bit);
                 osfd = OS_impl_filehandle_table[id].fd;
                 if (osfd < 0 || !FD_ISSET(osfd, output))
                 {
