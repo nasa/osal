@@ -199,7 +199,7 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
     int         fd;
 
     /* Open file to avoid filename race potential */
-    fd = open(local_path, O_RDONLY);
+    fd = open(local_path, O_RDONLY, 0);
     if (fd < 0)
     {
         return OS_ERROR;
