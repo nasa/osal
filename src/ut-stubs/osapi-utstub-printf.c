@@ -60,7 +60,7 @@ void OS_printf(const char *string, ...)
     UT_Stub_RegisterContext(UT_KEY(OS_printf), string);
 
     int32   status;
-    int32   length = strlen(string);
+    size_t  length = strlen(string);
     va_list va;
 
     va_start(va, string);

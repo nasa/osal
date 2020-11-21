@@ -81,8 +81,8 @@ OS_task_internal_record_t OS_task_table[LOCAL_NUM_OBJECTS];
  *-----------------------------------------------------------------*/
 static int32 OS_TaskPrepare(osal_id_t task_id, osal_task_entry *entrypt)
 {
-    int32  return_code;
-    uint32 local_id;
+    int32        return_code;
+    osal_index_t local_id;
 
     return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TASK, task_id, &local_id);
     if (return_code == OS_SUCCESS)
@@ -186,18 +186,12 @@ int32 OS_TaskAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry function_pointer, uint32 *stack_pointer,
-                    uint32 stack_size, uint32 priority, uint32 flags)
+int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry function_pointer,
+                    osal_stackptr_t stack_pointer, size_t stack_size, osal_priority_t priority, uint32 flags)
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
-
-    /* Check for bad priority */
-    if (priority > OS_MAX_TASK_PRIORITY)
-    {
-        return OS_ERR_INVALID_PRIORITY;
-    }
+    osal_index_t        local_id;
 
     /* Check for NULL pointers */
     if (task_name == NULL || task_id == NULL || function_pointer == NULL)
@@ -255,7 +249,7 @@ int32 OS_TaskDelete(osal_id_t task_id)
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
     osal_task_entry     delete_hook;
 
     delete_hook = NULL;
@@ -294,7 +288,7 @@ void OS_TaskExit()
 {
     OS_common_record_t *record;
     osal_id_t           task_id;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     task_id = OS_TaskGetId_Impl();
     if (OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &local_id, &record) == OS_SUCCESS)
@@ -331,33 +325,26 @@ int32 OS_TaskDelay(uint32 millisecond)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskSetPriority(osal_id_t task_id, uint32 new_priority)
+int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority)
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
 
-    if (new_priority > OS_MAX_TASK_PRIORITY)
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &local_id, &record);
+    if (return_code == OS_SUCCESS)
     {
-        return_code = OS_ERR_INVALID_PRIORITY;
-    }
-    else
-    {
-        return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &local_id, &record);
+        return_code = OS_TaskSetPriority_Impl(local_id, new_priority);
+
         if (return_code == OS_SUCCESS)
         {
-            return_code = OS_TaskSetPriority_Impl(local_id, new_priority);
-
-            if (return_code == OS_SUCCESS)
-            {
-                /* Use the abstracted priority, not the OS one */
-                /* Change the priority in the table as well */
-                OS_task_table[local_id].priority = new_priority;
-            }
-
-            /* Unlock the global from OS_ObjectIdGetAndLock() */
-            OS_Unlock_Global(LOCAL_OBJID_TYPE);
+            /* Use the abstracted priority, not the OS one */
+            /* Change the priority in the table as well */
+            OS_task_table[local_id].priority = new_priority;
         }
+
+        /* Unlock the global from OS_ObjectIdGetAndLock() */
+        OS_Unlock_Global(LOCAL_OBJID_TYPE);
     }
 
     return return_code;
@@ -374,7 +361,7 @@ int32 OS_TaskSetPriority(osal_id_t task_id, uint32 new_priority)
 int32 OS_TaskRegister(void)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     /*
      * Just to retain compatibility (really, only the unit test cares)
@@ -394,7 +381,7 @@ int32 OS_TaskRegister(void)
 osal_id_t OS_TaskGetId(void)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     osal_id_t           task_id;
 
     task_id = OS_TaskGetId_Impl();
@@ -444,7 +431,7 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     /* Check parameters */
     if (task_prop == NULL)
@@ -487,7 +474,7 @@ int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer)
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
     osal_id_t           task_id;
 
     task_id     = OS_TaskGetId_Impl();

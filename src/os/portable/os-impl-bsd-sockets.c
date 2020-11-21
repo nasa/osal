@@ -84,7 +84,7 @@ typedef union
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketOpen_Impl(uint32 sock_id)
+int32 OS_SocketOpen_Impl(osal_index_t sock_id)
 {
     int os_domain;
     int os_type;
@@ -175,7 +175,7 @@ int32 OS_SocketOpen_Impl(uint32 sock_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketBind_Impl(uint32 sock_id, const OS_SockAddr_t *Addr)
+int32 OS_SocketBind_Impl(osal_index_t sock_id, const OS_SockAddr_t *Addr)
 {
     int                    os_result;
     socklen_t              addrlen;
@@ -231,7 +231,7 @@ int32 OS_SocketBind_Impl(uint32 sock_id, const OS_SockAddr_t *Addr)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketConnect_Impl(uint32 sock_id, const OS_SockAddr_t *Addr, int32 timeout)
+int32 OS_SocketConnect_Impl(osal_index_t sock_id, const OS_SockAddr_t *Addr, int32 timeout)
 {
     int32                  return_code;
     int                    os_status;
@@ -309,7 +309,7 @@ int32 OS_SocketConnect_Impl(uint32 sock_id, const OS_SockAddr_t *Addr, int32 tim
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketAccept_Impl(uint32 sock_id, uint32 connsock_id, OS_SockAddr_t *Addr, int32 timeout)
+int32 OS_SocketAccept_Impl(osal_index_t sock_id, osal_index_t connsock_id, OS_SockAddr_t *Addr, int32 timeout)
 {
     int32     return_code;
     uint32    operation;
@@ -370,7 +370,8 @@ int32 OS_SocketAccept_Impl(uint32 sock_id, uint32 connsock_id, OS_SockAddr_t *Ad
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketRecvFrom_Impl(uint32 sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
+int32 OS_SocketRecvFrom_Impl(osal_index_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr,
+                             int32 timeout)
 {
     int32            return_code;
     int              os_result;
@@ -458,7 +459,7 @@ int32 OS_SocketRecvFrom_Impl(uint32 sock_id, void *buffer, uint32 buflen, OS_Soc
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketSendTo_Impl(uint32 sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr)
+int32 OS_SocketSendTo_Impl(osal_index_t sock_id, const void *buffer, size_t buflen, const OS_SockAddr_t *RemoteAddr)
 {
     int                    os_result;
     socklen_t              addrlen;
@@ -503,7 +504,7 @@ int32 OS_SocketSendTo_Impl(uint32 sock_id, const void *buffer, uint32 buflen, co
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketGetInfo_Impl(uint32 sock_id, OS_socket_prop_t *sock_prop)
+int32 OS_SocketGetInfo_Impl(osal_index_t sock_id, OS_socket_prop_t *sock_prop)
 {
     return OS_SUCCESS;
 } /* end OS_SocketGetInfo_Impl */
@@ -539,7 +540,7 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
 #endif
         default:
             sa_family = 0;
-            addrlen = 0;
+            addrlen   = 0;
             break;
     }
 
@@ -548,7 +549,7 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
         return OS_ERR_NOT_IMPLEMENTED;
     }
 
-    Addr->ActualLength           = addrlen;
+    Addr->ActualLength           = OSAL_SIZE_C(addrlen);
     Accessor->sockaddr.sa_family = sa_family;
 
     return OS_SUCCESS;
@@ -562,7 +563,7 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketAddrToString_Impl(char *buffer, uint32 buflen, const OS_SockAddr_t *Addr)
+int32 OS_SocketAddrToString_Impl(char *buffer, size_t buflen, const OS_SockAddr_t *Addr)
 {
     const void *                  addrbuffer;
     const OS_SockAddr_Accessor_t *Accessor;

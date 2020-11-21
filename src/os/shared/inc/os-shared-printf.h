@@ -45,9 +45,9 @@ typedef struct
     char device_name[OS_MAX_API_NAME];
 
     char *          BufBase;        /**< Start of the buffer memory */
-    uint32          BufSize;        /**< Total size of the buffer */
-    volatile uint32 ReadPos;        /**< Offset of next byte to read */
-    volatile uint32 WritePos;       /**< Offset of next byte to write */
+    size_t          BufSize;        /**< Total size of the buffer */
+    volatile size_t ReadPos;        /**< Offset of next byte to read */
+    volatile size_t WritePos;       /**< Offset of next byte to write */
     uint32          OverflowEvents; /**< Number of lines dropped due to overflow */
 
 } OS_console_internal_record_t;
@@ -73,7 +73,7 @@ int32 OS_ConsoleAPI_Init(void);
     Purpose: Prepare a console device for use
              For Async devices, this sets up the background writer task
  ------------------------------------------------------------------*/
-int32 OS_ConsoleCreate_Impl(uint32 local_id);
+int32 OS_ConsoleCreate_Impl(osal_index_t local_id);
 
 /*----------------------------------------------------------------
    Function: OS_ConsoleOutput_Impl
@@ -85,7 +85,7 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id);
 
    The data is already formatted, this just writes the characters.
  ------------------------------------------------------------------*/
-void OS_ConsoleOutput_Impl(uint32 local_id);
+void OS_ConsoleOutput_Impl(osal_index_t local_id);
 
 /*----------------------------------------------------------------
    Function: OS_ConsoleOutput_Impl
@@ -100,6 +100,6 @@ void OS_ConsoleOutput_Impl(uint32 local_id);
    service, this should wakeup the actual console servicing
    thread.
  ------------------------------------------------------------------*/
-void OS_ConsoleWakeup_Impl(uint32 local_id);
+void OS_ConsoleWakeup_Impl(osal_index_t local_id);
 
 #endif /* INCLUDE_OS_SHARED_PRINTF_H_ */

@@ -67,7 +67,7 @@ int32 OS_Posix_QueueAPI_Impl_Init(void)
     /*
      * Initialize this to zero to indicate no limit
      */
-    POSIX_GlobalVars.TruncateQueueDepth = 0;
+    POSIX_GlobalVars.TruncateQueueDepth = OSAL_BLOCKCOUNT_C(0);
 #endif
 
     return OS_SUCCESS;
@@ -81,7 +81,7 @@ int32 OS_Posix_QueueAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueCreate_Impl(uint32 queue_id, uint32 flags)
+int32 OS_QueueCreate_Impl(osal_index_t queue_id, uint32 flags)
 {
     int            return_code;
     mqd_t          queueDesc;
@@ -159,7 +159,7 @@ int32 OS_QueueCreate_Impl(uint32 queue_id, uint32 flags)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueDelete_Impl(uint32 queue_id)
+int32 OS_QueueDelete_Impl(osal_index_t queue_id)
 {
     int32 return_code;
 
@@ -185,7 +185,7 @@ int32 OS_QueueDelete_Impl(uint32 queue_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGet_Impl(uint32 queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout)
+int32 OS_QueueGet_Impl(osal_index_t queue_id, void *data, size_t size, size_t *size_copied, int32 timeout)
 {
     int32           return_code;
     ssize_t         sizeCopied;
@@ -240,7 +240,7 @@ int32 OS_QueueGet_Impl(uint32 queue_id, void *data, uint32 size, uint32 *size_co
     /* Figure out the return code */
     if (sizeCopied == -1)
     {
-        *size_copied = 0;
+        *size_copied = OSAL_SIZE_C(0);
 
         /* Map the system errno to the most appropriate OSAL return code */
         if (errno == EMSGSIZE)
@@ -266,7 +266,7 @@ int32 OS_QueueGet_Impl(uint32 queue_id, void *data, uint32 size, uint32 *size_co
     }
     else
     {
-        *size_copied = sizeCopied;
+        *size_copied = OSAL_SIZE_C(sizeCopied);
         return_code  = OS_SUCCESS;
     }
 
@@ -281,7 +281,7 @@ int32 OS_QueueGet_Impl(uint32 queue_id, void *data, uint32 size, uint32 *size_co
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueuePut_Impl(uint32 queue_id, const void *data, uint32 size, uint32 flags)
+int32 OS_QueuePut_Impl(osal_index_t queue_id, const void *data, size_t size, uint32 flags)
 {
     int32           return_code;
     int             result;

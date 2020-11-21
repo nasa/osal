@@ -100,7 +100,8 @@ int32 OS_TimeBaseCreate(osal_id_t *timer_id, const char *timebase_name, OS_Timer
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_objtype_t      objtype;
+    osal_index_t        local_id;
 
     /*
      * Specifying a NULL sync function means the timebase is not externally synchronized.
@@ -128,8 +129,8 @@ int32 OS_TimeBaseCreate(osal_id_t *timer_id, const char *timebase_name, OS_Timer
      * Check our context.  Not allowed to use the timer API from a timer callback.
      * Just interested in the object type returned.
      */
-    local_id = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
-    if (local_id == OS_OBJECT_TYPE_OS_TIMEBASE)
+    objtype = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
+    if (objtype == OS_OBJECT_TYPE_OS_TIMEBASE)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
@@ -175,7 +176,8 @@ int32 OS_TimeBaseSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_objtype_t      objtype;
+    osal_index_t        local_id;
 
     /*
      * Internally the implementation represents the interval as a
@@ -194,8 +196,8 @@ int32 OS_TimeBaseSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time
      * Check our context.  Not allowed to use the timer API from a timer callback.
      * Just interested in the object type returned.
      */
-    local_id = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
-    if (local_id == OS_OBJECT_TYPE_OS_TIMEBASE)
+    objtype = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
+    if (objtype == OS_OBJECT_TYPE_OS_TIMEBASE)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
@@ -235,14 +237,15 @@ int32 OS_TimeBaseDelete(osal_id_t timer_id)
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_objtype_t      objtype;
+    osal_index_t        local_id;
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
      * Just interested in the object type returned.
      */
-    local_id = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
-    if (local_id == OS_OBJECT_TYPE_OS_TIMEBASE)
+    objtype = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
+    if (objtype == OS_OBJECT_TYPE_OS_TIMEBASE)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
@@ -269,8 +272,8 @@ int32 OS_TimeBaseDelete(osal_id_t timer_id)
  *-----------------------------------------------------------------*/
 int32 OS_TimeBaseGetIdByName(osal_id_t *timer_id, const char *timebase_name)
 {
-    int32  return_code;
-    uint32 local_id;
+    int32          return_code;
+    osal_objtype_t objtype;
 
     if (timer_id == NULL || timebase_name == NULL)
     {
@@ -281,8 +284,8 @@ int32 OS_TimeBaseGetIdByName(osal_id_t *timer_id, const char *timebase_name)
      * Check our context.  Not allowed to use the timer API from a timer callback.
      * Just interested in the object type returned.
      */
-    local_id = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
-    if (local_id == OS_OBJECT_TYPE_OS_TIMEBASE)
+    objtype = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
+    if (objtype == OS_OBJECT_TYPE_OS_TIMEBASE)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
@@ -304,7 +307,8 @@ int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_pro
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_objtype_t      objtype;
+    osal_index_t        local_id;
 
     /* Check parameters */
     if (timebase_prop == NULL)
@@ -316,8 +320,8 @@ int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_pro
      * Check our context.  Not allowed to use the timer API from a timer callback.
      * Just interested in the object type returned.
      */
-    local_id = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
-    if (local_id == OS_OBJECT_TYPE_OS_TIMEBASE)
+    objtype = OS_ObjectIdToType_Impl(OS_TaskGetId_Impl());
+    if (objtype == OS_OBJECT_TYPE_OS_TIMEBASE)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
@@ -353,7 +357,7 @@ int32 OS_TimeBaseGetFreeRun(osal_id_t timebase_id, uint32 *freerun_val)
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     /* Check parameters */
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, timebase_id, &local_id, &record);
@@ -390,9 +394,9 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
     OS_timebase_internal_record_t *timebase;
     OS_timecb_internal_record_t *  timecb;
     OS_common_record_t *           record;
-    uint32                         local_id;
-    uint32                         timer_id;
-    uint32                         curr_cb_local_id;
+    osal_index_t                   local_id;
+    osal_index_t                   timer_id;
+    osal_index_t                   curr_cb_local_id;
     osal_id_t                      curr_cb_public_id;
     uint32                         tick_time;
     uint32                         spin_cycles;

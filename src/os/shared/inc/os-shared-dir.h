@@ -72,7 +72,7 @@ int32 OS_DirCreate_Impl(const char *local_path, uint32 access);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_DirOpen_Impl(uint32 local_id, const char *local_path);
+int32 OS_DirOpen_Impl(osal_index_t local_id, const char *local_path);
 
 /*----------------------------------------------------------------
    Function: OS_DirClose_Impl
@@ -81,7 +81,7 @@ int32 OS_DirOpen_Impl(uint32 local_id, const char *local_path);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_DirClose_Impl(uint32 local_id);
+int32 OS_DirClose_Impl(osal_index_t local_id);
 
 /*----------------------------------------------------------------
    Function: OS_DirRead_Impl
@@ -90,7 +90,7 @@ int32 OS_DirClose_Impl(uint32 local_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_DirRead_Impl(uint32 local_id, os_dirent_t *dirent);
+int32 OS_DirRead_Impl(osal_index_t local_id, os_dirent_t *dirent);
 
 /*----------------------------------------------------------------
    Function: OS_DirRewind_Impl
@@ -99,7 +99,7 @@ int32 OS_DirRead_Impl(uint32 local_id, os_dirent_t *dirent);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_DirRewind_Impl(uint32 local_id);
+int32 OS_DirRewind_Impl(osal_index_t local_id);
 
 /*----------------------------------------------------------------
    Function: OS_DirRemove_Impl

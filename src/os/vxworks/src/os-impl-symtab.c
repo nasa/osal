@@ -128,7 +128,7 @@ int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleSymbolLookup_Impl(uint32 local_id, cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_ModuleSymbolLookup_Impl(osal_index_t local_id, cpuaddr *SymbolAddress, const char *SymbolName)
 {
     /*
      * NOTE: this is currently exactly the same as OS_GlobalSymbolLookup_Impl().
@@ -165,7 +165,7 @@ int32 OS_ModuleSymbolLookup_Impl(uint32 local_id, cpuaddr *SymbolAddress, const 
 BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_arg_t arg, SYM_GROUP group)
 {
     SymbolRecord_t     symRecord;
-    uint32             NextSize;
+    size_t             NextSize;
     int                status;
     SymbolDumpState_t *state;
 
@@ -234,7 +234,7 @@ BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolTableDump_Impl(const char *local_filename, uint32 SizeLimit)
+int32 OS_SymbolTableDump_Impl(const char *filename, size_t size_limit)
 {
     SymbolDumpState_t *state;
 
@@ -245,15 +245,15 @@ int32 OS_SymbolTableDump_Impl(const char *local_filename, uint32 SizeLimit)
     state = &OS_VxWorks_SymbolDumpState;
 
     memset(state, 0, sizeof(*state));
-    state->Sizelimit = SizeLimit;
+    state->Sizelimit = size_limit;
 
     /*
     ** Open file
     */
-    state->fd = open(local_filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    state->fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
     if (state->fd < 0)
     {
-        OS_DEBUG("open(%s): error: %s\n", local_filename, strerror(errno));
+        OS_DEBUG("open(%s): error: %s\n", filename, strerror(errno));
         state->StatusCode = OS_ERROR;
     }
     else

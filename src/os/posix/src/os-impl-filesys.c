@@ -82,7 +82,7 @@ int32 OS_Posix_FileSysAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStartVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysStartVolume_Impl(osal_index_t filesys_id)
 {
     OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
     struct stat                   stat_buf;
@@ -184,7 +184,7 @@ int32 OS_FileSysStartVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStopVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysStopVolume_Impl(osal_index_t filesys_id)
 {
     /*
      * This is a no-op.
@@ -207,7 +207,7 @@ int32 OS_FileSysStopVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysFormatVolume_Impl(osal_index_t filesys_id)
 {
     /*
      * In theory, this should wipe any existing files in the ramdisk,
@@ -230,7 +230,7 @@ int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysMountVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysMountVolume_Impl(osal_index_t filesys_id)
 {
     OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
     struct stat                   stat_buf;
@@ -282,7 +282,7 @@ int32 OS_FileSysMountVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysUnmountVolume_Impl(osal_index_t filesys_id)
 {
     /*
      * NOTE: Mounting/Unmounting on POSIX is not implemented.
@@ -303,7 +303,7 @@ int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result)
+int32 OS_FileSysStatVolume_Impl(osal_index_t filesys_id, OS_statvfs_t *result)
 {
     OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
     struct statvfs                stat_buf;
@@ -313,9 +313,9 @@ int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result)
         return OS_ERROR;
     }
 
-    result->block_size   = stat_buf.f_bsize;
-    result->blocks_free  = stat_buf.f_bfree;
-    result->total_blocks = stat_buf.f_blocks;
+    result->block_size   = OSAL_SIZE_C(stat_buf.f_bsize);
+    result->blocks_free  = OSAL_BLOCKCOUNT_C(stat_buf.f_bfree);
+    result->total_blocks = OSAL_BLOCKCOUNT_C(stat_buf.f_blocks);
 
     return (OS_SUCCESS);
 } /* end OS_FileSysStatVolume_Impl */
@@ -328,7 +328,7 @@ int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysCheckVolume_Impl(uint32 filesys_id, bool repair)
+int32 OS_FileSysCheckVolume_Impl(osal_index_t filesys_id, bool repair)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_FileSysCheckVolume_Impl */

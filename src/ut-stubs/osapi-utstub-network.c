@@ -36,7 +36,7 @@
 
 UT_DEFAULT_STUB(OS_NetworkAPI_Init, (void))
 
-int32 OS_NetworkGetHostName(char *host_name, uint32 name_len)
+int32 OS_NetworkGetHostName(char *host_name, size_t name_len)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_NetworkGetHostName), host_name);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_NetworkGetHostName), name_len);

@@ -90,7 +90,7 @@ int32 OS_Rtems_TaskAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
+int32 OS_TaskCreate_Impl(osal_index_t task_id, uint32 flags)
 {
     rtems_status_code status;
     rtems_name        r_name;
@@ -151,7 +151,7 @@ int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskDelete_Impl(uint32 task_id)
+int32 OS_TaskDelete_Impl(osal_index_t task_id)
 {
     /*
     ** Try to delete the task
@@ -221,7 +221,7 @@ int32 OS_TaskDelay_Impl(uint32 milli_second)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskSetPriority_Impl(uint32 task_id, uint32 new_priority)
+int32 OS_TaskSetPriority_Impl(osal_index_t task_id, osal_priority_t new_priority)
 {
     rtems_task_priority old_pri;
     rtems_status_code   status;
@@ -246,7 +246,7 @@ int32 OS_TaskSetPriority_Impl(uint32 task_id, uint32 new_priority)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskMatch_Impl(uint32 task_id)
+int32 OS_TaskMatch_Impl(osal_index_t task_id)
 {
     /*
     ** Get RTEMS Task Id
@@ -329,7 +329,7 @@ osal_id_t OS_TaskGetId_Impl(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskGetInfo_Impl(uint32 task_id, OS_task_prop_t *task_prop)
+int32 OS_TaskGetInfo_Impl(osal_index_t task_id, OS_task_prop_t *task_prop)
 {
     return OS_SUCCESS;
 
@@ -360,7 +360,7 @@ int32 OS_TaskValidateSystemData_Impl(const void *sysdata, uint32 sysdata_size)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-bool OS_TaskIdMatchSystemData_Impl(void *ref, uint32 local_id, const OS_common_record_t *obj)
+bool OS_TaskIdMatchSystemData_Impl(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
 {
     const rtems_id *target = (const rtems_id *)ref;
 

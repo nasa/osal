@@ -93,7 +93,7 @@ static uint32 OS_ClockAccuracyNsec;
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_TimeBaseLock_Impl(uint32 local_id)
+void OS_TimeBaseLock_Impl(osal_index_t local_id)
 {
     semTake(OS_impl_timebase_table[local_id].handler_mutex, WAIT_FOREVER);
 } /* end OS_TimeBaseLock_Impl */
@@ -106,7 +106,7 @@ void OS_TimeBaseLock_Impl(uint32 local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_TimeBaseUnlock_Impl(uint32 local_id)
+void OS_TimeBaseUnlock_Impl(osal_index_t local_id)
 {
     semGive(OS_impl_timebase_table[local_id].handler_mutex);
 } /* end OS_TimeBaseUnlock_Impl */
@@ -140,7 +140,7 @@ void OS_VxWorks_UsecToTimespec(uint32 usecs, struct timespec *time_spec)
  *           Blocks the calling task until the timer tick arrives
  *
  *-----------------------------------------------------------------*/
-uint32 OS_VxWorks_SigWait(uint32 local_id)
+uint32 OS_VxWorks_SigWait(osal_index_t local_id)
 {
     OS_impl_timebase_internal_record_t *local;
     OS_common_record_t *                global;
@@ -204,7 +204,7 @@ uint32 OS_VxWorks_SigWait(uint32 local_id)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-void OS_VxWorks_RegisterTimer(uint32 local_id)
+void OS_VxWorks_RegisterTimer(osal_index_t local_id)
 {
     OS_impl_timebase_internal_record_t *local;
     struct sigevent                     evp;
@@ -253,7 +253,7 @@ void OS_VxWorks_RegisterTimer(uint32 local_id)
 int OS_VxWorks_TimeBaseTask(int arg)
 {
     VxWorks_ID_Buffer_t id;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     id.arg = arg;
     if (OS_ConvertToArrayIndex(id.id, &local_id) == OS_SUCCESS)
@@ -323,7 +323,7 @@ int32 OS_VxWorks_TimeBaseAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
+int32 OS_TimeBaseCreate_Impl(osal_index_t timer_id)
 {
     /*
      * The tick_sem is a simple semaphore posted by the ISR and taken by the
@@ -334,6 +334,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
     OS_common_record_t *                global;
     int                                 signo;
     sigset_t                            inuse;
+    osal_index_t                        idx;
     uint32                              i;
     VxWorks_ID_Buffer_t                 idbuf;
 
@@ -367,13 +368,13 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
          */
         sigemptyset(&inuse);
 
-        for (i = 0; i < OS_MAX_TIMEBASES; ++i)
+        for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
         {
-            if (OS_ObjectIdDefined(OS_global_timebase_table[i].active_id) &&
-                OS_impl_timebase_table[i].assigned_signal > 0)
+            if (OS_ObjectIdDefined(OS_global_timebase_table[idx].active_id) &&
+                OS_impl_timebase_table[idx].assigned_signal > 0)
             {
                 /* mark signal as in-use */
-                sigaddset(&inuse, OS_impl_timebase_table[i].assigned_signal);
+                sigaddset(&inuse, OS_impl_timebase_table[idx].assigned_signal);
             }
         }
 
@@ -500,7 +501,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time)
+int32 OS_TimeBaseSet_Impl(osal_index_t timer_id, uint32 start_time, uint32 interval_time)
 {
     OS_impl_timebase_internal_record_t *local;
     struct itimerspec                   timeout;
@@ -588,7 +589,7 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
+int32 OS_TimeBaseDelete_Impl(osal_index_t timer_id)
 {
     OS_impl_timebase_internal_record_t *local;
     int32                               return_code;
@@ -622,7 +623,7 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseGetInfo_Impl(uint32 timer_id, OS_timebase_prop_t *timer_prop)
+int32 OS_TimeBaseGetInfo_Impl(osal_index_t timer_id, OS_timebase_prop_t *timer_prop)
 {
     return OS_SUCCESS;
 

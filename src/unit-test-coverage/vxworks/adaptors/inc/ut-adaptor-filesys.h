@@ -34,6 +34,6 @@
 extern void *const  UT_Ref_OS_impl_filesys_table;
 extern size_t const UT_Ref_OS_impl_filesys_table_SIZE;
 
-void UT_FileSysTest_SetupFileSysEntry(uint32 id, OCS_BLK_DEV *blkdev, OCS_device_t xbddev, uint32 MaxParts);
+void UT_FileSysTest_SetupFileSysEntry(osal_index_t id, OCS_BLK_DEV *blkdev, OCS_device_t xbddev, uint32 MaxParts);
 
 #endif /* INCLUDE_UT_ADAPTOR_FILESYS_H_ */

@@ -37,16 +37,16 @@
 /*
 ** Task API
 */
-UT_DEFAULT_STUB(OS_TaskMatch_Impl, (uint32 task_id))
-UT_DEFAULT_STUB(OS_TaskCreate_Impl, (uint32 task_id, uint32 flags))
-UT_DEFAULT_STUB(OS_TaskDelete_Impl, (uint32 task_id))
+UT_DEFAULT_STUB(OS_TaskMatch_Impl, (osal_index_t task_id))
+UT_DEFAULT_STUB(OS_TaskCreate_Impl, (osal_index_t task_id, uint32 flags))
+UT_DEFAULT_STUB(OS_TaskDelete_Impl, (osal_index_t task_id))
 void OS_TaskExit_Impl(void)
 {
     UT_DEFAULT_IMPL(OS_TaskExit_Impl);
 }
 
 UT_DEFAULT_STUB(OS_TaskDelay_Impl, (uint32 millisecond))
-UT_DEFAULT_STUB(OS_TaskSetPriority_Impl, (uint32 task_id, uint32 new_priority))
+UT_DEFAULT_STUB(OS_TaskSetPriority_Impl, (osal_index_t task_id, osal_priority_t new_priority))
 osal_id_t OS_TaskGetId_Impl(void)
 {
     int32     status;
@@ -60,12 +60,12 @@ osal_id_t OS_TaskGetId_Impl(void)
 
     return id;
 }
-UT_DEFAULT_STUB(OS_TaskGetInfo_Impl, (uint32 task_id, OS_task_prop_t *task_prop))
+UT_DEFAULT_STUB(OS_TaskGetInfo_Impl, (osal_index_t task_id, OS_task_prop_t *task_prop))
 UT_DEFAULT_STUB(OS_TaskRegister_Impl, (osal_id_t global_task_id))
 
-bool OS_TaskIdMatchSystemData_Impl(void *ref, uint32 local_id, const OS_common_record_t *obj)
+bool OS_TaskIdMatchSystemData_Impl(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
 {
     return UT_DEFAULT_IMPL(OS_TaskIdMatchSystemData_Impl);
 }
 
-UT_DEFAULT_STUB(OS_TaskValidateSystemData_Impl, (const void *sysdata, uint32 sysdata_size))
+UT_DEFAULT_STUB(OS_TaskValidateSystemData_Impl, (const void *sysdata, size_t sysdata_size))

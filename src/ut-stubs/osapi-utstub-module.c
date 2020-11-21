@@ -262,7 +262,7 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
  * Stub function for OS_SymbolTableDump()
  *
  *****************************************************************************/
-int32 OS_SymbolTableDump(const char *filename, uint32 size_limit)
+int32 OS_SymbolTableDump(const char *filename, size_t size_limit)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_SymbolTableDump), filename);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SymbolTableDump), size_limit);

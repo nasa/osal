@@ -36,9 +36,9 @@
 /*
  * Module Loader API
  */
-UT_DEFAULT_STUB(OS_ModuleLoad_Impl, (uint32 module_id, const char *translated_path))
-UT_DEFAULT_STUB(OS_ModuleUnload_Impl, (uint32 module_id))
-UT_DEFAULT_STUB(OS_ModuleGetInfo_Impl, (uint32 module_id, OS_module_prop_t *module_prop))
+UT_DEFAULT_STUB(OS_ModuleLoad_Impl, (osal_index_t module_id, const char *translated_path))
+UT_DEFAULT_STUB(OS_ModuleUnload_Impl, (osal_index_t module_id))
+UT_DEFAULT_STUB(OS_ModuleGetInfo_Impl, (osal_index_t module_id, OS_module_prop_t *module_prop))
 UT_DEFAULT_STUB(OS_GlobalSymbolLookup_Impl, (cpuaddr * SymbolAddress, const char *SymbolName))
-UT_DEFAULT_STUB(OS_ModuleSymbolLookup_Impl, (uint32 module_id, cpuaddr * SymbolAddress, const char *SymbolName))
-UT_DEFAULT_STUB(OS_SymbolTableDump_Impl, (const char *filename, uint32 size_limit))
+UT_DEFAULT_STUB(OS_ModuleSymbolLookup_Impl, (osal_index_t module_id, cpuaddr *SymbolAddress, const char *SymbolName))
+UT_DEFAULT_STUB(OS_SymbolTableDump_Impl, (const char *filename, size_t size_limit))

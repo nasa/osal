@@ -33,8 +33,8 @@
 
 typedef struct
 {
-    uint32 Sizelimit;
-    uint32 CurrSize;
+    size_t Sizelimit;
+    size_t CurrSize;
     int32  StatusCode;
     int    fd;
 } SymbolDumpState_t;

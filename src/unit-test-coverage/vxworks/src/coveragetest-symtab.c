@@ -54,10 +54,10 @@ void Test_OS_ModuleSymbolLookup_Impl(void)
      */
     cpuaddr SymAddr;
 
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(0, &SymAddr, "symname"), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(0, NULL, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(UT_INDEX_0, &SymAddr, "symname"), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(UT_INDEX_0, NULL, NULL), OS_INVALID_POINTER);
     UT_SetForceFail(UT_KEY(OCS_symFind), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(0, &SymAddr, "symname"), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(UT_INDEX_0, &SymAddr, "symname"), OS_ERROR);
 }
 
 void Test_OS_SymTableIterator_Impl(void)

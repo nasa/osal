@@ -86,40 +86,40 @@ void Test_OS_mkfs(void)
 
     char TestBuffer[128];
 
-    actual = OS_mkfs(TestBuffer, "/ramdev0", "vol", 0, 0);
+    actual = OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_SUCCESS", (long)actual);
 
     /*
      * Test an entry NOT found in the OS_VolumeTable
      */
-    actual = OS_mkfs(TestBuffer, "/rd1", "vol1", 0, 0);
+    actual = OS_mkfs(TestBuffer, "/rd1", "vol1", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_mkfs(NULL, NULL, NULL, 0, 0);
+    actual   = OS_mkfs(NULL, NULL, NULL, OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     UT_SetForceFail(UT_KEY(OCS_strlen), 2 + OS_FS_DEV_NAME_LEN);
     expected = OS_FS_ERR_PATH_TOO_LONG;
-    actual   = OS_mkfs(TestBuffer, "/ramdev0", "vol", 0, 0);
+    actual   = OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
     UT_ClearForceFail(UT_KEY(OCS_strlen));
 
     /* set up for failure due to empty strings */
     expected = OS_FS_ERR_PATH_INVALID;
-    actual   = OS_mkfs(TestBuffer, "", "", 0, 0);
+    actual   = OS_mkfs(TestBuffer, "", "", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
 
     /* set up for failure due to formatting */
     UT_SetForceFail(UT_KEY(OS_FileSysFormatVolume_Impl), OS_FS_ERR_DRIVE_NOT_CREATED);
     expected = OS_FS_ERR_DRIVE_NOT_CREATED;
-    actual   = OS_mkfs(TestBuffer, "/ramdev0", "vol", 0, 0);
+    actual   = OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_FS_ERR_DRIVE_NOT_CREATED (format failure)", (long)actual);
 
     /* set up for failure due to no free slots */
     UT_SetForceFail(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
     expected = OS_FS_ERR_DEVICE_NOT_FREE;
-    actual   = OS_mkfs(TestBuffer, "/ramdev0", "vol", 0, 0);
+    actual   = OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_FS_ERR_DEVICE_NOT_FREE", (long)actual);
 }
 
@@ -164,26 +164,26 @@ void Test_OS_initfs(void)
 
     char TestBuffer[128];
 
-    actual = OS_initfs(TestBuffer, "/ramdev0", "vol", 0, 0);
+    actual = OS_initfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_initfs() (%ld) == OS_SUCCESS", (long)actual);
 
-    actual = OS_initfs(NULL, "/hda2", "vol2", 0, 0);
+    actual = OS_initfs(NULL, "/hda2", "vol2", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_initfs() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_initfs(NULL, NULL, NULL, 0, 0);
+    actual   = OS_initfs(NULL, NULL, NULL, OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_initfs() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     UT_SetForceFail(UT_KEY(OCS_strlen), 2 + OS_FS_DEV_NAME_LEN);
     expected = OS_FS_ERR_PATH_TOO_LONG;
-    actual   = OS_initfs(TestBuffer, "/ramdev0", "vol", 0, 0);
+    actual   = OS_initfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_initfs() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
     UT_ClearForceFail(UT_KEY(OCS_strlen));
 
     /* set up for failure */
     UT_SetForceFail(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
     expected = OS_FS_ERR_DEVICE_NOT_FREE;
-    actual   = OS_initfs(TestBuffer, "/ramdev0", "vol", 0, 0);
+    actual   = OS_initfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_initfs() (%ld) == OS_FS_ERR_DEVICE_NOT_FREE", (long)actual);
 }
 
@@ -263,9 +263,9 @@ void Test_OS_fsBlocksFree(void)
     int32        actual   = ~OS_SUCCESS;
     OS_statvfs_t statval;
 
-    statval.block_size   = 1024;
-    statval.blocks_free  = 1111;
-    statval.total_blocks = 2222;
+    statval.block_size   = OSAL_SIZE_C(1024);
+    statval.blocks_free  = OSAL_BLOCKCOUNT_C(1111);
+    statval.total_blocks = OSAL_BLOCKCOUNT_C(2222);
     UT_SetDataBuffer(UT_KEY(OS_FileSysStatVolume_Impl), &statval, sizeof(statval), false);
     OS_filesys_table[1].flags =
         OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
@@ -300,9 +300,9 @@ void Test_OS_fsBytesFree(void)
     OS_statvfs_t statval;
     uint64       bytes_free = 0;
 
-    statval.block_size   = 1024;
-    statval.blocks_free  = 1111;
-    statval.total_blocks = 2222;
+    statval.block_size   = OSAL_SIZE_C(1024);
+    statval.blocks_free  = OSAL_BLOCKCOUNT_C(1111);
+    statval.total_blocks = OSAL_BLOCKCOUNT_C(2222);
     UT_SetDataBuffer(UT_KEY(OS_FileSysStatVolume_Impl), &statval, sizeof(statval), false);
     OS_filesys_table[1].flags =
         OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;

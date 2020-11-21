@@ -32,12 +32,12 @@
 #include <os-vxworks.h>
 #include "ut-adaptor-idmap.h"
 
-int32 UT_Call_OS_VxWorks_TableMutex_Init(uint32 idtype)
+int32 UT_Call_OS_VxWorks_TableMutex_Init(osal_objtype_t idtype)
 {
     return OS_VxWorks_TableMutex_Init(idtype);
 }
 
-void UT_IdMapTest_SetImplTableMutex(uint32 idtype, OCS_SEM_ID vxid)
+void UT_IdMapTest_SetImplTableMutex(osal_objtype_t idtype, OCS_SEM_ID vxid)
 {
     VX_MUTEX_TABLE[idtype].vxid = vxid;
 }

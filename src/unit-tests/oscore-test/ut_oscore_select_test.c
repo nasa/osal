@@ -64,7 +64,7 @@ char *           fsAddrPtr = NULL;
 static osal_id_t setup_file(void)
 {
     osal_id_t id;
-    UT_SETUP(OS_mkfs(fsAddrPtr, "/ramdev3", "RAM3", 512, 20));
+    UT_SETUP(OS_mkfs(fsAddrPtr, "/ramdev3", "RAM3", OSAL_SIZE_C(512), OSAL_BLOCKCOUNT_C(20)));
     UT_SETUP(OS_mount("/ramdev3", "/drive3"));
     UT_SETUP(OS_OpenCreate(&id, "/drive3/select_test.txt", OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE));
     return id;

@@ -48,7 +48,7 @@
  * but are not exposed directly through the implementation API.
  *
  *****************************************************/
-void UT_PortablePosixIOTest_Set_Selectable(uint32 local_id, bool is_selectable);
+void UT_PortablePosixIOTest_Set_Selectable(osal_index_t local_id, bool is_selectable);
 
 #endif /* _UT_OSFILEAPI_H_ */
 

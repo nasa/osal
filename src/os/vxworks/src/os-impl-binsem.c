@@ -70,7 +70,7 @@ int32 OS_VxWorks_BinSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options)
+int32 OS_BinSemCreate_Impl(osal_index_t sem_id, uint32 sem_initial_value, uint32 options)
 {
     SEM_ID tmp_sem_id;
 
@@ -98,7 +98,7 @@ int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 optio
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemDelete_Impl(uint32 sem_id)
+int32 OS_BinSemDelete_Impl(osal_index_t sem_id)
 {
     /*
      * As the memory for the sem is statically allocated, delete is a no-op.
@@ -116,7 +116,7 @@ int32 OS_BinSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGive_Impl(uint32 sem_id)
+int32 OS_BinSemGive_Impl(osal_index_t sem_id)
 {
     /* Use common routine */
     return OS_VxWorks_GenericSemGive(OS_impl_bin_sem_table[sem_id].vxid);
@@ -130,7 +130,7 @@ int32 OS_BinSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemFlush_Impl(uint32 sem_id)
+int32 OS_BinSemFlush_Impl(osal_index_t sem_id)
 {
     /* Flush VxWorks Semaphore */
     if (semFlush(OS_impl_bin_sem_table[sem_id].vxid) != OK)
@@ -150,7 +150,7 @@ int32 OS_BinSemFlush_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTake_Impl(uint32 sem_id)
+int32 OS_BinSemTake_Impl(osal_index_t sem_id)
 {
     /* Use common routine */
     return OS_VxWorks_GenericSemTake(OS_impl_bin_sem_table[sem_id].vxid, WAIT_FOREVER);
@@ -165,7 +165,7 @@ int32 OS_BinSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
+int32 OS_BinSemTimedWait_Impl(osal_index_t sem_id, uint32 msecs)
 {
     int   ticks;
     int32 status;
@@ -188,7 +188,7 @@ int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGetInfo_Impl(uint32 sem_id, OS_bin_sem_prop_t *bin_prop)
+int32 OS_BinSemGetInfo_Impl(osal_index_t sem_id, OS_bin_sem_prop_t *bin_prop)
 {
     /* VxWorks has no API for obtaining the current value of a semaphore */
     return OS_SUCCESS;

@@ -83,7 +83,7 @@ void UT_os_queue_create_test()
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_QueueCreate(&queue_id, "Good", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "Good", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
@@ -95,7 +95,7 @@ void UT_os_queue_create_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Null-pointer-arg-1";
 
-    res = OS_QueueCreate(NULL, "Queue1", 10, 4, 0);
+    res = OS_QueueCreate(NULL, "Queue1", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res == OS_INVALID_POINTER)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -104,7 +104,7 @@ void UT_os_queue_create_test()
     /*-----------------------------------------------------*/
     testDesc = "#2 Null-pointer-arg-2";
 
-    res = OS_QueueCreate(&queue_id, NULL, 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, NULL, OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res == OS_INVALID_POINTER)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -115,7 +115,7 @@ void UT_os_queue_create_test()
 
     memset(long_queue_name, 'X', sizeof(long_queue_name));
     long_queue_name[sizeof(long_queue_name) - 1] = '\0';
-    res                                          = OS_QueueCreate(&queue_id, long_queue_name, 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, long_queue_name, OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res == OS_ERR_NAME_TOO_LONG)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -129,7 +129,7 @@ void UT_os_queue_create_test()
     {
         memset(queue_name, '\0', sizeof(queue_name));
         UT_os_sprintf(queue_name, "QUEUE%d", i);
-        res = OS_QueueCreate(&queue_id, queue_name, 2, 4, 0);
+        res = OS_QueueCreate(&queue_id, queue_name, OSAL_BLOCKCOUNT_C(2), sizeof(uint32), 0);
         if (res != OS_SUCCESS)
         {
             testDesc = "#4 No-free-IDs - Queue Create failed";
@@ -141,7 +141,7 @@ void UT_os_queue_create_test()
 
     if (test_setup_invalid == 0)
     {
-        res = OS_QueueCreate(&queue_id, "OneTooMany", 10, 4, 0);
+        res = OS_QueueCreate(&queue_id, "OneTooMany", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
         if (res == OS_ERR_NO_FREE_IDS)
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -155,14 +155,14 @@ void UT_os_queue_create_test()
     testDesc = "#5 Duplicate-name";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id2, "DUPLICATE", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id2, "DUPLICATE", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         UT_OS_TEST_RESULT("Queue Create failed", UTASSERT_CASETYPE_TSF);
     }
     else
     {
-        res = OS_QueueCreate(&queue_id, "DUPLICATE", 10, 4, 0);
+        res = OS_QueueCreate(&queue_id, "DUPLICATE", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
         if (res == OS_ERR_NAME_TAKEN)
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -180,7 +180,7 @@ void UT_os_queue_create_test()
     /*-----------------------------------------------------*/
     testDesc = "#7 Nominal";
 
-    res = OS_QueueCreate(&queue_id, "Good", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "Good", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res == OS_SUCCESS)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -235,7 +235,7 @@ void UT_os_queue_delete_test()
     testDesc = "#3 Nominal";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "DeleteTest", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "DeleteTest", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#3 Nominal - Queue Create failed";
@@ -272,13 +272,13 @@ void UT_os_queue_get_test()
     osal_id_t   queue_id;
     uint32      queue_data_out;
     uint32      queue_data_in;
-    uint32      size_copied;
-    uint32      data_size;
+    size_t      size_copied;
+    size_t      data_size;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_QueueGet(OS_OBJECT_ID_UNDEFINED, (void *)&queue_data_in, 4, &size_copied, OS_CHECK);
+    res = OS_QueueGet(OS_OBJECT_ID_UNDEFINED, (void *)&queue_data_in, sizeof(uint32), &size_copied, OS_CHECK);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
@@ -288,7 +288,7 @@ void UT_os_queue_get_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_QueueGet(UT_OBJID_INCORRECT, (void *)&queue_data_in, 4, &size_copied, OS_CHECK);
+    res = OS_QueueGet(UT_OBJID_INCORRECT, (void *)&queue_data_in, sizeof(uint32), &size_copied, OS_CHECK);
     if (res == OS_ERR_INVALID_ID)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -298,7 +298,7 @@ void UT_os_queue_get_test()
     testDesc = "#2 Invalid-pointer-arg-1";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "QueueGet", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "QueueGet", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#2 Invalid-pointer-arg-1 - Queue Create failed";
@@ -306,7 +306,7 @@ void UT_os_queue_get_test()
     }
     else
     {
-        res = OS_QueueGet(queue_id, NULL, 4, &size_copied, OS_CHECK);
+        res = OS_QueueGet(queue_id, NULL, sizeof(uint32), &size_copied, OS_CHECK);
         if (res == OS_INVALID_POINTER)
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -319,7 +319,7 @@ void UT_os_queue_get_test()
     testDesc = "#3 Invalid-pointer-arg-2";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "QueueGet", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "QueueGet", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#3 Invalid-pointer-arg-2 - Queue Create failed";
@@ -327,7 +327,7 @@ void UT_os_queue_get_test()
     }
     else
     {
-        res = OS_QueueGet(queue_id, (void *)&queue_data_in, 4, NULL, OS_CHECK);
+        res = OS_QueueGet(queue_id, (void *)&queue_data_in, sizeof(uint32), NULL, OS_CHECK);
         if (res == OS_INVALID_POINTER)
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -340,7 +340,7 @@ void UT_os_queue_get_test()
     testDesc = "#4 Queue-empty";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "QueueEmpty", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "QueueEmpty", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#4 Queue-empty - Queue Create failed";
@@ -348,7 +348,7 @@ void UT_os_queue_get_test()
     }
     else
     {
-        res = OS_QueueGet(queue_id, (void *)&queue_data_in, 4, &data_size, OS_CHECK);
+        res = OS_QueueGet(queue_id, (void *)&queue_data_in, sizeof(uint32), &data_size, OS_CHECK);
         if (res == OS_QUEUE_EMPTY)
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -361,7 +361,7 @@ void UT_os_queue_get_test()
     testDesc = "#5 Queue-timed-out";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "QueueTimeout", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "QueueTimeout", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#5 Queue-timed-out - Queue Create failed";
@@ -369,7 +369,7 @@ void UT_os_queue_get_test()
     }
     else
     {
-        res = OS_QueueGet(queue_id, (void *)&queue_data_in, 4, &data_size, 2);
+        res = OS_QueueGet(queue_id, (void *)&queue_data_in, sizeof(uint32), &data_size, 2);
         if (res == OS_QUEUE_TIMEOUT)
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -382,7 +382,7 @@ void UT_os_queue_get_test()
     testDesc = "#6 Invalid-queue-size";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "QueuePut", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "QueuePut", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#6 Invalid-queue-size - Queue Create failed";
@@ -391,7 +391,7 @@ void UT_os_queue_get_test()
     else
     {
         queue_data_out = 0x11223344;
-        res            = OS_QueuePut(queue_id, (void *)&queue_data_out, 2, 0);
+        res            = OS_QueuePut(queue_id, (void *)&queue_data_out, OSAL_SIZE_C(2), 0);
         if (res != OS_SUCCESS)
         {
             testDesc = "#6 Invalid-queue-size - Queue Put failed";
@@ -399,7 +399,7 @@ void UT_os_queue_get_test()
         }
         else
         {
-            res = OS_QueueGet(queue_id, (void *)&queue_data_in, 3, &data_size, OS_CHECK);
+            res = OS_QueueGet(queue_id, (void *)&queue_data_in, OSAL_SIZE_C(3), &data_size, OS_CHECK);
             if (res == OS_QUEUE_INVALID_SIZE)
                 UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
             else
@@ -417,7 +417,7 @@ void UT_os_queue_get_test()
     testDesc = "#8 Nominal Pend";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "QueueGet", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "QueueGet", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#8 Nominal Pend - Queue Create failed";
@@ -426,7 +426,7 @@ void UT_os_queue_get_test()
     else
     {
         queue_data_out = 0x11223344;
-        res            = OS_QueuePut(queue_id, (void *)&queue_data_out, 4, 0);
+        res            = OS_QueuePut(queue_id, (void *)&queue_data_out, sizeof(uint32), 0);
         if (res != OS_SUCCESS)
         {
             testDesc = "#8 Nominal Pend - Queue Put failed";
@@ -434,7 +434,7 @@ void UT_os_queue_get_test()
         }
         else
         {
-            res = OS_QueueGet(queue_id, (void *)&queue_data_in, 4, &data_size, OS_PEND);
+            res = OS_QueueGet(queue_id, (void *)&queue_data_in, sizeof(uint32), &data_size, OS_PEND);
             if (res == OS_SUCCESS)
                 UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
             else
@@ -447,7 +447,7 @@ void UT_os_queue_get_test()
     testDesc = "#9 Nominal timeout";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "QueueGet", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "QueueGet", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#9 Nominal timeout - Queue Create failed";
@@ -456,7 +456,7 @@ void UT_os_queue_get_test()
     else
     {
         queue_data_out = 0x11223344;
-        res            = OS_QueuePut(queue_id, (void *)&queue_data_out, 4, 0);
+        res            = OS_QueuePut(queue_id, (void *)&queue_data_out, sizeof(uint32), 0);
         if (res != OS_SUCCESS)
         {
             testDesc = "#9 Nominal timeout - Queue Put failed";
@@ -464,7 +464,7 @@ void UT_os_queue_get_test()
         }
         else
         {
-            res = OS_QueueGet(queue_id, (void *)&queue_data_in, 4, &data_size, 20);
+            res = OS_QueueGet(queue_id, (void *)&queue_data_in, sizeof(uint32), &data_size, 20);
             if (res == OS_SUCCESS)
                 UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
             else
@@ -477,7 +477,7 @@ void UT_os_queue_get_test()
     testDesc = "#10 Nominal check";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "QueueGet", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "QueueGet", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#10 Nominal check - Queue Create failed";
@@ -486,7 +486,7 @@ void UT_os_queue_get_test()
     else
     {
         queue_data_out = 0x11223344;
-        res            = OS_QueuePut(queue_id, (void *)&queue_data_out, 4, 0);
+        res            = OS_QueuePut(queue_id, (void *)&queue_data_out, sizeof(uint32), 0);
         if (res != OS_SUCCESS)
         {
             testDesc = "#10 Nominal check - Queue Put failed";
@@ -494,7 +494,7 @@ void UT_os_queue_get_test()
         }
         else
         {
-            res = OS_QueueGet(queue_id, (void *)&queue_data_in, 4, &data_size, OS_CHECK);
+            res = OS_QueueGet(queue_id, (void *)&queue_data_in, sizeof(uint32), &data_size, OS_CHECK);
             if (res == OS_SUCCESS)
                 UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
             else
@@ -528,7 +528,7 @@ void UT_os_queue_put_test()
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
 
-    res = OS_QueuePut(OS_OBJECT_ID_UNDEFINED, (void *)&queue_data_out, 4, 0);
+    res = OS_QueuePut(OS_OBJECT_ID_UNDEFINED, (void *)&queue_data_out, sizeof(uint32), 0);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
@@ -538,7 +538,7 @@ void UT_os_queue_put_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Invalid-ID-arg";
 
-    res = OS_QueuePut(UT_OBJID_INCORRECT, (void *)&queue_data_out, 4, 0);
+    res = OS_QueuePut(UT_OBJID_INCORRECT, (void *)&queue_data_out, sizeof(uint32), 0);
     if (res == OS_ERR_INVALID_ID)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -548,7 +548,7 @@ void UT_os_queue_put_test()
     testDesc = "#2 Invalid-pointer-arg";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "QueuePut", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "QueuePut", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#2 Invalid-pointer-arg - Queue Create failed";
@@ -556,7 +556,7 @@ void UT_os_queue_put_test()
     }
     else
     {
-        res = OS_QueuePut(queue_id, NULL, 4, 0);
+        res = OS_QueuePut(queue_id, NULL, sizeof(uint32), 0);
         if (res == OS_INVALID_POINTER)
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -573,7 +573,7 @@ void UT_os_queue_put_test()
     testDesc = "#4 Queue-full";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "QueuePut", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "QueuePut", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#4 Queue-full - Queue Create failed";
@@ -584,7 +584,7 @@ void UT_os_queue_put_test()
         queue_data_out = 0x11223344;
         for (i = 0; i < 100; i++)
         {
-            res = OS_QueuePut(queue_id, (void *)&queue_data_out, 4, 0);
+            res = OS_QueuePut(queue_id, (void *)&queue_data_out, sizeof(uint32), 0);
             if (res == OS_QUEUE_FULL)
                 break;
         }
@@ -601,7 +601,7 @@ void UT_os_queue_put_test()
     testDesc = "#5 Nominal";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "QueueGet", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "QueueGet", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#5 Nominal - Queue Create failed";
@@ -610,7 +610,7 @@ void UT_os_queue_put_test()
     else
     {
         queue_data_out = 0x11223344;
-        res            = OS_QueuePut(queue_id, (void *)&queue_data_out, 4, 0);
+        res            = OS_QueuePut(queue_id, (void *)&queue_data_out, sizeof(uint32), 0);
         if (res == OS_SUCCESS)
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -690,7 +690,7 @@ void UT_os_queue_get_id_by_name_test()
     testDesc = "#5 Nominal";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "GetIDByName", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "GetIDByName", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#5 Nominal - Queue Create failed";
@@ -749,7 +749,7 @@ void UT_os_queue_get_info_test()
     testDesc = "#2 Invalid-pointer-arg";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "GetInfo", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "GetInfo", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#2 Invalid-pointer-arg - Queue Create failed";
@@ -770,7 +770,7 @@ void UT_os_queue_get_info_test()
     testDesc = "#3 Nominal";
 
     /* Setup */
-    res = OS_QueueCreate(&queue_id, "GetInfo", 10, 4, 0);
+    res = OS_QueueCreate(&queue_id, "GetInfo", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0);
     if (res != OS_SUCCESS)
     {
         testDesc = "#3 Nominal - Queue Create failed";

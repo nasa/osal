@@ -44,8 +44,8 @@
 
 extern char *g_fsAddrPtr;
 
-extern int32 g_blkSize;
-extern int32 g_blkCnt;
+extern size_t            g_blkSize;
+extern osal_blockcount_t g_blkCnt;
 
 extern char g_fsLongName[UT_OS_PATH_BUFF_SIZE];
 extern char g_physDriveName[UT_OS_PHYS_NAME_BUFF_SIZE];
@@ -141,8 +141,8 @@ void UT_os_initfs_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Null-pointer-arg";
 
-    if ((OS_initfs(g_fsAddrPtr, NULL, g_volNames[1], 0, 0) == OS_INVALID_POINTER) &&
-        (OS_initfs(g_fsAddrPtr, g_devNames[1], NULL, 0, 0) == OS_INVALID_POINTER))
+    if ((OS_initfs(g_fsAddrPtr, NULL, g_volNames[1], OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)) == OS_INVALID_POINTER) &&
+        (OS_initfs(g_fsAddrPtr, g_devNames[1], NULL, OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)) == OS_INVALID_POINTER))
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
@@ -274,8 +274,8 @@ void UT_os_makefs_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Null-pointer-arg";
 
-    if ((OS_mkfs(g_fsAddrPtr, NULL, g_volNames[1], 0, 0) == OS_INVALID_POINTER) &&
-        (OS_mkfs(g_fsAddrPtr, g_devNames[1], NULL, 0, 0) == OS_INVALID_POINTER))
+    if ((OS_mkfs(g_fsAddrPtr, NULL, g_volNames[1], OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)) == OS_INVALID_POINTER) &&
+        (OS_mkfs(g_fsAddrPtr, g_devNames[1], NULL, OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)) == OS_INVALID_POINTER))
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);

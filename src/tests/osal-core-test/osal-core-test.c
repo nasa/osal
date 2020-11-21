@@ -123,8 +123,9 @@ void TestTasks(void)
     for (tasknum = 0; tasknum < (OS_MAX_TASKS + 1); ++tasknum)
     {
         snprintf(taskname, sizeof(taskname), "Task %d", tasknum);
-        status = OS_TaskCreate(&TaskData[tasknum].task_id, taskname, task_generic_no_exit, TaskData[tasknum].task_stack,
-                               TASK_0_STACK_SIZE, (250 - OS_MAX_TASKS) + tasknum, 0);
+        status = OS_TaskCreate(&TaskData[tasknum].task_id, taskname, task_generic_no_exit,
+                               OSAL_STACKPTR_C(TaskData[tasknum].task_stack), sizeof(TaskData[tasknum].task_stack),
+                               OSAL_PRIORITY_C(250 - OS_MAX_TASKS + tasknum), 0);
 
         UtDebug("Create %s Status = %d, Id = %lx\n", taskname, (int)status,
                 OS_ObjectIdToInteger(TaskData[tasknum].task_id));
@@ -161,7 +162,8 @@ void TestTasks(void)
     {
         snprintf(taskname, sizeof(taskname), "Task %d", tasknum);
         status = OS_TaskCreate(&TaskData[tasknum].task_id, taskname, task_generic_with_exit,
-                               TaskData[tasknum].task_stack, TASK_0_STACK_SIZE, (250 - OS_MAX_TASKS) + tasknum, 0);
+                               OSAL_STACKPTR_C(TaskData[tasknum].task_stack), sizeof(TaskData[tasknum].task_stack),
+                               OSAL_PRIORITY_C((250 - OS_MAX_TASKS) + tasknum), 0);
 
         UtDebug("Create %s Status = %d, Id = %lx\n", taskname, (int)status,
                 OS_ObjectIdToInteger(TaskData[tasknum].task_id));
@@ -193,19 +195,23 @@ void TestTasks(void)
 
     InitializeTaskIds();
     /* Create Task 0 again */
-    status = OS_TaskCreate(&task_0_id, "Task 0", task_0, task_0_stack, TASK_0_STACK_SIZE, TASK_0_PRIORITY, 0);
+    status = OS_TaskCreate(&task_0_id, "Task 0", task_0, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
+                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     /*UtDebug("Create Status = %d, Id = %d\n",status,task_0_id); */
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate, recreate 0");
 
     /* Try and create another "Task 0", should fail as we already have one named "Task 0" */
-    status = OS_TaskCreate(&task_1_id, "Task 0", task_0, task_0_stack, TASK_0_STACK_SIZE, TASK_0_PRIORITY, 0);
+    status = OS_TaskCreate(&task_1_id, "Task 0", task_0, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
+                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status != OS_SUCCESS, "OS_TaskCreate, dupe name 0");
 
-    status = OS_TaskCreate(&task_2_id, "Task 2", task_2, task_2_stack, TASK_2_STACK_SIZE, TASK_2_PRIORITY, 0);
+    status = OS_TaskCreate(&task_2_id, "Task 2", task_2, OSAL_STACKPTR_C(task_2_stack), sizeof(task_2_stack),
+                           OSAL_PRIORITY_C(TASK_2_PRIORITY), 0);
     /*  UtDebug("Create Status = %d, Id = %d\n",status,task_2_id); */
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate, recreate 2");
 
-    status = OS_TaskCreate(&task_3_id, "Task 3", task_3, task_3_stack, TASK_3_STACK_SIZE, TASK_3_PRIORITY, 0);
+    status = OS_TaskCreate(&task_3_id, "Task 3", task_3, OSAL_STACKPTR_C(task_3_stack), sizeof(task_3_stack),
+                           OSAL_PRIORITY_C(TASK_3_PRIORITY), 0);
     /*  UtDebug("Create Status = %d, Id = %d\n",status,task_3_id); */
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate, recreate 3");
 
@@ -255,7 +261,7 @@ void TestQueues(void)
     for (qnum = 0; qnum < (OS_MAX_QUEUES + 1); ++qnum)
     {
         snprintf(qname, sizeof(qname), "q %d", qnum);
-        status = OS_QueueCreate(&msgq_ids[qnum], qname, MSGQ_DEPTH, MSGQ_SIZE, 0);
+        status = OS_QueueCreate(&msgq_ids[qnum], qname, OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
 
         UtAssert_True((qnum < OS_MAX_QUEUES && status == OS_SUCCESS) || (qnum >= OS_MAX_QUEUES && status != OS_SUCCESS),
                       "OS_QueueCreate, nominal");
@@ -275,20 +281,20 @@ void TestQueues(void)
     /*     Create Some more Queues for trying to get the id by name */
 
     InitializeQIds();
-    status = OS_QueueCreate(&msgq_0, "q 0", MSGQ_DEPTH, MSGQ_SIZE, 0);
+    status = OS_QueueCreate(&msgq_0, "q 0", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
     /* UtDebug("Status after Creating q 0: %d,%d\n",status,msgq_0);*/
     UtAssert_True(status == OS_SUCCESS, "OS_QueueCreate, recreate 0");
 
     /* This one should fail */
-    status = OS_QueueCreate(&msgq_1, "q 0", MSGQ_DEPTH, MSGQ_SIZE, 0);
+    status = OS_QueueCreate(&msgq_1, "q 0", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
     /* UtDebug("Status after Creating q 0 again: %d,%d\n",status,msgq_1); */
     UtAssert_True(status != OS_SUCCESS, "OS_QueueCreate, dupe name 0");
 
-    status = OS_QueueCreate(&msgq_2, "q 2", MSGQ_DEPTH, MSGQ_SIZE, 0);
+    status = OS_QueueCreate(&msgq_2, "q 2", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
     /* UtDebug("Status after Creating q 2: %d,%d\n",status,msgq_2); */
     UtAssert_True(status == OS_SUCCESS, "OS_QueueCreate, recreate 2");
 
-    status = OS_QueueCreate(&msgq_3, "q 3", MSGQ_DEPTH, MSGQ_SIZE, 0);
+    status = OS_QueueCreate(&msgq_3, "q 3", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
     /* UtDebug("Status after Creating q 3: %d,%d\n",status,msgq_3); */
     UtAssert_True(status == OS_SUCCESS, "OS_QueueCreate, recreate 3");
 
@@ -613,10 +619,11 @@ void TestGetInfos(void)
 
     /* first step is to create an object to to get the properties of */
 
-    status = OS_TaskCreate(&task_0_id, "Task 0", task_0, task_0_stack, TASK_0_STACK_SIZE, TASK_0_PRIORITY, 0);
+    status = OS_TaskCreate(&task_0_id, "Task 0", task_0, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
+                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate");
 
-    status = OS_QueueCreate(&msgq_0, "q 0", MSGQ_DEPTH, MSGQ_SIZE, 0);
+    status = OS_QueueCreate(&msgq_0, "q 0", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
     /* UtDebug("Status after Creating q 0: %d,%d\n",status,msgq_0); */
     UtAssert_True(status == OS_SUCCESS, "OS_QueueCreate");
 
@@ -668,10 +675,11 @@ void TestGenericQueries(void)
     TestCallbackState_t State;
     char                ResourceName[OS_MAX_API_NAME];
 
-    status = OS_TaskCreate(&task_0_id, "Task 0", task_0, task_0_stack, TASK_0_STACK_SIZE, TASK_0_PRIORITY, 0);
+    status = OS_TaskCreate(&task_0_id, "Task 0", task_0, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
+                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate (%ld) == OS_SUCCESS", (long)status);
 
-    status = OS_QueueCreate(&msgq_0, "q 0", MSGQ_DEPTH, MSGQ_SIZE, 0);
+    status = OS_QueueCreate(&msgq_0, "q 0", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_QueueCreate (%ld) == OS_SUCCESS", (long)status);
 
     status = OS_BinSemCreate(&bin_0, "Bin 0", 1, 0);
@@ -711,7 +719,7 @@ void TestGenericQueries(void)
     UtAssert_True(State.NumInvocations >= 4, "State.NumInvocations (%lu) >= 4", (unsigned long)State.NumInvocations);
 
     /* Test the OS_GetResourceName() API function */
-    status = OS_GetResourceName(mut_0, ResourceName, 0);
+    status = OS_GetResourceName(mut_0, ResourceName, OSAL_SIZE_C(0));
     UtAssert_True(status == OS_INVALID_POINTER, "OS_GetResourceName (%lx,%ld) == OS_INVALID_POINTER",
                   OS_ObjectIdToInteger(mut_0), (long)status);
 
@@ -724,7 +732,7 @@ void TestGenericQueries(void)
     UtAssert_True(status == OS_ERR_INVALID_ID, "OS_GetResourceName (%lx,%ld) == OS_ERR_INVALID_ID",
                   OS_ObjectIdToInteger(OS_OBJECT_ID_UNDEFINED), (long)status);
 
-    status = OS_GetResourceName(bin_0, ResourceName, 1);
+    status = OS_GetResourceName(bin_0, ResourceName, OSAL_SIZE_C(1));
     UtAssert_True(status == OS_ERR_NAME_TOO_LONG, "OS_GetResourceName (%lx,%ld) == OS_ERR_NAME_TOO_LONG",
                   OS_ObjectIdToInteger(bin_0), (long)status);
 

@@ -132,7 +132,7 @@ int32 OS_ObjectIdInit(void)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-uint32 OS_GetMaxForObjectType(uint32 idtype)
+uint32 OS_GetMaxForObjectType(osal_objtype_t idtype)
 {
     switch (idtype)
     {
@@ -172,7 +172,7 @@ uint32 OS_GetMaxForObjectType(uint32 idtype)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-uint32 OS_GetBaseForObjectType(uint32 idtype)
+uint32 OS_GetBaseForObjectType(osal_objtype_t idtype)
 {
     switch (idtype)
     {
@@ -224,7 +224,7 @@ uint32 OS_GetBaseForObjectType(uint32 idtype)
  *  returns: true if match, false otherwise
  *
  *-----------------------------------------------------------------*/
-bool OS_ObjectNameMatch(void *ref, uint32 local_id, const OS_common_record_t *obj)
+bool OS_ObjectNameMatch(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
 {
     return (obj->name_entry != NULL && strcmp((const char *)ref, obj->name_entry) == 0);
 } /* end OS_ObjectNameMatch */
@@ -245,7 +245,7 @@ bool OS_ObjectNameMatch(void *ref, uint32 local_id, const OS_common_record_t *ob
  *   lock type requested (lock_mode).
  *
  *-----------------------------------------------------------------*/
-void OS_ObjectIdInitiateLock(OS_lock_mode_t lock_mode, uint32 idtype)
+void OS_ObjectIdInitiateLock(OS_lock_mode_t lock_mode, osal_objtype_t idtype)
 {
     if (lock_mode != OS_LOCK_MODE_NONE)
     {
@@ -291,7 +291,8 @@ void OS_ObjectIdInitiateLock(OS_lock_mode_t lock_mode, uint32 idtype)
  *         all lock modes other than OS_LOCK_MODE_NONE.
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdConvertLock(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t reference_id, OS_common_record_t *obj)
+int32 OS_ObjectIdConvertLock(OS_lock_mode_t lock_mode, osal_objtype_t idtype, osal_id_t reference_id,
+                             OS_common_record_t *obj)
 {
     int32  return_code    = OS_ERROR;
     uint32 exclusive_bits = 0;
@@ -420,11 +421,11 @@ int32 OS_ObjectIdConvertLock(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t 
  *  returns: OS_ERR_NAME_NOT_FOUND if not found, OS_SUCCESS if match is found
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdSearch(uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_common_record_t **record)
+int32 OS_ObjectIdSearch(osal_objtype_t idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_common_record_t **record)
 {
     int32               return_code;
     uint32              obj_count;
-    uint32              local_id;
+    osal_index_t        local_id;
     OS_common_record_t *obj;
 
     return_code = OS_ERR_NAME_NOT_FOUND;
@@ -475,7 +476,7 @@ int32 OS_ObjectIdSearch(uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg
  *
  *  returns: OS_SUCCESS if an empty location was found.
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdFindNext(uint32 idtype, uint32 *array_index, OS_common_record_t **record)
+int32 OS_ObjectIdFindNext(osal_objtype_t idtype, osal_index_t *array_index, OS_common_record_t **record)
 {
     uint32              max_id;
     uint32              base_id;
@@ -537,7 +538,7 @@ int32 OS_ObjectIdFindNext(uint32 idtype, uint32 *array_index, OS_common_record_t
 
     if (array_index != NULL)
     {
-        *array_index = local_id;
+        *array_index = OSAL_INDEX_C(local_id);
     }
     if (record != NULL)
     {
@@ -561,7 +562,7 @@ int32 OS_ObjectIdFindNext(uint32 idtype, uint32 *array_index, OS_common_record_t
 
     Purpose: Locks the global table identified by "idtype"
  ------------------------------------------------------------------*/
-void OS_Lock_Global(uint32 idtype)
+void OS_Lock_Global(osal_objtype_t idtype)
 {
     int32               return_code;
     osal_id_t           self_task_id;
@@ -622,7 +623,7 @@ void OS_Lock_Global(uint32 idtype)
 
     Purpose: Unlocks the global table identified by "idtype"
  ------------------------------------------------------------------*/
-void OS_Unlock_Global(uint32 idtype)
+void OS_Unlock_Global(osal_objtype_t idtype)
 {
     int32               return_code;
     osal_id_t           self_task_id;
@@ -695,8 +696,8 @@ void OS_Unlock_Global(uint32 idtype)
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record, osal_id_t *outid)
 {
-    uint32    idtype = OS_ObjectIdToType_Impl(record->active_id);
-    osal_id_t callback_id;
+    osal_objtype_t idtype = OS_ObjectIdToType_Impl(record->active_id);
+    osal_id_t      callback_id;
 
     /* if operation was unsuccessful, then clear
      * the active_id field within the record, so
@@ -750,8 +751,8 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_common_record_t *record,
  ------------------------------------------------------------------*/
 int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *record)
 {
-    uint32    idtype = OS_ObjectIdToType_Impl(record->active_id);
-    osal_id_t callback_id;
+    osal_objtype_t idtype = OS_ObjectIdToType_Impl(record->active_id);
+    osal_id_t      callback_id;
 
     /* Clear the OSAL ID if successful - this returns the record to the pool */
     if (operation_status == OS_SUCCESS)
@@ -790,7 +791,7 @@ int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_common_record_t *reco
  *  returns: OS_ERR_NAME_NOT_FOUND if not found, OS_SUCCESS if match is found
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg,
+int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg,
                              OS_common_record_t **record)
 {
     int32               return_code;
@@ -836,7 +837,8 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, uint32 idtype, OS_ObjectM
  *  returns: OS_ERR_NAME_NOT_FOUND if not found, OS_SUCCESS if match is found
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdGetByName(OS_lock_mode_t lock_mode, uint32 idtype, const char *name, OS_common_record_t **record)
+int32 OS_ObjectIdGetByName(OS_lock_mode_t lock_mode, osal_objtype_t idtype, const char *name,
+                           OS_common_record_t **record)
 {
     return OS_ObjectIdGetBySearch(lock_mode, idtype, OS_ObjectNameMatch, (void *)name, record);
 
@@ -853,7 +855,7 @@ int32 OS_ObjectIdGetByName(OS_lock_mode_t lock_mode, uint32 idtype, const char *
  *  returns: OS_ERR_NAME_NOT_FOUND if not found, OS_SUCCESS if match is found
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdFindByName(uint32 idtype, const char *name, osal_id_t *object_id)
+int32 OS_ObjectIdFindByName(osal_objtype_t idtype, const char *name, osal_id_t *object_id)
 {
     int32               return_code;
     OS_common_record_t *global;
@@ -900,7 +902,7 @@ int32 OS_ObjectIdFindByName(uint32 idtype, const char *name, osal_id_t *object_i
  *           If this returns something other than OS_SUCCESS then the global is NOT locked.
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t id, uint32 *array_index,
+int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, osal_objtype_t idtype, osal_id_t id, osal_index_t *array_index,
                          OS_common_record_t **record)
 {
     int32 return_code;
@@ -955,8 +957,8 @@ int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, uint32 idtype, osal_id_t id, 
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdRefcountDecr(OS_common_record_t *record)
 {
-    int32  return_code;
-    uint32 idtype = OS_ObjectIdToType_Impl(record->active_id);
+    int32          return_code;
+    osal_objtype_t idtype = OS_ObjectIdToType_Impl(record->active_id);
 
     if (idtype == 0 || !OS_ObjectIdDefined(record->active_id))
     {
@@ -1012,7 +1014,8 @@ int32 OS_ObjectIdRefcountDecr(OS_common_record_t *record)
  *             manipulate the global lock at all.
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdAllocateNew(uint32 idtype, const char *name, uint32 *array_index, OS_common_record_t **record)
+int32 OS_ObjectIdAllocateNew(osal_objtype_t idtype, const char *name, osal_index_t *array_index,
+                             OS_common_record_t **record)
 {
     int32 return_code;
 
@@ -1079,7 +1082,7 @@ int32 OS_ObjectIdAllocateNew(uint32 idtype, const char *name, uint32 *array_inde
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ConvertToArrayIndex(osal_id_t object_id, uint32 *ArrayIndex)
+int32 OS_ConvertToArrayIndex(osal_id_t object_id, osal_index_t *ArrayIndex)
 {
     /* just pass to the generic internal conversion routine */
     return OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_UNDEFINED, object_id, ArrayIndex);
@@ -1095,7 +1098,7 @@ int32 OS_ConvertToArrayIndex(osal_id_t object_id, uint32 *ArrayIndex)
  *-----------------------------------------------------------------*/
 void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
 {
-    uint32 idtype;
+    osal_objtype_t idtype;
 
     for (idtype = 0; idtype < OS_OBJECT_TYPE_USER; ++idtype)
     {
@@ -1111,11 +1114,12 @@ void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void 
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-void OS_ForEachObjectOfType(uint32 idtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
+void OS_ForEachObjectOfType(osal_objtype_t idtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr,
+                            void *callback_arg)
 {
-    uint32    obj_index;
-    uint32    obj_max;
-    osal_id_t obj_id;
+    osal_index_t obj_index;
+    uint32       obj_max;
+    osal_id_t    obj_id;
 
     obj_max = OS_GetMaxForObjectType(idtype);
     if (obj_max > 0)
@@ -1170,7 +1174,7 @@ void OS_ForEachObjectOfType(uint32 idtype, osal_id_t creator_id, OS_ArgCallback_
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-uint32 OS_IdentifyObject(osal_id_t object_id)
+osal_objtype_t OS_IdentifyObject(osal_id_t object_id)
 {
     return OS_ObjectIdToType_Impl(object_id);
 } /* end OS_IdentifyObject */
@@ -1183,13 +1187,13 @@ uint32 OS_IdentifyObject(osal_id_t object_id)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size)
+int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size)
 {
-    uint32              idtype;
+    osal_objtype_t      idtype;
     OS_common_record_t *record;
     int32               return_code;
-    uint32              name_len;
-    uint32              local_id;
+    size_t              name_len;
+    osal_index_t        local_id;
 
     /* sanity check the passed-in buffer and size */
     if (buffer == NULL || buffer_size == 0)
@@ -1241,12 +1245,12 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size)
  *           Otherwise OS_SUCCESS is returned.
  *
  *-----------------------------------------------------------------*/
-int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t object_id, uint32 *ArrayIndex)
+int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t object_id, osal_index_t *ArrayIndex)
 {
-    uint32 max_id;
-    uint32 obj_index;
-    uint32 actual_type;
-    int32  return_code;
+    uint32         max_id;
+    uint32         obj_index;
+    osal_objtype_t actual_type;
+    int32          return_code;
 
     obj_index   = OS_ObjectIdToSerialNumber_Impl(object_id);
     actual_type = OS_ObjectIdToType_Impl(object_id);
@@ -1269,7 +1273,7 @@ int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t object_id, uint32 *ArrayI
         else
         {
             return_code = OS_SUCCESS;
-            *ArrayIndex = obj_index % max_id;
+            *ArrayIndex = OSAL_INDEX_C(obj_index % max_id);
         }
     }
 

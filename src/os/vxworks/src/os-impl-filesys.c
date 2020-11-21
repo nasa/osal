@@ -76,7 +76,7 @@ OS_impl_filesys_internal_record_t OS_impl_filesys_table[OS_MAX_FILE_SYSTEMS];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStartVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysStartVolume_Impl(osal_index_t filesys_id)
 {
     OS_filesys_internal_record_t *     local = &OS_filesys_table[filesys_id];
     OS_impl_filesys_internal_record_t *impl  = &OS_impl_filesys_table[filesys_id];
@@ -192,7 +192,7 @@ int32 OS_FileSysStartVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStopVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysStopVolume_Impl(osal_index_t filesys_id)
 {
     OS_filesys_internal_record_t *     local = &OS_filesys_table[filesys_id];
     OS_impl_filesys_internal_record_t *impl  = &OS_impl_filesys_table[filesys_id];
@@ -231,7 +231,7 @@ int32 OS_FileSysStopVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysFormatVolume_Impl(osal_index_t filesys_id)
 {
     OS_filesys_internal_record_t *local       = &OS_filesys_table[filesys_id];
     int32                         return_code = OS_ERR_NOT_IMPLEMENTED;
@@ -282,7 +282,7 @@ int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysMountVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysMountVolume_Impl(osal_index_t filesys_id)
 {
     OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
     int32                         status;
@@ -315,7 +315,7 @@ int32 OS_FileSysMountVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysUnmountVolume_Impl(osal_index_t filesys_id)
 {
     OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
     int32                         status;
@@ -355,7 +355,7 @@ int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result)
+int32 OS_FileSysStatVolume_Impl(osal_index_t filesys_id, OS_statvfs_t *result)
 {
     OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
     struct statfs                 stat_buf;
@@ -368,9 +368,9 @@ int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result)
     }
     else
     {
-        result->block_size   = stat_buf.f_bsize;
-        result->blocks_free  = stat_buf.f_bfree;
-        result->total_blocks = stat_buf.f_blocks;
+        result->block_size   = OSAL_SIZE_C(stat_buf.f_bsize);
+        result->blocks_free  = OSAL_BLOCKCOUNT_C(stat_buf.f_bfree);
+        result->total_blocks = OSAL_BLOCKCOUNT_C(stat_buf.f_blocks);
         return_code          = OS_SUCCESS;
     }
 
@@ -386,7 +386,7 @@ int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysCheckVolume_Impl(uint32 filesys_id, bool repair)
+int32 OS_FileSysCheckVolume_Impl(osal_index_t filesys_id, bool repair)
 {
     OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
     STATUS                        chk_status;

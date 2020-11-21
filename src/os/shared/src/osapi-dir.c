@@ -113,7 +113,7 @@ int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
 {
     char                local_path[OS_MAX_LOCAL_PATH_LEN];
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     if (dir_id == NULL || path == NULL)
@@ -154,7 +154,7 @@ int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
 int32 OS_DirectoryClose(osal_id_t dir_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Make sure the file descriptor is legit before using it */
@@ -181,7 +181,7 @@ int32 OS_DirectoryClose(osal_id_t dir_id)
 int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     if (dirent == NULL)
@@ -223,7 +223,7 @@ int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
 int32 OS_DirectoryRewind(osal_id_t dir_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Make sure the file descriptor is legit before using it */

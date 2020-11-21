@@ -83,7 +83,7 @@ int32 OS_DirCreate_Impl(const char *local_path, uint32 access)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirOpen_Impl(uint32 local_id, const char *local_path)
+int32 OS_DirOpen_Impl(osal_index_t local_id, const char *local_path)
 {
     OS_impl_dir_table[local_id].dp = opendir(local_path);
     if (OS_impl_dir_table[local_id].dp == NULL)
@@ -101,7 +101,7 @@ int32 OS_DirOpen_Impl(uint32 local_id, const char *local_path)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirClose_Impl(uint32 local_id)
+int32 OS_DirClose_Impl(osal_index_t local_id)
 {
     closedir(OS_impl_dir_table[local_id].dp);
     OS_impl_dir_table[local_id].dp = NULL;
@@ -116,7 +116,7 @@ int32 OS_DirClose_Impl(uint32 local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirRead_Impl(uint32 local_id, os_dirent_t *dirent)
+int32 OS_DirRead_Impl(osal_index_t local_id, os_dirent_t *dirent)
 {
     struct dirent *de;
 
@@ -149,7 +149,7 @@ int32 OS_DirRead_Impl(uint32 local_id, os_dirent_t *dirent)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirRewind_Impl(uint32 local_id)
+int32 OS_DirRewind_Impl(osal_index_t local_id)
 {
     rewinddir(OS_impl_dir_table[local_id].dp);
     return OS_SUCCESS;

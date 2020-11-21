@@ -210,16 +210,16 @@ void Test_OS_SymbolTableDump(void)
     int32 expected = OS_SUCCESS;
     int32 actual   = ~OS_SUCCESS;
 
-    actual = OS_SymbolTableDump("test", 555);
+    actual = OS_SymbolTableDump("test", OSAL_SIZE_C(555));
     UtAssert_True(actual == expected, "OS_SymbolTableDump() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_SymbolTableDump(NULL, 555);
+    actual   = OS_SymbolTableDump(NULL, OSAL_SIZE_C(555));
     UtAssert_True(actual == expected, "OS_SymbolTableDump() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     UT_SetForceFail(UT_KEY(OS_TranslatePath), OS_ERROR);
     expected = OS_ERROR;
-    actual   = OS_SymbolTableDump("test", 555);
+    actual   = OS_SymbolTableDump("test", OSAL_SIZE_C(555));
     UtAssert_True(actual == expected, "OS_SymbolTableDump() (%ld) == OS_ERROR", (long)actual);
 }
 
@@ -232,10 +232,11 @@ void Test_OS_ModuleGetInfo(void)
     int32               expected = OS_SUCCESS;
     int32               actual   = ~OS_SUCCESS;
     OS_module_prop_t    module_prop;
-    uint32              local_index = 1;
+    osal_index_t        local_index;
     OS_common_record_t  utrec;
     OS_common_record_t *rptr = &utrec;
 
+    local_index = UT_INDEX_1;
     memset(&utrec, 0, sizeof(utrec));
     utrec.creator    = UT_OBJID_OTHER;
     utrec.name_entry = "ABC";

@@ -88,12 +88,14 @@
 *--------------------------------------------------------------------------------*/
 void UT_os_apiinit_test()
 {
-    int32       res = 0;
-    const char *testDesc;
-    osal_id_t   qId;
-    uint32      qDepth = 10, qSize = 4, qFlags = 0;
-    osal_id_t   semIds[3];
-    uint32      semInitValue = 1, semOptions = 0;
+    int32             res = 0;
+    const char *      testDesc;
+    osal_id_t         qId;
+    osal_blockcount_t qDepth = OSAL_BLOCKCOUNT_C(10);
+    size_t            qSize  = OSAL_SIZE_C(4);
+    uint32            qFlags = 0;
+    osal_id_t         semIds[3];
+    uint32            semInitValue = 1, semOptions = 0;
 
     /*-----------------------------------------------------*/
     testDesc = "#1 Init-not-call-first";

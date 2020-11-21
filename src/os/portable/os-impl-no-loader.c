@@ -38,7 +38,7 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleLoad_Impl(uint32 module_id, const char *translated_path)
+int32 OS_ModuleLoad_Impl(osal_index_t module_id, const char *translated_path)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 
@@ -52,7 +52,7 @@ int32 OS_ModuleLoad_Impl(uint32 module_id, const char *translated_path)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleUnload_Impl(uint32 module_id)
+int32 OS_ModuleUnload_Impl(osal_index_t module_id)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 
@@ -66,7 +66,7 @@ int32 OS_ModuleUnload_Impl(uint32 module_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleGetInfo_Impl(uint32 module_id, OS_module_prop_t *module_prop)
+int32 OS_ModuleGetInfo_Impl(osal_index_t module_id, OS_module_prop_t *module_prop)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 
