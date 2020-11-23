@@ -150,10 +150,11 @@ void Test_OS_SocketAccept(void)
      */
     int32         expected = OS_SUCCESS;
     int32         actual   = ~OS_SUCCESS;
-    uint32        local_id = 0;
+    osal_index_t  local_id;
     osal_id_t     connsock_id;
     OS_SockAddr_t Addr;
 
+    local_id    = UT_INDEX_0;
     connsock_id = OS_OBJECT_ID_UNDEFINED;
 
     OS_stream_table[local_id].socket_type  = OS_SocketType_STREAM;
@@ -210,10 +211,10 @@ void Test_OS_SocketConnect(void)
     int32         expected = OS_SUCCESS;
     int32         actual   = ~OS_SUCCESS;
     OS_SockAddr_t Addr;
-    uint32        idbuf;
+    osal_index_t  idbuf;
 
     memset(&Addr, 0, sizeof(Addr));
-    idbuf = 1;
+    idbuf = UT_INDEX_1;
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &idbuf, sizeof(idbuf), false);
     OS_stream_table[idbuf].socket_domain = OS_SocketDomain_INET;
     OS_stream_table[idbuf].socket_type   = OS_SocketType_STREAM;
@@ -263,19 +264,20 @@ void Test_OS_SocketRecvFrom(void)
     int32         expected = OS_SUCCESS;
     int32         actual   = ~OS_SUCCESS;
     OS_SockAddr_t Addr;
-    uint32        idbuf;
+    osal_index_t  idbuf;
 
     memset(&Addr, 0, sizeof(Addr));
-    idbuf = 1;
+    idbuf = UT_INDEX_1;
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &idbuf, sizeof(idbuf), false);
     OS_stream_table[idbuf].socket_type  = OS_SocketType_DATAGRAM;
     OS_stream_table[idbuf].stream_state = OS_STREAM_STATE_BOUND;
     actual                              = OS_SocketRecvFrom(UT_OBJID_1, &Buf, 1, &Addr, 0);
+    actual                              = OS_SocketRecvFrom(UT_OBJID_1, &Buf, sizeof(Buf), &Addr, 0);
 
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketRecvFrom(UT_OBJID_1, NULL, 0, NULL, 0);
+    actual   = OS_SocketRecvFrom(UT_OBJID_1, NULL, OSAL_SIZE_C(0), NULL, 0);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
 
     /*
@@ -283,7 +285,7 @@ void Test_OS_SocketRecvFrom(void)
      */
     OS_stream_table[1].socket_type = OS_SocketType_INVALID;
     expected                       = OS_ERR_INCORRECT_OBJ_TYPE;
-    actual                         = OS_SocketRecvFrom(UT_OBJID_1, &Buf, 1, &Addr, 0);
+    actual                         = OS_SocketRecvFrom(UT_OBJID_1, &Buf, sizeof(Buf), &Addr, 0);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() non-datagram (%ld) == OS_ERR_INCORRECT_OBJ_TYPE",
                   (long)actual);
 
@@ -293,7 +295,7 @@ void Test_OS_SocketRecvFrom(void)
     OS_stream_table[1].socket_type  = OS_SocketType_DATAGRAM;
     OS_stream_table[1].stream_state = 0;
     expected                        = OS_ERR_INCORRECT_OBJ_STATE;
-    actual                          = OS_SocketRecvFrom(UT_OBJID_1, &Buf, 1, &Addr, 0);
+    actual                          = OS_SocketRecvFrom(UT_OBJID_1, &Buf, sizeof(Buf), &Addr, 0);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() non-bound (%ld) == OS_ERR_INCORRECT_OBJ_STATE",
                   (long)actual);
 }
@@ -313,19 +315,19 @@ void Test_OS_SocketSendTo(void)
     int32         expected = OS_SUCCESS;
     int32         actual   = ~OS_SUCCESS;
     OS_SockAddr_t Addr;
-    uint32        idbuf;
+    osal_index_t  idbuf;
 
     memset(&Addr, 0, sizeof(Addr));
-    idbuf = 1;
+    idbuf = UT_INDEX_1;
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &idbuf, sizeof(idbuf), false);
     OS_stream_table[idbuf].socket_type  = OS_SocketType_DATAGRAM;
     OS_stream_table[idbuf].stream_state = OS_STREAM_STATE_BOUND;
-    actual                              = OS_SocketSendTo(UT_OBJID_1, &Buf, 1, &Addr);
+    actual                              = OS_SocketSendTo(UT_OBJID_1, &Buf, sizeof(Buf), &Addr);
 
     UtAssert_True(actual == expected, "OS_SocketSendTo() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketSendTo(UT_OBJID_1, NULL, 0, NULL);
+    actual   = OS_SocketSendTo(UT_OBJID_1, NULL, OSAL_SIZE_C(0), NULL);
     UtAssert_True(actual == expected, "OS_SocketSendTo(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
 
     /*
@@ -333,7 +335,7 @@ void Test_OS_SocketSendTo(void)
      */
     OS_stream_table[1].socket_type = OS_SocketType_INVALID;
     expected                       = OS_ERR_INCORRECT_OBJ_TYPE;
-    actual                         = OS_SocketSendTo(UT_OBJID_1, &Buf, 1, &Addr);
+    actual                         = OS_SocketSendTo(UT_OBJID_1, &Buf, sizeof(Buf), &Addr);
     UtAssert_True(actual == expected, "OS_SocketSendTo() non-datagram (%ld) == OS_ERR_INCORRECT_OBJ_TYPE",
                   (long)actual);
 }
@@ -382,7 +384,7 @@ void Test_OS_SocketGetInfo(void)
     int32               expected = OS_SUCCESS;
     int32               actual   = ~OS_SUCCESS;
     OS_socket_prop_t    prop;
-    uint32              local_index = 1;
+    osal_index_t        local_index = UT_INDEX_1;
     OS_common_record_t  utrec;
     OS_common_record_t *rptr = &utrec;
 
@@ -439,7 +441,7 @@ void Test_OS_SocketAddr(void)
     actual = OS_SocketAddrInit(NULL, OS_SocketDomain_INVALID);
     UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    actual = OS_SocketAddrToString(NULL, 0, NULL);
+    actual = OS_SocketAddrToString(NULL, OSAL_SIZE_C(0), NULL);
     UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     actual = OS_SocketAddrFromString(NULL, NULL);

@@ -63,9 +63,9 @@ void Test_OS_DirOpen_Impl(void)
      * Test Case For:
      * int32 OS_DirOpen_Impl(uint32 local_id, const char *local_path)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_DirOpen_Impl(0, "dir"), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_DirOpen_Impl(UT_INDEX_0, "dir"), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_KEY(OCS_opendir), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_DirOpen_Impl(0, "dir"), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_DirOpen_Impl(UT_INDEX_0, "dir"), OS_ERROR);
 }
 
 void Test_OS_DirClose_Impl(void)
@@ -74,7 +74,7 @@ void Test_OS_DirClose_Impl(void)
      * Test Case For:
      * int32 OS_DirClose_Impl(uint32 local_id)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_DirClose_Impl(0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_DirClose_Impl(UT_INDEX_0), OS_SUCCESS);
 }
 
 void Test_OS_DirRead_Impl(void)
@@ -85,10 +85,10 @@ void Test_OS_DirRead_Impl(void)
      */
     os_dirent_t dirent_buff;
 
-    OSAPI_TEST_FUNCTION_RC(OS_DirRead_Impl(0, &dirent_buff), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_DirRead_Impl(UT_INDEX_0, &dirent_buff), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_readdir), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_DirRead_Impl(0, &dirent_buff), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_DirRead_Impl(UT_INDEX_0, &dirent_buff), OS_ERROR);
 }
 
 void Test_OS_DirRewind_Impl(void)
@@ -97,7 +97,7 @@ void Test_OS_DirRewind_Impl(void)
      * Test Case For:
      * int32 OS_DirRewind_Impl(uint32 local_id)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_DirRewind_Impl(0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_DirRewind_Impl(UT_INDEX_0), OS_SUCCESS);
 }
 
 void Test_OS_DirRemove_Impl(void)

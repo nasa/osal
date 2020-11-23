@@ -35,15 +35,15 @@ void Test_OS_SelectSingle_Impl(void)
      * int32 OS_SelectSingle_Impl(uint32 stream_id, uint32 *SelectFlags, int32 msecs)
      */
     uint32              SelectFlags;
-    uint32              StreamID;
+    osal_index_t        StreamID;
     struct OCS_timespec nowtime;
     struct OCS_timespec latertime;
 
-    StreamID = 0;
-    UT_PortablePosixIOTest_Set_Selectable(0, false);
+    StreamID = UT_INDEX_0;
+    UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, false);
     SelectFlags = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (StreamID, &SelectFlags, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
-    UT_PortablePosixIOTest_Set_Selectable(0, true);
+    UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (StreamID, &SelectFlags, 0), OS_SUCCESS);
     SelectFlags = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (StreamID, &SelectFlags, -1), OS_SUCCESS);

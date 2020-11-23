@@ -68,7 +68,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
  * Stub function for OS_mkfs()
  *
  *****************************************************************************/
-int32 OS_mkfs(char *address, const char *devname, const char *volname, uint32 blocksize, uint32 numblocks)
+int32 OS_mkfs(char *address, const char *devname, const char *volname, size_t blocksize, osal_blockcount_t numblocks)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_mkfs), address);
     UT_Stub_RegisterContext(UT_KEY(OS_mkfs), devname);
@@ -104,7 +104,7 @@ int32 OS_rmfs(const char *devname)
  * Stub function for OS_initfs()
  *
  *****************************************************************************/
-int32 OS_initfs(char *address, const char *devname, const char *volname, uint32 blocksize, uint32 numblocks)
+int32 OS_initfs(char *address, const char *devname, const char *volname, size_t blocksize, osal_blockcount_t numblocks)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_initfs), address);
     UT_Stub_RegisterContext(UT_KEY(OS_initfs), devname);

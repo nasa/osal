@@ -92,14 +92,14 @@ int32 OS_VxWorks_DirAPI_Impl_Init(void);
 int OS_VxWorks_TaskEntry(int arg);
 int OS_VxWorks_ConsoleTask_Entry(int arg);
 
-uint32 OS_VxWorks_SigWait(uint32 local_id);
+uint32 OS_VxWorks_SigWait(osal_index_t local_id);
 int    OS_VxWorks_TimeBaseTask(int arg);
-void   OS_VxWorks_RegisterTimer(uint32 local_id);
+void   OS_VxWorks_RegisterTimer(osal_index_t local_id);
 void   OS_VxWorks_UsecToTimespec(uint32 usecs, struct timespec *time_spec);
 
 int32 OS_VxWorks_GenericSemTake(SEM_ID vxid, int sys_ticks);
 int32 OS_VxWorks_GenericSemGive(SEM_ID vxid);
 
-int32 OS_VxWorks_TableMutex_Init(uint32 idtype);
+int32 OS_VxWorks_TableMutex_Init(osal_objtype_t idtype);
 
 #endif /* INCLUDE_OS_VXWORKS_H_ */

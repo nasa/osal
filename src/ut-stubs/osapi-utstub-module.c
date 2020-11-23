@@ -80,11 +80,12 @@ int32 dummy_function(void)
 **        Returns either a user-defined status flag or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *filename)
+int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *filename, uint32 flags)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_ModuleLoad), module_id);
     UT_Stub_RegisterContext(UT_KEY(OS_ModuleLoad), module_name);
     UT_Stub_RegisterContext(UT_KEY(OS_ModuleLoad), filename);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_ModuleLoad), flags);
 
     int32 status;
 
@@ -228,7 +229,40 @@ int32 OS_SymbolLookup(cpuaddr *symbol_address, const char *symbol_name)
  * Stub function for OS_SymbolTableDump()
  *
  *****************************************************************************/
-int32 OS_SymbolTableDump(const char *filename, uint32 size_limit)
+int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const char *symbol_name)
+{
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_ModuleSymbolLookup), module_id);
+    UT_Stub_RegisterContext(UT_KEY(OS_ModuleSymbolLookup), symbol_address);
+    UT_Stub_RegisterContext(UT_KEY(OS_ModuleSymbolLookup), symbol_name);
+
+    int32 status;
+
+    /*
+     * Register the context so a hook can do something with the parameters
+     */
+
+    status = UT_DEFAULT_IMPL(OS_ModuleSymbolLookup);
+
+    if (status != OS_SUCCESS)
+    {
+        *symbol_address = 0xDEADBEEFU;
+    }
+    else if (UT_Stub_CopyToLocal(UT_KEY(OS_ModuleSymbolLookup), symbol_address, sizeof(*symbol_address)) <
+             sizeof(*symbol_address))
+    {
+        /* return the dummy function when test didn't register anything else */
+        *symbol_address = (cpuaddr)&dummy_function;
+    }
+
+    return status;
+}
+
+/*****************************************************************************
+ *
+ * Stub function for OS_SymbolTableDump()
+ *
+ *****************************************************************************/
+int32 OS_SymbolTableDump(const char *filename, size_t size_limit)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_SymbolTableDump), filename);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SymbolTableDump), size_limit);

@@ -89,7 +89,7 @@ OS_impl_timebase_internal_record_t OS_impl_timebase_table[OS_MAX_TIMEBASES];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_TimeBaseLock_Impl(uint32 local_id)
+void OS_TimeBaseLock_Impl(osal_index_t local_id)
 {
     rtems_semaphore_obtain(OS_impl_timebase_table[local_id].handler_mutex, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
 } /* end OS_TimeBaseLock_Impl */
@@ -102,7 +102,7 @@ void OS_TimeBaseLock_Impl(uint32 local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_TimeBaseUnlock_Impl(uint32 local_id)
+void OS_TimeBaseUnlock_Impl(osal_index_t local_id)
 {
     rtems_semaphore_release(OS_impl_timebase_table[local_id].handler_mutex);
 } /* end OS_TimeBaseUnlock_Impl */
@@ -119,7 +119,7 @@ void OS_TimeBaseUnlock_Impl(uint32 local_id)
 static rtems_timer_service_routine OS_TimeBase_ISR(rtems_id rtems_timer_id, void *arg)
 {
     OS_U32ValueWrapper_t                user_data;
-    uint32                              local_id;
+    osal_index_t                        local_id;
     OS_impl_timebase_internal_record_t *local;
 
     user_data.opaque_arg = arg;
@@ -154,7 +154,7 @@ static rtems_timer_service_routine OS_TimeBase_ISR(rtems_id rtems_timer_id, void
  *           Pends on the semaphore for the next timer tick
  *
  *-----------------------------------------------------------------*/
-static uint32 OS_TimeBase_WaitImpl(uint32 local_id)
+static uint32 OS_TimeBase_WaitImpl(osal_index_t local_id)
 {
     OS_impl_timebase_internal_record_t *local;
     uint32                              tick_time;
@@ -280,7 +280,7 @@ void OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
+int32 OS_TimeBaseCreate_Impl(osal_index_t timer_id)
 {
     int32                               return_code;
     rtems_status_code                   rtems_sc;
@@ -410,7 +410,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time)
+int32 OS_TimeBaseSet_Impl(osal_index_t timer_id, uint32 start_time, uint32 interval_time)
 {
     OS_U32ValueWrapper_t                user_data;
     OS_impl_timebase_internal_record_t *local;
@@ -512,7 +512,7 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
+int32 OS_TimeBaseDelete_Impl(osal_index_t timer_id)
 {
     rtems_status_code                   rtems_sc;
     OS_impl_timebase_internal_record_t *local;
@@ -576,7 +576,7 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseGetInfo_Impl(uint32 timer_id, OS_timebase_prop_t *timer_prop)
+int32 OS_TimeBaseGetInfo_Impl(osal_index_t timer_id, OS_timebase_prop_t *timer_prop)
 {
     return OS_SUCCESS;
 

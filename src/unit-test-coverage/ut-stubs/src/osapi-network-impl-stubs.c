@@ -37,23 +37,24 @@
 /*
  * Sockets API abstraction layer
  */
-UT_DEFAULT_STUB(OS_SocketOpen_Impl, (uint32 sock_id))
-UT_DEFAULT_STUB(OS_SocketClose_Impl, (uint32 sock_id))
-UT_DEFAULT_STUB(OS_SocketBind_Impl, (uint32 sock_id, const OS_SockAddr_t *Addr))
-UT_DEFAULT_STUB(OS_SocketAccept_Impl, (uint32 sock_id, uint32 connsock_id, OS_SockAddr_t *Addr, int32 timeout))
-UT_DEFAULT_STUB(OS_SocketConnect_Impl, (uint32 sock_id, const OS_SockAddr_t *Addr, int32 timeout))
+UT_DEFAULT_STUB(OS_SocketOpen_Impl, (osal_index_t sock_id))
+UT_DEFAULT_STUB(OS_SocketClose_Impl, (osal_index_t sock_id))
+UT_DEFAULT_STUB(OS_SocketBind_Impl, (osal_index_t sock_id, const OS_SockAddr_t *Addr))
+UT_DEFAULT_STUB(OS_SocketAccept_Impl,
+                (osal_index_t sock_id, osal_index_t connsock_id, OS_SockAddr_t *Addr, int32 timeout))
+UT_DEFAULT_STUB(OS_SocketConnect_Impl, (osal_index_t sock_id, const OS_SockAddr_t *Addr, int32 timeout))
 UT_DEFAULT_STUB(OS_SocketRecvFrom_Impl,
-                (uint32 sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout))
+                (osal_index_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr, int32 timeout))
 UT_DEFAULT_STUB(OS_SocketSendTo_Impl,
-                (uint32 sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr))
-UT_DEFAULT_STUB(OS_SocketGetInfo_Impl, (uint32 sock_id, OS_socket_prop_t *sock_prop))
+                (osal_index_t sock_id, const void *buffer, size_t buflen, const OS_SockAddr_t *RemoteAddr))
+UT_DEFAULT_STUB(OS_SocketGetInfo_Impl, (osal_index_t sock_id, OS_socket_prop_t *sock_prop))
 
 UT_DEFAULT_STUB(OS_SocketAddrInit_Impl, (OS_SockAddr_t * Addr, OS_SocketDomain_t Domain))
-UT_DEFAULT_STUB(OS_SocketAddrToString_Impl, (char *buffer, uint32 buflen, const OS_SockAddr_t *Addr))
+UT_DEFAULT_STUB(OS_SocketAddrToString_Impl, (char *buffer, size_t buflen, const OS_SockAddr_t *Addr))
 UT_DEFAULT_STUB(OS_SocketAddrGetPort_Impl, (uint16 * PortNum, const OS_SockAddr_t *Addr))
 UT_DEFAULT_STUB(OS_SocketAddrFromString_Impl, (OS_SockAddr_t * Addr, const char *string))
 UT_DEFAULT_STUB(OS_SocketAddrSetPort_Impl, (OS_SockAddr_t * Addr, uint16 PortNum))
-UT_DEFAULT_STUB(OS_NetworkGetHostName_Impl, (char *host_name, uint32 name_len))
+UT_DEFAULT_STUB(OS_NetworkGetHostName_Impl, (char *host_name, size_t name_len))
 
 int32 OS_NetworkGetID_Impl(int32 *IdBuf)
 {

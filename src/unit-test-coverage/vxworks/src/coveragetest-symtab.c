@@ -33,16 +33,31 @@
 #include <OCS_fcntl.h>
 #include <OCS_symLib.h>
 
-void Test_OS_SymbolLookup_Impl(void)
+void Test_OS_GlobalSymbolLookup_Impl(void)
 {
     /* Test Case For:
-     * int32 OS_SymbolLookup_Impl( cpuaddr *SymbolAddress, const char *SymbolName )
+     * int32 OS_GlobalSymbolLookup_Impl( cpuaddr *SymbolAddress, const char *SymbolName )
      */
     cpuaddr SymAddr;
-    OSAPI_TEST_FUNCTION_RC(OS_SymbolLookup_Impl(&SymAddr, "symname"), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_SymbolLookup_Impl(NULL, NULL), OS_INVALID_POINTER);
+
+    OSAPI_TEST_FUNCTION_RC(OS_GlobalSymbolLookup_Impl(&SymAddr, "symname"), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_GlobalSymbolLookup_Impl(NULL, NULL), OS_INVALID_POINTER);
     UT_SetDefaultReturnValue(UT_KEY(OCS_symFind), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_SymbolLookup_Impl(&SymAddr, "symname"), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_GlobalSymbolLookup_Impl(&SymAddr, "symname"), OS_ERROR);
+
+}
+
+void Test_OS_ModuleSymbolLookup_Impl(void)
+{
+    /* Test Case For:
+     * int32 OS_ModuleSymbolLookup_Impl( uint32 local_id, cpuaddr *SymbolAddress, const char *SymbolName )
+     */
+    cpuaddr SymAddr;
+
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(UT_INDEX_0, &SymAddr, "symname"), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(UT_INDEX_0, NULL, NULL), OS_INVALID_POINTER);
+    UT_SetForceFail(UT_KEY(OCS_symFind), OCS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(UT_INDEX_0, &SymAddr, "symname"), OS_ERROR);
 }
 
 void Test_OS_SymTableIterator_Impl(void)
@@ -101,6 +116,7 @@ void Osapi_Test_Teardown(void) {}
 void UtTest_Setup(void)
 {
     ADD_TEST(OS_SymTableIterator_Impl);
-    ADD_TEST(OS_SymbolLookup_Impl);
+    ADD_TEST(OS_GlobalSymbolLookup_Impl);
+    ADD_TEST(OS_ModuleSymbolLookup_Impl);
     ADD_TEST(OS_SymbolTableDump_Impl);
 }

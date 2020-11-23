@@ -61,7 +61,8 @@ UT_DEFAULT_STUB(OS_QueueAPI_Init, (void))
 **        or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, uint32 queue_depth, uint32 data_size, uint32 flags)
+int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcount_t queue_depth, size_t data_size,
+                     uint32 flags)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_QueueCreate), queue_id);
     UT_Stub_RegisterContext(UT_KEY(OS_QueueCreate), queue_name);
@@ -149,7 +150,7 @@ int32 OS_QueueDelete(osal_id_t queue_id)
 **        or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_QueueGet(osal_id_t queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout)
+int32 OS_QueueGet(osal_id_t queue_id, void *data, size_t size, size_t *size_copied, int32 timeout)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_QueueGet), queue_id);
     UT_Stub_RegisterContext(UT_KEY(OS_QueueGet), data);
@@ -196,7 +197,7 @@ int32 OS_QueueGet(osal_id_t queue_id, void *data, uint32 size, uint32 *size_copi
 **        OS_INVALID_POINTER, OS_QUEUE_FULL, or OS_SUCCESS.
 **
 ******************************************************************************/
-int32 OS_QueuePut(osal_id_t queue_id, const void *data, uint32 size, uint32 flags)
+int32 OS_QueuePut(osal_id_t queue_id, const void *data, size_t size, uint32 flags)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_QueuePut), queue_id);
     UT_Stub_RegisterContext(UT_KEY(OS_QueuePut), data);

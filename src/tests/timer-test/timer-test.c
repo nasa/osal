@@ -59,9 +59,9 @@ uint32 timer_idlookup[OS_MAX_TIMERS];
  */
 void test_func(osal_id_t timer_id)
 {
-    uint32 indx;
-    OS_ConvertToArrayIndex(timer_id, &indx);
-    timer_counter[timer_idlookup[indx]]++;
+    osal_index_t idx;
+    OS_ConvertToArrayIndex(timer_id, &idx);
+    timer_counter[timer_idlookup[idx]]++;
 }
 
 /* ********************** MAIN **************************** */
@@ -89,8 +89,8 @@ void TimerTestSetup(void)
      * In the new versions of OSAL, timers do NOT work in the "main" thread,
      * so we must create a task to handle them.
      */
-    status = OS_TaskCreate(&TimerTestTaskId, "Task 1", TimerTestTask, TimerTestTaskStack, TASK_1_STACK_SIZE,
-                           TASK_1_PRIORITY, 0);
+    status = OS_TaskCreate(&TimerTestTaskId, "Task 1", TimerTestTask, OSAL_STACKPTR_C(TimerTestTaskStack),
+                           sizeof(TimerTestTaskStack), OSAL_PRIORITY_C(TASK_1_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "Timer Test Task Created RC=%d", (int)status);
 
     /*
@@ -111,12 +111,12 @@ void TimerTestSetup(void)
 void TimerTestTask(void)
 {
 
-    int       i = 0;
-    int32     TimerStatus[NUMBER_OF_TIMERS];
-    uint32    TableId;
-    osal_id_t TimerID[NUMBER_OF_TIMERS];
-    char      TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4"};
-    uint32    ClockAccuracy;
+    int          i = 0;
+    int32        TimerStatus[NUMBER_OF_TIMERS];
+    osal_index_t TableId;
+    osal_id_t    TimerID[NUMBER_OF_TIMERS];
+    char         TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4"};
+    uint32       ClockAccuracy;
 
     for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
     {

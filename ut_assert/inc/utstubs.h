@@ -161,7 +161,7 @@ void UT_SetDeferredRetcode(UT_EntryKey_t FuncKey, int32 Count, int32 Retcode);
  *      is false then the DataBuffer pointer is used directly, and must remain valid for the duration
  *      of the current test case.
  */
-void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, uint32 BufferSize, bool AllocateCopy);
+void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, size_t BufferSize, bool AllocateCopy);
 
 /**
  * Gets the data buffer for a given stub function
@@ -177,7 +177,7 @@ void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, uint32 BufferSize
  * \param BufferSize Set to Maximum Size of data buffer (output)
  * \param Position Set to current position in data buffer (output)
  */
-void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, uint32 *MaxSize, uint32 *Position);
+void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, size_t *MaxSize, size_t *Position);
 
 /**
  * Enable or disable the forced failure mode for the given stub function
@@ -332,7 +332,7 @@ bool UT_Stub_CheckForceFail(UT_EntryKey_t FuncKey, int32 *Value);
  * \returns The actual size of data copied.  If no data buffer is
  *      supplied by the test harness this will return 0.
  */
-uint32 UT_Stub_CopyToLocal(UT_EntryKey_t FuncKey, void *LocalBuffer, uint32 MaxSize);
+size_t UT_Stub_CopyToLocal(UT_EntryKey_t FuncKey, void *LocalBuffer, size_t MaxSize);
 
 /**
  * Copies data from a local buffer to the test-supplied buffer
@@ -346,7 +346,7 @@ uint32 UT_Stub_CopyToLocal(UT_EntryKey_t FuncKey, void *LocalBuffer, uint32 MaxS
  * \returns The actual size of data copied.  If no data buffer is
  *      supplied by the test harness this will return 0.
  */
-uint32 UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, uint32 MaxSize);
+size_t UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, size_t MaxSize);
 
 /**
  * Registers a single context element for the hook callback

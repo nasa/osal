@@ -64,13 +64,13 @@ extern SYMTAB_ID sysSymTbl;
 
 /*----------------------------------------------------------------
  *
- * Function: OS_SymbolLookup_Impl
+ * Function: OS_GenericSymbolLookup_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_GenericSymbolLookup_Impl(SYMTAB_ID SymTab, cpuaddr *SymbolAddress, const char *SymbolName)
 {
     STATUS      vxStatus;
     SYMBOL_DESC SymDesc;
@@ -94,7 +94,7 @@ int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
     SymDesc.mask = SYM_FIND_BY_NAME;
     SymDesc.name = (char *)SymbolName;
 
-    vxStatus       = symFind(sysSymTbl, &SymDesc);
+    vxStatus       = symFind(SymTab, &SymDesc);
     *SymbolAddress = (cpuaddr)SymDesc.value;
 
     if (vxStatus == ERROR)
@@ -104,7 +104,43 @@ int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 
     return (OS_SUCCESS);
 
-} /* end OS_SymbolLookup_Impl */
+} /* end OS_GenericSymbolLookup_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_GlobalSymbolLookup_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+{
+    return OS_GenericSymbolLookup_Impl(sysSymTbl, SymbolAddress, SymbolName);
+} /* end OS_GlobalSymbolLookup_Impl */
+
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_ModuleSymbolLookup_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_ModuleSymbolLookup_Impl(osal_index_t local_id, cpuaddr *SymbolAddress, const char *SymbolName)
+{
+    /*
+     * NOTE: this is currently exactly the same as OS_GlobalSymbolLookup_Impl().
+     *
+     * Ideally this should get a SYMTAB_ID from the MODULE_ID and search only
+     * for the symbols provided by that module - but it is not clear if vxWorks
+     * offers this capability.
+     */
+    return OS_GenericSymbolLookup_Impl(sysSymTbl, SymbolAddress, SymbolName);
+} /* end OS_ModuleSymbolLookup_Impl */
+
+
 
 /*----------------------------------------------------------------
  *
@@ -129,7 +165,7 @@ int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_arg_t arg, SYM_GROUP group)
 {
     SymbolRecord_t     symRecord;
-    uint32             NextSize;
+    size_t             NextSize;
     int                status;
     SymbolDumpState_t *state;
 
@@ -198,7 +234,7 @@ BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolTableDump_Impl(const char *local_filename, uint32 SizeLimit)
+int32 OS_SymbolTableDump_Impl(const char *filename, size_t size_limit)
 {
     SymbolDumpState_t *state;
 
@@ -209,15 +245,15 @@ int32 OS_SymbolTableDump_Impl(const char *local_filename, uint32 SizeLimit)
     state = &OS_VxWorks_SymbolDumpState;
 
     memset(state, 0, sizeof(*state));
-    state->Sizelimit = SizeLimit;
+    state->Sizelimit = size_limit;
 
     /*
     ** Open file
     */
-    state->fd = open(local_filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    state->fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
     if (state->fd < 0)
     {
-        OS_DEBUG("open(%s): error: %s\n", local_filename, strerror(errno));
+        OS_DEBUG("open(%s): error: %s\n", filename, strerror(errno));
         state->StatusCode = OS_ERROR;
     }
     else

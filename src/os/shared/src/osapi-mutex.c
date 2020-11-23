@@ -90,7 +90,7 @@ int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options)
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     /* Check for NULL pointers */
     if (sem_id == NULL || sem_name == NULL)
@@ -133,7 +133,7 @@ int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options)
 int32 OS_MutSemDelete(osal_id_t sem_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
@@ -160,7 +160,7 @@ int32 OS_MutSemDelete(osal_id_t sem_id)
 int32 OS_MutSemGive(osal_id_t sem_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
     osal_id_t           self_task;
 
@@ -198,7 +198,7 @@ int32 OS_MutSemGive(osal_id_t sem_id)
 int32 OS_MutSemTake(osal_id_t sem_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
     osal_id_t           self_task;
 
@@ -262,7 +262,7 @@ int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     /* Check parameters */
     if (mut_prop == NULL)

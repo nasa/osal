@@ -116,11 +116,11 @@ void Test_OS_TimerCreate(void)
      * Test Case For:
      * int32 OS_TimerCreate(uint32 *timer_id, const char *timer_name, uint32 *accuracy, OS_TimerCallback_t callback_ptr)
      */
-    int32     expected = OS_SUCCESS;
-    osal_id_t objid    = OS_OBJECT_ID_UNDEFINED;
-    uint32    local_id = 0xFFFFFFFF;
-    uint32    accuracy = 0xFFFFFFFF;
-    int32     actual   = OS_TimerCreate(&objid, "UT", &accuracy, UT_TimerCallback);
+    int32        expected = OS_SUCCESS;
+    osal_id_t    objid    = OS_OBJECT_ID_UNDEFINED;
+    osal_index_t local_id;
+    uint32       accuracy = 0xFFFFFFFF;
+    int32        actual   = OS_TimerCreate(&objid, "UT", &accuracy, UT_TimerCallback);
 
     UtAssert_True(actual == expected, "OS_TimerCreate() (%ld) == OS_SUCCESS", (long)actual);
 
@@ -170,7 +170,7 @@ void Test_OS_TimerSet(void)
     actual   = OS_TimerSet(UT_OBJID_1, 0, 1);
     UtAssert_True(actual == expected, "OS_TimerSet() (%ld) == OS_SUCCESS", (long)actual);
 
-    OS_timecb_table[2].timebase_ref       = 0;
+    OS_timecb_table[2].timebase_ref       = UT_INDEX_0;
     OS_timecb_table[2].flags              = TIMECB_FLAG_DEDICATED_TIMEBASE;
     OS_global_timebase_table[0].active_id = UT_OBJID_2;
     actual                                = OS_TimerSet(UT_OBJID_2, 0, 1);
@@ -199,10 +199,10 @@ void Test_OS_TimerDelete(void)
 
     UtAssert_True(actual == expected, "OS_TimerDelete() (%ld) == OS_SUCCESS", (long)actual);
 
-    OS_timecb_table[1].timebase_ref = 0;
-    OS_timecb_table[2].timebase_ref = 0;
-    OS_timecb_table[2].next_ref     = 1;
-    OS_timecb_table[1].next_ref     = 1;
+    OS_timecb_table[1].timebase_ref = UT_INDEX_0;
+    OS_timecb_table[2].timebase_ref = UT_INDEX_0;
+    OS_timecb_table[2].next_ref     = UT_INDEX_1;
+    OS_timecb_table[1].next_ref     = UT_INDEX_1;
     OS_timebase_table[0].first_cb   = UT_OBJID_2;
     actual                          = OS_TimerDelete(UT_OBJID_2);
     UtAssert_True(actual == expected, "OS_TimerDelete() (%ld) == OS_SUCCESS", (long)actual);
@@ -215,7 +215,7 @@ void Test_OS_TimerDelete(void)
      * these are implicitly created as part of timer creation for API compatibility */
     OS_TimeBaseCreate(&OS_global_timebase_table[0].active_id, "ut", NULL);
     OS_timecb_table[1].flags        = TIMECB_FLAG_DEDICATED_TIMEBASE;
-    OS_timecb_table[1].timebase_ref = 0;
+    OS_timecb_table[1].timebase_ref = UT_INDEX_0;
     actual                          = OS_TimerDelete(UT_OBJID_1);
     UtAssert_True(actual == expected, "OS_TimerDelete() (%ld) == OS_SUCCESS", (long)actual);
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_TimeBaseDelete)) == 1, "OS_TimerDelete() invoked OS_TimeBaseDelete()");
@@ -269,7 +269,7 @@ void Test_OS_TimerGetInfo(void)
     int32               expected = OS_SUCCESS;
     int32               actual   = ~OS_SUCCESS;
     OS_timer_prop_t     timer_prop;
-    uint32              local_index = 1;
+    osal_index_t        local_index = UT_INDEX_1;
     OS_common_record_t  utrec;
     OS_common_record_t *rptr = &utrec;
 
@@ -277,7 +277,7 @@ void Test_OS_TimerGetInfo(void)
     utrec.creator                      = UT_OBJID_OTHER;
     utrec.name_entry                   = "ABC";
     OS_timecb_table[1].interval_time   = 2222;
-    OS_timecb_table[1].timebase_ref    = 0;
+    OS_timecb_table[1].timebase_ref    = UT_INDEX_0;
     OS_timebase_table[0].accuracy_usec = 3333;
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);

@@ -32,17 +32,31 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_SymbolLookup_Impl
+ * Function: OS_GlobalSymbolLookup_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 
-} /* end OS_SymbolLookup_Impl */
+} /* end OS_GlobalSymbolLookup_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_ModuleSymbolLookup_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_ModuleSymbolLookup_Impl(uint32 local_id, cpuaddr *SymbolAddress, const char *SymbolName)
+{
+    return OS_ERR_NOT_IMPLEMENTED;
+
+} /* end OS_ModuleSymbolLookup_Impl */
 
 /*----------------------------------------------------------------
  *
@@ -52,7 +66,7 @@ int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolTableDump_Impl(const char *filename, uint32 SizeLimit)
+int32 OS_SymbolTableDump_Impl(const char *filename, size_t SizeLimit)
 {
     return (OS_ERR_NOT_IMPLEMENTED);
 

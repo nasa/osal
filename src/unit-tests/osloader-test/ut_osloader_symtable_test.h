@@ -54,6 +54,7 @@
 **--------------------------------------------------------------------------------*/
 
 void UT_os_symbol_lookup_test(void);
+void UT_os_module_symbol_lookup_test(void);
 void UT_os_symbol_table_dump_test(void);
 
 /*--------------------------------------------------------------------------------*/

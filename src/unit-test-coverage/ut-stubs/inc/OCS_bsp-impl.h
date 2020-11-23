@@ -70,7 +70,7 @@
 
        Note: This should write the string as-is without buffering.
  ------------------------------------------------------------------*/
-extern void OCS_OS_BSP_ConsoleOutput_Impl(const char *Str, uint32_t DataLen);
+extern void OCS_OS_BSP_ConsoleOutput_Impl(const char *Str, size_t DataLen);
 
 /*----------------------------------------------------------------
    Function: OS_BSP_ConsoleSetMode_Impl

@@ -69,8 +69,8 @@ typedef struct
 
 typedef struct
 {
-    uint32 Position;
-    uint32 TotalSize;
+    size_t Position;
+    size_t TotalSize;
     uint8 *BasePtr;
 } UT_BufferEntry_t;
 
@@ -408,7 +408,7 @@ bool UT_Stub_CheckForceFail(UT_EntryKey_t FuncKey, int32 *Value)
     return (Result);
 }
 
-void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, uint32 BufferSize, bool AllocateCopy)
+void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, size_t BufferSize, bool AllocateCopy)
 {
     UT_StubTableEntry_t *StubPtr;
 
@@ -448,12 +448,12 @@ void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, uint32 BufferSize
     }
 }
 
-void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, uint32 *MaxSize, uint32 *Position)
+void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, size_t *MaxSize, size_t *Position)
 {
     UT_StubTableEntry_t *StubPtr;
     void *               ResultDataBuffer;
-    uint32               ResultMaxSize;
-    uint32               ResultPosition;
+    size_t               ResultMaxSize;
+    size_t               ResultPosition;
 
     StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_DATA_BUFFER);
 
@@ -484,9 +484,9 @@ void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, uint32 *MaxSize,
     }
 }
 
-uint32 UT_Stub_CopyToLocal(UT_EntryKey_t FuncKey, void *LocalBuffer, uint32 MaxSize)
+size_t UT_Stub_CopyToLocal(UT_EntryKey_t FuncKey, void *LocalBuffer, size_t MaxSize)
 {
-    uint32               ActualCopy;
+    size_t               ActualCopy;
     UT_StubTableEntry_t *StubPtr;
 
     ActualCopy = 0;
@@ -517,9 +517,9 @@ uint32 UT_Stub_CopyToLocal(UT_EntryKey_t FuncKey, void *LocalBuffer, uint32 MaxS
     return ActualCopy;
 }
 
-uint32 UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, uint32 MaxSize)
+size_t UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, size_t MaxSize)
 {
-    uint32               ActualCopy;
+    size_t               ActualCopy;
     UT_StubTableEntry_t *StubPtr;
 
     ActualCopy = 0;

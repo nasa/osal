@@ -29,8 +29,9 @@
 #define INCLUDE_UT_ADAPTOR_PORTABLE_POSIX_FILES_H_
 
 #include <common_types.h>
+#include <OCS_sys_types.h>
 
-unsigned int UT_PortablePosixFileTest_GetSelfEUID(void);
-unsigned int UT_PortablePosixFileTest_GetSelfEGID(void);
+OCS_uid_t UT_PortablePosixFileTest_GetSelfEUID(void);
+OCS_gid_t UT_PortablePosixFileTest_GetSelfEGID(void);
 
 #endif /* INCLUDE_UT_ADAPTOR_PORTABLE_POSIX_FILES_H_ */

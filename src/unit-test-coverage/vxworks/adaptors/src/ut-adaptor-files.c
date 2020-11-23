@@ -53,7 +53,7 @@ unsigned int UT_FileTest_GetSelfEGID(void)
     return OS_IMPL_SELF_EGID;
 }
 
-void UT_FileTest_Set_Selectable(uint32 local_id, bool is_selectable)
+void UT_FileTest_Set_Selectable(osal_index_t local_id, bool is_selectable)
 {
     OS_impl_filehandle_table[local_id].selectable = is_selectable;
 }

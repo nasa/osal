@@ -78,7 +78,7 @@ int32 OS_FileAPI_Init(void);
 
     Returns: File position (non-negative) on success, or relevant error code (negative)
  ------------------------------------------------------------------*/
-int32 OS_GenericSeek_Impl(uint32 local_id, int32 offset, uint32 whence);
+int32 OS_GenericSeek_Impl(osal_index_t local_id, int32 offset, uint32 whence);
 
 /*----------------------------------------------------------------
    Function: OS_GenericRead_Impl
@@ -88,7 +88,7 @@ int32 OS_GenericSeek_Impl(uint32 local_id, int32 offset, uint32 whence);
 
     Returns: Number of bytes read (non-negative) on success, or relevant error code (negative)
  ------------------------------------------------------------------*/
-int32 OS_GenericRead_Impl(uint32 local_id, void *buffer, uint32 nbytes, int32 timeout);
+int32 OS_GenericRead_Impl(osal_index_t local_id, void *buffer, size_t nbytes, int32 timeout);
 
 /*----------------------------------------------------------------
    Function: OS_GenericWrite_Impl
@@ -98,7 +98,7 @@ int32 OS_GenericRead_Impl(uint32 local_id, void *buffer, uint32 nbytes, int32 ti
 
     Returns: Number of bytes written (non-negative) on success, or relevant error code (negative)
  ------------------------------------------------------------------*/
-int32 OS_GenericWrite_Impl(uint32 local_id, const void *buffer, uint32 nbytes, int32 timeout);
+int32 OS_GenericWrite_Impl(osal_index_t local_id, const void *buffer, size_t nbytes, int32 timeout);
 
 /*----------------------------------------------------------------
    Function: OS_GenericClose_Impl
@@ -108,7 +108,7 @@ int32 OS_GenericWrite_Impl(uint32 local_id, const void *buffer, uint32 nbytes, i
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_GenericClose_Impl(uint32 local_id);
+int32 OS_GenericClose_Impl(osal_index_t local_id);
 
 /*----------------------------------------------------------------
    Function: OS_FileOpen_Impl
@@ -118,7 +118,7 @@ int32 OS_GenericClose_Impl(uint32 local_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access);
+int32 OS_FileOpen_Impl(osal_index_t local_id, const char *local_path, int32 flags, int32 access);
 
 /*----------------------------------------------------------------
    Function: OS_ShellOutputToFile_Impl
@@ -127,7 +127,7 @@ int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ShellOutputToFile_Impl(uint32 stream_id, const char *Cmd);
+int32 OS_ShellOutputToFile_Impl(osal_index_t stream_id, const char *Cmd);
 
 /****************************************************************************************
                              Filename-based Operations

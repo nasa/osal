@@ -92,7 +92,7 @@ void *OCS_malloc(size_t sz)
     cpuaddr           PoolEnd;
     cpuaddr           NextBlock;
     size_t            NextSize;
-    uint32            PoolSize;
+    size_t            PoolSize;
     uint32            CallCnt;
     struct MPOOL_REC *Rec;
 
@@ -163,7 +163,7 @@ void OCS_free(void *ptr)
     int32             Status;
     cpuaddr           BlockAddr;
     void *            PoolPtr;
-    uint32            PoolSize;
+    size_t            PoolSize;
     struct MPOOL_REC *Rec;
 
     /*

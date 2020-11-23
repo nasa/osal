@@ -50,12 +50,12 @@ void Test_OS_ModuleLoad_Impl(void)
     /* Test Case For:
      * int32 OS_ModuleLoad_Impl ( uint32 module_id, char *translated_path )
      */
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(0, "local"), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(UT_INDEX_0, "local"), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(0, "local"), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(UT_INDEX_0, "local"), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_open));
     UT_SetDefaultReturnValue(UT_KEY(OCS_loadModule), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(0, "local"), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(UT_INDEX_0, "local"), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_loadModule));
 }
 
@@ -64,9 +64,9 @@ void Test_OS_ModuleUnload_Impl(void)
     /* Test Case For:
      * int32 OS_ModuleUnload_Impl ( uint32 module_id )
      */
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleUnload_Impl(0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleUnload_Impl(UT_INDEX_0), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_KEY(OCS_unldByModuleId), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleUnload_Impl(0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleUnload_Impl(UT_INDEX_0), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_unldByModuleId));
 }
 
@@ -78,7 +78,7 @@ void Test_OS_ModuleGetInfo_Impl(void)
     OS_module_prop_t module_prop;
 
     memset(&module_prop, 0, sizeof(module_prop));
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleGetInfo_Impl(0, &module_prop), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleGetInfo_Impl(UT_INDEX_0, &module_prop), OS_SUCCESS);
     UtAssert_True(module_prop.addr.valid, "addresses in output valid");
 
     /*
@@ -87,7 +87,7 @@ void Test_OS_ModuleGetInfo_Impl(void)
      */
     memset(&module_prop, 0, sizeof(module_prop));
     UT_SetDefaultReturnValue(UT_KEY(OCS_moduleInfoGet), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleGetInfo_Impl(0, &module_prop), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleGetInfo_Impl(UT_INDEX_0, &module_prop), OS_SUCCESS);
     UT_ClearForceFail(UT_KEY(OCS_moduleInfoGet));
     UtAssert_True(!module_prop.addr.valid, "addresses in output not valid");
 }

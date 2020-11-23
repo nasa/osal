@@ -63,7 +63,7 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access)
+int32 OS_FileOpen_Impl(osal_index_t local_id, const char *local_path, int32 flags, int32 access)
 {
     int os_perm;
     int os_mode;

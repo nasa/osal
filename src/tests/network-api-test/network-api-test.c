@@ -266,43 +266,43 @@ void TestDatagramNetworkApi(void)
 
     /* OS_SocketSendTo */
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketSendTo(p1_socket_id, NULL, 0, NULL);
+    actual   = OS_SocketSendTo(p1_socket_id, NULL, OSAL_SIZE_C(0), NULL);
     UtAssert_True(actual == expected, "OS_SocketSendTo(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketSendTo(p1_socket_id, NULL, 1, &p2_addr);
+    actual   = OS_SocketSendTo(p1_socket_id, NULL, OSAL_SIZE_C(1), &p2_addr);
     UtAssert_True(actual == expected, "OS_SocketSendTo() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_ERR_INVALID_ID;
     objid    = OS_ObjectIdFromInteger(0xFFFFFFFF);
-    actual   = OS_SocketSendTo(objid, &Buf1, 1, &p2_addr);
+    actual   = OS_SocketSendTo(objid, &Buf1, sizeof(Buf1), &p2_addr);
     UtAssert_True(actual == expected, "OS_SocketSendTo() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
     /* OS_SocketRecvFrom */
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketRecvFrom(p2_socket_id, NULL, 1, NULL, 100);
+    actual   = OS_SocketRecvFrom(p2_socket_id, NULL, OSAL_SIZE_C(1), NULL, 100);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketRecvFrom(p2_socket_id, NULL, 0, NULL, 0);
+    actual   = OS_SocketRecvFrom(p2_socket_id, NULL, OSAL_SIZE_C(0), NULL, 0);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_ERR_INVALID_ID;
     objid    = OS_ObjectIdFromInteger(0xFFFFFFFF);
-    actual   = OS_SocketRecvFrom(objid, &Buf2, 1, &l_addr, 100);
+    actual   = OS_SocketRecvFrom(objid, &Buf2, sizeof(Buf2), &l_addr, 100);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, 0, &l_addr, 100);
+    actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, OSAL_SIZE_C(0), &l_addr, 100);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, 0, NULL, 100);
+    actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, OSAL_SIZE_C(0), NULL, 100);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     /* OS_SocketAddrToString */
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketAddrToString(NULL, 0, NULL);
+    actual   = OS_SocketAddrToString(NULL, OSAL_SIZE_C(0), NULL);
     UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
@@ -310,7 +310,7 @@ void TestDatagramNetworkApi(void)
     UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketAddrToString(0, 0, &p2_addr);
+    actual   = OS_SocketAddrToString(NULL, OSAL_SIZE_C(0), &p2_addr);
     UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     /* OS_SocketAddrGetPort */
@@ -319,7 +319,7 @@ void TestDatagramNetworkApi(void)
     UtAssert_True(actual == expected, "OS_SocketAddrGetPort() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketAddrGetPort(0, &l_addr);
+    actual   = OS_SocketAddrGetPort(NULL, &l_addr);
     UtAssert_True(actual == expected, "OS_SocketAddrGetPort() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
@@ -477,7 +477,8 @@ void TestStreamNetworkApi(void)
      */
 
     /* Create a server task/thread */
-    status = OS_TaskCreate(&s_task_id, "Server", Server_Fn, 0, 16384, 50, 0);
+    status = OS_TaskCreate(&s_task_id, "Server", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
+                           OSAL_PRIORITY_C(50), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
 
     /* Connect to a server */

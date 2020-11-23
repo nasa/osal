@@ -115,7 +115,7 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 timeo
  * Stub function for OS_SocketRecvFrom()
  *
  *****************************************************************************/
-int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
+int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketRecvFrom), sock_id);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketRecvFrom), buffer);
@@ -124,7 +124,7 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockA
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketRecvFrom), timeout);
 
     int32  status;
-    uint32 CopySize;
+    size_t CopySize;
 
     status = UT_DEFAULT_IMPL(OS_SocketRecvFrom);
 
@@ -159,7 +159,7 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockA
  * Stub function for OS_SocketSendTo()
  *
  *****************************************************************************/
-int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr)
+int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, size_t buflen, const OS_SockAddr_t *RemoteAddr)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketSendTo), sock_id);
     UT_Stub_RegisterContext(UT_KEY(OS_SocketSendTo), buffer);
@@ -167,7 +167,7 @@ int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, uint32 buflen, cons
     UT_Stub_RegisterContext(UT_KEY(OS_SocketSendTo), RemoteAddr);
 
     int32  status;
-    uint32 CopySize;
+    size_t CopySize;
 
     status = UT_DEFAULT_IMPL_RC(OS_SocketSendTo, 0x7FFFFFFF);
 
@@ -225,7 +225,7 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
     UT_Stub_RegisterContext(UT_KEY(OS_SocketGetInfo), sock_prop);
 
     int32  status;
-    uint32 CopySize;
+    size_t CopySize;
 
     status = UT_DEFAULT_IMPL(OS_SocketGetInfo);
 
@@ -260,7 +260,7 @@ int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
     return status;
 }
 
-int32 OS_SocketAddrToString(char *buffer, uint32 buflen, const OS_SockAddr_t *Addr)
+int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Addr)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_SocketAddrToString), buffer);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SocketAddrToString), buflen);

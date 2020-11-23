@@ -63,7 +63,7 @@ int32 OS_NetworkAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_NetworkGetHostName(char *host_name, uint32 name_len)
+int32 OS_NetworkGetHostName(char *host_name, size_t name_len)
 {
     uint32 return_code;
 

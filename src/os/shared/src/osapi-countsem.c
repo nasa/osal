@@ -90,7 +90,7 @@ int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_init
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     /* Check for NULL pointers */
     if (sem_id == NULL || sem_name == NULL)
@@ -133,7 +133,7 @@ int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_init
 int32 OS_CountSemDelete(osal_id_t sem_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
@@ -160,7 +160,7 @@ int32 OS_CountSemDelete(osal_id_t sem_id)
 int32 OS_CountSemGive(osal_id_t sem_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -185,7 +185,7 @@ int32 OS_CountSemGive(osal_id_t sem_id)
 int32 OS_CountSemTake(osal_id_t sem_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -209,7 +209,7 @@ int32 OS_CountSemTake(osal_id_t sem_id)
 int32 OS_CountSemTimedWait(osal_id_t sem_id, uint32 msecs)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -255,7 +255,7 @@ int32 OS_CountSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
 int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check parameters */

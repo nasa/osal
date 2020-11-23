@@ -59,7 +59,7 @@ OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_ConsoleWakeup_Impl(uint32 local_id)
+void OS_ConsoleWakeup_Impl(osal_index_t local_id)
 {
     OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
 
@@ -89,10 +89,10 @@ static void *OS_ConsoleTask_Entry(void *arg)
     OS_impl_console_internal_record_t *local;
 
     local_arg.opaque_arg = arg;
-    local                = &OS_impl_console_table[local_arg.value];
+    local                = &OS_impl_console_table[local_arg.idx];
     while (true)
     {
-        OS_ConsoleOutput_Impl(local_arg.value);
+        OS_ConsoleOutput_Impl(local_arg.idx);
         sem_wait(&local->data_sem);
     }
     return NULL;
@@ -106,7 +106,7 @@ static void *OS_ConsoleTask_Entry(void *arg)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ConsoleCreate_Impl(uint32 local_id)
+int32 OS_ConsoleCreate_Impl(osal_index_t local_id)
 {
     OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
     pthread_t                          consoletask;
@@ -126,8 +126,8 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id)
             }
             else
             {
-                local_arg.value = local_id;
-                return_code     = OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
+                local_arg.idx = local_id;
+                return_code   = OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
                                                                OS_ConsoleTask_Entry, local_arg.opaque_arg);
 
                 if (return_code != OS_SUCCESS)

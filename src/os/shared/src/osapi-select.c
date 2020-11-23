@@ -61,7 +61,7 @@
 int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
 {
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
     OS_common_record_t *record;
 
     if (StateFlags == NULL)
@@ -126,8 +126,8 @@ int32 OS_SelectFdZero(OS_FdSet *Set)
  *-----------------------------------------------------------------*/
 int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid)
 {
-    int32  return_code;
-    uint32 local_id;
+    int32        return_code;
+    osal_index_t local_id;
 
     if (Set == NULL)
         return OS_INVALID_POINTER;
@@ -151,8 +151,8 @@ int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid)
  *-----------------------------------------------------------------*/
 int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid)
 {
-    int32  return_code;
-    uint32 local_id;
+    int32        return_code;
+    osal_index_t local_id;
 
     if (Set == NULL)
         return OS_INVALID_POINTER;
@@ -176,8 +176,8 @@ int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid)
  *-----------------------------------------------------------------*/
 bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid)
 {
-    int32  return_code;
-    uint32 local_id;
+    int32        return_code;
+    osal_index_t local_id;
 
     if (Set == NULL)
         return false;

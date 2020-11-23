@@ -86,7 +86,7 @@ enum
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_Lock_Global_Impl(uint32 idtype)
+int32 OS_Lock_Global_Impl(osal_objtype_t idtype)
 {
     VxWorks_GlobalMutex_t *mut;
 
@@ -118,7 +118,7 @@ int32 OS_Lock_Global_Impl(uint32 idtype)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_Unlock_Global_Impl(uint32 idtype)
+int32 OS_Unlock_Global_Impl(osal_objtype_t idtype)
 {
     VxWorks_GlobalMutex_t *mut;
 
@@ -154,7 +154,7 @@ int32 OS_Unlock_Global_Impl(uint32 idtype)
  *           about objects
  *
  *-----------------------------------------------------------------*/
-int32 OS_VxWorks_TableMutex_Init(uint32 idtype)
+int32 OS_VxWorks_TableMutex_Init(osal_objtype_t idtype)
 {
     int32  return_code = OS_SUCCESS;
     SEM_ID semid;

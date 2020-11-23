@@ -41,14 +41,19 @@ void Test_OS_FileOpen_Impl(void)
      * Test Case For:
      * int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", OS_FILE_FLAG_TRUNCATE, OS_WRITE_ONLY), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", 0, OS_READ_ONLY), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", OS_FILE_FLAG_CREATE, OS_READ_WRITE), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", 0, -1234), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", OS_FILE_FLAG_TRUNCATE, OS_WRITE_ONLY), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, OS_READ_ONLY), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", OS_FILE_FLAG_CREATE, OS_READ_WRITE), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, -1234), OS_ERROR);
 
     /* failure mode */
+<<<<<<< HEAD
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", 0, OS_READ_ONLY), OS_ERROR);
+=======
+    UT_SetForceFail(UT_KEY(OCS_open), -1);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, OS_READ_ONLY), OS_ERROR);
+>>>>>>> refs/rewritten/onto
 }
 
 void Test_OS_FileStat_Impl(void)
@@ -73,7 +78,7 @@ void Test_OS_FileStat_Impl(void)
     /* all permission bits with uid/gid match */
     RefStat.st_uid   = UT_PortablePosixFileTest_GetSelfEUID();
     RefStat.st_gid   = UT_PortablePosixFileTest_GetSelfEGID();
-    RefStat.st_mode  = ~0;
+    RefStat.st_mode  = ~((OCS_mode_t)0);
     RefStat.st_size  = 1234;
     RefStat.st_mtime = 5678;
     UT_SetDataBuffer(UT_KEY(OCS_stat), &RefStat, sizeof(RefStat), false);
@@ -114,7 +119,7 @@ void Test_OS_FileChmod_Impl(void)
     /* all permission bits with uid/gid match */
     RefStat.st_uid   = UT_PortablePosixFileTest_GetSelfEUID();
     RefStat.st_gid   = UT_PortablePosixFileTest_GetSelfEGID();
-    RefStat.st_mode  = ~0;
+    RefStat.st_mode  = ~((OCS_mode_t)0);
     RefStat.st_size  = 1234;
     RefStat.st_mtime = 5678;
     UT_SetDataBuffer(UT_KEY(OCS_fstat), &RefStat, sizeof(RefStat), false);

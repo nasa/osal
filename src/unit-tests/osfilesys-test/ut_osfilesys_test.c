@@ -51,8 +51,8 @@
 
 char *g_fsAddrPtr = NULL;
 
-int32 g_blkSize = UT_OS_FS_BLOCK_SIZE;
-int32 g_blkCnt  = UT_OS_FS_MAX_BLOCKS;
+size_t            g_blkSize = {UT_OS_FS_BLOCK_SIZE};
+osal_blockcount_t g_blkCnt  = {UT_OS_FS_MAX_BLOCKS};
 
 char g_fsLongName[UT_OS_PATH_BUFF_SIZE];
 char g_physDriveName[UT_OS_PHYS_NAME_BUFF_SIZE];

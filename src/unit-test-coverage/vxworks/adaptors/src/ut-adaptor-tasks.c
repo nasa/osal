@@ -40,7 +40,7 @@ int32 UT_Call_OS_VxWorks_TaskAPI_Impl_Init(void)
     return OS_VxWorks_TaskAPI_Impl_Init();
 }
 
-void UT_TaskTest_SetImplTaskId(uint32 local_id, OCS_TASK_ID TaskId)
+void UT_TaskTest_SetImplTaskId(osal_index_t local_id, OCS_TASK_ID TaskId)
 {
     OS_impl_task_table[local_id].vxid = TaskId;
 }
@@ -55,7 +55,7 @@ int UT_TaskTest_CallEntryPoint(int arg)
     return OS_VxWorks_TaskEntry(arg);
 }
 
-OCS_WIND_TCB *UT_TaskTest_GetTaskTcb(uint32 local_id)
+OCS_WIND_TCB *UT_TaskTest_GetTaskTcb(osal_index_t local_id)
 {
     return &OS_impl_task_table[local_id].tcb;
 }

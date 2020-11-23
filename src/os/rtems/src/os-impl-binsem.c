@@ -87,7 +87,7 @@ int32 OS_Rtems_BinSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options)
+int32 OS_BinSemCreate_Impl(osal_index_t sem_id, uint32 sem_initial_value, uint32 options)
 {
     rtems_status_code status;
     rtems_name        r_name;
@@ -128,7 +128,7 @@ int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 optio
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemDelete_Impl(uint32 sem_id)
+int32 OS_BinSemDelete_Impl(osal_index_t sem_id)
 {
     rtems_status_code status;
 
@@ -151,7 +151,7 @@ int32 OS_BinSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGive_Impl(uint32 sem_id)
+int32 OS_BinSemGive_Impl(osal_index_t sem_id)
 {
     rtems_status_code status;
 
@@ -173,7 +173,7 @@ int32 OS_BinSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemFlush_Impl(uint32 sem_id)
+int32 OS_BinSemFlush_Impl(osal_index_t sem_id)
 {
     rtems_status_code status;
 
@@ -197,7 +197,7 @@ int32 OS_BinSemFlush_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTake_Impl(uint32 sem_id)
+int32 OS_BinSemTake_Impl(osal_index_t sem_id)
 {
     rtems_status_code status;
 
@@ -228,7 +228,7 @@ int32 OS_BinSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
+int32 OS_BinSemTimedWait_Impl(osal_index_t sem_id, uint32 msecs)
 {
     rtems_status_code status;
     int               TimeInTicks;
@@ -264,7 +264,7 @@ int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGetInfo_Impl(uint32 sem_id, OS_bin_sem_prop_t *bin_prop)
+int32 OS_BinSemGetInfo_Impl(osal_index_t sem_id, OS_bin_sem_prop_t *bin_prop)
 {
     /* RTEMS has no API for obtaining the current value of a semaphore */
     return OS_SUCCESS;

@@ -53,7 +53,7 @@
 int32 OS_ShellOutputToFile(const char *Cmd, osal_id_t filedes)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */

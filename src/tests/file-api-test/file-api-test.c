@@ -89,7 +89,7 @@ void TestMkfsMount(void)
     int32 status;
 
     /* Make the file system */
-    status = OS_mkfs(0, "/ramdev0", "RAM", 512, 200);
+    status = OS_mkfs(0, "/ramdev0", "RAM", OSAL_SIZE_C(512), OSAL_BLOCKCOUNT_C(200));
     UtAssert_True(status == OS_SUCCESS, "status after mkfs = %d", (int)status);
 
     status = OS_mount("/ramdev0", "/drive0");
@@ -249,8 +249,8 @@ void TestReadWriteLseek(void)
     char      copyofbuffer[30];
     char      seekbuffer[30];
     char      newbuffer[30];
-    int       offset;
-    int       size;
+    size_t    offset;
+    size_t    size;
     int32     status;
     osal_id_t fd;
 
@@ -274,7 +274,7 @@ void TestReadWriteLseek(void)
 
     /* test write portion of R/W mode */
     status = OS_write(fd, (void *)buffer, size);
-    UtAssert_True(status == size, "status after write = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after write = %d size = %lu", (int)status, (unsigned long)size);
 
     strcpy(buffer, "");
 
@@ -284,7 +284,7 @@ void TestReadWriteLseek(void)
 
     /*Read what we wrote to the file */
     status = OS_read(fd, (void *)buffer, size);
-    UtAssert_True(status == size, "status after read = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after read = %d size = %lu", (int)status, (unsigned long)size);
     if (status >= OS_SUCCESS)
     {
         UtAssert_True(strcmp(buffer, copyofbuffer) == 0, "Read: %s, Written: %s", buffer, copyofbuffer);
@@ -305,7 +305,7 @@ void TestReadWriteLseek(void)
     /* try to read in READ ONLY MODE */
 
     status = OS_read(fd, (void *)buffer, size);
-    UtAssert_True(status == size, "status after read = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after read = %d size = %lu", (int)status, (unsigned long)size);
     if (status >= OS_SUCCESS)
     {
         UtAssert_True(strcmp(buffer, copyofbuffer) == 0, "Read: %s, Written: %s", buffer, copyofbuffer);
@@ -317,8 +317,9 @@ void TestReadWriteLseek(void)
 
     /* now try to read out only the last chars of the file */
 
-    status = OS_read(fd, (void *)newbuffer, (size - offset));
-    UtAssert_True(status == (size - offset), "status after read = %d size = %d", (int)status, (int)(size - offset));
+    status = OS_read(fd, (void *)newbuffer, OSAL_SIZE_C(size - offset));
+    UtAssert_True(status == (size - offset), "status after read = %d size = %lu", (int)status,
+                  (unsigned long)(size - offset));
     if (status >= OS_SUCCESS)
     {
         UtAssert_True(strncmp(newbuffer, seekbuffer, size - offset) == 0, "Read: %s, Written: %s", newbuffer,
@@ -335,7 +336,7 @@ void TestReadWriteLseek(void)
 
     /* test write in WRITE ONLY mode */
     status = OS_write(fd, (void *)buffer, size);
-    UtAssert_True(status == size, "status after write = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after write = %d size = %lu", (int)status, (unsigned long)size);
 
     /* try to read in WRITE ONLY MODE */
     status = OS_read(fd, (void *)buffer, size);
@@ -346,7 +347,7 @@ void TestReadWriteLseek(void)
     UtAssert_True(status >= OS_SUCCESS, "status after lseek = %d", (int)status);
 
     /* now try to read out only the last chars of the file */
-    status = OS_read(fd, (void *)newbuffer, (size - offset));
+    status = OS_read(fd, (void *)newbuffer, OSAL_SIZE_C(size - offset));
     UtAssert_True(status < OS_SUCCESS, "status after read = %d", (int)status);
 
     /* close the file */
@@ -374,7 +375,7 @@ void TestMkRmDirFreeBytes(void)
     char      copybuffer2[OS_MAX_PATH_LEN];
     osal_id_t fd1;
     osal_id_t fd2;
-    int       size;
+    size_t    size;
 
     /* make the directory names for testing, as well as the filenames and the buffers
      * to put in the files */
@@ -410,11 +411,11 @@ void TestMkRmDirFreeBytes(void)
     /* write the propper buffers into each of the files */
     size   = strlen(buffer1);
     status = OS_write(fd1, buffer1, size);
-    UtAssert_True(status == size, "status after write 1 = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after write 1 = %d size = %lu", (int)status, (unsigned long)size);
 
     size   = strlen(buffer2);
     status = OS_write(fd2, buffer2, size);
-    UtAssert_True(status == size, "status after write 2 = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after write 2 = %d size = %lu", (int)status, (unsigned long)size);
 
     /* lseek back to the beginning of the file */
     status = OS_lseek(fd1, 0, 0);
@@ -431,7 +432,7 @@ void TestMkRmDirFreeBytes(void)
     /* read back out of the files what we wrote into them */
     size   = strlen(copybuffer1);
     status = OS_read(fd1, (void *)buffer1, size);
-    UtAssert_True(status == size, "status after read 1 = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after read 1 = %d size = %lu", (int)status, (unsigned long)size);
     if (status >= OS_SUCCESS)
     {
         UtAssert_True(strncmp(buffer1, copybuffer1, size) == 0, "Read: %s, Written: %s", buffer1, copybuffer1);
@@ -439,7 +440,7 @@ void TestMkRmDirFreeBytes(void)
 
     size   = strlen(copybuffer2);
     status = OS_read(fd2, (void *)buffer2, size);
-    UtAssert_True(status == size, "status after read 2 = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after read 2 = %d size = %lu", (int)status, (unsigned long)size);
     if (status >= OS_SUCCESS)
     {
         UtAssert_True(strncmp(buffer2, copybuffer2, size) == 0, "Read: %s, Written: %s", buffer1, copybuffer1);
@@ -481,7 +482,7 @@ void TestOpenReadCloseDir(void)
     char        dir2[OS_MAX_PATH_LEN];
     char        buffer1[OS_MAX_PATH_LEN];
     char        buffer2[OS_MAX_PATH_LEN];
-    int         size;
+    size_t      size;
     osal_id_t   fd1;
     osal_id_t   fd2;
     osal_id_t   dirh;
@@ -516,11 +517,11 @@ void TestOpenReadCloseDir(void)
     /* write the proper buffers into each of the files */
     size   = strlen(buffer1);
     status = OS_write(fd1, buffer1, size);
-    UtAssert_True(status == size, "status after write 1 = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after write 1 = %d size = %lu", (int)status, (unsigned long)size);
 
     size   = strlen(buffer2);
     status = OS_write(fd2, buffer2, size);
-    UtAssert_True(status == size, "status after write 2 = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after write 2 = %d size = %lu", (int)status, (unsigned long)size);
 
     /* close the files */
 
@@ -690,7 +691,7 @@ void TestRename(void)
     char newfilename1[OS_MAX_PATH_LEN];
 
     osal_id_t fd1;
-    int       size;
+    size_t    size;
 
     /* make the directory names for testing, as well as the filenames and the buffers
      * to put in the files */
@@ -719,7 +720,7 @@ void TestRename(void)
 
     size   = strlen(buffer1);
     status = OS_write(fd1, buffer1, size);
-    UtAssert_True(status == size, "status after write 1 = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after write 1 = %d size = %lu", (int)status, (unsigned long)size);
 
     /* close the file */
 
@@ -745,7 +746,7 @@ void TestRename(void)
 
     size   = strlen(copybuffer1);
     status = OS_read(fd1, buffer1, size);
-    UtAssert_True(status == size, "status after read 1 = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after read 1 = %d size = %lu", (int)status, (unsigned long)size);
     if (status >= OS_SUCCESS)
     {
         UtAssert_True(strncmp(buffer1, copybuffer1, size) == 0, "Read and Written Results are equal");
@@ -775,7 +776,7 @@ void TestStat(void)
     char       buffer1[OS_MAX_PATH_LEN];
     os_fstat_t StatBuff;
     osal_id_t  fd1;
-    int        size;
+    size_t     size;
 
     strcpy(dir1, "/drive0/DirectoryName");
     strcpy(dir1slash, dir1);
@@ -795,7 +796,7 @@ void TestStat(void)
 
     size   = strlen(buffer1);
     status = OS_write(fd1, buffer1, size);
-    UtAssert_True(status == size, "status after write 1 = %d size = %d", (int)status, (int)size);
+    UtAssert_True(status == size, "status after write 1 = %d size = %lu", (int)status, (unsigned long)size);
 
     status = OS_close(fd1);
     UtAssert_True(status == OS_SUCCESS, "status after close 1 = %d", (int)status);
