@@ -47,13 +47,8 @@ void Test_OS_FileOpen_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, -1234), OS_ERROR);
 
     /* failure mode */
-<<<<<<< HEAD
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", 0, OS_READ_ONLY), OS_ERROR);
-=======
-    UT_SetForceFail(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, OS_READ_ONLY), OS_ERROR);
->>>>>>> refs/rewritten/onto
 }
 
 void Test_OS_FileStat_Impl(void)
