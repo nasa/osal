@@ -73,14 +73,14 @@ int32 OS_Rtems_ModuleAPI_Impl_Init(void)
  * This could be fine-tuned later.
  *
  *-----------------------------------------------------------------*/
-static bool OS_rtems_rtl_check_unresolved(rtems_rtl_unresolv_rec_t *rec, void *data)
+static bool OS_rtems_rtl_check_unresolved(OSAL_UNRESOLV_REC_TYPE *rec, void *data)
 {
     int32 *status = data;
 
     switch (rec->type)
     {
-        case rtems_rtl_unresolved_name:
-            OS_DEBUG("unresolved name: %s\n", rec->rec.name.name);
+        case OSAL_UNRESOLVED_SYMBOL:
+            OS_DEBUG("unresolved symbol: %s\n", rec->rec.name.name);
             *status = OS_ERROR;
             break;
         case rtems_rtl_unresolved_reloc:
@@ -142,7 +142,7 @@ int32 OS_ModuleLoad_Impl(uint32 module_id, const char *translated_path)
 
         OS_DEBUG("module has has unresolved externals\n");
         status = OS_SUCCESS; /* note - not final, probably overridden */
-        rtems_rtl_unresolved_interate(OS_rtems_rtl_check_unresolved, &status);
+        OSAL_UNRESOLVED_ITERATE(OS_rtems_rtl_check_unresolved, &status);
     }
     else
     {

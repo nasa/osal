@@ -41,6 +41,15 @@
 #define RTEMS_MAX_CMDLINE      256
 
 /*
+ * Handle the differences between RTEMS 5 and 4.11 copyright notice
+ */
+#ifdef _RTEMS_5_
+    #define OSAL_BSP_COPYRIGHT_NOTICE           rtems_get_copyright_notice()
+#else
+    #define OSAL_BSP_COPYRIGHT_NOTICE           _Copyright_Notice
+#endif
+
+/*
  * The location which the general purpose file system will be mounted
  */
 #define RTEMS_USER_FS_MOUNTPOINT "/mnt"
