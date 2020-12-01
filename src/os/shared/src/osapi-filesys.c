@@ -76,17 +76,17 @@ const char OS_FILESYS_RAMDISK_VOLNAME_PREFIX[] = "RAM";
  *-----------------------------------------------------------------*/
 bool OS_FileSys_FindVirtMountPoint(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
 {
-    OS_filesys_internal_record_t *rec    = &OS_filesys_table[local_id];
-    const char *                  target = (const char *)ref;
+    OS_filesys_internal_record_t *filesys = &OS_filesys_table[local_id];
+    const char *                  target  = (const char *)ref;
     size_t                        mplen;
 
-    if ((rec->flags & OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL) == 0)
+    if ((filesys->flags & OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL) == 0)
     {
         return false;
     }
 
-    mplen = strlen(rec->virtual_mountpt);
-    return (mplen > 0 && strncmp(target, rec->virtual_mountpt, mplen) == 0 &&
+    mplen = strlen(filesys->virtual_mountpt);
+    return (mplen > 0 && strncmp(target, filesys->virtual_mountpt, mplen) == 0 &&
             (target[mplen] == '/' || target[mplen] == 0));
 } /* end OS_FileSys_FindVirtMountPoint */
 
@@ -104,7 +104,7 @@ bool OS_FileSys_FindVirtMountPoint(void *ref, osal_index_t local_id, const OS_co
 int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, size_t blocksize,
                             osal_blockcount_t numblocks, bool should_format)
 {
-    OS_filesys_internal_record_t *local;
+    OS_filesys_internal_record_t *filesys;
     int32                         return_code;
     OS_object_token_t             token;
 
@@ -123,7 +123,7 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
     }
 
     /* check names are not excessively long strings */
-    if (strlen(fsdevname) >= sizeof(local->device_name) || strlen(fsvolname) >= sizeof(local->volume_name))
+    if (strlen(fsdevname) >= sizeof(filesys->device_name) || strlen(fsvolname) >= sizeof(filesys->volume_name))
     {
         return OS_FS_ERR_PATH_TOO_LONG;
     }
@@ -131,17 +131,17 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
     return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, fsdevname, &token);
     if (return_code == OS_SUCCESS)
     {
-        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
+        filesys = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
         /* Reset the table entry and save the name */
-        OS_OBJECT_INIT(token, local, device_name, fsdevname);
+        OS_OBJECT_INIT(token, filesys, device_name, fsdevname);
 
         /* populate the VolumeName and BlockSize ahead of the Impl call,
          * so the implementation can reference this info if necessary */
-        local->blocksize = blocksize;
-        local->numblocks = numblocks;
-        local->address   = address;
-        strcpy(local->volume_name, fsvolname);
+        filesys->blocksize = blocksize;
+        filesys->numblocks = numblocks;
+        filesys->address   = address;
+        strcpy(filesys->volume_name, fsvolname);
 
         /*
          * Determine basic type of filesystem, if not already known
@@ -150,11 +150,11 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
          * contains the string "RAM" then it is a RAM disk. Otherwise
          * leave the type as UNKNOWN and let the implementation decide.
          */
-        if (local->fstype == OS_FILESYS_TYPE_UNKNOWN &&
-            (local->address != NULL || strncmp(local->volume_name, OS_FILESYS_RAMDISK_VOLNAME_PREFIX,
-                                               sizeof(OS_FILESYS_RAMDISK_VOLNAME_PREFIX) - 1) == 0))
+        if (filesys->fstype == OS_FILESYS_TYPE_UNKNOWN &&
+            (filesys->address != NULL || strncmp(filesys->volume_name, OS_FILESYS_RAMDISK_VOLNAME_PREFIX,
+                                                 sizeof(OS_FILESYS_RAMDISK_VOLNAME_PREFIX) - 1) == 0))
         {
-            local->fstype = OS_FILESYS_TYPE_VOLATILE_DISK;
+            filesys->fstype = OS_FILESYS_TYPE_VOLATILE_DISK;
         }
 
         return_code = OS_FileSysStartVolume_Impl(OS_ObjectIndexFromToken(&token));
@@ -172,7 +172,7 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
 
             if (return_code == OS_SUCCESS)
             {
-                local->flags |= OS_FILESYS_FLAG_IS_READY;
+                filesys->flags |= OS_FILESYS_FLAG_IS_READY;
             }
             else
             {
@@ -224,7 +224,7 @@ int32 OS_FileSysAPI_Init(void)
  *-----------------------------------------------------------------*/
 int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const char *virt_path)
 {
-    OS_filesys_internal_record_t *local;
+    OS_filesys_internal_record_t *filesys;
     int32                         return_code;
     OS_object_token_t             token;
     const char *                  dev_name;
@@ -263,20 +263,20 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
     return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, dev_name, &token);
     if (return_code == OS_SUCCESS)
     {
-        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
+        filesys = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
         /* Reset the table entry and save the name */
-        OS_OBJECT_INIT(token, local, device_name, dev_name);
+        OS_OBJECT_INIT(token, filesys, device_name, dev_name);
 
-        strncpy(local->volume_name, dev_name, sizeof(local->volume_name) - 1);
-        strncpy(local->system_mountpt, phys_path, sizeof(local->system_mountpt) - 1);
-        strncpy(local->virtual_mountpt, virt_path, sizeof(local->virtual_mountpt) - 1);
+        strncpy(filesys->volume_name, dev_name, sizeof(filesys->volume_name) - 1);
+        strncpy(filesys->system_mountpt, phys_path, sizeof(filesys->system_mountpt) - 1);
+        strncpy(filesys->virtual_mountpt, virt_path, sizeof(filesys->virtual_mountpt) - 1);
 
         /*
          * mark the entry that it is a fixed disk
          */
-        local->fstype = OS_FILESYS_TYPE_FS_BASED;
-        local->flags  = OS_FILESYS_FLAG_IS_FIXED;
+        filesys->fstype = OS_FILESYS_TYPE_FS_BASED;
+        filesys->flags  = OS_FILESYS_FLAG_IS_FIXED;
 
         /*
          * The "mount" implementation is required as it will
@@ -286,7 +286,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
 
         if (return_code == OS_SUCCESS)
         {
-            local->flags |= OS_FILESYS_FLAG_IS_READY;
+            filesys->flags |= OS_FILESYS_FLAG_IS_READY;
             return_code = OS_FileSysMountVolume_Impl(OS_ObjectIndexFromToken(&token));
         }
 
@@ -295,7 +295,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
             /*
              * mark the entry that it is a fixed disk
              */
-            local->flags |= OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
+            filesys->flags |= OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
         }
 
         /* Check result, finalize record, and unlock global table. */
@@ -424,7 +424,7 @@ int32 OS_mount(const char *devname, const char *mountpoint)
 {
     int32                         return_code;
     OS_object_token_t             token;
-    OS_filesys_internal_record_t *local;
+    OS_filesys_internal_record_t *filesys;
 
     /* Check parameters */
     if (devname == NULL || mountpoint == NULL)
@@ -432,7 +432,7 @@ int32 OS_mount(const char *devname, const char *mountpoint)
         return OS_INVALID_POINTER;
     }
 
-    if (strlen(devname) >= sizeof(local->device_name) || strlen(mountpoint) >= sizeof(local->virtual_mountpt))
+    if (strlen(devname) >= sizeof(filesys->device_name) || strlen(mountpoint) >= sizeof(filesys->virtual_mountpt))
     {
         return OS_FS_ERR_PATH_TOO_LONG;
     }
@@ -440,7 +440,7 @@ int32 OS_mount(const char *devname, const char *mountpoint)
     return_code = OS_ObjectIdGetByName(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, devname, &token);
     if (return_code == OS_SUCCESS)
     {
-        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
+        filesys = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
         /*
          * READY flag should be set (mkfs/initfs must have been called on this FS)
@@ -449,12 +449,12 @@ int32 OS_mount(const char *devname, const char *mountpoint)
          * FIXED flag _should_ always be unset (these don't support mount/unmount)
          * but to support abstraction this is not enforced.
          */
-        if ((local->flags & ~OS_FILESYS_FLAG_IS_FIXED) != OS_FILESYS_FLAG_IS_READY)
+        if ((filesys->flags & ~OS_FILESYS_FLAG_IS_FIXED) != OS_FILESYS_FLAG_IS_READY)
         {
             /* mount() cannot be used on this file system at this time */
             return_code = OS_ERR_INCORRECT_OBJ_STATE;
         }
-        else if (local->system_mountpt[0] == 0)
+        else if (filesys->system_mountpt[0] == 0)
         {
             /*
              * The system mount point should be a non-empty string.
@@ -470,8 +470,8 @@ int32 OS_mount(const char *devname, const char *mountpoint)
         {
             /* mark as mounted in the local table.
              * For now this does both sides (system and virtual) */
-            local->flags |= OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
-            strcpy(local->virtual_mountpt, mountpoint);
+            filesys->flags |= OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
+            strcpy(filesys->virtual_mountpt, mountpoint);
         }
 
         OS_ObjectIdRelease(&token);
@@ -498,7 +498,7 @@ int32 OS_unmount(const char *mountpoint)
 {
     int32                         return_code;
     OS_object_token_t             token;
-    OS_filesys_internal_record_t *local;
+    OS_filesys_internal_record_t *filesys;
 
     /* Check parameters */
     if (mountpoint == NULL)
@@ -506,7 +506,7 @@ int32 OS_unmount(const char *mountpoint)
         return OS_INVALID_POINTER;
     }
 
-    if (strlen(mountpoint) >= sizeof(local->virtual_mountpt))
+    if (strlen(mountpoint) >= sizeof(filesys->virtual_mountpt))
     {
         return OS_FS_ERR_PATH_TOO_LONG;
     }
@@ -516,7 +516,7 @@ int32 OS_unmount(const char *mountpoint)
 
     if (return_code == OS_SUCCESS)
     {
-        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
+        filesys = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
         /*
          * FIXED flag should always be unset (these don't support mount/unmount at all)
@@ -525,7 +525,7 @@ int32 OS_unmount(const char *mountpoint)
          *
          * The FIXED flag is not enforced to support abstraction.
          */
-        if ((local->flags & ~OS_FILESYS_FLAG_IS_FIXED) !=
+        if ((filesys->flags & ~OS_FILESYS_FLAG_IS_FIXED) !=
             (OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL))
         {
             /* unmount() cannot be used on this file system at this time */
@@ -540,7 +540,7 @@ int32 OS_unmount(const char *mountpoint)
         {
             /* mark as mounted in the local table.
              * For now this does both sides (system and virtual) */
-            local->flags &= ~(OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL);
+            filesys->flags &= ~(OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL);
         }
 
         OS_ObjectIdRelease(&token);
@@ -706,7 +706,7 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
 {
     OS_object_token_t             token;
     int32                         return_code;
-    OS_filesys_internal_record_t *local;
+    OS_filesys_internal_record_t *filesys;
 
     if (MountPoint == NULL || PhysDriveName == NULL)
     {
@@ -724,11 +724,11 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
 
     if (return_code == OS_SUCCESS)
     {
-        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
+        filesys = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
-        if ((local->flags & OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM) != 0)
+        if ((filesys->flags & OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM) != 0)
         {
-            strncpy(PhysDriveName, local->system_mountpt, OS_FS_PHYS_NAME_LEN - 1);
+            strncpy(PhysDriveName, filesys->system_mountpt, OS_FS_PHYS_NAME_LEN - 1);
             PhysDriveName[OS_FS_PHYS_NAME_LEN - 1] = 0;
         }
         else
@@ -811,7 +811,7 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     OS_object_token_t             token;
     int32                         return_code;
     const char *                  name_ptr;
-    OS_filesys_internal_record_t *local;
+    OS_filesys_internal_record_t *filesys;
     size_t                        SysMountPointLen;
     size_t                        VirtPathLen;
     size_t                        VirtPathBegin;
@@ -868,15 +868,15 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     }
     else
     {
-        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
+        filesys = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
-        if ((local->flags & OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM) != 0)
+        if ((filesys->flags & OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM) != 0)
         {
-            SysMountPointLen = strlen(local->system_mountpt);
-            VirtPathBegin    = strlen(local->virtual_mountpt);
+            SysMountPointLen = strlen(filesys->system_mountpt);
+            VirtPathBegin    = strlen(filesys->virtual_mountpt);
             if (SysMountPointLen < OS_MAX_LOCAL_PATH_LEN)
             {
-                memcpy(LocalPath, local->system_mountpt, SysMountPointLen);
+                memcpy(LocalPath, filesys->system_mountpt, SysMountPointLen);
             }
         }
         else
