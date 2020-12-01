@@ -159,7 +159,7 @@ void Test_OS_SocketAccept(void)
 
     OS_stream_table[local_id].socket_type  = OS_SocketType_STREAM;
     OS_stream_table[local_id].stream_state = OS_STREAM_STATE_BOUND;
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_id, sizeof(local_id), false);
+    OS_UT_SetupTestTargetIndex(OS_OBJECT_TYPE_OS_STREAM, local_id);
     memset(&Addr, 0, sizeof(Addr));
     actual = OS_SocketAccept(UT_OBJID_1, &connsock_id, &Addr, 0);
 
@@ -215,7 +215,7 @@ void Test_OS_SocketConnect(void)
 
     memset(&Addr, 0, sizeof(Addr));
     idbuf = UT_INDEX_1;
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &idbuf, sizeof(idbuf), false);
+    OS_UT_SetupTestTargetIndex(OS_OBJECT_TYPE_OS_STREAM, idbuf);
     OS_stream_table[idbuf].socket_domain = OS_SocketDomain_INET;
     OS_stream_table[idbuf].socket_type   = OS_SocketType_STREAM;
     OS_stream_table[idbuf].stream_state  = 0;
@@ -268,7 +268,7 @@ void Test_OS_SocketRecvFrom(void)
 
     memset(&Addr, 0, sizeof(Addr));
     idbuf = UT_INDEX_1;
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &idbuf, sizeof(idbuf), false);
+    OS_UT_SetupTestTargetIndex(OS_OBJECT_TYPE_OS_STREAM, idbuf);
     OS_stream_table[idbuf].socket_type  = OS_SocketType_DATAGRAM;
     OS_stream_table[idbuf].stream_state = OS_STREAM_STATE_BOUND;
     actual                              = OS_SocketRecvFrom(UT_OBJID_1, &Buf, 1, &Addr, 0);
@@ -319,7 +319,7 @@ void Test_OS_SocketSendTo(void)
 
     memset(&Addr, 0, sizeof(Addr));
     idbuf = UT_INDEX_1;
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &idbuf, sizeof(idbuf), false);
+    OS_UT_SetupTestTargetIndex(OS_OBJECT_TYPE_OS_STREAM, idbuf);
     OS_stream_table[idbuf].socket_type  = OS_SocketType_DATAGRAM;
     OS_stream_table[idbuf].stream_state = OS_STREAM_STATE_BOUND;
     actual                              = OS_SocketSendTo(UT_OBJID_1, &Buf, sizeof(Buf), &Addr);
@@ -381,18 +381,11 @@ void Test_OS_SocketGetInfo(void)
      * Test Case For:
      * int32 OS_SocketGetInfo (uint32 sock_id, OS_socket_prop_t *sock_prop)
      */
-    int32               expected = OS_SUCCESS;
-    int32               actual   = ~OS_SUCCESS;
-    OS_socket_prop_t    prop;
-    osal_index_t        local_index = UT_INDEX_1;
-    OS_common_record_t  utrec;
-    OS_common_record_t *rptr = &utrec;
+    int32            expected = OS_SUCCESS;
+    int32            actual   = ~OS_SUCCESS;
+    OS_socket_prop_t prop;
 
-    memset(&utrec, 0, sizeof(utrec));
-    utrec.creator    = UT_OBJID_OTHER;
-    utrec.name_entry = "ABC";
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
+    OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
     actual = OS_SocketGetInfo(UT_OBJID_1, &prop);
 
     UtAssert_True(actual == expected, "OS_SocketGetInfo() (%ld) == OS_SUCCESS", (long)actual);

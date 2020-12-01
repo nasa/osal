@@ -49,6 +49,15 @@ struct OS_shared_global_vars;
 typedef struct OS_shared_global_vars OS_SharedGlobalVars_t;
 
 /*
+ * The "OS_object_token" tracks to the type of lock currently held
+ * and the specific object record the requested operation should
+ * execute on.  All operations start by obtaining a token, which must
+ * be released when the operation is complete.
+ */
+struct OS_object_token;
+typedef struct OS_object_token OS_object_token_t;
+
+/*
  * Wrapper for encoding of other types into a generic void* type required as argument
  * to callbacks and pthread entry/return values, etc.
  *

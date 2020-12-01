@@ -104,10 +104,9 @@ bool OS_FileSys_FindVirtMountPoint(void *ref, osal_index_t local_id, const OS_co
 int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, size_t blocksize,
                             osal_blockcount_t numblocks, bool should_format)
 {
-    OS_common_record_t *          global;
     OS_filesys_internal_record_t *local;
     int32                         return_code;
-    osal_index_t                  local_id;
+    OS_object_token_t             token;
 
     /*
     ** Check parameters
@@ -129,14 +128,13 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
         return OS_FS_ERR_PATH_TOO_LONG;
     }
 
-    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, fsdevname, &local_id, &global);
+    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, fsdevname, &token);
     if (return_code == OS_SUCCESS)
     {
-        local = &OS_filesys_table[local_id];
+        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
-        memset(local, 0, sizeof(*local));
-        global->name_entry = local->device_name;
-        strcpy(local->device_name, fsdevname);
+        /* Reset the table entry and save the name */
+        OS_OBJECT_INIT(token, local, device_name, fsdevname);
 
         /* populate the VolumeName and BlockSize ahead of the Impl call,
          * so the implementation can reference this info if necessary */
@@ -159,7 +157,7 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
             local->fstype = OS_FILESYS_TYPE_VOLATILE_DISK;
         }
 
-        return_code = OS_FileSysStartVolume_Impl(local_id);
+        return_code = OS_FileSysStartVolume_Impl(OS_ObjectIndexFromToken(&token));
 
         if (return_code == OS_SUCCESS)
         {
@@ -169,7 +167,7 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
              */
             if (should_format)
             {
-                return_code = OS_FileSysFormatVolume_Impl(local_id);
+                return_code = OS_FileSysFormatVolume_Impl(OS_ObjectIndexFromToken(&token));
             }
 
             if (return_code == OS_SUCCESS)
@@ -178,18 +176,18 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
             }
             else
             {
-                /* 
+                /*
                  * To avoid leaving in an intermediate state,
                  * this also stops the volume if formatting failed.
                  * Cast to void to repress analysis warnings for
                  * ignored return value.
                  */
-                (void)OS_FileSysStopVolume_Impl(local_id);
+                (void)OS_FileSysStopVolume_Impl(OS_ObjectIndexFromToken(&token));
             }
         }
 
         /* Check result, finalize record, and unlock global table. */
-        return_code = OS_ObjectIdFinalizeNew(return_code, global, NULL);
+        return_code = OS_ObjectIdFinalizeNew(return_code, &token, NULL);
     }
 
     return return_code;
@@ -226,10 +224,9 @@ int32 OS_FileSysAPI_Init(void)
  *-----------------------------------------------------------------*/
 int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const char *virt_path)
 {
-    OS_common_record_t *          global;
     OS_filesys_internal_record_t *local;
     int32                         return_code;
-    osal_index_t                  local_id;
+    OS_object_token_t             token;
     const char *                  dev_name;
 
     /*
@@ -263,14 +260,14 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
         return OS_ERR_NAME_TOO_LONG;
     }
 
-    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, dev_name, &local_id, &global);
+    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, dev_name, &token);
     if (return_code == OS_SUCCESS)
     {
-        local = &OS_filesys_table[local_id];
+        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
-        memset(local, 0, sizeof(*local));
-        global->name_entry = local->device_name;
-        strncpy(local->device_name, dev_name, sizeof(local->device_name) - 1);
+        /* Reset the table entry and save the name */
+        OS_OBJECT_INIT(token, local, device_name, dev_name);
+
         strncpy(local->volume_name, dev_name, sizeof(local->volume_name) - 1);
         strncpy(local->system_mountpt, phys_path, sizeof(local->system_mountpt) - 1);
         strncpy(local->virtual_mountpt, virt_path, sizeof(local->virtual_mountpt) - 1);
@@ -285,12 +282,12 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
          * The "mount" implementation is required as it will
          * create the mountpoint if it does not already exist
          */
-        return_code = OS_FileSysStartVolume_Impl(local_id);
+        return_code = OS_FileSysStartVolume_Impl(OS_ObjectIndexFromToken(&token));
 
         if (return_code == OS_SUCCESS)
         {
             local->flags |= OS_FILESYS_FLAG_IS_READY;
-            return_code = OS_FileSysMountVolume_Impl(local_id);
+            return_code = OS_FileSysMountVolume_Impl(OS_ObjectIndexFromToken(&token));
         }
 
         if (return_code == OS_SUCCESS)
@@ -302,7 +299,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
         }
 
         /* Check result, finalize record, and unlock global table. */
-        return_code = OS_ObjectIdFinalizeNew(return_code, global, filesys_id);
+        return_code = OS_ObjectIdFinalizeNew(return_code, &token, filesys_id);
     }
 
     return return_code;
@@ -348,9 +345,8 @@ int32 OS_mkfs(char *address, const char *devname, const char *volname, size_t bl
  *-----------------------------------------------------------------*/
 int32 OS_rmfs(const char *devname)
 {
-    int32               return_code;
-    osal_index_t        local_id;
-    OS_common_record_t *global;
+    int32             return_code;
+    OS_object_token_t token;
 
     if (devname == NULL)
     {
@@ -362,11 +358,9 @@ int32 OS_rmfs(const char *devname)
         return OS_FS_ERR_PATH_TOO_LONG;
     }
 
-    return_code = OS_ObjectIdGetByName(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, devname, &global);
+    return_code = OS_ObjectIdGetByName(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, devname, &token);
     if (return_code == OS_SUCCESS)
     {
-        OS_ObjectIdToArrayIndex(LOCAL_OBJID_TYPE, global->active_id, &local_id);
-
         /*
          * NOTE: It is likely that if the file system is mounted,
          * this call to stop the volume will fail.
@@ -375,16 +369,10 @@ int32 OS_rmfs(const char *devname)
          * the filesystem is unmounted first, but this would break
          * compatibility with the existing unit tests.
          */
-        return_code = OS_FileSysStopVolume_Impl(local_id);
+        return_code = OS_FileSysStopVolume_Impl(OS_ObjectIndexFromToken(&token));
 
-        /* Free the entry in the master table now while still locked */
-        if (return_code == OS_SUCCESS)
-        {
-            /* Only need to clear the ID as zero is the "unused" flag */
-            global->active_id = OS_OBJECT_ID_UNDEFINED;
-        }
-
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        /* Free the entry in the master table  */
+        return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
     }
     else
     {
@@ -435,8 +423,7 @@ int32 OS_initfs(char *address, const char *devname, const char *volname, size_t 
 int32 OS_mount(const char *devname, const char *mountpoint)
 {
     int32                         return_code;
-    osal_index_t                  local_id;
-    OS_common_record_t *          global;
+    OS_object_token_t             token;
     OS_filesys_internal_record_t *local;
 
     /* Check parameters */
@@ -450,11 +437,10 @@ int32 OS_mount(const char *devname, const char *mountpoint)
         return OS_FS_ERR_PATH_TOO_LONG;
     }
 
-    return_code = OS_ObjectIdGetByName(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, devname, &global);
+    return_code = OS_ObjectIdGetByName(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, devname, &token);
     if (return_code == OS_SUCCESS)
     {
-        OS_ObjectIdToArrayIndex(LOCAL_OBJID_TYPE, global->active_id, &local_id);
-        local = &OS_filesys_table[local_id];
+        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
         /*
          * READY flag should be set (mkfs/initfs must have been called on this FS)
@@ -477,7 +463,7 @@ int32 OS_mount(const char *devname, const char *mountpoint)
         }
         else
         {
-            return_code = OS_FileSysMountVolume_Impl(local_id);
+            return_code = OS_FileSysMountVolume_Impl(OS_ObjectIndexFromToken(&token));
         }
 
         if (return_code == OS_SUCCESS)
@@ -488,7 +474,7 @@ int32 OS_mount(const char *devname, const char *mountpoint)
             strcpy(local->virtual_mountpt, mountpoint);
         }
 
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
     }
 
     if (return_code != OS_SUCCESS)
@@ -511,8 +497,7 @@ int32 OS_mount(const char *devname, const char *mountpoint)
 int32 OS_unmount(const char *mountpoint)
 {
     int32                         return_code;
-    osal_index_t                  local_id;
-    OS_common_record_t *          global;
+    OS_object_token_t             token;
     OS_filesys_internal_record_t *local;
 
     /* Check parameters */
@@ -526,13 +511,12 @@ int32 OS_unmount(const char *mountpoint)
         return OS_FS_ERR_PATH_TOO_LONG;
     }
 
-    return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
-                                         (void *)mountpoint, &global);
+    return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
+                                         (void *)mountpoint, &token);
 
     if (return_code == OS_SUCCESS)
     {
-        OS_ObjectIdToArrayIndex(LOCAL_OBJID_TYPE, global->active_id, &local_id);
-        local = &OS_filesys_table[local_id];
+        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
         /*
          * FIXED flag should always be unset (these don't support mount/unmount at all)
@@ -549,7 +533,7 @@ int32 OS_unmount(const char *mountpoint)
         }
         else
         {
-            return_code = OS_FileSysUnmountVolume_Impl(local_id);
+            return_code = OS_FileSysUnmountVolume_Impl(OS_ObjectIndexFromToken(&token));
         }
 
         if (return_code == OS_SUCCESS)
@@ -559,7 +543,7 @@ int32 OS_unmount(const char *mountpoint)
             local->flags &= ~(OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL);
         }
 
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
     }
 
     if (return_code != OS_SUCCESS)
@@ -580,10 +564,9 @@ int32 OS_unmount(const char *mountpoint)
  *-----------------------------------------------------------------*/
 int32 OS_fsBlocksFree(const char *name)
 {
-    int32               return_code;
-    OS_statvfs_t        statfs;
-    osal_index_t        local_id;
-    OS_common_record_t *global;
+    int32             return_code;
+    OS_statvfs_t      statfs;
+    OS_object_token_t token;
 
     if (name == NULL)
     {
@@ -596,15 +579,13 @@ int32 OS_fsBlocksFree(const char *name)
     }
 
     return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
-                                         (void *)name, &global);
+                                         (void *)name, &token);
 
     if (return_code == OS_SUCCESS)
     {
-        OS_ObjectIdToArrayIndex(LOCAL_OBJID_TYPE, global->active_id, &local_id);
+        return_code = OS_FileSysStatVolume_Impl(OS_ObjectIndexFromToken(&token), &statfs);
 
-        return_code = OS_FileSysStatVolume_Impl(local_id, &statfs);
-
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
 
         if (return_code == OS_SUCCESS)
         {
@@ -631,10 +612,9 @@ int32 OS_fsBlocksFree(const char *name)
  *-----------------------------------------------------------------*/
 int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
 {
-    int32               return_code;
-    OS_statvfs_t        statfs;
-    osal_index_t        local_id;
-    OS_common_record_t *global;
+    int32             return_code;
+    OS_statvfs_t      statfs;
+    OS_object_token_t token;
 
     if (name == NULL || bytes_free == NULL)
     {
@@ -647,15 +627,13 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
     }
 
     return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
-                                         (void *)name, &global);
+                                         (void *)name, &token);
 
     if (return_code == OS_SUCCESS)
     {
-        OS_ObjectIdToArrayIndex(LOCAL_OBJID_TYPE, global->active_id, &local_id);
+        return_code = OS_FileSysStatVolume_Impl(OS_ObjectIndexFromToken(&token), &statfs);
 
-        return_code = OS_FileSysStatVolume_Impl(local_id, &statfs);
-
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
 
         if (return_code == OS_SUCCESS)
         {
@@ -682,9 +660,8 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
  *-----------------------------------------------------------------*/
 int32 OS_chkfs(const char *name, bool repair)
 {
-    osal_index_t        local_id;
-    int32               return_code;
-    OS_common_record_t *global;
+    OS_object_token_t token;
+    int32             return_code;
 
     /*
     ** Check for a null pointer
@@ -704,15 +681,13 @@ int32 OS_chkfs(const char *name, bool repair)
 
     /* Get a reference lock, as a filesystem check could take some time. */
     return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
-                                         (void *)name, &global);
+                                         (void *)name, &token);
 
     if (return_code == OS_SUCCESS)
     {
-        OS_ObjectIdToArrayIndex(LOCAL_OBJID_TYPE, global->active_id, &local_id);
+        return_code = OS_FileSysCheckVolume_Impl(OS_ObjectIndexFromToken(&token), repair);
 
-        return_code = OS_FileSysCheckVolume_Impl(local_id, repair);
-
-        OS_ObjectIdRefcountDecr(global);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
@@ -729,9 +704,8 @@ int32 OS_chkfs(const char *name, bool repair)
  *-----------------------------------------------------------------*/
 int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
 {
-    osal_index_t                  local_id;
+    OS_object_token_t             token;
     int32                         return_code;
-    OS_common_record_t *          global;
     OS_filesys_internal_record_t *local;
 
     if (MountPoint == NULL || PhysDriveName == NULL)
@@ -746,12 +720,11 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
 
     /* Get a reference lock, as a filesystem check could take some time. */
     return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
-                                         (void *)MountPoint, &global);
+                                         (void *)MountPoint, &token);
 
     if (return_code == OS_SUCCESS)
     {
-        OS_ObjectIdToArrayIndex(LOCAL_OBJID_TYPE, global->active_id, &local_id);
-        local = &OS_filesys_table[local_id];
+        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
         if ((local->flags & OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM) != 0)
         {
@@ -763,7 +736,7 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
             return_code = OS_ERR_INCORRECT_OBJ_STATE;
         }
 
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
     }
     else
     {
@@ -835,10 +808,9 @@ int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
  *-----------------------------------------------------------------*/
 int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
 {
-    osal_index_t                  local_id;
+    OS_object_token_t             token;
     int32                         return_code;
     const char *                  name_ptr;
-    OS_common_record_t *          global;
     OS_filesys_internal_record_t *local;
     size_t                        SysMountPointLen;
     size_t                        VirtPathLen;
@@ -888,7 +860,7 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
 
     /* Get a reference lock, as a filesystem check could take some time. */
     return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
-                                         (void *)VirtualPath, &global);
+                                         (void *)VirtualPath, &token);
 
     if (return_code != OS_SUCCESS)
     {
@@ -896,8 +868,7 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     }
     else
     {
-        OS_ObjectIdToArrayIndex(LOCAL_OBJID_TYPE, global->active_id, &local_id);
-        local = &OS_filesys_table[local_id];
+        local = OS_OBJECT_TABLE_GET(OS_filesys_table, token);
 
         if ((local->flags & OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM) != 0)
         {
@@ -913,7 +884,7 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
             return_code = OS_ERR_INCORRECT_OBJ_STATE;
         }
 
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
     }
 
     if (return_code == OS_SUCCESS)

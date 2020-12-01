@@ -29,21 +29,22 @@
 #define INCLUDE_OS_SHARED_TIME_H_
 
 #include <os-shared-globaldefs.h>
+#include <os-shared-idmap.h>
 
 #define TIMECB_FLAG_DEDICATED_TIMEBASE 0x1
 
 typedef struct
 {
-    char             timer_name[OS_MAX_API_NAME];
-    uint32           flags;
-    osal_index_t     timebase_ref;
-    osal_index_t     prev_ref;
-    osal_index_t     next_ref;
-    uint32           backlog_resets;
-    int32            wait_time;
-    int32            interval_time;
-    OS_ArgCallback_t callback_ptr;
-    void *           callback_arg;
+    char              timer_name[OS_MAX_API_NAME];
+    uint32            flags;
+    OS_object_token_t timebase_token;
+    osal_index_t      prev_ref;
+    osal_index_t      next_ref;
+    uint32            backlog_resets;
+    int32             wait_time;
+    int32             interval_time;
+    OS_ArgCallback_t  callback_ptr;
+    void *            callback_arg;
 } OS_timecb_internal_record_t;
 
 /*

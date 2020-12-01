@@ -181,11 +181,11 @@ int32 OS_ModuleAPI_Init(void)
  *-----------------------------------------------------------------*/
 int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *filename, uint32 flags)
 {
-    char                translated_path[OS_MAX_LOCAL_PATH_LEN];
-    int32               return_code;
-    int32               filename_status;
-    osal_index_t        local_id;
-    OS_common_record_t *record;
+    char                         translated_path[OS_MAX_LOCAL_PATH_LEN];
+    int32                        return_code;
+    int32                        filename_status;
+    OS_object_token_t            token;
+    OS_module_internal_record_t *module;
 
     /*
      ** Check parameters
@@ -215,13 +215,15 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
     filename_status = OS_TranslatePath(filename, translated_path);
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
-    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, module_name, &local_id, &record);
+    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, module_name, &token);
     if (return_code == OS_SUCCESS)
     {
-        memset(&OS_module_table[local_id], 0, sizeof(OS_module_internal_record_t));
-        strncpy(OS_module_table[local_id].module_name, module_name, OS_MAX_API_NAME);
-        record->name_entry = OS_module_table[local_id].module_name;
-        OS_module_table[local_id].flags = flags; /* save user-supplied flags */
+        module = OS_OBJECT_TABLE_GET(OS_module_table, token);
+
+        /* Reset the table entry and save the name */
+        OS_OBJECT_INIT(token, module, module_name, module_name);
+
+        module->flags = flags; /* save user-supplied flags */
 
         /*
          * Check the statically-linked module list.
@@ -237,7 +239,7 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
         if (return_code == OS_SUCCESS)
         {
             /* mark this as a statically loaded module */
-            OS_module_table[local_id].module_type = OS_MODULE_TYPE_STATIC;
+            module->module_type = OS_MODULE_TYPE_STATIC;
         }
         else
         {
@@ -254,16 +256,16 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
             else
             {
                 /* supplied filename was valid, so store a copy for future reference */
-                strncpy(OS_module_table[local_id].file_name, filename, OS_MAX_PATH_LEN);
-                OS_module_table[local_id].module_type = OS_MODULE_TYPE_DYNAMIC;
+                strncpy(module->file_name, filename, OS_MAX_PATH_LEN);
+                module->module_type = OS_MODULE_TYPE_DYNAMIC;
 
                 /* Now call the OS-specific implementation.  This reads info from the module table. */
-                return_code = OS_ModuleLoad_Impl(local_id, translated_path);
+                return_code = OS_ModuleLoad_Impl(OS_ObjectIndexFromToken(&token), translated_path);
             }
         }
 
         /* Check result, finalize record, and unlock global table. */
-        return_code = OS_ObjectIdFinalizeNew(return_code, record, module_id);
+        return_code = OS_ObjectIdFinalizeNew(return_code, &token, module_id);
     }
 
     return (return_code);
@@ -280,25 +282,27 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
  *-----------------------------------------------------------------*/
 int32 OS_ModuleUnload(osal_id_t module_id)
 {
-    OS_common_record_t *record;
-    int32               return_code;
-    osal_index_t        local_id;
+    OS_module_internal_record_t *module;
+    int32                        return_code;
+    OS_object_token_t            token;
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, module_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, module_id, &token);
     if (return_code == OS_SUCCESS)
     {
+        module = OS_OBJECT_TABLE_GET(OS_module_table, token);
+
         /*
          * Only call the implementation if the file was actually loaded.
          * If this is a static module, then this is just a placeholder and
          * it means there was no file actually loaded.
          */
-        if (OS_module_table[local_id].module_type == OS_MODULE_TYPE_DYNAMIC)
+        if (module->module_type == OS_MODULE_TYPE_DYNAMIC)
         {
-            return_code = OS_ModuleUnload_Impl(local_id);
+            return_code = OS_ModuleUnload_Impl(OS_ObjectIndexFromToken(&token));
         }
 
         /* Complete the operation via the common routine */
-        return_code = OS_ObjectIdFinalizeDelete(return_code, record);
+        return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
     }
 
     return return_code;
@@ -314,9 +318,10 @@ int32 OS_ModuleUnload(osal_id_t module_id)
  *-----------------------------------------------------------------*/
 int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_prop)
 {
-    OS_common_record_t *record;
-    int32               return_code;
-    osal_index_t        local_id;
+    OS_common_record_t *         record;
+    OS_module_internal_record_t *module;
+    int32                        return_code;
+    OS_object_token_t            token;
 
     /* Check parameters */
     if (module_prop == NULL)
@@ -326,15 +331,18 @@ int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_prop)
 
     memset(module_prop, 0, sizeof(OS_module_prop_t));
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, module_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, module_id, &token);
     if (return_code == OS_SUCCESS)
     {
+        record = OS_OBJECT_TABLE_GET(OS_global_module_table, token);
+        module = OS_OBJECT_TABLE_GET(OS_module_table, token);
+
         strncpy(module_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
-        strncpy(module_prop->filename, OS_module_table[local_id].file_name, OS_MAX_API_NAME - 1);
+        strncpy(module_prop->filename, module->file_name, OS_MAX_API_NAME - 1);
 
-        return_code = OS_ModuleGetInfo_Impl(local_id, module_prop);
+        return_code = OS_ModuleGetInfo_Impl(OS_ObjectIndexFromToken(&token), module_prop);
 
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
@@ -402,7 +410,7 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
     int32               return_code;
     int32               staticsym_status;
     OS_common_record_t *record;
-    osal_index_t        local_id;
+    OS_object_token_t   token;
 
     /*
     ** Check parameters
@@ -412,10 +420,12 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
         return (OS_INVALID_POINTER);
     }
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, module_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, module_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_ModuleSymbolLookup_Impl(local_id, symbol_address, symbol_name);
+        record = OS_OBJECT_TABLE_GET(OS_global_module_table, token);
+
+        return_code = OS_ModuleSymbolLookup_Impl(OS_ObjectIndexFromToken(&token), symbol_address, symbol_name);
         if (return_code != OS_SUCCESS)
         {
             /* look for a static symbol that also matches this module name */
@@ -430,14 +440,13 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
                 return_code = staticsym_status;
             }
         }
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+
+        OS_ObjectIdRelease(&token);
     }
 
     return (return_code);
 
 } /* end OS_ModuleSymbolLookup */
-
-
 
 /*----------------------------------------------------------------
  *

@@ -60,18 +60,18 @@
  *-----------------------------------------------------------------*/
 int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
 {
-    int32               return_code;
-    osal_index_t        local_id;
-    OS_common_record_t *record;
+    int32             return_code;
+    OS_object_token_t token;
 
     if (StateFlags == NULL)
         return OS_INVALID_POINTER;
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, objid, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, objid, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_SelectSingle_Impl(local_id, StateFlags, msecs);
-        OS_ObjectIdRefcountDecr(record);
+        return_code = OS_SelectSingle_Impl(OS_ObjectIndexFromToken(&token), StateFlags, msecs);
+
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;

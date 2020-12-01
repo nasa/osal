@@ -81,34 +81,19 @@ OS_task_internal_record_t OS_task_table[LOCAL_NUM_OBJECTS];
  *-----------------------------------------------------------------*/
 static int32 OS_TaskPrepare(osal_id_t task_id, osal_task_entry *entrypt)
 {
-    int32        return_code;
-    osal_index_t local_id;
+    int32                      return_code;
+    OS_object_token_t          token;
+    OS_task_internal_record_t *task;
 
-    return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TASK, task_id, &local_id);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_TASK, task_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        /*
-         * Take our own task table lock.
-         *
-         * This ensures that the parent thread's OS_TaskCreate() call is fully completed,
-         * and that nobody can call OS_TaskDelete() and possibly overwrite this data.
-         */
-        OS_Lock_Global(OS_OBJECT_TYPE_OS_TASK);
+        task = OS_OBJECT_TABLE_GET(OS_task_table, token);
 
-        /*
-         * Verify that we still appear to own the table entry
-         */
-        if (!OS_ObjectIdEqual(OS_global_task_table[local_id].active_id, task_id))
-        {
-            return_code = OS_ERR_INVALID_ID;
-        }
-        else
-        {
-            return_code = OS_TaskMatch_Impl(local_id);
-            *entrypt    = OS_task_table[local_id].entry_function_pointer;
-        }
+        return_code = OS_TaskMatch_Impl(OS_ObjectIndexFromToken(&token));
+        *entrypt    = task->entry_function_pointer;
 
-        OS_Unlock_Global(OS_OBJECT_TYPE_OS_TASK);
+        OS_ObjectIdRelease(&token);
     }
 
     if (return_code == OS_SUCCESS)
@@ -189,9 +174,9 @@ int32 OS_TaskAPI_Init(void)
 int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry function_pointer,
                     osal_stackptr_t stack_pointer, size_t stack_size, osal_priority_t priority, uint32 flags)
 {
-    OS_common_record_t *record;
-    int32               return_code;
-    osal_index_t        local_id;
+    int32                      return_code;
+    OS_object_token_t          token;
+    OS_task_internal_record_t *task;
 
     /* Check for NULL pointers */
     if (task_name == NULL || task_id == NULL || function_pointer == NULL)
@@ -214,24 +199,24 @@ int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry f
     }
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
-    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, task_name, &local_id, &record);
+    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, task_name, &token);
     if (return_code == OS_SUCCESS)
     {
-        /* Save all the data to our own internal task table */
-        memset(&OS_task_table[local_id], 0, sizeof(OS_task_internal_record_t));
+        task = OS_OBJECT_TABLE_GET(OS_task_table, token);
 
-        strncpy(OS_task_table[local_id].task_name, task_name, OS_MAX_API_NAME);
-        record->name_entry                             = OS_task_table[local_id].task_name;
-        OS_task_table[local_id].stack_size             = stack_size;
-        OS_task_table[local_id].priority               = priority;
-        OS_task_table[local_id].entry_function_pointer = function_pointer;
-        OS_task_table[local_id].stack_pointer          = stack_pointer;
+        /* Reset the table entry and save the name */
+        OS_OBJECT_INIT(token, task, task_name, task_name);
+
+        task->stack_size             = stack_size;
+        task->priority               = priority;
+        task->entry_function_pointer = function_pointer;
+        task->stack_pointer          = stack_pointer;
 
         /* Now call the OS-specific implementation.  This reads info from the task table. */
-        return_code = OS_TaskCreate_Impl(local_id, flags);
+        return_code = OS_TaskCreate_Impl(OS_ObjectIndexFromToken(&token), flags);
 
         /* Check result, finalize record, and unlock global table. */
-        return_code = OS_ObjectIdFinalizeNew(return_code, record, task_id);
+        return_code = OS_ObjectIdFinalizeNew(return_code, &token, task_id);
     }
 
     return return_code;
@@ -247,22 +232,24 @@ int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry f
  *-----------------------------------------------------------------*/
 int32 OS_TaskDelete(osal_id_t task_id)
 {
-    OS_common_record_t *record;
-    int32               return_code;
-    osal_index_t        local_id;
-    osal_task_entry     delete_hook;
+    int32                      return_code;
+    OS_object_token_t          token;
+    OS_task_internal_record_t *task;
+    osal_task_entry            delete_hook;
 
     delete_hook = NULL;
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, task_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, task_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        /* Save the delete hook, as we do not want to call it while locked */
-        delete_hook = OS_task_table[local_id].delete_hook_pointer;
+        task = OS_OBJECT_TABLE_GET(OS_task_table, token);
 
-        return_code = OS_TaskDelete_Impl(local_id);
+        /* Save the delete hook, as we do not want to call it while locked */
+        delete_hook = task->delete_hook_pointer;
+
+        return_code = OS_TaskDelete_Impl(OS_ObjectIndexFromToken(&token));
 
         /* Complete the operation via the common routine */
-        return_code = OS_ObjectIdFinalizeDelete(return_code, record);
+        return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
     }
 
     /*
@@ -286,15 +273,14 @@ int32 OS_TaskDelete(osal_id_t task_id)
  *-----------------------------------------------------------------*/
 void OS_TaskExit()
 {
-    OS_common_record_t *record;
-    osal_id_t           task_id;
-    osal_index_t        local_id;
+    osal_id_t         task_id;
+    OS_object_token_t token;
 
     task_id = OS_TaskGetId_Impl();
-    if (OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &local_id, &record) == OS_SUCCESS)
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &token) == OS_SUCCESS)
     {
         /* Complete the operation via the common routine */
-        OS_ObjectIdFinalizeDelete(OS_SUCCESS, record);
+        OS_ObjectIdFinalizeDelete(OS_SUCCESS, &token);
     }
 
     /* call the implementation */
@@ -327,24 +313,25 @@ int32 OS_TaskDelay(uint32 millisecond)
  *-----------------------------------------------------------------*/
 int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority)
 {
-    OS_common_record_t *record;
-    int32               return_code;
-    osal_index_t        local_id;
+    int32                      return_code;
+    OS_object_token_t          token;
+    OS_task_internal_record_t *task;
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_TaskSetPriority_Impl(local_id, new_priority);
+        task = OS_OBJECT_TABLE_GET(OS_task_table, token);
+
+        return_code = OS_TaskSetPriority_Impl(OS_ObjectIndexFromToken(&token), new_priority);
 
         if (return_code == OS_SUCCESS)
         {
             /* Use the abstracted priority, not the OS one */
             /* Change the priority in the table as well */
-            OS_task_table[local_id].priority = new_priority;
+            task->priority = new_priority;
         }
 
-        /* Unlock the global from OS_ObjectIdGetAndLock() */
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
@@ -360,14 +347,13 @@ int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority)
  *-----------------------------------------------------------------*/
 int32 OS_TaskRegister(void)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
+    OS_object_token_t token;
 
     /*
      * Just to retain compatibility (really, only the unit test cares)
      * this will return NON success when called from a non-task context
      */
-    return OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, OS_TaskGetId_Impl(), &local_id, &record);
+    return OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, OS_TaskGetId_Impl(), &token);
 } /* end OS_TaskRegister */
 
 /*----------------------------------------------------------------
@@ -380,15 +366,14 @@ int32 OS_TaskRegister(void)
  *-----------------------------------------------------------------*/
 osal_id_t OS_TaskGetId(void)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    osal_id_t           task_id;
+    OS_object_token_t token;
+    osal_id_t         task_id;
 
     task_id = OS_TaskGetId_Impl();
 
     /* Confirm the task master table entry matches the expected.
      * If not it means we have some stale/leftover value */
-    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, task_id, &local_id, &record) != OS_SUCCESS)
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, task_id, &token) != OS_SUCCESS)
     {
         task_id = OS_OBJECT_ID_UNDEFINED;
     }
@@ -429,9 +414,10 @@ int32 OS_TaskGetIdByName(osal_id_t *task_id, const char *task_name)
  *-----------------------------------------------------------------*/
 int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
 {
-    OS_common_record_t *record;
-    int32               return_code;
-    osal_index_t        local_id;
+    OS_common_record_t *       record;
+    int32                      return_code;
+    OS_object_token_t          token;
+    OS_task_internal_record_t *task;
 
     /* Check parameters */
     if (task_prop == NULL)
@@ -441,21 +427,24 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
 
     memset(task_prop, 0, sizeof(OS_task_prop_t));
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &token);
     if (return_code == OS_SUCCESS)
     {
+        record = OS_OBJECT_TABLE_GET(OS_global_task_table, token);
+        task   = OS_OBJECT_TABLE_GET(OS_task_table, token);
+
         if (record->name_entry != NULL)
         {
             strncpy(task_prop->name, record->name_entry, sizeof(task_prop->name) - 1);
             task_prop->name[sizeof(task_prop->name) - 1] = 0;
         }
         task_prop->creator    = record->creator;
-        task_prop->stack_size = OS_task_table[local_id].stack_size;
-        task_prop->priority   = OS_task_table[local_id].priority;
+        task_prop->stack_size = task->stack_size;
+        task_prop->priority   = task->priority;
 
-        return_code = OS_TaskGetInfo_Impl(local_id, task_prop);
+        return_code = OS_TaskGetInfo_Impl(OS_ObjectIndexFromToken(&token), task_prop);
 
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
@@ -472,21 +461,23 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
  *-----------------------------------------------------------------*/
 int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer)
 {
-    OS_common_record_t *record;
-    int32               return_code;
-    osal_index_t        local_id;
-    osal_id_t           task_id;
+    int32                      return_code;
+    OS_object_token_t          token;
+    OS_task_internal_record_t *task;
+    osal_id_t                  task_id;
 
     task_id     = OS_TaskGetId_Impl();
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &token);
     if (return_code == OS_SUCCESS)
     {
+        task = OS_OBJECT_TABLE_GET(OS_task_table, token);
+
         /*
         ** Install the pointer
         */
-        OS_task_table[local_id].delete_hook_pointer = function_pointer;
+        task->delete_hook_pointer = function_pointer;
 
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
@@ -502,8 +493,8 @@ int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer)
  *-----------------------------------------------------------------*/
 int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t sysdata_size)
 {
-    int32               return_code;
-    OS_common_record_t *record;
+    int32             return_code;
+    OS_object_token_t token;
 
     /* Check parameters */
     if (task_id == NULL)
@@ -519,11 +510,12 @@ int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t 
     }
 
     return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_TaskIdMatchSystemData_Impl,
-                                         (void *)sysdata, &record);
+                                         (void *)sysdata, &token);
     if (return_code == OS_SUCCESS)
     {
-        *task_id = record->active_id;
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        *task_id = OS_ObjectIdFromToken(&token);
+
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
