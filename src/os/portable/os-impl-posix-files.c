@@ -202,7 +202,11 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
     fd = open(local_path, O_RDONLY, 0);
     if (fd < 0)
     {
-        return OS_ERROR;
+        fd = open(local_path, O_WRONLY, 0);
+        if (fd < 0)
+        {
+            return OS_ERROR;
+        }        
     }
 
     /*
