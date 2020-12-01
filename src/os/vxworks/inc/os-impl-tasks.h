@@ -37,7 +37,7 @@ typedef struct
     WIND_TCB tcb; /* Must be first */
     TASK_ID  vxid;
     void *   heap_block; /* set non-null if the stack was obtained with malloc() */
-    long     heap_block_size;
+    size_t   heap_block_size;
 } OS_impl_task_internal_record_t;
 
 /* Tables where the OS object information is stored */
