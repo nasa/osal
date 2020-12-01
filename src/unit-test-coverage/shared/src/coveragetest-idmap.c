@@ -96,7 +96,7 @@ void Test_OS_LockUnlockGlobal(void)
     OS_Lock_Global(55555);
     OS_Unlock_Global(55555);
 
-    UT_SetForceFail(UT_KEY(OS_TaskGetId), 0);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId), 0);
     OS_Lock_Global(OS_OBJECT_TYPE_OS_BINSEM);
     OS_Unlock_Global(OS_OBJECT_TYPE_OS_BINSEM);
 }
@@ -294,7 +294,7 @@ void Test_OS_ObjectIdFindByName(void)
     /*
      * Pass in a name that is beyond OS_MAX_API_NAME
      */
-    UT_SetForceFail(UT_KEY(OCS_strlen), OS_MAX_API_NAME + 10);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), OS_MAX_API_NAME + 10);
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_ObjectIdFindByName(OS_OBJECT_TYPE_OS_TASK, TaskName, &objid);
     UtAssert_True(actual == expected, "OS_ObjectFindIdByName(%s) (%ld) == OS_ERR_NAME_TOO_LONG", TaskName,

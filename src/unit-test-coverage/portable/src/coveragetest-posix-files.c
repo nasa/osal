@@ -47,7 +47,7 @@ void Test_OS_FileOpen_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, -1234), OS_ERROR);
 
     /* failure mode */
-    UT_SetForceFail(UT_KEY(OCS_open), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, OS_READ_ONLY), OS_ERROR);
 }
 
@@ -61,7 +61,7 @@ void Test_OS_FileStat_Impl(void)
     struct OCS_stat RefStat;
 
     /* failure mode */
-    UT_SetForceFail(UT_KEY(OCS_stat), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_stat), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileStat_Impl, ("local", &FileStats), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_stat));
 
@@ -97,17 +97,17 @@ void Test_OS_FileChmod_Impl(void)
     struct OCS_stat RefStat;
 
     /* failure mode 0 (open) */
-    UT_SetForceFail(UT_KEY(OCS_open), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_open));
 
     /* failure mode 1 (fstat) */
-    UT_SetForceFail(UT_KEY(OCS_fstat), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_fstat), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_fstat));
 
     /* failure mode 2 (fchmod) */
-    UT_SetForceFail(UT_KEY(OCS_fchmod), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_fchmod), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_fchmod));
 
@@ -142,7 +142,7 @@ void Test_OS_FileRemove_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileRemove_Impl, ("local"), OS_SUCCESS);
 
     /* failure mode */
-    UT_SetForceFail(UT_KEY(OCS_remove), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_remove), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileRemove_Impl, ("local"), OS_ERROR);
 }
 
@@ -155,7 +155,7 @@ void Test_OS_FileRename_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileRename_Impl, ("old", "new"), OS_SUCCESS);
 
     /* failure mode */
-    UT_SetForceFail(UT_KEY(OCS_rename), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_rename), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileRename_Impl, ("old", "new"), OS_ERROR);
 }
 

@@ -45,7 +45,7 @@ void Test_OS_MutSemCreate_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate_Impl(UT_INDEX_0, 0), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_semMInitialize), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semMInitialize), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate_Impl(UT_INDEX_0, 0), OS_SEM_FAILURE);
 }
 

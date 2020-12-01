@@ -119,7 +119,7 @@ void Test_OS_TaskCreate(void)
     OSAPI_TEST_FUNCTION_RC(
         OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(0), OSAL_PRIORITY_C(0), 0),
         OS_ERROR);
-    UT_SetForceFail(UT_KEY(OCS_strlen), 10 + OS_MAX_API_NAME);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), 10 + OS_MAX_API_NAME);
     OSAPI_TEST_FUNCTION_RC(
         OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(128), OSAL_PRIORITY_C(0), 0),
         OS_ERR_NAME_TOO_LONG);
@@ -141,7 +141,7 @@ void Test_OS_TaskDelete(void)
     UtAssert_True(actual == expected, "OS_TaskDelete() (%ld) == OS_SUCCESS", (long)actual);
     UtAssert_True(UT_TestHook_Count == 1, "UT_TestHook_Count (%lu) == 1", (unsigned long)UT_TestHook_Count);
 
-    UT_SetForceFail(UT_KEY(OS_TaskDelete_Impl), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskDelete_Impl), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_TaskDelete(UT_OBJID_1), OS_ERROR);
     UtAssert_True(UT_TestHook_Count == 1, "UT_TestHook_Count (%lu) == 1", (unsigned long)UT_TestHook_Count);
 
@@ -211,11 +211,11 @@ void Test_OS_TaskGetId(void)
     osal_id_t  objid;
 
     idbuf.val = 5555;
-    UT_SetForceFail(UT_KEY(OS_TaskGetId_Impl), idbuf.val);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), idbuf.val);
     objid = OS_TaskGetId();
     OSAPI_TEST_OBJID(objid, ==, idbuf.id);
 
-    UT_SetForceFail(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
     objid = OS_TaskGetId();
     OSAPI_TEST_OBJID(objid, ==, OS_OBJECT_ID_UNDEFINED);
 }
@@ -230,7 +230,7 @@ void Test_OS_TaskGetIdByName(void)
     int32     actual   = ~OS_SUCCESS;
     osal_id_t objid    = OS_OBJECT_ID_UNDEFINED;
 
-    UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_TaskGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_TaskGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
@@ -287,7 +287,7 @@ void Test_OS_TaskInstallDeleteHandler(void)
     int32 expected = OS_SUCCESS;
     int32 actual   = ~OS_SUCCESS;
 
-    UT_SetForceFail(UT_KEY(OS_TaskGetId_Impl), 1);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), 1);
     actual = OS_TaskInstallDeleteHandler(UT_TestHook);
     UtAssert_True(actual == expected, "OS_TaskInstallDeleteHandler() (%ld) == OS_SUCCESS", (long)actual);
     UtAssert_True(OS_task_table[1].delete_hook_pointer == UT_TestHook,
@@ -329,14 +329,14 @@ void Test_OS_TaskFindIdBySystemData(void)
     actual   = OS_TaskFindIdBySystemData(NULL, &test_sysdata, sizeof(test_sysdata));
     UtAssert_True(actual == expected, "OS_TaskFindIdBySystemData() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OS_TaskValidateSystemData_Impl), expected);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskValidateSystemData_Impl), expected);
     actual = OS_TaskFindIdBySystemData(&task_id, &test_sysdata, sizeof(test_sysdata));
     UtAssert_True(actual == expected, "OS_TaskFindIdBySystemData() (%ld) == OS_INVALID_POINTER", (long)actual);
     UT_ClearForceFail(UT_KEY(OS_TaskValidateSystemData_Impl));
 
     /* Test search failure */
     expected = OS_ERR_NAME_NOT_FOUND;
-    UT_SetForceFail(UT_KEY(OS_ObjectIdGetBySearch), expected);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch), expected);
     actual = OS_TaskFindIdBySystemData(&task_id, &test_sysdata, sizeof(test_sysdata));
     UtAssert_True(actual == expected, "OS_TaskFindIdBySystemData() (%ld) == OS_ERR_NAME_NOT_FOUND", (long)actual);
     UT_ClearForceFail(UT_KEY(OS_ObjectIdGetBySearch));

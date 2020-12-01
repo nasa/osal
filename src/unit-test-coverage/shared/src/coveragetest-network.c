@@ -52,7 +52,7 @@ void Test_OS_NetworkGetHostName(void)
     actual = OS_NetworkGetHostName(Buffer, sizeof(Buffer));
     UtAssert_True(actual == expected, "OS_NetworkGetHostName() (%ld) == OS_SUCCESS", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OS_NetworkGetHostName_Impl), -4444);
+    UT_SetDefaultReturnValue(UT_KEY(OS_NetworkGetHostName_Impl), -4444);
     expected = -4444;
     actual   = OS_NetworkGetHostName(Buffer, sizeof(Buffer));
     UtAssert_True(actual == expected, "OS_NetworkGetHostName(impl error) (%ld) == -4444", (long)actual);
@@ -79,7 +79,7 @@ void Test_OS_NetworkGetID(void)
     actual   = OS_NetworkGetID();
     UtAssert_True(actual == expected, "OS_NetworkGetID(nominal) (%ld) == 42", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OS_NetworkGetID_Impl), -5555);
+    UT_SetDefaultReturnValue(UT_KEY(OS_NetworkGetID_Impl), -5555);
     expected = -1;
     actual   = OS_NetworkGetID();
     UtAssert_True(actual == expected, "OS_NetworkGetID(error) (%ld) == -1", (long)actual);

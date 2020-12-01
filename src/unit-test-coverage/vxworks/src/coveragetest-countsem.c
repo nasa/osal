@@ -48,7 +48,7 @@ void Test_OS_CountSemCreate_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate_Impl(UT_INDEX_0, 0, 0), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_semCInitialize), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semCInitialize), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate_Impl(UT_INDEX_0, 0, 0), OS_SEM_FAILURE);
 }
 
@@ -87,7 +87,7 @@ void Test_OS_CountSemTimedWait_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_CountSemTimedWait_Impl(UT_INDEX_0, 100), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OS_Milli2Ticks), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_Milli2Ticks), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_CountSemTimedWait_Impl(UT_INDEX_0, 100), OS_ERROR);
 }
 

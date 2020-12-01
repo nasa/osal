@@ -60,7 +60,7 @@ void Test_OS_CreateSocketName(void)
      */
     OS_SockAddr_t testaddr;
 
-    UT_SetForceFail(UT_KEY(OS_SocketAddrToString_Impl), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_SocketAddrToString_Impl), OS_ERROR);
     OS_CreateSocketName(0, &testaddr, "ut");
 
     /*
@@ -192,7 +192,7 @@ void Test_OS_SocketAccept(void)
      */
     OS_stream_table[1].stream_state = OS_STREAM_STATE_BOUND;
     expected                        = -1234;
-    UT_SetForceFail(UT_KEY(OS_SocketAccept_Impl), -1234);
+    UT_SetDefaultReturnValue(UT_KEY(OS_SocketAccept_Impl), -1234);
     actual = OS_SocketAccept(UT_OBJID_1, &connsock_id, &Addr, 0);
     UtAssert_True(actual == expected, "OS_SocketAccept() underlying failure (%ld) == -1234", (long)actual);
 }
@@ -355,7 +355,7 @@ void Test_OS_SocketGetIdByName(void)
     int32     actual   = ~OS_SUCCESS;
     osal_id_t objid;
 
-    UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_SocketGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_SocketGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);

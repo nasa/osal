@@ -70,7 +70,7 @@ void Test_OS_TaskCreate_Impl(void)
     /* create task with stack size of 250 - this should invoke malloc() to get the stack.
      * The first call checks the failure path and ensures that a malloc failure gets handled */
     OS_task_table[0].stack_size = 250;
-    UT_SetForceFail(UT_KEY(OCS_malloc), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_malloc), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(UT_INDEX_0, 0), OS_ERROR);
 
     UT_ClearForceFail(UT_KEY(OCS_malloc));
@@ -97,7 +97,7 @@ void Test_OS_TaskCreate_Impl(void)
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskActivate)) == 3, "taskActivate() called");
 
     /* other failure modes */
-    UT_SetForceFail(UT_KEY(OCS_taskInit), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_taskInit), -1);
     OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(UT_INDEX_0, 0), OS_ERROR);
 }
 
@@ -122,7 +122,7 @@ void Test_OS_TaskDelete_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_TaskDelete_Impl(UT_INDEX_0), OS_SUCCESS);
 
     /* failure mode */
-    UT_SetForceFail(UT_KEY(OCS_taskDelete), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_taskDelete), -1);
     OSAPI_TEST_FUNCTION_RC(OS_TaskDelete_Impl(UT_INDEX_0), OS_ERROR);
 }
 
@@ -144,10 +144,10 @@ void Test_OS_TaskDelay_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_TaskDelay_Impl(100), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_taskDelay), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_taskDelay), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_TaskDelay_Impl(100), OS_ERROR);
 
-    UT_SetForceFail(UT_KEY(OS_Milli2Ticks), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_Milli2Ticks), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_TaskDelay_Impl(100), OS_ERROR);
 }
 
@@ -159,7 +159,7 @@ void Test_OS_TaskSetPriority_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_TaskSetPriority_Impl(UT_INDEX_0, OSAL_PRIORITY_C(100)), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_taskPrioritySet), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_taskPrioritySet), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_TaskSetPriority_Impl(UT_INDEX_0, OSAL_PRIORITY_C(100)), OS_ERROR);
 }
 

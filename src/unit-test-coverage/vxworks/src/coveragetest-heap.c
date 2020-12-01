@@ -40,7 +40,7 @@ void Test_OS_HeapGetInfo_Impl(void)
     memset(&heap_prop, 0xEE, sizeof(heap_prop));
     OSAPI_TEST_FUNCTION_RC(OS_HeapGetInfo_Impl(&heap_prop), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_memPartInfoGet), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memPartInfoGet), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_HeapGetInfo_Impl(&heap_prop), OS_ERROR);
 }
 

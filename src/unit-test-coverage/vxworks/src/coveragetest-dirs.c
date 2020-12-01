@@ -53,7 +53,7 @@ void Test_OS_DirCreate_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl("dir", 0), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_mkdir), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_mkdir), -1);
     OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl("dir", 0), OS_ERROR);
 }
 
@@ -64,7 +64,7 @@ void Test_OS_DirOpen_Impl(void)
      * int32 OS_DirOpen_Impl(uint32 local_id, const char *local_path)
      */
     OSAPI_TEST_FUNCTION_RC(OS_DirOpen_Impl(UT_INDEX_0, "dir"), OS_SUCCESS);
-    UT_SetForceFail(UT_KEY(OCS_opendir), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_opendir), -1);
     OSAPI_TEST_FUNCTION_RC(OS_DirOpen_Impl(UT_INDEX_0, "dir"), OS_ERROR);
 }
 
@@ -87,7 +87,7 @@ void Test_OS_DirRead_Impl(void)
 
     OSAPI_TEST_FUNCTION_RC(OS_DirRead_Impl(UT_INDEX_0, &dirent_buff), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_readdir), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_readdir), -1);
     OSAPI_TEST_FUNCTION_RC(OS_DirRead_Impl(UT_INDEX_0, &dirent_buff), OS_ERROR);
 }
 
@@ -108,7 +108,7 @@ void Test_OS_DirRemove_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_DirRemove_Impl("dir"), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_rmdir), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_rmdir), -1);
     OSAPI_TEST_FUNCTION_RC(OS_DirRemove_Impl("dir"), OS_ERROR);
 }
 

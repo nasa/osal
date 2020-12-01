@@ -108,17 +108,17 @@ void Test_OS_API_Init(void)
 
     /* other error paths */
     OS_SharedGlobalVars.Initialized = false;
-    UT_SetForceFail(UT_KEY(OS_ObjectIdInit), -222);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdInit), -222);
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), -222);
     UT_ResetState(UT_KEY(OS_ObjectIdInit));
 
     OS_SharedGlobalVars.Initialized = false;
-    UT_SetForceFail(UT_KEY(OS_API_Impl_Init), -333);
+    UT_SetDefaultReturnValue(UT_KEY(OS_API_Impl_Init), -333);
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), -333);
     UT_ResetState(UT_KEY(OS_API_Impl_Init));
 
     OS_SharedGlobalVars.Initialized = false;
-    UT_SetForceFail(UT_KEY(OS_TaskAPI_Init), -444);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskAPI_Init), -444);
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), -444);
     UT_ResetState(UT_KEY(OS_TaskAPI_Init));
 }
@@ -151,7 +151,7 @@ void Test_OS_CleanUpObject(void)
     while (objtype < OS_OBJECT_TYPE_USER)
     {
         UT_ResetState(0);
-        UT_SetForceFail(UT_KEY(OS_IdentifyObject), objtype);
+        UT_SetDefaultReturnValue(UT_KEY(OS_IdentifyObject), objtype);
 
         switch (objtype)
         {
@@ -195,7 +195,7 @@ void Test_OS_CleanUpObject(void)
             /* note the return code here is ignored -
              * the goal is simply to defeat the default
              * check that the objid was valid (it isn't) */
-            UT_SetForceFail(delhandler, OS_ERROR);
+            UT_SetDefaultReturnValue(delhandler, OS_ERROR);
             OS_CleanUpObject(OS_OBJECT_ID_UNDEFINED, &ActualObjs);
 
             CallCount = UT_GetStubCount(delhandler);

@@ -94,13 +94,13 @@ void Test_OS_ModuleLoad(void)
     expected = OS_INVALID_POINTER;
     UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OCS_strlen), 2 + OS_MAX_API_NAME);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), 2 + OS_MAX_API_NAME);
     actual   = OS_ModuleLoad(&objid, "UTS", "File2", OS_MODULE_FLAG_GLOBAL_SYMBOLS);
     expected = OS_ERR_NAME_TOO_LONG;
     UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
     UT_ResetState(UT_KEY(OCS_strlen));
 
-    UT_SetForceFail(UT_KEY(OS_TranslatePath), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
     actual   = OS_ModuleLoad(&objid, "UT", "FileBad", OS_MODULE_FLAG_GLOBAL_SYMBOLS);
     expected = OS_ERROR;
     UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_ERROR", (long)actual);
@@ -135,7 +135,7 @@ void Test_OS_SymbolLookup(void)
     UtAssert_True(actual == expected, "OS_SymbolLookup(name=%s) (%ld) == OS_SUCCESS", "uttestsym0", (long)actual);
 
     UT_ResetState(UT_KEY(OS_GlobalSymbolLookup_Impl));
-    UT_SetForceFail(UT_KEY(OS_GlobalSymbolLookup_Impl), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_GlobalSymbolLookup_Impl), OS_ERROR);
 
     /* this lookup should always fail */
     symaddr  = 0;
@@ -217,7 +217,7 @@ void Test_OS_SymbolTableDump(void)
     actual   = OS_SymbolTableDump(NULL, OSAL_SIZE_C(555));
     UtAssert_True(actual == expected, "OS_SymbolTableDump() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OS_TranslatePath), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
     expected = OS_ERROR;
     actual   = OS_SymbolTableDump("test", OSAL_SIZE_C(555));
     UtAssert_True(actual == expected, "OS_SymbolTableDump() (%ld) == OS_ERROR", (long)actual);

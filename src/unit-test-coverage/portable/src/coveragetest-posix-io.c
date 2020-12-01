@@ -49,7 +49,7 @@ void Test_OS_GenericClose_Impl(void)
      * Test path where underlying close() fails.
      * Should still return success.
      */
-    UT_SetForceFail(UT_KEY(OCS_close), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_close), -1);
     OSAPI_TEST_FUNCTION_RC(OS_GenericClose_Impl, (UT_INDEX_0), OS_SUCCESS);
 }
 
@@ -61,18 +61,18 @@ void Test_OS_GenericSeek_Impl(void)
      */
 
     /* note on success this wrapper returns the result of lseek(), not OS_SUCCESS */
-    UT_SetForceFail(UT_KEY(OCS_lseek), 111);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_lseek), 111);
     OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, OS_SEEK_CUR), 111);
-    UT_SetForceFail(UT_KEY(OCS_lseek), 222);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_lseek), 222);
     OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, OS_SEEK_SET), 222);
-    UT_SetForceFail(UT_KEY(OCS_lseek), 333);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_lseek), 333);
     OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, OS_SEEK_END), 333);
 
     /* bad whence */
     OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, 1234), OS_ERROR);
 
     /* generic failure of lseek() */
-    UT_SetForceFail(UT_KEY(OCS_lseek), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_lseek), -1);
     OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, OS_SEEK_END), OS_ERROR);
 
     /* The seek implementation also checks for this specific pipe errno */
@@ -102,7 +102,7 @@ void Test_OS_GenericRead_Impl(void)
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_SelectSingle_Impl)) == 1, "OS_SelectSingle() called");
 
     /* read() failure */
-    UT_SetForceFail(UT_KEY(OCS_read), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_read), -1);
     OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (UT_INDEX_0, DestData, sizeof(DestData), 0), OS_ERROR);
 }
 
@@ -128,7 +128,7 @@ void Test_OS_GenericWrite_Impl(void)
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_SelectSingle_Impl)) == 1, "OS_SelectSingle() called");
 
     /* write() failure */
-    UT_SetForceFail(UT_KEY(OCS_write), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_write), -1);
     OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (UT_INDEX_0, DestData, sizeof(DestData), 0), OS_ERROR);
 }
 

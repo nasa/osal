@@ -49,7 +49,7 @@ void Test_OS_QueueCreate_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_QueueCreate_Impl(UT_INDEX_0, 0), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_msgQCreate), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_msgQCreate), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_QueueCreate_Impl(UT_INDEX_0, 0), OS_ERROR);
 }
 
@@ -61,7 +61,7 @@ void Test_OS_QueueDelete_Impl(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_QueueDelete_Impl(UT_INDEX_0), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_msgQDelete), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_msgQDelete), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_QueueDelete_Impl(UT_INDEX_0), OS_ERROR);
 }
 
@@ -78,10 +78,10 @@ void Test_OS_QueueGet_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_QueueGet_Impl(UT_INDEX_0, &Data, sizeof(Data), &ActSz, OS_CHECK), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_QueueGet_Impl(UT_INDEX_0, &Data, sizeof(Data), &ActSz, 100), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OS_Milli2Ticks), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_Milli2Ticks), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_QueueGet_Impl(UT_INDEX_0, &Data, sizeof(Data), &ActSz, 100), OS_ERROR);
 
-    UT_SetForceFail(UT_KEY(OCS_msgQReceive), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_msgQReceive), OCS_ERROR);
     OCS_errno = OCS_S_objLib_OBJ_TIMEOUT;
     OSAPI_TEST_FUNCTION_RC(OS_QueueGet_Impl(UT_INDEX_0, &Data, sizeof(Data), &ActSz, OS_CHECK), OS_QUEUE_TIMEOUT);
     OCS_errno = OCS_S_objLib_OBJ_UNAVAILABLE;
@@ -99,7 +99,7 @@ void Test_OS_QueuePut_Impl(void)
     char Data[16] = "Test";
     OSAPI_TEST_FUNCTION_RC(OS_QueuePut_Impl(UT_INDEX_0, Data, sizeof(Data), 0), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_msgQSend), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_msgQSend), OCS_ERROR);
     OCS_errno = OCS_S_objLib_OBJ_UNAVAILABLE;
     OSAPI_TEST_FUNCTION_RC(OS_QueuePut_Impl(UT_INDEX_0, Data, sizeof(Data), 0), OS_QUEUE_FULL);
     OCS_errno = 0;
