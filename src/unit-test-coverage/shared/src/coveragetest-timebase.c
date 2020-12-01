@@ -243,14 +243,19 @@ void Test_OS_TimeBase_CallbackThread(void)
      * void OS_TimeBase_CallbackThread(uint32 timebase_id)
      */
     OS_common_record_t *recptr;
+    OS_object_token_t   timecb_token;
 
     recptr = &OS_global_timebase_table[2];
     memset(recptr, 0, sizeof(*recptr));
     recptr->active_id = UT_OBJID_2;
 
+    OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, UT_OBJID_1, &timecb_token);
     OS_timebase_table[2].external_sync = UT_TimerSync;
-    OS_timecb_table[0].wait_time       = 2000;
-    OS_timecb_table[0].callback_ptr    = UT_TimeCB;
+    OS_timebase_table[2].first_cb      = timecb_token.obj_id;
+    OS_timecb_table[1].prev_cb         = timecb_token.obj_id;
+    OS_timecb_table[1].next_cb         = timecb_token.obj_id;
+    OS_timecb_table[1].wait_time       = 2000;
+    OS_timecb_table[1].callback_ptr    = UT_TimeCB;
     TimerSyncCount                     = 0;
     TimerSyncRetVal                    = 0;
     TimeCB                             = 0;

@@ -205,8 +205,8 @@ void Test_OS_TimerDelete(void)
     OS_timecb_table[1].timebase_token.obj_id   = UT_OBJID_1;
     OS_timecb_table[1].timebase_token.obj_idx  = UT_INDEX_0;
     OS_timecb_table[2].timebase_token          = OS_timecb_table[1].timebase_token;
-    OS_timecb_table[2].next_ref                = UT_INDEX_1;
-    OS_timecb_table[1].next_ref                = UT_INDEX_1;
+    OS_timecb_table[2].next_cb                 = UT_OBJID_1;
+    OS_timecb_table[1].next_cb                 = UT_OBJID_1;
     OS_timebase_table[0].first_cb              = UT_OBJID_2;
     actual                                     = OS_TimerDelete(UT_OBJID_2);
     UtAssert_True(actual == expected, "OS_TimerDelete() (%ld) == OS_SUCCESS", (long)actual);

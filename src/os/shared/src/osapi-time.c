@@ -94,10 +94,10 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
     osal_objtype_t                 objtype;
     OS_object_token_t              timebase_token;
     OS_object_token_t              timecb_token;
+    OS_object_token_t              listcb_token;
     OS_timecb_internal_record_t *  timecb;
+    OS_timecb_internal_record_t *  list_timecb;
     OS_timebase_internal_record_t *timebase;
-    osal_id_t                      cb_list;
-    osal_index_t                   attach_id;
 
     /*
      ** Check Parameters
@@ -166,8 +166,8 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
         timecb->callback_ptr = callback_ptr;
         timecb->callback_arg = callback_arg;
         timecb->flags        = flags;
-        timecb->prev_ref     = OS_ObjectIndexFromToken(&timecb_token);
-        timecb->next_ref     = OS_ObjectIndexFromToken(&timecb_token);
+        timecb->prev_cb      = OS_ObjectIdFromToken(&timecb_token);
+        timecb->next_cb      = OS_ObjectIdFromToken(&timecb_token);
 
         /*
          * Now we need to add it to the time base callback ring, so take the
@@ -175,17 +175,22 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
          */
         OS_TimeBaseLock_Impl(&timebase_token);
 
-        cb_list            = timebase->first_cb;
-        timebase->first_cb = OS_ObjectIdFromToken(&timecb_token);
-
-        if (OS_ObjectIdDefined(cb_list))
+        if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timebase->first_cb, &listcb_token) == OS_SUCCESS)
         {
-            OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TIMECB, cb_list, &attach_id);
-            timecb->next_ref                           = attach_id;
-            timecb->prev_ref                           = OS_timecb_table[attach_id].prev_ref;
-            OS_timecb_table[timecb->prev_ref].next_ref = OS_ObjectIndexFromToken(&timecb_token);
-            OS_timecb_table[timecb->next_ref].prev_ref = OS_ObjectIndexFromToken(&timecb_token);
+            list_timecb = OS_OBJECT_TABLE_GET(OS_timecb_table, listcb_token);
+
+            timecb->next_cb = OS_ObjectIdFromToken(&listcb_token);
+            timecb->prev_cb = list_timecb->prev_cb;
+
+            if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timecb->prev_cb, &listcb_token) == OS_SUCCESS)
+            {
+                list_timecb->prev_cb = OS_ObjectIdFromToken(&timecb_token);
+                list_timecb          = OS_OBJECT_TABLE_GET(OS_timecb_table, listcb_token);
+                list_timecb->next_cb = OS_ObjectIdFromToken(&timecb_token);
+            }
         }
+
+        timebase->first_cb = OS_ObjectIdFromToken(&timecb_token);
 
         OS_TimeBaseUnlock_Impl(&timebase_token);
 
@@ -399,8 +404,10 @@ int32 OS_TimerDelete(osal_id_t timer_id)
     osal_id_t                      dedicated_timebase_id;
     OS_object_token_t              timecb_token;
     OS_object_token_t              timebase_token;
+    OS_object_token_t              listcb_token;
     OS_timebase_internal_record_t *timebase;
     OS_timecb_internal_record_t *  timecb;
+    OS_timecb_internal_record_t *  list_timecb;
 
     dedicated_timebase_id = OS_OBJECT_ID_UNDEFINED;
     memset(&timebase_token, 0, sizeof(timebase_token));
@@ -436,25 +443,31 @@ int32 OS_TimerDelete(osal_id_t timer_id)
         /*
          * Now we need to remove it from the time base callback ring
          */
-        if (OS_ObjectIdEqual(timebase->first_cb, timer_id))
+        if (OS_ObjectIdEqual(timebase->first_cb, OS_ObjectIdFromToken(&timecb_token)))
         {
-            if (timecb->next_ref != OS_ObjectIndexFromToken(&timecb_token))
+            if (OS_ObjectIdEqual(OS_ObjectIdFromToken(&timecb_token), timecb->next_cb))
             {
-                OS_ObjectIdCompose_Impl(OS_OBJECT_TYPE_OS_TIMEBASE, timecb->next_ref, &timebase->first_cb);
+                timebase->first_cb = OS_OBJECT_ID_UNDEFINED;
             }
             else
             {
-                /*
-                 * consider the list empty
-                 */
-                timebase->first_cb = OS_OBJECT_ID_UNDEFINED;
+                timebase->first_cb = timecb->next_cb;
             }
         }
 
-        OS_timecb_table[timecb->prev_ref].next_ref = timecb->next_ref;
-        OS_timecb_table[timecb->next_ref].prev_ref = timecb->prev_ref;
-        timecb->next_ref                           = OS_ObjectIndexFromToken(&timecb_token);
-        timecb->prev_ref                           = OS_ObjectIndexFromToken(&timecb_token);
+        if(OS_ObjectIdGetById(OS_LOCK_MODE_NONE,OS_OBJECT_TYPE_OS_TIMECB,timecb->prev_cb,&listcb_token) == OS_SUCCESS)
+        {
+            list_timecb          = OS_OBJECT_TABLE_GET(OS_timecb_table, listcb_token);
+            list_timecb->next_cb = timecb->next_cb;
+        }
+        if(OS_ObjectIdGetById(OS_LOCK_MODE_NONE,OS_OBJECT_TYPE_OS_TIMECB,timecb->next_cb,&listcb_token) == OS_SUCCESS)
+        {
+            list_timecb          = OS_OBJECT_TABLE_GET(OS_timecb_table, listcb_token);
+            list_timecb->prev_cb = timecb->prev_cb;
+        }
+
+        timecb->next_cb = OS_ObjectIdFromToken(&timecb_token);
+        timecb->prev_cb = OS_ObjectIdFromToken(&timecb_token);
 
         OS_TimeBaseUnlock_Impl(&timecb->timebase_token);
 

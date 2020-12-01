@@ -38,8 +38,8 @@ typedef struct
     char              timer_name[OS_MAX_API_NAME];
     uint32            flags;
     OS_object_token_t timebase_token;
-    osal_index_t      prev_ref;
-    osal_index_t      next_ref;
+    osal_id_t         prev_cb;
+    osal_id_t         next_cb;
     uint32            backlog_resets;
     int32             wait_time;
     int32             interval_time;

@@ -130,7 +130,7 @@ void TestTimerAddApi(void)
 
     OS_GetLocalTime(&EndTime);
 
-    for (i = 0; i < NUMBER_OF_TIMERS; i++)
+    for (i = NUMBER_OF_TIMERS-1; i >= 0; --i)
     {
         TimerStatus[i] = OS_TimerDelete(TimerID[i]);
     }

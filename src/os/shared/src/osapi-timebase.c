@@ -402,9 +402,7 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
     OS_timecb_internal_record_t *  timecb;
     OS_common_record_t *           record;
     OS_object_token_t              token;
-    osal_index_t                   timer_id;
-    osal_index_t                   curr_cb_local_id;
-    osal_id_t                      curr_cb_public_id;
+    OS_object_token_t              cb_token;
     uint32                         tick_time;
     uint32                         spin_cycles;
     int32                          saved_wait_time;
@@ -493,14 +491,12 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
         }
 
         timebase->freerun_time += tick_time;
-        if (OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TIMECB, timebase->first_cb, &timer_id) == 0)
+        if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timebase->first_cb, &cb_token) == 0)
         {
-            curr_cb_local_id = timer_id;
             do
             {
-                curr_cb_public_id = OS_global_timecb_table[curr_cb_local_id].active_id;
-                timecb            = &OS_timecb_table[curr_cb_local_id];
-                saved_wait_time   = timecb->wait_time;
+                timecb          = OS_OBJECT_TABLE_GET(OS_timecb_table, cb_token);
+                saved_wait_time = timecb->wait_time;
                 timecb->wait_time -= tick_time;
                 while (timecb->wait_time <= 0)
                 {
@@ -525,7 +521,7 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
                      */
                     if (saved_wait_time > 0 && timecb->callback_ptr != NULL)
                     {
-                        (*timecb->callback_ptr)(curr_cb_public_id, timecb->callback_arg);
+                        (*timecb->callback_ptr)(OS_ObjectIdFromToken(&cb_token), timecb->callback_arg);
                     }
 
                     /*
@@ -536,8 +532,9 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
                         break;
                     }
                 }
-                curr_cb_local_id = timecb->next_ref;
-            } while (curr_cb_local_id != timer_id);
+
+            } while (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timecb->next_cb, &cb_token) == OS_SUCCESS &&
+                    !OS_ObjectIdEqual(OS_ObjectIdFromToken(&cb_token), timebase->first_cb));
         }
 
         OS_TimeBaseUnlock_Impl(&token);
