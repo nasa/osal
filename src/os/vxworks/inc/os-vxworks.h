@@ -92,7 +92,7 @@ int32 OS_VxWorks_DirAPI_Impl_Init(void);
 int OS_VxWorks_TaskEntry(int arg);
 int OS_VxWorks_ConsoleTask_Entry(int arg);
 
-uint32 OS_VxWorks_SigWait(osal_index_t local_id);
+uint32 OS_VxWorks_SigWait(osal_id_t timebase_id);
 int    OS_VxWorks_TimeBaseTask(int arg);
 void   OS_VxWorks_RegisterTimer(osal_id_t obj_id);
 void   OS_VxWorks_UsecToTimespec(uint32 usecs, struct timespec *time_spec);

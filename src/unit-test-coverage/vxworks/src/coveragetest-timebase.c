@@ -183,11 +183,11 @@ void Test_OS_VxWorks_SigWait(void)
     OS_TimeBaseSet_Impl(&token, 1111111, 2222222);
 
     UT_SetDataBuffer(UT_KEY(OCS_sigwait), &signo, sizeof(signo), false);
-    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(UT_INDEX_0), 1111111);
+    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 1111111);
     UT_SetDataBuffer(UT_KEY(OCS_sigwait), &signo, sizeof(signo), false);
-    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(UT_INDEX_0), 2222222);
+    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 2222222);
     UT_SetDataBuffer(UT_KEY(OCS_sigwait), &signo, sizeof(signo), false);
-    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(UT_INDEX_0), 2222222);
+    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 2222222);
 
     UT_TimeBaseTest_Setup(UT_INDEX_0, 0, false);
     OS_global_timebase_table[0].active_id      = OS_OBJECT_ID_UNDEFINED;

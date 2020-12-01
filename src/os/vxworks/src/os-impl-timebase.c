@@ -148,26 +148,24 @@ void OS_VxWorks_UsecToTimespec(uint32 usecs, struct timespec *time_spec)
  *           Blocks the calling task until the timer tick arrives
  *
  *-----------------------------------------------------------------*/
-uint32 OS_VxWorks_SigWait(osal_index_t local_id)
+uint32 OS_VxWorks_SigWait(osal_id_t timebase_id)
 {
-    OS_impl_timebase_internal_record_t *local;
-    OS_common_record_t *                global;
-    osal_id_t                           active_id;
+    OS_object_token_t                   token;
+    OS_impl_timebase_internal_record_t *impl;
     uint32                              tick_time;
     int                                 signo;
     int                                 ret;
 
-    local     = &OS_impl_timebase_table[local_id];
-    global    = &OS_global_timebase_table[local_id];
-    active_id = global->active_id;
     tick_time = 0;
 
-    if (OS_ObjectIdDefined(active_id) && local->assigned_signal > 0)
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMEBASE, timebase_id, &token) == OS_SUCCESS)
     {
+        impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, token);
+
         /*
          * Pend for the tick arrival
          */
-        ret = sigwait(&local->timer_sigset, &signo);
+        ret = sigwait(&impl->timer_sigset, &signo);
 
         /*
          * The sigwait() can be interrupted....
@@ -187,17 +185,17 @@ uint32 OS_VxWorks_SigWait(osal_index_t local_id)
          * conditions.  Samples from before/after a reconfig
          * are generally not comparable.
          */
-        if (ret == OK && signo == local->assigned_signal && OS_ObjectIdEqual(global->active_id, active_id))
+        if (ret == OK && signo == impl->assigned_signal)
         {
-            if (local->reset_flag)
+            if (impl->reset_flag)
             {
                 /* first interval after reset, use start time */
-                tick_time         = local->configured_start_time;
-                local->reset_flag = false;
+                tick_time        = impl->configured_start_time;
+                impl->reset_flag = false;
             }
             else
             {
-                tick_time = local->configured_interval_time;
+                tick_time = impl->configured_interval_time;
             }
         }
     }

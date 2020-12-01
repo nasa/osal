@@ -40,9 +40,9 @@ int32 UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(void)
     return OS_VxWorks_TimeBaseAPI_Impl_Init();
 }
 
-int32 UT_TimeBaseTest_CallSigWaitFunc(osal_index_t local_id)
+int32 UT_TimeBaseTest_CallSigWaitFunc(osal_id_t timebase_id)
 {
-    return OS_VxWorks_SigWait(local_id);
+    return OS_VxWorks_SigWait(timebase_id);
 }
 
 int UT_TimeBaseTest_CallHelperTaskFunc(int arg)

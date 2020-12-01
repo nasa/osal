@@ -141,42 +141,49 @@ void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-static uint32 OS_TimeBase_SigWaitImpl(osal_index_t timer_id)
+static uint32 OS_TimeBase_SigWaitImpl(osal_id_t obj_id)
 {
     int                                 ret;
-    OS_impl_timebase_internal_record_t *local;
+    OS_object_token_t                   token;
+    OS_impl_timebase_internal_record_t *impl;
+    OS_timebase_internal_record_t *     timebase;
     uint32                              interval_time;
     int                                 sig;
 
-    local = &OS_impl_timebase_table[timer_id];
+    interval_time = 0;
 
-    ret = sigwait(&local->sigset, &sig);
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMEBASE, obj_id, &token) == OS_SUCCESS)
+    {
+        impl     = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, token);
+        timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, token);
 
-    if (ret != 0)
-    {
-        /*
-         * the sigwait call failed.
-         * returning 0 will cause the process to repeat.
-         */
-        interval_time = 0;
-    }
-    else if (local->reset_flag == 0)
-    {
-        /*
-         * Normal steady-state behavior.
-         * interval_time reflects the configured interval time.
-         */
-        interval_time = OS_timebase_table[timer_id].nominal_interval_time;
-    }
-    else
-    {
-        /*
-         * Reset/First interval behavior.
-         * timer_set() was invoked since the previous interval occurred (if any).
-         * interval_time reflects the configured start time.
-         */
-        interval_time     = OS_timebase_table[timer_id].nominal_start_time;
-        local->reset_flag = 0;
+        ret = sigwait(&impl->sigset, &sig);
+
+        if (ret != 0)
+        {
+            /*
+             * the sigwait call failed.
+             * returning 0 will cause the process to repeat.
+             */
+        }
+        else if (impl->reset_flag == 0)
+        {
+            /*
+             * Normal steady-state behavior.
+             * interval_time reflects the configured interval time.
+             */
+            interval_time = timebase->nominal_interval_time;
+        }
+        else
+        {
+            /*
+             * Reset/First interval behavior.
+             * timer_set() was invoked since the previous interval occurred (if any).
+             * interval_time reflects the configured start time.
+             */
+            interval_time    = timebase->nominal_start_time;
+            impl->reset_flag = 0;
+        }
     }
 
     return interval_time;

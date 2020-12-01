@@ -162,33 +162,39 @@ static rtems_timer_service_routine OS_TimeBase_ISR(rtems_id rtems_timer_id, void
  *           Pends on the semaphore for the next timer tick
  *
  *-----------------------------------------------------------------*/
-static uint32 OS_TimeBase_WaitImpl(osal_index_t local_id)
+static uint32 OS_TimeBase_WaitImpl(osal_id_t timebase_id)
 {
-    OS_impl_timebase_internal_record_t *local;
+    OS_object_token_t                   token;
+    OS_impl_timebase_internal_record_t *impl;
     uint32                              tick_time;
 
-    local = &OS_impl_timebase_table[local_id];
+    tick_time = 0;
 
-    /*
-     * Pend for the tick arrival
-     */
-    rtems_semaphore_obtain(local->tick_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMEBASE, timebase_id, &token) == OS_SUCCESS)
+    {
+        impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, token);
 
-    /*
-     * Determine how long this tick was.
-     * Note that there are plenty of ways this become wrong if the timer
-     * is reset right around the time a tick comes in.  However, it is
-     * impossible to guarantee the behavior of a reset if the timer is running.
-     * (This is not an expected use-case anyway; the timer should be set and forget)
-     */
-    if (local->reset_flag == 0)
-    {
-        tick_time = local->configured_interval_time;
-    }
-    else
-    {
-        tick_time         = local->configured_start_time;
-        local->reset_flag = 0;
+        /*
+         * Pend for the tick arrival
+         */
+        rtems_semaphore_obtain(impl->tick_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+
+        /*
+         * Determine how long this tick was.
+         * Note that there are plenty of ways this become wrong if the timer
+         * is reset right around the time a tick comes in.  However, it is
+         * impossible to guarantee the behavior of a reset if the timer is running.
+         * (This is not an expected use-case anyway; the timer should be set and forget)
+         */
+        if (impl->reset_flag == 0)
+        {
+            tick_time = impl->configured_interval_time;
+        }
+        else
+        {
+            tick_time        = impl->configured_start_time;
+            impl->reset_flag = 0;
+        }
     }
 
     return tick_time;

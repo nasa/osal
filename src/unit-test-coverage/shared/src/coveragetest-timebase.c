@@ -38,7 +38,7 @@ static uint32 TimerSyncCount  = 0;
 static uint32 TimerSyncRetVal = 0;
 static uint32 TimeCB          = 0;
 
-static uint32 UT_TimerSync(osal_index_t timer_id)
+static uint32 UT_TimerSync(osal_id_t timer_id)
 {
     ++TimerSyncCount;
     return TimerSyncRetVal;
