@@ -33,6 +33,7 @@
 void TestMkfsMount(void);
 void TestCreatRemove(void);
 void TestOpenClose(void);
+void TestChmod(void);
 void TestReadWriteLseek(void);
 void TestMkRmDirFreeBytes(void);
 void TestOpenReadCloseDir(void);
@@ -75,6 +76,7 @@ void UtTest_Setup(void)
     UtTest_Add(TestMkfsMount, NULL, NULL, "TestMkfsMount");
     UtTest_Add(TestCreatRemove, NULL, NULL, "TestCreatRemove");
     UtTest_Add(TestOpenClose, NULL, NULL, "TestOpenClose");
+    UtTest_Add(TestChmod, NULL, NULL, "TestChmod");
     UtTest_Add(TestReadWriteLseek, NULL, NULL, "TestReadWriteLseek");
     UtTest_Add(TestMkRmDirFreeBytes, NULL, NULL, "TestMkRmDirFreeBytes");
     UtTest_Add(TestOpenReadCloseDir, NULL, NULL, "TestOpenReadCloseDir");
@@ -238,10 +240,68 @@ void TestOpenClose(void)
     status = OS_remove(filename);
     UtAssert_True(status == OS_SUCCESS, "status after remove = %d", (int)status);
 }
+
+/*---------------------------------------------------------------------------------------
+ * Name TestChmod
+---------------------------------------------------------------------------------------*/
+void TestChmod(void)
+{
+    char      filename[OS_MAX_PATH_LEN];    
+    int32     status;
+    osal_id_t fd;
+
+    /*Make a file to test on. Start in Read only mode */
+    strncpy(filename, "/drive0/Filename1", sizeof(filename) - 1);
+    filename[sizeof(filename) - 1] = 0;
+    status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_ONLY);
+    UtAssert_True(status >= OS_SUCCESS, "status after creat = %d", (int)status);
+    status = OS_close(fd);
+    UtAssert_True(status == OS_SUCCESS, "status after close = %d", (int)status);
+
+    /*Testing Write Only */
+    status = OS_chmod(filename, OS_WRITE_ONLY);
+    if(status != OS_ERR_NOT_IMPLEMENTED){
+        UtAssert_True(status == OS_SUCCESS, "status after chmod = %d", (int)status);
+        status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_NONE, OS_WRITE_ONLY);
+        UtAssert_True(status >= OS_SUCCESS, "status after reopen = %d", (int)status);
+        status = OS_close(fd);
+        UtAssert_True(status == OS_SUCCESS, "status after close = %d", (int)status);
+    }else{
+         UtPrintf("OS_chmod not implemented for write only\n");
+    }   
+
+    /*Testing Read Only */
+    status = OS_chmod(filename, OS_READ_ONLY);
+    if(status != OS_ERR_NOT_IMPLEMENTED){
+        UtAssert_True(status == OS_SUCCESS, "status after chmod = %d", (int)status);
+        status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_NONE, OS_READ_ONLY);
+        UtAssert_True(status >= OS_SUCCESS, "status after reopen = %d", (int)status);
+        status = OS_close(fd);
+        UtAssert_True(status == OS_SUCCESS, "status after close = %d", (int)status); 
+    }else{
+        UtPrintf("OS_chmod not implemented for read only\n");
+    }      
+
+    /*Testing Read Write */
+    status = OS_chmod(filename, OS_READ_WRITE);
+    if(status != OS_ERR_NOT_IMPLEMENTED){
+        UtAssert_True(status == OS_SUCCESS, "status after chmod = %d", (int)status);
+        status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_NONE, OS_READ_WRITE);
+        UtAssert_True(status >= OS_SUCCESS, "status after reopen = %d", (int)status);
+        status = OS_close(fd);
+        UtAssert_True(status == OS_SUCCESS, "status after close = %d", (int)status); 
+    }else{
+        UtPrintf("OS_chmod not implemented for read write\n");
+    }   
+
+    /*Removing the file */
+    status = OS_remove(filename);
+    UtAssert_True(status == OS_SUCCESS, "status after remove = %d", (int)status);
+}
+
 /*---------------------------------------------------------------------------------------
  * Name TestReadWriteLseek
 ---------------------------------------------------------------------------------------*/
-
 void TestReadWriteLseek(void)
 {
     char      filename[OS_MAX_PATH_LEN];
@@ -468,6 +528,7 @@ void TestMkRmDirFreeBytes(void)
     status = OS_fsBlocksFree("/drive0");
     UtAssert_True(status == OS_ERR_NOT_IMPLEMENTED || status >= OS_SUCCESS, "Checking Free Blocks: %d", (int)status);
 }
+
 /*---------------------------------------------------------------------------------------
  * Name TestOpenReadCloseDir();
 ---------------------------------------------------------------------------------------*/
@@ -762,6 +823,7 @@ void TestRename(void)
     status = OS_rmdir(newdir1);
     UtAssert_True(status == OS_SUCCESS, "status after rmdir 1 = %d", (int)status);
 }
+
 /*---------------------------------------------------------------------------------------
  *  Name TestStat()
 ---------------------------------------------------------------------------------------*/
