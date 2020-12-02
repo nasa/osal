@@ -61,7 +61,7 @@ OS_impl_task_internal_record_t OS_impl_task_table[OS_MAX_TASKS];
  * to be within the range of [0,OS_MAX_TASK_PRIORITY]
  *
 ----------------------------------------------------------------------------*/
-static int OS_PriorityRemap(uint32 InputPri)
+static int OS_PriorityRemap(osal_priority_t InputPri)
 {
     int OutputPri;
 
@@ -429,8 +429,8 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t stacksz, PthreadFuncPtr_t entry,
-                                       void *entry_arg)
+int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority, size_t stacksz,
+                                       PthreadFuncPtr_t entry, void *entry_arg)
 {
     int                return_code = 0;
     pthread_attr_t     custom_attr;
@@ -564,7 +564,7 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t 
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
+int32 OS_TaskCreate_Impl(osal_index_t task_id, uint32 flags)
 {
     OS_U32ValueWrapper_t arg;
     int32                return_code;
@@ -587,7 +587,7 @@ int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskMatch_Impl(uint32 task_id)
+int32 OS_TaskMatch_Impl(osal_index_t task_id)
 {
     if (pthread_equal(pthread_self(), OS_impl_task_table[task_id].id) == 0)
     {
@@ -605,7 +605,7 @@ int32 OS_TaskMatch_Impl(uint32 task_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskDelete_Impl(uint32 task_id)
+int32 OS_TaskDelete_Impl(osal_index_t task_id)
 {
     /*
     ** Try to delete the task
@@ -678,7 +678,7 @@ int32 OS_TaskDelay_Impl(uint32 millisecond)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskSetPriority_Impl(uint32 task_id, uint32 new_priority)
+int32 OS_TaskSetPriority_Impl(osal_index_t task_id, osal_priority_t new_priority)
 {
     int os_priority;
     int ret;
@@ -758,7 +758,7 @@ osal_id_t OS_TaskGetId_Impl(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskGetInfo_Impl(uint32 task_id, OS_task_prop_t *task_prop)
+int32 OS_TaskGetInfo_Impl(osal_index_t task_id, OS_task_prop_t *task_prop)
 {
     return OS_SUCCESS;
 } /* end OS_TaskGetInfo_Impl */
@@ -771,7 +771,7 @@ int32 OS_TaskGetInfo_Impl(uint32 task_id, OS_task_prop_t *task_prop)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-bool OS_TaskIdMatchSystemData_Impl(void *ref, uint32 local_id, const OS_common_record_t *obj)
+bool OS_TaskIdMatchSystemData_Impl(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
 {
     const pthread_t *target = (const pthread_t *)ref;
 
@@ -786,7 +786,7 @@ bool OS_TaskIdMatchSystemData_Impl(void *ref, uint32 local_id, const OS_common_r
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskValidateSystemData_Impl(const void *sysdata, uint32 sysdata_size)
+int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size)
 {
     if (sysdata == NULL || sysdata_size != sizeof(pthread_t))
     {

@@ -74,12 +74,12 @@
  *-----------------------------------------------------------------*/
 static int OS_FdSet_ConvertIn_Impl(fd_set *os_set, OS_FdSet *OSAL_set)
 {
-    uint32 offset;
-    uint32 bit;
-    uint32 id;
-    uint8  objids;
-    int    osfd;
-    int    maxfd;
+    size_t       offset;
+    size_t       bit;
+    osal_index_t id;
+    uint8        objids;
+    int          osfd;
+    int          maxfd;
 
     maxfd = -1;
     for (offset = 0; offset < sizeof(OSAL_set->object_ids); ++offset)
@@ -90,7 +90,7 @@ static int OS_FdSet_ConvertIn_Impl(fd_set *os_set, OS_FdSet *OSAL_set)
         {
             if (objids & 0x01)
             {
-                id   = (offset * 8) + bit;
+                id   = OSAL_INDEX_C((offset * 8) + bit);
                 osfd = OS_impl_filehandle_table[id].fd;
                 if (osfd >= 0 && OS_impl_filehandle_table[id].selectable)
                 {
@@ -122,11 +122,11 @@ static int OS_FdSet_ConvertIn_Impl(fd_set *os_set, OS_FdSet *OSAL_set)
  *-----------------------------------------------------------------*/
 static void OS_FdSet_ConvertOut_Impl(fd_set *output, OS_FdSet *Input)
 {
-    uint32 offset;
-    uint32 bit;
-    uint32 id;
-    uint8  objids;
-    int    osfd;
+    size_t       offset;
+    size_t       bit;
+    osal_index_t id;
+    uint8        objids;
+    int          osfd;
 
     for (offset = 0; offset < sizeof(Input->object_ids); ++offset)
     {
@@ -136,7 +136,7 @@ static void OS_FdSet_ConvertOut_Impl(fd_set *output, OS_FdSet *Input)
         {
             if (objids & 0x01)
             {
-                id   = (offset * 8) + bit;
+                id   = OSAL_INDEX_C((offset * 8) + bit);
                 osfd = OS_impl_filehandle_table[id].fd;
                 if (osfd < 0 || !FD_ISSET(osfd, output))
                 {
@@ -249,7 +249,7 @@ static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, int32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SelectSingle_Impl(uint32 stream_id, uint32 *SelectFlags, int32 msecs)
+int32 OS_SelectSingle_Impl(osal_index_t stream_id, uint32 *SelectFlags, int32 msecs)
 {
     int32  return_code;
     fd_set wr_set;

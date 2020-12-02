@@ -118,7 +118,7 @@ int32 OS_Posix_BinSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 initial_value, uint32 options)
+int32 OS_BinSemCreate_Impl(osal_index_t sem_id, uint32 initial_value, uint32 options)
 {
     int                               ret;
     int                               attr_created;
@@ -240,7 +240,7 @@ int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 initial_value, uint32 options)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemDelete_Impl(uint32 sem_id)
+int32 OS_BinSemDelete_Impl(osal_index_t sem_id)
 {
     OS_impl_binsem_internal_record_t *sem;
     int32                             return_code;
@@ -279,7 +279,7 @@ int32 OS_BinSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGive_Impl(uint32 sem_id)
+int32 OS_BinSemGive_Impl(osal_index_t sem_id)
 {
     OS_impl_binsem_internal_record_t *sem;
 
@@ -324,7 +324,7 @@ int32 OS_BinSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemFlush_Impl(uint32 sem_id)
+int32 OS_BinSemFlush_Impl(osal_index_t sem_id)
 {
     OS_impl_binsem_internal_record_t *sem;
 
@@ -441,7 +441,7 @@ static int32 OS_GenericBinSemTake_Impl(OS_impl_binsem_internal_record_t *sem, co
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTake_Impl(uint32 sem_id)
+int32 OS_BinSemTake_Impl(osal_index_t sem_id)
 {
     return (OS_GenericBinSemTake_Impl(&OS_impl_bin_sem_table[sem_id], NULL));
 } /* end OS_BinSemTake_Impl */
@@ -454,7 +454,7 @@ int32 OS_BinSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
+int32 OS_BinSemTimedWait_Impl(osal_index_t sem_id, uint32 msecs)
 {
     struct timespec ts;
 
@@ -474,7 +474,7 @@ int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGetInfo_Impl(uint32 sem_id, OS_bin_sem_prop_t *sem_prop)
+int32 OS_BinSemGetInfo_Impl(osal_index_t sem_id, OS_bin_sem_prop_t *sem_prop)
 {
     /* put the info into the stucture */
     sem_prop->value = OS_impl_bin_sem_table[sem_id].current_value;

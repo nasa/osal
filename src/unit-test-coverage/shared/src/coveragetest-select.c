@@ -107,7 +107,7 @@ void Test_OS_SelectFdAddClearOps(void)
     UtAssert_True(!OS_SelectFdIsSet(&UtSet, UT_OBJID_2), "OS_SelectFdIsSet(2) == false");
 
     expected = -42;
-    UT_SetForceFail(UT_KEY(OS_ObjectIdToArrayIndex), expected);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdToArrayIndex), expected);
     actual = OS_SelectFdAdd(&UtSet, UT_OBJID_2);
     UtAssert_True(actual == expected, "OS_SelectFdAdd() (%ld) == %ld", (long)actual, (long)expected);
     actual = OS_SelectFdClear(&UtSet, UT_OBJID_1);

@@ -41,14 +41,14 @@ void Test_OS_FileOpen_Impl(void)
      * Test Case For:
      * int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", OS_FILE_FLAG_TRUNCATE, OS_WRITE_ONLY), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", 0, OS_READ_ONLY), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", OS_FILE_FLAG_CREATE, OS_READ_WRITE), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", 0, -1234), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", OS_FILE_FLAG_TRUNCATE, OS_WRITE_ONLY), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, OS_READ_ONLY), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", OS_FILE_FLAG_CREATE, OS_READ_WRITE), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, -1234), OS_ERROR);
 
     /* failure mode */
-    UT_SetForceFail(UT_KEY(OCS_open), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (0, "local", 0, OS_READ_ONLY), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, OS_READ_ONLY), OS_ERROR);
 }
 
 void Test_OS_FileStat_Impl(void)
@@ -61,7 +61,7 @@ void Test_OS_FileStat_Impl(void)
     struct OCS_stat RefStat;
 
     /* failure mode */
-    UT_SetForceFail(UT_KEY(OCS_stat), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_stat), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileStat_Impl, ("local", &FileStats), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_stat));
 
@@ -73,7 +73,7 @@ void Test_OS_FileStat_Impl(void)
     /* all permission bits with uid/gid match */
     RefStat.st_uid   = UT_PortablePosixFileTest_GetSelfEUID();
     RefStat.st_gid   = UT_PortablePosixFileTest_GetSelfEGID();
-    RefStat.st_mode  = ~0;
+    RefStat.st_mode  = ~((OCS_mode_t)0);
     RefStat.st_size  = 1234;
     RefStat.st_mtime = 5678;
     UT_SetDataBuffer(UT_KEY(OCS_stat), &RefStat, sizeof(RefStat), false);
@@ -97,24 +97,24 @@ void Test_OS_FileChmod_Impl(void)
     struct OCS_stat RefStat;
 
     /* failure mode 0 (open) */
-    UT_SetForceFail(UT_KEY(OCS_open), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_open));
 
     /* failure mode 1 (fstat) */
-    UT_SetForceFail(UT_KEY(OCS_fstat), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_fstat), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_fstat));
 
     /* failure mode 2 (fchmod) */
-    UT_SetForceFail(UT_KEY(OCS_fchmod), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_fchmod), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_fchmod));
 
     /* all permission bits with uid/gid match */
     RefStat.st_uid   = UT_PortablePosixFileTest_GetSelfEUID();
     RefStat.st_gid   = UT_PortablePosixFileTest_GetSelfEGID();
-    RefStat.st_mode  = ~0;
+    RefStat.st_mode  = ~((OCS_mode_t)0);
     RefStat.st_size  = 1234;
     RefStat.st_mtime = 5678;
     UT_SetDataBuffer(UT_KEY(OCS_fstat), &RefStat, sizeof(RefStat), false);
@@ -142,7 +142,7 @@ void Test_OS_FileRemove_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileRemove_Impl, ("local"), OS_SUCCESS);
 
     /* failure mode */
-    UT_SetForceFail(UT_KEY(OCS_remove), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_remove), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileRemove_Impl, ("local"), OS_ERROR);
 }
 
@@ -155,7 +155,7 @@ void Test_OS_FileRename_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileRename_Impl, ("old", "new"), OS_SUCCESS);
 
     /* failure mode */
-    UT_SetForceFail(UT_KEY(OCS_rename), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_rename), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileRename_Impl, ("old", "new"), OS_ERROR);
 }
 

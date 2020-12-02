@@ -52,7 +52,7 @@ RTEMS_GlobalVars_t RTEMS_GlobalVars = {0};
 
    returns: OS_SUCCESS or OS_ERROR
 ---------------------------------------------------------------------------------------*/
-int32 OS_API_Impl_Init(uint32 idtype)
+int32 OS_API_Impl_Init(osal_objtype_t idtype)
 {
     int32 return_code;
 

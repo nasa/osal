@@ -76,7 +76,7 @@ int32 UT_os_setup_fs()
 {
     int32 res;
 
-    res = OS_mkfs(g_fsAddrPtr, g_devName, "RAM3", 512, 64);
+    res = OS_mkfs(g_fsAddrPtr, g_devName, "RAM3", OSAL_SIZE_C(512), OSAL_BLOCKCOUNT_C(64));
     if (res != OS_SUCCESS)
     {
         UT_OS_LOG("OS_mkfs() returns %d\n", (int)res);

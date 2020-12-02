@@ -74,6 +74,10 @@ typedef union
 #define UT_OBJID_OTHER ((osal_id_t) {0x12345})
 #define UT_OBJID_MAX   ((osal_id_t) {0xFFFFFFFF})
 
+#define UT_INDEX_0 OSAL_INDEX_C(0)
+#define UT_INDEX_1 OSAL_INDEX_C(1)
+#define UT_INDEX_2 OSAL_INDEX_C(2)
+
 /*
  * Setup function prior to every test
  */

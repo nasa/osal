@@ -161,7 +161,7 @@ void UT_SetDeferredRetcode(UT_EntryKey_t FuncKey, int32 Count, int32 Retcode);
  *      is false then the DataBuffer pointer is used directly, and must remain valid for the duration
  *      of the current test case.
  */
-void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, uint32 BufferSize, bool AllocateCopy);
+void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, size_t BufferSize, bool AllocateCopy);
 
 /**
  * Gets the data buffer for a given stub function
@@ -177,7 +177,7 @@ void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, uint32 BufferSize
  * \param BufferSize Set to Maximum Size of data buffer (output)
  * \param Position Set to current position in data buffer (output)
  */
-void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, uint32 *MaxSize, uint32 *Position);
+void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, size_t *MaxSize, size_t *Position);
 
 /**
  * Enable or disable the forced failure mode for the given stub function
@@ -191,12 +191,30 @@ void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, uint32 *MaxSize,
  * \param FuncKey The stub function to add the return code to.
  * \param Value Arbitrary failure mode value (may or may not be used by the stub)
  */
+void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value);
+
+#ifndef OSAL_OMIT_DEPRECATED
+/**
+ * Enable or disable the forced failure mode for the given stub function
+ *
+ * This triggers a constant failure mode from the stub function, if implemented.
+ * The stub function will invoke a given failure path as defined by
+ * the stub implementation.
+ *
+ * A count of the number of times the failure mode is invoked will be maintained.
+ *
+ * \param FuncKey The stub function to add the return code to.
+ * \param Value Arbitrary failure mode value (may or may not be used by the stub)
+ * 
+ * @deprecated replaced by UT_SetDefaultReturnValue
+ */
 void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value);
+#endif
 
 /**
  * Disable the forced failure mode for the given stub function
  *
- * This undoes the action of UT_SetForceFail()
+ * This undoes the action of UT_SetDefaultReturnValue()
  *
  * \param FuncKey The stub function entry to clear.
  */
@@ -293,11 +311,11 @@ bool UT_Stub_CheckDeferredRetcode(UT_EntryKey_t FuncKey, int32 *Retcode);
 /**
  * Check for a forced failure mode entry for the given stub function
  *
- * If a UT_SetForceFail() option is in place for the given function this
+ * If a UT_SetDefaultReturnValue() option is in place for the given function this
  * will return true and increment the internal usage counter.
  *
  * \param FuncKey The stub function to check the return code.
- * \param Value Set to the value supplied to UT_SetForceFail()
+ * \param Value Set to the value supplied to UT_SetDefaultReturnValue()
  * \returns true if force fail mode is active
  */
 bool UT_Stub_CheckForceFail(UT_EntryKey_t FuncKey, int32 *Value);
@@ -314,7 +332,7 @@ bool UT_Stub_CheckForceFail(UT_EntryKey_t FuncKey, int32 *Value);
  * \returns The actual size of data copied.  If no data buffer is
  *      supplied by the test harness this will return 0.
  */
-uint32 UT_Stub_CopyToLocal(UT_EntryKey_t FuncKey, void *LocalBuffer, uint32 MaxSize);
+size_t UT_Stub_CopyToLocal(UT_EntryKey_t FuncKey, void *LocalBuffer, size_t MaxSize);
 
 /**
  * Copies data from a local buffer to the test-supplied buffer
@@ -328,7 +346,7 @@ uint32 UT_Stub_CopyToLocal(UT_EntryKey_t FuncKey, void *LocalBuffer, uint32 MaxS
  * \returns The actual size of data copied.  If no data buffer is
  *      supplied by the test harness this will return 0.
  */
-uint32 UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, uint32 MaxSize);
+size_t UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, size_t MaxSize);
 
 /**
  * Registers a single context element for the hook callback

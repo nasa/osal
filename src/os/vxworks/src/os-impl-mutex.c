@@ -67,7 +67,7 @@ int32 OS_VxWorks_MutexAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options)
+int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options)
 {
     SEM_ID tmp_sem_id;
 
@@ -93,7 +93,7 @@ int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemDelete_Impl(uint32 sem_id)
+int32 OS_MutSemDelete_Impl(osal_index_t sem_id)
 {
     /*
      * As the memory for the sem is statically allocated, delete is a no-op.
@@ -111,7 +111,7 @@ int32 OS_MutSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGive_Impl(uint32 sem_id)
+int32 OS_MutSemGive_Impl(osal_index_t sem_id)
 {
     /* Give VxWorks Semaphore */
     return OS_VxWorks_GenericSemGive(OS_impl_mutex_table[sem_id].vxid);
@@ -125,7 +125,7 @@ int32 OS_MutSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemTake_Impl(uint32 sem_id)
+int32 OS_MutSemTake_Impl(osal_index_t sem_id)
 {
     /* Take VxWorks Semaphore */
     return OS_VxWorks_GenericSemTake(OS_impl_mutex_table[sem_id].vxid, WAIT_FOREVER);
@@ -139,7 +139,7 @@ int32 OS_MutSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGetInfo_Impl(uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
+int32 OS_MutSemGetInfo_Impl(osal_index_t sem_id, OS_mut_sem_prop_t *mut_prop)
 {
     /* VxWorks provides no additional info */
     return OS_SUCCESS;

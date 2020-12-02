@@ -176,7 +176,7 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
  * @retval #OS_ERR_NOT_IMPLEMENTED @copybrief OS_ERR_NOT_IMPLEMENTED
  * @retval #OS_ERROR if the symbol table could not be read or dumped
  */
-int32 OS_SymbolTableDump(const char *filename, uint32 size_limit);
+int32 OS_SymbolTableDump(const char *filename, size_t size_limit);
 
 /*-------------------------------------------------------------------------------------*/
 /**

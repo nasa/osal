@@ -58,7 +58,7 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_NetworkGetHostName_Impl(char *host_name, uint32 name_len)
+int32 OS_NetworkGetHostName_Impl(char *host_name, size_t name_len)
 {
     int32 return_code;
 

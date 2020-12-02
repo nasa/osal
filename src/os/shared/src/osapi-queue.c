@@ -87,11 +87,12 @@ int32 OS_QueueAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, uint32 queue_depth, uint32 data_size, uint32 flags)
+int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcount_t queue_depth, size_t data_size,
+                     uint32 flags)
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     if (queue_name == NULL || queue_id == NULL)
     {
@@ -140,7 +141,7 @@ int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, uint32 queue_d
 int32 OS_QueueDelete(osal_id_t queue_id)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, queue_id, &local_id, &record);
@@ -164,10 +165,10 @@ int32 OS_QueueDelete(osal_id_t queue_id)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGet(osal_id_t queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout)
+int32 OS_QueueGet(osal_id_t queue_id, void *data, size_t size, size_t *size_copied, int32 timeout)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -206,10 +207,10 @@ int32 OS_QueueGet(osal_id_t queue_id, void *data, uint32 size, uint32 *size_copi
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueuePut(osal_id_t queue_id, const void *data, uint32 size, uint32 flags)
+int32 OS_QueuePut(osal_id_t queue_id, const void *data, size_t size, uint32 flags)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -264,7 +265,7 @@ int32 OS_QueueGetInfo(osal_id_t queue_id, OS_queue_prop_t *queue_prop)
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     /* Check parameters */
     if (queue_prop == NULL)

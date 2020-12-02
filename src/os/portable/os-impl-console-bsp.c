@@ -52,11 +52,11 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_ConsoleOutput_Impl(uint32 local_id)
+void OS_ConsoleOutput_Impl(osal_index_t local_id)
 {
-    uint32                        StartPos;
-    uint32                        EndPos;
-    long                          WriteSize;
+    size_t                        StartPos;
+    size_t                        EndPos;
+    size_t                        WriteSize;
     OS_console_internal_record_t *console;
 
     console  = &OS_console_table[local_id];

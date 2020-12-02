@@ -84,7 +84,7 @@ int32 OS_Rtems_CountSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options)
+int32 OS_CountSemCreate_Impl(osal_index_t sem_id, uint32 sem_initial_value, uint32 options)
 {
     rtems_status_code status;
     rtems_name        r_name;
@@ -125,7 +125,7 @@ int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 opt
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemDelete_Impl(uint32 sem_id)
+int32 OS_CountSemDelete_Impl(osal_index_t sem_id)
 {
     rtems_status_code status;
 
@@ -148,7 +148,7 @@ int32 OS_CountSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGive_Impl(uint32 sem_id)
+int32 OS_CountSemGive_Impl(osal_index_t sem_id)
 {
     rtems_status_code status;
 
@@ -171,7 +171,7 @@ int32 OS_CountSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTake_Impl(uint32 sem_id)
+int32 OS_CountSemTake_Impl(osal_index_t sem_id)
 {
     rtems_status_code status;
 
@@ -194,7 +194,7 @@ int32 OS_CountSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
+int32 OS_CountSemTimedWait_Impl(osal_index_t sem_id, uint32 msecs)
 {
     rtems_status_code status;
     int               TimeInTicks;
@@ -228,7 +228,7 @@ int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGetInfo_Impl(uint32 sem_id, OS_count_sem_prop_t *count_prop)
+int32 OS_CountSemGetInfo_Impl(osal_index_t sem_id, OS_count_sem_prop_t *count_prop)
 {
     /* RTEMS does not provide an API to get the value */
     return OS_SUCCESS;

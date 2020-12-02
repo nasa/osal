@@ -1037,7 +1037,8 @@ UT_os_writefile_test_exit_tag:
 void UT_os_lseekfile_test()
 {
     const char *testDesc;
-    int32       buffLen = 0, pos1 = 0, pos2 = 0, pos3 = 0;
+    size_t      buffLen;
+    int32       pos1 = 0, pos2 = 0, pos3 = 0;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
@@ -1101,7 +1102,7 @@ void UT_os_lseekfile_test()
 
     memset(g_writeBuff, '\0', sizeof(g_writeBuff));
     strcpy(g_writeBuff, "THE BROWN FOX JUMPS OVER THE LAZY DOG.");
-    buffLen = (int32)strlen(g_writeBuff);
+    buffLen = strlen(g_writeBuff);
 
     if (OS_write(g_fDescs[0], g_writeBuff, buffLen) != buffLen)
     {

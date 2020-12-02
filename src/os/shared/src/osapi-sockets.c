@@ -84,9 +84,9 @@ int32 OS_SocketAPI_Init(void)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-void OS_CreateSocketName(uint32 local_id, const OS_SockAddr_t *Addr, const char *parent_name)
+void OS_CreateSocketName(osal_index_t local_id, const OS_SockAddr_t *Addr, const char *parent_name)
 {
-    int32                        len;
+    size_t                       len;
     uint16                       port;
     OS_stream_internal_record_t *sock = &OS_stream_table[local_id];
 
@@ -122,7 +122,7 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
 {
     OS_common_record_t *record;
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
 
     /* Check for NULL pointers */
     if (sock_id == NULL)
@@ -160,7 +160,7 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
 int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -214,8 +214,8 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
 {
     OS_common_record_t *record;
     OS_common_record_t *connrecord;
-    uint32              local_id;
-    uint32              conn_id = 0;
+    osal_index_t        local_id;
+    osal_index_t        conn_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -232,6 +232,7 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
      * set to OS_SUCCESS when connrecord is also initialized)
      */
     connrecord = NULL;
+    conn_id    = OSAL_INDEX_C(0);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, sock_id, &local_id, &record);
     if (return_code == OS_SUCCESS)
@@ -310,7 +311,7 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
 int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeout)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -364,10 +365,10 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeo
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
+int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -407,10 +408,10 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, uint32 buflen, OS_SockA
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr)
+int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, size_t buflen, const OS_SockAddr_t *RemoteAddr)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -470,7 +471,7 @@ int32 OS_SocketGetIdByName(osal_id_t *sock_id, const char *sock_name)
 int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check parameters */
@@ -520,7 +521,7 @@ int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketAddrToString(char *buffer, uint32 buflen, const OS_SockAddr_t *Addr)
+int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Addr)
 {
     if (Addr == NULL || buffer == NULL || buflen == 0)
     {

@@ -52,13 +52,13 @@ UT_DEFAULT_STUB(OS_TaskAPI_Init, (void))
 **        Returns either OS_SUCCESS or OS_ERROR.
 **
 ******************************************************************************/
-int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry function_pointer, uint32 *stack_pointer,
-                    uint32 stack_size, uint32 priority, uint32 flags)
+int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry function_pointer,
+                    osal_stackptr_t stack_pointer, size_t stack_size, osal_priority_t priority, uint32 flags)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_TaskCreate), task_id);
     UT_Stub_RegisterContext(UT_KEY(OS_TaskCreate), task_name);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskCreate), function_pointer);
-    UT_Stub_RegisterContext(UT_KEY(OS_TaskCreate), stack_pointer);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskCreate), stack_pointer);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskCreate), stack_size);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskCreate), priority);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskCreate), flags);
@@ -165,7 +165,7 @@ int32 OS_TaskDelay(uint32 millisecond)
  * Stub function for OS_TaskSetPriority()
  *
  *****************************************************************************/
-int32 OS_TaskSetPriority(osal_id_t task_id, uint32 new_priority)
+int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskSetPriority), task_id);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_TaskSetPriority), new_priority);
@@ -281,8 +281,8 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
         UT_Stub_CopyToLocal(UT_KEY(OS_TaskGetInfo), task_prop, sizeof(*task_prop)) < sizeof(*task_prop))
     {
         UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &task_prop->creator);
-        task_prop->stack_size = 100;
-        task_prop->priority   = 150;
+        task_prop->stack_size = OSAL_SIZE_C(100);
+        task_prop->priority   = OSAL_PRIORITY_C(150);
         strncpy(task_prop->name, "UnitTest", OS_MAX_API_NAME - 1);
         task_prop->name[OS_MAX_API_NAME - 1] = '\0';
     }

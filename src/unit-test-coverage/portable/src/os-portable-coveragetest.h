@@ -57,6 +57,17 @@
 
 #define ADD_TEST(test) UtTest_Add((Test_##test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
 
+/*
+ * The default/primary table index used by most coverage tests.
+ */
+#define UT_INDEX_0 OSAL_INDEX_C(0)
+
+/*
+ * A secondary table index for coverage tests which require
+ * more than one entry
+ */
+#define UT_INDEX_1 OSAL_INDEX_C(1)
+
 /* Osapi_Test_Setup
  *
  * Purpose:

@@ -55,7 +55,7 @@ void Test_OS_Lock_Global_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semTake)) == 1, "semTake() called");
 
-    UT_SetForceFail(UT_KEY(OCS_semTake), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semTake), -1);
     OSAPI_TEST_FUNCTION_RC(OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
 }
 
@@ -68,7 +68,7 @@ void Test_OS_Unlock_Global_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(10000), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(0), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
-    UT_SetForceFail(UT_KEY(OCS_semGive), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semGive), -1);
     OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
 }
 
@@ -79,7 +79,7 @@ void Test_OS_API_Impl_Init(void)
      * int32 OS_API_Impl_Init(uint32 idtype)
      */
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(0), OS_SUCCESS);
-    UT_SetForceFail(UT_KEY(OCS_semMInitialize), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semMInitialize), -1);
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_semMInitialize));
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);

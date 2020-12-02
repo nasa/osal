@@ -58,7 +58,7 @@ int32 OS_MutexAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options);
+int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options);
 
 /*----------------------------------------------------------------
    Function: OS_MutSemGive_Impl
@@ -67,7 +67,7 @@ int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_MutSemGive_Impl(uint32 sem_id);
+int32 OS_MutSemGive_Impl(osal_index_t sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_MutSemTake_Impl
@@ -76,7 +76,7 @@ int32 OS_MutSemGive_Impl(uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_MutSemTake_Impl(uint32 sem_id);
+int32 OS_MutSemTake_Impl(osal_index_t sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_MutSemDelete_Impl
@@ -85,7 +85,7 @@ int32 OS_MutSemTake_Impl(uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_MutSemDelete_Impl(uint32 sem_id);
+int32 OS_MutSemDelete_Impl(osal_index_t sem_id);
 
 /*----------------------------------------------------------------
    Function: OS_MutSemGetInfo_Impl
@@ -94,6 +94,6 @@ int32 OS_MutSemDelete_Impl(uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_MutSemGetInfo_Impl(uint32 sem_id, OS_mut_sem_prop_t *mut_prop);
+int32 OS_MutSemGetInfo_Impl(osal_index_t sem_id, OS_mut_sem_prop_t *mut_prop);
 
 #endif /* INCLUDE_OS_SHARED_MUTEX_H_ */

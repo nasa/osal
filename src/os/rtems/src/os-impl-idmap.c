@@ -86,7 +86,7 @@ enum
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_Lock_Global_Impl(uint32 idtype)
+int32 OS_Lock_Global_Impl(osal_objtype_t idtype)
 {
     rtems_id *mut;
 
@@ -120,7 +120,7 @@ int32 OS_Lock_Global_Impl(uint32 idtype)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_Unlock_Global_Impl(uint32 idtype)
+int32 OS_Unlock_Global_Impl(osal_objtype_t idtype)
 {
     rtems_id *mut;
 
@@ -158,7 +158,7 @@ int32 OS_Unlock_Global_Impl(uint32 idtype)
 
    returns: OS_SUCCESS or OS_ERROR
 ---------------------------------------------------------------------------------------*/
-int32 OS_Rtems_TableMutex_Init(uint32 idtype)
+int32 OS_Rtems_TableMutex_Init(osal_objtype_t idtype)
 {
     int32             return_code = OS_SUCCESS;
     rtems_status_code rtems_sc;

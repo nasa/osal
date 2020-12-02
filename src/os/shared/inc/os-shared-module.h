@@ -72,7 +72,7 @@ int32 OS_ModuleAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ModuleLoad_Impl(uint32 module_id, const char *translated_path);
+int32 OS_ModuleLoad_Impl(osal_index_t module_id, const char *translated_path);
 
 /*----------------------------------------------------------------
 
@@ -82,7 +82,7 @@ int32 OS_ModuleLoad_Impl(uint32 module_id, const char *translated_path);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ModuleUnload_Impl(uint32 module_id);
+int32 OS_ModuleUnload_Impl(osal_index_t module_id);
 
 /*----------------------------------------------------------------
    Function: OS_ModuleGetInfo_Impl
@@ -91,7 +91,7 @@ int32 OS_ModuleUnload_Impl(uint32 module_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ModuleGetInfo_Impl(uint32 module_id, OS_module_prop_t *module_prop);
+int32 OS_ModuleGetInfo_Impl(osal_index_t module_id, OS_module_prop_t *module_prop);
 
 /*----------------------------------------------------------------
    Function: OS_GlobalSymbolLookup_Impl
@@ -111,7 +111,7 @@ int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ModuleSymbolLookup_Impl(uint32 local_id, cpuaddr *SymbolAddress, const char *SymbolName);
+int32 OS_ModuleSymbolLookup_Impl(osal_index_t local_id, cpuaddr *SymbolAddress, const char *SymbolName);
 
 /*----------------------------------------------------------------
    Function: OS_SymbolTableDump_Impl
@@ -120,7 +120,7 @@ int32 OS_ModuleSymbolLookup_Impl(uint32 local_id, cpuaddr *SymbolAddress, const 
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SymbolTableDump_Impl(const char *filename, uint32 size_limit);
+int32 OS_SymbolTableDump_Impl(const char *filename, size_t size_limit);
 
 /*
  * Helper functions within the shared layer that are not normally invoked outside the local module

@@ -78,7 +78,7 @@ int32 OS_ConsoleAPI_Init(void)
 {
     OS_console_internal_record_t *console;
     int32                         return_code;
-    uint32                        local_id;
+    osal_index_t                  local_id;
     OS_common_record_t *          record;
 
     memset(&OS_console_table, 0, sizeof(OS_console_table));
@@ -137,10 +137,10 @@ int32 OS_ConsoleAPI_Init(void)
  *    Either the entire string should be written, or none of it.
  *
  *-----------------------------------------------------------------*/
-static int32 OS_Console_CopyOut(OS_console_internal_record_t *console, const char *Str, uint32 *NextWritePos)
+static int32 OS_Console_CopyOut(OS_console_internal_record_t *console, const char *Str, size_t *NextWritePos)
 {
     const char *pmsg;
-    uint32      WriteOffset;
+    size_t      WriteOffset;
     int32       return_code;
 
     return_code = OS_ERROR;
@@ -193,9 +193,9 @@ int32 OS_ConsoleWrite(osal_id_t console_id, const char *Str)
 {
     int32                         return_code;
     OS_common_record_t *          record;
-    uint32                        local_id;
+    osal_index_t                  local_id;
     OS_console_internal_record_t *console;
-    uint32                        PendingWritePos;
+    size_t                        PendingWritePos;
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_CONSOLE, console_id, &local_id, &record);
     if (return_code == OS_SUCCESS)

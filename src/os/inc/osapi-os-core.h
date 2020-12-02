@@ -86,15 +86,34 @@
  */
 #define OS_ERROR_NAME_LENGTH 35
 
+/**
+ * @brief Type to be used for OSAL task priorities.
+ *
+ * OSAL priorities are in reverse order, and range
+ * from 0 (highest; will preempt all other tasks) to
+ * 255 (lowest; will not preempt any other task).
+ */
+typedef uint8_t osal_priority_t;
+
+#define OSAL_PRIORITY_C(X) ((osal_priority_t) {X})
+
+/**
+ * @brief Type to be used for OSAL stack pointer.
+ */
+typedef void *osal_stackptr_t;
+
+#define OSAL_STACKPTR_C(X)       ((osal_stackptr_t) {X})
+#define OSAL_TASK_STACK_ALLOCATE OSAL_STACKPTR_C(NULL)
+
 /*  Object property structures */
 
 /** @brief OSAL task properties */
 typedef struct
 {
-    char      name[OS_MAX_API_NAME];
-    osal_id_t creator;
-    uint32    stack_size;
-    uint32    priority;
+    char            name[OS_MAX_API_NAME];
+    osal_id_t       creator;
+    size_t          stack_size;
+    osal_priority_t priority;
 } OS_task_prop_t;
 
 /** @brief OSAL queue properties */
@@ -140,9 +159,9 @@ typedef struct
  */
 typedef struct
 {
-    uint32 free_bytes;
-    uint32 free_blocks;
-    uint32 largest_free_block;
+    size_t            free_bytes;
+    osal_blockcount_t free_blocks;
+    size_t            largest_free_block;
 } OS_heap_prop_t;
 
 /**
@@ -467,7 +486,7 @@ static inline bool OS_ObjectIdDefined(osal_id_t object_id)
  *          #OS_INVALID_POINTER if the passed-in buffer is invalid
  *          #OS_ERR_NAME_TOO_LONG if the name will not fit in the buffer provided
  */
-int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size);
+int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -480,7 +499,7 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, uint32 buffer_size);
  * @return The object type portion of the object_id, see @ref OSObjectTypes for
  *         expected values
  */
-uint32 OS_IdentifyObject(osal_id_t object_id);
+osal_objtype_t OS_IdentifyObject(osal_id_t object_id);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -506,7 +525,7 @@ uint32 OS_IdentifyObject(osal_id_t object_id);
  * @retval #OS_SUCCESS                 @copybrief OS_SUCCESS
  * @retval #OS_ERR_INCORRECT_OBJ_TYPE  @copybrief OS_ERR_INCORRECT_OBJ_TYPE
  */
-int32 OS_ConvertToArrayIndex(osal_id_t object_id, uint32 *ArrayIndex);
+int32 OS_ConvertToArrayIndex(osal_id_t object_id, osal_index_t *ArrayIndex);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -537,7 +556,7 @@ int32 OS_ConvertToArrayIndex(osal_id_t object_id, uint32 *ArrayIndex);
  * @retval #OS_SUCCESS                 @copybrief OS_SUCCESS
  * @retval #OS_ERR_INCORRECT_OBJ_TYPE  @copybrief OS_ERR_INCORRECT_OBJ_TYPE
  * */
-int32 OS_ObjectIdToArrayIndex(uint32 idtype, osal_id_t object_id, uint32 *ArrayIndex);
+int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t object_id, osal_index_t *ArrayIndex);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -566,7 +585,8 @@ void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void 
  * @param[in]  callback_ptr Function to invoke for each matching object ID
  * @param[in]  callback_arg Opaque Argument to pass to callback function
  */
-void OS_ForEachObjectOfType(uint32 objtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg);
+void OS_ForEachObjectOfType(osal_objtype_t objtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr,
+                            void *callback_arg);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -617,8 +637,8 @@ int32 OS_RegisterEventHandler(OS_EventHandler_t handler);
  * @retval #OS_ERR_NAME_TAKEN if the name specified is already used by a task
  * @retval #OS_ERROR if an unspecified/other error occurs
  */
-int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry function_pointer, uint32 *stack_pointer,
-                    uint32 stack_size, uint32 priority, uint32 flags);
+int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry function_pointer,
+                    osal_stackptr_t stack_pointer, size_t stack_size, osal_priority_t priority, uint32 flags);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -687,7 +707,7 @@ int32 OS_TaskDelay(uint32 millisecond);
  * @retval #OS_ERR_INVALID_PRIORITY if the priority is greater than the max allowed
  * @retval #OS_ERROR if the OS call to change the priority fails
  */
-int32 OS_TaskSetPriority(osal_id_t task_id, uint32 new_priority);
+int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -797,7 +817,8 @@ int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t 
  * @retval #OS_QUEUE_INVALID_SIZE if the queue depth exceeds the limit
  * @retval #OS_ERROR if the OS create call fails
  */
-int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, uint32 queue_depth, uint32 data_size, uint32 flags);
+int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcount_t queue_depth, size_t data_size,
+                     uint32 flags);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -839,7 +860,7 @@ int32 OS_QueueDelete(osal_id_t queue_id);
  * @retval #OS_QUEUE_TIMEOUT if the timeout was OS_PEND and the time expired
  * @retval #OS_QUEUE_INVALID_SIZE if the size copied from the queue was not correct
  */
-int32 OS_QueueGet(osal_id_t queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout);
+int32 OS_QueueGet(osal_id_t queue_id, void *data, size_t size, size_t *size_copied, int32 timeout);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -857,7 +878,7 @@ int32 OS_QueueGet(osal_id_t queue_id, void *data, uint32 size, uint32 *size_copi
  * @retval #OS_QUEUE_FULL if the queue cannot accept another message
  * @retval #OS_ERROR if the OS call returns an error
  */
-int32 OS_QueuePut(osal_id_t queue_id, const void *data, uint32 size, uint32 flags);
+int32 OS_QueuePut(osal_id_t queue_id, const void *data, size_t size, uint32 flags);
 
 /*-------------------------------------------------------------------------------------*/
 /**

@@ -93,10 +93,10 @@ void Test_OS_printf(void)
     /*
      * For coverage, exercise different paths depending on the return value
      */
-    UT_SetForceFail(UT_KEY(OCS_vsnprintf), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_vsnprintf), -1);
     OS_printf("UnitTest6");
 
-    UT_SetForceFail(UT_KEY(OCS_vsnprintf), OS_BUFFER_SIZE + 10);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_vsnprintf), OS_BUFFER_SIZE + 10);
     OS_printf("UnitTest7");
 }
 

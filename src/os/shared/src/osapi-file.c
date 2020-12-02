@@ -90,7 +90,7 @@ int32 OS_FileAPI_Init(void)
 int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access)
 {
     int32               return_code;
-    uint32              local_id;
+    osal_index_t        local_id;
     OS_common_record_t *record;
     char                local_path[OS_MAX_LOCAL_PATH_LEN];
 
@@ -228,7 +228,7 @@ int32 OS_open(const char *path, int32 access, uint32 mode)
 int32 OS_close(osal_id_t filedes)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Make sure the file descriptor is legit before using it */
@@ -253,10 +253,10 @@ int32 OS_close(osal_id_t filedes)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimedRead(osal_id_t filedes, void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -283,10 +283,10 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, uint32 nbytes, int32 timeout
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, uint32 nbytes, int32 timeout)
+int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 timeout)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check Parameters */
@@ -313,7 +313,7 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, uint32 nbytes, int32 
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_read(osal_id_t filedes, void *buffer, uint32 nbytes)
+int32 OS_read(osal_id_t filedes, void *buffer, size_t nbytes)
 {
     return OS_TimedRead(filedes, buffer, nbytes, OS_PEND);
 } /* end OS_read */
@@ -326,7 +326,7 @@ int32 OS_read(osal_id_t filedes, void *buffer, uint32 nbytes)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_write(osal_id_t filedes, const void *buffer, uint32 nbytes)
+int32 OS_write(osal_id_t filedes, const void *buffer, size_t nbytes)
 {
     return OS_TimedWrite(filedes, buffer, nbytes, OS_PEND);
 } /* end OS_write */
@@ -394,7 +394,7 @@ int32 OS_stat(const char *path, os_fstat_t *filestats)
 int32 OS_lseek(osal_id_t filedes, int32 offset, uint32 whence)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Make sure the file descriptor is legit before using it */
@@ -441,10 +441,10 @@ int32 OS_remove(const char *path)
  *-----------------------------------------------------------------*/
 int32 OS_rename(const char *old, const char *new)
 {
-    int   i;
-    int32 return_code;
-    char  old_path[OS_MAX_LOCAL_PATH_LEN];
-    char  new_path[OS_MAX_LOCAL_PATH_LEN];
+    osal_index_t i;
+    int32        return_code;
+    char         old_path[OS_MAX_LOCAL_PATH_LEN];
+    char         new_path[OS_MAX_LOCAL_PATH_LEN];
 
     return_code = OS_TranslatePath(old, old_path);
     if (return_code == OS_SUCCESS)
@@ -583,7 +583,7 @@ int32 OS_mv(const char *src, const char *dest)
 int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop)
 {
     OS_common_record_t *record;
-    uint32              local_id;
+    osal_index_t        local_id;
     int32               return_code;
 
     /* Check parameters */
@@ -618,8 +618,8 @@ int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop)
  *-----------------------------------------------------------------*/
 int32 OS_FileOpenCheck(const char *Filename)
 {
-    int32  return_code;
-    uint32 i;
+    int32        return_code;
+    osal_index_t i;
 
     if (Filename == NULL)
     {
@@ -656,9 +656,9 @@ int32 OS_FileOpenCheck(const char *Filename)
  *-----------------------------------------------------------------*/
 int32 OS_CloseFileByName(const char *Filename)
 {
-    int32  return_code;
-    int32  close_code;
-    uint32 i;
+    int32        return_code;
+    int32        close_code;
+    osal_index_t i;
 
     if (Filename == NULL)
     {
@@ -703,9 +703,9 @@ int32 OS_CloseFileByName(const char *Filename)
  *-----------------------------------------------------------------*/
 int32 OS_CloseAllFiles(void)
 {
-    int32  return_code;
-    int32  close_code;
-    uint32 i;
+    int32        return_code;
+    int32        close_code;
+    osal_index_t i;
 
     return_code = OS_SUCCESS;
 

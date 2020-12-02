@@ -39,7 +39,7 @@ typedef struct
 } Test_OS_ObjTypeCount_t;
 
 /* a match function that always matches */
-static bool TestAlwaysMatch(void *ref, uint32 local_id, const OS_common_record_t *obj)
+static bool TestAlwaysMatch(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
 {
     return true;
 }
@@ -96,7 +96,7 @@ void Test_OS_LockUnlockGlobal(void)
     OS_Lock_Global(55555);
     OS_Unlock_Global(55555);
 
-    UT_SetForceFail(UT_KEY(OS_TaskGetId), 0);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId), 0);
     OS_Lock_Global(OS_OBJECT_TYPE_OS_BINSEM);
     OS_Unlock_Global(OS_OBJECT_TYPE_OS_BINSEM);
 }
@@ -113,7 +113,7 @@ void Test_OS_ObjectIdConvertLock(void)
      */
     int32               expected;
     int32               actual;
-    uint32              array_index;
+    osal_index_t        array_index;
     OS_common_record_t *record;
     osal_id_t           objid;
     UT_idbuf_t          corrupt_objid;
@@ -186,9 +186,9 @@ void Test_OS_GetMaxForObjectType(void)
      * Test Case For:
      * uint32 OS_GetMaxForObjectType(uint32 idtype);
      */
-    uint32 idtype   = 0;
-    uint32 expected = 0xFFFFFFFF;
-    uint32 max      = 0;
+    osal_objtype_t idtype;
+    uint32         expected = 0xFFFFFFFF;
+    uint32         max      = 0;
 
     for (idtype = 0; idtype < OS_OBJECT_TYPE_USER; ++idtype)
     {
@@ -219,9 +219,9 @@ void Test_OS_GetBaseForObjectType(void)
      * Test Case For:
      * uint32 OS_GetBaseForObjectType(uint32 idtype);
      */
-    uint32 idtype   = 0;
-    uint32 expected = 0xFFFFFFFF;
-    uint32 max      = 0;
+    osal_objtype_t idtype;
+    uint32         expected = 0xFFFFFFFF;
+    uint32         max      = 0;
 
     for (idtype = 0; idtype < OS_OBJECT_TYPE_USER; ++idtype)
     {
@@ -256,10 +256,10 @@ void Test_OS_ObjectIdToArrayIndex(void)
      * different test case.  The only additional test here is to provide a value
      * which is out of range.
      */
-    osal_id_t objid;
-    uint32    local_idx = 0xFFFFFFFF;
-    int32     expected  = OS_SUCCESS;
-    int32     actual    = ~OS_SUCCESS;
+    osal_id_t    objid;
+    osal_index_t local_idx;
+    int32        expected = OS_SUCCESS;
+    int32        actual   = ~OS_SUCCESS;
 
     /* need to get a "valid" objid for the nominal case */
     OS_ObjectIdCompose_Impl(OS_OBJECT_TYPE_OS_TASK, 1, &objid);
@@ -271,7 +271,7 @@ void Test_OS_ObjectIdToArrayIndex(void)
 
     /* coverage for off-nominal case */
     expected = OS_ERR_INVALID_ID;
-    actual   = OS_ObjectIdToArrayIndex(0xFFFFFFFF, UT_OBJID_OTHER, &local_idx);
+    actual   = OS_ObjectIdToArrayIndex(0xFFFF, UT_OBJID_OTHER, &local_idx);
     UtAssert_True(actual == expected, "OS_ObjectIdToArrayIndex() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 }
 
@@ -294,7 +294,7 @@ void Test_OS_ObjectIdFindByName(void)
     /*
      * Pass in a name that is beyond OS_MAX_API_NAME
      */
-    UT_SetForceFail(UT_KEY(OCS_strlen), OS_MAX_API_NAME + 10);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), OS_MAX_API_NAME + 10);
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_ObjectIdFindByName(OS_OBJECT_TYPE_OS_TASK, TaskName, &objid);
     UtAssert_True(actual == expected, "OS_ObjectFindIdByName(%s) (%ld) == OS_ERR_NAME_TOO_LONG", TaskName,
@@ -335,8 +335,8 @@ void Test_OS_ObjectIdGetById(void)
     int32               actual   = ~OS_SUCCESS;
     int32               expected = OS_SUCCESS;
     osal_id_t           refobjid;
-    uint32              local_idx = 0xFFFFFFFF;
-    OS_common_record_t *rptr      = NULL;
+    osal_index_t        local_idx;
+    OS_common_record_t *rptr = NULL;
 
     /* verify that the call returns ERROR when not initialized */
     OS_SharedGlobalVars.Initialized = false;
@@ -373,7 +373,7 @@ void Test_OS_ObjectIdGetById(void)
 
     /* attempt to get lock for invalid type object should fail */
     expected = OS_ERR_INVALID_ID;
-    actual   = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, 0xFFFFFFFF, refobjid, &local_idx, &rptr);
+    actual   = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, 0xFFFF, refobjid, &local_idx, &rptr);
     UtAssert_True(actual == expected, "OS_ObjectIdGetById() (%ld) == OS_ERR_INVALID_ID", (long)actual);
     OS_SharedGlobalVars.ShutdownFlag = 0;
 
@@ -532,32 +532,32 @@ void Test_OS_ObjectIdAllocateNew(void)
      */
     int32               expected = OS_SUCCESS;
     int32               actual   = ~OS_SUCCESS;
-    uint32              indx;
+    osal_index_t        idx;
     OS_common_record_t *rptr = NULL;
 
-    actual = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &indx, &rptr);
+    actual = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &idx, &rptr);
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_ObjectIdAllocate() (%ld) == OS_SUCCESS", (long)actual);
     UtAssert_True(rptr != NULL, "rptr (%p) != NULL", (void *)rptr);
 
     /* Passing a NULL name also should work here (used for internal objects) */
-    actual = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, NULL, &indx, &rptr);
+    actual = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, NULL, &idx, &rptr);
     UtAssert_True(actual == expected, "OS_ObjectIdAllocate(NULL) (%ld) == OS_SUCCESS", (long)actual);
 
     rptr->name_entry = "UT_alloc";
     expected         = OS_ERR_NAME_TAKEN;
-    actual           = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &indx, &rptr);
+    actual           = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &idx, &rptr);
     UtAssert_True(actual == expected, "OS_ObjectIdAllocate() (%ld) == OS_ERR_NAME_TAKEN", (long)actual);
 
     OS_SharedGlobalVars.ShutdownFlag = OS_SHUTDOWN_MAGIC_NUMBER;
     expected                         = OS_ERROR;
-    actual                           = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &indx, &rptr);
+    actual                           = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &idx, &rptr);
     OS_SharedGlobalVars.ShutdownFlag = 0;
     UtAssert_True(actual == expected, "OS_ObjectIdAllocate() (%ld) == OS_ERR_NAME_TAKEN", (long)actual);
 
     expected = OS_ERR_INCORRECT_OBJ_TYPE;
-    actual   = OS_ObjectIdAllocateNew(0xFFFFFFFF, "UT_alloc", &indx, &rptr);
+    actual   = OS_ObjectIdAllocateNew(0xFFFF, "UT_alloc", &idx, &rptr);
     UtAssert_True(actual == expected, "OS_ObjectIdAllocate() (%ld) == OS_ERR_INCORRECT_OBJ_TYPE", (long)actual);
 }
 
@@ -569,11 +569,11 @@ void Test_OS_ConvertToArrayIndex(void)
      *
      *
      */
-    int32               expected   = OS_SUCCESS;
-    int32               actual     = ~OS_SUCCESS; // OS_ConvertToArrayIndex();
-    uint32              local_idx1 = 0xFFFFFFF0;
-    uint32              local_idx2 = 0xFFFFFFF1;
-    OS_common_record_t *rptr       = NULL;
+    int32               expected = OS_SUCCESS;
+    int32               actual   = ~OS_SUCCESS; // OS_ConvertToArrayIndex();
+    osal_index_t        local_idx1;
+    osal_index_t        local_idx2;
+    OS_common_record_t *rptr = NULL;
 
     /* Need a valid ID to work with */
     OS_ObjectIdFindNext(OS_OBJECT_TYPE_OS_TASK, &local_idx1, &rptr);
@@ -593,9 +593,9 @@ void Test_OS_ForEachObject(void)
      * Test Case For:
      * void OS_ForEachObject (uint32 creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg);
      */
-    uint32                 objtype   = OS_OBJECT_TYPE_UNDEFINED;
-    OS_common_record_t *   rptr      = NULL;
-    uint32                 local_idx = 0xFFFFFFFF;
+    osal_objtype_t         objtype;
+    OS_common_record_t *   rptr = NULL;
+    osal_index_t           local_idx;
     UT_idbuf_t             self_id;
     Test_OS_ObjTypeCount_t Count;
 
@@ -603,6 +603,7 @@ void Test_OS_ForEachObject(void)
 
     memset(&Count, 0, sizeof(Count));
 
+    objtype = OS_OBJECT_TYPE_UNDEFINED;
     while (objtype < OS_OBJECT_TYPE_USER)
     {
         OS_ObjectIdFindNext(objtype, &local_idx, &rptr);
@@ -641,8 +642,8 @@ void Test_OS_GetResourceName(void)
      * Test Case For:
      * int32 OS_GetResourceName(uint32 id, char *buffer, uint32 buffer_size)
      */
-    uint32              local_idx = 0xFFFFFFFF;
-    OS_common_record_t *rptr      = NULL;
+    osal_index_t        local_idx;
+    OS_common_record_t *rptr = NULL;
     char                NameBuffer[OS_MAX_API_NAME];
     int32               expected;
     int32               actual;
@@ -659,11 +660,11 @@ void Test_OS_GetResourceName(void)
     UtAssert_True(strcmp(NameBuffer, "UTTask") == 0, "NameBuffer (%s) == UTTask", NameBuffer);
 
     expected = OS_ERR_NAME_TOO_LONG;
-    actual   = OS_GetResourceName(rptr->active_id, NameBuffer, 2);
+    actual   = OS_GetResourceName(rptr->active_id, NameBuffer, OSAL_SIZE_C(2));
     UtAssert_True(actual == expected, "OS_GetResourceName() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_GetResourceName(rptr->active_id, NULL, 0);
+    actual   = OS_GetResourceName(rptr->active_id, NULL, OSAL_SIZE_C(0));
     UtAssert_True(actual == expected, "OS_GetResourceName() (%ld) == OS_INVALID_POINTER", (long)actual);
 }
 

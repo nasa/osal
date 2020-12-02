@@ -69,7 +69,7 @@ int32 OS_VxWorks_CountSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options)
+int32 OS_CountSemCreate_Impl(osal_index_t sem_id, uint32 sem_initial_value, uint32 options)
 {
     SEM_ID tmp_sem_id;
 
@@ -97,7 +97,7 @@ int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 opt
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemDelete_Impl(uint32 sem_id)
+int32 OS_CountSemDelete_Impl(osal_index_t sem_id)
 {
     /*
      * As the memory for the sem is statically allocated, delete is a no-op.
@@ -115,7 +115,7 @@ int32 OS_CountSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGive_Impl(uint32 sem_id)
+int32 OS_CountSemGive_Impl(osal_index_t sem_id)
 {
     /* Give VxWorks Semaphore */
     return OS_VxWorks_GenericSemGive(OS_impl_count_sem_table[sem_id].vxid);
@@ -129,7 +129,7 @@ int32 OS_CountSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTake_Impl(uint32 sem_id)
+int32 OS_CountSemTake_Impl(osal_index_t sem_id)
 {
     return OS_VxWorks_GenericSemTake(OS_impl_count_sem_table[sem_id].vxid, WAIT_FOREVER);
 } /* end OS_CountSemTake_Impl */
@@ -142,7 +142,7 @@ int32 OS_CountSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
+int32 OS_CountSemTimedWait_Impl(osal_index_t sem_id, uint32 msecs)
 {
     int   ticks;
     int32 status;
@@ -165,7 +165,7 @@ int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGetInfo_Impl(uint32 sem_id, OS_count_sem_prop_t *count_prop)
+int32 OS_CountSemGetInfo_Impl(osal_index_t sem_id, OS_count_sem_prop_t *count_prop)
 {
     /* VxWorks does not provide an API to get the value */
     return OS_SUCCESS;
