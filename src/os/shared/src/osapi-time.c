@@ -173,7 +173,7 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
          * Now we need to add it to the time base callback ring, so take the
          * timebase-specific lock to prevent a tick from being processed at this moment.
          */
-        OS_TimeBaseLock_Impl(OS_ObjectIndexFromToken(&timebase_token));
+        OS_TimeBaseLock_Impl(&timebase_token);
 
         cb_list            = timebase->first_cb;
         timebase->first_cb = OS_ObjectIdFromToken(&timecb_token);
@@ -187,7 +187,7 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
             OS_timecb_table[timecb->next_ref].prev_ref = OS_ObjectIndexFromToken(&timecb_token);
         }
 
-        OS_TimeBaseUnlock_Impl(OS_ObjectIndexFromToken(&timebase_token));
+        OS_TimeBaseUnlock_Impl(&timebase_token);
 
         /* Check result, finalize record, and unlock global table. */
         return_code = OS_ObjectIdFinalizeNew(return_code, &timecb_token, timer_id);
@@ -349,7 +349,7 @@ int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time)
     {
         timecb = OS_OBJECT_TABLE_GET(OS_timecb_table, token);
 
-        OS_TimeBaseLock_Impl(OS_ObjectIndexFromToken(&timecb->timebase_token));
+        OS_TimeBaseLock_Impl(&timecb->timebase_token);
 
         if ((timecb->flags & TIMECB_FLAG_DEDICATED_TIMEBASE) != 0)
         {
@@ -359,7 +359,7 @@ int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time)
         timecb->wait_time     = (int32)start_time;
         timecb->interval_time = (int32)interval_time;
 
-        OS_TimeBaseUnlock_Impl(OS_ObjectIndexFromToken(&timecb->timebase_token));
+        OS_TimeBaseUnlock_Impl(&timecb->timebase_token);
 
         OS_ObjectIdRelease(&token);
     }
@@ -423,7 +423,7 @@ int32 OS_TimerDelete(osal_id_t timer_id)
 
         OS_ObjectIdTransferToken(&timecb->timebase_token, &timebase_token);
 
-        OS_TimeBaseLock_Impl(OS_ObjectIndexFromToken(&timecb->timebase_token));
+        OS_TimeBaseLock_Impl(&timecb->timebase_token);
 
         /*
          * If the timer uses a dedicated time base, then also delete that.
@@ -456,7 +456,7 @@ int32 OS_TimerDelete(osal_id_t timer_id)
         timecb->next_ref                           = OS_ObjectIndexFromToken(&timecb_token);
         timecb->prev_ref                           = OS_ObjectIndexFromToken(&timecb_token);
 
-        OS_TimeBaseUnlock_Impl(OS_ObjectIndexFromToken(&timecb->timebase_token));
+        OS_TimeBaseUnlock_Impl(&timecb->timebase_token);
 
         /* Complete the operation via the common routine */
         return_code = OS_ObjectIdFinalizeDelete(return_code, &timecb_token);

@@ -89,9 +89,13 @@ OS_impl_timebase_internal_record_t OS_impl_timebase_table[OS_MAX_TIMEBASES];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_TimeBaseLock_Impl(osal_index_t local_id)
+void OS_TimeBaseLock_Impl(const OS_object_token_t *token)
 {
-    rtems_semaphore_obtain(OS_impl_timebase_table[local_id].handler_mutex, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+    OS_impl_timebase_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+
+    rtems_semaphore_obtain(impl->handler_mutex, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
 } /* end OS_TimeBaseLock_Impl */
 
 /*----------------------------------------------------------------
@@ -102,9 +106,13 @@ void OS_TimeBaseLock_Impl(osal_index_t local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_TimeBaseUnlock_Impl(osal_index_t local_id)
+void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token)
 {
-    rtems_semaphore_release(OS_impl_timebase_table[local_id].handler_mutex);
+    OS_impl_timebase_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+
+    rtems_semaphore_release(impl->handler_mutex);
 } /* end OS_TimeBaseUnlock_Impl */
 
 /*----------------------------------------------------------------
@@ -119,14 +127,14 @@ void OS_TimeBaseUnlock_Impl(osal_index_t local_id)
 static rtems_timer_service_routine OS_TimeBase_ISR(rtems_id rtems_timer_id, void *arg)
 {
     OS_U32ValueWrapper_t                user_data;
-    osal_index_t                        local_id;
+    OS_object_token_t                   token;
     OS_impl_timebase_internal_record_t *local;
 
     user_data.opaque_arg = arg;
-    OS_ConvertToArrayIndex(user_data.id, &local_id);
-    local = &OS_impl_timebase_table[local_id];
-    if (OS_ObjectIdEqual(OS_global_timebase_table[local_id].active_id, user_data.id))
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMEBASE, user_data.id, &token) == OS_SUCCESS)
     {
+        local = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, token);
+
         /*
          * Reset the timer, but only if an interval was selected
          */
@@ -219,8 +227,8 @@ int32 OS_Rtems_TimeBaseAPI_Impl_Init(void)
      * This really should be an exact/whole number result; otherwise this
      * will round to the nearest nanosecond.
      */
-    RTEMS_GlobalVars.ClockAccuracyNsec =
-        (1000000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) / OS_SharedGlobalVars.TicksPerSecond;
+    RTEMS_GlobalVars.ClockAccuracyNsec = (1000000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) /
+                                         OS_SharedGlobalVars.TicksPerSecond;
 
     /*
      * Finally compute the Microseconds per tick
@@ -280,22 +288,22 @@ void OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseCreate_Impl(osal_index_t timer_id)
+int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
 {
     int32                               return_code;
     rtems_status_code                   rtems_sc;
     OS_impl_timebase_internal_record_t *local;
-    OS_common_record_t *                global;
     rtems_name                          r_name;
+    OS_timebase_internal_record_t *     timebase;
 
     return_code = OS_SUCCESS;
-    local       = &OS_impl_timebase_table[timer_id];
-    global      = &OS_global_timebase_table[timer_id];
+    local       = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+    timebase    = OS_OBJECT_TABLE_GET(OS_timebase_table, *token);
 
     /*
      * The RTEMS classic name for dependent resources
      */
-    r_name = OS_ObjectIdToInteger(global->active_id);
+    r_name = OS_ObjectIdToInteger(OS_ObjectIdFromToken(token));
 
     /*
      * Set up the necessary OS constructs
@@ -306,17 +314,17 @@ int32 OS_TimeBaseCreate_Impl(osal_index_t timer_id)
      * If no external sync function is provided then this will set up an RTEMS
      * timer to locally simulate the timer tick using the CPU clock.
      */
-    local->simulate_flag = (OS_timebase_table[timer_id].external_sync == NULL);
+    local->simulate_flag = (timebase->external_sync == NULL);
     if (local->simulate_flag)
     {
-        OS_timebase_table[timer_id].external_sync = OS_TimeBase_WaitImpl;
+        timebase->external_sync = OS_TimeBase_WaitImpl;
 
         /*
          * The tick_sem is a simple semaphore posted by the ISR and taken by the
          * timebase helper task (created later).
          */
-        rtems_sc =
-            rtems_semaphore_create(r_name, 0, RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_PRIORITY, 0, &local->tick_sem);
+        rtems_sc = rtems_semaphore_create(r_name, 0, RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_PRIORITY, 0,
+                                          &local->tick_sem);
         if (rtems_sc != RTEMS_SUCCESSFUL)
         {
             OS_DEBUG("Error: Tick Sem could not be created: %d\n", (int)rtems_sc);
@@ -376,10 +384,9 @@ int32 OS_TimeBaseCreate_Impl(osal_index_t timer_id)
         else
         {
             /* will place the task in 'ready for scheduling' state */
-            rtems_sc =
-                rtems_task_start(local->handler_task,                                           /*rtems task id*/
-                                 (rtems_task_entry)OS_TimeBase_CallbackThread,                  /* task entry point */
-                                 (rtems_task_argument)OS_ObjectIdToInteger(global->active_id)); /* passed argument  */
+            rtems_sc = rtems_task_start(local->handler_task,                          /*rtems task id*/
+                                        (rtems_task_entry)OS_TimeBase_CallbackThread, /* task entry point */
+                                        (rtems_task_argument)r_name);                 /* passed argument  */
 
             if (rtems_sc != RTEMS_SUCCESSFUL)
             {
@@ -410,15 +417,17 @@ int32 OS_TimeBaseCreate_Impl(osal_index_t timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseSet_Impl(osal_index_t timer_id, uint32 start_time, uint32 interval_time)
+int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uint32 interval_time)
 {
     OS_U32ValueWrapper_t                user_data;
     OS_impl_timebase_internal_record_t *local;
     int32                               return_code;
     int                                 status;
     rtems_interval                      start_ticks;
+    OS_timebase_internal_record_t *     timebase;
 
-    local       = &OS_impl_timebase_table[timer_id];
+    local       = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+    timebase    = OS_OBJECT_TABLE_GET(OS_timebase_table, *token);
     return_code = OS_SUCCESS;
 
     /* There is only something to do here if we are generating a simulated tick */
@@ -458,7 +467,7 @@ int32 OS_TimeBaseSet_Impl(osal_index_t timer_id, uint32 start_time, uint32 inter
             OS_UsecsToTicks(start_time, &start_ticks);
 
             user_data.opaque_arg = NULL;
-            user_data.id         = OS_global_timebase_table[timer_id].active_id;
+            user_data.id         = OS_ObjectIdFromToken(token);
 
             status = rtems_timer_fire_after(local->rtems_timer_id, start_ticks, OS_TimeBase_ISR, user_data.opaque_arg);
             if (status != RTEMS_SUCCESSFUL)
@@ -475,23 +484,23 @@ int32 OS_TimeBaseSet_Impl(osal_index_t timer_id, uint32 start_time, uint32 inter
                 if (local->configured_start_time != start_time)
                 {
                     OS_DEBUG("WARNING: timer %lu start_time requested=%luus, configured=%luus\n",
-                             (unsigned long)timer_id, (unsigned long)start_time,
+                             OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), (unsigned long)start_time,
                              (unsigned long)local->configured_start_time);
                 }
                 if (local->configured_interval_time != interval_time)
                 {
                     OS_DEBUG("WARNING: timer %lu interval_time requested=%luus, configured=%luus\n",
-                             (unsigned long)timer_id, (unsigned long)interval_time,
+                             OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), (unsigned long)interval_time,
                              (unsigned long)local->configured_interval_time);
                 }
 
                 if (local->interval_ticks > 0)
                 {
-                    OS_timebase_table[timer_id].accuracy_usec = local->configured_interval_time;
+                    timebase->accuracy_usec = local->configured_interval_time;
                 }
                 else
                 {
-                    OS_timebase_table[timer_id].accuracy_usec = local->configured_start_time;
+                    timebase->accuracy_usec = local->configured_start_time;
                 }
             }
         }
@@ -512,13 +521,13 @@ int32 OS_TimeBaseSet_Impl(osal_index_t timer_id, uint32 start_time, uint32 inter
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseDelete_Impl(osal_index_t timer_id)
+int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token)
 {
     rtems_status_code                   rtems_sc;
     OS_impl_timebase_internal_record_t *local;
     int32                               return_code;
 
-    local       = &OS_impl_timebase_table[timer_id];
+    local       = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
     return_code = OS_SUCCESS;
 
     /*
@@ -576,7 +585,7 @@ int32 OS_TimeBaseDelete_Impl(osal_index_t timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseGetInfo_Impl(osal_index_t timer_id, OS_timebase_prop_t *timer_prop)
+int32 OS_TimeBaseGetInfo_Impl(const OS_object_token_t *token, OS_timebase_prop_t *timer_prop)
 {
     return OS_SUCCESS;
 

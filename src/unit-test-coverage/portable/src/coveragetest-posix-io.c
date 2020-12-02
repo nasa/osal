@@ -43,14 +43,18 @@ void Test_OS_GenericClose_Impl(void)
      * Test Case For:
      * int32 OS_GenericClose_Impl(uint32 local_id)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_GenericClose_Impl, (UT_INDEX_0), OS_SUCCESS);
+    OS_object_token_t token;
+
+    memset(&token, 0, sizeof(token));
+
+    OSAPI_TEST_FUNCTION_RC(OS_GenericClose_Impl, (&token), OS_SUCCESS);
 
     /*
      * Test path where underlying close() fails.
      * Should still return success.
      */
     UT_SetDefaultReturnValue(UT_KEY(OCS_close), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericClose_Impl, (UT_INDEX_0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericClose_Impl, (&token), OS_SUCCESS);
 }
 
 void Test_OS_GenericSeek_Impl(void)
@@ -59,25 +63,28 @@ void Test_OS_GenericSeek_Impl(void)
      * Test Case For:
      * int32 OS_GenericSeek_Impl (uint32 local_id, int32 offset, uint32 whence)
      */
+    OS_object_token_t token;
+
+    memset(&token, 0, sizeof(token));
 
     /* note on success this wrapper returns the result of lseek(), not OS_SUCCESS */
     UT_SetDefaultReturnValue(UT_KEY(OCS_lseek), 111);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, OS_SEEK_CUR), 111);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (&token, 0, OS_SEEK_CUR), 111);
     UT_SetDefaultReturnValue(UT_KEY(OCS_lseek), 222);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, OS_SEEK_SET), 222);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (&token, 0, OS_SEEK_SET), 222);
     UT_SetDefaultReturnValue(UT_KEY(OCS_lseek), 333);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, OS_SEEK_END), 333);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (&token, 0, OS_SEEK_END), 333);
 
     /* bad whence */
-    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, 1234), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (&token, 0, 1234), OS_ERROR);
 
     /* generic failure of lseek() */
     UT_SetDefaultReturnValue(UT_KEY(OCS_lseek), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, OS_SEEK_END), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (&token, 0, OS_SEEK_END), OS_ERROR);
 
     /* The seek implementation also checks for this specific pipe errno */
     OCS_errno = OCS_ESPIPE;
-    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (UT_INDEX_0, 0, OS_SEEK_END), OS_ERR_NOT_IMPLEMENTED);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (&token, 0, OS_SEEK_END), OS_ERR_NOT_IMPLEMENTED);
 }
 
 void Test_OS_GenericRead_Impl(void)
@@ -86,24 +93,27 @@ void Test_OS_GenericRead_Impl(void)
      * Test Case For:
      * int32 OS_GenericRead_Impl (uint32 local_id, void *buffer, uint32 nbytes, int32 timeout)
      */
-    char SrcData[]                 = "ABCDEFGHIJK";
-    char DestData[sizeof(SrcData)] = {0};
+    char              SrcData[]                 = "ABCDEFGHIJK";
+    char              DestData[sizeof(SrcData)] = {0};
+    OS_object_token_t token;
+
+    memset(&token, 0, sizeof(token));
 
     UT_SetDataBuffer(UT_KEY(OCS_read), SrcData, sizeof(SrcData), false);
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, false);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (UT_INDEX_0, DestData, sizeof(DestData), 0), sizeof(DestData));
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), sizeof(DestData));
     UtAssert_MemCmp(SrcData, DestData, sizeof(SrcData), "read() data Valid");
 
     /* test invocation of select() in nonblocking mode */
     UT_ResetState(UT_KEY(OCS_read));
     UT_SetDataBuffer(UT_KEY(OCS_read), SrcData, sizeof(SrcData), false);
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (UT_INDEX_0, DestData, sizeof(DestData), 0), sizeof(DestData));
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), sizeof(DestData));
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_SelectSingle_Impl)) == 1, "OS_SelectSingle() called");
 
     /* read() failure */
     UT_SetDefaultReturnValue(UT_KEY(OCS_read), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (UT_INDEX_0, DestData, sizeof(DestData), 0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), OS_ERROR);
 }
 
 void Test_OS_GenericWrite_Impl(void)
@@ -112,24 +122,27 @@ void Test_OS_GenericWrite_Impl(void)
      * Test Case For:
      * int32 OS_GenericWrite_Impl(uint32 local_id, const void *buffer, uint32 nbytes, int32 timeout)
      */
-    char SrcData[]                 = "ABCDEFGHIJKL";
-    char DestData[sizeof(SrcData)] = {0};
+    char              SrcData[]                 = "ABCDEFGHIJKL";
+    char              DestData[sizeof(SrcData)] = {0};
+    OS_object_token_t token;
+
+    memset(&token, 0, sizeof(token));
 
     UT_SetDataBuffer(UT_KEY(OCS_write), DestData, sizeof(DestData), false);
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, false);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (UT_INDEX_0, SrcData, sizeof(SrcData), 0), sizeof(SrcData));
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), 0), sizeof(SrcData));
     UtAssert_MemCmp(SrcData, DestData, sizeof(SrcData), "write() data valid");
 
     /* test invocation of select() in nonblocking mode */
     UT_ResetState(UT_KEY(OCS_write));
     UT_SetDataBuffer(UT_KEY(OCS_write), DestData, sizeof(DestData), false);
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (UT_INDEX_0, SrcData, sizeof(SrcData), 0), sizeof(SrcData));
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), 0), sizeof(SrcData));
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_SelectSingle_Impl)) == 1, "OS_SelectSingle() called");
 
     /* write() failure */
     UT_SetDefaultReturnValue(UT_KEY(OCS_write), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (UT_INDEX_0, DestData, sizeof(DestData), 0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, DestData, sizeof(DestData), 0), OS_ERROR);
 }
 
 /* ------------------- End of test cases --------------------------------------*/

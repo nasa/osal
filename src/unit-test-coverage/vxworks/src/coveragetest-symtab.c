@@ -44,7 +44,6 @@ void Test_OS_GlobalSymbolLookup_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_GlobalSymbolLookup_Impl(NULL, NULL), OS_INVALID_POINTER);
     UT_SetDefaultReturnValue(UT_KEY(OCS_symFind), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_GlobalSymbolLookup_Impl(&SymAddr, "symname"), OS_ERROR);
-
 }
 
 void Test_OS_ModuleSymbolLookup_Impl(void)
@@ -52,11 +51,13 @@ void Test_OS_ModuleSymbolLookup_Impl(void)
     /* Test Case For:
      * int32 OS_ModuleSymbolLookup_Impl( uint32 local_id, cpuaddr *SymbolAddress, const char *SymbolName )
      */
-    cpuaddr SymAddr;
+    cpuaddr           SymAddr;
+    OS_object_token_t token = UT_TOKEN_0;
 
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(UT_INDEX_0, &SymAddr, "symname"), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(UT_INDEX_0, NULL, NULL), OS_INVALID_POINTER);
-    UT_SetDefaultReturnValue(UT_KEY(OCS_symFind), OCS_ERROR);    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(UT_INDEX_0, &SymAddr, "symname"), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(&token, &SymAddr, "symname"), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(&token, NULL, NULL), OS_INVALID_POINTER);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_symFind), OCS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup_Impl(&token, &SymAddr, "symname"), OS_ERROR);
 }
 
 void Test_OS_SymTableIterator_Impl(void)

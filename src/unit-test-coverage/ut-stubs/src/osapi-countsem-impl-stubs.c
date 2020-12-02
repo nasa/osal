@@ -38,9 +38,9 @@
 ** Semaphore API
 */
 
-UT_DEFAULT_STUB(OS_CountSemCreate_Impl, (osal_index_t sem_id, uint32 sem_initial_value, uint32 options))
-UT_DEFAULT_STUB(OS_CountSemGive_Impl, (osal_index_t sem_id))
-UT_DEFAULT_STUB(OS_CountSemTake_Impl, (osal_index_t sem_id))
-UT_DEFAULT_STUB(OS_CountSemTimedWait_Impl, (osal_index_t sem_id, uint32 msecs))
-UT_DEFAULT_STUB(OS_CountSemDelete_Impl, (osal_index_t sem_id))
-UT_DEFAULT_STUB(OS_CountSemGetInfo_Impl, (osal_index_t sem_id, OS_count_sem_prop_t *count_prop))
+UT_DEFAULT_STUB(OS_CountSemCreate_Impl, (const OS_object_token_t *token, uint32 sem_initial_value, uint32 options))
+UT_DEFAULT_STUB(OS_CountSemGive_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_CountSemTake_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_CountSemTimedWait_Impl, (const OS_object_token_t *token, uint32 msecs))
+UT_DEFAULT_STUB(OS_CountSemDelete_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_CountSemGetInfo_Impl, (const OS_object_token_t *token, OS_count_sem_prop_t *count_prop))

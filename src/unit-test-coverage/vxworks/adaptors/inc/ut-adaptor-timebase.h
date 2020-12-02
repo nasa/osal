@@ -49,7 +49,7 @@ int32 UT_TimeBaseTest_CallSigWaitFunc(osal_index_t local_id);
 int UT_TimeBaseTest_CallHelperTaskFunc(int arg);
 
 /* Invokes the static OS_VxWorks_RegisterTimer() function with given argument */
-void UT_TimeBaseTest_CallRegisterTimer(osal_index_t local_id);
+void UT_TimeBaseTest_CallRegisterTimer(osal_id_t obj_id);
 
 /* Hook functions which set the timer registration state */
 void UT_TimeBaseTest_SetTimeBaseRegState(osal_index_t local_id, bool is_success);

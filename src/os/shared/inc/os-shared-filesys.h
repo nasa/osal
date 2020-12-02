@@ -140,7 +140,7 @@ int32 OS_FileSysAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStartVolume_Impl(osal_index_t filesys_id);
+int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysStopVolume_Impl
@@ -149,7 +149,7 @@ int32 OS_FileSysStartVolume_Impl(osal_index_t filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStopVolume_Impl(osal_index_t filesys_id);
+int32 OS_FileSysStopVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysFormatVolume_Impl
@@ -158,7 +158,7 @@ int32 OS_FileSysStopVolume_Impl(osal_index_t filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysFormatVolume_Impl(osal_index_t filesys_id);
+int32 OS_FileSysFormatVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysCheckVolume_Impl
@@ -167,7 +167,7 @@ int32 OS_FileSysFormatVolume_Impl(osal_index_t filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysCheckVolume_Impl(osal_index_t filesys_id, bool repair);
+int32 OS_FileSysCheckVolume_Impl(const OS_object_token_t *token, bool repair);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysStatVolume_Impl
@@ -176,7 +176,7 @@ int32 OS_FileSysCheckVolume_Impl(osal_index_t filesys_id, bool repair);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStatVolume_Impl(osal_index_t filesys_id, OS_statvfs_t *result);
+int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *result);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysMountVolume_Impl
@@ -185,7 +185,7 @@ int32 OS_FileSysStatVolume_Impl(osal_index_t filesys_id, OS_statvfs_t *result);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysMountVolume_Impl(osal_index_t filesys_id);
+int32 OS_FileSysMountVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysUnmountVolume_Impl
@@ -194,7 +194,7 @@ int32 OS_FileSysMountVolume_Impl(osal_index_t filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysUnmountVolume_Impl(osal_index_t filesys_id);
+int32 OS_FileSysUnmountVolume_Impl(const OS_object_token_t *token);
 
 /*
  * Internal helper functions
@@ -202,7 +202,7 @@ int32 OS_FileSysUnmountVolume_Impl(osal_index_t filesys_id);
  * Not normally invoked outside this unit, except for unit testing
  */
 
-bool  OS_FileSys_FindVirtMountPoint(void *ref, osal_index_t local_id, const OS_common_record_t *obj);
+bool  OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, size_t blocksize,
                             osal_blockcount_t numblocks, bool should_format);
 

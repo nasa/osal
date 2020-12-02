@@ -90,7 +90,7 @@ static int32 OS_TaskPrepare(osal_id_t task_id, osal_task_entry *entrypt)
     {
         task = OS_OBJECT_TABLE_GET(OS_task_table, token);
 
-        return_code = OS_TaskMatch_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_TaskMatch_Impl(&token);
         *entrypt    = task->entry_function_pointer;
 
         OS_ObjectIdRelease(&token);
@@ -213,7 +213,7 @@ int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry f
         task->stack_pointer          = stack_pointer;
 
         /* Now call the OS-specific implementation.  This reads info from the task table. */
-        return_code = OS_TaskCreate_Impl(OS_ObjectIndexFromToken(&token), flags);
+        return_code = OS_TaskCreate_Impl(&token, flags);
 
         /* Check result, finalize record, and unlock global table. */
         return_code = OS_ObjectIdFinalizeNew(return_code, &token, task_id);
@@ -246,7 +246,7 @@ int32 OS_TaskDelete(osal_id_t task_id)
         /* Save the delete hook, as we do not want to call it while locked */
         delete_hook = task->delete_hook_pointer;
 
-        return_code = OS_TaskDelete_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_TaskDelete_Impl(&token);
 
         /* Complete the operation via the common routine */
         return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
@@ -322,7 +322,7 @@ int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority)
     {
         task = OS_OBJECT_TABLE_GET(OS_task_table, token);
 
-        return_code = OS_TaskSetPriority_Impl(OS_ObjectIndexFromToken(&token), new_priority);
+        return_code = OS_TaskSetPriority_Impl(&token, new_priority);
 
         if (return_code == OS_SUCCESS)
         {
@@ -442,7 +442,7 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
         task_prop->stack_size = task->stack_size;
         task_prop->priority   = task->priority;
 
-        return_code = OS_TaskGetInfo_Impl(OS_ObjectIndexFromToken(&token), task_prop);
+        return_code = OS_TaskGetInfo_Impl(&token, task_prop);
 
         OS_ObjectIdRelease(&token);
     }

@@ -58,10 +58,18 @@ void Test_OS_CreateSocketName(void)
      *
      * This focuses on coverage paths, as this function does not return a value
      */
-    OS_SockAddr_t testaddr;
+    OS_SockAddr_t     testaddr;
+    OS_object_token_t token;
+
+    OS_stream_table[0].stream_name[0] = 'x';
+
+    token.lock_mode = OS_LOCK_MODE_NONE;
+    token.obj_idx   = UT_INDEX_0;
+    token.obj_id    = UT_OBJID_1;
+    token.obj_type  = OS_OBJECT_TYPE_OS_STREAM;
 
     UT_SetDefaultReturnValue(UT_KEY(OS_SocketAddrToString_Impl), OS_ERROR);
-    OS_CreateSocketName(0, &testaddr, "ut");
+    OS_CreateSocketName(&token, &testaddr, "ut");
 
     /*
      * The function should have called snprintf() to create the name

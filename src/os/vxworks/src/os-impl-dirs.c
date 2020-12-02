@@ -32,6 +32,7 @@
 #include "os-vxworks.h"
 #include "os-impl-dirs.h"
 #include "os-shared-dir.h"
+#include "os-shared-idmap.h"
 
 /*
  * The directory handle table.
@@ -83,10 +84,14 @@ int32 OS_DirCreate_Impl(const char *local_path, uint32 access)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirOpen_Impl(osal_index_t local_id, const char *local_path)
+int32 OS_DirOpen_Impl(const OS_object_token_t *token, const char *local_path)
 {
-    OS_impl_dir_table[local_id].dp = opendir(local_path);
-    if (OS_impl_dir_table[local_id].dp == NULL)
+    OS_impl_dir_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_dir_table, *token);
+
+    impl->dp = opendir(local_path);
+    if (impl->dp == NULL)
     {
         return OS_ERROR;
     }
@@ -101,10 +106,14 @@ int32 OS_DirOpen_Impl(osal_index_t local_id, const char *local_path)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirClose_Impl(osal_index_t local_id)
+int32 OS_DirClose_Impl(const OS_object_token_t *token)
 {
-    closedir(OS_impl_dir_table[local_id].dp);
-    OS_impl_dir_table[local_id].dp = NULL;
+    OS_impl_dir_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_dir_table, *token);
+
+    closedir(impl->dp);
+    impl->dp = NULL;
     return OS_SUCCESS;
 } /* end OS_DirClose_Impl */
 
@@ -116,9 +125,12 @@ int32 OS_DirClose_Impl(osal_index_t local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirRead_Impl(osal_index_t local_id, os_dirent_t *dirent)
+int32 OS_DirRead_Impl(const OS_object_token_t *token, os_dirent_t *dirent)
 {
-    struct dirent *de;
+    struct dirent *                de;
+    OS_impl_dir_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_dir_table, *token);
 
     /* NOTE - the readdir() call is non-reentrant ....
      * However, this is performed while the global dir table lock is taken.
@@ -129,7 +141,7 @@ int32 OS_DirRead_Impl(osal_index_t local_id, os_dirent_t *dirent)
      */
     /* cppcheck-suppress readdirCalled */
     /* cppcheck-suppress nonreentrantFunctionsreaddir */
-    de = readdir(OS_impl_dir_table[local_id].dp);
+    de = readdir(impl->dp);
     if (de == NULL)
     {
         return OS_ERROR;
@@ -149,9 +161,13 @@ int32 OS_DirRead_Impl(osal_index_t local_id, os_dirent_t *dirent)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_DirRewind_Impl(osal_index_t local_id)
+int32 OS_DirRewind_Impl(const OS_object_token_t *token)
 {
-    rewinddir(OS_impl_dir_table[local_id].dp);
+    OS_impl_dir_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_dir_table, *token);
+
+    rewinddir(impl->dp);
     return OS_SUCCESS;
 } /* end OS_DirRewind_Impl */
 

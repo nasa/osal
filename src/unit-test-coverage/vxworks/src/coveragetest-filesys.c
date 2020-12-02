@@ -45,19 +45,23 @@ void Test_OS_FileSysStartVolume_Impl(void)
      * Test Case For:
      * int32 OS_FileSysStartVolume_Impl (uint32 filesys_id)
      */
-    int32 expected;
+    int32             expected;
+    OS_object_token_t token;
+
+    token = UT_TOKEN_0;
 
     /* Emulate an UNKNOWN entry */
     OS_filesys_table[0].fstype = OS_FILESYS_TYPE_UNKNOWN;
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(0), OS_ERR_NOT_IMPLEMENTED);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(&token), OS_ERR_NOT_IMPLEMENTED);
 
     /* Emulate an FS_BASED entry */
     OS_filesys_table[0].fstype = OS_FILESYS_TYPE_FS_BASED;
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(&token), OS_SUCCESS);
 
     /* Emulate a VOLATILE_DISK entry (ramdisk) */
     OS_filesys_table[1].fstype = OS_FILESYS_TYPE_VOLATILE_DISK;
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(1), OS_SUCCESS);
+    token.obj_idx              = UT_INDEX_1;
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(&token), OS_SUCCESS);
 
     /* Emulate a NORMAL_DISK entry (ATA) */
     OS_filesys_table[2].fstype = OS_FILESYS_TYPE_NORMAL_DISK;
@@ -67,15 +71,17 @@ void Test_OS_FileSysStartVolume_Impl(void)
 #else
     expected = OS_ERR_NOT_IMPLEMENTED;
 #endif
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(2), expected);
+    token = UT_TOKEN_2;
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(&token), expected);
 
     /* Failure to create XBD layer */
     UT_SetDefaultReturnValue(UT_KEY(OCS_xbdBlkDevCreateSync), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(1), OS_FS_ERR_DRIVE_NOT_CREATED);
+    token = UT_TOKEN_1;
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(&token), OS_FS_ERR_DRIVE_NOT_CREATED);
 
     /* Failure to create low level block dev */
     UT_SetDefaultReturnValue(UT_KEY(OCS_ramDevCreate), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(1), OS_FS_ERR_DRIVE_NOT_CREATED);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(&token), OS_FS_ERR_DRIVE_NOT_CREATED);
 }
 
 void Test_OS_FileSysStopVolume_Impl(void)
@@ -83,12 +89,15 @@ void Test_OS_FileSysStopVolume_Impl(void)
     /* Test Case For:
      * int32 OS_FileSysStopVolume_Impl (uint32 filesys_id)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStopVolume_Impl(0), OS_SUCCESS);
+    OS_object_token_t token = UT_TOKEN_0;
+
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStopVolume_Impl(&token), OS_SUCCESS);
 
     /* Failure to delete XBD layer */
     OS_filesys_table[1].fstype = OS_FILESYS_TYPE_VOLATILE_DISK;
     UT_FileSysTest_SetupFileSysEntry(1, NULL, 1, 4);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStopVolume_Impl(1), OS_SUCCESS);
+    token = UT_TOKEN_1;
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStopVolume_Impl(&token), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_xbdBlkDevDelete)) == 1, "xbdBlkDevDelete() called");
 }
 
@@ -97,21 +106,22 @@ void Test_OS_FileSysFormatVolume_Impl(void)
     /* Test Case For:
      * int32 OS_FileSysFormatVolume_Impl (uint32 filesys_id)
      */
+    OS_object_token_t token = UT_TOKEN_0;
 
     /* test unimplemented fs type */
     OS_filesys_table[0].fstype = OS_FILESYS_TYPE_UNKNOWN;
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysFormatVolume_Impl(0), OS_ERR_NOT_IMPLEMENTED);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysFormatVolume_Impl(&token), OS_ERR_NOT_IMPLEMENTED);
 
     /* fs-based should be noop */
     OS_filesys_table[0].fstype = OS_FILESYS_TYPE_FS_BASED;
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysFormatVolume_Impl(0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysFormatVolume_Impl(&token), OS_SUCCESS);
 
     OS_filesys_table[0].fstype = OS_FILESYS_TYPE_VOLATILE_DISK;
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysFormatVolume_Impl(0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysFormatVolume_Impl(&token), OS_SUCCESS);
 
     /* Failure of the dosFsVolFormat() call */
     UT_SetDefaultReturnValue(UT_KEY(OCS_dosFsVolFormat), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysFormatVolume_Impl(0), OS_FS_ERR_DRIVE_NOT_CREATED);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysFormatVolume_Impl(&token), OS_FS_ERR_DRIVE_NOT_CREATED);
 }
 
 void Test_OS_FileSysMountVolume_Impl(void)
@@ -119,11 +129,12 @@ void Test_OS_FileSysMountVolume_Impl(void)
     /* Test Case For:
      * int32 OS_FileSysMountVolume_Impl (uint32 filesys_id)
      */
+    OS_object_token_t token = UT_TOKEN_0;
 
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_open));
 }
 
@@ -132,15 +143,16 @@ void Test_OS_FileSysUnmountVolume_Impl(void)
     /* Test Case For:
      * int32 OS_FileSysUnmountVolume_Impl (uint32 filesys_id)
      */
+    OS_object_token_t token = UT_TOKEN_0;
 
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(&token), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(&token), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_open));
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_ioctl), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(&token), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_ioctl));
 }
 
@@ -150,11 +162,13 @@ void Test_OS_FileSysStatVolume_Impl(void)
      * Test Case For:
      * int32 OS_FileSysStatVolume_Impl (uint32 filesys_id, OS_statvfs_t *result)
      */
-    OS_statvfs_t stat;
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStatVolume_Impl(0, &stat), OS_SUCCESS);
+    OS_statvfs_t      stat;
+    OS_object_token_t token = UT_TOKEN_0;
+
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStatVolume_Impl(&token, &stat), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_statvfs), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysStatVolume_Impl(0, &stat), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStatVolume_Impl(&token, &stat), OS_ERROR);
 }
 
 void Test_OS_FileSysCheckVolume_Impl(void)
@@ -163,14 +177,16 @@ void Test_OS_FileSysCheckVolume_Impl(void)
      * Test Case For:
      * int32 OS_FileSysCheckVolume_Impl (uint32 filesys_id, bool repair)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(0, true), OS_SUCCESS);
+    OS_object_token_t token = UT_TOKEN_0;
+
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(&token, true), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(0, false), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(&token, false), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_open));
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_ioctl), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(0, false), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(&token, false), OS_ERROR);
 }
 
 /* ------------------- End of test cases --------------------------------------*/

@@ -121,7 +121,7 @@ int32 OS_BinSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_initia
         OS_OBJECT_INIT(token, binsem, obj_name, sem_name);
 
         /* Now call the OS-specific implementation.  This reads info from the table. */
-        return_code = OS_BinSemCreate_Impl(OS_ObjectIndexFromToken(&token), sem_initial_value, options);
+        return_code = OS_BinSemCreate_Impl(&token, sem_initial_value, options);
 
         /* Check result, finalize record, and unlock global table. */
         return_code = OS_ObjectIdFinalizeNew(return_code, &token, sem_id);
@@ -147,7 +147,7 @@ int32 OS_BinSemDelete(osal_id_t sem_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_BinSemDelete_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_BinSemDelete_Impl(&token);
 
         /* Complete the operation via the common routine */
         return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
@@ -174,7 +174,7 @@ int32 OS_BinSemGive(osal_id_t sem_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_BinSemGive_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_BinSemGive_Impl(&token);
     }
 
     return return_code;
@@ -198,7 +198,7 @@ int32 OS_BinSemFlush(osal_id_t sem_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_BinSemFlush_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_BinSemFlush_Impl(&token);
     }
 
     return return_code;
@@ -221,7 +221,7 @@ int32 OS_BinSemTake(osal_id_t sem_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_BinSemTake_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_BinSemTake_Impl(&token);
     }
 
     return return_code;
@@ -244,7 +244,7 @@ int32 OS_BinSemTimedWait(osal_id_t sem_id, uint32 msecs)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_BinSemTimedWait_Impl(OS_ObjectIndexFromToken(&token), msecs);
+        return_code = OS_BinSemTimedWait_Impl(&token, msecs);
     }
 
     return return_code;
@@ -302,7 +302,7 @@ int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
 
         strncpy(bin_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
         bin_prop->creator = record->creator;
-        return_code       = OS_BinSemGetInfo_Impl(OS_ObjectIndexFromToken(&token), bin_prop);
+        return_code       = OS_BinSemGetInfo_Impl(&token, bin_prop);
 
         OS_ObjectIdRelease(&token);
     }

@@ -41,35 +41,41 @@ void Test_OS_ConsoleWakeup_Impl(void)
      * Test Case For:
      * void OS_ConsoleWakeup_Impl(const char *string)
      */
+    OS_object_token_t token = UT_TOKEN_0;
 
     /* no return code - check for coverage */
     UT_ConsoleTest_SetConsoleAsync(0, true);
-    OS_ConsoleWakeup_Impl(0);
+    OS_ConsoleWakeup_Impl(&token);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semGive)) == 1, "semGive() called in async mode");
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_semGive), -1);
-    OS_ConsoleWakeup_Impl(0);
+    OS_ConsoleWakeup_Impl(&token);
 
     UT_ConsoleTest_SetConsoleAsync(0, false);
     OS_console_table[0].WritePos = 1;
-    OS_ConsoleWakeup_Impl(0);
+    OS_ConsoleWakeup_Impl(&token);
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_ConsoleOutput_Impl)) == 1, "OS_ConsoleOutput_Impl() called in sync mode");
 }
 
 void Test_OS_ConsoleCreate_Impl(void)
 {
-    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(0), OS_SUCCESS);
+    OS_object_token_t token;
+
+    memset(&token, 0, sizeof(token));
+
+    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskSpawn)) == 1, "taskSpawn() called");
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_semCInitialize), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(0), OS_SEM_FAILURE);
+    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_SEM_FAILURE);
     UT_ClearForceFail(UT_KEY(OCS_semCInitialize));
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_taskSpawn), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_taskSpawn));
 
-    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(OS_MAX_CONSOLES + 1), OS_ERR_NOT_IMPLEMENTED);
+    token.obj_idx = OS_MAX_CONSOLES + 1;
+    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_ERR_NOT_IMPLEMENTED);
 
     /* Also call the actual console task, to get coverage on it.
      * This task has an infinite loop, which only exits if semTake fails */

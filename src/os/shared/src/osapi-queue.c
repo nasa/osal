@@ -122,7 +122,7 @@ int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcoun
         queue->max_size  = data_size;
 
         /* Now call the OS-specific implementation.  This reads info from the queue table. */
-        return_code = OS_QueueCreate_Impl(OS_ObjectIndexFromToken(&token), flags);
+        return_code = OS_QueueCreate_Impl(&token, flags);
 
         /* Check result, finalize record, and unlock global table. */
         return_code = OS_ObjectIdFinalizeNew(return_code, &token, queue_id);
@@ -148,7 +148,7 @@ int32 OS_QueueDelete(osal_id_t queue_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, queue_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_QueueDelete_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_QueueDelete_Impl(&token);
 
         /* Complete the operation via the common routine */
         return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
@@ -194,7 +194,7 @@ int32 OS_QueueGet(osal_id_t queue_id, void *data, size_t size, size_t *size_copi
             }
             else
             {
-                return_code = OS_QueueGet_Impl(OS_ObjectIndexFromToken(&token), data, size, size_copied, timeout);
+                return_code = OS_QueueGet_Impl(&token, data, size, size_copied, timeout);
             }
         }
     }
@@ -237,7 +237,7 @@ int32 OS_QueuePut(osal_id_t queue_id, const void *data, size_t size, uint32 flag
             }
             else
             {
-                return_code = OS_QueuePut_Impl(OS_ObjectIndexFromToken(&token), data, size, flags);
+                return_code = OS_QueuePut_Impl(&token, data, size, flags);
             }
         }
     }

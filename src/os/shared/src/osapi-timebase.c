@@ -155,7 +155,7 @@ int32 OS_TimeBaseCreate(osal_id_t *timer_id, const char *timebase_name, OS_Timer
         }
 
         /* Now call the OS-specific implementation.  This reads info from the timer table. */
-        return_code = OS_TimeBaseCreate_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_TimeBaseCreate_Impl(&token);
 
         /* Check result, finalize record, and unlock global table. */
         return_code = OS_ObjectIdFinalizeNew(return_code, &token, timer_id);
@@ -208,9 +208,9 @@ int32 OS_TimeBaseSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time
         timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, token);
 
         /* Need to take the time base lock to ensure that no ticks are currently being processed */
-        OS_TimeBaseLock_Impl(OS_ObjectIndexFromToken(&token));
+        OS_TimeBaseLock_Impl(&token);
 
-        return_code = OS_TimeBaseSet_Impl(OS_ObjectIndexFromToken(&token), start_time, interval_time);
+        return_code = OS_TimeBaseSet_Impl(&token, start_time, interval_time);
 
         if (return_code == OS_SUCCESS)
         {
@@ -219,7 +219,7 @@ int32 OS_TimeBaseSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time
             timebase->nominal_interval_time = interval_time;
         }
 
-        OS_TimeBaseUnlock_Impl(OS_ObjectIndexFromToken(&token));
+        OS_TimeBaseUnlock_Impl(&token);
 
         OS_ObjectIdRelease(&token);
     }
@@ -254,7 +254,7 @@ int32 OS_TimeBaseDelete(osal_id_t timer_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, OS_OBJECT_TYPE_OS_TIMEBASE, timer_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_TimeBaseDelete_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_TimeBaseDelete_Impl(&token);
 
         /* Complete the operation via the common routine */
         return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
@@ -342,7 +342,7 @@ int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_pro
         timebase_prop->freerun_time          = timebase->freerun_time;
         timebase_prop->accuracy              = timebase->accuracy_usec;
 
-        return_code = OS_TimeBaseGetInfo_Impl(OS_ObjectIndexFromToken(&token), timebase_prop);
+        return_code = OS_TimeBaseGetInfo_Impl(&token, timebase_prop);
 
         OS_ObjectIdRelease(&token);
     }
@@ -438,7 +438,7 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
          * Call the sync function - this will pend for some period of time
          * and return the amount of elapsed time in units of "timebase ticks"
          */
-        tick_time = (*syncfunc)(OS_ObjectIndexFromToken(&token));
+        tick_time = (*syncfunc)(timebase_id);
 
         /*
          * The returned tick_time should be nonzero.  If the sync function
@@ -480,7 +480,7 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
             }
         }
 
-        OS_TimeBaseLock_Impl(OS_ObjectIndexFromToken(&token));
+        OS_TimeBaseLock_Impl(&token);
 
         /*
          * After waiting, check that our ID still matches
@@ -488,7 +488,7 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
          */
         if (!OS_ObjectIdEqual(timebase_id, record->active_id))
         {
-            OS_TimeBaseUnlock_Impl(OS_ObjectIndexFromToken(&token));
+            OS_TimeBaseUnlock_Impl(&token);
             break;
         }
 
@@ -540,7 +540,7 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
             } while (curr_cb_local_id != timer_id);
         }
 
-        OS_TimeBaseUnlock_Impl(OS_ObjectIndexFromToken(&token));
+        OS_TimeBaseUnlock_Impl(&token);
     }
 } /* end OS_TimeBase_CallbackThread */
 

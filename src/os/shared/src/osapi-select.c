@@ -69,7 +69,7 @@ int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, objid, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_SelectSingle_Impl(OS_ObjectIndexFromToken(&token), StateFlags, msecs);
+        return_code = OS_SelectSingle_Impl(&token, StateFlags, msecs);
 
         OS_ObjectIdRelease(&token);
     }

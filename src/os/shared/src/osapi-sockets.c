@@ -84,11 +84,13 @@ int32 OS_SocketAPI_Init(void)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-void OS_CreateSocketName(osal_index_t local_id, const OS_SockAddr_t *Addr, const char *parent_name)
+void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Addr, const char *parent_name)
 {
     size_t                       len;
     uint16                       port;
-    OS_stream_internal_record_t *sock = &OS_stream_table[local_id];
+    OS_stream_internal_record_t *sock;
+
+    sock = OS_OBJECT_TABLE_GET(OS_stream_table, *token);
 
     if (OS_SocketAddrToString_Impl(sock->stream_name, OS_MAX_API_NAME, Addr) != OS_SUCCESS)
     {
@@ -142,7 +144,7 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
         stream->socket_type   = Type;
 
         /* Now call the OS-specific implementation.  This reads info from the table. */
-        return_code = OS_SocketOpen_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_SocketOpen_Impl(&token);
 
         /* Check result, finalize record, and unlock global table. */
         return_code = OS_ObjectIdFinalizeNew(return_code, &token, sock_id);
@@ -190,11 +192,11 @@ int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr)
         }
         else
         {
-            return_code = OS_SocketBind_Impl(OS_ObjectIndexFromToken(&token), Addr);
+            return_code = OS_SocketBind_Impl(&token, Addr);
 
             if (return_code == OS_SUCCESS)
             {
-                OS_CreateSocketName(OS_ObjectIndexFromToken(&token), Addr, NULL);
+                OS_CreateSocketName(&token, Addr, NULL);
                 record->name_entry = stream->stream_name;
                 stream->stream_state |= OS_STREAM_STATE_BOUND;
             }
@@ -290,8 +292,7 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
         OS_SocketAddrInit_Impl(Addr, sock->socket_domain);
 
         /* The actual accept impl is done without global table lock, only refcount lock */
-        return_code = OS_SocketAccept_Impl(OS_ObjectIndexFromToken(&sock_token), OS_ObjectIndexFromToken(&conn_token),
-                                           Addr, timeout);
+        return_code = OS_SocketAccept_Impl(&sock_token, &conn_token, Addr, timeout);
     }
 
     if (conn_record != NULL)
@@ -301,7 +302,7 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
         if (return_code == OS_SUCCESS)
         {
             /* Generate an entry name based on the remote address */
-            OS_CreateSocketName(OS_ObjectIndexFromToken(&conn_token), Addr, sock_record->name_entry);
+            OS_CreateSocketName(&conn_token, Addr, sock_record->name_entry);
             conn_record->name_entry = conn->stream_name;
             conn->stream_state |= OS_STREAM_STATE_CONNECTED;
         }
@@ -367,7 +368,7 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeo
 
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_SocketConnect_Impl(OS_ObjectIndexFromToken(&token), Addr, Timeout);
+        return_code = OS_SocketConnect_Impl(&token, Addr, Timeout);
 
         OS_Lock_Global(LOCAL_OBJID_TYPE);
         if (return_code == OS_SUCCESS)
@@ -417,7 +418,7 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockA
         }
         else
         {
-            return_code = OS_SocketRecvFrom_Impl(OS_ObjectIndexFromToken(&token), buffer, buflen, RemoteAddr, timeout);
+            return_code = OS_SocketRecvFrom_Impl(&token, buffer, buflen, RemoteAddr, timeout);
         }
 
         OS_ObjectIdRelease(&token);
@@ -457,7 +458,7 @@ int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, size_t buflen, cons
         }
         else
         {
-            return_code = OS_SocketSendTo_Impl(OS_ObjectIndexFromToken(&token), buffer, buflen, RemoteAddr);
+            return_code = OS_SocketSendTo_Impl(&token, buffer, buflen, RemoteAddr);
         }
 
         OS_ObjectIdRelease(&token);
@@ -518,7 +519,7 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
 
         strncpy(sock_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
         sock_prop->creator = record->creator;
-        return_code        = OS_SocketGetInfo_Impl(OS_ObjectIndexFromToken(&token), sock_prop);
+        return_code        = OS_SocketGetInfo_Impl(&token, sock_prop);
 
         OS_ObjectIdRelease(&token);
     }

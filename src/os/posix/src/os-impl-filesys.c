@@ -44,6 +44,7 @@
 
 #include "os-posix.h"
 #include "os-shared-filesys.h"
+#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -82,9 +83,9 @@ int32 OS_Posix_FileSysAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStartVolume_Impl(osal_index_t filesys_id)
+int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     struct stat                   stat_buf;
     const char *                  tmpdir;
     uint32                        i;
@@ -96,6 +97,8 @@ int32 OS_FileSysStartVolume_Impl(osal_index_t filesys_id)
         VOLATILE_DISK_LOC_TMP,
         VOLATILE_DISK_LOC_MAX
     };
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     /*
      * Determine basic type of filesystem, if not already known
@@ -184,7 +187,7 @@ int32 OS_FileSysStartVolume_Impl(osal_index_t filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStopVolume_Impl(osal_index_t filesys_id)
+int32 OS_FileSysStopVolume_Impl(const OS_object_token_t *token)
 {
     /*
      * This is a no-op.
@@ -207,7 +210,7 @@ int32 OS_FileSysStopVolume_Impl(osal_index_t filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysFormatVolume_Impl(osal_index_t filesys_id)
+int32 OS_FileSysFormatVolume_Impl(const OS_object_token_t *token)
 {
     /*
      * In theory, this should wipe any existing files in the ramdisk,
@@ -230,10 +233,12 @@ int32 OS_FileSysFormatVolume_Impl(osal_index_t filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysMountVolume_Impl(osal_index_t filesys_id)
+int32 OS_FileSysMountVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     struct stat                   stat_buf;
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     /*
      * This will do a mkdir() for the mount point if it does
@@ -282,7 +287,7 @@ int32 OS_FileSysMountVolume_Impl(osal_index_t filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysUnmountVolume_Impl(osal_index_t filesys_id)
+int32 OS_FileSysUnmountVolume_Impl(const OS_object_token_t *token)
 {
     /*
      * NOTE: Mounting/Unmounting on POSIX is not implemented.
@@ -303,10 +308,12 @@ int32 OS_FileSysUnmountVolume_Impl(osal_index_t filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStatVolume_Impl(osal_index_t filesys_id, OS_statvfs_t *result)
+int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *result)
 {
-    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     struct statvfs                stat_buf;
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     if (statvfs(local->system_mountpt, &stat_buf) != 0)
     {
@@ -328,7 +335,7 @@ int32 OS_FileSysStatVolume_Impl(osal_index_t filesys_id, OS_statvfs_t *result)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysCheckVolume_Impl(osal_index_t filesys_id, bool repair)
+int32 OS_FileSysCheckVolume_Impl(const OS_object_token_t *token, bool repair)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_FileSysCheckVolume_Impl */

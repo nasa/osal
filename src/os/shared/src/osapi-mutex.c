@@ -113,7 +113,7 @@ int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options)
         OS_OBJECT_INIT(token, mutex, obj_name, sem_name);
 
         /* Now call the OS-specific implementation.  This reads info from the table. */
-        return_code = OS_MutSemCreate_Impl(OS_ObjectIndexFromToken(&token), options);
+        return_code = OS_MutSemCreate_Impl(&token, options);
 
         /* Check result, finalize record, and unlock global table. */
         return_code = OS_ObjectIdFinalizeNew(return_code, &token, sem_id);
@@ -139,7 +139,7 @@ int32 OS_MutSemDelete(osal_id_t sem_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_MutSemDelete_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_MutSemDelete_Impl(&token);
 
         /* Complete the operation via the common routine */
         return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
@@ -180,7 +180,7 @@ int32 OS_MutSemGive(osal_id_t sem_id)
 
         mutex->last_owner = OS_OBJECT_ID_UNDEFINED;
 
-        return_code = OS_MutSemGive_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_MutSemGive_Impl(&token);
     }
 
     return return_code;
@@ -208,7 +208,7 @@ int32 OS_MutSemTake(osal_id_t sem_id)
     {
         mutex = OS_OBJECT_TABLE_GET(OS_mutex_table, token);
 
-        return_code = OS_MutSemTake_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_MutSemTake_Impl(&token);
         if (return_code == OS_SUCCESS)
         {
             self_task = OS_TaskGetId();
@@ -281,7 +281,7 @@ int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
         strncpy(mut_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
         mut_prop->creator = record->creator;
 
-        return_code = OS_MutSemGetInfo_Impl(OS_ObjectIndexFromToken(&token), mut_prop);
+        return_code = OS_MutSemGetInfo_Impl(&token, mut_prop);
 
         OS_ObjectIdRelease(&token);
     }

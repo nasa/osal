@@ -50,9 +50,9 @@ int UT_TimeBaseTest_CallHelperTaskFunc(int arg)
     return OS_VxWorks_TimeBaseTask(arg);
 }
 
-void UT_TimeBaseTest_CallRegisterTimer(osal_index_t local_id)
+void UT_TimeBaseTest_CallRegisterTimer(osal_id_t obj_id)
 {
-    OS_VxWorks_RegisterTimer(local_id);
+    OS_VxWorks_RegisterTimer(obj_id);
 }
 
 bool UT_TimeBaseTest_CheckTimeBaseRegisteredState(osal_index_t local_id)

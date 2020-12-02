@@ -55,6 +55,7 @@ void OS_UT_SetupTestTargetIndex(osal_objtype_t obj_type, osal_index_t test_idx)
     token.obj_id    = OS_ObjectIdFromInteger((obj_type << OS_OBJECT_TYPE_SHIFT) | test_idx);
 
     UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &token, sizeof(OS_object_token_t), true);
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_SUCCESS);
 }
 
 void OS_UT_SetupBasicInfoTest(osal_objtype_t obj_type, osal_index_t test_idx, const char *name, osal_id_t creator)

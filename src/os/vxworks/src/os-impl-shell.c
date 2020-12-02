@@ -33,6 +33,7 @@
 #include "os-impl-io.h"
 #include "os-shared-shell.h"
 #include "os-shared-file.h"
+#include "os-shared-idmap.h"
 
 #include <shellLib.h>
 #include <taskLib.h>
@@ -52,13 +53,15 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ShellOutputToFile_Impl(osal_index_t file_id, const char *Cmd)
+int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
 {
-    int32        ReturnCode = OS_ERROR;
-    int32        Result;
-    osal_id_t    fdCmd;
-    osal_index_t cmdidx;
-    char *       shellName;
+    int32                           ReturnCode = OS_ERROR;
+    int32                           Result;
+    osal_id_t                       fdCmd;
+    char *                          shellName;
+    OS_impl_file_internal_record_t *out_impl;
+    OS_impl_file_internal_record_t *cmd_impl;
+    OS_object_token_t               cmd_token;
 
     /* Create a file to write the command to (or write over the old one) */
     Result =
@@ -69,16 +72,18 @@ int32 OS_ShellOutputToFile_Impl(osal_index_t file_id, const char *Cmd)
         return Result;
     }
 
-    if (OS_ConvertToArrayIndex(fdCmd, &cmdidx) == OS_SUCCESS)
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_STREAM, fdCmd, &cmd_token) == OS_SUCCESS)
     {
+        out_impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
+        cmd_impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, cmd_token);
+
         /* copy the command to the file, and then seek back to the beginning of the file */
         OS_write(fdCmd, Cmd, strlen(Cmd));
         OS_lseek(fdCmd, 0, OS_SEEK_SET);
 
         /* Create a shell task the will run the command in the file, push output to OS_fd */
-        Result =
-            shellGenericInit("INTERPRETER=Cmd", 0, NULL, &shellName, false, false, OS_impl_filehandle_table[cmdidx].fd,
-                             OS_impl_filehandle_table[file_id].fd, OS_impl_filehandle_table[file_id].fd);
+        Result = shellGenericInit("INTERPRETER=Cmd", 0, NULL, &shellName, false, false,
+                                  cmd_impl->fd, out_impl->fd, out_impl->fd);
     }
 
     if (Result == OK)

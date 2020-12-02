@@ -85,16 +85,19 @@ int32 OS_Rtems_MutexAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options)
+int32 OS_MutSemCreate_Impl(const OS_object_token_t *token, uint32 options)
 {
-    rtems_status_code status;
-    rtems_name        r_name;
+    rtems_status_code                status;
+    rtems_name                       r_name;
+    OS_impl_mutex_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
 
     /*
     ** Try to create the mutex
     */
-    r_name = OS_ObjectIdToInteger(OS_global_mutex_table[sem_id].active_id);
-    status = rtems_semaphore_create(r_name, 1, OSAL_MUTEX_ATTRIBS, 0, &OS_impl_mutex_table[sem_id].id);
+    r_name = OS_ObjectIdToInteger(OS_ObjectIdFromToken(token));
+    status = rtems_semaphore_create(r_name, 1, OSAL_MUTEX_ATTRIBS, 0, &impl->id);
 
     if (status != RTEMS_SUCCESSFUL)
     {
@@ -114,11 +117,14 @@ int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemDelete_Impl(osal_index_t sem_id)
+int32 OS_MutSemDelete_Impl(const OS_object_token_t *token)
 {
-    rtems_status_code status;
+    rtems_status_code                status;
+    OS_impl_mutex_internal_record_t *impl;
 
-    status = rtems_semaphore_delete(OS_impl_mutex_table[sem_id].id);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
+
+    status = rtems_semaphore_delete(impl->id);
     if (status != RTEMS_SUCCESSFUL)
     {
         /* clean up? */
@@ -138,12 +144,15 @@ int32 OS_MutSemDelete_Impl(osal_index_t sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGive_Impl(osal_index_t sem_id)
+int32 OS_MutSemGive_Impl(const OS_object_token_t *token)
 {
-    rtems_status_code status;
+    rtems_status_code                status;
+    OS_impl_mutex_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
 
     /* Give the mutex */
-    status = rtems_semaphore_release(OS_impl_mutex_table[sem_id].id);
+    status = rtems_semaphore_release(impl->id);
 
     if (status != RTEMS_SUCCESSFUL)
     {
@@ -163,11 +172,14 @@ int32 OS_MutSemGive_Impl(osal_index_t sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemTake_Impl(osal_index_t sem_id)
+int32 OS_MutSemTake_Impl(const OS_object_token_t *token)
 {
-    rtems_status_code status;
+    rtems_status_code                status;
+    OS_impl_mutex_internal_record_t *impl;
 
-    status = rtems_semaphore_obtain(OS_impl_mutex_table[sem_id].id, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
+
+    status = rtems_semaphore_obtain(impl->id, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
 
     if (status != RTEMS_SUCCESSFUL)
     {
@@ -187,7 +199,7 @@ int32 OS_MutSemTake_Impl(osal_index_t sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGetInfo_Impl(osal_index_t sem_id, OS_mut_sem_prop_t *mut_prop)
+int32 OS_MutSemGetInfo_Impl(const OS_object_token_t *token, OS_mut_sem_prop_t *mut_prop)
 {
     /* RTEMS provides no additional info */
     return OS_SUCCESS;

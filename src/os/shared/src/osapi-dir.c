@@ -134,7 +134,7 @@ int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
             OS_OBJECT_INIT(token, dir, dir_name, path);
 
             /* Now call the OS-specific implementation.  */
-            return_code = OS_DirOpen_Impl(OS_ObjectIndexFromToken(&token), local_path);
+            return_code = OS_DirOpen_Impl(&token, local_path);
 
             /* Check result, finalize record, and unlock global table. */
             return_code = OS_ObjectIdFinalizeNew(return_code, &token, dir_id);
@@ -161,7 +161,7 @@ int32 OS_DirectoryClose(osal_id_t dir_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, dir_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_DirClose_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_DirClose_Impl(&token);
 
         /* Complete the operation via the common routine */
         return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
@@ -202,7 +202,7 @@ int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
          * reads the "/" directory, the application will see the
          * real name (eeprom) and not the virtualized name (cf).
          */
-        return_code = OS_DirRead_Impl(OS_ObjectIndexFromToken(&token), dirent);
+        return_code = OS_DirRead_Impl(&token, dirent);
 
         OS_ObjectIdRelease(&token);
     }
@@ -228,7 +228,7 @@ int32 OS_DirectoryRewind(osal_id_t dir_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, dir_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_DirRewind_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_DirRewind_Impl(&token);
     }
 
     return return_code;

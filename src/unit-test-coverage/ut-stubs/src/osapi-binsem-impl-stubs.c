@@ -38,10 +38,10 @@
 ** Semaphore API
 */
 
-UT_DEFAULT_STUB(OS_BinSemCreate_Impl, (osal_index_t sem_id, uint32 sem_initial_value, uint32 options))
-UT_DEFAULT_STUB(OS_BinSemFlush_Impl, (osal_index_t sem_id))
-UT_DEFAULT_STUB(OS_BinSemGive_Impl, (osal_index_t sem_id))
-UT_DEFAULT_STUB(OS_BinSemTake_Impl, (osal_index_t sem_id))
-UT_DEFAULT_STUB(OS_BinSemTimedWait_Impl, (osal_index_t sem_id, uint32 msecs))
-UT_DEFAULT_STUB(OS_BinSemDelete_Impl, (osal_index_t sem_id))
-UT_DEFAULT_STUB(OS_BinSemGetInfo_Impl, (osal_index_t sem_id, OS_bin_sem_prop_t *bin_prop))
+UT_DEFAULT_STUB(OS_BinSemCreate_Impl, (const OS_object_token_t *token, uint32 sem_initial_value, uint32 options))
+UT_DEFAULT_STUB(OS_BinSemFlush_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_BinSemGive_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_BinSemTake_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_BinSemTimedWait_Impl, (const OS_object_token_t *token, uint32 msecs))
+UT_DEFAULT_STUB(OS_BinSemDelete_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_BinSemGetInfo_Impl, (const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop))

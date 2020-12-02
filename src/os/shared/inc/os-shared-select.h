@@ -50,7 +50,7 @@
     Returns: OS_SUCCESS on success, or relevant error code
              OS_ERR_OPERATION_NOT_SUPPORTED if the specified file handle does not support select
  ------------------------------------------------------------------*/
-int32 OS_SelectSingle_Impl(osal_index_t stream_id, uint32 *SelectFlags, int32 msecs);
+int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, int32 msecs);
 
 /*----------------------------------------------------------------
 

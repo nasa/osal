@@ -28,6 +28,7 @@
 #include "ut-adaptor-portable-posix-files.h"
 
 #include "os-shared-file.h"
+#include "os-shared-idmap.h"
 
 #include <OCS_stdio.h>
 #include <OCS_stdlib.h>
@@ -41,14 +42,18 @@ void Test_OS_FileOpen_Impl(void)
      * Test Case For:
      * int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", OS_FILE_FLAG_TRUNCATE, OS_WRITE_ONLY), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, OS_READ_ONLY), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", OS_FILE_FLAG_CREATE, OS_READ_WRITE), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, -1234), OS_ERROR);
+    OS_object_token_t token;
+
+    memset(&token, 0, sizeof(token));
+
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (&token, "local", OS_FILE_FLAG_TRUNCATE, OS_WRITE_ONLY), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (&token, "local", 0, OS_READ_ONLY), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (&token, "local", OS_FILE_FLAG_CREATE, OS_READ_WRITE), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (&token, "local", 0, -1234), OS_ERROR);
 
     /* failure mode */
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (UT_INDEX_0, "local", 0, OS_READ_ONLY), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpen_Impl, (&token, "local", 0, OS_READ_ONLY), OS_ERROR);
 }
 
 void Test_OS_FileStat_Impl(void)

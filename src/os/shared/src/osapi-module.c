@@ -260,7 +260,7 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
                 module->module_type = OS_MODULE_TYPE_DYNAMIC;
 
                 /* Now call the OS-specific implementation.  This reads info from the module table. */
-                return_code = OS_ModuleLoad_Impl(OS_ObjectIndexFromToken(&token), translated_path);
+                return_code = OS_ModuleLoad_Impl(&token, translated_path);
             }
         }
 
@@ -298,7 +298,7 @@ int32 OS_ModuleUnload(osal_id_t module_id)
          */
         if (module->module_type == OS_MODULE_TYPE_DYNAMIC)
         {
-            return_code = OS_ModuleUnload_Impl(OS_ObjectIndexFromToken(&token));
+            return_code = OS_ModuleUnload_Impl(&token);
         }
 
         /* Complete the operation via the common routine */
@@ -340,7 +340,7 @@ int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_prop)
         strncpy(module_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
         strncpy(module_prop->filename, module->file_name, OS_MAX_API_NAME - 1);
 
-        return_code = OS_ModuleGetInfo_Impl(OS_ObjectIndexFromToken(&token), module_prop);
+        return_code = OS_ModuleGetInfo_Impl(&token, module_prop);
 
         OS_ObjectIdRelease(&token);
     }
@@ -425,7 +425,7 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
     {
         record = OS_OBJECT_TABLE_GET(OS_global_module_table, token);
 
-        return_code = OS_ModuleSymbolLookup_Impl(OS_ObjectIndexFromToken(&token), symbol_address, symbol_name);
+        return_code = OS_ModuleSymbolLookup_Impl(&token, symbol_address, symbol_name);
         if (return_code != OS_SUCCESS)
         {
             /* look for a static symbol that also matches this module name */

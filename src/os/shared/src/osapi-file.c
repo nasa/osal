@@ -124,7 +124,7 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
             OS_OBJECT_INIT(token, stream, stream_name, path);
 
             /* Now call the OS-specific implementation.  */
-            return_code = OS_FileOpen_Impl(OS_ObjectIndexFromToken(&token), local_path, flags, access);
+            return_code = OS_FileOpen_Impl(&token, local_path, flags, access);
 
             /* Check result, finalize record, and unlock global table. */
             return_code = OS_ObjectIdFinalizeNew(return_code, &token, filedes);
@@ -234,7 +234,7 @@ int32 OS_close(osal_id_t filedes)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, filedes, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_GenericClose_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_GenericClose_Impl(&token);
 
         /* Complete the operation via the common routine */
         return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
@@ -266,7 +266,8 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, filedes, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_GenericRead_Impl(OS_ObjectIndexFromToken(&token), buffer, nbytes, timeout);
+        return_code = OS_GenericRead_Impl(&token, buffer, nbytes, timeout);
+
         OS_ObjectIdRelease(&token);
     }
 
@@ -295,7 +296,7 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, filedes, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_GenericWrite_Impl(OS_ObjectIndexFromToken(&token), buffer, nbytes, timeout);
+        return_code = OS_GenericWrite_Impl(&token, buffer, nbytes, timeout);
         OS_ObjectIdRelease(&token);
     }
 
@@ -397,7 +398,7 @@ int32 OS_lseek(osal_id_t filedes, int32 offset, uint32 whence)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, filedes, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_GenericSeek_Impl(OS_ObjectIndexFromToken(&token), offset, whence);
+        return_code = OS_GenericSeek_Impl(&token, offset, whence);
         OS_ObjectIdRelease(&token);
     }
 

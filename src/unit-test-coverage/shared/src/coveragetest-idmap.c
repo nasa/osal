@@ -40,7 +40,7 @@ typedef struct
 } Test_OS_ObjTypeCount_t;
 
 /* a match function that always matches */
-static bool TestAlwaysMatch(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
+static bool TestAlwaysMatch(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
     return true;
 }

@@ -74,11 +74,13 @@ const char OS_FILESYS_RAMDISK_VOLNAME_PREFIX[] = "RAM";
  *  Returns: true if the entry matches, false if it does not match
  *
  *-----------------------------------------------------------------*/
-bool OS_FileSys_FindVirtMountPoint(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
+bool OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
-    OS_filesys_internal_record_t *filesys = &OS_filesys_table[local_id];
-    const char *                  target  = (const char *)ref;
+    OS_filesys_internal_record_t *filesys;
+    const char *                  target = (const char *)ref;
     size_t                        mplen;
+
+    filesys = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     if ((filesys->flags & OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL) == 0)
     {
@@ -157,7 +159,7 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
             filesys->fstype = OS_FILESYS_TYPE_VOLATILE_DISK;
         }
 
-        return_code = OS_FileSysStartVolume_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_FileSysStartVolume_Impl(&token);
 
         if (return_code == OS_SUCCESS)
         {
@@ -167,7 +169,7 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
              */
             if (should_format)
             {
-                return_code = OS_FileSysFormatVolume_Impl(OS_ObjectIndexFromToken(&token));
+                return_code = OS_FileSysFormatVolume_Impl(&token);
             }
 
             if (return_code == OS_SUCCESS)
@@ -182,7 +184,7 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
                  * Cast to void to repress analysis warnings for
                  * ignored return value.
                  */
-                (void)OS_FileSysStopVolume_Impl(OS_ObjectIndexFromToken(&token));
+                (void)OS_FileSysStopVolume_Impl(&token);
             }
         }
 
@@ -282,12 +284,12 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
          * The "mount" implementation is required as it will
          * create the mountpoint if it does not already exist
          */
-        return_code = OS_FileSysStartVolume_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_FileSysStartVolume_Impl(&token);
 
         if (return_code == OS_SUCCESS)
         {
             filesys->flags |= OS_FILESYS_FLAG_IS_READY;
-            return_code = OS_FileSysMountVolume_Impl(OS_ObjectIndexFromToken(&token));
+            return_code = OS_FileSysMountVolume_Impl(&token);
         }
 
         if (return_code == OS_SUCCESS)
@@ -369,7 +371,7 @@ int32 OS_rmfs(const char *devname)
          * the filesystem is unmounted first, but this would break
          * compatibility with the existing unit tests.
          */
-        return_code = OS_FileSysStopVolume_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_FileSysStopVolume_Impl(&token);
 
         /* Free the entry in the master table  */
         return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
@@ -463,7 +465,7 @@ int32 OS_mount(const char *devname, const char *mountpoint)
         }
         else
         {
-            return_code = OS_FileSysMountVolume_Impl(OS_ObjectIndexFromToken(&token));
+            return_code = OS_FileSysMountVolume_Impl(&token);
         }
 
         if (return_code == OS_SUCCESS)
@@ -533,7 +535,7 @@ int32 OS_unmount(const char *mountpoint)
         }
         else
         {
-            return_code = OS_FileSysUnmountVolume_Impl(OS_ObjectIndexFromToken(&token));
+            return_code = OS_FileSysUnmountVolume_Impl(&token);
         }
 
         if (return_code == OS_SUCCESS)
@@ -583,7 +585,7 @@ int32 OS_fsBlocksFree(const char *name)
 
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_FileSysStatVolume_Impl(OS_ObjectIndexFromToken(&token), &statfs);
+        return_code = OS_FileSysStatVolume_Impl(&token, &statfs);
 
         OS_ObjectIdRelease(&token);
 
@@ -631,7 +633,7 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
 
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_FileSysStatVolume_Impl(OS_ObjectIndexFromToken(&token), &statfs);
+        return_code = OS_FileSysStatVolume_Impl(&token, &statfs);
 
         OS_ObjectIdRelease(&token);
 
@@ -685,7 +687,7 @@ int32 OS_chkfs(const char *name, bool repair)
 
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_FileSysCheckVolume_Impl(OS_ObjectIndexFromToken(&token), repair);
+        return_code = OS_FileSysCheckVolume_Impl(&token, repair);
 
         OS_ObjectIdRelease(&token);
     }

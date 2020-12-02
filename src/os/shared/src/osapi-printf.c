@@ -99,7 +99,7 @@ int32 OS_ConsoleAPI_Init(void)
         console->BufBase = OS_printf_buffer_mem;
         console->BufSize = sizeof(OS_printf_buffer_mem);
 
-        return_code = OS_ConsoleCreate_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_ConsoleCreate_Impl(&token);
 
         /* Check result, finalize record, and unlock global table. */
         return_code = OS_ObjectIdFinalizeNew(return_code, &token, &OS_SharedGlobalVars.PrintfConsoleId);
@@ -233,7 +233,7 @@ int32 OS_ConsoleWrite(osal_id_t console_id, const char *Str)
          * This is done while still locked, so it can support
          * either a synchronous or asynchronous implementation.
          */
-        OS_ConsoleWakeup_Impl(OS_ObjectIndexFromToken(&token));
+        OS_ConsoleWakeup_Impl(&token);
 
         OS_ObjectIdRelease(&token);
     }

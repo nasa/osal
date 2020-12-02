@@ -32,6 +32,7 @@
 #include "os-impl-queues.h"
 #include "os-shared-queue.h"
 #include "os-shared-timebase.h"
+#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                    GLOBAL DATA
@@ -63,11 +64,19 @@ int32 OS_VxWorks_QueueAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueCreate_Impl(osal_index_t queue_id, uint32 flags)
+int32 OS_QueueCreate_Impl(const OS_object_token_t *token, uint32 flags)
 {
-    MSG_Q_ID tmp_msgq_id;
-    int      queue_depth = OS_queue_table[queue_id].max_depth; /* maximum number of messages in queue (queue depth) */
-    int      data_size   = OS_queue_table[queue_id].max_size;  /* maximum size in bytes of a message */
+    MSG_Q_ID                         tmp_msgq_id;
+    int                              queue_depth;
+    int                              data_size;
+    OS_impl_queue_internal_record_t *impl;
+    OS_queue_internal_record_t *     queue;
+
+    impl  = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
+    queue = OS_OBJECT_TABLE_GET(OS_queue_table, *token);
+
+    queue_depth = queue->max_depth; /* maximum number of messages in queue (queue depth) */
+    data_size   = queue->max_size;  /* maximum size in bytes of a message */
 
     /* Create VxWorks Message Queue */
     tmp_msgq_id = msgQCreate(queue_depth, data_size, MSG_Q_FIFO);
@@ -79,7 +88,7 @@ int32 OS_QueueCreate_Impl(osal_index_t queue_id, uint32 flags)
         return OS_ERROR;
     }
 
-    OS_impl_queue_table[queue_id].vxid = tmp_msgq_id;
+    impl->vxid = tmp_msgq_id;
     return OS_SUCCESS;
 
 } /* end OS_QueueCreate_Impl */
@@ -92,16 +101,20 @@ int32 OS_QueueCreate_Impl(osal_index_t queue_id, uint32 flags)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueDelete_Impl(osal_index_t queue_id)
+int32 OS_QueueDelete_Impl(const OS_object_token_t *token)
 {
+    OS_impl_queue_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
+
     /* Try to delete the queue */
-    if (msgQDelete(OS_impl_queue_table[queue_id].vxid) != OK)
+    if (msgQDelete(impl->vxid) != OK)
     {
         OS_DEBUG("msgQDelete() - vxWorks errno %d\n", errno);
         return OS_ERROR;
     }
 
-    OS_impl_queue_table[queue_id].vxid = 0;
+    impl->vxid = 0;
     return OS_SUCCESS;
 
 } /* end OS_QueueDelete_Impl */
@@ -114,11 +127,14 @@ int32 OS_QueueDelete_Impl(osal_index_t queue_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGet_Impl(osal_index_t queue_id, void *data, size_t size, size_t *size_copied, int32 timeout)
+int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, size_t *size_copied, int32 timeout)
 {
-    int32  return_code;
-    STATUS status;
-    int    ticks;
+    int32                            return_code;
+    STATUS                           status;
+    int                              ticks;
+    OS_impl_queue_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
 
     /* Get Message From Message Queue */
     if (timeout == OS_PEND)
@@ -138,7 +154,7 @@ int32 OS_QueueGet_Impl(osal_index_t queue_id, void *data, size_t size, size_t *s
         }
     }
 
-    status = msgQReceive(OS_impl_queue_table[queue_id].vxid, data, size, ticks);
+    status = msgQReceive(impl->vxid, data, size, ticks);
 
     if (status == ERROR)
     {
@@ -174,11 +190,14 @@ int32 OS_QueueGet_Impl(osal_index_t queue_id, void *data, size_t size, size_t *s
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueuePut_Impl(osal_index_t queue_id, const void *data, size_t size, uint32 flags)
+int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, size_t size, uint32 flags)
 {
-    int32 return_code;
+    int32                            return_code;
+    OS_impl_queue_internal_record_t *impl;
 
-    if (msgQSend(OS_impl_queue_table[queue_id].vxid, (void *)data, size, NO_WAIT, MSG_PRI_NORMAL) == OK)
+    impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
+
+    if (msgQSend(impl->vxid, (void *)data, size, NO_WAIT, MSG_PRI_NORMAL) == OK)
     {
         return_code = OS_SUCCESS;
     }
@@ -204,7 +223,7 @@ int32 OS_QueuePut_Impl(osal_index_t queue_id, const void *data, size_t size, uin
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGetInfo_Impl(osal_index_t queue_id, OS_queue_prop_t *queue_prop)
+int32 OS_QueueGetInfo_Impl(const OS_object_token_t *token, OS_queue_prop_t *queue_prop)
 {
     /* No extra info for queues in the OS implementation */
     return OS_SUCCESS;

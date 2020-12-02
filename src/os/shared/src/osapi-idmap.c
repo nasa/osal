@@ -240,7 +240,7 @@ OS_common_record_t *OS_ObjectIdGlobalFromToken(const OS_object_token_t *token)
  *  returns: true if match, false otherwise
  *
  *-----------------------------------------------------------------*/
-bool OS_ObjectNameMatch(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
+bool OS_ObjectNameMatch(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
     return (obj->name_entry != NULL && strcmp((const char *)ref, obj->name_entry) == 0);
 } /* end OS_ObjectNameMatch */
@@ -504,7 +504,7 @@ int32 OS_ObjectIdFindNextMatch(OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_obj
 
         record = OS_OBJECT_TABLE_GET(base, *token);
 
-        if (OS_ObjectIdDefined(record->active_id) && MatchFunc(arg, token->obj_idx, record))
+        if (OS_ObjectIdDefined(record->active_id) && MatchFunc(arg, token, record))
         {
             return_code   = OS_SUCCESS;
             token->obj_id = record->active_id;
@@ -1172,7 +1172,7 @@ int32 OS_ObjectIdIteratorInit(OS_ObjectMatchFunc_t matchfunc, void *matcharg, os
 
     Purpose: Match function to iterate only active objects
  ------------------------------------------------------------------*/
-bool OS_ObjectFilterActive(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
+bool OS_ObjectFilterActive(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
     return OS_ObjectIdDefined(obj->active_id);
 }
@@ -1209,7 +1209,7 @@ bool OS_ObjectIdIteratorGetNext(OS_object_iter_t *iter)
         }
 
         record = OS_OBJECT_TABLE_GET(iter->base, iter->token);
-        if (iter->match == NULL || iter->match(iter->arg, iter->token.obj_idx, record))
+        if (iter->match == NULL || iter->match(iter->arg, &iter->token, record))
         {
             iter->token.obj_id = record->active_id;
             got_next           = true;

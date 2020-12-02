@@ -37,22 +37,21 @@
 /*
 ** OS Time/Tick related API
 */
-UT_DEFAULT_STUB(OS_TimeBaseCreate_Impl, (osal_index_t timer_id))
-UT_DEFAULT_STUB(OS_TimeBaseSet_Impl, (osal_index_t timer_id, uint32 start_time, uint32 interval_time))
-UT_DEFAULT_STUB(OS_TimeBaseDelete_Impl, (osal_index_t timer_id))
-void OS_TimeBaseLock_Impl(osal_index_t timebase_id)
+UT_DEFAULT_STUB(OS_TimeBaseCreate_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_TimeBaseSet_Impl, (const OS_object_token_t *token, uint32 start_time, uint32 interval_time))
+UT_DEFAULT_STUB(OS_TimeBaseDelete_Impl, (const OS_object_token_t *token))
+void OS_TimeBaseLock_Impl(const OS_object_token_t *token)
 {
     UT_DEFAULT_IMPL(OS_TimeBaseLock_Impl);
 }
 
-void OS_TimeBaseUnlock_Impl(osal_index_t timebase_id)
+void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token)
 {
     UT_DEFAULT_IMPL(OS_TimeBaseUnlock_Impl);
 }
 
-UT_DEFAULT_STUB(OS_TimeBaseGetInfo_Impl, (osal_index_t timer_id, OS_timebase_prop_t *timer_prop))
+UT_DEFAULT_STUB(OS_TimeBaseGetInfo_Impl, (const OS_object_token_t *token, OS_timebase_prop_t *timer_prop))
 
-UT_DEFAULT_STUB(OS_TimeBaseRegister_Impl, (osal_index_t timebase_id))
 /*
  * Clock API low-level handlers
  */

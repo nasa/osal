@@ -81,17 +81,22 @@ int32 OS_Posix_QueueAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueCreate_Impl(osal_index_t queue_id, uint32 flags)
+int32 OS_QueueCreate_Impl(const OS_object_token_t *token, uint32 flags)
 {
-    int            return_code;
-    mqd_t          queueDesc;
-    struct mq_attr queueAttr;
-    char           name[OS_MAX_API_NAME * 2];
+    int                              return_code;
+    mqd_t                            queueDesc;
+    struct mq_attr                   queueAttr;
+    char                             name[OS_MAX_API_NAME * 2];
+    OS_impl_queue_internal_record_t *impl;
+    OS_queue_internal_record_t *     queue;
+
+    impl  = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
+    queue = OS_OBJECT_TABLE_GET(OS_queue_table, *token);
 
     /* set queue attributes */
     memset(&queueAttr, 0, sizeof(queueAttr));
-    queueAttr.mq_maxmsg  = OS_queue_table[queue_id].max_depth;
-    queueAttr.mq_msgsize = OS_queue_table[queue_id].max_size;
+    queueAttr.mq_maxmsg  = queue->max_depth;
+    queueAttr.mq_msgsize = queue->max_size;
 
     /*
      * The "TruncateQueueDepth" indicates a soft limit to the size of a queue.
@@ -107,7 +112,7 @@ int32 OS_QueueCreate_Impl(osal_index_t queue_id, uint32 flags)
     ** Construct the queue name:
     ** The name will consist of "/<process_id>.queue_name"
     */
-    snprintf(name, sizeof(name), "/%d.%s", (int)getpid(), OS_global_queue_table[queue_id].name_entry);
+    snprintf(name, sizeof(name), "/%d.%s", (int)getpid(), queue->queue_name);
 
     /*
      ** create message queue
@@ -128,8 +133,8 @@ int32 OS_QueueCreate_Impl(osal_index_t queue_id, uint32 flags)
     }
     else
     {
-        OS_impl_queue_table[queue_id].id = queueDesc;
-        return_code                      = OS_SUCCESS;
+        impl->id    = queueDesc;
+        return_code = OS_SUCCESS;
 
         /*
          * Unlink the queue right now --
@@ -159,12 +164,15 @@ int32 OS_QueueCreate_Impl(osal_index_t queue_id, uint32 flags)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueDelete_Impl(osal_index_t queue_id)
+int32 OS_QueueDelete_Impl(const OS_object_token_t *token)
 {
-    int32 return_code;
+    int32                            return_code;
+    OS_impl_queue_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
 
     /* Try to delete and unlink the queue */
-    if (mq_close(OS_impl_queue_table[queue_id].id) != 0)
+    if (mq_close(impl->id) != 0)
     {
         OS_DEBUG("OS_QueueDelete Error during mq_close(). errno = %d (%s)\n", errno, strerror(errno));
         return_code = OS_ERROR;
@@ -185,11 +193,14 @@ int32 OS_QueueDelete_Impl(osal_index_t queue_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGet_Impl(osal_index_t queue_id, void *data, size_t size, size_t *size_copied, int32 timeout)
+int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, size_t *size_copied, int32 timeout)
 {
-    int32           return_code;
-    ssize_t         sizeCopied;
-    struct timespec ts;
+    int32                            return_code;
+    ssize_t                          sizeCopied;
+    struct timespec                  ts;
+    OS_impl_queue_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
 
     /*
      ** Read the message queue for data
@@ -203,7 +214,7 @@ int32 OS_QueueGet_Impl(osal_index_t queue_id, void *data, size_t size, size_t *s
          */
         do
         {
-            sizeCopied = mq_receive(OS_impl_queue_table[queue_id].id, data, size, NULL);
+            sizeCopied = mq_receive(impl->id, data, size, NULL);
         } while (sizeCopied < 0 && errno == EINTR);
     }
     else
@@ -232,7 +243,7 @@ int32 OS_QueueGet_Impl(osal_index_t queue_id, void *data, size_t size, size_t *s
          */
         do
         {
-            sizeCopied = mq_timedreceive(OS_impl_queue_table[queue_id].id, data, size, NULL, &ts);
+            sizeCopied = mq_timedreceive(impl->id, data, size, NULL, &ts);
         } while (timeout != OS_CHECK && sizeCopied < 0 && errno == EINTR);
 
     } /* END timeout */
@@ -281,11 +292,14 @@ int32 OS_QueueGet_Impl(osal_index_t queue_id, void *data, size_t size, size_t *s
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueuePut_Impl(osal_index_t queue_id, const void *data, size_t size, uint32 flags)
+int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, size_t size, uint32 flags)
 {
-    int32           return_code;
-    int             result;
-    struct timespec ts;
+    int32                            return_code;
+    int                              result;
+    struct timespec                  ts;
+    OS_impl_queue_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
 
     /*
      * NOTE - using a zero timeout here for the same reason that QueueGet does ---
@@ -298,7 +312,7 @@ int32 OS_QueuePut_Impl(osal_index_t queue_id, const void *data, size_t size, uin
     /* send message */
     do
     {
-        result = mq_timedsend(OS_impl_queue_table[queue_id].id, data, size, 1, &ts);
+        result = mq_timedsend(impl->id, data, size, 1, &ts);
     } while (result == -1 && errno == EINTR);
 
     if (result == 0)

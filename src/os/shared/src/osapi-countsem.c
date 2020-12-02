@@ -113,7 +113,7 @@ int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_init
         OS_OBJECT_INIT(token, countsem, obj_name, sem_name);
 
         /* Now call the OS-specific implementation.  This reads info from the table. */
-        return_code = OS_CountSemCreate_Impl(OS_ObjectIndexFromToken(&token), sem_initial_value, options);
+        return_code = OS_CountSemCreate_Impl(&token, sem_initial_value, options);
 
         /* Check result, finalize record, and unlock global table. */
         return_code = OS_ObjectIdFinalizeNew(return_code, &token, sem_id);
@@ -139,7 +139,7 @@ int32 OS_CountSemDelete(osal_id_t sem_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_CountSemDelete_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_CountSemDelete_Impl(&token);
 
         /* Complete the operation via the common routine */
         return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
@@ -166,7 +166,7 @@ int32 OS_CountSemGive(osal_id_t sem_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_CountSemGive_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_CountSemGive_Impl(&token);
     }
 
     return return_code;
@@ -190,7 +190,7 @@ int32 OS_CountSemTake(osal_id_t sem_id)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_CountSemTake_Impl(OS_ObjectIndexFromToken(&token));
+        return_code = OS_CountSemTake_Impl(&token);
     }
 
     return return_code;
@@ -213,7 +213,7 @@ int32 OS_CountSemTimedWait(osal_id_t sem_id, uint32 msecs)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_CountSemTimedWait_Impl(OS_ObjectIndexFromToken(&token), msecs);
+        return_code = OS_CountSemTimedWait_Impl(&token, msecs);
     }
 
     return return_code;
@@ -272,7 +272,7 @@ int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
         strncpy(count_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
         count_prop->creator = record->creator;
 
-        return_code = OS_CountSemGetInfo_Impl(OS_ObjectIndexFromToken(&token), count_prop);
+        return_code = OS_CountSemGetInfo_Impl(&token, count_prop);
 
         OS_ObjectIdRelease(&token);
     }

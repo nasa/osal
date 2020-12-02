@@ -32,6 +32,7 @@
 #include "os-posix.h"
 #include "os-impl-console.h"
 
+#include "os-shared-idmap.h"
 #include "os-shared-printf.h"
 
 /*
@@ -59,9 +60,11 @@ OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_ConsoleWakeup_Impl(osal_index_t local_id)
+void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
 {
-    OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
+    OS_impl_console_internal_record_t *local;
+
+    local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
 
     if (local->is_async)
     {
@@ -71,7 +74,7 @@ void OS_ConsoleWakeup_Impl(osal_index_t local_id)
     else
     {
         /* output directly */
-        OS_ConsoleOutput_Impl(local_id);
+        OS_ConsoleOutput_Impl(token);
     }
 } /* end OS_ConsoleWakeup_Impl */
 
@@ -87,13 +90,18 @@ static void *OS_ConsoleTask_Entry(void *arg)
 {
     OS_U32ValueWrapper_t               local_arg;
     OS_impl_console_internal_record_t *local;
+    OS_object_token_t                  token;
 
     local_arg.opaque_arg = arg;
-    local                = &OS_impl_console_table[local_arg.idx];
-    while (true)
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_CONSOLE, local_arg.id, &token) == OS_SUCCESS)
     {
-        OS_ConsoleOutput_Impl(local_arg.idx);
-        sem_wait(&local->data_sem);
+        local = OS_OBJECT_TABLE_GET(OS_impl_console_table, token);
+        while (true)
+        {
+            OS_ConsoleOutput_Impl(&token);
+            sem_wait(&local->data_sem);
+        }
+        OS_ObjectIdRelease(&token);
     }
     return NULL;
 } /* end OS_ConsoleTask_Entry */
@@ -106,33 +114,35 @@ static void *OS_ConsoleTask_Entry(void *arg)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ConsoleCreate_Impl(osal_index_t local_id)
+int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 {
-    OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
+    OS_impl_console_internal_record_t *local;
     pthread_t                          consoletask;
     int32                              return_code;
     OS_U32ValueWrapper_t               local_arg = {0};
 
-    if (local_id == 0)
+    local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
+
+    if (token->obj_idx == 0)
     {
         return_code     = OS_SUCCESS;
         local->is_async = OS_CONSOLE_ASYNC;
 
         if (local->is_async)
         {
-            if (sem_init(&OS_impl_console_table[local_id].data_sem, 0, 0) < 0)
+            if (sem_init(&local->data_sem, 0, 0) < 0)
             {
                 return_code = OS_SEM_FAILURE;
             }
             else
             {
-                local_arg.idx = local_id;
-                return_code   = OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
+                local_arg.id = OS_ObjectIdFromToken(token);
+                return_code  = OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
                                                                OS_ConsoleTask_Entry, local_arg.opaque_arg);
 
                 if (return_code != OS_SUCCESS)
                 {
-                    sem_destroy(&OS_impl_console_table[local_id].data_sem);
+                    sem_destroy(&local->data_sem);
                 }
             }
         }

@@ -64,7 +64,7 @@ int32 OS_ShellOutputToFile(const char *Cmd, osal_id_t filedes)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, filedes, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_ShellOutputToFile_Impl(OS_ObjectIndexFromToken(&token), Cmd);
+        return_code = OS_ShellOutputToFile_Impl(&token, Cmd);
         OS_ObjectIdRelease(&token);
     }
 
