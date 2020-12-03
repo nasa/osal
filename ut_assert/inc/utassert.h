@@ -31,8 +31,8 @@
  *    - All asserts must call the function UtAssert.
  */
 
-#ifndef _utassert_
-#define _utassert_
+#ifndef UTASSERT_H
+#define UTASSERT_H
 
 /*
  * Includes

@@ -32,6 +32,8 @@
  * can be executed.
  */
 
+#include "osapi-queue.h" /* OSAL public API for this subsystem */
+#include "osapi-idmap.h"
 #include "utstub-helpers.h"
 
 UT_DEFAULT_STUB(OS_QueueAPI_Init, (void))

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for string.h */
-#ifndef _OSAL_OVERRIDE_STRING_H_
-#define _OSAL_OVERRIDE_STRING_H_
+#ifndef OSAL_OVERRIDE_STRING_H
+#define OSAL_OVERRIDE_STRING_H
 
 #include <OCS_string.h>
 
@@ -40,4 +40,4 @@
 #define strncat  OCS_strncat
 #define strerror OCS_strerror
 
-#endif /* _OSAL_OVERRIDE_STRING_H_ */
+#endif  /* OSAL_OVERRIDE_STRING_H */

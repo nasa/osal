@@ -19,9 +19,9 @@
  */
 
 /* OSAL coverage stub replacement for iv.h */
-#ifndef _OSAL_STUB_IV_H_
-#define _OSAL_STUB_IV_H_
+#ifndef OCS_IV_H
+#define OCS_IV_H
 
 #include <OCS_basetypes.h>
 
-#endif /* _OSAL_STUB_IV_H_ */
+#endif  /*  OCS_IV_H */

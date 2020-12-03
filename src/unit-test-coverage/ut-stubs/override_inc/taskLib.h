@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for taskLib.h */
-#ifndef _OSAL_OVERRIDE_TASKLIB_H_
-#define _OSAL_OVERRIDE_TASKLIB_H_
+#ifndef OSAL_OVERRIDE_TASKLIB_H
+#define OSAL_OVERRIDE_TASKLIB_H
 
 #include <OCS_taskLib.h>
 #include <vxWorks.h>
@@ -53,4 +53,4 @@
 #define taskInit        OCS_taskInit
 #define taskTcb         OCS_taskTcb
 
-#endif /* _OSAL_OVERRIDE_TASKLIB_H_ */
+#endif  /* OSAL_OVERRIDE_TASKLIB_H */

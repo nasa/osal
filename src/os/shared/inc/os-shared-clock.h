@@ -25,9 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_CLOCK_H_
-#define INCLUDE_OS_SHARED_CLOCK_H_
+#ifndef OS_SHARED_CLOCK_H
+#define OS_SHARED_CLOCK_H
 
+#include "osapi-clock.h"
 #include <os-shared-globaldefs.h>
 
 /*
@@ -53,4 +54,4 @@ int32 OS_GetLocalTime_Impl(OS_time_t *time_struct);
  ------------------------------------------------------------------*/
 int32 OS_SetLocalTime_Impl(const OS_time_t *time_struct);
 
-#endif /* INCLUDE_OS_SHARED_CLOCK_H_ */
+#endif  /* OS_SHARED_CLOCK_H  */

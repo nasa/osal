@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for moduleLib.h */
-#ifndef _OSAL_OVERRIDE_MODULELIB_H_
-#define _OSAL_OVERRIDE_MODULELIB_H_
+#ifndef OSAL_OVERRIDE_MODULELIB_H
+#define OSAL_OVERRIDE_MODULELIB_H
 
 #include <OCS_moduleLib.h>
 #include <vxWorks.h>
@@ -34,4 +34,4 @@
 
 #define moduleInfoGet OCS_moduleInfoGet
 
-#endif /* _OSAL_OVERRIDE_MODULELIB_H_ */
+#endif  /* OSAL_OVERRIDE_MODULELIB_H */

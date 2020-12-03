@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for ioLib.h */
-#ifndef _OSAL_STUB_IOLIB_H_
-#define _OSAL_STUB_IOLIB_H_
+#ifndef OCS_IOLIB_H
+#define OCS_IOLIB_H
 
 #include <OCS_basetypes.h>
 #include <OCS_vxWorks.h>
@@ -42,4 +42,4 @@
 
 extern int OCS_ioctl(int fd, unsigned long request, ...);
 
-#endif /* _OSAL_STUB_IOLIB_H_ */
+#endif  /*  OCS_IOLIB_H */

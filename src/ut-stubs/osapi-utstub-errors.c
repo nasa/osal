@@ -32,6 +32,7 @@
  * can be executed.
  */
 
+#include "osapi-error.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
 int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name)

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for sys/times.h */
-#ifndef _OSAL_OVERRIDE_SYS_TIMES_H_
-#define _OSAL_OVERRIDE_SYS_TIMES_H_
+#ifndef OSAL_OVERRIDE_SYS_TIMES_H
+#define OSAL_OVERRIDE_SYS_TIMES_H
 
 #include <OCS_sys_times.h>
 #include <time.h>
@@ -29,4 +29,4 @@
 /* mappings for declarations in sys/times.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_SYS_TIMES_H_ */
+#endif  /* OSAL_OVERRIDE_SYS_TIMES_H */

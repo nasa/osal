@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for strings.h */
-#ifndef _OSAL_OVERRIDE_STRINGS_H_
-#define _OSAL_OVERRIDE_STRINGS_H_
+#ifndef OSAL_OVERRIDE_STRINGS_H
+#define OSAL_OVERRIDE_STRINGS_H
 
 #include <OCS_strings.h>
 
@@ -28,4 +28,4 @@
 /* mappings for declarations in strings.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_STRINGS_H_ */
+#endif  /* OSAL_OVERRIDE_STRINGS_H */

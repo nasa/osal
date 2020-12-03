@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for complex.h */
-#ifndef _OSAL_STUB_COMPLEX_H_
-#define _OSAL_STUB_COMPLEX_H_
+#ifndef OCS_COMPLEX_H
+#define OCS_COMPLEX_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in complex.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_COMPLEX_H_ */
+#endif  /*  OCS_COMPLEX_H */

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for locale.h */
-#ifndef _OSAL_STUB_LOCALE_H_
-#define _OSAL_STUB_LOCALE_H_
+#ifndef OCS_LOCALE_H
+#define OCS_LOCALE_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in locale.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_LOCALE_H_ */
+#endif  /*  OCS_LOCALE_H */

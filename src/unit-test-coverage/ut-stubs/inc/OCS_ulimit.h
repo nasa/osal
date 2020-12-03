@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for ulimit.h */
-#ifndef _OSAL_STUB_ULIMIT_H_
-#define _OSAL_STUB_ULIMIT_H_
+#ifndef OCS_ULIMIT_H
+#define OCS_ULIMIT_H
 
 #include <OCS_basetypes.h>
 
@@ -37,4 +37,4 @@
 /* ----------------------------------------- */
 long OCS_ulimit(int cmd, long newlimit);
 
-#endif /* _OSAL_STUB_ULIMIT_H_ */
+#endif  /*  OCS_ULIMIT_H */

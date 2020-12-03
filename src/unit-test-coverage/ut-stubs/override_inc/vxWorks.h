@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef INCLUDE_VXWORKS_H_
-#define INCLUDE_VXWORKS_H_
+#ifndef VXWORKS_H
+#define VXWORKS_H
 
 #include <OCS_vxWorks.h>
 
@@ -53,4 +53,4 @@
 
 #define _Vx_usr_arg_t OCS_Vx_usr_arg_t
 
-#endif /* INCLUDE_VXWORKS_H_ */
+#endif  /* VXWORKS_H  */

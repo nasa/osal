@@ -25,9 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_TASK_H_
-#define INCLUDE_OS_SHARED_TASK_H_
+#ifndef OS_SHARED_TASK_H
+#define OS_SHARED_TASK_H
 
+#include "osapi-task.h"
 #include <os-shared-globaldefs.h>
 
 /*tasks */
@@ -181,4 +182,4 @@ bool OS_TaskIdMatchSystemData_Impl(void *ref, const OS_object_token_t *token, co
  ------------------------------------------------------------------*/
 int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size);
 
-#endif /* INCLUDE_OS_SHARED_TASK_H_ */
+#endif  /* OS_SHARED_TASK_H  */

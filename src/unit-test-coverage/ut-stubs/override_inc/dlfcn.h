@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for dlfcn.h */
-#ifndef _OSAL_OVERRIDE_DLFCN_H_
-#define _OSAL_OVERRIDE_DLFCN_H_
+#ifndef OSAL_OVERRIDE_DLFCN_H
+#define OSAL_OVERRIDE_DLFCN_H
 
 #include <OCS_dlfcn.h>
 
@@ -33,4 +33,4 @@
 #define dlopen  OCS_dlopen
 #define dlsym   OCS_dlsym
 
-#endif /* _OSAL_OVERRIDE_DLFCN_H_ */
+#endif  /* OSAL_OVERRIDE_DLFCN_H */

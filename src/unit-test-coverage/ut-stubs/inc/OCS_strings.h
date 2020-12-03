@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for strings.h */
-#ifndef _OSAL_STUB_STRINGS_H_
-#define _OSAL_STUB_STRINGS_H_
+#ifndef OCS_STRINGS_H
+#define OCS_STRINGS_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in strings.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_STRINGS_H_ */
+#endif  /*  OCS_STRINGS_H */

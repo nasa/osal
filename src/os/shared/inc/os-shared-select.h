@@ -25,9 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_SELECT_H_
-#define INCLUDE_OS_SHARED_SELECT_H_
+#ifndef OS_SHARED_SELECT_H
+#define OS_SHARED_SELECT_H
 
+#include "osapi-select.h"
 #include <os-shared-globaldefs.h>
 
 /*
@@ -77,4 +78,4 @@ int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, 
  ------------------------------------------------------------------*/
 int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
 
-#endif /* INCLUDE_OS_SHARED_SELECT_H_ */
+#endif  /* OS_SHARED_SELECT_H  */

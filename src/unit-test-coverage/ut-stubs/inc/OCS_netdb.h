@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for netdb.h */
-#ifndef _OSAL_STUB_NETDB_H_
-#define _OSAL_STUB_NETDB_H_
+#ifndef OCS_NETDB_H
+#define OCS_NETDB_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in netdb.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_NETDB_H_ */
+#endif  /*  OCS_NETDB_H */

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for dosFsLib.h */
-#ifndef _OSAL_OVERRIDE_DOSFSLIB_H_
-#define _OSAL_OVERRIDE_DOSFSLIB_H_
+#ifndef OSAL_OVERRIDE_DOSFSLIB_H
+#define OSAL_OVERRIDE_DOSFSLIB_H
 
 #include <OCS_dosFsLib.h>
 #include <vxWorks.h>
@@ -36,4 +36,4 @@
 
 #define dosFsVolFormat OCS_dosFsVolFormat
 
-#endif /* _OSAL_OVERRIDE_DOSFSLIB_H_ */
+#endif  /* OSAL_OVERRIDE_DOSFSLIB_H */

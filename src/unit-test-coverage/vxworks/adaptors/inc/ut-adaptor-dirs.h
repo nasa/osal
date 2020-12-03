@@ -25,10 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_UT_ADAPTOR_DIRS_H_
-#define INCLUDE_UT_ADAPTOR_DIRS_H_
+#ifndef UT_ADAPTOR_DIRS_H
+#define UT_ADAPTOR_DIRS_H
 
-#include <common_types.h>
+#include "common_types.h"
 
 /*****************************************************
  *
@@ -44,4 +44,4 @@
  */
 extern int32 UT_Call_OS_VxWorks_DirAPI_Impl_Init(void);
 
-#endif /* INCLUDE_UT_ADAPTOR_DIRS_H_ */
+#endif  /* UT_ADAPTOR_DIRS_H  */

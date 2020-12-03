@@ -41,6 +41,8 @@
  *   remove()
  *   rename()
  */
+
+#include <stdio.h>
 #include <string.h>
 #include <errno.h>
 

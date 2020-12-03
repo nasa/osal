@@ -25,10 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_UT_ADAPTOR_FILES_H_
-#define INCLUDE_UT_ADAPTOR_FILES_H_
+#ifndef UT_ADAPTOR_FILES_H
+#define UT_ADAPTOR_FILES_H
 
-#include <common_types.h>
+#include "common_types.h"
 
 /*****************************************************
  *
@@ -55,4 +55,4 @@ unsigned int UT_FileTest_GetSelfEGID(void);
 
 void UT_FileTest_Set_Selectable(osal_index_t local_id, bool is_selectable);
 
-#endif /* INCLUDE_UT_ADAPTOR_FILES_H_ */
+#endif  /* UT_ADAPTOR_FILES_H  */

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for iv.h */
-#ifndef _OSAL_OVERRIDE_IV_H_
-#define _OSAL_OVERRIDE_IV_H_
+#ifndef OSAL_OVERRIDE_IV_H
+#define OSAL_OVERRIDE_IV_H
 
 #include <OCS_iv.h>
 
@@ -28,4 +28,4 @@
 /* mappings for declarations in iv.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_IV_H_ */
+#endif  /* OSAL_OVERRIDE_IV_H */

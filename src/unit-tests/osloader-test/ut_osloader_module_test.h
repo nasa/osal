@@ -24,8 +24,8 @@
 ** Date:  April 2013
 **================================================================================*/
 
-#ifndef _UT_OSLOADER_MODULE_TEST_H_
-#define _UT_OSLOADER_MODULE_TEST_H_
+#ifndef UT_OSLOADER_MODULE_TEST_H
+#define UT_OSLOADER_MODULE_TEST_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
@@ -59,7 +59,7 @@ void UT_os_module_info_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif /* _UT_OSLOADER_MODULE_TEST_H_ */
+#endif  /* UT_OSLOADER_MODULE_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_osloader_module_test.h

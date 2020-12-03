@@ -28,8 +28,8 @@
  *         Assumes make file has defined processor family
  */
 
-#ifndef _common_types_
-#define _common_types_
+#ifndef COMMON_TYPES_H
+#define COMMON_TYPES_H
 
 #ifdef __cplusplus
 extern "C"
@@ -122,6 +122,13 @@ extern "C"
      * A type used to represent the runtime type or category of an OSAL object
      */
     typedef uint32 osal_objtype_t;
+
+    /**
+     * @brief General purpose OSAL callback function
+     *
+     * This may be used by multiple APIS
+     */
+    typedef void (*OS_ArgCallback_t)(osal_id_t object_id, void *arg);
 
 #ifndef NULL /* pointer to nothing */
 #define NULL ((void *)0)

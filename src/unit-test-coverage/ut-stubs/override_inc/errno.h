@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for errno.h */
-#ifndef _OSAL_OVERRIDE_ERRNO_H_
-#define _OSAL_OVERRIDE_ERRNO_H_
+#ifndef OSAL_OVERRIDE_ERRNO_H
+#define OSAL_OVERRIDE_ERRNO_H
 
 #include <OCS_errno.h>
 
@@ -36,4 +36,4 @@
 
 #define errno OCS_errno
 
-#endif /* _OSAL_OVERRIDE_ERRNO_H_ */
+#endif  /* OSAL_OVERRIDE_ERRNO_H */

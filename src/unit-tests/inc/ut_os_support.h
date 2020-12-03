@@ -24,8 +24,8 @@
 ** Date:  May 2013
 **================================================================================*/
 
-#ifndef _UT_OS_SUPPORT_H_
-#define _UT_OS_SUPPORT_H_
+#ifndef UT_OS_SUPPORT_H
+#define UT_OS_SUPPORT_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
@@ -137,7 +137,7 @@ static inline bool UtOsalImplemented(int32 Fn, const char *File, uint32 Line)
 
 /*--------------------------------------------------------------------------------*/
 
-#endif /* _UT_OS_SUPPORT_H_ */
+#endif  /* UT_OS_SUPPORT_H */
 
 /*================================================================================*
 ** End of File: ut_os_support.h

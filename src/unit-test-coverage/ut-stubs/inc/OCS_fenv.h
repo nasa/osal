@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for fenv.h */
-#ifndef _OSAL_STUB_FENV_H_
-#define _OSAL_STUB_FENV_H_
+#ifndef OCS_FENV_H
+#define OCS_FENV_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in fenv.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_FENV_H_ */
+#endif  /*  OCS_FENV_H */

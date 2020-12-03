@@ -24,8 +24,8 @@
 ** Date:  April 2013
 **================================================================================*/
 
-#ifndef _UT_OSCORE_MISC_TEST_H_
-#define _UT_OSCORE_MISC_TEST_H_
+#ifndef UT_OSCORE_MISC_TEST_H
+#define UT_OSCORE_MISC_TEST_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
@@ -68,7 +68,7 @@ void UT_os_heapgetinfo_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif /* _UT_OSCORE_MISC_TEST_H_ */
+#endif  /* UT_OSCORE_MISC_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_oscore_misc_test.h

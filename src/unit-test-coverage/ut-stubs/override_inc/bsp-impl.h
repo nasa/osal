@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef INCLUDE_BSP_IMPL_H_
-#define INCLUDE_BSP_IMPL_H_
+#ifndef BSP_IMPL_H
+#define BSP_IMPL_H
 
 #include "OCS_bsp-impl.h"
 
@@ -43,4 +43,4 @@
    END bsp-impl.h
  *********************/
 
-#endif /* INCLUDE_BSP_IMPL_H_ */
+#endif  /* BSP_IMPL_H  */

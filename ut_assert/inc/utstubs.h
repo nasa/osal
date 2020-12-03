@@ -36,8 +36,8 @@
  *
  */
 
-#ifndef _UTSTUBS_H_
-#define _UTSTUBS_H_
+#ifndef UTSTUBS_H
+#define UTSTUBS_H
 
 #include <stdarg.h>
 #include "common_types.h"
@@ -520,4 +520,4 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
         return UT_DEFAULT_IMPL(FuncName); \
     }
 
-#endif /* _UTSTUBS_H_ */
+#endif  /* UTSTUBS_H */

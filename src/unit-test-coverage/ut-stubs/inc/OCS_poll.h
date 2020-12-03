@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for poll.h */
-#ifndef _OSAL_STUB_POLL_H_
-#define _OSAL_STUB_POLL_H_
+#ifndef OCS_POLL_H
+#define OCS_POLL_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in poll.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_POLL_H_ */
+#endif  /*  OCS_POLL_H */

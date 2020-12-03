@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for objLib.h */
-#ifndef _OSAL_OVERRIDE_OBJLIB_H_
-#define _OSAL_OVERRIDE_OBJLIB_H_
+#ifndef OSAL_OVERRIDE_OBJLIB_H
+#define OSAL_OVERRIDE_OBJLIB_H
 
 #include <OCS_objLib.h>
 #include <vxWorks.h>
@@ -36,4 +36,4 @@
 #define S_objLib_OBJ_TIMEOUT     OCS_S_objLib_OBJ_TIMEOUT
 #define S_objLib_OBJ_NO_METHOD   OCS_S_objLib_OBJ_NO_METHOD
 
-#endif /* _OSAL_OVERRIDE_OBJLIB_H_ */
+#endif  /* OSAL_OVERRIDE_OBJLIB_H */

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for string.h */
-#ifndef _OSAL_STUB_STRING_H_
-#define _OSAL_STUB_STRING_H_
+#ifndef OCS_STRING_H
+#define OCS_STRING_H
 
 #include <OCS_basetypes.h>
 
@@ -49,4 +49,4 @@ extern char * OCS_strcat(char *dest, const char *src);
 extern char * OCS_strncat(char *dest, const char *src, size_t n);
 extern char * OCS_strerror(int errnum);
 
-#endif /* _OSAL_STUB_STRING_H_ */
+#endif  /*  OCS_STRING_H */

@@ -32,6 +32,7 @@
  * can be executed.
  */
 
+#include "osapi-network.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
 UT_DEFAULT_STUB(OS_NetworkAPI_Init, (void))

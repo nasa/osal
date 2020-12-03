@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for fenv.h */
-#ifndef _OSAL_OVERRIDE_FENV_H_
-#define _OSAL_OVERRIDE_FENV_H_
+#ifndef OSAL_OVERRIDE_FENV_H
+#define OSAL_OVERRIDE_FENV_H
 
 #include <OCS_fenv.h>
 
@@ -28,4 +28,4 @@
 /* mappings for declarations in fenv.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_FENV_H_ */
+#endif  /* OSAL_OVERRIDE_FENV_H */

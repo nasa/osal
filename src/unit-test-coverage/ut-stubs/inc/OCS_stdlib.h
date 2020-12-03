@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for stdlib.h */
-#ifndef _OSAL_STUB_STDLIB_H_
-#define _OSAL_STUB_STDLIB_H_
+#ifndef OCS_STDLIB_H
+#define OCS_STDLIB_H
 
 #include <OCS_basetypes.h>
 
@@ -45,4 +45,4 @@ extern int               OCS_system(const char *command);
 extern void *            OCS_malloc(size_t sz);
 extern void              OCS_free(void *ptr);
 
-#endif /* _OSAL_STUB_STDLIB_H_ */
+#endif  /*  OCS_STDLIB_H */

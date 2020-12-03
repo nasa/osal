@@ -29,8 +29,8 @@
  *    test output define the macro UT_VERBOSE.
  */
 
-#ifndef _uttest_
-#define _uttest_
+#ifndef UTTEST_H
+#define UTTEST_H
 
 #include <stdbool.h>
 

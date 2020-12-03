@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for time.h */
-#ifndef _OSAL_OVERRIDE_TIME_H_
-#define _OSAL_OVERRIDE_TIME_H_
+#ifndef OSAL_OVERRIDE_TIME_H
+#define OSAL_OVERRIDE_TIME_H
 
 #include <OCS_time.h>
 
@@ -51,4 +51,4 @@
 #define timer_settime   OCS_timer_settime
 #define timer_connect   OCS_timer_connect
 
-#endif /* _OSAL_OVERRIDE_TIME_H_ */
+#endif  /* OSAL_OVERRIDE_TIME_H */

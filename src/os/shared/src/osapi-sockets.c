@@ -44,6 +44,12 @@
 #include "os-shared-sockets.h"
 
 /*
+ * Other OSAL public APIs used by this module
+ */
+#include "osapi-select.h"
+
+
+/*
  * Global data for the API
  */
 enum

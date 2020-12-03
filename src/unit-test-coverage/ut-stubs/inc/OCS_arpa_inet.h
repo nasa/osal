@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for arpa/inet.h */
-#ifndef _OSAL_STUB_ARPA_INET_H_
-#define _OSAL_STUB_ARPA_INET_H_
+#ifndef OCS_ARPA_INET_H
+#define OCS_ARPA_INET_H
 
 #include <OCS_basetypes.h>
 
@@ -39,4 +39,4 @@
 extern const char *OCS_inet_ntop(int af, const void *cp, char *buf, size_t len);
 extern int         OCS_inet_pton(int af, const char *cp, void *buf);
 
-#endif /* _OSAL_STUB_ARPA_INET_H_ */
+#endif  /*  OCS_ARPA_INET_H */

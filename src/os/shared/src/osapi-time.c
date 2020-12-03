@@ -56,6 +56,12 @@
 
 OS_timecb_internal_record_t OS_timecb_table[OS_MAX_TIMERS];
 
+typedef union
+{
+    OS_TimerCallback_t timer_callback_func;
+    void *opaque_arg;
+} OS_Timer_ArgWrapper_t;
+
 /****************************************************************************************
                                    Timer API
  ***************************************************************************************/
@@ -228,7 +234,7 @@ int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebas
  *-----------------------------------------------------------------*/
 static void OS_Timer_NoArgCallback(osal_id_t objid, void *arg)
 {
-    OS_U32ValueWrapper_t Conv;
+    OS_Timer_ArgWrapper_t Conv;
 
     /*
      * Note - did not write this as simply *((OS_SimpleCallback_t)arg) because
@@ -250,7 +256,7 @@ int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *accura
 {
     int32                return_code;
     osal_id_t            timebase_ref_id;
-    OS_U32ValueWrapper_t Conv;
+    OS_Timer_ArgWrapper_t Conv;
 
     /*
     ** Check Parameters.  Although DoTimerAdd will also

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for unldLib.h */
-#ifndef _OSAL_STUB_UNLDLIB_H_
-#define _OSAL_STUB_UNLDLIB_H_
+#ifndef OCS_UNLDLIB_H
+#define OCS_UNLDLIB_H
 
 #include <OCS_basetypes.h>
 #include <OCS_vxWorks.h>
@@ -39,4 +39,4 @@
 /* ----------------------------------------- */
 extern OCS_STATUS OCS_unldByModuleId(OCS_MODULE_ID moduleId, int options);
 
-#endif /* _OSAL_STUB_UNLDLIB_H_ */
+#endif  /*  OCS_UNLDLIB_H */

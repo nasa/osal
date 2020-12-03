@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for float.h */
-#ifndef _OSAL_STUB_FLOAT_H_
-#define _OSAL_STUB_FLOAT_H_
+#ifndef OCS_FLOAT_H
+#define OCS_FLOAT_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in float.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_FLOAT_H_ */
+#endif  /*  OCS_FLOAT_H */

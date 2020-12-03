@@ -29,7 +29,7 @@
  *   which will override this default.
  */
 
-#include "osapi.h"
+#include "osapi-module.h"
 #include "bsp-impl.h"
 
 OS_static_symbol_record_t OS_STATIC_SYMBOL_TABLE[] = {

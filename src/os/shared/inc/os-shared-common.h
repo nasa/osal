@@ -25,9 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_COMMON_H_
-#define INCLUDE_OS_SHARED_COMMON_H_
+#ifndef OS_SHARED_COMMON_H
+#define OS_SHARED_COMMON_H
 
+#include "osapi-common.h"
 #include <os-shared-globaldefs.h>
 
 /*
@@ -127,4 +128,4 @@ void OS_IdleLoop_Impl(void);
  ------------------------------------------------------------------*/
 void OS_ApplicationShutdown_Impl(void);
 
-#endif /* INCLUDE_OS_SHARED_COMMON_H_ */
+#endif  /* OS_SHARED_COMMON_H  */

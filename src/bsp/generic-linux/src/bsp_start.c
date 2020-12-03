@@ -28,6 +28,7 @@
  *   2005/07/26  A. Cudmore      | Initial version for linux
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>

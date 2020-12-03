@@ -25,13 +25,13 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_COVERAGETEST_H_
-#define INCLUDE_OS_SHARED_COVERAGETEST_H_
+#ifndef OS_SHARED_COVERAGETEST_H
+#define OS_SHARED_COVERAGETEST_H
 
 #include <utassert.h>
 #include <uttest.h>
 #include <utstubs.h>
-#include <osapi.h>
+#include "osapi.h"
 
 #include "os-shared-idmap.h"
 
@@ -113,4 +113,4 @@ void Osapi_Test_Setup(void);
  */
 void Osapi_Test_Teardown(void);
 
-#endif /* INCLUDE_OS_SHARED_COVERAGETEST_H_ */
+#endif  /* OS_SHARED_COVERAGETEST_H  */

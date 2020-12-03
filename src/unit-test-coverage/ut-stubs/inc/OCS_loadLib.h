@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for loadLib.h */
-#ifndef _OSAL_STUB_LOADLIB_H_
-#define _OSAL_STUB_LOADLIB_H_
+#ifndef OCS_LOADLIB_H
+#define OCS_LOADLIB_H
 
 #include <OCS_basetypes.h>
 #include <OCS_moduleLib.h>
@@ -40,4 +40,4 @@
 
 extern OCS_MODULE_ID OCS_loadModule(int fd, unsigned int symFlag);
 
-#endif /* _OSAL_STUB_LOADLIB_H_ */
+#endif  /*  OCS_LOADLIB_H */

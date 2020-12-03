@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for wchar.h */
-#ifndef _OSAL_OVERRIDE_WCHAR_H_
-#define _OSAL_OVERRIDE_WCHAR_H_
+#ifndef OSAL_OVERRIDE_WCHAR_H
+#define OSAL_OVERRIDE_WCHAR_H
 
 #include <OCS_wchar.h>
 
@@ -28,4 +28,4 @@
 /* mappings for declarations in wchar.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_WCHAR_H_ */
+#endif  /* OSAL_OVERRIDE_WCHAR_H */

@@ -28,8 +28,8 @@
  *          may contain RTEMS-specific definitions.
  */
 
-#ifndef INCLUDE_OS_RTEMS_H_
-#define INCLUDE_OS_RTEMS_H_
+#ifndef OS_RTEMS_H
+#define OS_RTEMS_H
 
 /****************************************************************************************
                                     COMMON INCLUDE FILES
@@ -100,4 +100,4 @@ int32 OS_Rtems_FileSysAPI_Impl_Init(void);
 
 int32 OS_Rtems_TableMutex_Init(osal_objtype_t idtype);
 
-#endif /* INCLUDE_OS_RTEMS_H_ */
+#endif  /* OS_RTEMS_H  */

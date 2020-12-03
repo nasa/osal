@@ -25,9 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_QUEUE_H_
-#define INCLUDE_OS_SHARED_QUEUE_H_
+#ifndef OS_SHARED_QUEUE_H
+#define OS_SHARED_QUEUE_H
 
+#include "osapi-queue.h"
 #include <os-shared-globaldefs.h>
 
 typedef struct
@@ -106,4 +107,4 @@ int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, size_t 
  ------------------------------------------------------------------*/
 int32 OS_QueueGetInfo_Impl(const OS_object_token_t *token, OS_queue_prop_t *queue_prop);
 
-#endif /* INCLUDE_OS_SHARED_QUEUE_H_ */
+#endif  /* OS_SHARED_QUEUE_H  */

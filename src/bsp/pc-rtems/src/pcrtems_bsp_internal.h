@@ -25,13 +25,12 @@
  *   Header file for internal data to the PC-RTEMS BSP
  */
 
-#ifndef _PCRTEMS_BSP_INTERNAL_H_
-#define _PCRTEMS_BSP_INTERNAL_H_
+#ifndef PCRTEMS_BSP_INTERNAL_H
+#define PCRTEMS_BSP_INTERNAL_H
 
 /*
 ** OSAL includes
 */
-#include "osapi.h"
 #include "bsp-impl.h"
 
 /*
@@ -74,4 +73,4 @@ typedef struct
  */
 extern OS_BSP_PcRtemsGlobalData_t OS_BSP_PcRtemsGlobal;
 
-#endif /* _PCRTEMS_BSP_INTERNAL_H_ */
+#endif  /* PCRTEMS_BSP_INTERNAL_H */

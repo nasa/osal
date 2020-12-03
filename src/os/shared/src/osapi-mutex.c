@@ -42,6 +42,11 @@
 #include "os-shared-mutex.h"
 
 /*
+ * Other OSAL public APIs used by this module
+ */
+#include "osapi-task.h"
+
+/*
  * Sanity checks on the user-supplied configuration
  * The relevent OS_MAX limit should be defined and greater than zero
  */

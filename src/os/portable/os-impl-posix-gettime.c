@@ -47,7 +47,7 @@
 #include <string.h>
 #include <errno.h>
 
-#include <osapi.h>
+#include "osapi-clock.h"
 #include "os-impl-gettime.h"
 #include "os-shared-clock.h"
 
