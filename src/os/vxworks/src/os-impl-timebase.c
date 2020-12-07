@@ -377,7 +377,7 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
 
         for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
         {
-            if (OS_ObjectIdDefined(OS_global_timebase_table[idx].active_id) &&
+            if (OS_ObjectIdIsValid(OS_global_timebase_table[idx].active_id) &&
                 OS_impl_timebase_table[idx].assigned_signal > 0)
             {
                 /* mark signal as in-use */

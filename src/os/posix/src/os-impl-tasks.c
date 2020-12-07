@@ -478,6 +478,16 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
     }
 
     /*
+    ** Set the thread to be joinable by default
+    */
+    return_code = pthread_attr_setdetachstate(&custom_attr, PTHREAD_CREATE_JOINABLE);
+    if (return_code != 0)
+    {
+        OS_DEBUG("pthread_attr_setdetachstate error in OS_TaskCreate: %s\n", strerror(return_code));
+        return (OS_ERROR);
+    }
+
+    /*
     ** Test to see if the original main task scheduling priority worked.
     ** If so, then also set the attributes for this task.  Otherwise attributes
     ** are left at default.
@@ -541,12 +551,6 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
      ** Do not treat anything bad that happens after this point as fatal.
      ** The task is running, after all - better to leave well enough alone.
      */
-    return_code = pthread_detach(*pthr);
-    if (return_code != 0)
-    {
-        OS_DEBUG("pthread_detach error in OS_TaskCreate: %s\n", strerror(return_code));
-    }
-
     return_code = pthread_attr_destroy(&custom_attr);
     if (return_code != 0)
     {
@@ -585,6 +589,33 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_TaskDetach_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
+{
+    OS_impl_task_internal_record_t *impl;
+    int                             ret;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    ret = pthread_detach(impl->id);
+
+    if (ret != 0)
+    {
+        OS_DEBUG("pthread_detach: Failed on Task ID = %lu, err = %s\n",
+                 OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), strerror(ret));
+        return OS_ERROR;
+    }
+
+    return OS_SUCCESS;
+}
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_TaskMatch_Impl
  *
  *  Purpose: Implemented per internal OSAL API
@@ -616,6 +647,8 @@ int32 OS_TaskMatch_Impl(const OS_object_token_t *token)
 int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
 {
     OS_impl_task_internal_record_t *impl;
+    void *                          retval;
+    int                             ret;
 
     impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
 
@@ -625,7 +658,35 @@ int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
     ** to cancel here is that the thread ID is invalid because it already exited itself,
     ** and if that is true there is nothing wrong - everything is OK to continue normally.
     */
-    pthread_cancel(impl->id);
+    ret = pthread_cancel(impl->id);
+    if (ret != 0)
+    {
+        OS_DEBUG("pthread_cancel: Failed on Task ID = %lu, err = %s\n",
+                 OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), strerror(ret));
+
+        /* fall through (will still return OS_SUCCESS) */
+    }
+    else
+    {
+        /*
+         * Note that "pthread_cancel" is a request - and successful return above
+         * only means that the cancellation request is pending.
+         *
+         * pthread_join() will wait until the thread has actually exited.
+         *
+         * This is important for CFE, as task deletion often occurs in
+         * conjunction with an application reload - which means the next
+         * call is likely to be OS_ModuleUnload().  So is critical that all
+         * tasks potentially executing code within that module have actually
+         * been stopped - not just pending cancellation.
+         */
+        ret = pthread_join(impl->id, &retval);
+        if (ret != 0)
+        {
+            OS_DEBUG("pthread_join: Failed on Task ID = %lu, err = %s\n",
+                     OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), strerror(ret));
+        }
+    }
     return OS_SUCCESS;
 
 } /* end OS_TaskDelete_Impl */
@@ -731,6 +792,17 @@ int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
 {
     int32                return_code;
     OS_U32ValueWrapper_t arg;
+    int                  old_state;
+    int                  old_type;
+
+    /*
+     * Set cancel state=ENABLED, type=DEFERRED
+     * This should be the default for new threads, but
+     * setting explicitly to be sure that a pthread_join()
+     * will work as expected in case this thread is deleted.
+     */
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &old_state);
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, &old_type);
 
     arg.opaque_arg = 0;
     arg.id         = global_task_id;

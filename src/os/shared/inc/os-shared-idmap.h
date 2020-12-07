@@ -30,8 +30,6 @@
 
 #include <os-shared-globaldefs.h>
 
-#define OS_OBJECT_EXCL_REQ_FLAG 0x0001
-
 #define OS_OBJECT_ID_RESERVED ((osal_id_t) {0xFFFFFFFF})
 
 /*
@@ -43,7 +41,6 @@ struct OS_common_record
     osal_id_t   active_id;
     osal_id_t   creator;
     uint16      refcount;
-    uint16      flags;
 };
 
 /*
@@ -212,6 +209,26 @@ static inline osal_objtype_t OS_ObjectIdToType_Impl(osal_id_t id)
 static inline void OS_ObjectIdCompose_Impl(osal_objtype_t idtype, uint32 idserial, osal_id_t *result)
 {
     *result = OS_ObjectIdFromInteger((idtype << OS_OBJECT_TYPE_SHIFT) | idserial);
+}
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Check if an object ID represents a valid/active value.
+ *
+ * This tests that the ID value is within the range specifically used by
+ * valid OSAL IDs. This is smaller than the set of defined IDs.
+ *
+ * For example, the value of OS_OBJECT_ID_RESERVED is defined but not valid.
+ * So while OS_ObjectIdDefined() will match entries being actively created or
+ * deleted, OS_ObjectIdIsValid() will not.
+ *
+ * @param[in]   object_id The object ID
+ * @returns     true if table entry is valid
+ */
+static inline bool OS_ObjectIdIsValid(osal_id_t object_id)
+{
+    osal_objtype_t objtype = OS_ObjectIdToType_Impl(object_id);
+    return (objtype > OS_OBJECT_TYPE_UNDEFINED && objtype < OS_OBJECT_TYPE_USER);
 }
 
 /*----------------------------------------------------------------

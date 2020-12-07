@@ -95,6 +95,16 @@ int32 OS_TaskMatch_Impl(const OS_object_token_t *token);
 int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags);
 
 /*----------------------------------------------------------------
+   Function: OS_TaskDetach_Impl
+
+    Purpose: Sets the thread so that the OS resources associated with the task
+             will be released when the thread exits itself
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_TaskDetach_Impl(const OS_object_token_t *token);
+
+/*----------------------------------------------------------------
    Function: OS_TaskDelete_Impl
 
     Purpose: Free the OS resources associated with the specified task

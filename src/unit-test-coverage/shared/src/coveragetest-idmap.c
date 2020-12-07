@@ -151,7 +151,7 @@ void Test_OS_ObjectIdConvertToken(void)
 
     /*
      * Use mode OS_LOCK_MODE_GLOBAL with matching ID
-     * This should return success, not change refcount
+     * This should return success and update refcount
      */
     token.lock_mode = OS_LOCK_MODE_GLOBAL;
     token.obj_id    = objid;
@@ -160,7 +160,7 @@ void Test_OS_ObjectIdConvertToken(void)
 
     UtAssert_True(actual == expected, "OS_ObjectIdConvertLock(GLOBAL) (%ld) == OS_SUCCESS (%ld)", (long)actual,
                   (long)expected);
-    UtAssert_UINT32_EQ(record->refcount, 5);
+    UtAssert_UINT32_EQ(record->refcount, 6);
 
     /*
      * Use mode OS_LOCK_MODE_REFCOUNT with matching ID
@@ -173,7 +173,7 @@ void Test_OS_ObjectIdConvertToken(void)
 
     UtAssert_True(actual == expected, "OS_ObjectIdConvertLock(REFCOUNT) (%ld) == OS_SUCCESS (%ld)", (long)actual,
                   (long)expected);
-    UtAssert_UINT32_EQ(record->refcount, 6);
+    UtAssert_UINT32_EQ(record->refcount, 7);
 
     /*
      * Use mode OS_LOCK_MODE_EXCLUSIVE with matching ID and other refs.
@@ -191,13 +191,15 @@ void Test_OS_ObjectIdConvertToken(void)
 
     /*
      * Use mode OS_LOCK_MODE_EXCLUSIVE with matching ID and no other refs.
-     * This should return success.
+     * This should return success and set the active_id to OS_OBJECT_ID_RESERVED.
      */
     record->refcount = 0;
     actual           = OS_ObjectIdConvertToken(&token);
     expected         = OS_SUCCESS;
     UtAssert_True(actual == expected, "OS_ObjectIdConvertLock(EXCLUSIVE) (%ld) == OS_SUCCESS (%ld)", (long)actual,
                   (long)expected);
+    UtAssert_True(OS_ObjectIdEqual(record->active_id, OS_OBJECT_ID_RESERVED),
+                  "OS_ObjectIdConvertLock(EXCLUSIVE) objid reserved");
 }
 
 void Test_OS_ObjectIdGetBySearch(void)
@@ -598,6 +600,15 @@ void Test_OS_ObjectIdAllocateNew(void)
     expected                           = OS_ERR_NAME_TAKEN;
     actual                             = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &token);
     UtAssert_True(actual == expected, "OS_ObjectIdAllocate() (%ld) == OS_ERR_NAME_TAKEN", (long)actual);
+
+    /*
+     * Although an object with that name exists, it isn't fully created yet.
+     * OS_ObjectIdAllocateNew() should leave the object record in a state where
+     * attempts to get object ID by name should fail.
+     */
+    expected = OS_ERR_INCORRECT_OBJ_STATE;
+    actual   = OS_ObjectIdGetByName(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &token);
+    UtAssert_True(actual == expected, "OS_ObjectIdGetByName() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
 
     OS_SharedGlobalVars.ShutdownFlag = OS_SHUTDOWN_MAGIC_NUMBER;
     expected                         = OS_ERR_INCORRECT_OBJ_STATE;
