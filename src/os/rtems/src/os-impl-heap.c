@@ -46,8 +46,8 @@
  *-----------------------------------------------------------------*/
 int32 OS_HeapGetInfo_Impl(OS_heap_prop_t *heap_prop)
 {
-    region_information_block info;
-    int                      status;
+    OSAL_HEAP_INFO_BLOCK info;
+    int                  status;
 
     status = malloc_info(&info);
 

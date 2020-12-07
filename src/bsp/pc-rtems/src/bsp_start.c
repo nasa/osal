@@ -83,10 +83,10 @@ void OS_BSP_Setup(void)
     cmdlinestr = bsp_cmdline();
 
     printf("\n\n*** RTEMS Info ***\n");
-    printf("%s", _Copyright_Notice);
-    printf("%s\n\n", _RTEMS_version);
-    printf(" Stack size=%d\n", (int)Configuration.stack_space_size);
-    printf(" Workspace size=%d\n", (int)Configuration.work_space_size);
+    printf("%s", OSAL_BSP_COPYRIGHT_NOTICE);
+    printf("%s\n\n", rtems_get_version_string());
+    printf(" Stack size=%d\n", (int)rtems_configuration_get_stack_space_size());
+    printf(" Workspace size=%d\n", (int)rtems_configuration_get_work_space_size());
     if (cmdlinestr != NULL)
     {
         printf(" Bootloader Command Line: %s\n", cmdlinestr);
@@ -374,9 +374,13 @@ rtems_task Init(rtems_task_argument ignored)
 #define CONFIGURE_MAXIMUM_TIMERS                 (OS_MAX_TIMERS + 2)
 #define CONFIGURE_MAXIMUM_SEMAPHORES             (OS_MAX_BIN_SEMAPHORES + OS_MAX_COUNT_SEMAPHORES + OS_MAX_MUTEXES + 16)
 #define CONFIGURE_MAXIMUM_MESSAGE_QUEUES         (OS_MAX_QUEUES + 4)
-#define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS (OS_MAX_NUM_OPEN_FILES + 8)
 #define CONFIGURE_MAXIMUM_DRIVERS                10
 #define CONFIGURE_MAXIMUM_POSIX_KEYS             4
+#ifdef _RTEMS_5_
+   #define CONFIGURE_MAXIMUM_FILE_DESCRIPTORS        (OS_MAX_NUM_OPEN_FILES + 8)
+#else
+   #define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS  (OS_MAX_NUM_OPEN_FILES + 8)
+#endif
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
 #define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
