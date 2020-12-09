@@ -35,7 +35,7 @@
 #include "uttest.h"
 #include "utbsp.h"
 
-static uint32 UT_TimerSync(osal_index_t timer_id)
+static uint32 UT_TimerSync(osal_id_t timer_id)
 {
     OS_TaskDelay(1);
     return 1;

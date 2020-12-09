@@ -47,7 +47,7 @@
  * This is shared by all OSAL entities that perform low-level I/O.
  */
 /* The file/stream table is referenced by multiple entities, i.e. sockets, select, etc */
-OS_Rtems_filehandle_entry_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FILES];
+OS_impl_file_internal_record_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FILES];
 
 /****************************************************************************************
                          IMPLEMENTATION-SPECIFIC ROUTINES

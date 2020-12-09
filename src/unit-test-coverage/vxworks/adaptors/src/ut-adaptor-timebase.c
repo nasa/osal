@@ -40,9 +40,9 @@ int32 UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(void)
     return OS_VxWorks_TimeBaseAPI_Impl_Init();
 }
 
-int32 UT_TimeBaseTest_CallSigWaitFunc(osal_index_t local_id)
+int32 UT_TimeBaseTest_CallSigWaitFunc(osal_id_t timebase_id)
 {
-    return OS_VxWorks_SigWait(local_id);
+    return OS_VxWorks_SigWait(timebase_id);
 }
 
 int UT_TimeBaseTest_CallHelperTaskFunc(int arg)
@@ -50,9 +50,9 @@ int UT_TimeBaseTest_CallHelperTaskFunc(int arg)
     return OS_VxWorks_TimeBaseTask(arg);
 }
 
-void UT_TimeBaseTest_CallRegisterTimer(osal_index_t local_id)
+void UT_TimeBaseTest_CallRegisterTimer(osal_id_t obj_id)
 {
-    OS_VxWorks_RegisterTimer(local_id);
+    OS_VxWorks_RegisterTimer(obj_id);
 }
 
 bool UT_TimeBaseTest_CheckTimeBaseRegisteredState(osal_index_t local_id)

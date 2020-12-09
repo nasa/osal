@@ -50,9 +50,9 @@ void UT_TaskTest_SetImplTaskId(osal_index_t local_id, OCS_TASK_ID TaskId)
  * in order for the UT to invoke it there must be a non-static
  * way to get access to it.
  */
-int UT_TaskTest_CallEntryPoint(int arg)
+int UT_TaskTest_CallEntryPoint(osal_id_t arg)
 {
-    return OS_VxWorks_TaskEntry(arg);
+    return OS_VxWorks_TaskEntry(OS_ObjectIdToInteger(arg));
 }
 
 OCS_WIND_TCB *UT_TaskTest_GetTaskTcb(osal_index_t local_id)

@@ -46,6 +46,7 @@
 
 #include "os-impl-files.h"
 #include "os-shared-file.h"
+#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -63,10 +64,13 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileOpen_Impl(osal_index_t local_id, const char *local_path, int32 flags, int32 access)
+int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, int32 flags, int32 access)
 {
-    int os_perm;
-    int os_mode;
+    int                             os_perm;
+    int                             os_mode;
+    OS_impl_file_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
 
     /*
     ** Check for a valid access mode
@@ -100,9 +104,9 @@ int32 OS_FileOpen_Impl(osal_index_t local_id, const char *local_path, int32 flag
 
     os_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
 
-    OS_impl_filehandle_table[local_id].fd = open(local_path, os_perm, os_mode);
+    impl->fd = open(local_path, os_perm, os_mode);
 
-    if (OS_impl_filehandle_table[local_id].fd < 0)
+    if (impl->fd < 0)
     {
         OS_DEBUG("open(%s): %s\n", local_path, strerror(errno));
         return OS_ERROR;
@@ -112,7 +116,7 @@ int32 OS_FileOpen_Impl(osal_index_t local_id, const char *local_path, int32 flag
      * If the flags included O_NONBLOCK, then
      * enable the "select" call on this handle.
      */
-    OS_impl_filehandle_table[local_id].selectable = ((os_perm & O_NONBLOCK) != 0);
+    impl->selectable = ((os_perm & O_NONBLOCK) != 0);
 
     return OS_SUCCESS;
 } /* end OS_FileOpen_Impl */
@@ -202,7 +206,11 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
     fd = open(local_path, O_RDONLY, 0);
     if (fd < 0)
     {
-        return OS_ERROR;
+        fd = open(local_path, O_WRONLY, 0);
+        if (fd < 0)
+        {
+            return OS_ERROR;
+        }        
     }
 
     /*

@@ -73,7 +73,7 @@ int32 OS_TimeBaseAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_TimeBaseCreate_Impl(osal_index_t timebase_id);
+int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_TimeBaseSet_Impl
@@ -82,7 +82,7 @@ int32 OS_TimeBaseCreate_Impl(osal_index_t timebase_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_TimeBaseSet_Impl(osal_index_t timebase_id, uint32 start_time, uint32 interval_time);
+int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uint32 interval_time);
 
 /*----------------------------------------------------------------
    Function: OS_TimeBaseDelete_Impl
@@ -91,7 +91,7 @@ int32 OS_TimeBaseSet_Impl(osal_index_t timebase_id, uint32 start_time, uint32 in
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_TimeBaseDelete_Impl(osal_index_t timebase_id);
+int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token);
 
 /****************************************************************************************
                                 INTERNAL FUNCTIONS
@@ -103,7 +103,7 @@ int32 OS_TimeBaseDelete_Impl(osal_index_t timebase_id);
     Purpose: Get exclusive access to the given timebase
              Add/remove of application callbacks is prevented
  ------------------------------------------------------------------*/
-void OS_TimeBaseLock_Impl(osal_index_t timebase_id);
+void OS_TimeBaseLock_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_TimeBaseLock_Impl
@@ -111,7 +111,7 @@ void OS_TimeBaseLock_Impl(osal_index_t timebase_id);
     Purpose: Release exclusive access to the given timebase
              Add/remove of application callbacks is allowed
  ------------------------------------------------------------------*/
-void OS_TimeBaseUnlock_Impl(osal_index_t timebase_id);
+void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_TimeBaseGetInfo_Impl
@@ -120,7 +120,7 @@ void OS_TimeBaseUnlock_Impl(osal_index_t timebase_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_TimeBaseGetInfo_Impl(osal_index_t timer_id, OS_timebase_prop_t *timer_prop);
+int32 OS_TimeBaseGetInfo_Impl(const OS_object_token_t *token, OS_timebase_prop_t *timer_prop);
 
 /*----------------------------------------------------------------
    Function: OS_TimeBase_CallbackThread

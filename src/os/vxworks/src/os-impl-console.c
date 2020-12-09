@@ -32,6 +32,8 @@
 #include "os-impl-console.h"
 
 #include "os-shared-printf.h"
+#include "os-shared-idmap.h"
+#include "os-shared-common.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -66,9 +68,11 @@ OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_ConsoleWakeup_Impl(osal_index_t local_id)
+void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
 {
-    OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
+    OS_impl_console_internal_record_t *local;
+
+    local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
 
     if (local->is_async)
     {
@@ -81,7 +85,7 @@ void OS_ConsoleWakeup_Impl(osal_index_t local_id)
     else
     {
         /* output directly */
-        OS_ConsoleOutput_Impl(local_id);
+        OS_ConsoleOutput_Impl(token);
     }
 } /* end OS_ConsoleWakeup_Impl */
 
@@ -94,18 +98,25 @@ void OS_ConsoleWakeup_Impl(osal_index_t local_id)
  *-----------------------------------------------------------------*/
 int OS_VxWorks_ConsoleTask_Entry(int arg)
 {
-    osal_index_t                       local_id = OSAL_INDEX_C(arg);
     OS_impl_console_internal_record_t *local;
+    OS_object_token_t                  token;
 
-    local = &OS_impl_console_table[local_id];
-    while (true)
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_CONSOLE, OS_ObjectIdFromInteger(arg), &token) ==
+        OS_SUCCESS)
     {
-        OS_ConsoleOutput_Impl(local_id);
-        if (semTake(local->datasem, WAIT_FOREVER) == ERROR)
+        local = OS_OBJECT_TABLE_GET(OS_impl_console_table, token);
+
+        /* Loop forever (unless shutdown is set) */
+        while (OS_SharedGlobalVars.ShutdownFlag != OS_SHUTDOWN_MAGIC_NUMBER)
         {
-            OS_DEBUG("semTake() - vxWorks errno %d\n", errno);
-            break;
+            OS_ConsoleOutput_Impl(&token);
+            if (semTake(local->datasem, WAIT_FOREVER) == ERROR)
+            {
+                OS_DEBUG("semTake() - vxWorks errno %d\n", errno);
+                break;
+            }
         }
+        OS_ObjectIdRelease(&token);
     }
 
     return OK;
@@ -119,12 +130,16 @@ int OS_VxWorks_ConsoleTask_Entry(int arg)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ConsoleCreate_Impl(osal_index_t local_id)
+int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 {
-    OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
+    OS_impl_console_internal_record_t *local;
     int32                              return_code;
+    OS_console_internal_record_t *     console;
 
-    if (local_id == 0)
+    local   = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
+    console = OS_OBJECT_TABLE_GET(OS_console_table, *token);
+
+    if (OS_ObjectIndexFromToken(token) == 0)
     {
         return_code     = OS_SUCCESS;
         local->is_async = OS_CONSOLE_ASYNC;
@@ -145,9 +160,9 @@ int32 OS_ConsoleCreate_Impl(osal_index_t local_id)
             }
 
             /* spawn the async output helper task */
-            local->taskid = taskSpawn(OS_console_table[local_id].device_name, OS_CONSOLE_TASK_PRIORITY, 0,
-                                      OS_CONSOLE_TASK_STACKSIZE, (FUNCPTR)OS_VxWorks_ConsoleTask_Entry, local_id, 0, 0,
-                                      0, 0, 0, 0, 0, 0, 0);
+            local->taskid = taskSpawn(console->device_name, OS_CONSOLE_TASK_PRIORITY, 0, OS_CONSOLE_TASK_STACKSIZE,
+                                      (FUNCPTR)OS_VxWorks_ConsoleTask_Entry,
+                                      OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
             if (local->taskid == (TASK_ID)ERROR)
             {

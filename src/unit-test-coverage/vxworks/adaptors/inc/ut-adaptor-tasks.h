@@ -45,7 +45,7 @@ extern size_t const UT_Ref_OS_impl_task_table_SIZE;
 
 int32         UT_Call_OS_VxWorks_TaskAPI_Impl_Init(void);
 void          UT_TaskTest_SetImplTaskId(osal_index_t local_id, OCS_TASK_ID TaskId);
-int           UT_TaskTest_CallEntryPoint(int arg);
+int           UT_TaskTest_CallEntryPoint(osal_id_t arg);
 OCS_WIND_TCB *UT_TaskTest_GetTaskTcb(osal_index_t local_id);
 
 #endif /* INCLUDE_UT_ADAPTOR_TASKS_H_ */

@@ -34,6 +34,7 @@
 #include "os-rtems.h"
 #include "os-impl-loader.h"
 #include "os-shared-module.h"
+#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                    GLOBAL DATA
@@ -73,14 +74,14 @@ int32 OS_Rtems_ModuleAPI_Impl_Init(void)
  * This could be fine-tuned later.
  *
  *-----------------------------------------------------------------*/
-static bool OS_rtems_rtl_check_unresolved(rtems_rtl_unresolv_rec_t *rec, void *data)
+static bool OS_rtems_rtl_check_unresolved(OSAL_UNRESOLV_REC_TYPE *rec, void *data)
 {
     int32 *status = data;
 
     switch (rec->type)
     {
-        case rtems_rtl_unresolved_name:
-            OS_DEBUG("unresolved name: %s\n", rec->rec.name.name);
+        case OSAL_UNRESOLVED_SYMBOL:
+            OS_DEBUG("unresolved symbol: %s\n", rec->rec.name.name);
             *status = OS_ERROR;
             break;
         case rtems_rtl_unresolved_reloc:
@@ -104,11 +105,14 @@ static bool OS_rtems_rtl_check_unresolved(rtems_rtl_unresolv_rec_t *rec, void *d
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleLoad_Impl(osal_index_t module_id, const char *translated_path)
+int32 OS_ModuleLoad_Impl(const OS_object_token_t *token, const char *translated_path)
 {
-    int32 status = OS_ERROR;
-    int   unresolved;
-    void *dl_handle;
+    int32                             status = OS_ERROR;
+    int                               unresolved;
+    void *                            dl_handle;
+    OS_impl_module_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_module_table, *token);
 
     dlerror();
     dl_handle = dlopen(translated_path, RTLD_NOW | RTLD_GLOBAL);
@@ -142,7 +146,7 @@ int32 OS_ModuleLoad_Impl(osal_index_t module_id, const char *translated_path)
 
         OS_DEBUG("module has has unresolved externals\n");
         status = OS_SUCCESS; /* note - not final, probably overridden */
-        rtems_rtl_unresolved_interate(OS_rtems_rtl_check_unresolved, &status);
+        OSAL_UNRESOLVED_ITERATE(OS_rtems_rtl_check_unresolved, &status);
     }
     else
     {
@@ -152,7 +156,7 @@ int32 OS_ModuleLoad_Impl(osal_index_t module_id, const char *translated_path)
     if (status == OS_SUCCESS)
     {
         /* success: save for future use */
-        OS_impl_module_table[module_id].dl_handle = dl_handle;
+        impl->dl_handle = dl_handle;
     }
     else if (dl_handle != NULL)
     {
@@ -177,18 +181,21 @@ int32 OS_ModuleLoad_Impl(osal_index_t module_id, const char *translated_path)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleUnload_Impl(osal_index_t module_id)
+int32 OS_ModuleUnload_Impl(const OS_object_token_t *token)
 {
-    int32 status = OS_ERROR;
+    int32                             status = OS_ERROR;
+    OS_impl_module_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_module_table, *token);
 
     /*
     ** Attempt to close/unload the module
     */
     dlerror();
-    if (dlclose(OS_impl_module_table[module_id].dl_handle) == 0)
+    if (dlclose(impl->dl_handle) == 0)
     {
-        OS_impl_module_table[module_id].dl_handle = NULL;
-        status                                    = OS_SUCCESS;
+        impl->dl_handle = NULL;
+        status          = OS_SUCCESS;
     }
     else
     {
@@ -207,7 +214,7 @@ int32 OS_ModuleUnload_Impl(osal_index_t module_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleGetInfo_Impl(osal_index_t module_id, OS_module_prop_t *module_prop)
+int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *module_prop)
 {
     /*
     ** RTEMS does not specify a way to get these values

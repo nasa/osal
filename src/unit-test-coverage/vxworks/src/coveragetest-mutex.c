@@ -43,10 +43,12 @@ void Test_OS_MutSemCreate_Impl(void)
      * Test Case For:
      * int32 OS_MutSemCreate_Impl (uint32 sem_id, uint32 options)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate_Impl(UT_INDEX_0, 0), OS_SUCCESS);
+    OS_object_token_t token = UT_TOKEN_0;
+
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate_Impl(&token, 0), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_semMInitialize), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate_Impl(UT_INDEX_0, 0), OS_SEM_FAILURE);
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate_Impl(&token, 0), OS_SEM_FAILURE);
 }
 
 void Test_OS_MutSemDelete_Impl(void)
@@ -55,7 +57,9 @@ void Test_OS_MutSemDelete_Impl(void)
      * Test Case For:
      * int32 OS_MutSemDelete_Impl (uint32 sem_id)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_MutSemDelete_Impl(UT_INDEX_0), OS_SUCCESS);
+    OS_object_token_t token = UT_TOKEN_0;
+
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemDelete_Impl(&token), OS_SUCCESS);
 }
 
 void Test_OS_MutSemGive_Impl(void)
@@ -64,7 +68,9 @@ void Test_OS_MutSemGive_Impl(void)
      * Test Case For:
      * int32 OS_MutSemGive_Impl ( uint32 sem_id )
      */
-    OSAPI_TEST_FUNCTION_RC(OS_MutSemGive_Impl(UT_INDEX_0), OS_SUCCESS);
+    OS_object_token_t token = UT_TOKEN_0;
+
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemGive_Impl(&token), OS_SUCCESS);
 }
 
 void Test_OS_MutSemTake_Impl(void)
@@ -73,7 +79,9 @@ void Test_OS_MutSemTake_Impl(void)
      * Test Case For:
      * int32 OS_MutSemTake_Impl ( uint32 sem_id )
      */
-    OSAPI_TEST_FUNCTION_RC(OS_MutSemTake_Impl(UT_INDEX_0), OS_SUCCESS);
+    OS_object_token_t token = UT_TOKEN_0;
+
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemTake_Impl(&token), OS_SUCCESS);
 }
 
 void Test_OS_MutSemGetInfo_Impl(void)
@@ -83,8 +91,10 @@ void Test_OS_MutSemGetInfo_Impl(void)
      * int32 OS_MutSemGetInfo_Impl (uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
      */
     OS_mut_sem_prop_t mut_prop;
+    OS_object_token_t token = UT_TOKEN_0;
+
     memset(&mut_prop, 0xEE, sizeof(mut_prop));
-    OSAPI_TEST_FUNCTION_RC(OS_MutSemGetInfo_Impl(UT_INDEX_0, &mut_prop), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemGetInfo_Impl(&token, &mut_prop), OS_SUCCESS);
 }
 
 /* ------------------- End of test cases --------------------------------------*/

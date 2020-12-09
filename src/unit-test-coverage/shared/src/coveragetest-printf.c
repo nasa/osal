@@ -38,10 +38,16 @@ void Test_OS_ConsoleAPI_Init(void)
      * Test Case For:
      * int32 OS_ConsoleAPI_Init(void)
      */
-    uint32 CallCount = 0;
-    uint32 local_id  = 0;
+    uint32            CallCount = 0;
+    OS_object_token_t token;
 
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdAllocateNew), &local_id, sizeof(local_id), false);
+    /* make a custom token to force use of array index 0 */
+    token.lock_mode = OS_LOCK_MODE_NONE;
+    token.obj_type  = OS_OBJECT_TYPE_OS_CONSOLE;
+    token.obj_idx   = UT_INDEX_0;
+    token.obj_id    = UT_OBJID_1;
+
+    UT_SetDataBuffer(UT_KEY(OS_ObjectIdAllocateNew), &token, sizeof(token), false);
 
     /* call for coverage */
     OS_ConsoleAPI_Init();

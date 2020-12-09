@@ -52,9 +52,8 @@
  *-----------------------------------------------------------------*/
 int32 OS_ShellOutputToFile(const char *Cmd, osal_id_t filedes)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
+    OS_object_token_t token;
+    int32             return_code;
 
     /* Check Parameters */
     if (Cmd == NULL)
@@ -62,11 +61,11 @@ int32 OS_ShellOutputToFile(const char *Cmd, osal_id_t filedes)
         return OS_INVALID_POINTER;
     }
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, filedes, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, filedes, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_ShellOutputToFile_Impl(local_id, Cmd);
-        OS_ObjectIdRefcountDecr(record);
+        return_code = OS_ShellOutputToFile_Impl(&token, Cmd);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;

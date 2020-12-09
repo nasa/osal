@@ -76,11 +76,14 @@ OS_impl_filesys_internal_record_t OS_impl_filesys_table[OS_MAX_FILE_SYSTEMS];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStartVolume_Impl(osal_index_t filesys_id)
+int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *     local = &OS_filesys_table[filesys_id];
-    OS_impl_filesys_internal_record_t *impl  = &OS_impl_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *     local;
+    OS_impl_filesys_internal_record_t *impl;
     int32                              return_code;
+
+    impl  = OS_OBJECT_TABLE_GET(OS_impl_filesys_table, *token);
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     memset(impl, 0, sizeof(*impl));
     return_code = OS_ERR_NOT_IMPLEMENTED;
@@ -192,10 +195,13 @@ int32 OS_FileSysStartVolume_Impl(osal_index_t filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStopVolume_Impl(osal_index_t filesys_id)
+int32 OS_FileSysStopVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *     local = &OS_filesys_table[filesys_id];
-    OS_impl_filesys_internal_record_t *impl  = &OS_impl_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *     local;
+    OS_impl_filesys_internal_record_t *impl;
+
+    impl  = OS_OBJECT_TABLE_GET(OS_impl_filesys_table, *token);
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     switch (local->fstype)
     {
@@ -231,11 +237,13 @@ int32 OS_FileSysStopVolume_Impl(osal_index_t filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysFormatVolume_Impl(osal_index_t filesys_id)
+int32 OS_FileSysFormatVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *local       = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     int32                         return_code = OS_ERR_NOT_IMPLEMENTED;
     int                           status;
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     switch (local->fstype)
     {
@@ -282,11 +290,13 @@ int32 OS_FileSysFormatVolume_Impl(osal_index_t filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysMountVolume_Impl(osal_index_t filesys_id)
+int32 OS_FileSysMountVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     int32                         status;
     int                           fd;
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     /*
      * Calling open() on the physical device path
@@ -315,11 +325,13 @@ int32 OS_FileSysMountVolume_Impl(osal_index_t filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysUnmountVolume_Impl(osal_index_t filesys_id)
+int32 OS_FileSysUnmountVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     int32                         status;
     int                           fd;
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     /*
     ** vxWorks uses an ioctl to unmount
@@ -355,11 +367,13 @@ int32 OS_FileSysUnmountVolume_Impl(osal_index_t filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStatVolume_Impl(osal_index_t filesys_id, OS_statvfs_t *result)
+int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *result)
 {
-    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     struct statfs                 stat_buf;
     int                           return_code;
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     if (statfs(local->system_mountpt, &stat_buf) != 0)
     {
@@ -386,12 +400,14 @@ int32 OS_FileSysStatVolume_Impl(osal_index_t filesys_id, OS_statvfs_t *result)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysCheckVolume_Impl(osal_index_t filesys_id, bool repair)
+int32 OS_FileSysCheckVolume_Impl(const OS_object_token_t *token, bool repair)
 {
-    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     STATUS                        chk_status;
     int                           flags;
     int                           fd;
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     fd = open(local->system_mountpt, O_RDONLY, 0);
     if (fd < 0)

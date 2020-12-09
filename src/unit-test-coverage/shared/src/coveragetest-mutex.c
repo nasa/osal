@@ -136,18 +136,12 @@ void Test_OS_MutSemGetInfo(void)
      * Test Case For:
      * int32 OS_MutSemGetInfo (uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
      */
-    int32               expected = OS_SUCCESS;
-    int32               actual   = ~OS_SUCCESS;
-    OS_mut_sem_prop_t   prop;
-    osal_index_t        local_index = UT_INDEX_1;
-    OS_common_record_t  utrec;
-    OS_common_record_t *rptr = &utrec;
+    int32             expected = OS_SUCCESS;
+    int32             actual   = ~OS_SUCCESS;
+    OS_mut_sem_prop_t prop;
 
-    memset(&utrec, 0, sizeof(utrec));
-    utrec.creator    = UT_OBJID_OTHER;
-    utrec.name_entry = "ABC";
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
+    OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_MUTEX, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
+
     actual = OS_MutSemGetInfo(UT_OBJID_1, &prop);
 
     UtAssert_True(actual == expected, "OS_MutSemGetInfo() (%ld) == OS_SUCCESS", (long)actual);

@@ -37,11 +37,11 @@
 /*
 ** Console output API (printf)
 */
-void OS_ConsoleWakeup_Impl(osal_index_t local_id)
+void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
 {
     UT_DEFAULT_IMPL(OS_ConsoleWakeup_Impl);
 }
-int32 OS_ConsoleCreate_Impl(osal_index_t local_id)
+int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 {
     return UT_DEFAULT_IMPL(OS_ConsoleCreate_Impl);
 }

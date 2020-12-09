@@ -88,9 +88,9 @@ int32 OS_CountSemAPI_Init(void)
  *-----------------------------------------------------------------*/
 int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_initial_value, uint32 options)
 {
-    OS_common_record_t *record;
-    int32               return_code;
-    osal_index_t        local_id;
+    int32                           return_code;
+    OS_object_token_t               token;
+    OS_count_sem_internal_record_t *countsem;
 
     /* Check for NULL pointers */
     if (sem_id == NULL || sem_name == NULL)
@@ -104,18 +104,19 @@ int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_init
     }
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
-    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, sem_name, &local_id, &record);
+    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, sem_name, &token);
     if (return_code == OS_SUCCESS)
     {
-        /* Save all the data to our own internal table */
-        strcpy(OS_count_sem_table[local_id].obj_name, sem_name);
-        record->name_entry = OS_count_sem_table[local_id].obj_name;
+        countsem = OS_OBJECT_TABLE_GET(OS_count_sem_table, token);
+
+        /* Reset the table entry and save the name */
+        OS_OBJECT_INIT(token, countsem, obj_name, sem_name);
 
         /* Now call the OS-specific implementation.  This reads info from the table. */
-        return_code = OS_CountSemCreate_Impl(local_id, sem_initial_value, options);
+        return_code = OS_CountSemCreate_Impl(&token, sem_initial_value, options);
 
         /* Check result, finalize record, and unlock global table. */
-        return_code = OS_ObjectIdFinalizeNew(return_code, record, sem_id);
+        return_code = OS_ObjectIdFinalizeNew(return_code, &token, sem_id);
     }
 
     return return_code;
@@ -132,17 +133,16 @@ int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_init
  *-----------------------------------------------------------------*/
 int32 OS_CountSemDelete(osal_id_t sem_id)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
+    OS_object_token_t token;
+    int32             return_code;
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_CountSemDelete_Impl(local_id);
+        return_code = OS_CountSemDelete_Impl(&token);
 
         /* Complete the operation via the common routine */
-        return_code = OS_ObjectIdFinalizeDelete(return_code, record);
+        return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
     }
 
     return return_code;
@@ -159,15 +159,14 @@ int32 OS_CountSemDelete(osal_id_t sem_id)
  *-----------------------------------------------------------------*/
 int32 OS_CountSemGive(osal_id_t sem_id)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
+    OS_object_token_t token;
+    int32             return_code;
 
     /* Check Parameters */
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_CountSemGive_Impl(local_id);
+        return_code = OS_CountSemGive_Impl(&token);
     }
 
     return return_code;
@@ -184,15 +183,14 @@ int32 OS_CountSemGive(osal_id_t sem_id)
  *-----------------------------------------------------------------*/
 int32 OS_CountSemTake(osal_id_t sem_id)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
+    OS_object_token_t token;
+    int32             return_code;
 
     /* Check Parameters */
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_CountSemTake_Impl(local_id);
+        return_code = OS_CountSemTake_Impl(&token);
     }
 
     return return_code;
@@ -208,15 +206,14 @@ int32 OS_CountSemTake(osal_id_t sem_id)
  *-----------------------------------------------------------------*/
 int32 OS_CountSemTimedWait(osal_id_t sem_id, uint32 msecs)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
+    OS_object_token_t token;
+    int32             return_code;
 
     /* Check Parameters */
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_CountSemTimedWait_Impl(local_id, msecs);
+        return_code = OS_CountSemTimedWait_Impl(&token, msecs);
     }
 
     return return_code;
@@ -255,7 +252,7 @@ int32 OS_CountSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
 int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
 {
     OS_common_record_t *record;
-    osal_index_t        local_id;
+    OS_object_token_t   token;
     int32               return_code;
 
     /* Check parameters */
@@ -267,14 +264,17 @@ int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
     memset(count_prop, 0, sizeof(OS_count_sem_prop_t));
 
     /* Check Parameters */
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
+        record = OS_OBJECT_TABLE_GET(OS_global_count_sem_table, token);
+
         strncpy(count_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
         count_prop->creator = record->creator;
 
-        return_code = OS_CountSemGetInfo_Impl(local_id, count_prop);
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        return_code = OS_CountSemGetInfo_Impl(&token, count_prop);
+
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;

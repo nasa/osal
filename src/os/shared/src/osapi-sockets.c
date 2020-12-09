@@ -84,11 +84,13 @@ int32 OS_SocketAPI_Init(void)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-void OS_CreateSocketName(osal_index_t local_id, const OS_SockAddr_t *Addr, const char *parent_name)
+void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Addr, const char *parent_name)
 {
     size_t                       len;
     uint16                       port;
-    OS_stream_internal_record_t *sock = &OS_stream_table[local_id];
+    OS_stream_internal_record_t *sock;
+
+    sock = OS_OBJECT_TABLE_GET(OS_stream_table, *token);
 
     if (OS_SocketAddrToString_Impl(sock->stream_name, OS_MAX_API_NAME, Addr) != OS_SUCCESS)
     {
@@ -120,9 +122,9 @@ void OS_CreateSocketName(osal_index_t local_id, const OS_SockAddr_t *Addr, const
  *-----------------------------------------------------------------*/
 int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t Type)
 {
-    OS_common_record_t *record;
-    int32               return_code;
-    osal_index_t        local_id;
+    OS_object_token_t            token;
+    OS_stream_internal_record_t *stream;
+    int32                        return_code;
 
     /* Check for NULL pointers */
     if (sock_id == NULL)
@@ -131,19 +133,21 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
     }
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
-    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, NULL, &local_id, &record);
+    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, NULL, &token);
     if (return_code == OS_SUCCESS)
     {
+        stream = OS_OBJECT_TABLE_GET(OS_stream_table, token);
+
         /* Save all the data to our own internal table */
-        memset(&OS_stream_table[local_id], 0, sizeof(OS_stream_internal_record_t));
-        OS_stream_table[local_id].socket_domain = Domain;
-        OS_stream_table[local_id].socket_type   = Type;
+        memset(stream, 0, sizeof(OS_stream_internal_record_t));
+        stream->socket_domain = Domain;
+        stream->socket_type   = Type;
 
         /* Now call the OS-specific implementation.  This reads info from the table. */
-        return_code = OS_SocketOpen_Impl(local_id);
+        return_code = OS_SocketOpen_Impl(&token);
 
         /* Check result, finalize record, and unlock global table. */
-        return_code = OS_ObjectIdFinalizeNew(return_code, record, sock_id);
+        return_code = OS_ObjectIdFinalizeNew(return_code, &token, sock_id);
     }
 
     return return_code;
@@ -159,9 +163,10 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
  *-----------------------------------------------------------------*/
 int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
+    OS_common_record_t *         record;
+    OS_stream_internal_record_t *stream;
+    OS_object_token_t            token;
+    int32                        return_code;
 
     /* Check Parameters */
     if (Addr == NULL)
@@ -169,33 +174,35 @@ int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr)
         return OS_INVALID_POINTER;
     }
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sock_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sock_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        if (OS_stream_table[local_id].socket_domain == OS_SocketDomain_INVALID)
+        record = OS_OBJECT_TABLE_GET(OS_global_stream_table, token);
+        stream = OS_OBJECT_TABLE_GET(OS_stream_table, token);
+
+        if (stream->socket_domain == OS_SocketDomain_INVALID)
         {
             /* Not a socket */
             return_code = OS_ERR_INCORRECT_OBJ_TYPE;
         }
-        else if (record->refcount != 0 ||
-                 (OS_stream_table[local_id].stream_state & (OS_STREAM_STATE_BOUND | OS_STREAM_STATE_CONNECTED)) != 0)
+        else if (record->refcount != 0 || (stream->stream_state & (OS_STREAM_STATE_BOUND | OS_STREAM_STATE_CONNECTED)) != 0)
         {
             /* Socket must be neither bound nor connected */
             return_code = OS_ERR_INCORRECT_OBJ_STATE;
         }
         else
         {
-            return_code = OS_SocketBind_Impl(local_id, Addr);
+            return_code = OS_SocketBind_Impl(&token, Addr);
 
             if (return_code == OS_SUCCESS)
             {
-                OS_CreateSocketName(local_id, Addr, NULL);
-                record->name_entry = OS_stream_table[local_id].stream_name;
-                OS_stream_table[local_id].stream_state |= OS_STREAM_STATE_BOUND;
+                OS_CreateSocketName(&token, Addr, NULL);
+                record->name_entry = stream->stream_name;
+                stream->stream_state |= OS_STREAM_STATE_BOUND;
             }
         }
 
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
@@ -212,11 +219,13 @@ int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *Addr, int32 timeout)
 {
-    OS_common_record_t *record;
-    OS_common_record_t *connrecord;
-    osal_index_t        local_id;
-    osal_index_t        conn_id;
-    int32               return_code;
+    OS_common_record_t *         sock_record;
+    OS_common_record_t *         conn_record;
+    OS_stream_internal_record_t *sock;
+    OS_stream_internal_record_t *conn;
+    OS_object_token_t            sock_token;
+    OS_object_token_t            conn_token;
+    int32                        return_code;
 
     /* Check Parameters */
     if (Addr == NULL || connsock_id == NULL)
@@ -231,19 +240,25 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
      * return_code is checked, and return_code is only
      * set to OS_SUCCESS when connrecord is also initialized)
      */
-    connrecord = NULL;
-    conn_id    = OSAL_INDEX_C(0);
+    conn_record = NULL;
+    sock_record = NULL;
+    sock        = NULL;
+    conn        = NULL;
+    memset(&sock_token, 0, sizeof(sock_token));
+    memset(&conn_token, 0, sizeof(conn_token));
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, sock_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, sock_id, &sock_token);
     if (return_code == OS_SUCCESS)
     {
-        if (OS_stream_table[local_id].socket_type != OS_SocketType_STREAM)
+        sock_record = OS_OBJECT_TABLE_GET(OS_global_stream_table, sock_token);
+        sock        = OS_OBJECT_TABLE_GET(OS_stream_table, sock_token);
+
+        if (sock->socket_type != OS_SocketType_STREAM)
         {
             /* Socket must be of the STREAM variety */
             return_code = OS_ERR_INCORRECT_OBJ_TYPE;
         }
-        else if ((OS_stream_table[local_id].stream_state & (OS_STREAM_STATE_BOUND | OS_STREAM_STATE_CONNECTED)) !=
-                 OS_STREAM_STATE_BOUND)
+        else if ((sock->stream_state & (OS_STREAM_STATE_BOUND | OS_STREAM_STATE_CONNECTED)) != OS_STREAM_STATE_BOUND)
         {
             /* Socket must be bound but not connected */
             return_code = OS_ERR_INCORRECT_OBJ_STATE;
@@ -251,51 +266,58 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
         else
         {
             /* Now create a unique ID for the connection */
-            return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, NULL, &conn_id, &connrecord);
+            return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, NULL, &conn_token);
             if (return_code == OS_SUCCESS)
             {
-                /* Incr the refcount to record the fact that an operation is pending on this */
-                memset(&OS_stream_table[conn_id], 0, sizeof(OS_stream_internal_record_t));
-                OS_stream_table[conn_id].socket_domain = OS_stream_table[local_id].socket_domain;
-                OS_stream_table[conn_id].socket_type   = OS_stream_table[local_id].socket_type;
-                ++connrecord->refcount;
-                return_code = OS_ObjectIdFinalizeNew(return_code, connrecord, connsock_id);
-            }
-        }
+                conn_record = OS_OBJECT_TABLE_GET(OS_global_stream_table, conn_token);
+                conn        = OS_OBJECT_TABLE_GET(OS_stream_table, sock_token);
 
-        /* If failure happened here, decrement the refcount of the listening socket now */
-        if (return_code != OS_SUCCESS)
-        {
-            OS_ObjectIdRefcountDecr(record);
+                /* Incr the refcount to record the fact that an operation is pending on this */
+                memset(conn, 0, sizeof(OS_stream_internal_record_t));
+
+                conn->socket_domain = sock->socket_domain;
+                conn->socket_type   = sock->socket_type;
+
+                /* bumps up the refcount by 1 before finalizing,
+                 * to avoid having to re-acquire (should be cleaned up) */
+                ++conn_record->refcount;
+
+                return_code = OS_ObjectIdFinalizeNew(return_code, &conn_token, connsock_id);
+            }
         }
     }
 
     if (return_code == OS_SUCCESS)
     {
-        OS_SocketAddrInit_Impl(Addr, OS_stream_table[local_id].socket_domain);
+        OS_SocketAddrInit_Impl(Addr, sock->socket_domain);
 
         /* The actual accept impl is done without global table lock, only refcount lock */
-        return_code = OS_SocketAccept_Impl(local_id, conn_id, Addr, timeout);
+        return_code = OS_SocketAccept_Impl(&sock_token, &conn_token, Addr, timeout);
+    }
 
+    if (conn_record != NULL)
+    {
         OS_Lock_Global(LOCAL_OBJID_TYPE);
+
         if (return_code == OS_SUCCESS)
         {
             /* Generate an entry name based on the remote address */
-            OS_CreateSocketName(conn_id, Addr, record->name_entry);
-            connrecord->name_entry = OS_stream_table[conn_id].stream_name;
-            OS_stream_table[conn_id].stream_state |= OS_STREAM_STATE_CONNECTED;
+            OS_CreateSocketName(&conn_token, Addr, sock_record->name_entry);
+            conn_record->name_entry = conn->stream_name;
+            conn->stream_state |= OS_STREAM_STATE_CONNECTED;
         }
         else
         {
             /* Clear the connrecord */
-            connrecord->active_id = OS_OBJECT_ID_UNDEFINED;
+            conn_record->active_id = OS_OBJECT_ID_UNDEFINED;
         }
 
         /* Decrement both ref counters that were increased earlier */
-        --record->refcount;
-        --connrecord->refcount;
+        --conn_record->refcount;
         OS_Unlock_Global(LOCAL_OBJID_TYPE);
     }
+
+    OS_ObjectIdRelease(&sock_token);
 
     return return_code;
 } /* end OS_SocketAccept */
@@ -310,9 +332,10 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
  *-----------------------------------------------------------------*/
 int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeout)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
+    OS_stream_internal_record_t *stream;
+    OS_common_record_t *         record;
+    OS_object_token_t            token;
+    int32                        return_code;
 
     /* Check Parameters */
     if (Addr == NULL)
@@ -320,15 +343,17 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeo
         return OS_INVALID_POINTER;
     }
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sock_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sock_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        if (OS_stream_table[local_id].socket_domain == OS_SocketDomain_INVALID)
+        record = OS_OBJECT_TABLE_GET(OS_global_stream_table, token);
+        stream = OS_OBJECT_TABLE_GET(OS_stream_table, token);
+
+        if (stream->socket_domain == OS_SocketDomain_INVALID)
         {
             return_code = OS_ERR_INCORRECT_OBJ_TYPE;
         }
-        else if (OS_stream_table[local_id].socket_type == OS_SocketType_STREAM &&
-                 (OS_stream_table[local_id].stream_state & OS_STREAM_STATE_CONNECTED) != 0)
+        else if (stream->socket_type == OS_SocketType_STREAM && (stream->stream_state & OS_STREAM_STATE_CONNECTED) != 0)
         {
             /* Stream socket must not be connected */
             return_code = OS_ERR_INCORRECT_OBJ_STATE;
@@ -337,18 +362,18 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeo
         {
             ++record->refcount;
         }
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+
+        OS_ObjectIdRelease(&token);
     }
 
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_SocketConnect_Impl(local_id, Addr, Timeout);
+        return_code = OS_SocketConnect_Impl(&token, Addr, Timeout);
 
         OS_Lock_Global(LOCAL_OBJID_TYPE);
         if (return_code == OS_SUCCESS)
         {
-            OS_stream_table[local_id].stream_state |=
-                OS_STREAM_STATE_CONNECTED | OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
+            stream->stream_state |= OS_STREAM_STATE_CONNECTED | OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
         }
         --record->refcount;
         OS_Unlock_Global(LOCAL_OBJID_TYPE);
@@ -367,9 +392,9 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeo
  *-----------------------------------------------------------------*/
 int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
+    OS_stream_internal_record_t *stream;
+    OS_object_token_t            token;
+    int32                        return_code;
 
     /* Check Parameters */
     if (buffer == NULL || buflen == 0)
@@ -377,24 +402,26 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockA
         return OS_INVALID_POINTER;
     }
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, sock_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, sock_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        if (OS_stream_table[local_id].socket_type != OS_SocketType_DATAGRAM)
+        stream = OS_OBJECT_TABLE_GET(OS_stream_table, token);
+
+        if (stream->socket_type != OS_SocketType_DATAGRAM)
         {
             return_code = OS_ERR_INCORRECT_OBJ_TYPE;
         }
-        else if ((OS_stream_table[local_id].stream_state & OS_STREAM_STATE_BOUND) == 0)
+        else if ((stream->stream_state & OS_STREAM_STATE_BOUND) == 0)
         {
             /* Socket needs to be bound first */
             return_code = OS_ERR_INCORRECT_OBJ_STATE;
         }
         else
         {
-            return_code = OS_SocketRecvFrom_Impl(local_id, buffer, buflen, RemoteAddr, timeout);
+            return_code = OS_SocketRecvFrom_Impl(&token, buffer, buflen, RemoteAddr, timeout);
         }
 
-        OS_ObjectIdRefcountDecr(record);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
@@ -410,9 +437,9 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockA
  *-----------------------------------------------------------------*/
 int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, size_t buflen, const OS_SockAddr_t *RemoteAddr)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
+    OS_stream_internal_record_t *stream;
+    OS_object_token_t            token;
+    int32                        return_code;
 
     /* Check Parameters */
     if (buffer == NULL || buflen == 0)
@@ -420,19 +447,21 @@ int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, size_t buflen, cons
         return OS_INVALID_POINTER;
     }
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, sock_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, sock_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        if (OS_stream_table[local_id].socket_type != OS_SocketType_DATAGRAM)
+        stream = OS_OBJECT_TABLE_GET(OS_stream_table, token);
+
+        if (stream->socket_type != OS_SocketType_DATAGRAM)
         {
             return_code = OS_ERR_INCORRECT_OBJ_TYPE;
         }
         else
         {
-            return_code = OS_SocketSendTo_Impl(local_id, buffer, buflen, RemoteAddr);
+            return_code = OS_SocketSendTo_Impl(&token, buffer, buflen, RemoteAddr);
         }
 
-        OS_ObjectIdRefcountDecr(record);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
@@ -471,7 +500,7 @@ int32 OS_SocketGetIdByName(osal_id_t *sock_id, const char *sock_name)
 int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
 {
     OS_common_record_t *record;
-    osal_index_t        local_id;
+    OS_object_token_t   token;
     int32               return_code;
 
     /* Check parameters */
@@ -483,13 +512,16 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
     memset(sock_prop, 0, sizeof(OS_socket_prop_t));
 
     /* Check Parameters */
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sock_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sock_id, &token);
     if (return_code == OS_SUCCESS)
     {
+        record = OS_OBJECT_TABLE_GET(OS_global_stream_table, token);
+
         strncpy(sock_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
         sock_prop->creator = record->creator;
-        return_code        = OS_SocketGetInfo_Impl(local_id, sock_prop);
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        return_code        = OS_SocketGetInfo_Impl(&token, sock_prop);
+
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;

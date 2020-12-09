@@ -31,6 +31,7 @@
 
 #include "os-posix.h"
 #include "os-shared-mutex.h"
+#include "os-shared-idmap.h"
 #include "os-impl-mutex.h"
 
 /* Tables where the OS object information is stored */
@@ -61,10 +62,13 @@ int32 OS_Posix_MutexAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options)
+int32 OS_MutSemCreate_Impl(const OS_object_token_t *token, uint32 options)
 {
-    int                 return_code;
-    pthread_mutexattr_t mutex_attr;
+    int                              return_code;
+    pthread_mutexattr_t              mutex_attr;
+    OS_impl_mutex_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
 
     /*
     ** initialize the attribute with default values
@@ -72,8 +76,8 @@ int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options)
     return_code = pthread_mutexattr_init(&mutex_attr);
     if (return_code != 0)
     {
-        OS_DEBUG("Error: Mutex could not be created. pthread_mutexattr_init failed ID = %u: %s\n", (unsigned int)sem_id,
-                 strerror(return_code));
+        OS_DEBUG("Error: Mutex could not be created. pthread_mutexattr_init failed ID = %lu: %s\n",
+                 OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), strerror(return_code));
         return OS_SEM_FAILURE;
     }
 
@@ -83,8 +87,8 @@ int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options)
     return_code = pthread_mutexattr_setprotocol(&mutex_attr, PTHREAD_PRIO_INHERIT);
     if (return_code != 0)
     {
-        OS_DEBUG("Error: Mutex could not be created. pthread_mutexattr_setprotocol failed ID = %u: %s\n",
-                 (unsigned int)sem_id, strerror(return_code));
+        OS_DEBUG("Error: Mutex could not be created. pthread_mutexattr_setprotocol failed ID = %lu: %s\n",
+                 OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), strerror(return_code));
         return OS_SEM_FAILURE;
     }
 
@@ -94,8 +98,8 @@ int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options)
     return_code = pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
     if (return_code != 0)
     {
-        OS_DEBUG("Error: Mutex could not be created. pthread_mutexattr_settype failed ID = %u: %s\n",
-                 (unsigned int)sem_id, strerror(return_code));
+        OS_DEBUG("Error: Mutex could not be created. pthread_mutexattr_settype failed ID = %lu: %s\n",
+                 OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), strerror(return_code));
         return OS_SEM_FAILURE;
     }
 
@@ -103,10 +107,11 @@ int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options)
     ** create the mutex
     ** upon successful initialization, the state of the mutex becomes initialized and unlocked
     */
-    return_code = pthread_mutex_init(&OS_impl_mutex_table[sem_id].id, &mutex_attr);
+    return_code = pthread_mutex_init(&impl->id, &mutex_attr);
     if (return_code != 0)
     {
-        OS_DEBUG("Error: Mutex could not be created. ID = %u: %s\n", (unsigned int)sem_id, strerror(return_code));
+        OS_DEBUG("Error: Mutex could not be created. ID = %lu: %s\n", OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)),
+                 strerror(return_code));
         return OS_SEM_FAILURE;
     }
 
@@ -121,11 +126,14 @@ int32 OS_MutSemCreate_Impl(osal_index_t sem_id, uint32 options)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemDelete_Impl(osal_index_t sem_id)
+int32 OS_MutSemDelete_Impl(const OS_object_token_t *token)
 {
-    int status;
+    int                              status;
+    OS_impl_mutex_internal_record_t *impl;
 
-    status = pthread_mutex_destroy(&(OS_impl_mutex_table[sem_id].id)); /* 0 = success */
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
+
+    status = pthread_mutex_destroy(&(impl->id)); /* 0 = success */
 
     if (status != 0)
     {
@@ -144,14 +152,17 @@ int32 OS_MutSemDelete_Impl(osal_index_t sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGive_Impl(osal_index_t sem_id)
+int32 OS_MutSemGive_Impl(const OS_object_token_t *token)
 {
-    int status;
+    int                              status;
+    OS_impl_mutex_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
 
     /*
      ** Unlock the mutex
      */
-    status = pthread_mutex_unlock(&(OS_impl_mutex_table[sem_id].id));
+    status = pthread_mutex_unlock(&(impl->id));
     if (status != 0)
     {
         return OS_SEM_FAILURE;
@@ -168,14 +179,17 @@ int32 OS_MutSemGive_Impl(osal_index_t sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemTake_Impl(osal_index_t sem_id)
+int32 OS_MutSemTake_Impl(const OS_object_token_t *token)
 {
-    int status;
+    int                              status;
+    OS_impl_mutex_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
 
     /*
     ** Lock the mutex
     */
-    status = pthread_mutex_lock(&(OS_impl_mutex_table[sem_id].id));
+    status = pthread_mutex_lock(&(impl->id));
     if (status != 0)
     {
         return OS_SEM_FAILURE;
@@ -192,7 +206,7 @@ int32 OS_MutSemTake_Impl(osal_index_t sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGetInfo_Impl(osal_index_t sem_id, OS_mut_sem_prop_t *mut_prop)
+int32 OS_MutSemGetInfo_Impl(const OS_object_token_t *token, OS_mut_sem_prop_t *mut_prop)
 {
     return OS_SUCCESS;
 

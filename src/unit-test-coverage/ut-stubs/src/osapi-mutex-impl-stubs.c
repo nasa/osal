@@ -38,8 +38,8 @@
 ** Mutex API
 */
 
-UT_DEFAULT_STUB(OS_MutSemCreate_Impl, (osal_index_t sem_id, uint32 options))
-UT_DEFAULT_STUB(OS_MutSemGive_Impl, (osal_index_t sem_id))
-UT_DEFAULT_STUB(OS_MutSemTake_Impl, (osal_index_t sem_id))
-UT_DEFAULT_STUB(OS_MutSemDelete_Impl, (osal_index_t sem_id))
-UT_DEFAULT_STUB(OS_MutSemGetInfo_Impl, (osal_index_t sem_id, OS_mut_sem_prop_t *mut_prop))
+UT_DEFAULT_STUB(OS_MutSemCreate_Impl, (const OS_object_token_t *token, uint32 options))
+UT_DEFAULT_STUB(OS_MutSemGive_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_MutSemTake_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_MutSemDelete_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_MutSemGetInfo_Impl, (const OS_object_token_t *token, OS_mut_sem_prop_t *mut_prop))

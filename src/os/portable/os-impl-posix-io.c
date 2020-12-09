@@ -48,6 +48,7 @@
 #include "os-impl-io.h"
 #include "os-shared-file.h"
 #include "os-shared-select.h"
+#include "os-shared-idmap.h"
 
 /* some OS libraries (e.g. VxWorks) do not declare the API to be const-correct
  * It can still use this generic implementation but the call to write() must be
@@ -66,11 +67,14 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GenericClose_Impl(osal_index_t local_id)
+int32 OS_GenericClose_Impl(const OS_object_token_t *token)
 {
-    int result;
+    int                             result;
+    OS_impl_file_internal_record_t *impl;
 
-    result = close(OS_impl_filehandle_table[local_id].fd);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
+
+    result = close(impl->fd);
     if (result < 0)
     {
         /*
@@ -86,7 +90,7 @@ int32 OS_GenericClose_Impl(osal_index_t local_id)
          */
         OS_DEBUG("close: %s\n", strerror(errno));
     }
-    OS_impl_filehandle_table[local_id].fd = -1;
+    impl->fd = -1;
     return OS_SUCCESS;
 } /* end OS_GenericClose_Impl */
 
@@ -98,11 +102,14 @@ int32 OS_GenericClose_Impl(osal_index_t local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GenericSeek_Impl(osal_index_t local_id, int32 offset, uint32 whence)
+int32 OS_GenericSeek_Impl(const OS_object_token_t *token, int32 offset, uint32 whence)
 {
-    int   where;
-    off_t os_result;
-    int32 retval;
+    int                             where;
+    off_t                           os_result;
+    int32                           retval;
+    OS_impl_file_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
 
     switch (whence)
     {
@@ -119,7 +126,7 @@ int32 OS_GenericSeek_Impl(osal_index_t local_id, int32 offset, uint32 whence)
             return OS_ERROR;
     }
 
-    os_result = lseek(OS_impl_filehandle_table[local_id].fd, (off_t)offset, where);
+    os_result = lseek(impl->fd, (off_t)offset, where);
     if (os_result == (off_t)-1)
     {
         if (errno == ESPIPE)
@@ -163,11 +170,14 @@ int32 OS_GenericSeek_Impl(osal_index_t local_id, int32 offset, uint32 whence)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GenericRead_Impl(osal_index_t local_id, void *buffer, size_t nbytes, int32 timeout)
+int32 OS_GenericRead_Impl(const OS_object_token_t *token, void *buffer, size_t nbytes, int32 timeout)
 {
-    int32   return_code;
-    ssize_t os_result;
-    uint32  operation;
+    int32                           return_code;
+    ssize_t                         os_result;
+    uint32                          operation;
+    OS_impl_file_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
 
     return_code = OS_SUCCESS;
 
@@ -183,14 +193,14 @@ int32 OS_GenericRead_Impl(osal_index_t local_id, void *buffer, size_t nbytes, in
          *
          * Note that a timeout will not work unless selectable is true.
          */
-        if (OS_impl_filehandle_table[local_id].selectable)
+        if (impl->selectable)
         {
-            return_code = OS_SelectSingle_Impl(local_id, &operation, timeout);
+            return_code = OS_SelectSingle_Impl(token, &operation, timeout);
         }
 
         if (return_code == OS_SUCCESS && (operation & OS_STREAM_STATE_READABLE) != 0)
         {
-            os_result = read(OS_impl_filehandle_table[local_id].fd, buffer, nbytes);
+            os_result = read(impl->fd, buffer, nbytes);
             if (os_result < 0)
             {
                 OS_DEBUG("read: %s\n", strerror(errno));
@@ -215,11 +225,14 @@ int32 OS_GenericRead_Impl(osal_index_t local_id, void *buffer, size_t nbytes, in
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GenericWrite_Impl(osal_index_t local_id, const void *buffer, size_t nbytes, int32 timeout)
+int32 OS_GenericWrite_Impl(const OS_object_token_t *token, const void *buffer, size_t nbytes, int32 timeout)
 {
-    int32   return_code;
-    ssize_t os_result;
-    uint32  operation;
+    int32                           return_code;
+    ssize_t                         os_result;
+    uint32                          operation;
+    OS_impl_file_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
 
     return_code = OS_SUCCESS;
 
@@ -235,16 +248,16 @@ int32 OS_GenericWrite_Impl(osal_index_t local_id, const void *buffer, size_t nby
          *
          * Note that a timeout will not work unless selectable is true.
          */
-        if (OS_impl_filehandle_table[local_id].selectable)
+        if (impl->selectable)
         {
-            return_code = OS_SelectSingle_Impl(local_id, &operation, timeout);
+            return_code = OS_SelectSingle_Impl(token, &operation, timeout);
         }
 
         if (return_code == OS_SUCCESS && (operation & OS_STREAM_STATE_WRITABLE) != 0)
         {
             /* on some system libraries for which the write() argument is not
              * qualified correctly, it needs to be case to a void* here */
-            os_result = write(OS_impl_filehandle_table[local_id].fd, GENERIC_IO_CONST_DATA_CAST buffer, nbytes);
+            os_result = write(impl->fd, GENERIC_IO_CONST_DATA_CAST buffer, nbytes);
             if (os_result < 0)
             {
                 OS_DEBUG("write: %s\n", strerror(errno));

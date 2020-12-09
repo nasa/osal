@@ -43,13 +43,13 @@ void UT_TimeBaseTest_Setup(osal_index_t local_id, int signo, bool reset_flag);
  * Invokes OS_VxWorks_SigWait() with the given arguments.
  * This is normally a static function but exposed via a non-static wrapper for UT purposes.
  */
-int32 UT_TimeBaseTest_CallSigWaitFunc(osal_index_t local_id);
+int32 UT_TimeBaseTest_CallSigWaitFunc(osal_id_t timebase_id);
 
 /* Invokes the static OS_VxWorks_TimeBaseTask() function with given argument */
 int UT_TimeBaseTest_CallHelperTaskFunc(int arg);
 
 /* Invokes the static OS_VxWorks_RegisterTimer() function with given argument */
-void UT_TimeBaseTest_CallRegisterTimer(osal_index_t local_id);
+void UT_TimeBaseTest_CallRegisterTimer(osal_id_t obj_id);
 
 /* Hook functions which set the timer registration state */
 void UT_TimeBaseTest_SetTimeBaseRegState(osal_index_t local_id, bool is_success);

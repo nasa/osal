@@ -229,20 +229,13 @@ void Test_OS_ModuleGetInfo(void)
      * Test Case For:
      * int32 OS_ModuleInfo ( uint32 module_id, OS_module_prop_t *module_prop )
      */
-    int32               expected = OS_SUCCESS;
-    int32               actual   = ~OS_SUCCESS;
-    OS_module_prop_t    module_prop;
-    osal_index_t        local_index;
-    OS_common_record_t  utrec;
-    OS_common_record_t *rptr = &utrec;
+    int32            expected = OS_SUCCESS;
+    int32            actual   = ~OS_SUCCESS;
+    OS_module_prop_t module_prop;
 
-    local_index = UT_INDEX_1;
-    memset(&utrec, 0, sizeof(utrec));
-    utrec.creator    = UT_OBJID_OTHER;
-    utrec.name_entry = "ABC";
+    OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_MODULE, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
     strncpy(OS_module_table[1].file_name, "DEF", sizeof(OS_module_table[1].file_name));
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
+
     actual = OS_ModuleInfo(UT_OBJID_1, &module_prop);
 
     UtAssert_True(actual == expected, "OS_ModuleGetInfo() (%ld) == OS_SUCCESS", (long)actual);

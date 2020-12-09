@@ -32,6 +32,7 @@
 #include "os-vxworks.h"
 #include "os-impl-loader.h"
 #include "os-shared-module.h"
+#include "os-shared-idmap.h"
 
 #include <errnoLib.h>
 #include <loadLib.h>
@@ -71,11 +72,14 @@ int32 OS_VxWorks_ModuleAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleLoad_Impl(osal_index_t local_id, const char *translated_path)
+int32 OS_ModuleLoad_Impl(const OS_object_token_t *token, const char *translated_path)
 {
-    int32     return_code;
-    int       fd;
-    MODULE_ID vxModuleId;
+    int32                             return_code;
+    int                               fd;
+    MODULE_ID                         vxModuleId;
+    OS_impl_module_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_module_table, *token);
 
     /*
     ** File is ready to load
@@ -104,8 +108,8 @@ int32 OS_ModuleLoad_Impl(osal_index_t local_id, const char *translated_path)
         }
         else
         {
-            OS_impl_module_table[local_id].moduleID = vxModuleId;
-            return_code                             = OS_SUCCESS;
+            impl->moduleID = vxModuleId;
+            return_code    = OS_SUCCESS;
         }
 
         /*
@@ -126,14 +130,17 @@ int32 OS_ModuleLoad_Impl(osal_index_t local_id, const char *translated_path)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleUnload_Impl(osal_index_t local_id)
+int32 OS_ModuleUnload_Impl(const OS_object_token_t *token)
 {
-    STATUS vxStatus;
+    STATUS                            vxStatus;
+    OS_impl_module_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_module_table, *token);
 
     /*
     ** Attempt to close/unload the module
     */
-    vxStatus = unldByModuleId(OS_impl_module_table[local_id].moduleID, 0);
+    vxStatus = unldByModuleId(impl->moduleID, 0);
     if (vxStatus == ERROR)
     {
         OS_DEBUG("OSAL: Error, Cannot Close/Unload application file: %d\n", vxStatus);
@@ -152,17 +159,20 @@ int32 OS_ModuleUnload_Impl(osal_index_t local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleGetInfo_Impl(osal_index_t local_id, OS_module_prop_t *module_prop)
+int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *module_prop)
 {
-    MODULE_INFO vxModuleInfo;
-    STATUS      vxStatus;
+    MODULE_INFO                       vxModuleInfo;
+    STATUS                            vxStatus;
+    OS_impl_module_internal_record_t *impl;
 
-    module_prop->host_module_id = (cpuaddr)OS_impl_module_table[local_id].moduleID;
+    impl = OS_OBJECT_TABLE_GET(OS_impl_module_table, *token);
+
+    module_prop->host_module_id = (cpuaddr)impl->moduleID;
 
     /*
     ** Get the module info from vxWorks
     */
-    vxStatus = moduleInfoGet(OS_impl_module_table[local_id].moduleID, &vxModuleInfo);
+    vxStatus = moduleInfoGet(impl->moduleID, &vxModuleInfo);
     if (vxStatus == ERROR)
     {
         OS_DEBUG("OSAL: OS_ModuleInfoGet Error from vxWorks: %d\n", vxStatus);

@@ -26,6 +26,7 @@
 #include "os-portable-coveragetest.h"
 #include "ut-adaptor-portable-posix-io.h"
 #include "os-shared-select.h"
+#include "os-shared-idmap.h"
 
 #include <OCS_sys_select.h>
 
@@ -35,20 +36,21 @@ void Test_OS_SelectSingle_Impl(void)
      * int32 OS_SelectSingle_Impl(uint32 stream_id, uint32 *SelectFlags, int32 msecs)
      */
     uint32              SelectFlags;
-    osal_index_t        StreamID;
+    OS_object_token_t   token;
     struct OCS_timespec nowtime;
     struct OCS_timespec latertime;
 
-    StreamID = UT_INDEX_0;
+    memset(&token, 0, sizeof(token));
+
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, false);
     SelectFlags = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
-    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (StreamID, &SelectFlags, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
-    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (StreamID, &SelectFlags, 0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 0), OS_SUCCESS);
     SelectFlags = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
-    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (StreamID, &SelectFlags, -1), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, -1), OS_SUCCESS);
     SelectFlags = 0;
-    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (StreamID, &SelectFlags, 0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 0), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_select), 0);
     SelectFlags       = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
@@ -58,7 +60,7 @@ void Test_OS_SelectSingle_Impl(void)
     latertime.tv_nsec = 0;
     UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &nowtime, sizeof(nowtime), false);
     UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &latertime, sizeof(latertime), false);
-    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (StreamID, &SelectFlags, 999), OS_ERROR_TIMEOUT);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 999), OS_ERROR_TIMEOUT);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_select), -1);
     SelectFlags       = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
@@ -68,7 +70,7 @@ void Test_OS_SelectSingle_Impl(void)
     latertime.tv_nsec = 600000000;
     UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &nowtime, sizeof(nowtime), false);
     UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &latertime, sizeof(latertime), false);
-    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (StreamID, &SelectFlags, 2100), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 2100), OS_ERROR);
 } /* end OS_SelectSingle_Impl */
 
 void Test_OS_SelectMultiple_Impl(void)
