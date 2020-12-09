@@ -34,6 +34,7 @@
 
 #include "os-shared-idmap.h"
 #include "os-shared-printf.h"
+#include "os-shared-common.h"
 
 /*
  * By default the console output is always asynchronous
@@ -96,7 +97,9 @@ static void *OS_ConsoleTask_Entry(void *arg)
     if (OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_CONSOLE, local_arg.id, &token) == OS_SUCCESS)
     {
         local = OS_OBJECT_TABLE_GET(OS_impl_console_table, token);
-        while (true)
+
+        /* Loop forever (unless shutdown is set) */
+        while (OS_SharedGlobalVars.ShutdownFlag != OS_SHUTDOWN_MAGIC_NUMBER)
         {
             OS_ConsoleOutput_Impl(&token);
             sem_wait(&local->data_sem);
