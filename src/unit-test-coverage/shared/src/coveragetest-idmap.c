@@ -187,7 +187,10 @@ void Test_OS_ObjectIdConvertToken(void)
                   (long)actual, (long)expected);
 
     /* should have delayed 4 times, on the 5th try it returns error */
-    UtAssert_STUB_COUNT(OS_TaskDelay_Impl, 4);
+    UtAssert_STUB_COUNT(OS_WaitForStateChange_Impl, 4);
+
+    /* It should also have preserved the original ID */
+    UtAssert_True(OS_ObjectIdEqual(record->active_id, objid), "OS_ObjectIdConvertLock(EXCLUSIVE) objid restored");
 
     /*
      * Use mode OS_LOCK_MODE_EXCLUSIVE with matching ID and no other refs.

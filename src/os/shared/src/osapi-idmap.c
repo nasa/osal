@@ -433,9 +433,10 @@ int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
             break;
         }
 
-        OS_Unlock_Global(token->obj_type);
-        OS_TaskDelay_Impl(attempts);
-        OS_Lock_Global(token->obj_type);
+        /*
+         * Call the impl layer to wait for some sort of change to occur.
+         */
+        OS_WaitForStateChange(token->obj_type, attempts);
     }
 
     /*
@@ -727,6 +728,41 @@ void OS_Unlock_Global(osal_objtype_t idtype)
     if (return_code != OS_SUCCESS)
     {
         OS_DEBUG("ERROR: unable to unlock global %u, error=%d\n", (unsigned int)idtype, (int)return_code);
+    }
+}
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_WaitForStateChange
+ *
+ *  Purpose: Local helper routine, not part of OSAL API.
+ *  Waits for a change in the global table identified by "idtype"
+ *
+ *-----------------------------------------------------------------*/
+void OS_WaitForStateChange(osal_objtype_t idtype, uint32 attempts)
+{
+    osal_id_t           saved_owner_id;
+    OS_objtype_state_t *objtype;
+
+    if (idtype < OS_OBJECT_TYPE_USER)
+    {
+        objtype        = &OS_objtype_state[idtype];
+        saved_owner_id = objtype->table_owner;
+
+        /* temporarily release the table */
+        objtype->table_owner = OS_OBJECT_ID_UNDEFINED;
+
+        /*
+         * The implementation layer takes care of the actual unlock + wait.
+         * This permits use of condition variables where these two actions
+         * are done atomically.
+         */
+        OS_WaitForStateChange_Impl(idtype, attempts);
+
+        /*
+         * After return, this task owns the table again
+         */
+        objtype->table_owner = saved_owner_id;
     }
 }
 
