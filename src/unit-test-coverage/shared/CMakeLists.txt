@@ -26,11 +26,16 @@ set(MODULE_LIST
 )
 
 set(SHARED_COVERAGE_LINK_LIST
+        os-shared-coverage-support
         ut-adaptor-shared
         ut_osapi_impl_stubs
         ut_osapi_shared_stubs
         ut_osapi_stubs
         ut_libc_stubs
+)
+
+add_library(os-shared-coverage-support STATIC
+        src/os-shared-coverage-support.c
 )
 
 add_subdirectory(adaptors)

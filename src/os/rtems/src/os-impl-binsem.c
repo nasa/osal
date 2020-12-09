@@ -87,17 +87,20 @@ int32 OS_Rtems_BinSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemCreate_Impl(osal_index_t sem_id, uint32 sem_initial_value, uint32 options)
+int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 sem_initial_value, uint32 options)
 {
-    rtems_status_code status;
-    rtems_name        r_name;
+    rtems_status_code                 status;
+    rtems_name                        r_name;
+    OS_impl_binsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
 
     /*
     ** RTEMS task names are 4 byte integers.
     ** It is convenient to use the OSAL ID in here, as we know it is already unique
     ** and trying to use the real name would be less than useful (only 4 chars)
     */
-    r_name = OS_ObjectIdToInteger(OS_global_bin_sem_table[sem_id].active_id);
+    r_name = OS_ObjectIdToInteger(OS_ObjectIdFromToken(token));
 
     /* Check to make sure the sem value is going to be either 0 or 1 */
     if (sem_initial_value > 1)
@@ -106,8 +109,7 @@ int32 OS_BinSemCreate_Impl(osal_index_t sem_id, uint32 sem_initial_value, uint32
     }
 
     /* Create RTEMS Semaphore */
-    status = rtems_semaphore_create(r_name, sem_initial_value, OSAL_BINARY_SEM_ATTRIBS, 0,
-                                    &(OS_impl_bin_sem_table[sem_id].id));
+    status = rtems_semaphore_create(r_name, sem_initial_value, OSAL_BINARY_SEM_ATTRIBS, 0, &(impl->id));
 
     /* check if Create failed */
     if (status != RTEMS_SUCCESSFUL)
@@ -128,11 +130,14 @@ int32 OS_BinSemCreate_Impl(osal_index_t sem_id, uint32 sem_initial_value, uint32
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemDelete_Impl(osal_index_t sem_id)
+int32 OS_BinSemDelete_Impl(const OS_object_token_t *token)
 {
-    rtems_status_code status;
+    rtems_status_code                 status;
+    OS_impl_binsem_internal_record_t *impl;
 
-    status = rtems_semaphore_delete(OS_impl_bin_sem_table[sem_id].id);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
+
+    status = rtems_semaphore_delete(impl->id);
     if (status != RTEMS_SUCCESSFUL)
     {
         OS_DEBUG("Unhandled semaphore_delete error: %s\n", rtems_status_text(status));
@@ -151,11 +156,14 @@ int32 OS_BinSemDelete_Impl(osal_index_t sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGive_Impl(osal_index_t sem_id)
+int32 OS_BinSemGive_Impl(const OS_object_token_t *token)
 {
-    rtems_status_code status;
+    rtems_status_code                 status;
+    OS_impl_binsem_internal_record_t *impl;
 
-    status = rtems_semaphore_release(OS_impl_bin_sem_table[sem_id].id);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
+
+    status = rtems_semaphore_release(impl->id);
     if (status != RTEMS_SUCCESSFUL)
     {
         OS_DEBUG("Unhandled semaphore_release error: %s\n", rtems_status_text(status));
@@ -173,12 +181,15 @@ int32 OS_BinSemGive_Impl(osal_index_t sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemFlush_Impl(osal_index_t sem_id)
+int32 OS_BinSemFlush_Impl(const OS_object_token_t *token)
 {
-    rtems_status_code status;
+    rtems_status_code                 status;
+    OS_impl_binsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
 
     /* Give Semaphore */
-    status = rtems_semaphore_flush(OS_impl_bin_sem_table[sem_id].id);
+    status = rtems_semaphore_flush(impl->id);
     if (status != RTEMS_SUCCESSFUL)
     {
         OS_DEBUG("Unhandled semaphore_flush error: %s\n", rtems_status_text(status));
@@ -197,11 +208,14 @@ int32 OS_BinSemFlush_Impl(osal_index_t sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTake_Impl(osal_index_t sem_id)
+int32 OS_BinSemTake_Impl(const OS_object_token_t *token)
 {
-    rtems_status_code status;
+    rtems_status_code                 status;
+    OS_impl_binsem_internal_record_t *impl;
 
-    status = rtems_semaphore_obtain(OS_impl_bin_sem_table[sem_id].id, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
+
+    status = rtems_semaphore_obtain(impl->id, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
     /*
     ** If the semaphore is flushed, this function will return
     ** RTEMS_UNSATISFIED. If this happens, the OSAL does not want to return
@@ -228,17 +242,20 @@ int32 OS_BinSemTake_Impl(osal_index_t sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTimedWait_Impl(osal_index_t sem_id, uint32 msecs)
+int32 OS_BinSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
 {
-    rtems_status_code status;
-    int               TimeInTicks;
+    rtems_status_code                 status;
+    int                               TimeInTicks;
+    OS_impl_binsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
 
     if (OS_Milli2Ticks(msecs, &TimeInTicks) != OS_SUCCESS)
     {
         return OS_ERROR;
     }
 
-    status = rtems_semaphore_obtain(OS_impl_bin_sem_table[sem_id].id, RTEMS_WAIT, TimeInTicks);
+    status = rtems_semaphore_obtain(impl->id, RTEMS_WAIT, TimeInTicks);
 
     if (status == RTEMS_TIMEOUT)
     {
@@ -264,7 +281,7 @@ int32 OS_BinSemTimedWait_Impl(osal_index_t sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGetInfo_Impl(osal_index_t sem_id, OS_bin_sem_prop_t *bin_prop)
+int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop)
 {
     /* RTEMS has no API for obtaining the current value of a semaphore */
     return OS_SUCCESS;

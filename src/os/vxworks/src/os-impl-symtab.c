@@ -119,7 +119,6 @@ int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
     return OS_GenericSymbolLookup_Impl(sysSymTbl, SymbolAddress, SymbolName);
 } /* end OS_GlobalSymbolLookup_Impl */
 
-
 /*----------------------------------------------------------------
  *
  * Function: OS_ModuleSymbolLookup_Impl
@@ -128,7 +127,7 @@ int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleSymbolLookup_Impl(osal_index_t local_id, cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_ModuleSymbolLookup_Impl(const OS_object_token_t *token, cpuaddr *SymbolAddress, const char *SymbolName)
 {
     /*
      * NOTE: this is currently exactly the same as OS_GlobalSymbolLookup_Impl().
@@ -139,8 +138,6 @@ int32 OS_ModuleSymbolLookup_Impl(osal_index_t local_id, cpuaddr *SymbolAddress, 
      */
     return OS_GenericSymbolLookup_Impl(sysSymTbl, SymbolAddress, SymbolName);
 } /* end OS_ModuleSymbolLookup_Impl */
-
-
 
 /*----------------------------------------------------------------
  *

@@ -54,7 +54,7 @@ void Test_OS_VxWorksEntry(void)
      * Test Case For:
      * static int OS_VxWorksEntry(int arg)
      */
-    OSAPI_TEST_FUNCTION_RC(UT_TaskTest_CallEntryPoint(0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(UT_TaskTest_CallEntryPoint(OS_OBJECT_ID_UNDEFINED), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_TaskEntryPoint)) == 1, "OS_TaskEntryPoint() called");
 }
 
@@ -64,6 +64,8 @@ void Test_OS_TaskCreate_Impl(void)
      * Test Case For:
      * int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
      */
+    OS_object_token_t token = UT_TOKEN_0;
+
     UT_SetDataBuffer(UT_KEY(OCS_malloc), TestHeap, sizeof(TestHeap), false);
     UT_SetDataBuffer(UT_KEY(OCS_free), TestHeap, sizeof(TestHeap), false);
 
@@ -71,10 +73,10 @@ void Test_OS_TaskCreate_Impl(void)
      * The first call checks the failure path and ensures that a malloc failure gets handled */
     OS_task_table[0].stack_size = 250;
     UT_SetDefaultReturnValue(UT_KEY(OCS_malloc), OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(UT_INDEX_0, 0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, 0), OS_ERROR);
 
     UT_ClearForceFail(UT_KEY(OCS_malloc));
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(UT_INDEX_0, OS_FP_ENABLED), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 2, "malloc() called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 0, "free() not called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 1, "taskInit() called");
@@ -82,7 +84,7 @@ void Test_OS_TaskCreate_Impl(void)
 
     /* create again with smaller stack - this should re-use existing buffer */
     OS_task_table[0].stack_size = 100;
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(UT_INDEX_0, OS_FP_ENABLED), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 2, "malloc() not called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 0, "free() not called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 2, "taskInit() called");
@@ -90,7 +92,7 @@ void Test_OS_TaskCreate_Impl(void)
 
     /* create again with larger stack - this should free existing and malloc() new buffer */
     OS_task_table[0].stack_size = 400;
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(UT_INDEX_0, OS_FP_ENABLED), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 3, "malloc() called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 1, "free() called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 3, "taskInit() called");
@@ -98,7 +100,7 @@ void Test_OS_TaskCreate_Impl(void)
 
     /* other failure modes */
     UT_SetDefaultReturnValue(UT_KEY(OCS_taskInit), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(UT_INDEX_0, 0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, 0), OS_ERROR);
 }
 
 void Test_OS_TaskMatch_Impl(void)
@@ -107,10 +109,12 @@ void Test_OS_TaskMatch_Impl(void)
      * Test Case For:
      * int32 OS_TaskMatch_Impl(uint32 task_id)
      */
+    OS_object_token_t token = UT_TOKEN_0;
+
     UT_TaskTest_SetImplTaskId(UT_INDEX_0, OCS_taskIdSelf());
-    OSAPI_TEST_FUNCTION_RC(OS_TaskMatch_Impl(UT_INDEX_0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskMatch_Impl(&token), OS_SUCCESS);
     UT_TaskTest_SetImplTaskId(UT_INDEX_0, (OCS_TASK_ID)0);
-    OSAPI_TEST_FUNCTION_RC(OS_TaskMatch_Impl(UT_INDEX_0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskMatch_Impl(&token), OS_ERROR);
 }
 
 void Test_OS_TaskDelete_Impl(void)
@@ -119,11 +123,13 @@ void Test_OS_TaskDelete_Impl(void)
      * Test Case For:
      * int32 OS_TaskDelete_Impl (uint32 task_id)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_TaskDelete_Impl(UT_INDEX_0), OS_SUCCESS);
+    OS_object_token_t token = UT_TOKEN_0;
+
+    OSAPI_TEST_FUNCTION_RC(OS_TaskDelete_Impl(&token), OS_SUCCESS);
 
     /* failure mode */
     UT_SetDefaultReturnValue(UT_KEY(OCS_taskDelete), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_TaskDelete_Impl(UT_INDEX_0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskDelete_Impl(&token), OS_ERROR);
 }
 
 void Test_OS_TaskExit_Impl(void)
@@ -157,10 +163,12 @@ void Test_OS_TaskSetPriority_Impl(void)
      * Test Case For:
      * int32 OS_TaskSetPriority_Impl (uint32 task_id, uint32 new_priority)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_TaskSetPriority_Impl(UT_INDEX_0, OSAL_PRIORITY_C(100)), OS_SUCCESS);
+    OS_object_token_t token = UT_TOKEN_0;
+
+    OSAPI_TEST_FUNCTION_RC(OS_TaskSetPriority_Impl(&token, OSAL_PRIORITY_C(100)), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_taskPrioritySet), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_TaskSetPriority_Impl(UT_INDEX_0, OSAL_PRIORITY_C(100)), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskSetPriority_Impl(&token, OSAL_PRIORITY_C(100)), OS_ERROR);
 }
 
 void Test_OS_TaskRegister_Impl(void)
@@ -196,9 +204,11 @@ void Test_OS_TaskGetInfo_Impl(void)
      * Test Case For:
      * int32 OS_TaskGetInfo_Impl (uint32 task_id, OS_task_prop_t *task_prop)
      */
-    OS_task_prop_t task_prop;
+    OS_task_prop_t    task_prop;
+    OS_object_token_t token = UT_TOKEN_0;
+
     memset(&task_prop, 0xEE, sizeof(task_prop));
-    OSAPI_TEST_FUNCTION_RC(OS_TaskGetInfo_Impl(UT_INDEX_0, &task_prop), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskGetInfo_Impl(&token, &task_prop), OS_SUCCESS);
 }
 
 void Test_OS_TaskValidateSystemData_Impl(void)
@@ -222,15 +232,16 @@ void Test_OS_TaskIdMatchSystemData_Impl(void)
      * Test Case For:
      * bool OS_TaskIdMatchSystemData_Impl(void *ref, uint32 local_id, const OS_common_record_t *obj)
      */
-    OCS_TASK_ID test_sys_id;
+    OCS_TASK_ID       test_sys_id;
+    OS_object_token_t token = UT_TOKEN_0;
 
     memset(&test_sys_id, 'x', sizeof(test_sys_id));
 
     UT_TaskTest_SetImplTaskId(UT_INDEX_0, test_sys_id);
-    OSAPI_TEST_FUNCTION_RC(OS_TaskIdMatchSystemData_Impl(&test_sys_id, UT_INDEX_0, NULL), true);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskIdMatchSystemData_Impl(&test_sys_id, &token, NULL), true);
 
     memset(&test_sys_id, 'y', sizeof(test_sys_id));
-    OSAPI_TEST_FUNCTION_RC(OS_TaskIdMatchSystemData_Impl(&test_sys_id, UT_INDEX_0, NULL), false);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskIdMatchSystemData_Impl(&test_sys_id, &token, NULL), false);
 }
 
 /* ------------------- End of test cases --------------------------------------*/

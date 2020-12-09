@@ -62,7 +62,7 @@ int32 OS_CountSemAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_CountSemCreate_Impl(osal_index_t sem_id, uint32 sem_initial_value, uint32 options);
+int32 OS_CountSemCreate_Impl(const OS_object_token_t *token, uint32 sem_initial_value, uint32 options);
 
 /*----------------------------------------------------------------
    Function: OS_CountSemGive_Impl
@@ -71,7 +71,7 @@ int32 OS_CountSemCreate_Impl(osal_index_t sem_id, uint32 sem_initial_value, uint
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_CountSemGive_Impl(osal_index_t sem_id);
+int32 OS_CountSemGive_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_CountSemTake_Impl
@@ -81,7 +81,7 @@ int32 OS_CountSemGive_Impl(osal_index_t sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_CountSemTake_Impl(osal_index_t sem_id);
+int32 OS_CountSemTake_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_CountSemTimedWait_Impl
@@ -91,7 +91,7 @@ int32 OS_CountSemTake_Impl(osal_index_t sem_id);
     Returns: OS_SUCCESS on success, or relevant error code
              OS_SEM_TIMEOUT must be returned if the time limit was reached
  ------------------------------------------------------------------*/
-int32 OS_CountSemTimedWait_Impl(osal_index_t sem_id, uint32 msecs);
+int32 OS_CountSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs);
 
 /*----------------------------------------------------------------
    Function: OS_CountSemDelete_Impl
@@ -100,7 +100,7 @@ int32 OS_CountSemTimedWait_Impl(osal_index_t sem_id, uint32 msecs);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_CountSemDelete_Impl(osal_index_t sem_id);
+int32 OS_CountSemDelete_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_CountSemGetInfo_Impl
@@ -109,6 +109,6 @@ int32 OS_CountSemDelete_Impl(osal_index_t sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_CountSemGetInfo_Impl(osal_index_t sem_id, OS_count_sem_prop_t *count_prop);
+int32 OS_CountSemGetInfo_Impl(const OS_object_token_t *token, OS_count_sem_prop_t *count_prop);
 
 #endif /* INCLUDE_OS_SHARED_COUNTSEM_H_ */

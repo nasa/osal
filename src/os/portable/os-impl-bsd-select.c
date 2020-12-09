@@ -45,6 +45,7 @@
 #include <osapi.h>
 #include "os-impl-select.h"
 #include "os-shared-select.h"
+#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -249,17 +250,20 @@ static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, int32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SelectSingle_Impl(osal_index_t stream_id, uint32 *SelectFlags, int32 msecs)
+int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, int32 msecs)
 {
-    int32  return_code;
-    fd_set wr_set;
-    fd_set rd_set;
+    int32                           return_code;
+    fd_set                          wr_set;
+    fd_set                          rd_set;
+    OS_impl_file_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
 
     /*
      * If called on a stream_id which does not support this
      * operation, return immediately and do not invoke the system call
      */
-    if (!OS_impl_filehandle_table[stream_id].selectable)
+    if (!impl->selectable)
     {
         return OS_ERR_OPERATION_NOT_SUPPORTED;
     }
@@ -270,22 +274,22 @@ int32 OS_SelectSingle_Impl(osal_index_t stream_id, uint32 *SelectFlags, int32 ms
         FD_ZERO(&rd_set);
         if (*SelectFlags & OS_STREAM_STATE_READABLE)
         {
-            FD_SET(OS_impl_filehandle_table[stream_id].fd, &rd_set);
+            FD_SET(impl->fd, &rd_set);
         }
         if (*SelectFlags & OS_STREAM_STATE_WRITABLE)
         {
-            FD_SET(OS_impl_filehandle_table[stream_id].fd, &wr_set);
+            FD_SET(impl->fd, &wr_set);
         }
 
-        return_code = OS_DoSelect(OS_impl_filehandle_table[stream_id].fd, &rd_set, &wr_set, msecs);
+        return_code = OS_DoSelect(impl->fd, &rd_set, &wr_set, msecs);
 
         if (return_code == OS_SUCCESS)
         {
-            if (!FD_ISSET(OS_impl_filehandle_table[stream_id].fd, &rd_set))
+            if (!FD_ISSET(impl->fd, &rd_set))
             {
                 *SelectFlags &= ~OS_STREAM_STATE_READABLE;
             }
-            if (!FD_ISSET(OS_impl_filehandle_table[stream_id].fd, &wr_set))
+            if (!FD_ISSET(impl->fd, &wr_set))
             {
                 *SelectFlags &= ~OS_STREAM_STATE_WRITABLE;
             }

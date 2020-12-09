@@ -88,9 +88,9 @@ int32 OS_MutexAPI_Init(void)
  *-----------------------------------------------------------------*/
 int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options)
 {
-    OS_common_record_t *record;
-    int32               return_code;
-    osal_index_t        local_id;
+    int32                       return_code;
+    OS_object_token_t           token;
+    OS_mutex_internal_record_t *mutex;
 
     /* Check for NULL pointers */
     if (sem_id == NULL || sem_name == NULL)
@@ -104,18 +104,19 @@ int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options)
     }
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
-    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, sem_name, &local_id, &record);
+    return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, sem_name, &token);
     if (return_code == OS_SUCCESS)
     {
-        /* Save all the data to our own internal table */
-        strcpy(OS_mutex_table[local_id].obj_name, sem_name);
-        record->name_entry = OS_mutex_table[local_id].obj_name;
+        mutex = OS_OBJECT_TABLE_GET(OS_mutex_table, token);
+
+        /* Reset the table entry and save the name */
+        OS_OBJECT_INIT(token, mutex, obj_name, sem_name);
 
         /* Now call the OS-specific implementation.  This reads info from the table. */
-        return_code = OS_MutSemCreate_Impl(local_id, options);
+        return_code = OS_MutSemCreate_Impl(&token, options);
 
         /* Check result, finalize record, and unlock global table. */
-        return_code = OS_ObjectIdFinalizeNew(return_code, record, sem_id);
+        return_code = OS_ObjectIdFinalizeNew(return_code, &token, sem_id);
     }
 
     return return_code;
@@ -132,17 +133,16 @@ int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options)
  *-----------------------------------------------------------------*/
 int32 OS_MutSemDelete(osal_id_t sem_id)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
+    OS_object_token_t token;
+    int32             return_code;
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_MutSemDelete_Impl(local_id);
+        return_code = OS_MutSemDelete_Impl(&token);
 
         /* Complete the operation via the common routine */
-        return_code = OS_ObjectIdFinalizeDelete(return_code, record);
+        return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
     }
 
     return return_code;
@@ -159,28 +159,28 @@ int32 OS_MutSemDelete(osal_id_t sem_id)
  *-----------------------------------------------------------------*/
 int32 OS_MutSemGive(osal_id_t sem_id)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
-    osal_id_t           self_task;
+    OS_mutex_internal_record_t *mutex;
+    OS_object_token_t           token;
+    int32                       return_code;
+    osal_id_t                   self_task;
 
     /* Check Parameters */
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
+        mutex = OS_OBJECT_TABLE_GET(OS_mutex_table, token);
+
         self_task = OS_TaskGetId();
 
-        if (!OS_ObjectIdEqual(OS_mutex_table[local_id].last_owner, self_task))
+        if (!OS_ObjectIdEqual(mutex->last_owner, self_task))
         {
-            OS_DEBUG("WARNING: Task %lu giving mutex %lu while owned by task %lu\n",
-                    OS_ObjectIdToInteger(self_task),
-                    OS_ObjectIdToInteger(sem_id),
-                    OS_ObjectIdToInteger(OS_mutex_table[local_id].last_owner));
+            OS_DEBUG("WARNING: Task %lu giving mutex %lu while owned by task %lu\n", OS_ObjectIdToInteger(self_task),
+                     OS_ObjectIdToInteger(sem_id), OS_ObjectIdToInteger(mutex->last_owner));
         }
 
-        OS_mutex_table[local_id].last_owner = OS_OBJECT_ID_UNDEFINED;
+        mutex->last_owner = OS_OBJECT_ID_UNDEFINED;
 
-        return_code = OS_MutSemGive_Impl(local_id);
+        return_code = OS_MutSemGive_Impl(&token);
     }
 
     return return_code;
@@ -197,29 +197,30 @@ int32 OS_MutSemGive(osal_id_t sem_id)
  *-----------------------------------------------------------------*/
 int32 OS_MutSemTake(osal_id_t sem_id)
 {
-    OS_common_record_t *record;
-    osal_index_t        local_id;
-    int32               return_code;
-    osal_id_t           self_task;
+    OS_mutex_internal_record_t *mutex;
+    OS_object_token_t           token;
+    int32                       return_code;
+    osal_id_t                   self_task;
 
     /* Check Parameters */
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_MutSemTake_Impl(local_id);
+        mutex = OS_OBJECT_TABLE_GET(OS_mutex_table, token);
+
+        return_code = OS_MutSemTake_Impl(&token);
         if (return_code == OS_SUCCESS)
         {
             self_task = OS_TaskGetId();
 
-            if (OS_ObjectIdDefined(OS_mutex_table[local_id].last_owner))
+            if (OS_ObjectIdDefined(mutex->last_owner))
             {
                 OS_DEBUG("WARNING: Task %lu taking mutex %lu while owned by task %lu\n",
-                        OS_ObjectIdToInteger(self_task),
-                        OS_ObjectIdToInteger(sem_id),
-                        OS_ObjectIdToInteger(OS_mutex_table[local_id].last_owner));
+                         OS_ObjectIdToInteger(self_task), OS_ObjectIdToInteger(sem_id),
+                         OS_ObjectIdToInteger(mutex->last_owner));
             }
 
-            OS_mutex_table[local_id].last_owner = self_task;
+            mutex->last_owner = self_task;
         }
     }
 
@@ -262,7 +263,7 @@ int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
 {
     OS_common_record_t *record;
     int32               return_code;
-    osal_index_t        local_id;
+    OS_object_token_t   token;
 
     /* Check parameters */
     if (mut_prop == NULL)
@@ -272,15 +273,17 @@ int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
 
     memset(mut_prop, 0, sizeof(OS_mut_sem_prop_t));
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sem_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sem_id, &token);
     if (return_code == OS_SUCCESS)
     {
+        record = OS_OBJECT_TABLE_GET(OS_global_mutex_table, token);
+
         strncpy(mut_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
         mut_prop->creator = record->creator;
 
-        return_code = OS_MutSemGetInfo_Impl(local_id, mut_prop);
+        return_code = OS_MutSemGetInfo_Impl(&token, mut_prop);
 
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;

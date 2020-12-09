@@ -33,5 +33,5 @@
 #include "utstubs.h"
 #include "os-shared-select.h"
 
-UT_DEFAULT_STUB(OS_SelectSingle_Impl, (osal_index_t stream_id, uint32 *SelectFlags, int32 msecs))
+UT_DEFAULT_STUB(OS_SelectSingle_Impl, (const OS_object_token_t *token, uint32 *SelectFlags, int32 msecs))
 UT_DEFAULT_STUB(OS_SelectMultiple_Impl, (OS_FdSet * ReadSet, OS_FdSet *WriteSet, int32 msecs))

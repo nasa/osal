@@ -47,6 +47,7 @@
 
 #include "os-impl-loader.h"
 #include "os-shared-module.h"
+#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -157,11 +158,14 @@ int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleSymbolLookup_Impl(osal_index_t local_id, cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_ModuleSymbolLookup_Impl(const OS_object_token_t *token, cpuaddr *SymbolAddress, const char *SymbolName)
 {
-    int32 status;
+    int32                             status;
+    OS_impl_module_internal_record_t *impl;
 
-    status = OS_GenericSymbolLookup_Impl(OS_impl_module_table[local_id].dl_handle, SymbolAddress, SymbolName);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_module_table, *token);
+
+    status = OS_GenericSymbolLookup_Impl(impl->dl_handle, SymbolAddress, SymbolName);
 
     return status;
 

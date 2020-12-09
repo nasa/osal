@@ -73,7 +73,7 @@ int32 OS_ConsoleAPI_Init(void);
     Purpose: Prepare a console device for use
              For Async devices, this sets up the background writer task
  ------------------------------------------------------------------*/
-int32 OS_ConsoleCreate_Impl(osal_index_t local_id);
+int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_ConsoleOutput_Impl
@@ -85,7 +85,7 @@ int32 OS_ConsoleCreate_Impl(osal_index_t local_id);
 
    The data is already formatted, this just writes the characters.
  ------------------------------------------------------------------*/
-void OS_ConsoleOutput_Impl(osal_index_t local_id);
+void OS_ConsoleOutput_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_ConsoleOutput_Impl
@@ -100,6 +100,6 @@ void OS_ConsoleOutput_Impl(osal_index_t local_id);
    service, this should wakeup the actual console servicing
    thread.
  ------------------------------------------------------------------*/
-void OS_ConsoleWakeup_Impl(osal_index_t local_id);
+void OS_ConsoleWakeup_Impl(const OS_object_token_t *token);
 
 #endif /* INCLUDE_OS_SHARED_PRINTF_H_ */

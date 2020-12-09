@@ -39,27 +39,27 @@
  * File API abstraction layer
  */
 
-UT_DEFAULT_STUB(OS_FileOpen_Impl, (osal_index_t file_id, const char *local_path, int32 flags, int32 access))
+UT_DEFAULT_STUB(OS_FileOpen_Impl, (const OS_object_token_t *token, const char *local_path, int32 flags, int32 access))
 UT_DEFAULT_STUB(OS_FileStat_Impl, (const char *local_path, os_fstat_t *filestat))
 UT_DEFAULT_STUB(OS_FileRemove_Impl, (const char *local_path))
 UT_DEFAULT_STUB(OS_FileRename_Impl, (const char *old_path, const char *new_path))
 UT_DEFAULT_STUB(OS_FileChmod_Impl, (const char *local_path, uint32 access))
-UT_DEFAULT_STUB(OS_ShellOutputToFile_Impl, (osal_index_t file_id, const char *Cmd))
+UT_DEFAULT_STUB(OS_ShellOutputToFile_Impl, (const OS_object_token_t *token, const char *Cmd))
 
 /*
  * Directory API abstraction layer
  */
 UT_DEFAULT_STUB(OS_DirCreate_Impl, (const char *local_path, uint32 access))
-UT_DEFAULT_STUB(OS_DirOpen_Impl, (osal_index_t dir_id, const char *local_path))
-UT_DEFAULT_STUB(OS_DirClose_Impl, (osal_index_t dir_id))
-UT_DEFAULT_STUB(OS_DirRead_Impl, (osal_index_t dir_id, os_dirent_t *dirent))
-UT_DEFAULT_STUB(OS_DirRewind_Impl, (osal_index_t dir_id))
+UT_DEFAULT_STUB(OS_DirOpen_Impl, (const OS_object_token_t *token, const char *local_path))
+UT_DEFAULT_STUB(OS_DirClose_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_DirRead_Impl, (const OS_object_token_t *token, os_dirent_t *dirent))
+UT_DEFAULT_STUB(OS_DirRewind_Impl, (const OS_object_token_t *token))
 UT_DEFAULT_STUB(OS_DirRemove_Impl, (const char *local_path))
 
 /*
  * Stream abstraction layer (applies to sockets and files)
  */
-int32 OS_GenericRead_Impl(osal_index_t local_id, void *buffer, size_t nbytes, int32 timeout)
+int32 OS_GenericRead_Impl(const OS_object_token_t *token, void *buffer, size_t nbytes, int32 timeout)
 {
     int32 Status = UT_DEFAULT_IMPL(OS_GenericRead_Impl);
 
@@ -71,7 +71,7 @@ int32 OS_GenericRead_Impl(osal_index_t local_id, void *buffer, size_t nbytes, in
     return Status;
 }
 
-int32 OS_GenericWrite_Impl(osal_index_t local_id, const void *buffer, size_t nbytes, int32 timeout)
+int32 OS_GenericWrite_Impl(const OS_object_token_t *token, const void *buffer, size_t nbytes, int32 timeout)
 {
     int32 Status = UT_DEFAULT_IMPL(OS_GenericWrite_Impl);
 
@@ -83,5 +83,5 @@ int32 OS_GenericWrite_Impl(osal_index_t local_id, const void *buffer, size_t nby
     return Status;
 }
 
-UT_DEFAULT_STUB(OS_GenericSeek_Impl, (osal_index_t file_id, int32 offset, uint32 whence))
-UT_DEFAULT_STUB(OS_GenericClose_Impl, (osal_index_t file_id))
+UT_DEFAULT_STUB(OS_GenericSeek_Impl, (const OS_object_token_t *token, int32 offset, uint32 whence))
+UT_DEFAULT_STUB(OS_GenericClose_Impl, (const OS_object_token_t *token))

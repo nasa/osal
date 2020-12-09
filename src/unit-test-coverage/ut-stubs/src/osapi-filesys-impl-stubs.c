@@ -36,14 +36,14 @@
 /*
  * File system abstraction layer
  */
-UT_DEFAULT_STUB(OS_FileSysStartVolume_Impl, (osal_index_t filesys_id))
-UT_DEFAULT_STUB(OS_FileSysStopVolume_Impl, (osal_index_t filesys_id))
-UT_DEFAULT_STUB(OS_FileSysFormatVolume_Impl, (osal_index_t filesys_id))
-UT_DEFAULT_STUB(OS_FileSysCheckVolume_Impl, (osal_index_t filesys_id, bool repair))
-UT_DEFAULT_STUB(OS_FileSysMountVolume_Impl, (osal_index_t filesys_id))
-UT_DEFAULT_STUB(OS_FileSysUnmountVolume_Impl, (osal_index_t filesys_id))
+UT_DEFAULT_STUB(OS_FileSysStartVolume_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_FileSysStopVolume_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_FileSysFormatVolume_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_FileSysCheckVolume_Impl, (const OS_object_token_t *token, bool repair))
+UT_DEFAULT_STUB(OS_FileSysMountVolume_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_FileSysUnmountVolume_Impl, (const OS_object_token_t *token))
 
-int32 OS_FileSysStatVolume_Impl(osal_index_t filesys_id, OS_statvfs_t *result)
+int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *result)
 {
     int32 Status = UT_DEFAULT_IMPL(OS_FileSysStatVolume_Impl);
 

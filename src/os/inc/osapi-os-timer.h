@@ -33,8 +33,8 @@
 /*
 ** Typedefs
 */
-typedef void (*OS_TimerCallback_t)(osal_id_t timer_id);  /**< @brief Timer callback */
-typedef uint32 (*OS_TimerSync_t)(osal_index_t timer_id); /**< @brief Timer sync */
+typedef void (*OS_TimerCallback_t)(osal_id_t timer_id); /**< @brief Timer callback */
+typedef uint32 (*OS_TimerSync_t)(osal_id_t timer_id);   /**< @brief Timer sync */
 
 /** @brief Timer properties */
 typedef struct

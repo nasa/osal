@@ -57,12 +57,15 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ShellOutputToFile_Impl(osal_index_t file_id, const char *Cmd)
+int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
 {
-    pid_t       cpid;
-    uint32      local_id;
-    int         wstat;
-    const char *shell = getenv("SHELL");
+    pid_t                           cpid;
+    uint32                          local_id;
+    int                             wstat;
+    const char *                    shell = getenv("SHELL");
+    OS_impl_file_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
 
     if (shell == NULL)
     {
@@ -79,8 +82,8 @@ int32 OS_ShellOutputToFile_Impl(osal_index_t file_id, const char *Cmd)
     if (cpid == 0)
     {
         /* child process */
-        dup2(OS_impl_filehandle_table[file_id].fd, STDOUT_FILENO);
-        dup2(OS_impl_filehandle_table[file_id].fd, STDERR_FILENO);
+        dup2(impl->fd, STDOUT_FILENO);
+        dup2(impl->fd, STDERR_FILENO);
 
         /* close all _other_ filehandles */
         for (local_id = 0; local_id < OS_MAX_NUM_OPEN_FILES; ++local_id)

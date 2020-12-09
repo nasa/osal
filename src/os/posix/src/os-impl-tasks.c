@@ -564,17 +564,21 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskCreate_Impl(osal_index_t task_id, uint32 flags)
+int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
 {
-    OS_U32ValueWrapper_t arg;
-    int32                return_code;
+    OS_U32ValueWrapper_t            arg;
+    int32                           return_code;
+    OS_impl_task_internal_record_t *impl;
+    OS_task_internal_record_t *     task;
 
     arg.opaque_arg = NULL;
-    arg.id         = OS_global_task_table[task_id].active_id;
+    arg.id         = OS_ObjectIdFromToken(token);
 
-    return_code =
-        OS_Posix_InternalTaskCreate_Impl(&OS_impl_task_table[task_id].id, OS_task_table[task_id].priority,
-                                         OS_task_table[task_id].stack_size, OS_PthreadTaskEntry, arg.opaque_arg);
+    task = OS_OBJECT_TABLE_GET(OS_task_table, *token);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    return_code = OS_Posix_InternalTaskCreate_Impl(&impl->id, task->priority, task->stack_size, OS_PthreadTaskEntry,
+                                                   arg.opaque_arg);
 
     return return_code;
 } /* end OS_TaskCreate_Impl */
@@ -587,9 +591,13 @@ int32 OS_TaskCreate_Impl(osal_index_t task_id, uint32 flags)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskMatch_Impl(osal_index_t task_id)
+int32 OS_TaskMatch_Impl(const OS_object_token_t *token)
 {
-    if (pthread_equal(pthread_self(), OS_impl_task_table[task_id].id) == 0)
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    if (pthread_equal(pthread_self(), impl->id) == 0)
     {
         return OS_ERROR;
     }
@@ -605,15 +613,19 @@ int32 OS_TaskMatch_Impl(osal_index_t task_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskDelete_Impl(osal_index_t task_id)
+int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
 {
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
     /*
     ** Try to delete the task
     ** If this fails, not much recourse - the only potential cause of failure
     ** to cancel here is that the thread ID is invalid because it already exited itself,
     ** and if that is true there is nothing wrong - everything is OK to continue normally.
     */
-    pthread_cancel(OS_impl_task_table[task_id].id);
+    pthread_cancel(impl->id);
     return OS_SUCCESS;
 
 } /* end OS_TaskDelete_Impl */
@@ -678,10 +690,14 @@ int32 OS_TaskDelay_Impl(uint32 millisecond)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskSetPriority_Impl(osal_index_t task_id, osal_priority_t new_priority)
+int32 OS_TaskSetPriority_Impl(const OS_object_token_t *token, osal_priority_t new_priority)
 {
     int os_priority;
     int ret;
+
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
 
     if (POSIX_GlobalVars.EnableTaskPriorities)
     {
@@ -691,11 +707,11 @@ int32 OS_TaskSetPriority_Impl(osal_index_t task_id, osal_priority_t new_priority
         /*
         ** Set priority
         */
-        ret = pthread_setschedprio(OS_impl_task_table[task_id].id, os_priority);
+        ret = pthread_setschedprio(impl->id, os_priority);
         if (ret != 0)
         {
-            OS_DEBUG("pthread_setschedprio: Task ID = %u, prio = %d, err = %s\n", (unsigned int)task_id, os_priority,
-                     strerror(ret));
+            OS_DEBUG("pthread_setschedprio: Task ID = %lu, prio = %d, err = %s\n",
+                     OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), os_priority, strerror(ret));
             return (OS_ERROR);
         }
     }
@@ -758,7 +774,7 @@ osal_id_t OS_TaskGetId_Impl(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskGetInfo_Impl(osal_index_t task_id, OS_task_prop_t *task_prop)
+int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_prop)
 {
     return OS_SUCCESS;
 } /* end OS_TaskGetInfo_Impl */
@@ -771,11 +787,14 @@ int32 OS_TaskGetInfo_Impl(osal_index_t task_id, OS_task_prop_t *task_prop)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-bool OS_TaskIdMatchSystemData_Impl(void *ref, osal_index_t local_id, const OS_common_record_t *obj)
+bool OS_TaskIdMatchSystemData_Impl(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
-    const pthread_t *target = (const pthread_t *)ref;
+    const pthread_t *               target = (const pthread_t *)ref;
+    OS_impl_task_internal_record_t *impl;
 
-    return (pthread_equal(*target, OS_impl_task_table[local_id].id) != 0);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    return (pthread_equal(*target, impl->id) != 0);
 }
 
 /*----------------------------------------------------------------
