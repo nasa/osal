@@ -38,6 +38,7 @@
 #include "os-rtems.h"
 #include "os-shared-printf.h"
 #include "os-shared-idmap.h"
+#include "os-shared-common.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -120,7 +121,9 @@ static void OS_ConsoleTask_Entry(rtems_task_argument arg)
         OS_SUCCESS)
     {
         local = OS_OBJECT_TABLE_GET(OS_impl_console_table, token);
-        while (true)
+
+        /* Loop forever (unless shutdown is set) */
+        while (OS_SharedGlobalVars.ShutdownFlag != OS_SHUTDOWN_MAGIC_NUMBER)
         {
             OS_ConsoleOutput_Impl(&token);
             rtems_semaphore_obtain(local->data_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
