@@ -1,0 +1,13 @@
+TEMPLATE = lib
+HEADERS = ../../bsp/pc-linux/config/osconfig.h
+HEADERS += ../inc/osapi-os-core.h
+INCLUDEPATH = ../../bsp/pc-linux/config
+INCLUDEPATH += ../inc
+SOURCES = osapi.cpp
+SOURCES += ostimer.cpp
+SOURCES += osfileapi.cpp 
+SOURCES += osfilesys.cpp
+SOURCES += osqueue_mutex.cpp
+SOURCES += osloader.cpp
+SOURCES += osnetwork.cpp
+QT += network
