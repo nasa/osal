@@ -12,7 +12,7 @@
 ** Author : Nicholas Yanchik
 **
 ** Purpose: This file Contains all of the api calls for manipulating
-**          files in a file system for posix 
+**          files in a file system for qt 
 **
 ** $Date: 2014/04/23 15:13:50GMT-05:00 $
 ** $Revision: 1.15 $
@@ -49,7 +49,7 @@
 ** replaced copyright character with (c) and added open source notice where needed.
 ** Revision 1.1 2010/02/17 13:12:02EST acudmore 
 ** Initial revision
-** Member added to project c:/MKSDATA/MKS-REPOSITORY/MKS-OSAL-REPOSITORY/src/os/posix/project.pj
+** Member added to project c:/MKSDATA/MKS-REPOSITORY/MKS-OSAL-REPOSITORY/src/os/qt/project.pj
 ** Revision 1.5 2009/07/16 13:01:43EDT acudmore 
 ** Fixed warnings found by ARC.
 ** Revision 1.4 2009/07/14 14:26:33EDT acudmore 

@@ -41,7 +41,7 @@
 #
 ######################################################################
 cmake_minimum_required(VERSION 2.8.12)
-project(OSAL C)
+project(OSAL C CXX)
 
 # The "OSAL_EXT_SOURCE_DIR" cache variable may be set to a path
 # on the host containing extra OS/BSP implementations which are not
@@ -85,7 +85,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
 set(OSAL_API_INCLUDE_DIRECTORIES
     "${OSAL_SOURCE_DIR}/src/os/inc"
     "${CMAKE_BINARY_DIR}/inc"
-)
+    "${QT_INCLUDES}")
 include_directories(${OSAL_API_INCLUDE_DIRECTORIES})
 
 # In case the OSAL_USER_C_FLAGS was specified, use them

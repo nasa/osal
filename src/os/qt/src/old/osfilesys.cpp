@@ -41,7 +41,7 @@
 ** For example: on OSAL "/cf" might map to "/media/cf0"
 ** Revision 1.6 2011/05/16 16:04:46EDT acudmore 
 ** Do not append device to directory name in OS_TranslatePath. 
-** This is so the mapping is easier to setup on posix
+** This is so the mapping is easier to setup on qt
 ** Revision 1.5 2010/11/12 12:41:37EST acudmore 
 ** updated error codes in comments.
 ** Revision 1.4 2010/11/12 12:00:44EST acudmore 
@@ -49,10 +49,10 @@
 ** Revision 1.3 2010/02/23 11:05:00EST acudmore 
 ** Updated fsBlocksFree and fsBytesFree to use statvfs
 ** Revision 1.2 2010/02/22 15:50:03EST acudmore 
-** Added OS_fsBytesFree to posix port
+** Added OS_fsBytesFree to qt port
 ** Revision 1.1 2010/02/17 13:12:03EST acudmore 
 ** Initial revision
-** Member added to project c:/MKSDATA/MKS-REPOSITORY/MKS-OSAL-REPOSITORY/src/os/posix/project.pj
+** Member added to project c:/MKSDATA/MKS-REPOSITORY/MKS-OSAL-REPOSITORY/src/os/qt/project.pj
 ** Revision 1.4 2009/08/03 14:14:29EDT acudmore 
 ** Turned off debug printfs
 ** Revision 1.3 2009/07/16 13:01:46EDT acudmore 

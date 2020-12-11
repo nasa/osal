@@ -100,7 +100,7 @@ int OS_QueueInit()
                                 MESSAGE QUEUE API
 ****************************************************************************************/
 
-/* ---------------------- POSIX MESSAGE QUEUE IMPLEMENTATION ------------------------- */
+/* ---------------------- QT MESSAGE QUEUE IMPLEMENTATION ------------------------- */
 /*---------------------------------------------------------------------------------------
  Name: OS_QueueCreate
 
@@ -484,7 +484,7 @@ int32 OS_QueuePut (uint32 queue_id, const void *data, uint32 size, uint32 flags)
 } /* end OS_QueuePut */
 
 
-/* --------------------- END POSIX MESSAGE QUEUE IMPLEMENTATION ---------------------- */
+/* --------------------- END QT MESSAGE QUEUE IMPLEMENTATION ---------------------- */
 
 /*--------------------------------------------------------------------------------------
     Name: OS_QueueGetIdByName
