@@ -20,12 +20,12 @@
 
 /**
  * \file     os-impl-timebase.c
- * \ingroup  qt
+ * \ingroup  posix
  * \author   joseph.p.hickey@nasa.gov
  *
- * This file contains the OSAL Timebase API for QT systems.
+ * This file contains the OSAL Timebase API for POSIX systems.
  *
- * This implementation depends on the QT Timer API which may not be available
+ * This implementation depends on the POSIX Timer API which may not be available
  * in older versions of the Linux kernel. It was developed and tested on
  * RHEL 5 ./ CentOS 5 with Linux kernel 2.6.18
  */
@@ -36,431 +36,557 @@
 
 #include "os-qt.h"
 #include "os-impl-timebase.h"
-
 #include "os-shared-timebase.h"
 #include "os-shared-idmap.h"
 #include "os-shared-common.h"
-
+#include <algorithm>
 /****************************************************************************************
-                                     GLOBALS
+                                EXTERNAL FUNCTION PROTOTYPES
  ***************************************************************************************/
-
-static OS_impl_timebase_internal_record_t OS_impl_timebase_table[OS_MAX_TIMEBASES] = {0};
-
 
 /****************************************************************************************
                                 INTERNAL FUNCTION PROTOTYPES
  ***************************************************************************************/
 
-static OS_impl_timebase_internal_record_t * GetTableById(osal_id_t id){
-    if(id < 1 || OS_MAX_TIMEBASES < id)
-        return 0x0;
-    if(OS_impl_timebase_table[i -1]->timer == 0x0)
-        return 0x0;
-    return &OS_impl_timebase_table[i-1];
-
-}
-
-static int GetUnsuedEntryIndex(){
-    for(int i=0;i<OS_MAX_TIMEBASES;i++){
-        if(OS_impl_timebase_table[i]->timer == 0x0)
-            return i;
-    }
-    return -1;
-}
-
+static void OS_UsecToTimespec(uint32 usecs, struct timespec *time_spec);
 
 /****************************************************************************************
-                                EXTERNAL FUNCTION PROTOTYPES
+                                     DEFINES
  ***************************************************************************************/
 
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Find the ID of an existing time base resource
- *
- * Given a time base name, find and output the ID associated with it.
- *
- * @param[out]  timebase_id     The timebase resource ID
- * @param[in]   timebase_name   The name of the timebase resource to find
- *
- * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_INVALID_POINTER if timebase_id or timebase_name are NULL pointers
- * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
- * @retval #OS_ERR_NAME_NOT_FOUND if the name was not found in the table
+/*
+ * Prefer to use the MONOTONIC clock if available, as it will not get distrupted by setting
+ * the time like the REALTIME clock will.
  */
-int32 OS_TimeBaseGetIdByName(osal_id_t *timebase_id, const char *timebase_name){
-    if(timebase_name == NULL)
-        return OS_INVALID_POINTER;
-    for(int i=0;i<OS_MAX_TIMEBASES;i++){
-        OS_impl_timebase_internal_record_t * local = &OS_impl_timebase_table[i];
-        if(local->timer == 0x0){
-            continue;
-        }
-        if(strncmp(local->name, timebase_name, sizeof(local->name)) == 0){
-            *timebase_id = i+1;
-            return OS_SUCCESS;
-        }
+#ifndef OS_PREFERRED_CLOCK
+#ifdef _QT_MONOTONIC_CLOCK
+#define OS_PREFERRED_CLOCK CLOCK_MONOTONIC
+#else
+#define OS_PREFERRED_CLOCK CLOCK_REALTIME
+#endif
+#endif
 
+/****************************************************************************************
+                                     GLOBALS
+ ***************************************************************************************/
+
+OS_impl_timebase_internal_record_t OS_impl_timebase_table[OS_MAX_TIMEBASES];
+
+/****************************************************************************************
+                                INTERNAL FUNCTIONS
+ ***************************************************************************************/
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_UsecToTimespec
+ *
+ *  Purpose: Local helper routine, not part of OSAL API.
+ *           Convert Microseconds to a POSIX timespec structure.
+ *
+ *-----------------------------------------------------------------*/
+static void OS_UsecToTimespec(uint32 usecs, struct timespec *time_spec)
+{
+
+    if (usecs < 1000000)
+    {
+        time_spec->tv_nsec = (usecs * 1000);
+        time_spec->tv_sec  = 0;
     }
-    return OS_ERR_NAME_NOT_FOUND;
-}
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Create an abstract Time Base resource
+    else
+    {
+        time_spec->tv_sec  = usecs / 1000000;
+        time_spec->tv_nsec = (usecs % 1000000) * 1000;
+    }
+} /* end OS_UsecToTimespec */
+
+/*----------------------------------------------------------------
  *
- * An OSAL time base is an abstraction of a "timer tick" that can, in turn, be
- * used for measurement of elapsed time between events.
+ * Function: OS_TimeBaseLock_Impl
  *
- * Time bases can be simulated by the operating system using the OS kernel-provided
- * timing facilities, or based on a hardware timing source if provided by the BSP.
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
  *
- * A time base object has a servicing task associated with it, that runs at elevated
- * priority and will thereby interrupt user-level tasks when timing ticks occur.
+ *-----------------------------------------------------------------*/
+void OS_TimeBaseLock_Impl(const OS_object_token_t *token)
+{
+
+    // OS_impl_timebase_internal_record_t *impl;
+
+    // impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+    // impl->handler_mutex.lock();
+    
+} /* end OS_TimeBaseLock_Impl */
+
+/*----------------------------------------------------------------
  *
- * If the external_sync function is passed as NULL, the operating system kernel
- * timing resources will be utilized for a simulated timer tick.
+ * Function: OS_TimeBaseUnlock_Impl
  *
- * If the external_sync function is not NULL, this should point to a BSP-provided
- * function that will block the calling task until the next tick occurs.  This
- * can be used for synchronizing with hardware events.
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
  *
- * @note When provisioning a tunable RTOS kernel, such as RTEMS, the kernel should
- * be configured to support at least (OS_MAX_TASKS + OS_MAX_TIMEBASES) threads,
- * to account for the helper threads associated with time base objects.
+ *-----------------------------------------------------------------*/
+void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token)
+{
+
+    // OS_impl_timebase_internal_record_t *impl;
+
+    // impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+    // impl->handler_mutex.unlock();
+} /* end OS_TimeBaseUnlock_Impl */
+
+/*----------------------------------------------------------------
  *
- * @param[out]  timebase_id     A non-zero ID corresponding to the timebase resource
- * @param[in]   timebase_name   The name of the time base
- * @param[in]   external_sync   A synchronization function for BSP hardware-based timer ticks
+ * Function: OS_TimeBase_SoftWaitImpl
  *
- * @return Execution status, see @ref OSReturnCodes
+ *  Purpose: Local helper routine, not part of OSAL API.
+ *
+ *-----------------------------------------------------------------*/
+static uint32 OS_TimeBase_SigWaitImpl(osal_id_t obj_id)
+{
+    return 0; /* TODO */
+    // bool                                 ret;
+    // OS_object_token_t                   token;
+    // OS_impl_timebase_internal_record_t *impl;
+    // OS_timebase_internal_record_t *     timebase;
+    // uint32                              interval_time;
+
+    // interval_time = 0;
+
+    // if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMEBASE, obj_id, &token) == OS_SUCCESS)
+    // {
+    //     impl     = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, token);
+    //     timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, token);
+
+    //     impl->sigMutex.lock();
+    //     ret = impl->sigWaiter.wait(&impl->sigMutex);
+    //     impl->sigMutex.unlock();
+
+    //     if (ret == false)
+    //     {
+    //         /*
+    //          * the sigwait call failed.
+    //          * returning 0 will cause the process to repeat.
+    //          */
+    //     }
+    //     else if (impl->reset_flag == 0)
+    //     {
+    //         /*
+    //          * Normal steady-state behavior.
+    //          * interval_time reflects the configured interval time.
+    //          */
+    //         interval_time = timebase->nominal_interval_time;
+    //     }
+    //     else
+    //     {
+    //         /*
+    //          * Reset/First interval behavior.
+    //          * timer_set() was invoked since the previous interval occurred (if any).
+    //          * interval_time reflects the configured start time.
+    //          */
+    //         interval_time    = timebase->nominal_start_time;
+    //         impl->reset_flag = 0;
+    //     }
+    // }
+
+    // return interval_time;
+} /* end OS_TimeBase_SoftWaitImpl */
+
+/****************************************************************************************
+                                INITIALIZATION FUNCTION
+ ***************************************************************************************/
+
+/******************************************************************************
+ *  Function:  OS_QT_TimeBaseAPI_Impl_Init
+ *
+ *  Purpose:  Initialize the timer implementation layer
+ *
+ *  Arguments:
+ *
+ *  Return:
  */
-int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_TimerSync_t external_sync){
-    return OS_ERR_NOT_IMPLEMENTED; /* todo */
-
-}
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Sets the tick period for simulated time base objects
- *
- * This sets the actual tick period for timing ticks that are
- * simulated by the RTOS kernel (i.e. the "external_sync" parameter
- * on the call to OS_TimeBaseCreate() is NULL).
- *
- * The RTOS will be configured to wake up the helper thread at the
- * requested interval.
- *
- * This function has no effect for time bases that are using
- * a BSP-provided external_sync function.
- *
- * @param[in]   timebase_id     The timebase resource to configure
- * @param[in]   start_time      The amount of delay for the first tick, in microseconds.
- * @param[in]   interval_time   The amount of delay between ticks, in microseconds.
- *
- * @return Execution status, see @ref OSReturnCodes
- */
-int32 OS_TimeBaseSet(osal_id_t timebase_id, uint32 _start_time, uint32 _interval_time){
-    OS_impl_timebase_internal_record_t * local = GetTableById(timebase_id);
-    if(local == 0x0){
-        return OS_ERROR;
-    }
-
-    int start_time = _start_time / 1000;
-    int interval_time = _interval_time / 1000;
-
-    if((start_time*1000) != _start_time){
-        OS_DEBUG("WARNING: timer %lu start_time requested=%luus, configured=%luus\n",
-                timebase_id, (unsigned long)_start_time,
-                start_time*1000);
-    }
-    if((interval_time*1000) != _interval_time){
-        OS_DEBUG("WARNING: timer %lu start_time requested=%luus, configured=%luus\n",
-                timebase_id, (unsigned long)_interval_time,
-                interval_time*1000);
-    }
-
-
-}
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Deletes a time base object
- *
- * The helper task and any other resources associated with the time base
- * abstraction will be freed.
- *
- * @param[in]   timebase_id     The timebase resource to delete
- *
- * @return Execution status, see @ref OSReturnCodes
- */
-int32 OS_TimeBaseDelete(osal_id_t timebase_id){
-    OS_impl_timebase_internal_record_t * local = GetTableById(timebase_id);
-    if(local == 0x0){
-        return OS_ERROR;
-    }
-    local->timer.stop();
-    delete local->timer;
-    return OS_SUCCESS;
-}
-
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Obtain information about a timebase resource
- *
- * Fills the buffer referred to by the timebase_prop parameter with
- * relevant information about the time base resource.
- *
- * This function will pass back a pointer to structure that contains
- *             all of the relevant info( name and creator) about the specified timebase.
- *
- * @param[in]   timebase_id     The timebase resource ID
- * @param[out]  timebase_prop   Buffer to store timebase properties
- *
- * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid timebase
- * @retval #OS_INVALID_POINTER if the timebase_prop pointer is null
- */
-int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_prop){
-    OS_impl_timebase_internal_record_t * local = GetTableById(timebase_id);
-    if(local == 0x0){
-        return OS_ERROR;
-    }
-
-    timebase_prop->creator = 0;
-    memcpy(timebase_prop->name, local->name, sizeof(timebase_prop->name));
-    timebase_prop->accuracy = 1000;
-    timebase_prop->nominal_interval_time = local->interval_time * 1000;
-    timebase_prop->freerun_time = 0;
-    return OS_SUCCESS;
-}
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief  Read the value of the timebase free run counter
- *
- * Poll the timer free-running time counter in a lightweight fashion.
- *
- * The free run count is a monotonically increasing value reflecting the
- * total time elapsed since the timebase inception.  Units are the
- * same as the timebase itself, usually microseconds.
- *
- * Applications may quickly and efficiently calculate relative time
- * differences by polling this value and subtracting the previous
- * counter value.
- *
- * The absolute value of this counter is not relevant, because it
- * will "roll over" after 2^32 units of time.  For a timebase with
- * microsecond units, this occurs approximately every 4294 seconds,
- * or about 1.2 hours.
- *
- * @note To ensure consistency of results, the application should
- * sample the value at a minimum of two times the roll over frequency,
- * and calculate the difference between the consecutive samples.
- *
- * @param[in]   timebase_id The timebase to operate on
- * @param[out]  freerun_val Buffer to store the free run counter
- *
- * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid timebase
- */
-int32 OS_TimeBaseGetFreeRun(osal_id_t timebase_id, uint32 *freerun_val){
-    /* TODO */
+int32 OS_QT_TimeBaseAPI_Impl_Init(void)
+{
     return OS_ERR_NOT_IMPLEMENTED;
+    // int                 status;
+    // osal_index_t        idx;
+    // // pthread_mutexattr_t mutex_attr;
+    // struct timespec     clock_resolution;
+    // int32               return_code;
+
+    // return_code = OS_SUCCESS;
+
+    // do
+    // {
+    //     /*
+    //     ** Mark all timers as available
+    //     */
+    //     memset(OS_impl_timebase_table, 0, sizeof(OS_impl_timebase_table));
+
+    //     /*
+    //     ** get the resolution of the selected clock
+    //     */
+    //     status = clock_getres(OS_PREFERRED_CLOCK, &clock_resolution);
+    //     if (status != 0)
+    //     {
+    //         OS_DEBUG("failed in clock_getres: %s\n", strerror(status));
+    //         return_code = OS_ERROR;
+    //         break;
+    //     }
+
+    //     /*
+    //     ** Convert to microseconds
+    //     ** Note that the resolution MUST be in the sub-second range, if not then
+    //     ** it looks like the POSIX timer API in the C library is broken.
+    //     ** Note for any flavor of RTOS we would expect <= 1ms.  Even a "desktop"
+    //     ** linux or development system should be <= 100ms absolute worst-case.
+    //     */
+    //     if (clock_resolution.tv_sec > 0)
+    //     {
+    //         return_code = OS_TIMER_ERR_INTERNAL;
+    //         break;
+    //     }
+
+    //     /* Round to the nearest microsecond */
+    //     QT_GlobalVars.ClockAccuracyNsec = (uint32)(clock_resolution.tv_nsec);
+
+    //     /*
+    //     ** Allow the mutex to use priority inheritance
+    //     * TODO
+    //     */
+    //     // status = pthread_mutexattr_setprotocol(&mutex_attr, PTHREAD_PRIO_INHERIT);
+    //     // if (status != 0)
+    //     // {
+    //     //     OS_DEBUG("Error: pthread_mutexattr_setprotocol failed: %s\n", strerror(status));
+    //     //     return_code = OS_ERROR;
+    //     //     break;
+    //     // }
+
+    //     // for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
+    //     // {
+    //     //     /*
+    //     //     ** create the timebase sync mutex
+    //     //     ** This gives a mechanism to synchronize updates to the timer chain with the
+    //     //     ** expiration of the timer and processing the chain.
+    //     //     */
+    //     //     status = pthread_mutex_init(&OS_impl_timebase_table[idx].handler_mutex, &mutex_attr);
+    //     //     if (status != 0)
+    //     //     {
+    //     //         OS_DEBUG("Error: Mutex could not be created: %s\n", strerror(status));
+    //     //         return_code = OS_ERROR;
+    //     //         break;
+    //     //     }
+    //     // }
+
+    //     /*
+    //      * Pre-calculate the clock tick to microsecond conversion factor.
+    //      */
+    //     OS_SharedGlobalVars.TicksPerSecond = sysconf(_SC_CLK_TCK);
+    //     if (OS_SharedGlobalVars.TicksPerSecond <= 0)
+    //     {
+    //         OS_DEBUG("Error: Unable to determine OS ticks per second: %s\n", strerror(errno));
+    //         return_code = OS_ERROR;
+    //         break;
+    //     }
+
+    //     /*
+    //      * Calculate microseconds per tick
+    //      *  - If the ratio is not an integer, this will round to the nearest integer value
+    //      *  - This is used internally for reporting accuracy,
+    //      *  - TicksPerSecond values over 2M will return zero
+    //      */
+    //     OS_SharedGlobalVars.MicroSecPerTick = (1000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) /
+    //                                           OS_SharedGlobalVars.TicksPerSecond;
+
+    // } while (0);
+
+    // return (return_code);
+} /* end OS_QT_TimeBaseAPI_Impl_Init */
+
+/****************************************************************************************
+                                   Time Base API
+ ***************************************************************************************/
+
+static void *OS_TimeBasePthreadEntry(void *arg)
+{
+    // OS_U32ValueWrapper_t local_arg;
+
+    // local_arg.opaque_arg = arg;
+    // OS_TimeBase_CallbackThread(local_arg.id);
+    return NULL;
 }
 
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Create a timer object
+/*----------------------------------------------------------------
  *
- * A timer object is a resource that invokes the specified application-provided function
- * upon timer expiration.  Timers may be one-shot or periodic in nature.
+ * Function: OS_TimeBaseCreate_Impl
  *
- * This function creates a dedicated (hidden) time base object to service this timer,
- * which is created and deleted with the timer object itself.  The internal time base
- * is configured for an OS simulated timer tick at the same interval as the timer.
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
  *
- * @note clock_accuracy comes from the underlying OS tick value.  The nearest integer
- *       microsecond value is returned, so may not be exact.
- *
- * @warning Depending on the OS, the callback_ptr function may be similar to an
- *          interrupt service routine. Calls that cause the code to block or require
- *          an application context (like sending events) are generally not supported.
- *
- * @param[out]  timer_id        The non-zero resource ID of the timer object
- * @param[in]   timer_name      Name of the timer object
- * @param[out]  clock_accuracy  Expected precision of the timer, in microseconds. This
- *                              is the underlying tick value rounded to the nearest
- *                              microsecond integer.
- * @param[in]   callback_ptr    The function pointer of the timer callback or ISR that
- *                              will be called by the timer. The user’s function is
- *                              declared as follows: <tt> void timer_callback(uint32 timer_id) </tt>
- *                              Where the timer_id is passed in to the function by the OSAL
- *
- * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_INVALID_POINTER if any parameters are NULL
- * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
- * @retval #OS_ERR_NAME_TAKEN if the name is already in use by another timer.
- * @retval #OS_ERR_NO_FREE_IDS if all of the timers are already allocated.
- * @retval #OS_TIMER_ERR_INVALID_ARGS if the callback pointer is zero.
- * @retval #OS_TIMER_ERR_UNAVAILABLE if the timer cannot be created.
- */
-int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *clock_accuracy,
-                     OS_TimerCallback_t callback_ptr){
+ *-----------------------------------------------------------------*/
+int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
+{
+    return OS_ERR_NOT_IMPLEMENTED;
+    // int32                               return_code;
+    // int                                 status;
+    // int                                 i;
+    // osal_index_t                        idx;
+    // struct sigevent                     evp;
+    // struct timespec                     ts;
+    // OS_impl_timebase_internal_record_t *local;
+    // OS_timebase_internal_record_t *     timebase;
+    // OS_U32ValueWrapper_t                arg;
 
-    int index = GetUnsuedEntryIndex() + 1;
-    if(index < 0){
-        return OS_ERROR;
-    }
-    if(strlen(timebase_name) >= OS_MAX_API_NAME)
-        return OS_ERR_NAME_TOO_LONG;
+    // local    = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+    // timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, *token);
 
-    OS_impl_timebase_internal_record_t * local = &OS_impl_timebase_table[index];
-    local->timer = new QTimer();
-    if(local->timer == 0x0)
-        return OS_ERROR;
+    // /*
+    //  * Spawn a dedicated time base handler thread
+    //  *
+    //  * This alleviates the need to handle expiration in the context of a signal handler -
+    //  * The handler thread can call a BSP synchronized delay implementation as well as the
+    //  * application callback function.  It should run with elevated priority to reduce latency.
+    //  *
+    //  * Note the thread will not actually start running until this function exits and releases
+    //  * the global table lock.
+    //  */
+    // arg.opaque_arg = NULL;
+    // arg.id         = OS_ObjectIdFromToken(token);
+    // return_code    = OS_QT_InternalTaskCreate_Impl(&local->handler_thread, OSAL_PRIORITY_C(0), 0,
+    //                                                OS_TimeBasePthreadEntry, arg.opaque_arg);
+    // if (return_code != OS_SUCCESS)
+    // {
+    //     return return_code;
+    // }
 
-    memcpy(local->name, timebase_name, sizeof(local->name));
-    local->callback = OS_TimerSync_t;
-    *timebase_id = index + 1;
+    // local->assigned_signal = 0;
+    // clock_gettime(OS_PREFERRED_CLOCK, &local->softsleep);
 
+    // /*
+    //  * Set up the necessary OS constructs
+    //  *
+    //  * If an external sync function is used then there is nothing to do here -
+    //  * we simply call that function and it should synchronize to the time source.
+    //  *
+    //  * If no external sync function is provided then this will set up a POSIX
+    //  * timer to locally simulate the timer tick using the CPU clock.
+    //  */
+    // if (timebase->external_sync == NULL)
+    // {
+    //     local->sigMutex.unlock();
 
-    *clock_accuracy = 1000;
+    //     /*
+    //      * find an RT signal that is not used by another time base object.
+    //      * This is all done while the global lock is held so no chance of the
+    //      * underlying tables changing
+    //      */
+    //     for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
+    //     {
+    //         if (OS_ObjectIdDefined(OS_global_timebase_table[idx].active_id) &&
+    //             OS_impl_timebase_table[idx].assigned_signal != 0)
+    //         {
+    //             /* sigaddset(&local->sigset, OS_impl_timebase_table[idx].assigned_signal); */
+    //             local->signalIDs.push_back(OS_impl_timebase_table[idx].assigned_signal);
+    //         }
+    //     }
 
-    return OS_SUCCESS;
-}
+    //     for (i = SIGRTMIN; i <= SIGRTMAX; ++i)
+    //     {
+    //         if (!sigismember(&local->sigMutex, i))
+    //         {
+    //             local->assigned_signal = i;
+    //             break;
+    //         }
+    //     }
 
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Add a timer object based on an existing TimeBase resource
- *
- * A timer object is a resource that invokes the specified application-provided function
- * upon timer expiration.  Timers may be one-shot or periodic in nature.
- *
- * This function uses an existing time base object to service this timer, which must
- * exist prior to adding the timer.  The precision of the timer is the same
- * as that of the underlying time base object. Multiple timer objects can be
- * created referring to a single time base object.
- *
- * This routine also uses a different callback function prototype from OS_TimerCreate(),
- * allowing a single opaque argument to be passed to the callback routine.
- * The OSAL implementation does not use this parameter, and may be set NULL.
- *
- * @warning Depending on the OS, the callback_ptr function may be similar to an
- *          interrupt service routine. Calls that cause the code to block or require
- *          an application context (like sending events) are generally not supported.
- *
- * @param[out]  timer_id        The non-zero resource ID of the timer object
- * @param[in]   timer_name      Name of the timer object
- * @param[in]   timebase_id     The time base resource to use as a reference
- * @param[in]   callback_ptr    Application-provided function to invoke
- * @param[in]   callback_arg    Opaque argument to pass to callback function
- *
- * @return Execution status, see @ref OSReturnCodes
- */
-int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebase_id, OS_ArgCallback_t callback_ptr,
-                  void *callback_arg){
+    //     do
+    //     {
+    //         if (local->assigned_signal == 0)
+    //         {
+    //             OS_DEBUG("No free RT signals to use for simulated time base\n");
+    //             return_code = OS_TIMER_ERR_UNAVAILABLE;
+    //             break;
+    //         }
 
-}
+    //         sigemptyset(&local->sigMutex);
+    //         sigaddset(&local->sigMutex, local->assigned_signal);
 
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Configures a periodic or one shot timer
- *
- * This function programs the timer with a start time and an optional interval time.
- * The start time is the time in microseconds when the user callback function will be
- * called. If the interval time is non-zero, the timer will be reprogrammed with that
- * interval in microseconds to call the user callback function periodically. If the start
- * time and interval time are zero, the function will return an error.
- *
- * For a "one-shot" timer, the start_time configures the
- * expiration time, and the interval_time should be passed as
- * zero to indicate the timer is not to be automatically reset.
- *
- * @note The resolution of the times specified is limited to the clock accuracy
- *       returned in the OS_TimerCreate call. If the times specified in the start_msec
- *       or interval_msec parameters are less than the accuracy, they will be rounded
- *       up to the accuracy of the timer.
- *
- * @param[in] timer_id      The timer ID to operate on
- * @param[in] start_time    Time in microseconds to the first expiration
- * @param[in] interval_time Time in microseconds between subsequent intervals, value
- *                          of zero will only call the user callback function once
- *                          after the start_msec time.
- *
- * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERR_INVALID_ID if the timer_id is not valid.
- * @retval #OS_TIMER_ERR_INTERNAL if there was an error programming the OS timer.
- * @retval #OS_ERROR if both start time and interval time are zero.
- */
-int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time){
+    //         /*
+    //          * Ensure that the chosen signal is NOT already pending.
+    //          *
+    //          * Perform a "sigtimedwait" with a zero timeout to poll the
+    //          * status of the selected signal.  RT signals are also queued,
+    //          * so this needs to be called in a loop to until sigtimedwait()
+    //          * returns an error.
+    //          *
+    //          * The max number of signals that can be queued is available
+    //          * via sysconf() as the _SC_SIGQUEUE_MAX value.
+    //          *
+    //          * The output is irrelevant here; the objective is to just ensure
+    //          * that the signal is not already pending.
+    //          */
+    //         i = sysconf(_SC_SIGQUEUE_MAX);
+    //         do
+    //         {
+    //             ts.tv_sec  = 0;
+    //             ts.tv_nsec = 0;
+    //             if (sigtimedwait(&local->sigMutex, NULL, &ts) < 0)
+    //             {
+    //                 /* signal is NOT pending */
+    //                 break;
+    //             }
+    //             --i;
+    //         } while (i > 0);
 
-}
+    //         /*
+    //         **  Initialize the sigevent structures for the handler.
+    //         */
+    //         memset((void *)&evp, 0, sizeof(evp));
+    //         evp.sigev_notify = SIGEV_SIGNAL;
+    //         evp.sigev_signo  = local->assigned_signal;
 
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Deletes a timer resource
- *
- * The application callback associated with the timer will be stopped,
- * and the resources freed for future use.
- *
- * @param[in] timer_id      The timer ID to operate on
- *
- * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERR_INVALID_ID if the timer_id is invalid.
- * @retval #OS_TIMER_ERR_INTERNAL if there was a problem deleting the timer in the host OS.
- */
-int32 OS_TimerDelete(osal_id_t timer_id){
+    //         /*
+    //          * Pass the Timer Index value of the object ID to the signal handler --
+    //          *  Note that the upper bits can be safely assumed as a timer ID to recreate the original,
+    //          *  and doing it this way should still work on a system where sizeof(sival_int) < sizeof(uint32)
+    //          *  (as long as sizeof(sival_int) >= number of bits in OS_OBJECT_INDEX_MASK)
+    //          */
+    //         evp.sigev_value.sival_int = (int)OS_ObjectIdToSerialNumber_Impl(OS_ObjectIdFromToken(token));
 
-}
+    //         /*
+    //         ** Create the timer
+    //         ** Note using the "MONOTONIC" clock here as this will still produce consistent intervals
+    //         ** even if the system clock is stepped (e.g. clock_settime).
+    //         */
+    //         status = timer_create(OS_PREFERRED_CLOCK, &evp, &local->host_timerid);
+    //         if (status < 0)
+    //         {
+    //             return_code = OS_TIMER_ERR_UNAVAILABLE;
+    //             break;
+    //         }
 
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Locate an existing timer resource by name
- *
- * Outputs the ID associated with the given timer, if it exists.
- *
- * @param[out] timer_id      The timer ID corresponding to the name
- * @param[in]  timer_name    The timer name to find
- *
- * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_INVALID_POINTER if timer_id or timer_name are NULL pointers
- * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
- * @retval #OS_ERR_NAME_NOT_FOUND if the name was not found in the table
- */
-int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name){
+    //         timebase->external_sync = OS_TimeBase_SigWaitImpl;
+    //     } while (0);
+    // }
 
-}
+    // if (return_code != OS_SUCCESS)
+    // {
+    //     /*
+    //      * NOTE about the thread cancellation -- this technically is just a backup,
+    //      * we should not need to cancel it because the handler thread will exit automatically
+    //      * if the active ID does not match the expected value.  This check would fail
+    //      * if this function returns non-success (the ID in the global will be set zero)
+    //      */
+    //     local->handler_thread->stop();
+    //     local->assigned_signal = 0;
+    // }
 
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Gets information about an existing timer
- *
- * This function takes timer_id, and looks it up in the OS table. It puts all of the
- * information known about that timer into a structure pointer to by timer_prop.
- *
- * @param[in]  timer_id      The timer ID to operate on
- * @param[out] timer_prop    Buffer containing timer properties
- *                           - creator: the OS task ID of the task that created this timer
- *                           - name: the string name of the timer
- *                           - start_time: the start time in microseconds, if any
- *                           - interval_time: the interval time in microseconds, if any
- *                           - accuracy: the accuracy of the timer in microseconds
- *
- * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid timer
- * @retval #OS_INVALID_POINTER if the timer_prop pointer is null
- */
-int32 OS_TimerGetInfo(osal_id_t timer_id, OS_timer_prop_t *timer_prop){
+    // return return_code;
+} /* end OS_TimeBaseCreate_Impl */
 
-}
-/**@}*/
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TimeBaseSet_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uint32 interval_time)
+{
+    return OS_ERR_NOT_IMPLEMENTED;
+    // OS_impl_timebase_internal_record_t *local;
+    // struct itimerspec                   timeout;
+    // int32                               return_code;
+    // int                                 status;
+    // OS_timebase_internal_record_t *     timebase;
+
+    // local       = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+    // timebase    = OS_OBJECT_TABLE_GET(OS_timebase_table, *token);
+    // return_code = OS_SUCCESS;
+
+    // /* There is only something to do here if we are generating a simulated tick */
+    // if (local->assigned_signal != 0)
+    // {
+    //     /*
+    //     ** Convert from Microseconds to timespec structures
+    //     */
+    //     memset(&timeout, 0, sizeof(timeout));
+    //     OS_UsecToTimespec(start_time, &timeout.it_value);
+    //     OS_UsecToTimespec(interval_time, &timeout.it_interval);
+
+    //     /*
+    //     ** Program the real timer
+    //     */
+    //     status = timer_settime(local->host_timerid, 0, /* Flags field can be zero */
+    //                            &timeout,               /* struct itimerspec */
+    //                            NULL);                  /* Oldvalue */
+
+    //     if (status < 0)
+    //     {
+    //         OS_DEBUG("Error in timer_settime: %s\n", strerror(errno));
+    //         return_code = OS_TIMER_ERR_INTERNAL;
+    //     }
+    //     else if (interval_time > 0)
+    //     {
+    //         timebase->accuracy_usec = (uint32)((timeout.it_interval.tv_nsec + 999) / 1000);
+    //     }
+    //     else
+    //     {
+    //         timebase->accuracy_usec = (uint32)((timeout.it_value.tv_nsec + 999) / 1000);
+    //     }
+    // }
+
+    // local->reset_flag = (return_code == OS_SUCCESS);
+    // return return_code;
+} /* end OS_TimeBaseSet_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TimeBaseDelete_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token)
+{
+    return OS_ERR_NOT_IMPLEMENTED;
+    // OS_impl_timebase_internal_record_t *local;
+    // int                                 status;
+
+    // local = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+
+    // pthread_cancel(local->handler_thread);
+
+    // /*
+    // ** Delete the timer
+    // */
+    // if (local->assigned_signal != 0)
+    // {
+    //     status = timer_delete(local->host_timerid);
+    //     if (status < 0)
+    //     {
+    //         OS_DEBUG("Error deleting timer: %s\n", strerror(errno));
+    //         return (OS_TIMER_ERR_INTERNAL);
+    //     }
+
+    //     local->assigned_signal = 0;
+    // }
+
+    // return OS_SUCCESS;
+} /* end OS_TimeBaseDelete_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TimeBaseGetInfo_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TimeBaseGetInfo_Impl(const OS_object_token_t *token, OS_timebase_prop_t *timer_prop)
+{
+    return OS_ERR_NOT_IMPLEMENTED;
+    // return OS_SUCCESS;
+
+} /* end OS_TimeBaseGetInfo_Impl */

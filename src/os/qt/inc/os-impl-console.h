@@ -31,15 +31,19 @@
 #include <stdbool.h>
 #include <osconfig.h>
 #include <unistd.h>
-#include <semaphore.h>
+
+
 
 /* Console device */
-typedef struct
-{
-    bool  is_async;
-    sem_t data_sem;
-} OS_impl_console_internal_record_t;
 
-extern OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
+// typedef struct
+// {
+//     bool  is_async;
+//     void * data_sem;
+
+//     // QSemaphore data_sem;
+// } OS_impl_console_internal_record_t;
+
+// extern OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
 
 #endif /* INCLUDE_OS_IMPL_CONSOLE_H_ */

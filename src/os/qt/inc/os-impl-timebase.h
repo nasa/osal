@@ -29,22 +29,33 @@
 #define INCLUDE_OS_IMPL_TIMEBASE_H_
 
 #include <osconfig.h>
-#include <pthread.h>
-#include <signal.h>
+#include <QThread>
+#include <QWaitCondition>
 #include <QMutex>
+
+
+#include <list>
+
+
 typedef struct
 {
     int start_ms;
     int interval_ms;
     QTimer * timer;
+    QMutex handler_mutex;
+    QWaitCondition sigWaiter;
+    QMutex        sigMutex;
+    std::list<int> signalIDs;
+    OS_impl_task_internal_record_t handler_thread;
     // pthread_t       handler_thread;
     char name[OS_MAX_API_NAME];
-    QMutex handler_mutex;
+    sig_atomic_t    reset_flag;
+
     // timer_t         host_timerid;
     int             assigned_signal;
-    // sigset_t        sigset;
-    // sig_atomic_t    reset_flag;
-    // struct timespec softsleep;
+
+
+    struct timespec softsleep;
     OS_TimerSync_t syncFunc;
     OS_TimerCallback_t callback;
 

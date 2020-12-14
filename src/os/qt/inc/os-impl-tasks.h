@@ -29,25 +29,7 @@
 #define INCLUDE_OS_IMPL_TASKS_H_
 
 #include <osconfig.h>
-#include <QThread>
 
-
-
-class OSALThread : public QThread{
-    public:
-    void * data;
-    PthreadFuncPtr_t entry;
-    void run() override {
-       entry(this->data);
-    };
-};
-
-/*tasks */
-typedef struct
-{
-    char name[OS_MAX_API_NAME];
-    OSALThread * thread;
-} OS_impl_task_internal_record_t;
 
 /* Tables where the OS object information is stored */
 extern OS_impl_task_internal_record_t OS_impl_task_table[OS_MAX_TASKS];

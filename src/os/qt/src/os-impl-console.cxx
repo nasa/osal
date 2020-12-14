@@ -35,7 +35,7 @@
 #include "os-shared-idmap.h"
 #include "os-shared-printf.h"
 #include "os-shared-common.h"
-
+#include <QSemaphore>
 /*
  * By default the console output is always asynchronous
  * (equivalent to "OS_UTILITY_TASK_ON" being set)
@@ -45,6 +45,12 @@
  */
 #define OS_CONSOLE_ASYNC         true
 #define OS_CONSOLE_TASK_PRIORITY OS_UTILITYTASK_PRIORITY
+
+typedef struct
+{
+    bool  is_async;
+    QSemaphore data_sem;
+} OS_impl_console_internal_record_t;
 
 /* Tables where the OS object information is stored */
 OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
@@ -70,7 +76,7 @@ void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
     if (local->is_async)
     {
         /* post the sem for the utility task to run */
-        sem_post(&local->data_sem);
+        local->data_sem.release();
     }
     else
     {
@@ -102,7 +108,7 @@ static void *OS_ConsoleTask_Entry(void *arg)
         while (OS_SharedGlobalVars.ShutdownFlag != OS_SHUTDOWN_MAGIC_NUMBER)
         {
             OS_ConsoleOutput_Impl(&token);
-            sem_wait(&local->data_sem);
+            local->data_sem.acquire();
         }
         OS_ObjectIdRelease(&token);
     }
@@ -120,7 +126,7 @@ static void *OS_ConsoleTask_Entry(void *arg)
 int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 {
     OS_impl_console_internal_record_t *local;
-    pthread_t                          consoletask;
+    OS_impl_task_internal_record_t     consoletask;
     int32                              return_code;
     OS_U32ValueWrapper_t               local_arg = {0};
 
@@ -133,21 +139,10 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 
         if (local->is_async)
         {
-            if (sem_init(&local->data_sem, 0, 0) < 0)
-            {
-                return_code = OS_SEM_FAILURE;
-            }
-            else
-            {
-                local_arg.id = OS_ObjectIdFromToken(token);
-                return_code  = OS_QT_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
-                                                               OS_ConsoleTask_Entry, local_arg.opaque_arg);
+            local_arg.id = OS_ObjectIdFromToken(token);
+            return_code  = OS_QT_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
+                                                            OS_ConsoleTask_Entry, local_arg.opaque_arg);
 
-                if (return_code != OS_SUCCESS)
-                {
-                    sem_destroy(&local->data_sem);
-                }
-            }
         }
     }
     else
