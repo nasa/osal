@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for math.h */
-#ifndef _OSAL_STUB_MATH_H_
-#define _OSAL_STUB_MATH_H_
+#ifndef OCS_MATH_H
+#define OCS_MATH_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in math.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_MATH_H_ */
+#endif  /*  OCS_MATH_H */

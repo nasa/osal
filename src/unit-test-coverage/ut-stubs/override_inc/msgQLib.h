@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for msgQLib.h */
-#ifndef _OSAL_OVERRIDE_MSGQLIB_H_
-#define _OSAL_OVERRIDE_MSGQLIB_H_
+#ifndef OSAL_OVERRIDE_MSGQLIB_H
+#define OSAL_OVERRIDE_MSGQLIB_H
 
 #include <OCS_msgQLib.h>
 #include <vxWorks.h>
@@ -42,4 +42,4 @@
 #define msgQReceive OCS_msgQReceive
 #define msgQSend    OCS_msgQSend
 
-#endif /* _OSAL_OVERRIDE_MSGQLIB_H_ */
+#endif  /* OSAL_OVERRIDE_MSGQLIB_H */

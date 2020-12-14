@@ -24,8 +24,8 @@
  * Purpose: This file contains functions to implement a set of tools for use in unit testing.
  */
 
-#ifndef _uttools_
-#define _uttools_
+#ifndef UTTOOLS_H
+#define UTTOOLS_H
 
 /*
  * Includes

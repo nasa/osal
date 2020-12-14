@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for pthread.h */
-#ifndef _OSAL_STUB_PTHREAD_H_
-#define _OSAL_STUB_PTHREAD_H_
+#ifndef OCS_PTHREAD_H
+#define OCS_PTHREAD_H
 
 #include <OCS_basetypes.h>
 #include <OCS_sched.h>
@@ -122,4 +122,4 @@ extern int OCS_pthread_setschedprio(OCS_pthread_t target_thread, int prio);
 extern int OCS_pthread_setspecific(OCS_pthread_key_t key, const void *pointer);
 extern int OCS_pthread_sigmask(int how, const OCS_sigset_t *set, OCS_sigset_t *oldset);
 
-#endif /* _OSAL_STUB_PTHREAD_H_ */
+#endif  /*  OCS_PTHREAD_H */

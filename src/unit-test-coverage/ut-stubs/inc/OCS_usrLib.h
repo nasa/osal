@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for usrLib.h */
-#ifndef _OSAL_STUB_USRLIB_H_
-#define _OSAL_STUB_USRLIB_H_
+#ifndef OCS_USRLIB_H
+#define OCS_USRLIB_H
 
 #include <OCS_basetypes.h>
 #include <OCS_vxWorks.h>
@@ -37,4 +37,4 @@
 /* prototypes normally declared in usrLib.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_USRLIB_H_ */
+#endif  /*  OCS_USRLIB_H */

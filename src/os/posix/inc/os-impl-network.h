@@ -25,9 +25,9 @@
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_NETWORK_H_
-#define INCLUDE_OS_IMPL_NETWORK_H_
+#ifndef OS_IMPL_NETWORK_H
+#define OS_IMPL_NETWORK_H
 
 #include <unistd.h>
 
-#endif /* INCLUDE_OS_IMPL_NETWORK_H_ */
+#endif  /* OS_IMPL_NETWORK_H  */

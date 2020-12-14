@@ -32,6 +32,7 @@
  * can be executed.
  */
 
+#include "osapi-printf.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
 int32 OS_ConsoleAPI_Init(void)

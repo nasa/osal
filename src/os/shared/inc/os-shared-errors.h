@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_ERRORS_H_
-#define INCLUDE_OS_SHARED_ERRORS_H_
+#ifndef OS_SHARED_ERRORS_H
+#define OS_SHARED_ERRORS_H
 
 #include <os-shared-globaldefs.h>
 
@@ -39,4 +39,4 @@ typedef struct
 
 extern const OS_ErrorTable_Entry_t OS_IMPL_ERROR_NAME_TABLE[];
 
-#endif /* INCLUDE_OS_SHARED_ERRORS_H_ */
+#endif  /* OS_SHARED_ERRORS_H  */

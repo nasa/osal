@@ -35,6 +35,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "osapi-filesys.h"
+
 /*
  * User defined include files
  */

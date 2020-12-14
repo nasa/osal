@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for dirent.h */
-#ifndef _OSAL_OVERRIDE_DIRENT_H_
-#define _OSAL_OVERRIDE_DIRENT_H_
+#ifndef OSAL_OVERRIDE_DIRENT_H
+#define OSAL_OVERRIDE_DIRENT_H
 
 #include <OCS_dirent.h>
 
@@ -35,4 +35,4 @@
 #define readdir   OCS_readdir
 #define rewinddir OCS_rewinddir
 
-#endif /* _OSAL_OVERRIDE_DIRENT_H_ */
+#endif  /* OSAL_OVERRIDE_DIRENT_H */

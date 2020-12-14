@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for sys/ipc.h */
-#ifndef _OSAL_STUB_SYS_IPC_H_
-#define _OSAL_STUB_SYS_IPC_H_
+#ifndef OCS_SYS_IPC_H
+#define OCS_SYS_IPC_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in sys/ipc.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_SYS_IPC_H_ */
+#endif  /*  OCS_SYS_IPC_H */

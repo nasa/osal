@@ -25,9 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_DIR_H_
-#define INCLUDE_OS_SHARED_DIR_H_
+#ifndef OS_SHARED_DIR_H
+#define OS_SHARED_DIR_H
 
+#include "osapi-dir.h"
 #include <os-shared-globaldefs.h>
 
 /* directory objects */
@@ -110,4 +111,4 @@ int32 OS_DirRewind_Impl(const OS_object_token_t *token);
  ------------------------------------------------------------------*/
 int32 OS_DirRemove_Impl(const char *local_path);
 
-#endif /* INCLUDE_OS_SHARED_DIR_H_ */
+#endif  /* OS_SHARED_DIR_H  */

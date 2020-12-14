@@ -25,9 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_SOCKETS_H_
-#define INCLUDE_OS_SHARED_SOCKETS_H_
+#ifndef OS_SHARED_SOCKETS_H
+#define OS_SHARED_SOCKETS_H
 
+#include "osapi-sockets.h"
 #include <os-shared-globaldefs.h>
 
 /*
@@ -179,4 +180,4 @@ int32 OS_SocketAddrSetPort_Impl(OS_SockAddr_t *Addr, uint16 PortNum);
  */
 void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Addr, const char *parent_name);
 
-#endif /* INCLUDE_OS_SHARED_SOCKETS_H_ */
+#endif  /* OS_SHARED_SOCKETS_H  */

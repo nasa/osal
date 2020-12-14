@@ -24,8 +24,8 @@
 ** Date:  April 2013
 **================================================================================*/
 
-#ifndef _UT_OSTIMER_TIMERIO_TEST_H_
-#define _UT_OSTIMER_TIMERIO_TEST_H_
+#ifndef UT_OSTIMER_TIMERIO_TEST_H
+#define UT_OSTIMER_TIMERIO_TEST_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
@@ -64,7 +64,7 @@ void UT_os_timergetinfo_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif /* _UT_OSTIMER_TIMERIO_TEST_H_ */
+#endif  /* UT_OSTIMER_TIMERIO_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_ostimer_timerio_test.h

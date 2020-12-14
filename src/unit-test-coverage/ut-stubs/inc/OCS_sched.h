@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for sched.h */
-#ifndef _OSAL_STUB_SCHED_H_
-#define _OSAL_STUB_SCHED_H_
+#ifndef OCS_SCHED_H
+#define OCS_SCHED_H
 
 #include <OCS_basetypes.h>
 
@@ -45,4 +45,4 @@ struct OCS_sched_param
 extern int OCS_sched_get_priority_max(int policy);
 extern int OCS_sched_get_priority_min(int policy);
 
-#endif /* _OSAL_STUB_SCHED_H_ */
+#endif  /*  OCS_SCHED_H */

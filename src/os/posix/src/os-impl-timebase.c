@@ -36,6 +36,7 @@
 
 #include "os-posix.h"
 #include "os-impl-timebase.h"
+#include "os-impl-tasks.h"
 
 #include "os-shared-timebase.h"
 #include "os-shared-idmap.h"

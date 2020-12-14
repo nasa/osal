@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for ctype.h */
-#ifndef _OSAL_STUB_CTYPE_H_
-#define _OSAL_STUB_CTYPE_H_
+#ifndef OCS_CTYPE_H
+#define OCS_CTYPE_H
 
 #include <OCS_basetypes.h>
 
@@ -38,4 +38,4 @@
 
 extern int OCS_isgraph(int c);
 
-#endif /* _OSAL_STUB_CTYPE_H_ */
+#endif  /*  OCS_CTYPE_H */

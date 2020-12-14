@@ -42,6 +42,12 @@
 #include "os-shared-idmap.h"
 
 /*
+ * Other OSAL public APIs used by this module
+ */
+#include "osapi-filesys.h"
+
+
+/*
  * Sanity checks on the user-supplied configuration
  * The relevent OS_MAX limit should be defined
  *

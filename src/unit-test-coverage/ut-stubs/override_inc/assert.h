@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for assert.h */
-#ifndef _OSAL_OVERRIDE_ASSERT_H_
-#define _OSAL_OVERRIDE_ASSERT_H_
+#ifndef OSAL_OVERRIDE_ASSERT_H
+#define OSAL_OVERRIDE_ASSERT_H
 
 #include <OCS_assert.h>
 
@@ -30,4 +30,4 @@
 
 #define assert OCS_assert
 
-#endif /* _OSAL_OVERRIDE_ASSERT_H_ */
+#endif  /* OSAL_OVERRIDE_ASSERT_H */

@@ -32,6 +32,7 @@
  * can be executed.
  */
 
+#include "osapi-module.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
 UT_DEFAULT_STUB(OS_ModuleAPI_Init, (void))

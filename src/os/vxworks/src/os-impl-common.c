@@ -31,6 +31,7 @@
 #include "os-vxworks.h"
 
 #include "os-shared-common.h"
+#include "os-shared-idmap.h"
 
 #include <errnoLib.h>
 #include <objLib.h>

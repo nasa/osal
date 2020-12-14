@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef INCLUDE_SYMLIB_H_
-#define INCLUDE_SYMLIB_H_
+#ifndef SYMLIB_H
+#define SYMLIB_H
 
 #include <OCS_symLib.h>
 #include <vxWorks.h>
@@ -51,4 +51,4 @@
 #define symEach       OCS_symEach
 #define symFind       OCS_symFind
 
-#endif /* INCLUDE_SYMLIB_H_ */
+#endif  /* SYMLIB_H  */

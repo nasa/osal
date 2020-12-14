@@ -32,8 +32,8 @@
  * can be executed.
  */
 
-#ifndef __OSAPI_UTSTUB_INTERNAL_H_
-#define __OSAPI_UTSTUB_INTERNAL_H_
+#ifndef OSAPI_UTSTUB_INTERNAL_H
+#define OSAPI_UTSTUB_INTERNAL_H
 
 /*
  * Commonly used C library headers
@@ -43,7 +43,9 @@
 /*
  * Include all relevant OSAPI (public) and UT-assert headers
  */
-#include "osapi.h"
+#include "common_types.h"
+#include "osapi-error.h"
+#include "osapi-constants.h"
 #include "utstubs.h"
 #include "utbsp.h"
 #include "utassert.h"

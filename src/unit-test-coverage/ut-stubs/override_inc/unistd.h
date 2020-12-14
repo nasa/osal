@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for unistd.h */
-#ifndef _OSAL_OVERRIDE_UNISTD_H_
-#define _OSAL_OVERRIDE_UNISTD_H_
+#ifndef OSAL_OVERRIDE_UNISTD_H
+#define OSAL_OVERRIDE_UNISTD_H
 
 #include <OCS_unistd.h>
 
@@ -47,4 +47,4 @@
 #define sysconf     OCS_sysconf
 #define write       OCS_write
 
-#endif /* _OSAL_OVERRIDE_UNISTD_H_ */
+#endif  /* OSAL_OVERRIDE_UNISTD_H */

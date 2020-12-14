@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for semLib.h */
-#ifndef _OSAL_OVERRIDE_SEMLIB_H_
-#define _OSAL_OVERRIDE_SEMLIB_H_
+#ifndef OSAL_OVERRIDE_SEMLIB_H
+#define OSAL_OVERRIDE_SEMLIB_H
 
 #include <OCS_semLib.h>
 #include <vxWorks.h>
@@ -54,4 +54,4 @@
 #define semTake        OCS_semTake
 #define semGive        OCS_semGive
 
-#endif /* _OSAL_OVERRIDE_SEMLIB_H_ */
+#endif  /* OSAL_OVERRIDE_SEMLIB_H */

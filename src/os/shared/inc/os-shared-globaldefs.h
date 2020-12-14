@@ -28,11 +28,14 @@
  * so they are put into a common header file.
  */
 
-#ifndef INCLUDE_OSAPI_SHARED_GLOBALDEFS_H_
-#define INCLUDE_OSAPI_SHARED_GLOBALDEFS_H_
+#ifndef OSAPI_SHARED_GLOBALDEFS_H_
+#define OSAPI_SHARED_GLOBALDEFS_H_
 
-/* All subsystems reference the public API */
-#include <osapi.h>
+/* All subsystems reference the same config, common types, and other constants */
+#include "osconfig.h"
+#include "common_types.h"
+#include "osapi-constants.h"
+#include "osapi-error.h"
 
 /*
  * The "common_record" is part of the generic ID mapping -
@@ -67,8 +70,6 @@ typedef union
 {
     void *             opaque_arg;
     OS_ArgCallback_t   arg_callback_func;
-    OS_TimerCallback_t timer_callback_func;
-    osal_task_entry    entry_func;
     osal_id_t          id;
     osal_index_t       idx;
 } OS_U32ValueWrapper_t;
@@ -88,4 +89,4 @@ extern void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const ch
 #define OS_DEBUG(...)
 #endif
 
-#endif /* INCLUDE_OS_SHARED_GLOBALDEFS_H_ */
+#endif  /* OS_SHARED_GLOBALDEFS_H  */

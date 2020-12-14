@@ -42,7 +42,6 @@
 #include <errno.h>
 #include <time.h>
 
-#include <osapi.h>
 #include "os-impl-select.h"
 #include "os-shared-select.h"
 #include "os-shared-idmap.h"

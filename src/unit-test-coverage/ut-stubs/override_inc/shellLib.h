@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for shellLib.h */
-#ifndef _OSAL_OVERRIDE_SHELLLIB_H_
-#define _OSAL_OVERRIDE_SHELLLIB_H_
+#ifndef OSAL_OVERRIDE_SHELLLIB_H
+#define OSAL_OVERRIDE_SHELLLIB_H
 
 #include <OCS_shellLib.h>
 #include <vxWorks.h>
@@ -30,4 +30,4 @@
 /* ----------------------------------------- */
 #define shellGenericInit OCS_shellGenericInit
 
-#endif /* _OSAL_OVERRIDE_SHELLLIB_H_ */
+#endif  /* OSAL_OVERRIDE_SHELLLIB_H */

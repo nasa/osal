@@ -25,10 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_UT_ADAPTOR_CONSOLE_H_
-#define INCLUDE_UT_ADAPTOR_CONSOLE_H_
+#ifndef UT_ADAPTOR_CONSOLE_H
+#define UT_ADAPTOR_CONSOLE_H
 
-#include <common_types.h>
+#include "common_types.h"
 #include "ut-adaptor-common.h"
 
 extern void *const  UT_Ref_OS_impl_console_table;
@@ -44,4 +44,4 @@ extern void UT_ConsoleTest_TaskEntry(int arg);
  */
 extern void UT_ConsoleTest_SetConsoleAsync(osal_index_t local_id, bool is_async);
 
-#endif /* INCLUDE_UT_ADAPTOR_CONSOLE_H_ */
+#endif  /* UT_ADAPTOR_CONSOLE_H  */

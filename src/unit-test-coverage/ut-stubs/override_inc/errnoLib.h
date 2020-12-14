@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for errnoLib.h */
-#ifndef _OSAL_OVERRIDE_ERRNOLIB_H_
-#define _OSAL_OVERRIDE_ERRNOLIB_H_
+#ifndef OSAL_OVERRIDE_ERRNOLIB_H
+#define OSAL_OVERRIDE_ERRNOLIB_H
 
 #include <OCS_errnoLib.h>
 #include <vxWorks.h>
@@ -30,4 +30,4 @@
 /* -----------------------------------------  */
 #define errnoGet OCS_errnoGet
 
-#endif /* _OSAL_OVERRIDE_ERRNOLIB_H_ */
+#endif  /* OSAL_OVERRIDE_ERRNOLIB_H */

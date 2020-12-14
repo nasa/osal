@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_FILES_H_
-#define INCLUDE_OS_IMPL_FILES_H_
+#ifndef OS_IMPL_FILES_H
+#define OS_IMPL_FILES_H
 
 #include "os-impl-io.h"
 
@@ -48,4 +48,4 @@ extern gid_t OS_IMPL_SELF_EGID;
 
 extern const int OS_IMPL_REGULAR_FILE_FLAGS;
 
-#endif /* INCLUDE_OS_IMPL_FILES_H_ */
+#endif  /* OS_IMPL_FILES_H  */

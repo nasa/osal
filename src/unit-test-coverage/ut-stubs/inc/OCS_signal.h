@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for signal.h */
-#ifndef _OSAL_STUB_SIGNAL_H_
-#define _OSAL_STUB_SIGNAL_H_
+#ifndef OCS_SIGNAL_H
+#define OCS_SIGNAL_H
 
 #include <OCS_basetypes.h>
 #include <OCS_sys_types.h>
@@ -74,4 +74,4 @@ extern int              OCS_sigprocmask(int how, const OCS_sigset_t *set, OCS_si
 extern int              OCS_sigsuspend(const OCS_sigset_t *set);
 extern int              OCS_sigwait(const OCS_sigset_t *set, int *sig);
 
-#endif /* _OSAL_STUB_SIGNAL_H_ */
+#endif  /*  OCS_SIGNAL_H */

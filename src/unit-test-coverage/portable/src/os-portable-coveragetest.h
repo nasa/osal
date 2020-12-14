@@ -25,18 +25,8 @@
  *
  */
 
-#ifndef INCLUDE_OS_PORTABLE_COVERAGETEST_H_
-#define INCLUDE_OS_PORTABLE_COVERAGETEST_H_
-
-/**
- * \file     os-vxworks-coveragetest.h
- * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
- *
- */
-
-#ifndef _OS_PORTABLE_COVERAGETEST_H_
-#define _OS_PORTABLE_COVERAGETEST_H_
+#ifndef OS_PORTABLE_COVERAGETEST_H
+#define OS_PORTABLE_COVERAGETEST_H
 
 /*
  * Includes
@@ -76,6 +66,4 @@
 void Osapi_Test_Setup(void);
 void Osapi_Test_Teardown(void);
 
-#endif /* _OS_PORTABLE_COVERAGETEST_H_ */
-
-#endif /* INCLUDE_OS_PORTABLE_COVERAGETEST_H_ */
+#endif  /* OS_PORTABLE_COVERAGETEST_H  */

@@ -31,7 +31,6 @@
 /*
 ** OSAL includes
 */
-#include "osapi.h"
 #include "bsp-impl.h"
 
-#endif /* GENERIC_VXWORKS_BSP_INTERNAL_H_ */
+#endif  /* GENERIC_VXWORKS_BSP_INTERNAL_H */

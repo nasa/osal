@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for ramDiskCbio.h */
-#ifndef _OSAL_OVERRIDE_RAMDISKCBIO_H_
-#define _OSAL_OVERRIDE_RAMDISKCBIO_H_
+#ifndef OSAL_OVERRIDE_RAMDISKCBIO_H
+#define OSAL_OVERRIDE_RAMDISKCBIO_H
 
 #include <OCS_ramDiskCbio.h>
 #include <vxWorks.h>
@@ -29,4 +29,4 @@
 /* mappings for declarations in ramDiskCbio.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_RAMDISKCBIO_H_ */
+#endif  /* OSAL_OVERRIDE_RAMDISKCBIO_H */

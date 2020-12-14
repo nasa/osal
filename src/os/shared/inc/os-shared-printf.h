@@ -25,9 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_PRINTF_H_
-#define INCLUDE_OS_SHARED_PRINTF_H_
+#ifndef OS_SHARED_PRINTF_H
+#define OS_SHARED_PRINTF_H
 
+#include "osapi-printf.h"
 #include <os-shared-globaldefs.h>
 
 /*
@@ -102,4 +103,4 @@ void OS_ConsoleOutput_Impl(const OS_object_token_t *token);
  ------------------------------------------------------------------*/
 void OS_ConsoleWakeup_Impl(const OS_object_token_t *token);
 
-#endif /* INCLUDE_OS_SHARED_PRINTF_H_ */
+#endif  /* OS_SHARED_PRINTF_H  */

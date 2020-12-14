@@ -28,8 +28,8 @@
  *          may contain POSIX-specific definitions.
  */
 
-#ifndef INCLUDE_OS_POSIX_H_
-#define INCLUDE_OS_POSIX_H_
+#ifndef OS_POSIX_H
+#define OS_POSIX_H
 
 /****************************************************************************************
                                     COMMON INCLUDE FILES
@@ -107,8 +107,6 @@ int32 OS_Posix_FileSysAPI_Impl_Init(void);
 
 int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype);
 
-int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority, size_t stacksz,
-                                       PthreadFuncPtr_t entry, void *entry_arg);
 void  OS_Posix_CompAbsDelayTime(uint32 msecs, struct timespec *tm);
 
-#endif /* INCLUDE_OS_POSIX_H_ */
+#endif  /* OS_POSIX_H  */

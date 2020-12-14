@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_NETWORK_H_
-#define INCLUDE_OS_IMPL_NETWORK_H_
+#ifndef OS_IMPL_NETWORK_H
+#define OS_IMPL_NETWORK_H
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -36,4 +36,4 @@
 #include <netinet/in.h>
 #include <hostLib.h>
 
-#endif /* INCLUDE_OS_IMPL_NETWORK_H_ */
+#endif  /* OS_IMPL_NETWORK_H  */

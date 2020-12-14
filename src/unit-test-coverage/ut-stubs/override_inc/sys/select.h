@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef INCLUDE_SELECT_H_
-#define INCLUDE_SELECT_H_
+#ifndef SELECT_H
+#define SELECT_H
 
 #include <OCS_sys_select.h>
 
@@ -50,4 +50,4 @@
 #define FD_CLR   OCS_FD_CLR
 #define FD_ZERO  OCS_FD_ZERO
 
-#endif /* INCLUDE_SELECT_H_ */
+#endif  /* SELECT_H  */

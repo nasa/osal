@@ -32,8 +32,8 @@
  *  @CMAKE_CURRENT_SOURCE_DIR@/default_config.cmake
  */
  
-#ifndef INCLUDE_OSCONFIG_H_            
-#define INCLUDE_OSCONFIG_H_
+#ifndef OSCONFIG_H
+#define OSCONFIG_H
 
 /* 
  * OSAL feature selection options from build config 
@@ -275,5 +275,13 @@
   */
 #define OS_MODULE_FILE_EXTENSION        "@CMAKE_SHARED_LIBRARY_SUFFIX@"
 
+/*
+** Length of a Device and Volume name
+*/
+#define OS_FS_DEV_NAME_LEN  32 /**< Device name length */
+#define OS_FS_PHYS_NAME_LEN 64 /**< Physical drive name length */
+#define OS_FS_VOL_NAME_LEN  32 /**< Volume name length */
 
-#endif      /* INCLUDE_OSCONFIG_H_ */
+
+#endif      /* OSCONFIG_H */
+

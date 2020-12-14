@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for signal.h */
-#ifndef _OSAL_OVERRIDE_SIGNAL_H_
-#define _OSAL_OVERRIDE_SIGNAL_H_
+#ifndef OSAL_OVERRIDE_SIGNAL_H
+#define OSAL_OVERRIDE_SIGNAL_H
 
 #include <OCS_signal.h>
 
@@ -56,4 +56,4 @@
 #define sigsuspend  OCS_sigsuspend
 #define sigwait     OCS_sigwait
 
-#endif /* _OSAL_OVERRIDE_SIGNAL_H_ */
+#endif  /* OSAL_OVERRIDE_SIGNAL_H */

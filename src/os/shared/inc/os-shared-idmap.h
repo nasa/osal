@@ -25,9 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_IDMAP_H_
-#define INCLUDE_OS_SHARED_IDMAP_H_
+#ifndef OS_SHARED_IDMAP_H
+#define OS_SHARED_IDMAP_H
 
+#include "osapi-idmap.h"
 #include <os-shared-globaldefs.h>
 
 #define OS_OBJECT_EXCL_REQ_FLAG 0x0001
@@ -485,4 +486,4 @@ bool  OS_ObjectNameMatch(void *ref, const OS_object_token_t *token, const OS_com
 int32 OS_ObjectIdFindNextMatch(OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_object_token_t *token);
 int32 OS_ObjectIdFindNextFree(OS_object_token_t *token);
 
-#endif /* INCLUDE_OS_SHARED_IDMAP_H_ */
+#endif  /* OS_SHARED_IDMAP_H  */

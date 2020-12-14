@@ -33,6 +33,7 @@
 #include "utstubs.h"
 
 #include "os-shared-task.h"
+#include "osapi-idmap.h"
 
 /*
 ** Task API

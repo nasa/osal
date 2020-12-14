@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for stat.h */
-#ifndef _OSAL_OVERRIDE_STAT_H_
-#define _OSAL_OVERRIDE_STAT_H_
+#ifndef OSAL_OVERRIDE_STAT_H
+#define OSAL_OVERRIDE_STAT_H
 
 #include <OCS_stat.h>
 
@@ -40,4 +40,4 @@
 #define statvfs OCS_statvfs
 #define statfs  OCS_statvfs
 
-#endif /* _OSAL_OVERRIDE_STAT_H_ */
+#endif  /* OSAL_OVERRIDE_STAT_H */

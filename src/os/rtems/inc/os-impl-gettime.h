@@ -25,12 +25,12 @@
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_GETTIME_H_
-#define INCLUDE_OS_IMPL_GETTIME_H_
+#ifndef OS_IMPL_GETTIME_H
+#define OS_IMPL_GETTIME_H
 
-#include <osconfig.h>
+#include "osconfig.h"
 #include <time.h>
 
 #define OSAL_GETTIME_SOURCE_CLOCK CLOCK_MONOTONIC
 
-#endif /* INCLUDE_OS_IMPL_GETTIME_H_ */
+#endif  /* OS_IMPL_GETTIME_H  */

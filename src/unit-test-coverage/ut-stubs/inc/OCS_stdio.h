@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for stdio.h */
-#ifndef _OSAL_STUB_STDIO_H_
-#define _OSAL_STUB_STDIO_H_
+#ifndef OCS_STDIO_H
+#define OCS_STDIO_H
 
 #include <OCS_basetypes.h>
 #include <OCS_stdarg.h>
@@ -53,4 +53,4 @@ extern OCS_FILE *OCS_stdin;
 extern OCS_FILE *OCS_stdout;
 extern OCS_FILE *OCS_stderr;
 
-#endif /* _OSAL_STUB_STDIO_H_ */
+#endif  /*  OCS_STDIO_H */

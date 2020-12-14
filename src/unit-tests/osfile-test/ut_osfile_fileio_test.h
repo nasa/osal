@@ -24,8 +24,8 @@
 ** Date:  April 2013
 **================================================================================*/
 
-#ifndef _UT_OSFILE_FILEIO_H_
-#define _UT_OSFILE_FILEIO_H_
+#ifndef UT_OSFILE_FILEIO_H
+#define UT_OSFILE_FILEIO_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
@@ -80,7 +80,7 @@ void UT_os_closefilebyname_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif /* _UT_OSFILE_FILEIO_H_ */
+#endif  /* UT_OSFILE_FILEIO_H */
 
 /*================================================================================*
 ** End of File: ut_osfile_fileio.h

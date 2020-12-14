@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for stat.h */
-#ifndef _OSAL_STUB_STAT_H_
-#define _OSAL_STUB_STAT_H_
+#ifndef OCS_STAT_H
+#define OCS_STAT_H
 
 #include <OCS_basetypes.h>
 #include <OCS_sys_types.h>
@@ -72,4 +72,4 @@ extern int OCS_fstat(int fd, struct OCS_stat *buf);
 
 extern int OCS_statvfs(const char *file, struct OCS_statvfs *buf);
 
-#endif /* _OSAL_STUB_STAT_H_ */
+#endif  /*  OCS_STAT_H */
