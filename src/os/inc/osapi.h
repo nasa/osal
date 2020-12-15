@@ -70,6 +70,7 @@
 #include "osapi-file.h"
 #include "osapi-filesys.h"
 #include "osapi-heap.h"
+#include "osapi-macros.h"
 #include "osapi-idmap.h"
 #include "osapi-module.h"
 #include "osapi-mutex.h"
