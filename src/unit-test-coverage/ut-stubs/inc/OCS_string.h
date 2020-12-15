@@ -36,6 +36,7 @@
 /* prototypes normally declared in string.h */
 /* ----------------------------------------- */
 
+extern void * OCS_memchr(const void *s, int c, size_t n);
 extern void * OCS_memcpy(void *dest, const void *src, size_t n);
 extern void * OCS_memset(void *s, int c, size_t n);
 extern int    OCS_strcmp(const char *s1, const char *s2);

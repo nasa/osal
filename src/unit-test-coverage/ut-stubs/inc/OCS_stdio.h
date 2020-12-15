@@ -47,6 +47,7 @@ extern int       OCS_rename(const char *old, const char *nw);
 extern int       OCS_snprintf(char *s, size_t maxlen, const char *format, ...);
 extern int       OCS_vsnprintf(char *s, size_t maxlen, const char *format, OCS_va_list arg);
 extern int       OCS_printf(const char *format, ...);
+extern int       OCS_fprintf(OCS_FILE *fp, const char *format, ...);
 extern int       OCS_putchar(int c);
 
 extern OCS_FILE *OCS_stdin;

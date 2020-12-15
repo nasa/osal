@@ -318,7 +318,7 @@ void UT_os_timercreate_test()
     /*-----------------------------------------------------*/
     testDesc = "#6 Invalid-arg";
 
-    if (OS_TimerCreate(&g_timerIds[5], g_timerNames[5], &g_clkAccuracy, NULL) == OS_TIMER_ERR_INVALID_ARGS)
+    if (OS_TimerCreate(&g_timerIds[5], g_timerNames[5], &g_clkAccuracy, NULL) == OS_INVALID_POINTER)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);

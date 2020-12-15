@@ -27,6 +27,7 @@
 /* ----------------------------------------- */
 /* mappings for declarations in string.h */
 /* ----------------------------------------- */
+#define memchr   OCS_memchr
 #define memcpy   OCS_memcpy
 #define memset   OCS_memset
 #define strcmp   OCS_strcmp

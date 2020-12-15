@@ -177,7 +177,7 @@ void UT_os_networkgethostname_test()
     testDesc = "#2 Zero-name-length-arg";
 
     res = OS_NetworkGetHostName(buffer, 0);
-    if (res == OS_ERROR)
+    if (res == OS_ERR_INVALID_SIZE)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);

@@ -113,21 +113,13 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
     /*
     ** Check parameters
     */
-    if (fsdevname == NULL || fsvolname == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_STRING(fsdevname, sizeof(filesys->device_name), OS_FS_ERR_PATH_TOO_LONG);
+    OS_CHECK_STRING(fsvolname, sizeof(filesys->volume_name), OS_FS_ERR_PATH_TOO_LONG);
 
     /* check names are not empty strings */
     if (fsdevname[0] == 0 || fsvolname[0] == 0)
     {
         return OS_FS_ERR_PATH_INVALID;
-    }
-
-    /* check names are not excessively long strings */
-    if (strlen(fsdevname) >= sizeof(filesys->device_name) || strlen(fsvolname) >= sizeof(filesys->volume_name))
-    {
-        return OS_FS_ERR_PATH_TOO_LONG;
     }
 
     return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, fsdevname, &token);
@@ -234,15 +226,8 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
     /*
      * Validate inputs
      */
-    if (phys_path == NULL || virt_path == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    if (strlen(phys_path) >= OS_MAX_LOCAL_PATH_LEN || strlen(virt_path) >= OS_MAX_PATH_LEN)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
+    OS_CHECK_STRING(phys_path, sizeof(filesys->system_mountpt), OS_FS_ERR_PATH_TOO_LONG);
+    OS_CHECK_PATHNAME(virt_path);
 
     /*
      * Generate a dev name by taking the basename of the phys_path.
@@ -350,15 +335,7 @@ int32 OS_rmfs(const char *devname)
     int32             return_code;
     OS_object_token_t token;
 
-    if (devname == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    if (strlen(devname) >= OS_MAX_API_NAME)
-    {
-        return OS_FS_ERR_PATH_TOO_LONG;
-    }
+    OS_CHECK_PATHNAME(devname);
 
     return_code = OS_ObjectIdGetByName(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, devname, &token);
     if (return_code == OS_SUCCESS)
@@ -429,15 +406,8 @@ int32 OS_mount(const char *devname, const char *mountpoint)
     OS_filesys_internal_record_t *filesys;
 
     /* Check parameters */
-    if (devname == NULL || mountpoint == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    if (strlen(devname) >= sizeof(filesys->device_name) || strlen(mountpoint) >= sizeof(filesys->virtual_mountpt))
-    {
-        return OS_FS_ERR_PATH_TOO_LONG;
-    }
+    OS_CHECK_STRING(devname, sizeof(filesys->device_name), OS_FS_ERR_PATH_TOO_LONG);
+    OS_CHECK_STRING(mountpoint, sizeof(filesys->virtual_mountpt), OS_FS_ERR_PATH_TOO_LONG);
 
     return_code = OS_ObjectIdGetByName(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, devname, &token);
     if (return_code == OS_SUCCESS)
@@ -503,15 +473,7 @@ int32 OS_unmount(const char *mountpoint)
     OS_filesys_internal_record_t *filesys;
 
     /* Check parameters */
-    if (mountpoint == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    if (strlen(mountpoint) >= sizeof(filesys->virtual_mountpt))
-    {
-        return OS_FS_ERR_PATH_TOO_LONG;
-    }
+    OS_CHECK_STRING(mountpoint, sizeof(filesys->virtual_mountpt), OS_FS_ERR_PATH_TOO_LONG);
 
     return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
                                          (void *)mountpoint, &token);
@@ -570,15 +532,8 @@ int32 OS_fsBlocksFree(const char *name)
     OS_statvfs_t      statfs;
     OS_object_token_t token;
 
-    if (name == NULL)
-    {
-        return (OS_INVALID_POINTER);
-    }
-
-    if (strlen(name) >= OS_MAX_PATH_LEN)
-    {
-        return OS_FS_ERR_PATH_TOO_LONG;
-    }
+    /* Check parameters */
+    OS_CHECK_PATHNAME(name);
 
     return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
                                          (void *)name, &token);
@@ -618,15 +573,9 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
     OS_statvfs_t      statfs;
     OS_object_token_t token;
 
-    if (name == NULL || bytes_free == NULL)
-    {
-        return (OS_INVALID_POINTER);
-    }
-
-    if (strlen(name) >= OS_MAX_PATH_LEN)
-    {
-        return OS_FS_ERR_PATH_TOO_LONG;
-    }
+    /* Check parameters */
+    OS_CHECK_PATHNAME(name);
+    OS_CHECK_POINTER(bytes_free);
 
     return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
                                          (void *)name, &token);
@@ -665,21 +614,8 @@ int32 OS_chkfs(const char *name, bool repair)
     OS_object_token_t token;
     int32             return_code;
 
-    /*
-    ** Check for a null pointer
-    */
-    if (name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    /*
-    ** Check the length of the volume name
-    */
-    if (strlen(name) >= OS_MAX_PATH_LEN)
-    {
-        return (OS_FS_ERR_PATH_TOO_LONG);
-    }
+    /* Check parameters */
+    OS_CHECK_PATHNAME(name);
 
     /* Get a reference lock, as a filesystem check could take some time. */
     return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
@@ -710,15 +646,9 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
     int32                         return_code;
     OS_filesys_internal_record_t *filesys;
 
-    if (MountPoint == NULL || PhysDriveName == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    if (strlen(MountPoint) >= OS_MAX_PATH_LEN)
-    {
-        return OS_FS_ERR_PATH_TOO_LONG;
-    }
+    /* Check parameters */
+    OS_CHECK_PATHNAME(MountPoint);
+    OS_CHECK_POINTER(PhysDriveName);
 
     /* Get a reference lock, as a filesystem check could take some time. */
     return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
@@ -760,13 +690,8 @@ int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
 {
     osal_index_t idx;
 
-    /*
-    ** Check to see if the file pointers are NULL
-    */
-    if (filesys_info == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(filesys_info);
 
     memset(filesys_info, 0, sizeof(*filesys_info));
 
@@ -821,10 +746,9 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     /*
     ** Check to see if the path pointers are NULL
     */
-    if (VirtualPath == NULL || LocalPath == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check inputs */
+    OS_CHECK_POINTER(VirtualPath);
+    OS_CHECK_POINTER(LocalPath);
 
     /*
     ** Check length

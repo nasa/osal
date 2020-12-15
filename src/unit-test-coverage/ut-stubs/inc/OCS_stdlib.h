@@ -39,6 +39,7 @@
 /* prototypes normally declared in stdlib.h */
 /* ----------------------------------------- */
 
+extern void              OCS_abort(void);
 extern void              OCS_exit(int status);
 extern unsigned long int OCS_strtoul(const char *nptr, char **endptr, int base);
 extern int               OCS_system(const char *command);

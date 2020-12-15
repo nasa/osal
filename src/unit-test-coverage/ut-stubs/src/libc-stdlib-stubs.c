@@ -59,6 +59,13 @@ void OCS_exit(int c)
      */
 }
 
+void OCS_abort(void)
+{
+    UT_DEFAULT_IMPL(OCS_abort);
+
+    /* Note - same issue as with OCS_exit() - this isn't supposed to return */
+}
+
 unsigned long int OCS_strtoul(const char *nptr, char **endptr, int base)
 {
     int32         Status;
