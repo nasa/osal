@@ -132,6 +132,7 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage)
                 Prefix       = "TSF";
                 break;
             case UTASSERT_CASETYPE_TTF:
+                TermModeBits = OS_BSP_CONSOLEMODE_HIGHLIGHT | OS_BSP_CONSOLEMODE_RED | OS_BSP_CONSOLEMODE_BLUE;
                 Prefix = "TTF";
                 break;
             case UTASSERT_CASETYPE_NA:
