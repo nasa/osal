@@ -177,6 +177,19 @@ void OS_Unlock_Global(osal_objtype_t idtype);
  ------------------------------------------------------------------*/
 int32 OS_Unlock_Global_Impl(osal_objtype_t idtype);
 
+/*----------------------------------------------------------------
+
+   Function: OS_WaitForStateChange
+
+    Purpose: Waits for a change in the global table identified by "idtype"
+
+   NOTE: The table must be already "owned" (via OS_Lock_Global) by the calling
+   at the time this function is invoked.  The lock is released and re-acquired
+   before returning from this function.
+
+  -----------------------------------------------------------------*/
+void OS_WaitForStateChange(osal_objtype_t idtype, uint32 attempts);
+
 /*
    Function prototypes for routines implemented in common layers but private to OSAL
 

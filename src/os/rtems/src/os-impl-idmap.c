@@ -146,6 +146,32 @@ int32 OS_Unlock_Global_Impl(osal_objtype_t idtype)
     return OS_SUCCESS;
 } /* end OS_Unlock_Global_Impl */
 
+/*----------------------------------------------------------------
+ *
+ *  Function: OS_WaitForStateChange_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+void OS_WaitForStateChange_Impl(osal_objtype_t idtype, uint32 attempts)
+{
+    uint32 wait_ms;
+
+    if (attempts <= 10)
+    {
+        wait_ms = attempts * attempts * 10;
+    }
+    else
+    {
+        wait_ms = 1000;
+    }
+
+    OS_Unlock_Global_Impl(idtype);
+    OS_TaskDelay(wait_ms);
+    OS_Lock_Global_Impl(idtype);
+}
+
 /****************************************************************************************
                                 INITIALIZATION FUNCTION
  ***************************************************************************************/
