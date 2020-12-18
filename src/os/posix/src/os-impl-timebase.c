@@ -226,7 +226,7 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
         status = clock_getres(OS_PREFERRED_CLOCK, &clock_resolution);
         if (status != 0)
         {
-            OS_DEBUG("failed in clock_getres: %s\n", strerror(status));
+            OS_DEBUG("failed in clock_getres: %s\n", strerror(errno));
             return_code = OS_ERROR;
             break;
         }
