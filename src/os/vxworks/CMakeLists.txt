@@ -45,13 +45,13 @@ else ()
     )
 endif ()
 
-if (CMAKE_SYSTEM_VERSION VERSION_GREATER_EQUAL 7.0)
+if (CMAKE_SYSTEM_VERSION VERSION_LESS 7.0)
     list(APPEND VXWORKS_IMPL_SRCLIST
-        ../portable/os-impl-posix-dirs.c
+        src/os-impl-dirs.c
     )
 else ()
     list(APPEND VXWORKS_IMPL_SRCLIST
-        src/os-impl-dirs.c
+        ../portable/os-impl-posix-dirs.c
     )
 endif ()
 # If some form of module loading is configured,
