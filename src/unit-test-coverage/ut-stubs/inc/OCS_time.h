@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for time.h */
-#ifndef _OSAL_STUB_TIME_H_
-#define _OSAL_STUB_TIME_H_
+#ifndef OCS_TIME_H
+#define OCS_TIME_H
 
 #include <OCS_basetypes.h>
 #include <OCS_signal.h>
@@ -79,4 +79,4 @@ extern int OCS_timer_settime(OCS_timer_t timerid, int flags, const struct OCS_it
 
 extern int OCS_timer_connect(OCS_timer_t timerid, OCS_TIMER_CONNECT_FUNC func, int arg);
 
-#endif /* _OSAL_STUB_TIME_H_ */
+#endif  /*  OCS_TIME_H */

@@ -25,10 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_IO_H_
-#define INCLUDE_OS_IMPL_IO_H_
+#ifndef OS_IMPL_IO_H
+#define OS_IMPL_IO_H
 
-#include <osconfig.h>
+#include "osconfig.h"
 #include <stdbool.h>
 #include <unistd.h>
 
@@ -46,4 +46,4 @@ typedef struct
  */
 extern OS_impl_file_internal_record_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FILES];
 
-#endif /* INCLUDE_OS_IMPL_IO_H_ */
+#endif  /* OS_IMPL_IO_H  */

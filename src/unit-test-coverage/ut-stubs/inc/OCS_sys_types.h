@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for sys/types.h */
-#ifndef _OSAL_STUB_SYS_TYPES_H_
-#define _OSAL_STUB_SYS_TYPES_H_
+#ifndef OCS_SYS_TYPES_H
+#define OCS_SYS_TYPES_H
 
 #include <OCS_basetypes.h>
 
@@ -43,4 +43,4 @@ typedef int          OCS_uid_t;
 /* prototypes normally declared in sys/types.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_SYS_TYPES_H_ */
+#endif  /*  OCS_SYS_TYPES_H */

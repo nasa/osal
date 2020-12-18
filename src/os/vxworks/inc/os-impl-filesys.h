@@ -25,11 +25,11 @@
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_FILESYS_H_
-#define INCLUDE_OS_IMPL_FILESYS_H_
+#ifndef OS_IMPL_FILESYS_H
+#define OS_IMPL_FILESYS_H
 
-#include <osconfig.h>
-#include <common_types.h>
+#include "osconfig.h"
+#include "common_types.h"
 #include <blkIo.h>
 #include <xbdBlkDev.h>
 
@@ -42,4 +42,4 @@ typedef struct
 
 extern OS_impl_filesys_internal_record_t OS_impl_filesys_table[OS_MAX_FILE_SYSTEMS];
 
-#endif /* INCLUDE_OS_IMPL_FILESYS_H_ */
+#endif  /* OS_IMPL_FILESYS_H  */

@@ -31,6 +31,7 @@
 
 #include <os-vxworks.h>
 #include <os-impl-tasks.h>
+#include "osapi-idmap.h"
 
 void *const  UT_Ref_OS_impl_task_table      = OS_impl_task_table;
 size_t const UT_Ref_OS_impl_task_table_SIZE = sizeof(OS_impl_task_table);

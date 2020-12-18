@@ -42,6 +42,14 @@
 #include "os-shared-idmap.h"
 
 /*
+ * Other OSAL public APIs used by this module
+ */
+#include "osapi-filesys.h"
+#include "osapi-sockets.h"
+
+
+
+/*
  * Sanity checks on the user-supplied configuration
  * The relevent OS_MAX limit should be defined and greater than zero
  */
@@ -94,10 +102,7 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
     OS_object_token_t            token;
     OS_stream_internal_record_t *stream;
 
-    if (filedes == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(filedes);
 
     /*
     ** Check for a valid access mode
@@ -258,10 +263,8 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout
     int32             return_code;
 
     /* Check Parameters */
-    if (buffer == NULL || nbytes == 0)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(buffer);
+    OS_CHECK_SIZE(nbytes);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, filedes, &token);
     if (return_code == OS_SUCCESS)
@@ -288,10 +291,8 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
     int32             return_code;
 
     /* Check Parameters */
-    if (buffer == NULL || nbytes == 0)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(buffer);
+    OS_CHECK_SIZE(nbytes);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, filedes, &token);
     if (return_code == OS_SUCCESS)
@@ -365,10 +366,8 @@ int32 OS_stat(const char *path, os_fstat_t *filestats)
     int32 return_code;
     char  local_path[OS_MAX_LOCAL_PATH_LEN];
 
-    if (filestats == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check Parameters */
+    OS_CHECK_POINTER(filestats);
 
     memset(filestats, 0, sizeof(*filestats));
 
@@ -494,10 +493,9 @@ int32 OS_cp(const char *src, const char *dest)
     osal_id_t file2;
     uint8     copyblock[512];
 
-    if (src == NULL || dest == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check Parameters */
+    OS_CHECK_POINTER(src);
+    OS_CHECK_POINTER(dest);
 
     file1       = OS_OBJECT_ID_UNDEFINED;
     file2       = OS_OBJECT_ID_UNDEFINED;
@@ -587,10 +585,7 @@ int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop)
     int32               return_code;
 
     /* Check parameters */
-    if (fd_prop == NULL)
-    {
-        return (OS_INVALID_POINTER);
-    }
+    OS_CHECK_POINTER(fd_prop);
 
     memset(fd_prop, 0, sizeof(OS_file_prop_t));
 
@@ -625,10 +620,7 @@ int32 OS_FileOpenCheck(const char *Filename)
     OS_object_iter_t             iter;
     OS_stream_internal_record_t *stream;
 
-    if (Filename == NULL)
-    {
-        return (OS_INVALID_POINTER);
-    }
+    OS_CHECK_POINTER(Filename);
 
     return_code = OS_ERROR;
 
@@ -664,10 +656,7 @@ int32 OS_CloseFileByName(const char *Filename)
     OS_object_iter_t             iter;
     OS_stream_internal_record_t *stream;
 
-    if (Filename == NULL)
-    {
-        return (OS_INVALID_POINTER);
-    }
+    OS_CHECK_POINTER(Filename);
 
     return_code = OS_FS_ERR_PATH_INVALID;
 

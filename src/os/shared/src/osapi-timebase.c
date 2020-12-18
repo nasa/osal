@@ -111,19 +111,8 @@ int32 OS_TimeBaseCreate(osal_id_t *timer_id, const char *timebase_name, OS_Timer
     /*
      ** Check Parameters
      */
-    if (timer_id == NULL || timebase_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    /*
-     ** we don't want to allow names too long
-     ** if truncated, two names might be the same
-     */
-    if (strlen(timebase_name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
+    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_APINAME(timebase_name);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -187,10 +176,8 @@ int32 OS_TimeBaseSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time
      * Note that the units are intentionally left unspecified.  The external sync period
      * could be measured in microseconds or hours -- it is whatever the application requires.
      */
-    if (interval_time >= 1000000000 || start_time >= 1000000000)
-    {
-        return OS_TIMER_ERR_INVALID_ARGS;
-    }
+    ARGCHECK(start_time < 1000000000, OS_TIMER_ERR_INVALID_ARGS);
+    ARGCHECK(interval_time < 1000000000, OS_TIMER_ERR_INVALID_ARGS);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -276,10 +263,8 @@ int32 OS_TimeBaseGetIdByName(osal_id_t *timer_id, const char *timebase_name)
     int32          return_code;
     osal_objtype_t objtype;
 
-    if (timer_id == NULL || timebase_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_APINAME(timebase_name);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -313,10 +298,7 @@ int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_pro
     OS_timebase_internal_record_t *timebase;
 
     /* Check parameters */
-    if (timebase_prop == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(timebase_prop);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.

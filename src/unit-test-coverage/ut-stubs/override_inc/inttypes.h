@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for inttypes.h */
-#ifndef _OSAL_OVERRIDE_INTTYPES_H_
-#define _OSAL_OVERRIDE_INTTYPES_H_
+#ifndef OSAL_OVERRIDE_INTTYPES_H
+#define OSAL_OVERRIDE_INTTYPES_H
 
 #include <OCS_inttypes.h>
 
@@ -28,4 +28,4 @@
 /* mappings for declarations in inttypes.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_INTTYPES_H_ */
+#endif  /* OSAL_OVERRIDE_INTTYPES_H */

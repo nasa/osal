@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for tgmath.h */
-#ifndef _OSAL_STUB_TGMATH_H_
-#define _OSAL_STUB_TGMATH_H_
+#ifndef OCS_TGMATH_H
+#define OCS_TGMATH_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in tgmath.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_TGMATH_H_ */
+#endif  /*  OCS_TGMATH_H */

@@ -31,6 +31,7 @@
 
 #include "os-posix.h"
 #include "os-impl-console.h"
+#include "os-impl-tasks.h"
 
 #include "os-shared-idmap.h"
 #include "os-shared-printf.h"

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for memPartLib.h */
-#ifndef _OSAL_STUB_MEMPARTLIB_H_
-#define _OSAL_STUB_MEMPARTLIB_H_
+#ifndef OCS_MEMPARTLIB_H
+#define OCS_MEMPARTLIB_H
 
 #include <OCS_basetypes.h>
 #include <OCS_vxWorks.h>
@@ -54,4 +54,4 @@ extern OCS_STATUS OCS_memPartInfoGet(OCS_PART_ID         partId, /* partition ID
 
 extern OCS_PART_ID OCS_memSysPartId;
 
-#endif /* _OSAL_STUB_MEMPARTLIB_H_ */
+#endif  /*  OCS_MEMPARTLIB_H */

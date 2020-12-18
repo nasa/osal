@@ -433,9 +433,10 @@ int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
             break;
         }
 
-        OS_Unlock_Global(token->obj_type);
-        OS_TaskDelay_Impl(attempts);
-        OS_Lock_Global(token->obj_type);
+        /*
+         * Call the impl layer to wait for some sort of change to occur.
+         */
+        OS_WaitForStateChange(token->obj_type, attempts);
     }
 
     /*
@@ -732,6 +733,41 @@ void OS_Unlock_Global(osal_objtype_t idtype)
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_WaitForStateChange
+ *
+ *  Purpose: Local helper routine, not part of OSAL API.
+ *  Waits for a change in the global table identified by "idtype"
+ *
+ *-----------------------------------------------------------------*/
+void OS_WaitForStateChange(osal_objtype_t idtype, uint32 attempts)
+{
+    osal_id_t           saved_owner_id;
+    OS_objtype_state_t *objtype;
+
+    if (idtype < OS_OBJECT_TYPE_USER)
+    {
+        objtype        = &OS_objtype_state[idtype];
+        saved_owner_id = objtype->table_owner;
+
+        /* temporarily release the table */
+        objtype->table_owner = OS_OBJECT_ID_UNDEFINED;
+
+        /*
+         * The implementation layer takes care of the actual unlock + wait.
+         * This permits use of condition variables where these two actions
+         * are done atomically.
+         */
+        OS_WaitForStateChange_Impl(idtype, attempts);
+
+        /*
+         * After return, this task owns the table again
+         */
+        objtype->table_owner = saved_owner_id;
+    }
+}
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_ObjectIdFinalizeNew
  *
  *  Purpose: Local helper routine, not part of OSAL API.
@@ -900,15 +936,8 @@ int32 OS_ObjectIdFindByName(osal_objtype_t idtype, const char *name, osal_id_t *
      * This is required by the file/dir/socket API since these DO allow multiple
      * instances of the same name.
      */
-    if (name == NULL)
-    {
-        return OS_ERR_NAME_NOT_FOUND;
-    }
-
-    if (strlen(name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
+    ARGCHECK(name, OS_ERR_NAME_NOT_FOUND);
+    LENGTHCHECK(name, OS_MAX_API_NAME, OS_ERR_NAME_TOO_LONG);
 
     return_code = OS_ObjectIdGetByName(OS_LOCK_MODE_GLOBAL, idtype, name, &token);
     if (return_code == OS_SUCCESS)

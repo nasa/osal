@@ -45,6 +45,24 @@ void *OCS_memset(void *s, int c, size_t n)
     return Result;
 }
 
+void *OCS_memchr(const void *s, int c, size_t n)
+{
+    int32 Status;
+    void *Result;
+
+    Status = UT_DEFAULT_IMPL(OCS_memchr);
+    if (Status == 0)
+    {
+        Result = memchr(s, c, n);
+    }
+    else
+    {
+        Result = NULL;
+    }
+
+    return Result;
+}
+
 void *OCS_memcpy(void *dest, const void *src, size_t n)
 {
     int32 Status;

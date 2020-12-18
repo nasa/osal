@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for sys/socket.h */
-#ifndef _OSAL_STUB_SYS_SOCKET_H_
-#define _OSAL_STUB_SYS_SOCKET_H_
+#ifndef OCS_SYS_SOCKET_H
+#define OCS_SYS_SOCKET_H
 
 #include <OCS_basetypes.h>
 #include <OCS_sys_types.h>
@@ -55,4 +55,4 @@ extern OCS_ssize_t OCS_sendto(int fd, const void *buf, size_t n, int flags, cons
 extern int         OCS_setsockopt(int fd, int level, int optname, const void *optval, OCS_socklen_t optlen);
 extern int         OCS_socket(int domain, int type, int protocol);
 
-#endif /* _OSAL_STUB_SYS_SOCKET_H_ */
+#endif  /*  OCS_SYS_SOCKET_H */

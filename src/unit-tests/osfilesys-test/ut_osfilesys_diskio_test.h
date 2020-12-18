@@ -24,8 +24,8 @@
 ** Date:  April 2013
 **================================================================================*/
 
-#ifndef _UT_OSFILESYS_DISKIO_TEST_H_
-#define _UT_OSFILESYS_DISKIO_TEST_H_
+#ifndef UT_OSFILESYS_DISKIO_TEST_H
+#define UT_OSFILESYS_DISKIO_TEST_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
@@ -74,7 +74,7 @@ void UT_os_fsbytesfree_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif /* _UT_OSFILESYS_DISKIO_TEST_H_ */
+#endif  /* UT_OSFILESYS_DISKIO_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_osfilesys_diskio_test.h

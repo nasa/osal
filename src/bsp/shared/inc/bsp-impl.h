@@ -40,10 +40,14 @@
  *    BSP-provided console or debug terminal device.
  */
 
-#ifndef _osapi_bsp_impl_
-#define _osapi_bsp_impl_
+#ifndef BSP_IMPL_H
+#define BSP_IMPL_H
 
-#include "osapi.h"
+#include <stdio.h>
+
+#include "osapi-common.h"
+#include "osapi-bsp.h"
+#include "osapi-error.h"
 
 /*
  * A set of simplified console control options
@@ -151,4 +155,4 @@ void OS_BSP_Shutdown_Impl(void);
 /*********************
    END bsp-impl.h
  *********************/
-#endif /* _osapi_bsp_impl_ */
+#endif /* BSP_IMPL_H */

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for sys/time.h */
-#ifndef _OSAL_STUB_SYS_TIME_H_
-#define _OSAL_STUB_SYS_TIME_H_
+#ifndef OCS_SYS_TIME_H
+#define OCS_SYS_TIME_H
 
 #include <OCS_basetypes.h>
 #include <OCS_time.h>
@@ -37,4 +37,4 @@
 /* prototypes normally declared in sys/time.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_SYS_TIME_H_ */
+#endif  /*  OCS_SYS_TIME_H */

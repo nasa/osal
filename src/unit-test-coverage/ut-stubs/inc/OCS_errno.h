@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for errno.h */
-#ifndef _OSAL_STUB_ERRNO_H_
-#define _OSAL_STUB_ERRNO_H_
+#ifndef OCS_ERRNO_H
+#define OCS_ERRNO_H
 
 #include <OCS_basetypes.h>
 
@@ -45,4 +45,4 @@
 
 extern int OCS_errno;
 
-#endif /* _OSAL_STUB_ERRNO_H_ */
+#endif  /*  OCS_ERRNO_H */

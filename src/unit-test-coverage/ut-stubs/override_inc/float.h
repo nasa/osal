@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for float.h */
-#ifndef _OSAL_OVERRIDE_FLOAT_H_
-#define _OSAL_OVERRIDE_FLOAT_H_
+#ifndef OSAL_OVERRIDE_FLOAT_H
+#define OSAL_OVERRIDE_FLOAT_H
 
 #include <OCS_float.h>
 
@@ -28,4 +28,4 @@
 /* mappings for declarations in float.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_FLOAT_H_ */
+#endif  /* OSAL_OVERRIDE_FLOAT_H */

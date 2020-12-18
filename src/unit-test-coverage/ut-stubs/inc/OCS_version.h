@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for version.h */
-#ifndef _OSAL_STUB_VERSION_H_
-#define _OSAL_STUB_VERSION_H_
+#ifndef OCS_VERSION_H
+#define OCS_VERSION_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in version.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_VERSION_H_ */
+#endif  /*  OCS_VERSION_H */

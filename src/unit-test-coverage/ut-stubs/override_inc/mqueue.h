@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for mqueue.h */
-#ifndef _OSAL_OVERRIDE_MQUEUE_H_
-#define _OSAL_OVERRIDE_MQUEUE_H_
+#ifndef OSAL_OVERRIDE_MQUEUE_H
+#define OSAL_OVERRIDE_MQUEUE_H
 
 #include <OCS_mqueue.h>
 #include <time.h>
@@ -39,4 +39,4 @@
 #define mq_timedsend    OCS_mq_timedsend
 #define mq_unlink       OCS_mq_unlink
 
-#endif /* _OSAL_OVERRIDE_MQUEUE_H_ */
+#endif  /* OSAL_OVERRIDE_MQUEUE_H */

@@ -27,7 +27,6 @@
  * for all calls.
  */
 
-#include <osapi.h>
 #include "os-shared-module.h"
 
 /*----------------------------------------------------------------

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for stdlib.h */
-#ifndef _OSAL_STUB_STDLIB_H_
-#define _OSAL_STUB_STDLIB_H_
+#ifndef OCS_STDLIB_H
+#define OCS_STDLIB_H
 
 #include <OCS_basetypes.h>
 
@@ -39,10 +39,11 @@
 /* prototypes normally declared in stdlib.h */
 /* ----------------------------------------- */
 
+extern void              OCS_abort(void);
 extern void              OCS_exit(int status);
 extern unsigned long int OCS_strtoul(const char *nptr, char **endptr, int base);
 extern int               OCS_system(const char *command);
 extern void *            OCS_malloc(size_t sz);
 extern void              OCS_free(void *ptr);
 
-#endif /* _OSAL_STUB_STDLIB_H_ */
+#endif  /*  OCS_STDLIB_H */

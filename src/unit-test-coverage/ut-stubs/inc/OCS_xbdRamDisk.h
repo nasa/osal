@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for xbdRamDisk.h */
-#ifndef _OSAL_STUB_XBDRAMDISK_H_
-#define _OSAL_STUB_XBDRAMDISK_H_
+#ifndef OCS_XBDRAMDISK_H
+#define OCS_XBDRAMDISK_H
 
 #include <OCS_basetypes.h>
 #include <OCS_vxWorks.h>
@@ -37,4 +37,4 @@
 /* prototypes normally declared in xbdRamDisk.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_XBDRAMDISK_H_ */
+#endif  /*  OCS_XBDRAMDISK_H */

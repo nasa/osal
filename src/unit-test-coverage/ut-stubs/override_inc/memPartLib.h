@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for memPartLib.h */
-#ifndef _OSAL_OVERRIDE_MEMPARTLIB_H_
-#define _OSAL_OVERRIDE_MEMPARTLIB_H_
+#ifndef OSAL_OVERRIDE_MEMPARTLIB_H
+#define OSAL_OVERRIDE_MEMPARTLIB_H
 
 #include <OCS_memPartLib.h>
 #include <vxWorks.h>
@@ -35,4 +35,4 @@
 #define memPartInfoGet OCS_memPartInfoGet
 #define memSysPartId   OCS_memSysPartId
 
-#endif /* _OSAL_OVERRIDE_MEMPARTLIB_H_ */
+#endif  /* OSAL_OVERRIDE_MEMPARTLIB_H */

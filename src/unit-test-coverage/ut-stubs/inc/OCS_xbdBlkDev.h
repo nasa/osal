@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for xbdBlkDev.h */
-#ifndef _OSAL_STUB_XBDBLKDEV_H_
-#define _OSAL_STUB_XBDBLKDEV_H_
+#ifndef OCS_XBDBLKDEV_H
+#define OCS_XBDBLKDEV_H
 
 #include <OCS_basetypes.h>
 #include <OCS_vxWorks.h>
@@ -42,4 +42,4 @@ typedef int OCS_device_t;
 extern OCS_device_t OCS_xbdBlkDevCreateSync(OCS_BLK_DEV *bd, const char *name);
 extern OCS_STATUS   OCS_xbdBlkDevDelete(OCS_device_t dev, OCS_BLK_DEV **ppbd);
 
-#endif /* _OSAL_STUB_XBDBLKDEV_H_ */
+#endif  /*  OCS_XBDBLKDEV_H */

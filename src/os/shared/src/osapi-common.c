@@ -229,10 +229,7 @@ int32 OS_API_Init(void)
  *-----------------------------------------------------------------*/
 int32 OS_RegisterEventHandler(OS_EventHandler_t handler)
 {
-    if (handler == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(handler);
 
     OS_SharedGlobalVars.EventHandler = handler;
     return OS_SUCCESS;

@@ -25,9 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_FILE_H_
-#define INCLUDE_OS_SHARED_FILE_H_
+#ifndef OS_SHARED_FILE_H
+#define OS_SHARED_FILE_H
 
+#include "osapi-file.h"
 #include <os-shared-globaldefs.h>
 
 typedef struct
@@ -182,4 +183,4 @@ int32 OS_FileRename_Impl(const char *old_path, const char *new_path);
  ------------------------------------------------------------------*/
 int32 OS_FileChmod_Impl(const char *local_path, uint32 access);
 
-#endif /* INCLUDE_OS_SHARED_FILE_H_ */
+#endif  /* OS_SHARED_FILE_H  */

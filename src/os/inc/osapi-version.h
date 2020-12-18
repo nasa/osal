@@ -24,13 +24,13 @@
  *  See @ref cfsversions for version and build number and description
  *
  */
-#ifndef _osapi_version_h_
-#define _osapi_version_h_
+#ifndef OSAPI_VERSION_H
+#define OSAPI_VERSION_H
 
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER   109
+#define OS_BUILD_NUMBER   132
 #define OS_BUILD_BASELINE "v5.1.0-rc1"
 
 /*
@@ -70,7 +70,7 @@ OSAL 4.1 is present.
  */
 #define OSAL_API_VERSION ((OS_MAJOR_VERSION * 10000) + (OS_MINOR_VERSION * 100) + OS_REVISION)
 
-#endif /* _osapi_version_h_ */
+#endif  /* OSAPI_VERSION_H */
 
 /************************/
 /*  End of File Comment */

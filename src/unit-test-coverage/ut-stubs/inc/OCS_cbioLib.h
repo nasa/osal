@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for cbioLib.h */
-#ifndef _OSAL_STUB_CBIOLIB_H_
-#define _OSAL_STUB_CBIOLIB_H_
+#ifndef OCS_CBIOLIB_H
+#define OCS_CBIOLIB_H
 
 #include <OCS_basetypes.h>
 #include <OCS_vxWorks.h>
@@ -37,4 +37,4 @@
 /* prototypes normally declared in cbioLib.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_CBIOLIB_H_ */
+#endif  /*  OCS_CBIOLIB_H */

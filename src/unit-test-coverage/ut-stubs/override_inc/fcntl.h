@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for fcntl.h */
-#ifndef _OSAL_OVERRIDE_FCNTL_H_
-#define _OSAL_OVERRIDE_FCNTL_H_
+#ifndef OSAL_OVERRIDE_FCNTL_H
+#define OSAL_OVERRIDE_FCNTL_H
 
 #include <OCS_fcntl.h>
 
@@ -53,4 +53,4 @@
 #define fcntl OCS_fcntl
 #define open  OCS_open
 
-#endif /* _OSAL_OVERRIDE_FCNTL_H_ */
+#endif  /* OSAL_OVERRIDE_FCNTL_H */

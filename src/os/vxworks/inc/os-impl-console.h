@@ -25,11 +25,11 @@
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_CONSOLE_H_
-#define INCLUDE_OS_IMPL_CONSOLE_H_
+#ifndef OS_IMPL_CONSOLE_H
+#define OS_IMPL_CONSOLE_H
 
 #include <stdbool.h>
-#include <osconfig.h>
+#include "osconfig.h"
 #include <semLib.h>
 #include <taskLib.h>
 
@@ -44,4 +44,4 @@ typedef struct
 
 extern OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
 
-#endif /* INCLUDE_OS_IMPL_CONSOLE_H_ */
+#endif  /* OS_IMPL_CONSOLE_H  */

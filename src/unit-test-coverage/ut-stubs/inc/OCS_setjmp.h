@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for setjmp.h */
-#ifndef _OSAL_STUB_SETJMP_H_
-#define _OSAL_STUB_SETJMP_H_
+#ifndef OCS_SETJMP_H
+#define OCS_SETJMP_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in setjmp.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_SETJMP_H_ */
+#endif  /*  OCS_SETJMP_H */

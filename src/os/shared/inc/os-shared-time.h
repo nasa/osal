@@ -25,8 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_TIME_H_
-#define INCLUDE_OS_SHARED_TIME_H_
+#ifndef OS_SHARED_TIME_H
+#define OS_SHARED_TIME_H
+
+#include "osapi-timer.h"
 
 #include <os-shared-globaldefs.h>
 #include <os-shared-idmap.h>
@@ -62,4 +64,4 @@ extern OS_timecb_internal_record_t OS_timecb_table[OS_MAX_TIMERS];
 ---------------------------------------------------------------------------------------*/
 int32 OS_TimerCbAPI_Init(void);
 
-#endif /* INCLUDE_OS_SHARED_TIME_H_ */
+#endif  /* OS_SHARED_TIME_H  */

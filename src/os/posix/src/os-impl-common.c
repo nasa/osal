@@ -40,7 +40,6 @@
 
 #include "os-shared-common.h"
 #include "os-shared-idmap.h"
-#include "os-shared-errors.h"
 
 POSIX_GlobalVars_t POSIX_GlobalVars = {0};
 

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for sys/socket.h */
-#ifndef _OSAL_OVERRIDE_SYS_SOCKET_H_
-#define _OSAL_OVERRIDE_SYS_SOCKET_H_
+#ifndef OSAL_OVERRIDE_SYS_SOCKET_H
+#define OSAL_OVERRIDE_SYS_SOCKET_H
 
 #include <OCS_sys_socket.h>
 
@@ -39,4 +39,4 @@
 #define setsockopt OCS_setsockopt
 #define socket     OCS_socket
 
-#endif /* _OSAL_OVERRIDE_SYS_SOCKET_H_ */
+#endif  /* OSAL_OVERRIDE_SYS_SOCKET_H */

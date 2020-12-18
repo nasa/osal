@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for netinet/in.h */
-#ifndef _OSAL_STUB_NETINET_IN_H_
-#define _OSAL_STUB_NETINET_IN_H_
+#ifndef OCS_NETINET_IN_H
+#define OCS_NETINET_IN_H
 
 #include <OCS_basetypes.h>
 
@@ -41,4 +41,4 @@ extern uint16_t OCS_ntohs(uint16_t netshort);
 extern uint32_t OCS_htonl(uint32_t hostlong);
 extern uint32_t OCS_ntohl(uint32_t netlong);
 
-#endif /* _OSAL_STUB_NETINET_IN_H_ */
+#endif  /*  OCS_NETINET_IN_H */

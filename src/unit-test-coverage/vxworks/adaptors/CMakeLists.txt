@@ -13,6 +13,7 @@ add_library(ut-adaptor-${SETNAME} STATIC
     src/ut-adaptor-console.c
     src/ut-adaptor-countsem.c
     src/ut-adaptor-dirs.c
+    src/ut-adaptor-dirtable-stub.c
     src/ut-adaptor-files.c
     src/ut-adaptor-filesys.c
     src/ut-adaptor-idmap.c

@@ -28,8 +28,8 @@
  * Includes
  */
 
-#ifndef INCLUDE_UTASSERT_GLOBAL_H_
-#define INCLUDE_UTASSERT_GLOBAL_H_
+#ifndef UTASSERT_GLOBAL_H
+#define UTASSERT_GLOBAL_H
 
 #include "osapi.h"
 #include "utassert.h"
@@ -64,4 +64,4 @@ typedef struct
  */
 extern UtAssert_Global_t UtAssert_Global;
 
-#endif /* INCLUDE_UTASSERT_GLOBAL_H_ */
+#endif  /* UTASSERT_GLOBAL_H  */

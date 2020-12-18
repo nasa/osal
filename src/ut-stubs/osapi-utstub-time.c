@@ -32,6 +32,7 @@
  * can be executed.
  */
 
+#include "osapi-timer.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
 UT_DEFAULT_STUB(OS_TimerCbAPI_Init, (void))

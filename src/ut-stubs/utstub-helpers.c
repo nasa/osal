@@ -34,6 +34,8 @@
 
 #include "utstub-helpers.h"
 
+#include "osapi-idmap.h"
+
 const uint32 UT_MAXOBJS[UT_OBJTYPE_MAX] = {[UT_OBJTYPE_TASK]       = OS_MAX_TASKS,
                                            [UT_OBJTYPE_QUEUE]      = OS_MAX_QUEUES,
                                            [UT_OBJTYPE_COUNTSEM]   = OS_MAX_COUNT_SEMAPHORES,

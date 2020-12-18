@@ -45,3 +45,8 @@ void OS_ApplicationShutdown_Impl(void)
 {
     UT_DEFAULT_IMPL(OS_ApplicationShutdown_Impl);
 }
+
+void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts)
+{
+    UT_DEFAULT_IMPL(OS_WaitForStateChange_Impl);
+}

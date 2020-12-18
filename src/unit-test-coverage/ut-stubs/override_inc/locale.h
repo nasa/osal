@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for locale.h */
-#ifndef _OSAL_OVERRIDE_LOCALE_H_
-#define _OSAL_OVERRIDE_LOCALE_H_
+#ifndef OSAL_OVERRIDE_LOCALE_H
+#define OSAL_OVERRIDE_LOCALE_H
 
 #include <OCS_locale.h>
 
@@ -28,4 +28,4 @@
 /* mappings for declarations in locale.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_LOCALE_H_ */
+#endif  /* OSAL_OVERRIDE_LOCALE_H */

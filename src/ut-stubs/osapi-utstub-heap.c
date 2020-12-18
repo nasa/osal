@@ -32,6 +32,7 @@
  * can be executed.
  */
 
+#include "osapi-heap.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
 /*****************************************************************************

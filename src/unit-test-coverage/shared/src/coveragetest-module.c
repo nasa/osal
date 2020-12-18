@@ -94,11 +94,11 @@ void Test_OS_ModuleLoad(void)
     expected = OS_INVALID_POINTER;
     UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), 2 + OS_MAX_API_NAME);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     actual   = OS_ModuleLoad(&objid, "UTS", "File2", OS_MODULE_FLAG_GLOBAL_SYMBOLS);
     expected = OS_ERR_NAME_TOO_LONG;
     UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
-    UT_ResetState(UT_KEY(OCS_strlen));
+    UT_ResetState(UT_KEY(OCS_memchr));
 
     UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
     actual   = OS_ModuleLoad(&objid, "UT", "FileBad", OS_MODULE_FLAG_GLOBAL_SYMBOLS);

@@ -187,7 +187,10 @@ void Test_OS_ObjectIdConvertToken(void)
                   (long)actual, (long)expected);
 
     /* should have delayed 4 times, on the 5th try it returns error */
-    UtAssert_STUB_COUNT(OS_TaskDelay_Impl, 4);
+    UtAssert_STUB_COUNT(OS_WaitForStateChange_Impl, 4);
+
+    /* It should also have preserved the original ID */
+    UtAssert_True(OS_ObjectIdEqual(record->active_id, objid), "OS_ObjectIdConvertLock(EXCLUSIVE) objid restored");
 
     /*
      * Use mode OS_LOCK_MODE_EXCLUSIVE with matching ID and no other refs.
@@ -341,12 +344,12 @@ void Test_OS_ObjectIdFindByName(void)
     /*
      * Pass in a name that is beyond OS_MAX_API_NAME
      */
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), OS_MAX_API_NAME + 10);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_ObjectIdFindByName(OS_OBJECT_TYPE_OS_TASK, TaskName, &objid);
     UtAssert_True(actual == expected, "OS_ObjectFindIdByName(%s) (%ld) == OS_ERR_NAME_TOO_LONG", TaskName,
                   (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_strlen));
+    UT_ClearForceFail(UT_KEY(OCS_memchr));
 
     /*
      * Pass in a name that is actually not found

@@ -36,15 +36,6 @@
 #include <OCS_unistd.h>
 #include <OCS_stat.h>
 
-void Test_OS_VxWorks_DirAPI_Impl_Init(void)
-{
-    /*
-     * Test Case For:
-     * int32 OS_VxWorks_DirAPI_Impl_Init(void)
-     */
-    OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_DirAPI_Impl_Init(), OS_SUCCESS);
-}
-
 void Test_OS_DirCreate_Impl(void)
 {
     /*
@@ -146,7 +137,6 @@ void Osapi_Test_Teardown(void) {}
  */
 void UtTest_Setup(void)
 {
-    ADD_TEST(OS_VxWorks_DirAPI_Impl_Init);
     ADD_TEST(OS_DirCreate_Impl);
     ADD_TEST(OS_DirOpen_Impl);
     ADD_TEST(OS_DirClose_Impl);

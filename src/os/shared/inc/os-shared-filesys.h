@@ -25,9 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_FILESYS_H_
-#define INCLUDE_OS_SHARED_FILESYS_H_
+#ifndef OS_SHARED_FILESYS_H
+#define OS_SHARED_FILESYS_H
 
+#include "osapi-filesys.h"
 #include <os-shared-globaldefs.h>
 
 /**
@@ -206,4 +207,4 @@ bool  OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, c
 int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, size_t blocksize,
                             osal_blockcount_t numblocks, bool should_format);
 
-#endif /* INCLUDE_OS_SHARED_FILESYS_H_ */
+#endif  /* OS_SHARED_FILESYS_H  */

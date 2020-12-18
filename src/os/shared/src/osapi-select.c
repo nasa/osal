@@ -63,8 +63,8 @@ int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
     int32             return_code;
     OS_object_token_t token;
 
-    if (StateFlags == NULL)
-        return OS_INVALID_POINTER;
+    /* check parameters */
+    OS_CHECK_POINTER(StateFlags);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, objid, &token);
     if (return_code == OS_SUCCESS)
@@ -109,8 +109,8 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
  *-----------------------------------------------------------------*/
 int32 OS_SelectFdZero(OS_FdSet *Set)
 {
-    if (Set == NULL)
-        return OS_INVALID_POINTER;
+    /* check parameters */
+    OS_CHECK_POINTER(Set);
 
     memset(Set, 0, sizeof(OS_FdSet));
     return OS_SUCCESS;
@@ -129,8 +129,8 @@ int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid)
     int32        return_code;
     osal_index_t local_id;
 
-    if (Set == NULL)
-        return OS_INVALID_POINTER;
+    /* check parameters */
+    OS_CHECK_POINTER(Set);
 
     return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
     if (return_code == OS_SUCCESS)
@@ -154,8 +154,8 @@ int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid)
     int32        return_code;
     osal_index_t local_id;
 
-    if (Set == NULL)
-        return OS_INVALID_POINTER;
+    /* check parameters */
+    OS_CHECK_POINTER(Set);
 
     return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
     if (return_code == OS_SUCCESS)
@@ -179,8 +179,8 @@ bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid)
     int32        return_code;
     osal_index_t local_id;
 
-    if (Set == NULL)
-        return false;
+    /* check parameters */
+    BUGCHECK(Set != NULL, false);
 
     return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
     if (return_code != OS_SUCCESS)

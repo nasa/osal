@@ -25,10 +25,10 @@
  *
  */
 
-#ifndef INCLUDE_UT_ADAPTOR_TIMEBASE_H_
-#define INCLUDE_UT_ADAPTOR_TIMEBASE_H_
+#ifndef UT_ADAPTOR_TIMEBASE_H
+#define UT_ADAPTOR_TIMEBASE_H
 
-#include <common_types.h>
+#include "common_types.h"
 #include <OCS_symLib.h>
 #include <OCS_time.h>
 
@@ -62,4 +62,4 @@ bool UT_TimeBaseTest_CheckTimeBaseErrorState(osal_index_t local_id);
 /* Invoke the internal UsecToTimespec API */
 void UT_TimeBaseTest_UsecToTimespec(uint32 usecs, struct OCS_timespec *time_spec);
 
-#endif /* INCLUDE_UT_ADAPTOR_TIMEBASE_H_ */
+#endif  /* UT_ADAPTOR_TIMEBASE_H  */

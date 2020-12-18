@@ -30,6 +30,7 @@
  * can be executed.
  */
 
+#include "osapi-mutex.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
 UT_DEFAULT_STUB(OS_MutexAPI_Init, (void))

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for sysLib.h */
-#ifndef _OSAL_STUB_SYSLIB_H_
-#define _OSAL_STUB_SYSLIB_H_
+#ifndef OCS_SYSLIB_H
+#define OCS_SYSLIB_H
 
 #include <OCS_basetypes.h>
 #include <OCS_vxWorks.h>
@@ -38,4 +38,4 @@
 /* ----------------------------------------- */
 extern int OCS_sysClkRateGet(void);
 
-#endif /* _OSAL_STUB_SYSLIB_H_ */
+#endif  /*  OCS_SYSLIB_H */

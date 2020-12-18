@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for objLib.h */
-#ifndef _OSAL_STUB_OBJLIB_H_
-#define _OSAL_STUB_OBJLIB_H_
+#ifndef OCS_OBJLIB_H
+#define OCS_OBJLIB_H
 
 #include <OCS_basetypes.h>
 #include <OCS_vxWorks.h>
@@ -44,4 +44,4 @@
 /* prototypes normally declared in objLib.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_OBJLIB_H_ */
+#endif  /*  OCS_OBJLIB_H */

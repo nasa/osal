@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for timers.h */
-#ifndef _OSAL_STUB_TIMERS_H_
-#define _OSAL_STUB_TIMERS_H_
+#ifndef OCS_TIMERS_H
+#define OCS_TIMERS_H
 
 #include <OCS_basetypes.h>
 
@@ -36,4 +36,4 @@
 /* prototypes normally declared in timers.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_TIMERS_H_ */
+#endif  /*  OCS_TIMERS_H */

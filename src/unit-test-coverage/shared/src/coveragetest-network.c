@@ -61,7 +61,7 @@ void Test_OS_NetworkGetHostName(void)
     actual   = OS_NetworkGetHostName(NULL, sizeof(Buffer));
     UtAssert_True(actual == expected, "OS_NetworkGetHostName(Ptr=NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    expected = OS_ERROR;
+    expected = OS_ERR_INVALID_SIZE;
     actual   = OS_NetworkGetHostName(Buffer, 0);
     UtAssert_True(actual == expected, "OS_NetworkGetHostName(Size=0) (%ld) == OS_ERROR", (long)actual);
 }

@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef INCLUDE_SELECTLIB_H_
-#define INCLUDE_SELECTLIB_H_
+#ifndef SELECTLIB_H
+#define SELECTLIB_H
 
 #include <vxWorks.h>
 #include <sys/select.h>
@@ -35,4 +35,4 @@
 /* mappings for declarations in selectLib.h */
 /* ----------------------------------------- */
 
-#endif /* INCLUDE_SELECTLIB_H_ */
+#endif  /* SELECTLIB_H  */

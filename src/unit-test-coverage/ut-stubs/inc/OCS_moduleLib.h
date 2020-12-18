@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for moduleLib.h */
-#ifndef _OSAL_STUB_MODULELIB_H_
-#define _OSAL_STUB_MODULELIB_H_
+#ifndef OCS_MODULELIB_H
+#define OCS_MODULELIB_H
 
 #include <OCS_basetypes.h>
 #include <OCS_vxWorks.h>
@@ -58,4 +58,4 @@ typedef struct OCS_MODULE_INFO
 
 extern OCS_STATUS OCS_moduleInfoGet(OCS_MODULE_ID moduleId, OCS_MODULE_INFO *pModuleInfo);
 
-#endif /* _OSAL_STUB_MODULELIB_H_ */
+#endif  /*  OCS_MODULELIB_H */

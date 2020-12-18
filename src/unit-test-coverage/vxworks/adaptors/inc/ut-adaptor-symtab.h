@@ -25,11 +25,11 @@
  *
  */
 
-#ifndef INCLUDE_UT_ADAPTOR_SYMTAB_H_
-#define INCLUDE_UT_ADAPTOR_SYMTAB_H_
+#ifndef UT_ADAPTOR_SYMTAB_H
+#define UT_ADAPTOR_SYMTAB_H
 
-#include <common_types.h>
+#include "common_types.h"
 
 int32 UT_SymTabTest_CallIteratorFunc(const char *name, void *val, size_t TestSize, size_t SizeLimit);
 
-#endif /* INCLUDE_UT_ADAPTOR_SYMTAB_H_ */
+#endif  /* UT_ADAPTOR_SYMTAB_H  */

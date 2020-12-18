@@ -196,6 +196,11 @@ int OCS_printf(const char *format, ...)
     return UT_DEFAULT_IMPL(OCS_printf);
 }
 
+int OCS_fprintf(OCS_FILE *fp, const char *format, ...)
+{
+    return UT_DEFAULT_IMPL(OCS_fprintf);
+}
+
 static OCS_FILE LOCAL_FP[3] = {{10}, {11}, {12}};
 
 OCS_FILE *OCS_stdin  = &LOCAL_FP[0];

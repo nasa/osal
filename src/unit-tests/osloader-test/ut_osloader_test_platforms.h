@@ -24,8 +24,8 @@
 ** Date:  November 2014
 **================================================================================*/
 
-#ifndef _UT_OSLOADER_TEST_PLATFORMS_H_
-#define _UT_OSLOADER_TEST_PLATFORMS_H_
+#ifndef UT_OSLOADER_TEST_PLATFORMS_H
+#define UT_OSLOADER_TEST_PLATFORMS_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
@@ -63,7 +63,7 @@
 
 /*--------------------------------------------------------------------------------*/
 
-#endif /* _UT_OSLOADER_TEST_PLATFORMS_H_ */
+#endif  /* UT_OSLOADER_TEST_PLATFORMS_H */
 
 /*================================================================================*
 ** End of File: ut_osloader_test_platforms.h

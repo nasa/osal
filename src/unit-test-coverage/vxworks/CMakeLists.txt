@@ -6,6 +6,7 @@ set(VXWORKS_MODULE_LIST
     console
     countsem
     dirs
+    dirs-globals
     files
     filesys
     idmap

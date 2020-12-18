@@ -26,7 +26,7 @@
  */
 
 /* pull in the OSAL configuration */
-#include <osconfig.h>
+#include "osconfig.h"
 #include <stdlib.h>
 #include <string.h>
 

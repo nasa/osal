@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for taskLib.h */
-#ifndef _OSAL_STUB_TASKLIB_H_
-#define _OSAL_STUB_TASKLIB_H_
+#ifndef OCS_TASKLIB_H
+#define OCS_TASKLIB_H
 
 #include <OCS_basetypes.h>
 #include <OCS_vxWorks.h>
@@ -79,4 +79,4 @@ OCS_STATUS OCS_taskInit(OCS_WIND_TCB *pTcb, char *name, int priority, int option
 
 OCS_WIND_TCB *OCS_taskTcb(OCS_TASK_ID tid);
 
-#endif /* _OSAL_STUB_TASKLIB_H_ */
+#endif  /*  OCS_TASKLIB_H */

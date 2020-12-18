@@ -179,24 +179,10 @@ int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry f
     OS_task_internal_record_t *task;
 
     /* Check for NULL pointers */
-    if (task_name == NULL || task_id == NULL || function_pointer == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    /* Check for bad stack size.  Note that NULL stack_pointer is
-     * OK (impl will allocate) but size must be nonzero. */
-    if (stack_size == 0)
-    {
-        return OS_ERROR;
-    }
-
-    /* we don't want to allow names too long*/
-    /* if truncated, two names might be the same */
-    if (strlen(task_name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
+    OS_CHECK_POINTER(task_id);
+    OS_CHECK_POINTER(function_pointer);
+    OS_CHECK_APINAME(task_name);
+    OS_CHECK_SIZE(stack_size);
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
     return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, task_name, &token);
@@ -393,10 +379,8 @@ int32 OS_TaskGetIdByName(osal_id_t *task_id, const char *task_name)
 {
     int32 return_code;
 
-    if (task_id == NULL || task_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(task_id);
+    OS_CHECK_POINTER(task_name);
 
     return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, task_name, task_id);
 
@@ -420,10 +404,7 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
     OS_task_internal_record_t *task;
 
     /* Check parameters */
-    if (task_prop == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(task_prop);
 
     memset(task_prop, 0, sizeof(OS_task_prop_t));
 
@@ -497,10 +478,7 @@ int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t 
     OS_object_token_t token;
 
     /* Check parameters */
-    if (task_id == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(task_id);
 
     /* The "sysdata" and "sysdata_size" must be passed to the underlying impl for validation */
     return_code = OS_TaskValidateSystemData_Impl(sysdata, sysdata_size);

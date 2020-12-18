@@ -24,8 +24,8 @@
  * Purpose: This file contains functions to implement a generic linked list data structure.
  */
 
-#ifndef _utlist_
-#define _utlist_
+#ifndef UTLIST_H
+#define UTLIST_H
 
 /*
  * Includes

@@ -35,6 +35,8 @@
 #include <string.h>
 #include <errno.h>
 
+#include "osapi-printf.h"
+
 #include "bsp-impl.h"
 
 #include "os-impl-console.h"

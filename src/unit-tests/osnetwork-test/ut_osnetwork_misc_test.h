@@ -24,8 +24,8 @@
 ** Date:  April 2013
 **================================================================================*/
 
-#ifndef _UT_OSNETWORK_MISC_TEST_H_
-#define _UT_OSNETWORK_MISC_TEST_H_
+#ifndef UT_OSNETWORK_MISC_TEST_H
+#define UT_OSNETWORK_MISC_TEST_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
@@ -58,7 +58,7 @@ void UT_os_networkgethostname_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif /* _UT_OSNETWORK_MISC_TEST_H_ */
+#endif  /* UT_OSNETWORK_MISC_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_osnetwork_misc_test.h

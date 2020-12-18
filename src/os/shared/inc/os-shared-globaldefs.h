@@ -28,11 +28,15 @@
  * so they are put into a common header file.
  */
 
-#ifndef INCLUDE_OSAPI_SHARED_GLOBALDEFS_H_
-#define INCLUDE_OSAPI_SHARED_GLOBALDEFS_H_
+#ifndef OSAPI_SHARED_GLOBALDEFS_H_
+#define OSAPI_SHARED_GLOBALDEFS_H_
 
-/* All subsystems reference the public API */
-#include <osapi.h>
+/* All subsystems reference the same config, common types, and other constants */
+#include "osconfig.h"
+#include "common_types.h"
+#include "osapi-constants.h"
+#include "osapi-error.h"
+#include "osapi-macros.h"
 
 /*
  * The "common_record" is part of the generic ID mapping -
@@ -67,8 +71,6 @@ typedef union
 {
     void *             opaque_arg;
     OS_ArgCallback_t   arg_callback_func;
-    OS_TimerCallback_t timer_callback_func;
-    osal_task_entry    entry_func;
     osal_id_t          id;
     osal_index_t       idx;
 } OS_U32ValueWrapper_t;
@@ -88,4 +90,52 @@ extern void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const ch
 #define OS_DEBUG(...)
 #endif
 
-#endif /* INCLUDE_OS_SHARED_GLOBALDEFS_H_ */
+/*
+ * An OSAL-specific check macro for NULL pointer.
+ * Checked via BUGCHECK - considered a bug/fatal error if check fails.
+ *
+ * Returns OS_INVALID_POINTER if pointer is NULL.
+ */
+#define OS_CHECK_POINTER(ptr) BUGCHECK((ptr) != NULL, OS_INVALID_POINTER)
+
+/*
+ * An OSAL-specific check macro for an input buffer size.
+ * Checked via ARGCHECK - non-fatal if check fails.
+ *
+ * Returns OS_ERR_INVALID_SIZE if size is 0.
+ *
+ * Also returns OS_ERR_INVALID_SIZE if size is excessively large.
+ * Currently (UINT32_MAX/2) is used as the upper limit, as some API calls
+ * (e.g. read/write) return a size as an int32 type, and therefore the
+ * operation cannot exceed the bounds of this type.
+ */
+#define OS_CHECK_SIZE(val) ARGCHECK((val) > 0 && (val) < (UINT32_MAX/2), OS_ERR_INVALID_SIZE)
+
+/*
+ * An OSAL-specific check macro for arbitrary string argument validation.
+ *
+ * First confirms string is not null using OS_CHECK_POINTER, then checks the maximum
+ * length of the string using LENGTHCHECK.
+ */
+#define OS_CHECK_STRING(str, maxlen, errcode) \
+    do                                        \
+    {                                         \
+        OS_CHECK_POINTER(str);                \
+        LENGTHCHECK(str, maxlen, errcode);    \
+    } while (0)
+
+/*
+ * An OSAL-specific check macro for object name strings.
+ *
+ * Returns OS_ERR_NAME_TOO_LONG if length is exceeded.
+ */
+#define OS_CHECK_APINAME(str) OS_CHECK_STRING(str, OS_MAX_API_NAME, OS_ERR_NAME_TOO_LONG)
+
+/*
+ * An OSAL specific argument check macro for path names
+ *
+ * Returns OS_FS_ERR_PATH_TOO_LONG if length is exceeded.
+ */
+#define OS_CHECK_PATHNAME(str) OS_CHECK_STRING(str, OS_MAX_PATH_LEN, OS_FS_ERR_PATH_TOO_LONG)
+
+#endif /* OS_SHARED_GLOBALDEFS_H  */

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for drv/hdisk/ataDrv.h */
-#ifndef _OSAL_OVERRIDE_DRV_HDISK_ATADRV_H_
-#define _OSAL_OVERRIDE_DRV_HDISK_ATADRV_H_
+#ifndef OSAL_OVERRIDE_DRV_HDISK_ATADRV_H
+#define OSAL_OVERRIDE_DRV_HDISK_ATADRV_H
 
 #include <OCS_drv_hdisk_ataDrv.h>
 #include <vxWorks.h>
@@ -31,4 +31,4 @@
 /* ----------------------------------------- */
 #define ataDevCreate OCS_ataDevCreate
 
-#endif /* _OSAL_OVERRIDE_DRV_HDISK_ATADRV_H_ */
+#endif  /* OSAL_OVERRIDE_DRV_HDISK_ATADRV_H */

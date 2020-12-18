@@ -27,8 +27,8 @@
  *          for the OS Abstraction Layer, Core OS module
  */
 
-#ifndef _osapi_
-#define _osapi_
+#ifndef OSAPI_H
+#define OSAPI_H
 
 /*
  * Note - the "osapi-os-filesys.h" file previously included these system headers
@@ -46,58 +46,9 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "common_types.h"
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-/** @defgroup OSReturnCodes OSAL Return Code Defines
- * @{
- */
-#define OS_SUCCESS                     (0)   /**< @brief Successful execution */
-#define OS_ERROR                       (-1)  /**< @brief Failed execution */
-#define OS_INVALID_POINTER             (-2)  /**< @brief Invalid pointer */
-#define OS_ERROR_ADDRESS_MISALIGNED    (-3)  /**< @brief Address misalignment */
-#define OS_ERROR_TIMEOUT               (-4)  /**< @brief Error timeout */
-#define OS_INVALID_INT_NUM             (-5)  /**< @brief Invalid Interrupt number */
-#define OS_SEM_FAILURE                 (-6)  /**< @brief Semaphore failure */
-#define OS_SEM_TIMEOUT                 (-7)  /**< @brief Semaphore timeout */
-#define OS_QUEUE_EMPTY                 (-8)  /**< @brief Queue empty */
-#define OS_QUEUE_FULL                  (-9)  /**< @brief Queue full */
-#define OS_QUEUE_TIMEOUT               (-10) /**< @brief Queue timeout */
-#define OS_QUEUE_INVALID_SIZE          (-11) /**< @brief Queue invalid size */
-#define OS_QUEUE_ID_ERROR              (-12) /**< @brief Queue ID error */
-#define OS_ERR_NAME_TOO_LONG           (-13) /**< @brief name length including null terminator greater than #OS_MAX_API_NAME */
-#define OS_ERR_NO_FREE_IDS             (-14) /**< @brief No free IDs */
-#define OS_ERR_NAME_TAKEN              (-15) /**< @brief Name taken */
-#define OS_ERR_INVALID_ID              (-16) /**< @brief Invalid ID */
-#define OS_ERR_NAME_NOT_FOUND          (-17) /**< @brief Name not found */
-#define OS_ERR_SEM_NOT_FULL            (-18) /**< @brief Semaphore not full */
-#define OS_ERR_INVALID_PRIORITY        (-19) /**< @brief Invalid priority */
-#define OS_INVALID_SEM_VALUE           (-20) /**< @brief Invalid semaphore value */
-#define OS_ERR_FILE                    (-27) /**< @brief File error */
-#define OS_ERR_NOT_IMPLEMENTED         (-28) /**< @brief Not implemented */
-#define OS_TIMER_ERR_INVALID_ARGS      (-29) /**< @brief Timer invalid arguments */
-#define OS_TIMER_ERR_TIMER_ID          (-30) /**< @brief Timer ID error */
-#define OS_TIMER_ERR_UNAVAILABLE       (-31) /**< @brief Timer unavailable */
-#define OS_TIMER_ERR_INTERNAL          (-32) /**< @brief Timer internal error */
-#define OS_ERR_OBJECT_IN_USE           (-33) /**< @brief Object in use */
-#define OS_ERR_BAD_ADDRESS             (-34) /**< @brief Bad address */
-#define OS_ERR_INCORRECT_OBJ_STATE     (-35) /**< @brief Incorrect object state */
-#define OS_ERR_INCORRECT_OBJ_TYPE      (-36) /**< @brief Incorrect object type */
-#define OS_ERR_STREAM_DISCONNECTED     (-37) /**< @brief Stream disconnected */
-#define OS_ERR_OPERATION_NOT_SUPPORTED (-38) /**< @brief Requested operation is not support on the supplied object(s) \
-                                              */
-/**@}*/
-
-/*
-** Defines for Queue Timeout parameters
-*/
-#define OS_PEND  (-1)
-#define OS_CHECK (0)
 
 #include "osapi-version.h"
 
@@ -109,11 +60,29 @@ extern "C"
 /*
 ** Include the OS API modules
 */
-#include "osapi-os-core.h"
-#include "osapi-os-filesys.h"
-#include "osapi-os-net.h"
-#include "osapi-os-loader.h"
-#include "osapi-os-timer.h"
+#include "osapi-binsem.h"
+#include "osapi-clock.h"
+#include "osapi-common.h"
+#include "osapi-constants.h"
+#include "osapi-countsem.h"
+#include "osapi-dir.h"
+#include "osapi-error.h"
+#include "osapi-file.h"
+#include "osapi-filesys.h"
+#include "osapi-heap.h"
+#include "osapi-macros.h"
+#include "osapi-idmap.h"
+#include "osapi-module.h"
+#include "osapi-mutex.h"
+#include "osapi-network.h"
+#include "osapi-printf.h"
+#include "osapi-queue.h"
+#include "osapi-select.h"
+#include "osapi-shell.h"
+#include "osapi-sockets.h"
+#include "osapi-task.h"
+#include "osapi-timebase.h"
+#include "osapi-timer.h"
 
     /*
      ******************************************************************************
@@ -121,6 +90,9 @@ extern "C"
      * OSAL API
      *****************************************************************************
      */
+
+#include "osapi-bsp.h"
+
 
 #ifdef __cplusplus
 }

@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for taskVarLib.h */
-#ifndef _OSAL_OVERRIDE_TASKVARLIB_H_
-#define _OSAL_OVERRIDE_TASKVARLIB_H_
+#ifndef OSAL_OVERRIDE_TASKVARLIB_H
+#define OSAL_OVERRIDE_TASKVARLIB_H
 
 #include <OCS_taskVarLib.h>
 #include <vxWorks.h>
@@ -31,4 +31,4 @@
 
 #define taskVarAdd OCS_taskVarAdd
 
-#endif /* _OSAL_OVERRIDE_TASKVARLIB_H_ */
+#endif  /* OSAL_OVERRIDE_TASKVARLIB_H */
