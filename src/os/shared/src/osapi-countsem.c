@@ -92,16 +92,9 @@ int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_init
     OS_object_token_t               token;
     OS_count_sem_internal_record_t *countsem;
 
-    /* Check for NULL pointers */
-    if (sem_id == NULL || sem_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    if (strlen(sem_name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
+    /* Check inputs */
+    OS_CHECK_POINTER(sem_id);
+    OS_CHECK_APINAME(sem_name);
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
     return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, sem_name, &token);
@@ -231,10 +224,9 @@ int32 OS_CountSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
 {
     int32 return_code;
 
-    if (sem_id == NULL || sem_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check inputs */
+    OS_CHECK_POINTER(sem_id);
+    OS_CHECK_POINTER(sem_name);
 
     return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, sem_name, sem_id);
 
@@ -255,11 +247,8 @@ int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
     OS_object_token_t   token;
     int32               return_code;
 
-    /* Check parameters */
-    if (count_prop == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check inputs */
+    OS_CHECK_POINTER(count_prop);
 
     memset(count_prop, 0, sizeof(OS_count_sem_prop_t));
 

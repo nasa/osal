@@ -199,15 +199,8 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
      ** Note "filename" is not checked, because in certain configurations it can be validly
      ** null.  filename is checked for NULL-ness by the OS_TranslatePath() later.
      */
-    if ((module_id == NULL) || (module_name == NULL))
-    {
-        return (OS_INVALID_POINTER);
-    }
-
-    if (strlen(module_name) >= OS_MAX_API_NAME)
-    {
-        return (OS_ERR_NAME_TOO_LONG);
-    }
+    OS_CHECK_POINTER(module_id);
+    OS_CHECK_APINAME(module_name);
 
     /*
      * Preemptively translate the filename, and hold it in a temporary buffer.
@@ -330,10 +323,7 @@ int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_prop)
     OS_object_token_t            token;
 
     /* Check parameters */
-    if (module_prop == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(module_prop);
 
     memset(module_prop, 0, sizeof(OS_module_prop_t));
 
@@ -371,10 +361,8 @@ int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
     /*
     ** Check parameters
     */
-    if ((SymbolAddress == NULL) || (SymbolName == NULL))
-    {
-        return (OS_INVALID_POINTER);
-    }
+    OS_CHECK_POINTER(SymbolAddress);
+    OS_CHECK_POINTER(SymbolName);
 
     /*
      * attempt to find the symbol in the global symbol table.
@@ -421,10 +409,8 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
     /*
     ** Check parameters
     */
-    if ((symbol_address == NULL) || (symbol_name == NULL))
-    {
-        return (OS_INVALID_POINTER);
-    }
+    OS_CHECK_POINTER(symbol_address);
+    OS_CHECK_POINTER(symbol_name);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, module_id, &token);
     if (return_code == OS_SUCCESS)
@@ -470,10 +456,7 @@ int32 OS_SymbolTableDump(const char *filename, size_t SizeLimit)
     /*
     ** Check parameters
     */
-    if (filename == NULL)
-    {
-        return (OS_INVALID_POINTER);
-    }
+    OS_CHECK_POINTER(filename);
 
     /*
      ** Translate the filename to the Host System

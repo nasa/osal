@@ -344,12 +344,12 @@ void Test_OS_ObjectIdFindByName(void)
     /*
      * Pass in a name that is beyond OS_MAX_API_NAME
      */
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), OS_MAX_API_NAME + 10);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_ObjectIdFindByName(OS_OBJECT_TYPE_OS_TASK, TaskName, &objid);
     UtAssert_True(actual == expected, "OS_ObjectFindIdByName(%s) (%ld) == OS_ERR_NAME_TOO_LONG", TaskName,
                   (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_strlen));
+    UT_ClearForceFail(UT_KEY(OCS_memchr));
 
     /*
      * Pass in a name that is actually not found

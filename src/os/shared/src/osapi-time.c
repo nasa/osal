@@ -108,27 +108,9 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
     /*
      ** Check Parameters
      */
-    if (timer_id == NULL || timer_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    /*
-     ** we don't want to allow names too long
-     ** if truncated, two names might be the same
-     */
-    if (strlen(timer_name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
-
-    /*
-     ** Verify callback parameter
-     */
-    if (callback_ptr == NULL)
-    {
-        return OS_TIMER_ERR_INVALID_ARGS;
-    }
+    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_APINAME(timer_name);
+    OS_CHECK_POINTER(callback_ptr);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -263,18 +245,10 @@ int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *accura
     ** check this stuff, also doing it here avoids unnecessarily
     ** creating and deleting a timebase object in case something is bad.
     */
-    if (timer_id == NULL || timer_name == NULL || accuracy == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    /*
-    ** Verify callback parameter
-    */
-    if (callback_ptr == NULL)
-    {
-        return OS_TIMER_ERR_INVALID_ARGS;
-    }
+    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_APINAME(timer_name);
+    OS_CHECK_POINTER(accuracy);
+    OS_CHECK_POINTER(callback_ptr);
 
     /*
      * Create our dedicated time base object to drive this timer
@@ -335,15 +309,9 @@ int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time)
 
     dedicated_timebase_id = OS_OBJECT_ID_UNDEFINED;
 
-    if (start_time >= (UINT32_MAX / 2) || interval_time >= (UINT32_MAX / 2))
-    {
-        return OS_TIMER_ERR_INVALID_ARGS;
-    }
-
-    if (start_time == 0 && interval_time == 0)
-    {
-        return OS_ERROR;
-    }
+    ARGCHECK(start_time < (UINT32_MAX / 2), OS_TIMER_ERR_INVALID_ARGS);
+    ARGCHECK(interval_time < (UINT32_MAX / 2), OS_TIMER_ERR_INVALID_ARGS);
+    ARGCHECK(start_time != 0 || interval_time != 0, OS_ERROR);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -510,10 +478,8 @@ int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name)
     int32          return_code;
     osal_objtype_t objtype;
 
-    if (timer_id == NULL || timer_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_POINTER(timer_name);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -548,10 +514,7 @@ int32 OS_TimerGetInfo(osal_id_t timer_id, OS_timer_prop_t *timer_prop)
     OS_timebase_internal_record_t *timebase;
 
     /* Check parameters */
-    if (timer_prop == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(timer_prop);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.

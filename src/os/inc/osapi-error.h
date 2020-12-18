@@ -82,8 +82,9 @@ typedef char os_err_name_t[OS_ERROR_NAME_LENGTH];
 #define OS_ERR_INCORRECT_OBJ_STATE     (-35) /**< @brief Incorrect object state */
 #define OS_ERR_INCORRECT_OBJ_TYPE      (-36) /**< @brief Incorrect object type */
 #define OS_ERR_STREAM_DISCONNECTED     (-37) /**< @brief Stream disconnected */
-#define OS_ERR_OPERATION_NOT_SUPPORTED (-38) /**< @brief Requested operation is not support on the supplied object(s) \
-                                              */
+#define OS_ERR_OPERATION_NOT_SUPPORTED (-38) /**< @brief Requested operation is not support on the supplied object(s) */
+#define OS_ERR_INVALID_SIZE            (-40) /**< @brief Invalid Size */
+
 /*
 ** Defines for File System Calls
 */

@@ -133,10 +133,7 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
     int32                        return_code;
 
     /* Check for NULL pointers */
-    if (sock_id == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(sock_id);
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
     return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, NULL, &token);
@@ -175,10 +172,7 @@ int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr)
     int32                        return_code;
 
     /* Check Parameters */
-    if (Addr == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(Addr);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sock_id, &token);
     if (return_code == OS_SUCCESS)
@@ -234,10 +228,8 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
     int32                        return_code;
 
     /* Check Parameters */
-    if (Addr == NULL || connsock_id == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(Addr);
+    OS_CHECK_POINTER(connsock_id);
 
     /*
      * Note: setting "connrecord" here avoids a false warning
@@ -344,10 +336,7 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeo
     int32                        return_code;
 
     /* Check Parameters */
-    if (Addr == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(Addr);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sock_id, &token);
     if (return_code == OS_SUCCESS)
@@ -403,10 +392,8 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockA
     int32                        return_code;
 
     /* Check Parameters */
-    if (buffer == NULL || buflen == 0)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(buffer);
+    OS_CHECK_SIZE(buflen);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, sock_id, &token);
     if (return_code == OS_SUCCESS)
@@ -448,10 +435,8 @@ int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, size_t buflen, cons
     int32                        return_code;
 
     /* Check Parameters */
-    if (buffer == NULL || buflen == 0)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(buffer);
+    OS_CHECK_SIZE(buflen);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, sock_id, &token);
     if (return_code == OS_SUCCESS)
@@ -485,10 +470,9 @@ int32 OS_SocketGetIdByName(osal_id_t *sock_id, const char *sock_name)
 {
     int32 return_code;
 
-    if (sock_id == NULL || sock_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check Parameters */
+    OS_CHECK_POINTER(sock_id);
+    OS_CHECK_POINTER(sock_name);
 
     return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, sock_name, sock_id);
 
@@ -510,10 +494,7 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
     int32               return_code;
 
     /* Check parameters */
-    if (sock_prop == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(sock_prop);
 
     memset(sock_prop, 0, sizeof(OS_socket_prop_t));
 
@@ -543,10 +524,7 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
 {
-    if (Addr == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(Addr);
 
     return OS_SocketAddrInit_Impl(Addr, Domain);
 } /* end OS_SocketAddrInit */
@@ -561,10 +539,9 @@ int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Addr)
 {
-    if (Addr == NULL || buffer == NULL || buflen == 0)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(Addr);
+    OS_CHECK_POINTER(buffer);
+    OS_CHECK_SIZE(buflen);
 
     return OS_SocketAddrToString_Impl(buffer, buflen, Addr);
 } /* end OS_SocketAddrToString */
@@ -579,10 +556,8 @@ int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Ad
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string)
 {
-    if (Addr == NULL || string == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(Addr);
+    OS_CHECK_POINTER(string);
 
     return OS_SocketAddrFromString_Impl(Addr, string);
 } /* end OS_SocketAddrFromString */
@@ -597,10 +572,8 @@ int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr)
 {
-    if (PortNum == NULL || Addr == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(Addr);
+    OS_CHECK_POINTER(PortNum);
 
     return OS_SocketAddrGetPort_Impl(PortNum, Addr);
 } /* end OS_SocketAddrGetPort */
@@ -615,10 +588,7 @@ int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum)
 {
-    if (Addr == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(Addr);
 
     return OS_SocketAddrSetPort_Impl(Addr, PortNum);
 } /* end OS_SocketAddrSetPort */

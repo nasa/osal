@@ -292,13 +292,13 @@ void TestDatagramNetworkApi(void)
     actual   = OS_SocketRecvFrom(objid, &Buf2, sizeof(Buf2), &l_addr, 100);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
-    expected = OS_INVALID_POINTER;
+    expected = OS_ERR_INVALID_SIZE;
     actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, OSAL_SIZE_C(0), &l_addr, 100);
-    UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_INVALID_POINTER", (long)actual);
+    UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
 
-    expected = OS_INVALID_POINTER;
+    expected = OS_ERR_INVALID_SIZE;
     actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, OSAL_SIZE_C(0), NULL, 100);
-    UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_INVALID_POINTER", (long)actual);
+    UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
 
     /* OS_SocketAddrToString */
     expected = OS_INVALID_POINTER;

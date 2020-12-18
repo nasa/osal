@@ -186,9 +186,9 @@ void TestTimerAddApi(void)
     actual   = OS_TimerAdd(&timer_id, "Timer", OS_OBJECT_ID_UNDEFINED, null_func, NULL);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
-    expected = OS_TIMER_ERR_INVALID_ARGS;
+    expected = OS_INVALID_POINTER;
     actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, NULL, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
+    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_ERR_NAME_TAKEN;
     actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL);

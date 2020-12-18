@@ -936,15 +936,8 @@ int32 OS_ObjectIdFindByName(osal_objtype_t idtype, const char *name, osal_id_t *
      * This is required by the file/dir/socket API since these DO allow multiple
      * instances of the same name.
      */
-    if (name == NULL)
-    {
-        return OS_ERR_NAME_NOT_FOUND;
-    }
-
-    if (strlen(name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
+    ARGCHECK(name, OS_ERR_NAME_NOT_FOUND);
+    LENGTHCHECK(name, OS_MAX_API_NAME, OS_ERR_NAME_TOO_LONG);
 
     return_code = OS_ObjectIdGetByName(OS_LOCK_MODE_GLOBAL, idtype, name, &token);
     if (return_code == OS_SUCCESS)

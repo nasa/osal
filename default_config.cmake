@@ -15,6 +15,53 @@
 #
 ##########################################################################
 
+##############################################################
+# Argument/Bug-checking options
+##############################################################
+
+# OSAL_CONFIG_BUGCHECK_DISABLE
+# ----------------------------------
+#
+# Disable/compile-out the "bugcheck" macro
+#
+# The bugcheck macro is used to validate the inputs to functions and/or
+# assert on other conditions that should _always_ be true.  If any of these
+# conditions ever evaluate as false, it indicates a bug in the code -
+# either in the OSAL or the application which invoked OSAL.
+#
+# If set FALSE (default), then the OSAL bugcheck macro will evaluate its
+# boolean conditional and generate an action if that conditional evaulates
+# false.  (The specific action to take is configured via a different
+# directive -- see OSAL_CONFIG_BUGCHECK_STRICT).
+#
+# These extra bug checks do consume a slight bit of code+data space as
+# well as some runtime CPU cycles on every call, depending on the conditions
+# being tested.
+#
+# Once the application has reached a sufficient level of stability and
+# confidence is obtained that these bug checks are not possible to be
+# triggered, this directive may be set TRUE which disables the bug checks
+# completely - rendering these statements as no-ops.
+#
+set(OSAL_CONFIG_BUGCHECK_DISABLE                FALSE)
+
+
+# OSAL_CONFIG_BUGCHECK_STRICT
+# ----------------------------------
+#
+# Select a strict implementation for the "bugcheck" macro
+#
+# If set FALSE (default), then the OSAL bugcheck macro will generate a
+# debug message and return an error code if the conditional evaluates
+# as false.  This is a soft error - the application will get the
+# error code and keep running.
+#
+# If set to TRUE, then any failure of any bugcheck macro is considered
+# fatal and will trigger an abort().  On many platforms this will
+# generate an abnormal application exit with a core file for debugging.
+#
+set(OSAL_CONFIG_BUGCHECK_STRICT                  FALSE)
+
 
 ##############################################################
 # Code/Feature Selection Options for the OSAL implementation

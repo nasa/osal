@@ -56,10 +56,7 @@ int32 OS_ShellOutputToFile(const char *Cmd, osal_id_t filedes)
     int32             return_code;
 
     /* Check Parameters */
-    if (Cmd == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(Cmd);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, filedes, &token);
     if (return_code == OS_SUCCESS)

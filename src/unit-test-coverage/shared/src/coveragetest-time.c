@@ -81,13 +81,13 @@ void Test_OS_TimerAdd(void)
     actual   = OS_TimerAdd(NULL, "UT", UT_OBJID_1, UT_TimerArgCallback, &arg);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), 2 + OS_MAX_API_NAME);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_TimerAdd(&objid, "UT", UT_OBJID_1, UT_TimerArgCallback, &arg);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_strlen));
+    UT_ClearForceFail(UT_KEY(OCS_memchr));
 
-    expected = OS_TIMER_ERR_INVALID_ARGS;
+    expected = OS_INVALID_POINTER;
     actual   = OS_TimerAdd(&objid, "UT", UT_OBJID_1, NULL, &arg);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
 
@@ -139,7 +139,7 @@ void Test_OS_TimerCreate(void)
     actual   = OS_TimerCreate(&objid, NULL, NULL, NULL);
     UtAssert_True(actual == expected, "OS_TimerSet() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    expected = OS_TIMER_ERR_INVALID_ARGS;
+    expected = OS_INVALID_POINTER;
     actual   = OS_TimerCreate(&objid, "UT", &accuracy, NULL);
     UtAssert_True(actual == expected, "OS_TimerSet() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
 
@@ -149,11 +149,11 @@ void Test_OS_TimerCreate(void)
     UtAssert_True(actual == expected, "OS_TimerCreate() (%ld) == OS_ERROR", (long)actual);
     UT_ClearForceFail(UT_KEY(OS_TimeBaseCreate));
 
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), 2 + OS_MAX_API_NAME);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_TimerCreate(&objid, "UT", &accuracy, UT_TimerCallback);
     UtAssert_True(actual == expected, "OS_TimerCreate() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_strlen));
+    UT_ClearForceFail(UT_KEY(OCS_memchr));
 }
 
 void Test_OS_TimerSet(void)

@@ -62,7 +62,7 @@ void Test_OS_CountSemCreate(void)
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
     OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate(NULL, NULL, 0, 0), OS_INVALID_POINTER);
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), 10 + OS_MAX_API_NAME);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate(&objid, "UT", 0, 0), OS_ERR_NAME_TOO_LONG);
 }
 

@@ -30,6 +30,7 @@
 
 #define EXIT_SUCCESS OCS_EXIT_SUCCESS
 #define EXIT_FAILURE OCS_EXIT_FAILURE
+#define abort        OCS_abort
 #define exit         OCS_exit
 #define strtoul      OCS_strtoul
 #define system       OCS_system

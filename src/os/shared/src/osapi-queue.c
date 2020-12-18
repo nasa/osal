@@ -87,27 +87,17 @@ int32 OS_QueueAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcount_t queue_depth, size_t data_size,
-                     uint32 flags)
+int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcount_t queue_depth, size_t data_size, uint32 flags)
 {
     int32                       return_code;
     OS_object_token_t           token;
     OS_queue_internal_record_t *queue;
 
-    if (queue_name == NULL || queue_id == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    if (strlen(queue_name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
-
-    if (queue_depth > OS_QUEUE_MAX_DEPTH)
-    {
-        return OS_QUEUE_INVALID_SIZE;
-    }
+    /* validate inputs */
+    OS_CHECK_POINTER(queue_id);
+    OS_CHECK_APINAME(queue_name);
+    OS_CHECK_SIZE(data_size);
+    ARGCHECK(queue_depth <= OS_QUEUE_MAX_DEPTH, OS_QUEUE_INVALID_SIZE);
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
     return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, queue_name, &token);
@@ -173,29 +163,25 @@ int32 OS_QueueGet(osal_id_t queue_id, void *data, size_t size, size_t *size_copi
     OS_queue_internal_record_t *queue;
 
     /* Check Parameters */
-    if (data == NULL || size_copied == NULL)
-    {
-        return_code = OS_INVALID_POINTER;
-    }
-    else
-    {
-        return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, queue_id, &token);
-        if (return_code == OS_SUCCESS)
-        {
-            queue = OS_OBJECT_TABLE_GET(OS_queue_table, token);
+    OS_CHECK_POINTER(data);
+    OS_CHECK_POINTER(size_copied);
 
-            if (size < queue->max_size)
-            {
-                /*
-                ** The buffer that the user is passing in is potentially too small
-                */
-                *size_copied = 0;
-                return_code  = OS_QUEUE_INVALID_SIZE;
-            }
-            else
-            {
-                return_code = OS_QueueGet_Impl(&token, data, size, size_copied, timeout);
-            }
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, queue_id, &token);
+    if (return_code == OS_SUCCESS)
+    {
+        queue = OS_OBJECT_TABLE_GET(OS_queue_table, token);
+
+        if (size < queue->max_size)
+        {
+            /*
+            ** The buffer that the user is passing in is potentially too small
+            */
+            *size_copied = 0;
+            return_code  = OS_QUEUE_INVALID_SIZE;
+        }
+        else
+        {
+            return_code = OS_QueueGet_Impl(&token, data, size, size_copied, timeout);
         }
     }
 
@@ -217,28 +203,23 @@ int32 OS_QueuePut(osal_id_t queue_id, const void *data, size_t size, uint32 flag
     OS_queue_internal_record_t *queue;
 
     /* Check Parameters */
-    if (data == NULL)
-    {
-        return_code = OS_INVALID_POINTER;
-    }
-    else
-    {
-        return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, queue_id, &token);
-        if (return_code == OS_SUCCESS)
-        {
-            queue = OS_OBJECT_TABLE_GET(OS_queue_table, token);
+    OS_CHECK_POINTER(data);
 
-            if (size > queue->max_size)
-            {
-                /*
-                ** The buffer that the user is passing in is too large
-                */
-                return_code = OS_QUEUE_INVALID_SIZE;
-            }
-            else
-            {
-                return_code = OS_QueuePut_Impl(&token, data, size, flags);
-            }
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, queue_id, &token);
+    if (return_code == OS_SUCCESS)
+    {
+        queue = OS_OBJECT_TABLE_GET(OS_queue_table, token);
+
+        if (size > queue->max_size)
+        {
+            /*
+            ** The buffer that the user is passing in is too large
+            */
+            return_code = OS_QUEUE_INVALID_SIZE;
+        }
+        else
+        {
+            return_code = OS_QueuePut_Impl(&token, data, size, flags);
         }
     }
 
@@ -257,10 +238,9 @@ int32 OS_QueueGetIdByName(osal_id_t *queue_id, const char *queue_name)
 {
     int32 return_code;
 
-    if (queue_id == NULL || queue_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check Parameters */
+    OS_CHECK_POINTER(queue_id);
+    OS_CHECK_POINTER(queue_name);
 
     return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, queue_name, queue_id);
 
@@ -283,10 +263,7 @@ int32 OS_QueueGetInfo(osal_id_t queue_id, OS_queue_prop_t *queue_prop)
     OS_object_token_t   token;
 
     /* Check parameters */
-    if (queue_prop == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(queue_prop);
 
     memset(queue_prop, 0, sizeof(OS_queue_prop_t));
 
