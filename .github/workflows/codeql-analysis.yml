@@ -36,11 +36,119 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      
+  build-cfs:
+    name: Build
+    runs-on: ubuntu-18.04
+
+    strategy:
+      matrix:
+        buildtype: [debug, release]
+
+    # Set the type of machine to run on
+    env:
+      BUILDTYPE: ${{ matrix.buildtype }}
+
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      # Setup the build system
+      - name: Copy Files
+        run: |
+          cp ./cfe/cmake/Makefile.sample Makefile
+          cp -r ./cfe/cmake/sample_defs sample_defs
+      # Setup the build system
+      - name: Make Prep
+        run: make prep
+
+      - name: Make
+        run: make
+
+  test-cfs:
+    name: Test
+    needs: build-cfs
+    runs-on: ubuntu-18.04
+
+    strategy:
+      matrix:
+        buildtype: [debug, release]
+
+    # Set the type of machine to run on
+    env:
+      BUILDTYPE: ${{ matrix.buildtype }}
+
+    steps:
+      - name: Install Dependencies
+        run: sudo apt-get install lcov -y
+
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      # Setup the build system
+      - name: Copy Files
+        run: |
+          cp ./cfe/cmake/Makefile.sample Makefile
+          cp -r ./cfe/cmake/sample_defs sample_defs
+      # Setup the build system
+      - name: Make
+        run: make
+
+      - name: Run Tests
+        run: make test
+
+      - name: Check Coverage
+        run: make lcov
+
+  run-cfs:
+    name: Run
+    needs: build-cfs
+    runs-on: ubuntu-18.04
+
+    strategy:
+      matrix:
+        buildtype: [debug, release]
+
+    # Set the type of machine to run on
+    env:
+      BUILDTYPE: ${{ matrix.buildtype }}
+
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      # Setup the build system
+      - name: Copy sample_defs
+        run: |
+          cp ./cfe/cmake/Makefile.sample Makefile
+          cp -r ./cfe/cmake/sample_defs sample_defs
+      # Setup the build system
+      - name: Make Install
+        run: make install
+
+      - name: List cpu1
+        run: ls build/exe/cpu1/
+
+      - name: Run cFS
+        run: |
+          ./core-cpu1 > cFS_startup_cpu1.txt &
+          sleep 30
+          ../host/cmdUtil --endian=LE --pktid=0x1806 --cmdcode=2 --half=0x0002
+        working-directory: ./build/exe/cpu1/
 
     # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
-      with:
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
         languages: ${{ matrix.language }}
         # If you wish to specify custom queries, you can do so here or in a config file.
         # By default, queries listed here will override any specified in a config file.
@@ -49,8 +157,8 @@ jobs:
 
     # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v1
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v1
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 https://git.io/JvXDl
@@ -63,5 +171,5 @@ jobs:
     #   make bootstrap
     #   make release
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
