@@ -206,6 +206,7 @@ static bool OS_Posix_GetSchedulerParams(int sched_policy, POSIX_PriorityLimits_t
 int32 OS_Posix_TaskAPI_Impl_Init(void)
 {
     int                    ret;
+    long                   ret_long;
     int                    sig;
     struct sched_param     sched_param;
     int                    sched_policy;
@@ -417,7 +418,13 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
     }
 #endif
 
-    POSIX_GlobalVars.PageSize = sysconf(_SC_PAGESIZE);
+    ret_long = sysconf(_SC_PAGESIZE);
+    if (ret_long < 0)
+    {
+       OS_DEBUG("Could not get page size via sysconf: %s\n", strerror(errno));
+       return OS_ERROR;
+    }
+    POSIX_GlobalVars.PageSize = ret_long;
 
     return OS_SUCCESS;
 } /* end OS_Posix_TaskAPI_Impl_Init */
