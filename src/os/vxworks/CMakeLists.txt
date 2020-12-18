@@ -14,7 +14,7 @@ set(VXWORKS_BASE_SRCLIST
     src/os-impl-console.c
     src/os-impl-countsem.c
     src/os-impl-errors.c
-    src/os-impl-dirs.c
+    src/os-impl-dirs-globals.c
     src/os-impl-files.c
     src/os-impl-filesys.c
     src/os-impl-heap.c
@@ -45,6 +45,15 @@ else ()
     )
 endif ()
 
+if (CMAKE_SYSTEM_VERSION VERSION_GREATER_EQUAL 7.0)
+    list(APPEND VXWORKS_IMPL_SRCLIST
+        ../portable/os-impl-posix-dirs.c
+    )
+else ()
+    list(APPEND VXWORKS_IMPL_SRCLIST
+        src/os-impl-dirs.c
+    )
+endif ()
 # If some form of module loading is configured,
 # then build the module loader
 if (OSAL_CONFIG_INCLUDE_DYNAMIC_LOADER)
