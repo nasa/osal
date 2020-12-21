@@ -51,12 +51,6 @@
                                     TYPEDEFS
 ****************************************************************************************/
 
-typedef struct
-{
-    void *const mem;
-    SEM_ID      vxid;
-} VxWorks_GlobalMutex_t;
-
 /*
  * Union to facilitate passing an osal_id_t through
  * a function/api designed to take an "int"
@@ -72,8 +66,6 @@ typedef union
 /****************************************************************************************
                                    GLOBAL DATA
 ****************************************************************************************/
-
-extern VxWorks_GlobalMutex_t VX_MUTEX_TABLE[];
 
 /****************************************************************************************
                        VXWORKS IMPLEMENTATION FUNCTION PROTOTYPES

@@ -56,6 +56,13 @@
 #include "os-shared-idmap.h"
 #include "os-shared-task.h"
 
+/*
+ * A fixed nonzero value to put into the upper 8 bits
+ * of lock keys.
+ */
+#define OS_LOCK_KEY_FIXED_VALUE 0x4D000000
+#define OS_LOCK_KEY_INVALID     ((osal_key_t) {0})
+
 typedef enum
 {
     OS_TASK_BASE         = 0,
@@ -97,8 +104,12 @@ typedef struct
     /* Keep track of the last successfully-issued object ID of each type */
     osal_id_t last_id_issued;
 
-    /* The last task to lock/own this global table */
-    osal_id_t table_owner;
+    /* The number of individual transactions (lock/unlock cycles) on this type */
+    uint32 transaction_count;
+
+    /* The key required to unlock this table */
+    osal_key_t owner_key;
+
 } OS_objtype_state_t;
 
 OS_objtype_state_t OS_objtype_state[OS_OBJECT_TYPE_USER];
@@ -344,7 +355,7 @@ int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype
 
     if (lock_mode != OS_LOCK_MODE_NONE)
     {
-        OS_Lock_Global(idtype);
+        OS_Lock_Global(token);
     }
 
     return OS_SUCCESS;
@@ -363,7 +374,7 @@ void OS_ObjectIdTransactionCancel(OS_object_token_t *token)
 {
     if (token->lock_mode != OS_LOCK_MODE_NONE)
     {
-        OS_Unlock_Global(token->obj_type);
+        OS_Unlock_Global(token);
         token->lock_mode = OS_LOCK_MODE_NONE;
     }
 }
@@ -490,7 +501,7 @@ int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
         /*
          * Call the impl layer to wait for some sort of change to occur.
          */
-        OS_WaitForStateChange(token->obj_type, attempts);
+        OS_WaitForStateChange(token, attempts);
     }
 
     /*
@@ -514,7 +525,7 @@ int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
          */
         if (return_code == OS_SUCCESS && token->lock_mode == OS_LOCK_MODE_REFCOUNT)
         {
-            OS_Unlock_Global(token->obj_type);
+            OS_Unlock_Global(token);
         }
     }
 
@@ -671,87 +682,27 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
 
     Purpose: Locks the global table identified by "idtype"
  ------------------------------------------------------------------*/
-void OS_Lock_Global(osal_objtype_t idtype)
+void OS_Lock_Global(OS_object_token_t *token)
 {
-    int32               return_code;
     osal_id_t           self_task_id;
     OS_objtype_state_t *objtype;
 
-    if (idtype < OS_OBJECT_TYPE_USER)
+    if (token->obj_type < OS_OBJECT_TYPE_USER && token->lock_mode != OS_LOCK_MODE_NONE)
     {
-        objtype      = &OS_objtype_state[idtype];
+        objtype      = &OS_objtype_state[token->obj_type];
         self_task_id = OS_TaskGetId_Impl();
 
-        return_code = OS_Lock_Global_Impl(idtype);
-        if (return_code == OS_SUCCESS)
-        {
-            /*
-             * Track ownership of this table.  It should only be owned by one
-             * task at a time, and this aids in recovery if the owning task is
-             * deleted or experiences an exception causing it to not be freed.
-             *
-             * This is done after successfully locking, so this has exclusive access
-             * to the state object.
-             */
-            if (!OS_ObjectIdDefined(self_task_id))
-            {
-                /*
-                 * This just means the calling context is not an OSAL-created task.
-                 * This is not necessarily an error, but it should be tracked.
-                 * Also note that the root/initial task also does not have an ID.
-                 */
-                self_task_id = OS_OBJECT_ID_RESERVED; /* nonzero, but also won't alias a known task */
-            }
-
-            if (OS_ObjectIdDefined(objtype->table_owner))
-            {
-                /* this is almost certainly a bug */
-                OS_DEBUG("ERROR: global %u acquired by task 0x%lx when already owned by task 0x%lx\n",
-                         (unsigned int)idtype, OS_ObjectIdToInteger(self_task_id),
-                         OS_ObjectIdToInteger(objtype->table_owner));
-            }
-            else
-            {
-                objtype->table_owner = self_task_id;
-            }
-        }
-    }
-    else
-    {
-        return_code = OS_ERR_INCORRECT_OBJ_TYPE;
-    }
-
-    if (return_code != OS_SUCCESS)
-    {
-        OS_DEBUG("ERROR: unable to lock global %u, error=%d\n", (unsigned int)idtype, (int)return_code);
-    }
-}
-
-/*----------------------------------------------------------------
-   Function: OS_Unlock_Global
-
-    Purpose: Unlocks the global table identified by "idtype"
- ------------------------------------------------------------------*/
-void OS_Unlock_Global(osal_objtype_t idtype)
-{
-    int32               return_code;
-    osal_id_t           self_task_id;
-    OS_objtype_state_t *objtype;
-
-    if (idtype < OS_OBJECT_TYPE_USER)
-    {
-        objtype      = &OS_objtype_state[idtype];
-        self_task_id = OS_TaskGetId_Impl();
+        OS_Lock_Global_Impl(token->obj_type);
 
         /*
-         * Un-track ownership of this table.  It should only be owned by one
+         * Track ownership of this table.  It should only be owned by one
          * task at a time, and this aids in recovery if the owning task is
          * deleted or experiences an exception causing it to not be freed.
          *
-         * This is done before unlocking, while this has exclusive access
+         * This is done after successfully locking, so this has exclusive access
          * to the state object.
          */
-        if (!OS_ObjectIdDefined(self_task_id))
+        if (!OS_ObjectIdIsValid(self_task_id))
         {
             /*
              * This just means the calling context is not an OSAL-created task.
@@ -761,27 +712,73 @@ void OS_Unlock_Global(osal_objtype_t idtype)
             self_task_id = OS_OBJECT_ID_RESERVED; /* nonzero, but also won't alias a known task */
         }
 
-        if (!OS_ObjectIdEqual(objtype->table_owner, self_task_id))
+        /*
+         * The key value is computed with fixed/nonzero flag bits combined
+         * with the lower 24 bits of the task ID xor'ed with transaction id.
+         * This makes it different for every operation, and different depending
+         * on what task is calling the function.
+         */
+        token->lock_key.key_value = OS_LOCK_KEY_FIXED_VALUE |
+                                    ((OS_ObjectIdToInteger(self_task_id) ^ objtype->transaction_count) & 0xFFFFFF);
+
+        ++objtype->transaction_count;
+
+        if (objtype->owner_key.key_value != 0)
         {
             /* this is almost certainly a bug */
-            OS_DEBUG("ERROR: global %u released by task 0x%lx when owned by task 0x%lx\n", (unsigned int)idtype,
-                     OS_ObjectIdToInteger(self_task_id), OS_ObjectIdToInteger(objtype->table_owner));
+            OS_DEBUG("ERROR: global %u acquired by task 0x%lx when already assigned key 0x%lx\n", (unsigned int)token->obj_type,
+                     OS_ObjectIdToInteger(self_task_id), (unsigned long)objtype->owner_key.key_value);
         }
         else
         {
-            objtype->table_owner = OS_OBJECT_ID_UNDEFINED;
+            objtype->owner_key = token->lock_key;
         }
-
-        return_code = OS_Unlock_Global_Impl(idtype);
     }
     else
     {
-        return_code = OS_ERR_INCORRECT_OBJ_TYPE;
+        OS_DEBUG("ERROR: cannot lock global %u for mode %u\n",
+            (unsigned int)token->obj_type, (unsigned int)token->lock_mode);
     }
+}
 
-    if (return_code != OS_SUCCESS)
+/*----------------------------------------------------------------
+   Function: OS_Unlock_Global
+
+    Purpose: Unlocks the global table identified by "idtype"
+ ------------------------------------------------------------------*/
+void OS_Unlock_Global(OS_object_token_t *token)
+{
+    OS_objtype_state_t *objtype;
+
+    if (token->obj_type < OS_OBJECT_TYPE_USER && token->lock_mode != OS_LOCK_MODE_NONE)
     {
-        OS_DEBUG("ERROR: unable to unlock global %u, error=%d\n", (unsigned int)idtype, (int)return_code);
+        objtype = &OS_objtype_state[token->obj_type];
+
+        /*
+         * Un-track ownership of this table.  It should only be owned by one
+         * task at a time, and this aids in recovery if the owning task is
+         * deleted or experiences an exception causing it to not be freed.
+         *
+         * This is done before unlocking, while this has exclusive access
+         * to the state object.
+         */
+        if ((objtype->owner_key.key_value & 0xFF000000) != OS_LOCK_KEY_FIXED_VALUE ||
+            objtype->owner_key.key_value != token->lock_key.key_value)
+        {
+            /* this is almost certainly a bug */
+            OS_DEBUG("ERROR: global %u released using mismatched key=0x%lx expected=0x%lx\n", (unsigned int)token->obj_type,
+                     (unsigned long)token->lock_key.key_value, (unsigned long)objtype->owner_key.key_value);
+        }
+
+        objtype->owner_key = OS_LOCK_KEY_INVALID;
+        token->lock_key    = OS_LOCK_KEY_INVALID;
+
+        OS_Unlock_Global_Impl(token->obj_type);
+    }
+    else
+    {
+        OS_DEBUG("ERROR: cannot unlock global %u for mode %u\n",
+            (unsigned int)token->obj_type, (unsigned int)token->lock_mode);
     }
 }
 
@@ -792,32 +789,39 @@ void OS_Unlock_Global(osal_objtype_t idtype)
  *  Purpose: Local helper routine, not part of OSAL API.
  *  Waits for a change in the global table identified by "idtype"
  *
+ *  NOTE: this must be called while the table is _LOCKED_
+ *  The "OS_WaitForStateChange_Impl" function should unlock + relock
+ *
  *-----------------------------------------------------------------*/
-void OS_WaitForStateChange(osal_objtype_t idtype, uint32 attempts)
+void OS_WaitForStateChange(OS_object_token_t *token, uint32 attempts)
 {
-    osal_id_t           saved_owner_id;
+    osal_key_t          saved_unlock_key;
     OS_objtype_state_t *objtype;
 
-    if (idtype < OS_OBJECT_TYPE_USER)
-    {
-        objtype        = &OS_objtype_state[idtype];
-        saved_owner_id = objtype->table_owner;
+    /*
+     * This needs to release the lock, to allow other
+     * tasks to make a change to the table.  But to avoid
+     * ownership warnings the key must also be temporarily
+     * cleared too, and restored after waiting.
+     */
 
-        /* temporarily release the table */
-        objtype->table_owner = OS_OBJECT_ID_UNDEFINED;
+    objtype          = &OS_objtype_state[token->obj_type];
+    saved_unlock_key = objtype->owner_key;
 
-        /*
-         * The implementation layer takes care of the actual unlock + wait.
-         * This permits use of condition variables where these two actions
-         * are done atomically.
-         */
-        OS_WaitForStateChange_Impl(idtype, attempts);
+    /* temporarily release the table */
+    objtype->owner_key = OS_LOCK_KEY_INVALID;
 
-        /*
-         * After return, this task owns the table again
-         */
-        objtype->table_owner = saved_owner_id;
-    }
+    /*
+        * The implementation layer takes care of the actual unlock + wait.
+        * This permits use of condition variables where these two actions
+        * are done atomically.
+        */
+    OS_WaitForStateChange_Impl(token->obj_type, attempts);
+
+    /*
+        * After return, this task owns the table again
+        */
+    objtype->owner_key = saved_unlock_key;
 }
 
 /*----------------------------------------------------------------
@@ -1084,7 +1088,7 @@ void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id)
     /* re-acquire global table lock to adjust refcount */
     if (token->lock_mode == OS_LOCK_MODE_REFCOUNT)
     {
-        OS_Lock_Global(token->obj_type);
+        OS_Lock_Global(token);
 
         if (record->refcount > 0)
         {
@@ -1106,7 +1110,7 @@ void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id)
     }
 
     /* always unlock (this also covers OS_LOCK_MODE_GLOBAL case) */
-    OS_Unlock_Global(token->obj_type);
+    OS_Unlock_Global(token);
 
     /*
      * Setting to "NONE" indicates that this token has been
@@ -1325,9 +1329,9 @@ int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal
      * This needs to temporarily unlock the global,
      * call the handler function, then re-lock.
      */
-    OS_Unlock_Global(iter->token.obj_type);
+    OS_Unlock_Global(&iter->token);
     status = func(OS_ObjectIdFromToken(&iter->token), iter->arg);
-    OS_Lock_Global(iter->token.obj_type);
+    OS_Lock_Global(&iter->token);
 
     return status;
 }

@@ -85,21 +85,53 @@ void Test_OS_LockUnlockGlobal(void)
      * void OS_Lock_Global(uint32 idtype)
      * void OS_Unlock_Global(uint32 idtype)
      */
+    OS_object_token_t token;
+
+    memset(&token, 0, sizeof(token));
+
+    token.obj_type = OS_OBJECT_TYPE_OS_COUNTSEM;
+    token.lock_mode = OS_LOCK_MODE_GLOBAL;
 
     /*
      * As these have no return codes, these tests
      * exist to get coverage of the paths.
      */
-    OS_Lock_Global(OS_OBJECT_TYPE_OS_COUNTSEM);
-    OS_Unlock_Global(OS_OBJECT_TYPE_OS_COUNTSEM);
-    OS_Lock_Global(0);
-    OS_Unlock_Global(0);
-    OS_Lock_Global(55555);
-    OS_Unlock_Global(55555);
+    OS_Lock_Global(&token);
+    OS_Unlock_Global(&token);
+
+    token.obj_type = OS_OBJECT_TYPE_UNDEFINED;
+
+    OS_Lock_Global(&token);
+    OS_Unlock_Global(&token);
+
+    token.obj_type = 55555;
+
+    OS_Lock_Global(&token);
+    OS_Unlock_Global(&token);
 
     UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId), 0);
-    OS_Lock_Global(OS_OBJECT_TYPE_OS_BINSEM);
-    OS_Unlock_Global(OS_OBJECT_TYPE_OS_BINSEM);
+    token.obj_type = OS_OBJECT_TYPE_OS_BINSEM;
+
+    OS_Lock_Global(&token);
+    OS_Unlock_Global(&token);
+
+    UT_ResetState(UT_KEY(OS_TaskGetId));
+
+    /*
+     * Execute paths where the incorrect patten is followed,
+     * such as unlocking from a different task than the lock.
+     * These trigger OS_DEBUG messages, if compiled in.
+     *
+     * Start by locking twice in a row
+     */
+    OS_Lock_Global(&token);
+    OS_Lock_Global(&token);
+
+    /*
+     * Next unlock with wrong/corrupt/bad key
+     */
+    token.lock_key.key_value ^= 0x11111111;
+    OS_Unlock_Global(&token);
 }
 
 void Test_OS_ObjectIdConvertToken(void)

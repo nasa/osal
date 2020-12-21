@@ -59,11 +59,21 @@ typedef enum
 } OS_lock_mode_t;
 
 /*
+ * A unique key value issued when obtaining a table lock, based on a
+ * the a combination of the requesting task ID and a transaction ID
+ */
+typedef struct
+{
+    uint32 key_value;
+} osal_key_t;
+
+/*
  * Actual (non-abstract) definition of "OS_object_token_t"
  */
 struct OS_object_token
 {
     OS_lock_mode_t lock_mode;
+    osal_key_t     lock_key;
     osal_objtype_t obj_type;
     osal_index_t   obj_idx;
     osal_id_t      obj_id;
@@ -148,7 +158,7 @@ int32 OS_ObjectIdInit(void);
 
    Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-void OS_Lock_Global(osal_objtype_t idtype);
+void OS_Lock_Global(OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_Lock_Global
@@ -157,7 +167,7 @@ void OS_Lock_Global(osal_objtype_t idtype);
 
    Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_Lock_Global_Impl(osal_objtype_t idtype);
+void OS_Lock_Global_Impl(osal_objtype_t idtype);
 
 /*----------------------------------------------------------------
    Function: OS_Unlock_Global
@@ -166,7 +176,7 @@ int32 OS_Lock_Global_Impl(osal_objtype_t idtype);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-void OS_Unlock_Global(osal_objtype_t idtype);
+void OS_Unlock_Global(OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_Unlock_Global
@@ -175,7 +185,7 @@ void OS_Unlock_Global(osal_objtype_t idtype);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_Unlock_Global_Impl(osal_objtype_t idtype);
+void OS_Unlock_Global_Impl(osal_objtype_t idtype);
 
 /*----------------------------------------------------------------
 
@@ -188,7 +198,24 @@ int32 OS_Unlock_Global_Impl(osal_objtype_t idtype);
    before returning from this function.
 
   -----------------------------------------------------------------*/
-void OS_WaitForStateChange(osal_objtype_t idtype, uint32 attempts);
+void OS_WaitForStateChange(OS_object_token_t *token, uint32 attempts);
+
+/*----------------------------------------------------------------
+
+   Function: OS_WaitForStateChange_Impl
+
+   Purpose: Block the caller until some sort of change event
+   has occurred for the given object type, such as a record changing
+   state i.e. the acquisition or release of a lock/refcount from
+   another thread.
+
+   It is not guaranteed what, if any, state change has actually
+   occured when this function returns.  This may be implement as
+   a simple OS_TaskDelay().
+
+ ------------------------------------------------------------------*/
+void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts);
+
 
 /*
    Function prototypes for routines implemented in common layers but private to OSAL

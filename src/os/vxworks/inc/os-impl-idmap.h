@@ -19,30 +19,26 @@
  */
 
 /**
- * \file     osapi-idmap-impl-stubs.c
- * \ingroup  ut-stubs
+ * \file     os-impl-idmap.h
+ * \ingroup  vxworks
  * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
+#ifndef OS_IMPL_IDMAP_H
+#define OS_IMPL_IDMAP_H
 
-#include "utstubs.h"
+#include "osconfig.h"
+#include "osapi-idmap.h"
+#include <semLib.h>
 
-#include "os-shared-idmap.h"
-
-/*
- * Table locking and unlocking for global objects can be done at the shared code
- * layer but the actual implementation is OS-specific
- */
-void OS_Lock_Global_Impl(osal_objtype_t idtype)
+typedef struct
 {
-    UT_DEFAULT_IMPL(OS_Lock_Global_Impl);
-}
-void OS_Unlock_Global_Impl(osal_objtype_t idtype)
-{
-    UT_DEFAULT_IMPL(OS_Unlock_Global_Impl);
-}
+    void *const mem;
+    SEM_ID      vxid;
+} OS_impl_objtype_lock_t;
+
+/* Tables where the lock state information is stored */
+extern OS_impl_objtype_lock_t *const OS_impl_objtype_lock_table[OS_OBJECT_TYPE_USER];
+
+#endif  /* OS_IMPL_IDMAP_H  */

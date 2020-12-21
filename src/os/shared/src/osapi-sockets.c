@@ -295,7 +295,7 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
 
     if (conn_record != NULL)
     {
-        OS_Lock_Global(LOCAL_OBJID_TYPE);
+        OS_Lock_Global(&conn_token);
 
         if (return_code == OS_SUCCESS)
         {
@@ -312,7 +312,7 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
 
         /* Decrement both ref counters that were increased earlier */
         --conn_record->refcount;
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_Unlock_Global(&conn_token);
     }
 
     OS_ObjectIdRelease(&sock_token);
@@ -365,13 +365,13 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeo
     {
         return_code = OS_SocketConnect_Impl(&token, Addr, Timeout);
 
-        OS_Lock_Global(LOCAL_OBJID_TYPE);
+        OS_Lock_Global(&token);
         if (return_code == OS_SUCCESS)
         {
             stream->stream_state |= OS_STREAM_STATE_CONNECTED | OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
         }
         --record->refcount;
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_Unlock_Global(&token);
     }
 
     return return_code;
