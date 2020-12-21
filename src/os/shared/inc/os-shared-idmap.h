@@ -228,6 +228,26 @@ static inline void OS_ObjectIdCompose_Impl(osal_objtype_t idtype, uint32 idseria
     *result = OS_ObjectIdFromInteger((idtype << OS_OBJECT_TYPE_SHIFT) | idserial);
 }
 
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Check if an object ID represents a valid/active value.
+ *
+ * This tests that the ID value is within the range specifically used by
+ * valid OSAL IDs. This is smaller than the set of defined IDs.
+ *
+ * For example, the value of OS_OBJECT_ID_RESERVED is defined but not valid.
+ * So while OS_ObjectIdDefined() will match entries being actively created or
+ * deleted, OS_ObjectIdIsValid() will not.
+ *
+ * @param[in]   object_id The object ID
+ * @returns     true if table entry is valid
+ */
+static inline bool OS_ObjectIdIsValid(osal_id_t object_id)
+{
+    osal_objtype_t objtype = OS_ObjectIdToType_Impl(object_id);
+    return (objtype > OS_OBJECT_TYPE_UNDEFINED && objtype < OS_OBJECT_TYPE_USER);
+}
+
 /*----------------------------------------------------------------
    Function: OS_GetMaxForObjectType
 
@@ -488,7 +508,7 @@ static inline const OS_object_token_t *OS_ObjectIdIteratorRef(OS_object_iter_t *
 
     Returns: None
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t));
+int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t,void*));
 
 /*
  * Internal helper functions

@@ -68,6 +68,16 @@ enum
 
 OS_stream_internal_record_t OS_stream_table[OS_MAX_NUM_OPEN_FILES];
 
+/*----------------------------------------------------------------
+ *
+ * Helper function to close a file from an iterator
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_FileIteratorClose(osal_id_t filedes, void *arg)
+{
+    return OS_close(filedes);
+}
+
 /****************************************************************************************
                                   FILE API
  ***************************************************************************************/
@@ -669,7 +679,7 @@ int32 OS_CloseFileByName(const char *Filename)
         if (stream->socket_domain == OS_SocketDomain_INVALID && (strcmp(stream->stream_name, Filename) == 0))
         {
             /* call OS_close() on the entry referred to by the iterator */
-            close_code = OS_ObjectIdIteratorProcessEntry(&iter, OS_close);
+            close_code = OS_ObjectIdIteratorProcessEntry(&iter, OS_FileIteratorClose);
 
             if (return_code == OS_FS_ERR_PATH_INVALID || close_code != OS_SUCCESS)
             {
@@ -705,7 +715,7 @@ int32 OS_CloseAllFiles(void)
     while (OS_ObjectIdIteratorGetNext(&iter))
     {
         /* call OS_close() on the entry referred to by the iterator */
-        close_code = OS_ObjectIdIteratorProcessEntry(&iter, OS_close);
+        close_code = OS_ObjectIdIteratorProcessEntry(&iter, OS_FileIteratorClose);
         if (close_code != OS_SUCCESS)
         {
             return_code = close_code;

@@ -74,6 +74,18 @@ typedef enum
 } OS_ObjectIndex_t;
 
 /*
+ * A structure containing the user-specified
+ * details of a "foreach" iteration request
+ */
+typedef struct
+{
+    osal_id_t        creator_id;
+    OS_ArgCallback_t user_callback;
+    void *           user_arg;
+} OS_creator_filter_t;
+
+
+/*
  * Global ID storage tables
  */
 
@@ -212,6 +224,44 @@ uint32 OS_GetBaseForObjectType(osal_objtype_t idtype)
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_ForEachFilterCreator
+ *
+ *  Purpose: Local helper routine, not part of OSAL API.
+ *           Determine if the object is a match for "foreach" operations
+ *
+ *-----------------------------------------------------------------*/
+bool OS_ForEachFilterCreator(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
+{
+    OS_creator_filter_t *filter = ref;
+
+    /*
+     * Check if the obj_id is both valid and matches
+     * the specified creator_id
+     */
+    return (OS_ObjectIdIsValid(obj->active_id) && (OS_ObjectIdEqual(filter->creator_id, OS_OBJECT_CREATOR_ANY) ||
+                                                   OS_ObjectIdEqual(obj->creator, filter->creator_id)));
+}
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_ForEachDoCallback
+ *
+ *  Purpose: Local helper routine, not part of OSAL API.
+ *           Invoke the user-specified callback routine
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_ForEachDoCallback(osal_id_t obj_id, void *ref)
+{
+    OS_creator_filter_t *filter = ref;
+
+    /* Just invoke the user callback */
+    filter->user_callback(obj_id, filter->user_arg);
+    return OS_SUCCESS;
+}
+
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_ObjectIdGlobalFromToken
  *
  *  Purpose: Local helper routine, not part of OSAL API.
@@ -279,19 +329,23 @@ int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
 
-    if (idtype >= OS_OBJECT_TYPE_USER)
+    /*
+     * Transactions cannot be started on an object type for which
+     * there are no actual objects
+     */
+    if (OS_GetMaxForObjectType(idtype) == 0)
     {
         return OS_ERR_INCORRECT_OBJ_TYPE;
-    }
-
-    if (lock_mode != OS_LOCK_MODE_NONE)
-    {
-        OS_Lock_Global(idtype);
     }
 
     token->lock_mode = lock_mode;
     token->obj_type  = idtype;
     token->obj_idx   = OSAL_INDEX_C(-1);
+
+    if (lock_mode != OS_LOCK_MODE_NONE)
+    {
+        OS_Lock_Global(idtype);
+    }
 
     return OS_SUCCESS;
 
@@ -1263,7 +1317,7 @@ void OS_ObjectIdIteratorDestroy(OS_object_iter_t *iter)
 
     Purpose: Call a handler function on an iterator object ID
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t))
+int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t, void *))
 {
     int32 status;
 
@@ -1272,7 +1326,7 @@ int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal
      * call the handler function, then re-lock.
      */
     OS_Unlock_Global(iter->token.obj_type);
-    status = func(iter->token.obj_id);
+    status = func(OS_ObjectIdFromToken(&iter->token), iter->arg);
     OS_Lock_Global(iter->token.obj_type);
 
     return status;
@@ -1324,55 +1378,23 @@ void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void 
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-void OS_ForEachObjectOfType(osal_objtype_t idtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr,
-                            void *callback_arg)
+void OS_ForEachObjectOfType(osal_objtype_t idtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
 {
-    osal_index_t obj_index;
-    uint32       obj_max;
-    osal_id_t    obj_id;
+    OS_object_iter_t    iter;
+    OS_creator_filter_t filter;
 
-    obj_max = OS_GetMaxForObjectType(idtype);
-    if (obj_max > 0)
+    filter.creator_id    = creator_id;
+    filter.user_callback = callback_ptr;
+    filter.user_arg      = callback_arg;
+
+    if (OS_ObjectIdIteratorInit(OS_ForEachFilterCreator, &filter, idtype, &iter) == OS_SUCCESS)
     {
-        obj_index = OS_GetBaseForObjectType(idtype);
-        OS_Lock_Global(idtype);
-        while (obj_max > 0)
+        while (OS_ObjectIdIteratorGetNext(&iter))
         {
-            /*
-             * Check if the obj_id is both valid and matches
-             * the specified creator_id
-             */
-            obj_id = OS_common_table[obj_index].active_id;
-            if (OS_ObjectIdDefined(obj_id) && !OS_ObjectIdEqual(creator_id, OS_OBJECT_CREATOR_ANY) &&
-                !OS_ObjectIdEqual(OS_common_table[obj_index].creator, creator_id))
-            {
-                /* valid object but not a creator match -
-                 * skip the callback for this object */
-                obj_id = OS_OBJECT_ID_UNDEFINED;
-            }
-
-            if (OS_ObjectIdDefined(obj_id))
-            {
-                /*
-                 * Invoke Callback for the object, which must be done
-                 * while the global table is unlocked.
-                 *
-                 * Note this means by the time the callback is done,
-                 * the object could have been deleted by another task.
-                 *
-                 * But this must not invoke a callback with a locked table,
-                 * as the callback function might call other OSAL functions,
-                 * which could deadlock.
-                 */
-                OS_Unlock_Global(idtype);
-                (*callback_ptr)(obj_id, callback_arg);
-                OS_Lock_Global(idtype);
-            }
-
-            ++obj_index;
-            --obj_max;
+            OS_ObjectIdIteratorProcessEntry(&iter, OS_ForEachDoCallback);
         }
-        OS_Unlock_Global(idtype);
+
+        OS_ObjectIdIteratorDestroy(&iter);
     }
 } /* end OS_ForEachObjectOfType */
 

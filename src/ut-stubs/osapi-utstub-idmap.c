@@ -573,7 +573,7 @@ void OS_ObjectIdIteratorDestroy(OS_object_iter_t *iter)
     UT_DEFAULT_IMPL(OS_ObjectIdIteratorDestroy);
 }
 
-int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t))
+int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t, void*))
 {
     int32 Status;
 
