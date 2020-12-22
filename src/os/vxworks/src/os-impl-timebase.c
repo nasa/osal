@@ -218,8 +218,10 @@ void OS_VxWorks_RegisterTimer(osal_id_t obj_id)
     OS_object_token_t                   token;
     struct sigevent                     evp;
     int                                 status;
+	int32 retcode;
 
-    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMEBASE, obj_id, &token) == OS_SUCCESS)
+    retcode = OS_ObjectIdGetById(OS_LOCK_MODE_RESERVED, OS_OBJECT_TYPE_OS_TIMEBASE, obj_id, &token);
+	if (retcode == OS_SUCCESS)
     {
         local = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, token);
 
@@ -248,7 +250,13 @@ void OS_VxWorks_RegisterTimer(osal_id_t obj_id)
         {
             local->timer_state = OS_TimerRegState_SUCCESS;
         }
+
+		OS_ObjectIdRelease(&token);
     }
+	else
+	{
+		OS_DEBUG("OS_VxWorks_RegisterTimer() bad ID, code=%d\n", (int)retcode);
+	}
 } /* end OS_VxWorks_RegisterTimer */
 
 /****************************************************************************************
@@ -264,11 +272,11 @@ void OS_VxWorks_RegisterTimer(osal_id_t obj_id)
  *-----------------------------------------------------------------*/
 int OS_VxWorks_TimeBaseTask(int arg)
 {
-    VxWorks_ID_Buffer_t id;
+    osal_id_t obj_id;
 
-    id.arg = arg;
-    OS_VxWorks_RegisterTimer(id.id);
-    OS_TimeBase_CallbackThread(id.id);
+    obj_id = OS_ObjectIdFromInteger(arg);
+    OS_VxWorks_RegisterTimer(obj_id);
+    OS_TimeBase_CallbackThread(obj_id);
 
     return 0;
 } /* end OS_VxWorks_TimeBaseTask */
@@ -344,7 +352,6 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
     sigset_t                            inuse;
     osal_index_t                        idx;
     uint32                              i;
-    VxWorks_ID_Buffer_t                 idbuf;
 
     return_code = OS_SUCCESS;
 
@@ -379,7 +386,7 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
 
         for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
         {
-            if (OS_ObjectIdDefined(OS_global_timebase_table[idx].active_id) &&
+            if (OS_ObjectIdIsValid(OS_global_timebase_table[idx].active_id) &&
                 OS_impl_timebase_table[idx].assigned_signal > 0)
             {
                 /* mark signal as in-use */
@@ -453,11 +460,11 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
      */
     if (return_code == OS_SUCCESS)
     {
-        idbuf.id            = OS_ObjectIdFromToken(token);
         local->handler_task = taskSpawn(timebase->timebase_name, OSAL_TIMEBASE_TASK_PRIORITY, /* priority */
                                         OSAL_TIMEBASE_TASK_OPTION_WORD,                       /* task option word */
-                                        OSAL_TIMEBASE_TASK_STACK_SIZE,               /* size (bytes) of stack needed */
-                                        (FUNCPTR)OS_VxWorks_TimeBaseTask, idbuf.arg, /* 1st arg is ID */
+                                        OSAL_TIMEBASE_TASK_STACK_SIZE,                        /* size (bytes) of stack needed */
+                                        (FUNCPTR)OS_VxWorks_TimeBaseTask,                     /* Timebase helper task entry point */
+                                        OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)),    /* 1st arg is ID */
                                         0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         /* check if taskSpawn failed */

@@ -419,74 +419,87 @@ void OS_ObjectIdTransactionCancel(OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
 {
-    int32  return_code    = OS_ERROR;
-    uint32 exclusive_bits = 0;
-    uint32 attempts       = 0;
+    int32               return_code = OS_ERROR;
+    uint32              attempts    = 0;
+    OS_common_record_t *obj;
+    osal_id_t           expected_id;
 
-    OS_common_record_t *obj = OS_ObjectIdGlobalFromToken(token);
+    obj         = OS_ObjectIdGlobalFromToken(token);
+    expected_id = OS_ObjectIdFromToken(token);
+
+    /*
+     * Upon entry the ID from the token must be valid
+     */
+    if (!OS_ObjectIdIsValid(expected_id))
+    {
+        return OS_ERR_INCORRECT_OBJ_STATE;
+    }
+
+    /*
+     * If lock mode is RESERVED, then the ID in the record should
+     * already be set to OS_OBJECT_ID_RESERVED.  This is for very
+     * specific use cases where a secondary task needs to access an
+     * object during its creation/deletion.
+     *
+     * For all typical modes the ID in the record should be equal
+     * to the token ID.
+     */
+    if (token->lock_mode == OS_LOCK_MODE_RESERVED)
+    {
+        expected_id = OS_OBJECT_ID_RESERVED;
+    }
 
     while (true)
     {
         /* Validate the integrity of the ID.  As the "active_id" is a single
          * integer, we can do this check regardless of whether global is locked or not. */
-        if (!OS_ObjectIdEqual(obj->active_id, OS_ObjectIdFromToken(token)))
-        {
-            /* The ID does not match, so unlock and return error.
-             * This basically means the ID was stale or otherwise no longer invalid */
-            return_code = OS_ERR_INVALID_ID;
-            break;
-        }
-
-        /*
-         * The REFCOUNT and EXCLUSIVE lock modes require additional
-         * conditions on before they can be successful.
-         */
-        if (token->lock_mode == OS_LOCK_MODE_REFCOUNT)
-        {
-            /* As long as no exclusive request is pending, we can increment the
-             * refcount and good to go. */
-            if ((obj->flags & OS_OBJECT_EXCL_REQ_FLAG) == 0)
-            {
-                ++obj->refcount;
-                return_code = OS_SUCCESS;
-                break;
-            }
-        }
-        else if (token->lock_mode == OS_LOCK_MODE_EXCLUSIVE)
+        if (OS_ObjectIdEqual(obj->active_id, expected_id))
         {
             /*
-             * Set the exclusive request flag -- this will prevent anyone else from
-             * incrementing the refcount while we are waiting.  However we can only
-             * do this if there are no OTHER exclusive requests.
+             * Got an ID match...
              */
-            if (exclusive_bits != 0 || (obj->flags & OS_OBJECT_EXCL_REQ_FLAG) == 0)
+            if (token->lock_mode == OS_LOCK_MODE_EXCLUSIVE)
             {
                 /*
-                 * As long as nothing is referencing this object, we are good to go.
-                 * The global table will be left in a locked state in this case.
+                 * For EXCLUSIVE mode, overwrite the ID to be RESERVED now -- this
+                 * makes any future ID checks or lock attempts in other tasks fail to match.
+                 */
+                if (!OS_ObjectIdEqual(expected_id, OS_OBJECT_ID_RESERVED))
+                {
+                    expected_id    = OS_OBJECT_ID_RESERVED;
+                    obj->active_id = expected_id;
+                }
+
+                /*
+                 * Also confirm that reference count is zero
+                 * If not zero, will need to wait for other tasks to release.
                  */
                 if (obj->refcount == 0)
                 {
                     return_code = OS_SUCCESS;
                     break;
                 }
-
-                exclusive_bits = OS_OBJECT_EXCL_REQ_FLAG;
-                obj->flags |= exclusive_bits;
+            }
+            else
+            {
+                /*
+                 * Nothing else to test for this lock type
+                 */
+                return_code = OS_SUCCESS;
+                break;
             }
         }
-        else
+        else if (token->lock_mode == OS_LOCK_MODE_NONE || !OS_ObjectIdEqual(obj->active_id, OS_OBJECT_ID_RESERVED))
         {
-            /* No fanciness required - move on. */
-            return_code = OS_SUCCESS;
+            /* Not an ID match and not RESERVED - fail out */
+            return_code = OS_ERR_INVALID_ID;
             break;
         }
 
         /*
          * If we get this far, it means there is contention for access to the object.
-         *  a) we want to increment refcount but an exclusive is pending
-         *  b) we want exclusive but refcount is nonzero
-         *  c) we want exclusive but another exclusive is pending
+         *  a) we want to some type of lock but the ID is currently RESERVED
+         *  b) the refcount is too high - need to wait for release
          *
          * In this case we will UNLOCK the global object again so that the holder
          * can relinquish it.  We'll try again a few times before giving up hope.
@@ -512,20 +525,36 @@ int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
      */
     if (token->lock_mode != OS_LOCK_MODE_NONE)
     {
-        /*
-         * In case any exclusive bits were set locally, unset them now
-         * before the lock is (maybe) released.
-         */
-        obj->flags &= ~exclusive_bits;
-
-        /*
-         * On a successful operation, the global is unlocked if it is a REFCOUNT
-         * style lock.  For other styles (GLOBAL or EXCLUSIVE) the global lock
-         * should be maintained and returned to the caller.
-         */
-        if (return_code == OS_SUCCESS && token->lock_mode == OS_LOCK_MODE_REFCOUNT)
+        if (return_code == OS_SUCCESS)
         {
-            OS_Unlock_Global(token);
+            /* always increment the refcount, which means a task is actively
+             * using or modifying this record. */
+            ++obj->refcount;
+
+            /*
+             * On a successful operation, the global is unlocked if it is
+             * a REFCOUNT or EXCLUSIVE lock.  Note for EXCLUSIVE, because the ID
+             * was overwritten to OS_OBJECT_ID_RESERVED, other tasks will not be
+             * able to access the object because the ID will not match, so the
+             * table can be unlocked while the remainder of the create/delete process
+             * continues.
+             *
+             * For OS_LOCK_MODE_GLOBAL the global lock should be maintained and
+             * returned to the caller.
+             */
+            if (token->lock_mode == OS_LOCK_MODE_REFCOUNT || token->lock_mode == OS_LOCK_MODE_EXCLUSIVE)
+            {
+                OS_Unlock_Global(token);
+            }
+        }
+        else if (token->lock_mode == OS_LOCK_MODE_EXCLUSIVE && OS_ObjectIdEqual(expected_id, OS_OBJECT_ID_RESERVED))
+        {
+            /*
+             * On failure, if the active_id was overwritten, then set
+             * it back to the original value which is in the token.
+             * (note it had to match initially before overwrite)
+             */
+            obj->active_id = OS_ObjectIdFromToken(token);
         }
     }
 
@@ -881,7 +910,7 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_object_token_t *token, o
 } /* end OS_ObjectIdFinalizeNew(, &token, ) */
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdFinalizeDelete(, &token)
+   Function: OS_ObjectIdFinalizeDelete
 
     Purpose: Helper routine, not part of OSAL public API.
              See description in prototype
@@ -945,7 +974,7 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS
          */
         return_code = OS_ObjectIdConvertToken(token);
     }
-    else if (lock_mode != OS_LOCK_MODE_NONE)
+    else
     {
         OS_ObjectIdTransactionCancel(token);
     }
@@ -1086,14 +1115,14 @@ void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id)
     record = OS_ObjectIdGlobalFromToken(token);
 
     /* re-acquire global table lock to adjust refcount */
-    if (token->lock_mode == OS_LOCK_MODE_REFCOUNT)
+    if (token->lock_mode == OS_LOCK_MODE_EXCLUSIVE || token->lock_mode == OS_LOCK_MODE_REFCOUNT)
     {
         OS_Lock_Global(token);
+    }
 
-        if (record->refcount > 0)
-        {
-            --record->refcount;
-        }
+    if (record->refcount > 0)
+    {
+        --record->refcount;
     }
 
     /*
@@ -1107,6 +1136,15 @@ void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id)
     if (final_id != NULL)
     {
         record->active_id = *final_id;
+    }
+    else if (token->lock_mode == OS_LOCK_MODE_EXCLUSIVE)
+    {
+        /*
+         * If the lock type was EXCLUSIVE, it means that the ID in the record
+         * was reset to OS_OBJECT_ID_RESERVED.  This must restore the original
+         * object ID from the token.
+         */
+        record->active_id = token->obj_id;
     }
 
     /* always unlock (this also covers OS_LOCK_MODE_GLOBAL case) */
@@ -1205,16 +1243,28 @@ int32 OS_ObjectIdAllocateNew(osal_objtype_t idtype, const char *name, OS_object_
         return_code = OS_ObjectIdFindNextFree(token);
     }
 
+    /* If allocation failed, abort the operation now - no ID was allocated.
+     * After this point, if a future step fails, the allocated ID must be
+     * released. */
+    if (return_code != OS_SUCCESS)
+    {
+        OS_ObjectIdTransactionCancel(token);
+        return return_code;
+    }
+
     if (return_code == OS_SUCCESS)
     {
         return_code = OS_NotifyEvent(OS_EVENT_RESOURCE_ALLOCATED, token->obj_id, NULL);
     }
 
-    /* If allocation failed for any reason, unlock the global.
-     * otherwise the global should stay locked so remaining initialization can be done */
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_ObjectIdConvertToken(token);
+    }
+
     if (return_code != OS_SUCCESS)
     {
-        OS_ObjectIdTransactionCancel(token);
+        return_code = OS_ObjectIdFinalizeNew(return_code, token, NULL);
     }
 
     return return_code;

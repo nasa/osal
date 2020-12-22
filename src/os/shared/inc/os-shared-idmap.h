@@ -31,8 +31,6 @@
 #include "osapi-idmap.h"
 #include <os-shared-globaldefs.h>
 
-#define OS_OBJECT_EXCL_REQ_FLAG 0x0001
-
 #define OS_OBJECT_ID_RESERVED ((osal_id_t) {0xFFFFFFFF})
 
 /*
@@ -44,7 +42,6 @@ struct OS_common_record
     osal_id_t   active_id;
     osal_id_t   creator;
     uint16      refcount;
-    uint16      flags;
 };
 
 /*
@@ -52,10 +49,11 @@ struct OS_common_record
  */
 typedef enum
 {
-    OS_LOCK_MODE_NONE,      /**< Do not lock global table at all (use with caution) */
-    OS_LOCK_MODE_GLOBAL,    /**< Lock during operation, and if successful, leave global table locked */
-    OS_LOCK_MODE_EXCLUSIVE, /**< Like OS_LOCK_MODE_GLOBAL but must be exclusive (refcount == zero)  */
-    OS_LOCK_MODE_REFCOUNT,  /**< If operation succeeds, increment refcount and unlock global table */
+    OS_LOCK_MODE_NONE,      /**< Quick ID validity check, does not lock global table at all (use with caution) */
+    OS_LOCK_MODE_GLOBAL,    /**< Confirm ID match, and if successful, leave global table locked */
+    OS_LOCK_MODE_REFCOUNT,  /**< Confirm ID match, increment refcount, and unlock global table.  ID is not changed. */
+    OS_LOCK_MODE_EXCLUSIVE, /**< Confirm ID match AND refcount equal zero, then change ID to RESERVED value and unlock global. */
+    OS_LOCK_MODE_RESERVED   /**< Confirm ID is already set to RESERVED, otherwise like OS_LOCK_MODE_GLOBAL. */
 } OS_lock_mode_t;
 
 /*
