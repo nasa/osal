@@ -540,6 +540,7 @@ int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal
  * These are not normally called outside this unit, but need
  * to be exposed for unit testing.
  */
+bool  OS_ObjectFilterActive(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 bool  OS_ObjectNameMatch(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 int32 OS_ObjectIdFindNextMatch(OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_object_token_t *token);
 int32 OS_ObjectIdFindNextFree(OS_object_token_t *token);
