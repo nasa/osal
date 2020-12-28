@@ -38,6 +38,10 @@
  *
  * These are exposed to apps through fcntl.h and sys/stat.h
  */
+#define OCS_S_IRWXO 0x1110
+#define OCS_S_IRWXG 0x2220
+#define OCS_S_IRWXU 0x4440
+
 #define OCS_S_IXOTH 0x1000
 #define OCS_S_IXGRP 0x2000
 #define OCS_S_IXUSR 0x4000

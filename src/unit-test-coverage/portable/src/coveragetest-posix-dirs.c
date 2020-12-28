@@ -19,19 +19,17 @@
  */
 
 /**
- * \file     coveragetest-dirs.c
- * \ingroup  vxworks
+ * \file     coveragetest-posix-dirs.c
  * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#include "os-vxworks-coveragetest.h"
-#include "ut-adaptor-dirs.h"
+#include "os-portable-coveragetest.h"
 
 #include "os-shared-dir.h"
+#include "os-shared-idmap.h"
 
 #include <OCS_stdlib.h>
-#include <OCS_taskLib.h>
 #include <OCS_dirent.h>
 #include <OCS_unistd.h>
 #include <OCS_stat.h>
@@ -42,10 +40,10 @@ void Test_OS_DirCreate_Impl(void)
      * Test Case For:
      * int32 OS_DirCreate_Impl(const char *local_path, uint32 access)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl("dir", 0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl, ("dir", 0), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_mkdir), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl("dir", 0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl, ("dir", 0), OS_ERROR);
 }
 
 void Test_OS_DirOpen_Impl(void)
@@ -54,11 +52,13 @@ void Test_OS_DirOpen_Impl(void)
      * Test Case For:
      * int32 OS_DirOpen_Impl(uint32 local_id, const char *local_path)
      */
-    OS_object_token_t token = UT_TOKEN_0;
+    OS_object_token_t token;
 
-    OSAPI_TEST_FUNCTION_RC(OS_DirOpen_Impl(&token, "dir"), OS_SUCCESS);
+    memset(&token, 0, sizeof(token));
+
+    OSAPI_TEST_FUNCTION_RC(OS_DirOpen_Impl, (&token, "dir"), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_KEY(OCS_opendir), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_DirOpen_Impl(&token, "dir"), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_DirOpen_Impl, (&token, "dir"), OS_ERROR);
 }
 
 void Test_OS_DirClose_Impl(void)
@@ -67,9 +67,11 @@ void Test_OS_DirClose_Impl(void)
      * Test Case For:
      * int32 OS_DirClose_Impl(uint32 local_id)
      */
-    OS_object_token_t token = UT_TOKEN_0;
+    OS_object_token_t token;
 
-    OSAPI_TEST_FUNCTION_RC(OS_DirClose_Impl(&token), OS_SUCCESS);
+    memset(&token, 0, sizeof(token));
+
+    OSAPI_TEST_FUNCTION_RC(OS_DirClose_Impl, (&token), OS_SUCCESS);
 }
 
 void Test_OS_DirRead_Impl(void)
@@ -79,12 +81,14 @@ void Test_OS_DirRead_Impl(void)
      * int32 OS_DirRead_Impl(uint32 local_id, os_dirent_t *dirent)
      */
     os_dirent_t       dirent_buff;
-    OS_object_token_t token = UT_TOKEN_0;
+    OS_object_token_t token;
 
-    OSAPI_TEST_FUNCTION_RC(OS_DirRead_Impl(&token, &dirent_buff), OS_SUCCESS);
+    memset(&token, 0, sizeof(token));
+
+    OSAPI_TEST_FUNCTION_RC(OS_DirRead_Impl, (&token, &dirent_buff), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_readdir), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_DirRead_Impl(&token, &dirent_buff), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_DirRead_Impl, (&token, &dirent_buff), OS_ERROR);
 }
 
 void Test_OS_DirRewind_Impl(void)
@@ -93,9 +97,11 @@ void Test_OS_DirRewind_Impl(void)
      * Test Case For:
      * int32 OS_DirRewind_Impl(uint32 local_id)
      */
-    OS_object_token_t token = UT_TOKEN_0;
+    OS_object_token_t token;
 
-    OSAPI_TEST_FUNCTION_RC(OS_DirRewind_Impl(&token), OS_SUCCESS);
+    memset(&token, 0, sizeof(token));
+
+    OSAPI_TEST_FUNCTION_RC(OS_DirRewind_Impl, (&token), OS_SUCCESS);
 }
 
 void Test_OS_DirRemove_Impl(void)
@@ -104,10 +110,10 @@ void Test_OS_DirRemove_Impl(void)
      * Test Case For:
      * int32 OS_DirRemove_Impl(const char *local_path)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_DirRemove_Impl("dir"), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_DirRemove_Impl, ("dir"), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_rmdir), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_DirRemove_Impl("dir"), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_DirRemove_Impl, ("dir"), OS_ERROR);
 }
 
 /* ------------------- End of test cases --------------------------------------*/

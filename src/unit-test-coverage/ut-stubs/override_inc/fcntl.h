@@ -27,6 +27,9 @@
 /* ----------------------------------------- */
 /* mappings for declarations in fcntl.h */
 /* ----------------------------------------- */
+#define S_IRWXU    OCS_S_IRWXU
+#define S_IRWXG    OCS_S_IRWXG
+#define S_IRWXO    OCS_S_IRWXO
 #define S_IXOTH    OCS_S_IXOTH
 #define S_IXGRP    OCS_S_IXGRP
 #define S_IXUSR    OCS_S_IXUSR

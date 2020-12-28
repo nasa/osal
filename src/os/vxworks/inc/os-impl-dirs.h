@@ -31,7 +31,19 @@
 #include "osconfig.h"
 #include <unistd.h>
 #include <dirent.h>
+#include <fcntl.h>
 #include <sys/stat.h>
+
+/*
+ * In VxWorks 6.x the system mkdir() function only has a path argument
+ * In VxWorks 7 it is now POSIX compilant and adds a mode argument
+ *
+ * This macro simply discards the second argument, allowing code to use
+ * mkdir() in a consistent, POSIX compliant fashion.
+ */
+#ifdef OSAL_VXWORKS6_COMPATIBILITY
+#define mkdir(path,mode) mkdir(path)
+#endif
 
 typedef struct
 {
