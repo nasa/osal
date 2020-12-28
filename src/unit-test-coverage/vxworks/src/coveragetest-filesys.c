@@ -130,12 +130,38 @@ void Test_OS_FileSysMountVolume_Impl(void)
      * int32 OS_FileSysMountVolume_Impl (uint32 filesys_id)
      */
     OS_object_token_t token = UT_TOKEN_0;
+    struct OCS_stat   statbuf;
+
+    memset(&OS_filesys_table[0], 0, sizeof(OS_filesys_table[0]));
+    OS_filesys_table[0].fstype = OS_FILESYS_TYPE_NORMAL_DISK;
+    strcpy(OS_filesys_table[0].system_mountpt, "/ut");
 
     OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_open));
+
+    /* Additional cases for the FS_BASED handling */
+    OS_filesys_table[0].fstype = OS_FILESYS_TYPE_FS_BASED;
+
+    /* Mount dir does not exist but can be created */
+    UT_SetDefaultReturnValue(UT_KEY(OCS_stat), -1);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_SUCCESS);
+
+    /* Mount dir does not exist and cannot be created */
+    UT_SetDeferredRetcode(UT_KEY(OCS_mkdir), 1, -1);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_FS_ERR_DRIVE_NOT_CREATED);
+
+    /* Mount dir does exist but not a directory */
+    UT_ClearForceFail(UT_KEY(OCS_stat));
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_FS_ERR_PATH_INVALID);
+
+    /* Mount dir does exist and is a directory */
+    memset(&statbuf, 0, sizeof(statbuf));
+    statbuf.st_mode = OCS_S_IFDIR;
+    UT_SetDataBuffer(UT_KEY(OCS_stat), &statbuf, sizeof(statbuf), false);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_SUCCESS);
 }
 
 void Test_OS_FileSysUnmountVolume_Impl(void)
@@ -144,6 +170,10 @@ void Test_OS_FileSysUnmountVolume_Impl(void)
      * int32 OS_FileSysUnmountVolume_Impl (uint32 filesys_id)
      */
     OS_object_token_t token = UT_TOKEN_0;
+
+    memset(&OS_filesys_table[0], 0, sizeof(OS_filesys_table[0]));
+    OS_filesys_table[0].fstype = OS_FILESYS_TYPE_NORMAL_DISK;
+    strcpy(OS_filesys_table[0].system_mountpt, "/ut");
 
     OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(&token), OS_SUCCESS);
 
@@ -154,6 +184,10 @@ void Test_OS_FileSysUnmountVolume_Impl(void)
     UT_SetDefaultReturnValue(UT_KEY(OCS_ioctl), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(&token), OS_ERROR);
     UT_ClearForceFail(UT_KEY(OCS_ioctl));
+
+    /* Additional cases for the FS_BASED handling (no op on unmount) */
+    OS_filesys_table[0].fstype = OS_FILESYS_TYPE_FS_BASED;
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(&token), OS_SUCCESS);
 }
 
 void Test_OS_FileSysStatVolume_Impl(void)

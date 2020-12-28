@@ -32,6 +32,7 @@
 #include "os-vxworks.h"
 
 #include "os-impl-filesys.h"
+#include "os-impl-dirs.h"
 #include "os-shared-filesys.h"
 #include "os-shared-idmap.h"
 
@@ -295,22 +296,62 @@ int32 OS_FileSysMountVolume_Impl(const OS_object_token_t *token)
     OS_filesys_internal_record_t *local;
     int32                         status;
     int                           fd;
+    struct stat                   stat_buf;
 
     local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     /*
-     * Calling open() on the physical device path
-     * mounts the device.
+     * For FS-based mounts, these are just a map to a some other
+     * directory in the filesystem.
+     *
+     * If it does exist then make sure it is actually a directory.
+     * If it does not exist then attempt to create it.
      */
-    fd = open(local->system_mountpt, O_RDONLY, 0644);
-    if (fd < 0)
+    if (local->fstype == OS_FILESYS_TYPE_FS_BASED)
     {
-        status = OS_ERROR;
+        if (stat(local->system_mountpt, &stat_buf) == 0)
+        {
+            if (S_ISDIR(stat_buf.st_mode))
+            {
+                /* mount point exists */
+                status = OS_SUCCESS;
+            }
+            else
+            {
+                OS_DEBUG("%s is not a directory\n", local->system_mountpt);
+                status = OS_FS_ERR_PATH_INVALID;
+            }
+        }
+        else
+        {
+            if (mkdir(local->system_mountpt, 0775) == 0)
+            {
+                /* directory created OK */
+                status = OS_SUCCESS;
+            }
+            else
+            {
+                OS_DEBUG("mkdir(%s): errno=%d\n", local->system_mountpt, errnoGet());
+                status = OS_FS_ERR_DRIVE_NOT_CREATED;
+            }
+        }
     }
     else
     {
-        status = OS_SUCCESS;
-        close(fd);
+        /*
+         * For all other (non-FS_BASED) filesystem types,
+         * Calling open() on the physical device path mounts the device.
+         */
+        fd = open(local->system_mountpt, O_RDONLY, 0644);
+        if (fd < 0)
+        {
+            status = OS_ERROR;
+        }
+        else
+        {
+            status = OS_SUCCESS;
+            close(fd);
+        }
     }
 
     return status;
@@ -333,26 +374,34 @@ int32 OS_FileSysUnmountVolume_Impl(const OS_object_token_t *token)
 
     local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
-    /*
-    ** vxWorks uses an ioctl to unmount
-    */
-    fd = open(local->system_mountpt, O_RDONLY, 0644);
-    if (fd < 0)
+    if (local->fstype == OS_FILESYS_TYPE_FS_BASED)
     {
-        status = OS_ERROR;
+        /* unmount is a no-op on FS-based mounts - it is just a directory map */
+        status = OS_SUCCESS;
     }
     else
     {
-        if (ioctl(fd, FIOUNMOUNT, 0) < 0)
+        /*
+        ** vxWorks uses an ioctl to unmount
+        */
+        fd = open(local->system_mountpt, O_RDONLY, 0644);
+        if (fd < 0)
         {
             status = OS_ERROR;
         }
         else
         {
-            status = OS_SUCCESS;
-        }
+            if (ioctl(fd, FIOUNMOUNT, 0) < 0)
+            {
+                status = OS_ERROR;
+            }
+            else
+            {
+                status = OS_SUCCESS;
+            }
 
-        close(fd);
+            close(fd);
+        }
     }
 
     return status;
