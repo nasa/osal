@@ -203,6 +203,7 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
     mode_t      writebits;
     struct stat st;
     int         fd;
+    int32       status;
 
     /* Open file to avoid filename race potential */
     fd = open(local_path, O_RDONLY, 0);
@@ -211,9 +212,15 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
         fd = open(local_path, O_WRONLY, 0);
         if (fd < 0)
         {
+            OS_DEBUG("open(%s): %s (%d)\n", local_path, strerror(errno), errno);
             return OS_ERROR;
-        }        
+        }
     }
+
+    /*
+     * NOTE: After this point, execution must proceed to the end of this routine
+     * so that the "fd" opened above can be properly closed.
+     */
 
     /*
      * In order to preserve any OTHER mode bits,
@@ -226,58 +233,81 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
      */
     if (fstat(fd, &st) < 0)
     {
-        return OS_ERROR;
-    }
-
-    /* always check world bits */
-    readbits  = S_IROTH;
-    writebits = S_IWOTH;
-
-    if (OS_IMPL_SELF_EUID == st.st_uid)
-    {
-        /* we own the file so use user bits */
-        readbits |= S_IRUSR;
-        writebits |= S_IWUSR;
-    }
-
-    if (OS_IMPL_SELF_EGID == st.st_gid)
-    {
-        /* our group owns the file so use group bits */
-        readbits |= S_IRGRP;
-        writebits |= S_IWGRP;
-    }
-
-    if (access == OS_WRITE_ONLY || access == OS_READ_WRITE)
-    {
-        /* set all "write" mode bits */
-        st.st_mode |= writebits;
+        OS_DEBUG("fstat(%s): %s (%d)\n", local_path, strerror(errno), errno);
+        status = OS_ERROR;
     }
     else
     {
-        /* clear all "write" mode bits */
-        st.st_mode &= ~writebits;
-    }
+        /* always check world bits */
+        readbits  = S_IROTH;
+        writebits = S_IWOTH;
 
-    if (access == OS_READ_ONLY || access == OS_READ_WRITE)
-    {
-        /* set all "read" mode bits */
-        st.st_mode |= readbits;
-    }
-    else
-    {
-        /* clear all "read" mode bits */
-        st.st_mode &= ~readbits;
-    }
+        if (OS_IMPL_SELF_EUID == st.st_uid)
+        {
+            /* we own the file so use user bits */
+            readbits |= S_IRUSR;
+            writebits |= S_IWUSR;
+        }
 
-    /* finally, write the modified mode back to the file */
-    if (fchmod(fd, st.st_mode) < 0)
-    {
-        return OS_ERROR;
+        if (OS_IMPL_SELF_EGID == st.st_gid)
+        {
+            /* our group owns the file so use group bits */
+            readbits |= S_IRGRP;
+            writebits |= S_IWGRP;
+        }
+
+        if (access == OS_WRITE_ONLY || access == OS_READ_WRITE)
+        {
+            /* set all "write" mode bits */
+            st.st_mode |= writebits;
+        }
+        else
+        {
+            /* clear all "write" mode bits */
+            st.st_mode &= ~writebits;
+        }
+
+        if (access == OS_READ_ONLY || access == OS_READ_WRITE)
+        {
+            /* set all "read" mode bits */
+            st.st_mode |= readbits;
+        }
+        else
+        {
+            /* clear all "read" mode bits */
+            st.st_mode &= ~readbits;
+        }
+
+        /* finally, write the modified mode back to the file */
+        if (fchmod(fd, st.st_mode) < 0)
+        {
+            /*
+             * These particular errnos generally indicate that the
+             * underlying filesystem does not support chmod()
+             *
+             * This is often the case for FAT / DOSFS filesystems
+             * which do not have UNIX-style permissions, or (in the
+             * case of EROFS) if the filesystem is mounted read-only.
+             */
+            if (errno == ENOTSUP || errno == ENOSYS || errno == EROFS)
+            {
+                status = OS_ERR_NOT_IMPLEMENTED;
+            }
+            else
+            {
+                OS_DEBUG("fchmod(%s): %s (%d)\n", local_path, strerror(errno), errno);
+                status = OS_ERROR;
+            }
+        }
+        else
+        {
+            status = OS_SUCCESS;
+        }
     }
 
     close(fd);
 
-    return OS_SUCCESS;
+    return status;
 
 } /* end OS_FileChmod_Impl */
 
