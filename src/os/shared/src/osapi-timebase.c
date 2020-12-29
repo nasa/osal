@@ -347,6 +347,8 @@ int32 OS_TimeBaseGetFreeRun(osal_id_t timebase_id, uint32 *freerun_val)
     OS_timebase_internal_record_t *timebase;
 
     /* Check parameters */
+    OS_CHECK_POINTER(freerun_val);
+
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, timebase_id, &token);
     if (return_code == OS_SUCCESS)
     {
