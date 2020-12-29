@@ -206,7 +206,7 @@ typedef struct
     } while (0)
 
 /**
- * \brief Confirm an integer value is nonzero
+ * \brief Confirm an integer value is zero
  */
 #define UtAssert_ZERO(actual)                                   \
     do                                                          \
