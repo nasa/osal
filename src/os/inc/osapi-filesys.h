@@ -42,6 +42,19 @@ typedef struct
 } os_fsinfo_t;
 
 /*
+ * @brief The data type filled in by the OS_FileSysStatVolume() call.
+ *
+ * Encapsulates detail information about the size and available space
+ * in a mounted file system volume.
+ */
+typedef struct
+{
+    size_t            block_size;   /**< Block size of underlying FS */
+    osal_blockcount_t total_blocks; /**< Total blocks in underlying FS */
+    osal_blockcount_t blocks_free;  /**< Available blocks in underlying FS */
+} OS_statvfs_t;
+
+/*
  * Exported Functions
  */
 
@@ -200,6 +213,30 @@ int32 OS_fsBlocksFree(const char *name);
  * @retval #OS_ERROR if the OS call failed
  */
 int32 OS_fsBytesFree(const char *name, uint64 *bytes_free);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Obtains information about size and free space in a volume
+ *
+ * Populates the supplied OS_statvfs_t structure, which includes
+ * the block size and total/free blocks in a file system volume.
+ *
+ * This replaces two older OSAL calls:
+ *
+ * OS_fsBlocksFree() is determined by reading the blocks_free
+ *      output struct member
+ * OS_fsBytesFree() is determined by multiplying blocks_free
+ *      by the block_size member
+ *
+ * @param[in]  name       The device/path to operate on
+ * @param[out] statbuf    Output structure to populate
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_INVALID_POINTER if name or statbuf is NULL
+ * @retval #OS_ERROR if the OS call failed
+ */
+int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf);
 
 /*-------------------------------------------------------------------------------------*/
 /**

@@ -194,6 +194,28 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
 
 /*****************************************************************************
  *
+ * Stub function for OS_FileSysStatVolume()
+ *
+ *****************************************************************************/
+int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf)
+{
+    UT_Stub_RegisterContext(UT_KEY(OS_FileSysStatVolume), name);
+    UT_Stub_RegisterContext(UT_KEY(OS_FileSysStatVolume), statbuf);
+
+    int32 status;
+
+    status = UT_DEFAULT_IMPL(OS_FileSysStatVolume);
+
+    if (status == OS_SUCCESS && UT_Stub_CopyToLocal(UT_KEY(OS_FileSysStatVolume), statbuf, sizeof(*statbuf)) < sizeof(*statbuf))
+    {
+        memset(statbuf, 0, sizeof(*statbuf));
+    }
+
+    return status;
+}
+
+/*****************************************************************************
+ *
  * Stub function for OS_chkfs()
  *
  *****************************************************************************/
