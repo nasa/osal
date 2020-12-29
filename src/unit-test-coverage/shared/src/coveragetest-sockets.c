@@ -335,8 +335,16 @@ void Test_OS_SocketSendTo(void)
     UtAssert_True(actual == expected, "OS_SocketSendTo() (%ld) == OS_SUCCESS", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_SocketSendTo(UT_OBJID_1, NULL, OSAL_SIZE_C(0), NULL);
+    actual   = OS_SocketSendTo(UT_OBJID_1, NULL, sizeof(Buf), &Addr);
     UtAssert_True(actual == expected, "OS_SocketSendTo(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    expected = OS_INVALID_POINTER;
+    actual   = OS_SocketSendTo(UT_OBJID_1, &Buf, sizeof(Buf), NULL);
+    UtAssert_True(actual == expected, "OS_SocketSendTo(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    expected = OS_ERR_INVALID_SIZE;
+    actual   = OS_SocketSendTo(UT_OBJID_1, &Buf, OSAL_SIZE_C(0), &Addr);
+    UtAssert_True(actual == expected, "OS_SocketSendTo(0) (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
 
     /*
      * Should fail if not a datagram socket
