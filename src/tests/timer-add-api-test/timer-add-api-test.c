@@ -130,7 +130,7 @@ void TestTimerAddApi(void)
 
     OS_GetLocalTime(&EndTime);
 
-    for (i = NUMBER_OF_TIMERS-1; i >= 0; --i)
+    for (i = NUMBER_OF_TIMERS - 1; i >= 0; --i)
     {
         TimerStatus[i] = OS_TimerDelete(TimerID[i]);
     }
@@ -144,15 +144,7 @@ void TestTimerAddApi(void)
     /*
      * Time limited test
      */
-    microsecs = 1000000 * (EndTime.seconds - StartTime.seconds);
-    if (EndTime.microsecs < StartTime.microsecs)
-    {
-        microsecs -= StartTime.microsecs - EndTime.microsecs;
-    }
-    else
-    {
-        microsecs += EndTime.microsecs - StartTime.microsecs;
-    }
+    microsecs = OS_TimeGetTotalMicroseconds(OS_TimeSubtract(EndTime, StartTime));
 
     /* Make sure the ratio of the timers are OK */
     for (i = 0; i < NUMBER_OF_TIMERS; i++)

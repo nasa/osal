@@ -27,6 +27,7 @@
 
 #include "osconfig.h"
 #include "common_types.h"
+#include "osapi-clock.h"
 
 
 /** @defgroup OSFileAccess OSAL File Access Option Defines
@@ -63,9 +64,9 @@ typedef struct
  */
 typedef struct
 {
-    uint32 FileModeBits;
-    int32  FileTime;
-    size_t FileSize;
+    uint32    FileModeBits;
+    OS_time_t FileTime;
+    size_t    FileSize;
 } os_fstat_t;
 
 /**
@@ -96,8 +97,8 @@ enum
 #define OS_FILESTAT_READ(x) ((x).FileModeBits & OS_FILESTAT_MODE_READ)
 /** @brief Access file stat size field */
 #define OS_FILESTAT_SIZE(x) ((x).FileSize)
-/** @brief Access file stat time field */
-#define OS_FILESTAT_TIME(x) ((x).FileTime)
+/** @brief Access file stat time field as a whole number of seconds */
+#define OS_FILESTAT_TIME(x) (OS_TimeGetTotalSeconds((x).FileTime))
 
 /**
  * @brief Flags that can be used with opening of a file (bitmask)

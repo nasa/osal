@@ -24,6 +24,7 @@
 
 #include <OCS_basetypes.h>
 #include <OCS_sys_types.h>
+#include <OCS_time.h>
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/stat.h */
@@ -39,11 +40,12 @@
 
 struct OCS_stat
 {
-    OCS_mode_t st_mode;
-    OCS_off_t  st_size;
-    OCS_time_t st_mtime;
-    OCS_uid_t  st_uid;
-    OCS_gid_t  st_gid;
+    OCS_mode_t          st_mode;
+    OCS_off_t           st_size;
+    OCS_time_t          st_mtime;
+    struct OCS_timespec st_mtim;
+    OCS_uid_t           st_uid;
+    OCS_gid_t           st_gid;
 };
 
 /* ----------------------------------------- */
