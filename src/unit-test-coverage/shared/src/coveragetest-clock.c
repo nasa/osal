@@ -118,14 +118,14 @@ void Test_OS_TimeAccessConversions(void)
     UtAssert_UINT32_EQ(OS_TimeGetTotalMicroseconds(t4), 1901000);
 
     /* Note: Nanoseconds/Subseconds may not be exact due to limitations of OS_time_t resolution */
-    UtAssert_UINT32_EQ(OS_TimeGetTotalNanoseconds(t1), 1234567000);
-    UtAssert_UINT32_EQ(OS_TimeGetTotalNanoseconds(t2), 2528888000);
+    UtAssert_UINT32_EQ(OS_TimeGetTotalNanoseconds(t1), 1234567800);
+    UtAssert_UINT32_EQ(OS_TimeGetTotalNanoseconds(t2), 2528888800);
     UtAssert_UINT32_EQ(OS_TimeGetTotalNanoseconds(t3), 45678000);
     UtAssert_UINT32_EQ(OS_TimeGetTotalNanoseconds(t4), 1901000000);
 
     /* These functions only return the fractional part, not the whole part */
-    UtAssert_UINT32_EQ(OS_TimeGetSubsecondsPart(t1), 0x3c0c953a);
-    UtAssert_UINT32_EQ(OS_TimeGetSubsecondsPart(t2), 0x87653438);
+    UtAssert_UINT32_EQ(OS_TimeGetSubsecondsPart(t1), 0x3c0ca2a6);
+    UtAssert_UINT32_EQ(OS_TimeGetSubsecondsPart(t2), 0x876541a4);
     UtAssert_UINT32_EQ(OS_TimeGetSubsecondsPart(t3), 0x0bb18dad);
     UtAssert_UINT32_EQ(OS_TimeGetSubsecondsPart(t4), 0xe6a7ef9e);
 
@@ -139,8 +139,8 @@ void Test_OS_TimeAccessConversions(void)
     UtAssert_UINT32_EQ(OS_TimeGetMicrosecondsPart(t3), 45678);
     UtAssert_UINT32_EQ(OS_TimeGetMicrosecondsPart(t4), 901000);
 
-    UtAssert_UINT32_EQ(OS_TimeGetNanosecondsPart(t1), 234567000);
-    UtAssert_UINT32_EQ(OS_TimeGetNanosecondsPart(t2), 528888000);
+    UtAssert_UINT32_EQ(OS_TimeGetNanosecondsPart(t1), 234567800);
+    UtAssert_UINT32_EQ(OS_TimeGetNanosecondsPart(t2), 528888800);
     UtAssert_UINT32_EQ(OS_TimeGetNanosecondsPart(t3), 45678000);
     UtAssert_UINT32_EQ(OS_TimeGetNanosecondsPart(t4), 901000000);
 
