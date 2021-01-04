@@ -75,7 +75,7 @@ void Test_OS_TaskCreate_Impl(void)
     UT_SetDefaultReturnValue(UT_KEY(OCS_malloc), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, 0), OS_ERROR);
 
-    UT_ClearForceFail(UT_KEY(OCS_malloc));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_malloc));
     OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 2, "malloc() called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 0, "free() not called");

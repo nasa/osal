@@ -193,6 +193,15 @@ void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, size_t *MaxSize,
  */
 void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value);
 
+/**
+ * Disable the forced failure mode for the given stub function
+ *
+ * This undoes the action of UT_SetDefaultReturnValue()
+ *
+ * \param FuncKey The stub function entry to clear.
+ */
+void UT_ClearDefaultReturnValue(UT_EntryKey_t FuncKey);
+
 #ifndef OSAL_OMIT_DEPRECATED
 /**
  * Enable or disable the forced failure mode for the given stub function
@@ -209,7 +218,6 @@ void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value);
  * @deprecated replaced by UT_SetDefaultReturnValue
  */
 void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value);
-#endif
 
 /**
  * Disable the forced failure mode for the given stub function
@@ -217,8 +225,11 @@ void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value);
  * This undoes the action of UT_SetDefaultReturnValue()
  *
  * \param FuncKey The stub function entry to clear.
+ * 
+ *  @deprecated replaced by UT_ClearDefaultReturnValue
  */
 void UT_ClearForceFail(UT_EntryKey_t FuncKey);
+#endif
 
 /**
  * Set a Hook function for a particular call

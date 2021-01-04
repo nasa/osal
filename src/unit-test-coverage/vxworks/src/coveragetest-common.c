@@ -44,7 +44,7 @@ void Test_OS_API_Impl_Init(void)
     OSAPI_TEST_FUNCTION_RC(OS_API_Impl_Init(0), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_StubKey_OS_VxWorks_TableMutex_Init, OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_API_Impl_Init(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
-    UT_ClearForceFail(UT_StubKey_OS_VxWorks_TableMutex_Init);
+    UT_ClearDefaultReturnValue(UT_StubKey_OS_VxWorks_TableMutex_Init);
     OSAPI_TEST_FUNCTION_RC(OS_API_Impl_Init(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_API_Impl_Init(OS_OBJECT_TYPE_OS_QUEUE), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_API_Impl_Init(OS_OBJECT_TYPE_OS_BINSEM), OS_SUCCESS);

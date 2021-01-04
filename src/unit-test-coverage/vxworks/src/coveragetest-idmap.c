@@ -74,7 +74,7 @@ void Test_OS_API_Impl_Init(void)
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(0), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_KEY(OCS_semMInitialize), -1);
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_semMInitialize));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_semMInitialize));
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
 }
 

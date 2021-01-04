@@ -69,7 +69,7 @@ void Test_OS_FileStat_Impl(void)
     /* failure mode */
     UT_SetDefaultReturnValue(UT_KEY(OCS_stat), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileStat_Impl, ("local", &FileStats), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_stat));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_stat));
 
     /* nominal, no permission bits */
     memset(&FileStats, 0, sizeof(FileStats));
@@ -108,12 +108,12 @@ void Test_OS_FileChmod_Impl(void)
     /* failure mode 0 (open) */
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_open));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_open));
 
     /* failure mode 1 (fstat) */
     UT_SetDefaultReturnValue(UT_KEY(OCS_fstat), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_fstat));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_fstat));
 
     /* failure mode 2 (fchmod) */
     UT_SetDefaultReturnValue(UT_KEY(OCS_fchmod), -1);
@@ -122,7 +122,7 @@ void Test_OS_FileChmod_Impl(void)
     /* non implemented error, e.g. such as DOS Filesystem with no perms  */
     OCS_errno = OCS_ENOTSUP;
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERR_NOT_IMPLEMENTED);
-    UT_ClearForceFail(UT_KEY(OCS_fchmod));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_fchmod));
 
     /* all permission bits with uid/gid match */
     RefStat.st_uid   = UT_PortablePosixFileTest_GetSelfEUID();

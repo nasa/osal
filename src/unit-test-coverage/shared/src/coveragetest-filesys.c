@@ -103,7 +103,7 @@ void Test_OS_mkfs(void)
     expected = OS_FS_ERR_PATH_TOO_LONG;
     actual   = OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_memchr));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
     /* set up for failure due to empty strings */
     expected = OS_FS_ERR_PATH_INVALID;
@@ -140,7 +140,7 @@ void Test_OS_rmfs(void)
     expected = OS_ERR_NAME_NOT_FOUND;
     actual   = OS_rmfs("/ramdev4");
     UtAssert_True(actual == expected, "OS_rmfs() (%ld) == OS_ERR_NAME_NOT_FOUND", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdGetByName));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdGetByName));
 
     expected = OS_INVALID_POINTER;
     actual   = OS_rmfs(NULL);
@@ -178,7 +178,7 @@ void Test_OS_initfs(void)
     expected = OS_FS_ERR_PATH_TOO_LONG;
     actual   = OS_initfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
     UtAssert_True(actual == expected, "OS_initfs() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_memchr));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
     /* set up for failure */
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
@@ -326,7 +326,7 @@ void Test_OS_chkfs(void)
     expected = OS_FS_ERR_PATH_TOO_LONG;
     actual   = OS_chkfs("/cf", false);
     UtAssert_True(actual == expected, "OS_fsBytesFree() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_memchr));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
     /* Test Fail due to no matching VolTab entry */
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch), OS_ERR_NAME_NOT_FOUND);
@@ -351,7 +351,7 @@ void Test_OS_FS_GetPhysDriveName(void)
     expected = OS_FS_ERR_PATH_TOO_LONG;
     actual   = OS_FS_GetPhysDriveName(NameBuf, "none");
     UtAssert_True(actual == expected, "OS_FS_GetPhysDriveName() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_memchr));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
     expected = OS_ERR_INCORRECT_OBJ_STATE;
     actual   = OS_FS_GetPhysDriveName(NameBuf, "none");
@@ -435,7 +435,7 @@ void Test_OS_TranslatePath(void)
     expected = OS_FS_ERR_PATH_TOO_LONG;
     actual   = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_strlen));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_strlen));
 
     /* Invalid no '/' */
     expected = OS_FS_ERR_PATH_INVALID;
@@ -455,7 +455,7 @@ void Test_OS_TranslatePath(void)
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch), OS_ERR_NAME_NOT_FOUND);
     actual = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdGetBySearch));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch));
 
     /* VirtPathLen < VirtPathBegin */
     UT_SetDeferredRetcode(UT_KEY(OCS_strlen), 4, OS_MAX_PATH_LEN);

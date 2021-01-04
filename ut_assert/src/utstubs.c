@@ -335,14 +335,7 @@ void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value)
     }
 }
 
-#ifndef OSAL_OMIT_DEPRECATED
-void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value)
-{
-    UT_SetDefaultReturnValue(FuncKey, Value);
-}
-#endif
-
-void UT_ClearForceFail(UT_EntryKey_t FuncKey)
+void UT_ClearDefaultReturnValue(UT_EntryKey_t FuncKey)
 {
     UT_StubTableEntry_t *StubPtr;
 
@@ -352,6 +345,18 @@ void UT_ClearForceFail(UT_EntryKey_t FuncKey)
         UT_ClearStubEntry(StubPtr);
     }
 }
+
+#ifndef OSAL_OMIT_DEPRECATED
+void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value)
+{
+    UT_SetDefaultReturnValue(FuncKey, Value);
+}
+
+void UT_ClearForceFail(UT_EntryKey_t FuncKey)
+{
+    UT_ClearDefaultReturnValue(FuncKey);
+}
+#endif
 
 bool UT_GetStubRetcodeAndCount(UT_EntryKey_t FuncKey, int32 *Retcode, int32 *Count)
 {

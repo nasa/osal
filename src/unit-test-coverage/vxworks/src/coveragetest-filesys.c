@@ -140,7 +140,7 @@ void Test_OS_FileSysMountVolume_Impl(void)
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_open));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_open));
 
     /* Additional cases for the FS_BASED handling */
     OS_filesys_table[0].fstype = OS_FILESYS_TYPE_FS_BASED;
@@ -154,7 +154,7 @@ void Test_OS_FileSysMountVolume_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_FS_ERR_DRIVE_NOT_CREATED);
 
     /* Mount dir does exist but not a directory */
-    UT_ClearForceFail(UT_KEY(OCS_stat));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_stat));
     OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_FS_ERR_PATH_INVALID);
 
     /* Mount dir does exist and is a directory */
@@ -179,11 +179,11 @@ void Test_OS_FileSysUnmountVolume_Impl(void)
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(&token), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_open));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_open));
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_ioctl), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(&token), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_ioctl));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_ioctl));
 
     /* Additional cases for the FS_BASED handling (no op on unmount) */
     OS_filesys_table[0].fstype = OS_FILESYS_TYPE_FS_BASED;
@@ -217,7 +217,7 @@ void Test_OS_FileSysCheckVolume_Impl(void)
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(&token, false), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_open));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_open));
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_ioctl), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(&token, false), OS_ERROR);
