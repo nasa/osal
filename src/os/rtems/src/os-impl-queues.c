@@ -156,7 +156,7 @@ int32 OS_QueueDelete_Impl(const OS_object_token_t *token)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, uint32 size, uint32 *size_copied, int32 timeout)
+int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, size_t *size_copied, int32 timeout)
 {
     int32                            return_code;
     rtems_status_code                status;
@@ -253,7 +253,7 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, uint32 size, 
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, uint32 size, uint32 flags)
+int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, size_t size, uint32 flags)
 {
     rtems_status_code                status;
     rtems_id                         rtems_queue_id;
