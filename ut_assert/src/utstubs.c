@@ -313,13 +313,13 @@ void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value)
     UT_StubTableEntry_t *Rc;
 
     /*
-     * First find an existing force fail entry for the function.
+     * First find an existing default return value entry for the function.
      * In case one is already set we do not duplicate (unlike deferred codes)
      */
     Rc = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FORCE_FAIL);
     if (Rc == NULL)
     {
-        /* Creating force fail entry - repeat search and grab any unused slot */
+        /* Creating default return value entry - repeat search and grab any unused slot */
         Rc = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
     }
 

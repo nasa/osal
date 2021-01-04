@@ -180,21 +180,16 @@ void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, size_t BufferSize
 void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, size_t *MaxSize, size_t *Position);
 
 /**
- * Enable or disable the forced failure mode for the given stub function
- *
- * This triggers a constant failure mode from the stub function, if implemented.
- * The stub function will invoke a given failure path as defined by
- * the stub implementation.
- *
- * A count of the number of times the failure mode is invoked will be maintained.
+ * Set the default return value for the given stub function.
+ * User needs to use UT_ClearDefaultReturnValue to clear the value.
  *
  * \param FuncKey The stub function to add the return code to.
- * \param Value Arbitrary failure mode value (may or may not be used by the stub)
+ * \param Value Arbitrary return value (may or may not be used by the stub)
  */
 void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value);
 
 /**
- * Disable the forced failure mode for the given stub function
+ * Disable the default return for the given stub function
  *
  * This undoes the action of UT_SetDefaultReturnValue()
  *
@@ -226,7 +221,7 @@ void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value);
  *
  * \param FuncKey The stub function entry to clear.
  * 
- *  @deprecated replaced by UT_ClearDefaultReturnValue
+ * @deprecated replaced by UT_ClearDefaultReturnValue
  */
 void UT_ClearForceFail(UT_EntryKey_t FuncKey);
 #endif
