@@ -550,7 +550,7 @@ void UT_os_timerset_test()
         intervalTime   = 5;
         g_toleranceVal = 0;
 
-        UT_OS_LOG("\nOS_TimerSet() - #3 Interval-too-short (clk_accuracy=%d)\n", (int)g_clkAccuracy);
+        UtPrintf("\nOS_TimerSet() - #3 Interval-too-short (clk_accuracy=%d)\n", (int)g_clkAccuracy);
         res = OS_TimerSet(g_timerIds[3], startTime, intervalTime);
         if (res == OS_SUCCESS)
         {
@@ -588,7 +588,7 @@ void UT_os_timerset_test()
         startTime      = 1000;
         intervalTime   = 500000;
         g_toleranceVal = intervalTime / 20; /* 5% */
-        UT_OS_LOG("\nOS_TimerSet() - #1 Nominal condition (clk_accuracy=%d)\n", (int)g_clkAccuracy);
+        UtPrintf("\nOS_TimerSet() - #1 Nominal condition (clk_accuracy=%d)\n", (int)g_clkAccuracy);
         res = OS_TimerSet(g_timerIds[4], startTime, intervalTime);
         if (res == OS_SUCCESS)
         {

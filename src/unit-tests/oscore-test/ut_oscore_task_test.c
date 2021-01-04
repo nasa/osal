@@ -84,7 +84,7 @@ void generic_test_task(void)
     task_id = OS_TaskGetId();
     OS_TaskGetInfo(task_id, &task_prop);
 
-    UT_OS_LOG("Starting GenericTask: %s, id: %lx\n", task_prop.name, OS_ObjectIdToInteger(task_id));
+    UtPrintf("Starting GenericTask: %s, id: %lx\n", task_prop.name, OS_ObjectIdToInteger(task_id));
 
     while (1)
     {
@@ -322,7 +322,7 @@ UT_os_task_delete_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void delete_handler_callback(void)
 {
-    UT_OS_LOG("Task delete callback...\n");
+    UtPrintf("Task delete callback...\n");
 }
 
 /*--------------------------------------------------------------------------------*/
@@ -337,7 +337,7 @@ void delete_handler_test_task(void)
     task_id = OS_TaskGetId();
     OS_TaskGetInfo(task_id, &task_prop);
 
-    UT_OS_LOG("Starting DeleteTest Task: %s, id: %lx\n", task_prop.name, OS_ObjectIdToInteger(task_id));
+    UtPrintf("Starting DeleteTest Task: %s, id: %lx\n", task_prop.name, OS_ObjectIdToInteger(task_id));
 
     g_task_result = OS_TaskInstallDeleteHandler(&delete_handler_callback);
 
@@ -443,7 +443,7 @@ void exit_test_task(void)
     task_id = OS_TaskGetId();
     OS_TaskGetInfo(task_id, &task_prop);
 
-    UT_OS_LOG("Starting ExitTest Task: %s, id: %lx\n", task_prop.name, OS_ObjectIdToInteger(task_id));
+    UtPrintf("Starting ExitTest Task: %s, id: %lx\n", task_prop.name, OS_ObjectIdToInteger(task_id));
 
     /*
     ** The parent task will check to see if this task is valid.
@@ -675,7 +675,7 @@ void register_test_task(void)
     task_id = OS_TaskGetId();
     OS_TaskGetInfo(task_id, &task_prop);
 
-    UT_OS_LOG("Starting RegisterTest Task: %s\n", task_prop.name);
+    UtPrintf("Starting RegisterTest Task: %s\n", task_prop.name);
     ;
 
     /*
@@ -775,7 +775,7 @@ void getid_test_task(void)
     task_id = OS_TaskGetId();
     OS_TaskGetInfo(task_id, &task_prop);
 
-    UT_OS_LOG("OS_TaskGetId() - #1 Nominal [This is the returned task Id=%lx]\n", OS_ObjectIdToInteger(task_id));
+    UtPrintf("OS_TaskGetId() - #1 Nominal [This is the returned task Id=%lx]\n", OS_ObjectIdToInteger(task_id));
 
     while (1)
     {
@@ -814,7 +814,7 @@ void UT_os_task_get_id_test()
     {
         OS_TaskDelay(500);
 
-        UT_OS_LOG("OS_TaskGetId() - #1 Nominal [This is the expected task Id=%lx]\n",
+        UtPrintf("OS_TaskGetId() - #1 Nominal [This is the expected task Id=%lx]\n",
                   OS_ObjectIdToInteger(g_task_ids[1]));
 
         res = OS_TaskDelete(g_task_ids[1]); /* Won't hurt if its already deleted */

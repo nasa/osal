@@ -804,9 +804,9 @@ void UT_os_readfile_test()
     OS_close(g_fDescs[0]);
     OS_remove(g_fNames[0]);
 
-    UT_OS_LOG("OS_read() success test -- Write to file:\n\t%s\n", g_writeBuff);
+    UtPrintf("OS_read() success test -- Write to file:\n\t%s\n", g_writeBuff);
     ;
-    UT_OS_LOG("OS_read() success test -- Read from file:\n\t%s\n", g_readBuff);
+    UtPrintf("OS_read() success test -- Read from file:\n\t%s\n", g_readBuff);
     ;
 
 UT_os_readfile_test_exit_tag:
@@ -975,9 +975,9 @@ void UT_os_writefile_test()
     OS_close(g_fDescs[0]);
     OS_remove(g_fNames[0]);
 
-    UT_OS_LOG("OS_write() success test -- Write to file:\n\t%s\n", g_writeBuff);
+    UtPrintf("OS_write() success test -- Write to file:\n\t%s\n", g_writeBuff);
     ;
-    UT_OS_LOG("OS_write() success test -- Read from file:\n\t%s\n", g_readBuff);
+    UtPrintf("OS_write() success test -- Read from file:\n\t%s\n", g_readBuff);
     ;
 
 UT_os_writefile_test_exit_tag:
