@@ -91,4 +91,6 @@ char *const *OS_BSP_GetArgV(void);
  ------------------------------------------------------------------*/
 void OS_BSP_SetExitCode(int32 code);
 
+/**@}*/
+
 #endif
