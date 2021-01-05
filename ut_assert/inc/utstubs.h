@@ -193,6 +193,15 @@ void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, size_t *MaxSize,
  */
 void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value);
 
+/**
+ * Disable the forced failure mode for the given stub function
+ *
+ * This undoes the action of UT_SetDefaultReturnValue()
+ *
+ * \param FuncKey The stub function entry to clear.
+ */
+void UT_ClearDefaultReturnValue(UT_EntryKey_t FuncKey);
+
 #ifndef OSAL_OMIT_DEPRECATED
 /**
  * Enable or disable the forced failure mode for the given stub function
@@ -209,7 +218,6 @@ void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value);
  * @deprecated replaced by UT_SetDefaultReturnValue
  */
 void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value);
-#endif
 
 /**
  * Disable the forced failure mode for the given stub function
@@ -219,6 +227,7 @@ void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value);
  * \param FuncKey The stub function entry to clear.
  */
 void UT_ClearForceFail(UT_EntryKey_t FuncKey);
+#endif
 
 /**
  * Set a Hook function for a particular call
@@ -315,10 +324,24 @@ bool UT_Stub_CheckDeferredRetcode(UT_EntryKey_t FuncKey, int32 *Retcode);
  * will return true and increment the internal usage counter.
  *
  * \param FuncKey The stub function to check the return code.
+ * \param[out] Value Set to the value supplied to UT_SetDefaultReturnValue() (NULL allowed)
+ * \returns true if force fail mode is active
+ */
+bool UT_Stub_CheckDefaultReturnValue(UT_EntryKey_t FuncKey, int32 *Value);
+
+#ifndef OSAL_OMIT_DEPRECATED
+/**
+ * Check for a forced failure mode entry for the given stub function
+ *
+ * If a UT_SetDefaultReturnValue() option is in place for the given function this
+ * will return true and increment the internal usage counter.
+ *
+ * \param FuncKey The stub function to check the return code.
  * \param Value Set to the value supplied to UT_SetDefaultReturnValue()
  * \returns true if force fail mode is active
  */
 bool UT_Stub_CheckForceFail(UT_EntryKey_t FuncKey, int32 *Value);
+#endif
 
 /**
  * Copies data from a test-supplied buffer to the local buffer

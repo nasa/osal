@@ -335,14 +335,7 @@ void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value)
     }
 }
 
-#ifndef OSAL_OMIT_DEPRECATED
-void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value)
-{
-    UT_SetDefaultReturnValue(FuncKey, Value);
-}
-#endif
-
-void UT_ClearForceFail(UT_EntryKey_t FuncKey)
+void UT_ClearDefaultReturnValue(UT_EntryKey_t FuncKey)
 {
     UT_StubTableEntry_t *StubPtr;
 
@@ -352,6 +345,18 @@ void UT_ClearForceFail(UT_EntryKey_t FuncKey)
         UT_ClearStubEntry(StubPtr);
     }
 }
+
+#ifndef OSAL_OMIT_DEPRECATED
+void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value)
+{
+    UT_SetDefaultReturnValue(FuncKey, Value);
+}
+
+void UT_ClearForceFail(UT_EntryKey_t FuncKey)
+{
+    UT_ClearDefaultReturnValue(FuncKey);
+}
+#endif
 
 bool UT_GetStubRetcodeAndCount(UT_EntryKey_t FuncKey, int32 *Retcode, int32 *Count)
 {
@@ -391,7 +396,7 @@ uint32 UT_GetStubCount(UT_EntryKey_t FuncKey)
     return Count;
 }
 
-bool UT_Stub_CheckForceFail(UT_EntryKey_t FuncKey, int32 *Value)
+bool UT_Stub_CheckDefaultReturnValue(UT_EntryKey_t FuncKey, int32 *Value)
 {
     bool                 Result = false;
     UT_StubTableEntry_t *StubPtr;
@@ -401,12 +406,22 @@ bool UT_Stub_CheckForceFail(UT_EntryKey_t FuncKey, int32 *Value)
     {
         /* For "force fail" entries, the count will reflect the number of times it was used */
         ++StubPtr->Data.Rc.Count;
-        *Value = StubPtr->Data.Rc.Value;
+        if (Value != NULL)
+        {
+            *Value = StubPtr->Data.Rc.Value;
+        }
         Result = true;
     }
 
     return (Result);
 }
+
+#ifndef OSAL_OMIT_DEPRECATED
+bool UT_Stub_CheckForceFail(UT_EntryKey_t FuncKey, int32 *Value)
+{
+    return UT_Stub_CheckDefaultReturnValue(FuncKey, Value);
+}
+#endif
 
 void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, size_t BufferSize, bool AllocateCopy)
 {
