@@ -762,6 +762,7 @@ void OS_WaitForStateChange(osal_objtype_t idtype, uint32 attempts)
         /*
          * After return, this task owns the table again
          */
+        /* cppcheck-suppress redundantAssignment */
         objtype->table_owner = saved_owner_id;
     }
 }
