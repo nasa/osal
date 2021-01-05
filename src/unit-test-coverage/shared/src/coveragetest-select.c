@@ -115,7 +115,7 @@ void Test_OS_SelectFdAddClearOps(void)
     UtAssert_True(!OS_SelectFdIsSet(&UtSet, UT_OBJID_1), "OS_SelectFdIsSet(1) == false");
     UtAssert_True(!OS_SelectFdIsSet(&UtSet, UT_OBJID_2), "OS_SelectFdIsSet(2) == false");
 
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdToArrayIndex));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdToArrayIndex));
     UtAssert_True(OS_SelectFdIsSet(&UtSet, UT_OBJID_1), "OS_SelectFdIsSet(1) == true");
     UtAssert_True(!OS_SelectFdIsSet(&UtSet, UT_OBJID_2), "OS_SelectFdIsSet(2) == false");
 }

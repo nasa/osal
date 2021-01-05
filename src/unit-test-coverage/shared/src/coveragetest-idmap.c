@@ -349,7 +349,7 @@ void Test_OS_ObjectIdFindByName(void)
     actual   = OS_ObjectIdFindByName(OS_OBJECT_TYPE_OS_TASK, TaskName, &objid);
     UtAssert_True(actual == expected, "OS_ObjectFindIdByName(%s) (%ld) == OS_ERR_NAME_TOO_LONG", TaskName,
                   (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_memchr));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
     /*
      * Pass in a name that is actually not found

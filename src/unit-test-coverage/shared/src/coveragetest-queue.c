@@ -73,7 +73,7 @@ void Test_OS_QueueCreate(void)
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(0), OSAL_SIZE_C(4), 0);
     UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_memchr));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
     expected = OS_QUEUE_INVALID_SIZE;
     actual   = OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(1 + OS_QUEUE_MAX_DEPTH), OSAL_SIZE_C(4), 0);
@@ -153,7 +153,7 @@ void Test_OS_QueueGetIdByName(void)
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_QueueGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_QueueGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
     actual   = OS_QueueGetIdByName(&objid, "NF");

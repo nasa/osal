@@ -82,7 +82,7 @@ void Test_OS_OpenCreate(void)
     expected = OS_ERROR;
     actual   = OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, OS_READ_WRITE);
     UtAssert_True(actual == OS_ERROR, "OS_OpenCreate() (%ld) == OS_ERROR (bad path)", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TranslatePath));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TranslatePath));
 }
 
 void Test_OS_close(void)
@@ -271,7 +271,7 @@ void Test_OS_cp(void)
     expected = -444;
     actual   = OS_cp("/cf/file1", "/cf/file2");
     UtAssert_True(actual == expected, "OS_cp() (%ld) == -444", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_GenericRead_Impl));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_GenericRead_Impl));
 
     UT_SetDataBuffer(UT_KEY(OS_GenericRead_Impl), ReadBuf, sizeof(ReadBuf), false);
     UT_SetDefaultReturnValue(UT_KEY(OS_GenericWrite_Impl), -555);
@@ -283,7 +283,7 @@ void Test_OS_cp(void)
     expected = OS_INVALID_POINTER;
     actual   = OS_cp("/cf/file1", "/cf/file2");
     UtAssert_True(actual == expected, "OS_cp() (%ld) == OS_INVALID_POINTER", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TranslatePath));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TranslatePath));
 }
 
 void Test_OS_mv(void)

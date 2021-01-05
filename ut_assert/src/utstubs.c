@@ -771,7 +771,7 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
 
     if (!UT_Stub_CheckDeferredRetcode(FuncKey, &Retcode))
     {
-        if (!UT_Stub_CheckForceFail(FuncKey, &Retcode))
+        if (!UT_Stub_CheckDefaultReturnValue(FuncKey, &Retcode))
         {
             Retcode = DefaultRc;
         }

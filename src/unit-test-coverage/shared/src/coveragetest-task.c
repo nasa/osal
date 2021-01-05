@@ -227,7 +227,7 @@ void Test_OS_TaskGetIdByName(void)
     actual = OS_TaskGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_TaskGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
     actual   = OS_TaskGetIdByName(&objid, "NF");
@@ -318,14 +318,14 @@ void Test_OS_TaskFindIdBySystemData(void)
     UT_SetDefaultReturnValue(UT_KEY(OS_TaskValidateSystemData_Impl), expected);
     actual = OS_TaskFindIdBySystemData(&task_id, &test_sysdata, sizeof(test_sysdata));
     UtAssert_True(actual == expected, "OS_TaskFindIdBySystemData() (%ld) == OS_INVALID_POINTER", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TaskValidateSystemData_Impl));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TaskValidateSystemData_Impl));
 
     /* Test search failure */
     expected = OS_ERR_NAME_NOT_FOUND;
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch), expected);
     actual = OS_TaskFindIdBySystemData(&task_id, &test_sysdata, sizeof(test_sysdata));
     UtAssert_True(actual == expected, "OS_TaskFindIdBySystemData() (%ld) == OS_ERR_NAME_NOT_FOUND", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdGetBySearch));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch));
 }
 
 /* Osapi_Test_Setup

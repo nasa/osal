@@ -120,12 +120,12 @@ void Test_OS_TimeBaseCreate_Impl(void)
     /* fail to initialize the sem */
     UT_SetDefaultReturnValue(UT_KEY(OCS_semMInitialize), -1);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(&token), OS_TIMER_ERR_INTERNAL);
-    UT_ClearForceFail(UT_KEY(OCS_semMInitialize));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_semMInitialize));
 
     /* fail to spawn the task */
     UT_SetDefaultReturnValue(UT_KEY(OCS_taskSpawn), -1);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(&token), OS_TIMER_ERR_INTERNAL);
-    UT_ClearForceFail(UT_KEY(OCS_taskSpawn));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_taskSpawn));
 
     /*
      * this call to TimeBaseCreate_Impl should also fail, because

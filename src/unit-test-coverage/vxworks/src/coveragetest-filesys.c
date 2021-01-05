@@ -135,7 +135,7 @@ void Test_OS_FileSysMountVolume_Impl(void)
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysMountVolume_Impl(&token), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_open));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_open));
 }
 
 void Test_OS_FileSysUnmountVolume_Impl(void)
@@ -149,11 +149,11 @@ void Test_OS_FileSysUnmountVolume_Impl(void)
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(&token), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_open));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_open));
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_ioctl), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysUnmountVolume_Impl(&token), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_ioctl));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_ioctl));
 }
 
 void Test_OS_FileSysStatVolume_Impl(void)
@@ -183,7 +183,7 @@ void Test_OS_FileSysCheckVolume_Impl(void)
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(&token, false), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_open));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_open));
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_ioctl), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysCheckVolume_Impl(&token, false), OS_ERROR);
