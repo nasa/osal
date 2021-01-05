@@ -113,7 +113,8 @@ void TestDatagramNetworkApi_Setup(void)
 
     /* OS_SocketOpen */
     actual = OS_SocketOpen(&socket_id, OS_SocketDomain_INET6, OS_SocketType_DATAGRAM);
-    UtAssert_True(actual == OS_SUCCESS || OS_ERR_NOT_IMPLEMENTED, "OS_SocketOpen() (%ld) Passed", (long)actual);
+    UtAssert_True(actual == OS_SUCCESS || actual ==  OS_ERR_NOT_IMPLEMENTED,
+                "OS_SocketOpen() (%ld) Passed", (long)actual);
     OS_close(socket_id);
 
     expected = OS_INVALID_POINTER;
@@ -126,12 +127,12 @@ void TestDatagramNetworkApi_Setup(void)
 
     /* OS_SocketAddrInit */
     actual = OS_SocketAddrInit(&addr, OS_SocketDomain_INET6);
-    UtAssert_True(actual == OS_SUCCESS || OS_ERR_NOT_IMPLEMENTED, "OS_SocketAddrInit() (%ld) == OS_SUCCESS",
-                  (long)actual);
+    UtAssert_True(actual == OS_SUCCESS || actual ==  OS_ERR_NOT_IMPLEMENTED,
+                "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
 
     actual = OS_SocketAddrInit(NULL, OS_SocketDomain_INET6);
-    UtAssert_True(actual == OS_INVALID_POINTER || OS_ERR_NOT_IMPLEMENTED,
-                  "OS_SocketAddrInit() (%ld) == OS_INVALID_POINTER", (long)actual);
+    UtAssert_True(actual == OS_INVALID_POINTER || actual == OS_ERR_NOT_IMPLEMENTED,
+                "OS_SocketAddrInit() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_ERR_NOT_IMPLEMENTED;
     actual   = OS_SocketAddrInit(&addr, OS_SocketDomain_INVALID);
