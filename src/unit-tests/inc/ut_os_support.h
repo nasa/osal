@@ -109,8 +109,6 @@ static inline bool UtOsalImplemented(int32 Fn, const char *File, uint32 Line)
 
 /*--------------------------------------------------------------------------------*/
 
-#define UT_OS_LOG(...) UtAssert_Message(UTASSERT_CASETYPE_INFO, __FILE__, __LINE__, __VA_ARGS__);
-
 /*
  * An osal_id_t value which is not OS_OBJECT_ID_UNDEFINED and also
  * not aliasing any other valid value/type.
