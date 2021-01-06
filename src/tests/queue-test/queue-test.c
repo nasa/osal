@@ -33,7 +33,9 @@ void QueueTimeoutSetup(void);
 void QueueTimeoutCheck(void);
 
 #define MSGQ_DEPTH 50
-#define MSGQ_SIZE  4
+#define MSGQ_SIZE  sizeof(uint32)
+#define MSGQ_TOTAL 10
+#define MSGQ_BURST  3
 
 /* Task 1 */
 #define TASK_1_STACK_SIZE 1024
@@ -65,8 +67,8 @@ void task_1(void)
 {
     int32  status;
     size_t data_size;
-    char   data_received[4] = {0};
-    char   expected[4]      = "xyz";
+    uint32   data_received ;
+    uint32   expected = 0;
 
     OS_printf("Starting task 1\n");
 
@@ -84,8 +86,10 @@ void task_1(void)
         if (status == OS_SUCCESS)
         {
             ++task_1_messages;
-            UtAssert_True(strcmp(data_received, expected) == 0, "TASK 1: data_received (%s) == expected (%s)",
+            UtAssert_True(data_received == expected, "TASK 1: data_received (%u) == expected (%u)",
                           data_received, expected);
+
+            expected++;
         }
         else if (status == OS_QUEUE_TIMEOUT)
         {
@@ -194,13 +198,12 @@ void QueueMessageSetup(void)
 {
     int32  status;
     uint32 accuracy;
+    int        i;
+    uint32 Data = 0;
     task_1_failures = 0;
     task_1_messages = 0;
     task_1_timeouts = 0;
-
-    int        i;
-    const char Data[4] = "xyz";
-
+  
     status = OS_QueueCreate(&msgq_id, "MsgQ", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
     UtAssert_True(status == OS_SUCCESS, "MsgQ create Id=%lx Rc=%d", OS_ObjectIdToInteger(msgq_id), (int)status);
 
@@ -224,11 +227,17 @@ void QueueMessageSetup(void)
     status = OS_TimerSet(timer_id, timer_start, timer_interval);
     UtAssert_True(status == OS_SUCCESS, "Timer 1 set Rc=%d", (int)status);
 
-    /* Put 10 messages onto the que with some time inbetween to not overfill the que*/
-    for (i = 0; i < 10; i++)
+    /* 
+    * Put 10 messages onto the que with some time inbetween the later messages   
+    * to make sure the que handles both storing and waiting for messages 
+    */
+    for (i = 0; i < MSGQ_TOTAL; i++)
     {
-        OS_TaskDelay(200);
-        status = OS_QueuePut(msgq_id, Data, sizeof(Data), 0);
+        if(i > MSGQ_BURST)
+            OS_TaskDelay(400);
+
+        Data = i;
+        status = OS_QueuePut(msgq_id, (void *)&Data, sizeof(Data), 0);
         UtAssert_True(status == OS_SUCCESS, "OS Queue Put Rc=%d", (int)status);
     }
 }
