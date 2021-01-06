@@ -108,7 +108,7 @@ void Setup_Server(void)
     UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Set server port */
-    actual = OS_SocketAddrSetPort(&s_addr, 9997);
+    actual = OS_SocketAddrSetPort(&s_addr, 9994);
     UtAssert_True(actual == expected, "OS_SocketAddrSetPort() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Set server address */
@@ -142,7 +142,7 @@ void Setup_Client(void)
     UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Set client port */
-    actual = OS_SocketAddrSetPort(&c_addr, 9996);
+    actual = OS_SocketAddrSetPort(&c_addr, 9993);
     UtAssert_True(actual == expected, "OS_SocketAddrSetPort() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Set client address */
@@ -193,7 +193,7 @@ void Setup_Server2(void)
     UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Set server port */
-    actual = OS_SocketAddrSetPort(&s2_addr, 9998);
+    actual = OS_SocketAddrSetPort(&s2_addr, 9995);
     UtAssert_True(actual == expected, "OS_SocketAddrSetPort() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Set server address */
@@ -227,7 +227,7 @@ void Setup_Client2(void)
     UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Set client port */
-    actual = OS_SocketAddrSetPort(&c2_addr, 9995);
+    actual = OS_SocketAddrSetPort(&c2_addr, 9992);
     UtAssert_True(actual == expected, "OS_SocketAddrSetPort() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Set client address */
@@ -281,8 +281,8 @@ void Teardown_Multi(void)
 {
     uint32 status;
 
-    status = OS_BinSemFlush(bin_sem_id);
-    UtAssert_True(status == OS_SUCCESS, "BinSem1 Teardown multi flush Rc=%d", (int)status);
+    status = OS_BinSemGive(bin_sem_id);
+    UtAssert_True(status == OS_SUCCESS, "BinSem1 Teardown multi give Rc=%d", (int)status);
 
     OS_close(c2_socket_id);
     Teardown_Single();
