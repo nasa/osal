@@ -285,6 +285,55 @@ static inline OS_time_t OS_TimeAssembleFromNanoseconds(int64 seconds, uint32 nan
 
 /*-------------------------------------------------------------------------------------*/
 /**
+ * @brief Assemble/Convert a number of seconds + microseconds into an OS_time_t interval
+ *
+ * This creates an OS_time_t value using a whole number of seconds and a fractional
+ * part in units of microseconds.  This is the inverse of OS_TimeGetTotalSeconds()
+ * and OS_TimeGetMicrosecondsPart(), and should recreate the original OS_time_t
+ * value from these separate values (aside from any potential conversion losses
+ * due to limited resolution of the data types/units).
+ *
+ * @sa OS_TimeGetTotalSeconds(), OS_TimeGetMicrosecondsPart()
+ *
+ * @param[in] seconds       Whole number of seconds
+ * @param[in] microseconds  Number of microseconds (fractional part only)
+ * @returns The input arguments represented as an OS_time_t interval
+ */
+static inline OS_time_t OS_TimeAssembleFromMicroseconds(int64 seconds, uint32 microseconds)
+{
+    OS_time_t result;
+    result.seconds   = seconds;
+    result.microsecs = microseconds;
+    return result;
+}
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Assemble/Convert a number of seconds + milliseconds into an OS_time_t interval
+ *
+ * This creates an OS_time_t value using a whole number of seconds and a fractional
+ * part in units of milliseconds.  This is the inverse of OS_TimeGetTotalSeconds()
+ * and OS_TimeGetMillisecondsPart(), and should recreate the original OS_time_t
+ * value from these separate values (aside from any potential conversion losses
+ * due to limited resolution of the data types/units).
+ *
+ * @sa OS_TimeGetTotalSeconds(), OS_TimeGetMillisecondsPart()
+ *
+ * @param[in] seconds       Whole number of seconds
+ * @param[in] milliseconds  Number of milliseconds (fractional part only)
+ * @returns The input arguments represented as an OS_time_t interval
+ */
+static inline OS_time_t OS_TimeAssembleFromMilliseconds(int64 seconds, uint32 milliseconds)
+{
+    OS_time_t result;
+    result.seconds   = seconds;
+    result.microsecs = milliseconds * 1000;
+    return result;
+}
+
+
+/*-------------------------------------------------------------------------------------*/
+/**
  * @brief Assemble/Convert a number of seconds + subseconds into an OS_time_t interval
  *
  * This creates an OS_time_t value using a whole number of seconds and a fractional
