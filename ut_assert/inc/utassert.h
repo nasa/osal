@@ -206,7 +206,7 @@ typedef struct
     } while (0)
 
 /**
- * \brief Confirm an integer value is nonzero
+ * \brief Confirm an integer value is zero
  */
 #define UtAssert_ZERO(actual)                                   \
     do                                                          \
@@ -272,13 +272,20 @@ bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File,
 void UtAssert_Abort(const char *Message);
 
 /**
- * Output an informational message to the console/log file
+ * \brief Output an informational message to the console/log file
  *
  * Just like the standard printf except it will output to the given status channel (see utassert.h)
  *
  * This calls into the UT BSP function to actually write the message
  * to the current output device.  This may be the console or a log file
  * or something else depending on what BSP is in use.
+ *
+ * \param MessageType Message case type
+ * \param File        File name containing the message
+ * \param Line        Line number containing the message
+ * \param Spec        printf style format followed by args of message
+ *
+ * \sa Helper macros: UtPrintf(), UtDebug()
  */
 void UtAssert_Message(uint8 MessageType, const char *File, uint32 Line, const char *Spec, ...) OS_PRINTF(4, 5);
 
@@ -292,7 +299,7 @@ void UtAssert_Message(uint8 MessageType, const char *File, uint32 Line, const ch
  *
  * \param File         File containing the test case
  * \param LineNum      Line number containing the test case
- * \param MessageType  Should be set to either UT_MESSAGE_PASS or UT_MESSAGE_FAILURE.
+ * \param MessageType  Message case type
  * \param SubsysName   The subsystem under test (abbreviated name)
  * \param ShortDesc    Short description of the test case
  * \param SegmentNum   Sequence among the overall/global test Segments

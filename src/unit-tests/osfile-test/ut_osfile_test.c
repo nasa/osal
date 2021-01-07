@@ -79,7 +79,7 @@ int32 UT_os_setup_fs()
     res = OS_mkfs(g_fsAddrPtr, g_devName, "RAM3", OSAL_SIZE_C(512), OSAL_BLOCKCOUNT_C(64));
     if (res != OS_SUCCESS)
     {
-        UT_OS_LOG("OS_mkfs() returns %d\n", (int)res);
+        UtPrintf("OS_mkfs() returns %d\n", (int)res);
         ;
         goto UT_os_setup_fs_exit_tag;
     }
@@ -87,7 +87,7 @@ int32 UT_os_setup_fs()
     res = OS_mount(g_devName, g_mntName);
     if (res != OS_SUCCESS)
     {
-        UT_OS_LOG("OS_mount() returns %d\n", (int)res);
+        UtPrintf("OS_mount() returns %d\n", (int)res);
         ;
         OS_rmfs(g_devName);
         goto UT_os_setup_fs_exit_tag;

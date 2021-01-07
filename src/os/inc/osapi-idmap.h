@@ -51,15 +51,6 @@
 #define OS_OBJECT_TYPE_USER        0x10 /**< @brief Object user type */
 /**@}*/
 
-/** @defgroup OSAPICore OSAL Core Operation APIs
- *
- * These are for OSAL core operations for startup/initialization, running, and shutdown.
- * Typically only used in bsps, unit tests, psps, etc.
- *
- * Not intended for user application use
- * @{
- */
-
 /** @defgroup OSAPIObjUtil OSAL Object ID Utility APIs
  * @{
  */
