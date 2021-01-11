@@ -318,7 +318,7 @@ void TestSelectSingleRead(void)
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_ERROR_TIMEOUT", (long)actual);
-    UtAssert_True(StateFlags == 0, "OS_SelectSingle() (%d) == None", StateFlags);
+    UtAssert_True(StateFlags == 0, "OS_SelectSingle() (0x%x) == None", (unsigned int)StateFlags);
 
     status = OS_BinSemGive(bin_sem_id);
 
@@ -433,7 +433,7 @@ void TestSelectSingleWrite(void)
         expected = OS_ERROR_TIMEOUT;
         /* Verify Outputs */
         UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_ERROR_TIMEOUT", (long)actual);
-        UtAssert_True(StateFlags == 0, "OS_SelectSingle() (%d) == None", StateFlags);
+        UtAssert_True(StateFlags == 0, "OS_SelectSingle() (0x%x) == None", (unsigned int)StateFlags);
 
         expected   = OS_SUCCESS;
         StateFlags = OS_STREAM_STATE_WRITABLE;
@@ -549,7 +549,7 @@ void TestSelectSingleFile(void)
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_ERROR_TIMEOUT", (long)actual);
-    UtAssert_True(StateFlags == 0, "OS_SelectSingle() (%d) == None", StateFlags);
+    UtAssert_True(StateFlags == 0, "OS_SelectSingle() (0x%x) == None", (unsigned int)StateFlags);
 }
 
 void UtTest_Setup(void)
