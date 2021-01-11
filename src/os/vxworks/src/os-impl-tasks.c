@@ -289,6 +289,20 @@ int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_TaskDetach_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
+{
+    /* No-op on VxWorks */
+    return OS_SUCCESS;
+}
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_TaskExit_Impl
  *
  *  Purpose: Implemented per internal OSAL API

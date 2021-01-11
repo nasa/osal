@@ -54,11 +54,11 @@ static void UT_TokenCompose(uint32 lock_mode, uint32 indx, UT_ObjType_t objtype,
 UT_DEFAULT_STUB(OS_ObjectIdInit, (void))
 
 /* Lock/Unlock for global tables */
-void OS_Lock_Global(osal_objtype_t idtype)
+void OS_Lock_Global(OS_object_token_t *token)
 {
     UT_DEFAULT_IMPL(OS_Lock_Global);
 }
-void OS_Unlock_Global(osal_objtype_t idtype)
+void OS_Unlock_Global(OS_object_token_t *token)
 {
     UT_DEFAULT_IMPL(OS_Unlock_Global);
 }
@@ -210,6 +210,36 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS
     }
 
     return Status;
+}
+
+/*****************************************************************************
+ *
+ * Stub function for OS_ObjectIdTransactionInit()
+ *
+ *****************************************************************************/
+int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS_object_token_t *token)
+{
+    int32 Status;
+
+    Status = UT_DEFAULT_IMPL(OS_ObjectIdTransactionInit);
+
+    if (Status == OS_SUCCESS &&
+        UT_Stub_CopyToLocal(UT_KEY(OS_ObjectIdTransactionInit), token, sizeof(*token)) < sizeof(*token))
+    {
+        memset(&token, 0, sizeof(token));
+    }
+
+    return Status;
+}
+
+/*****************************************************************************
+ *
+ * Stub function for OS_ObjectIdTransactionCancel()
+ *
+ *****************************************************************************/
+void OS_ObjectIdTransactionCancel(OS_object_token_t *token)
+{
+    UT_DEFAULT_IMPL(OS_ObjectIdTransactionCancel);
 }
 
 /*****************************************************************************
@@ -573,7 +603,7 @@ void OS_ObjectIdIteratorDestroy(OS_object_iter_t *iter)
     UT_DEFAULT_IMPL(OS_ObjectIdIteratorDestroy);
 }
 
-int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t))
+int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t, void*))
 {
     int32 Status;
 

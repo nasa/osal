@@ -404,6 +404,10 @@ void Test_OS_GetFsInfo(void)
     int32       actual   = ~OS_SUCCESS;
     os_fsinfo_t filesys_info;
 
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdIteratorGetNext), 1);
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdIteratorGetNext), 3, 0);
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdIteratorGetNext), 4, 0);
+
     actual = OS_GetFsInfo(&filesys_info);
 
     UtAssert_True(actual == expected, "OS_FileSysInfo() (%ld) == OS_SUCCESS", (long)actual);
@@ -414,11 +418,11 @@ void Test_OS_GetFsInfo(void)
                   "filesys_info.MaxVolumes (%lu) == OS_MAX_FILE_SYSTEMS", (unsigned long)filesys_info.MaxVolumes);
 
     /* since there are no open files, the free fd count should match the max */
-    UtAssert_True(filesys_info.FreeFds == OS_MAX_NUM_OPEN_FILES, "filesys_info.FreeFds (%lu) == OS_MAX_NUM_OPEN_FILES",
+    UtAssert_True(filesys_info.FreeFds == 2, "filesys_info.FreeFds (%lu) == 2",
                   (unsigned long)filesys_info.FreeFds);
 
-    UtAssert_True(filesys_info.FreeVolumes == OS_MAX_FILE_SYSTEMS,
-                  "filesys_info.FreeVolumes (%lu) == OS_MAX_FILE_SYSTEMS", (unsigned long)filesys_info.FreeVolumes);
+    UtAssert_True(filesys_info.FreeVolumes == 3, "filesys_info.FreeVolumes (%lu) == 3",
+                    (unsigned long)filesys_info.FreeVolumes);
 
     expected = OS_INVALID_POINTER;
     actual   = OS_GetFsInfo(NULL);

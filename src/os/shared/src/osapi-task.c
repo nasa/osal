@@ -265,6 +265,8 @@ void OS_TaskExit()
     task_id = OS_TaskGetId_Impl();
     if (OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &token) == OS_SUCCESS)
     {
+        OS_TaskDetach_Impl(&token);
+
         /* Complete the operation via the common routine */
         OS_ObjectIdFinalizeDelete(OS_SUCCESS, &token);
     }

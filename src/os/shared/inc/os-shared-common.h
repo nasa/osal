@@ -128,20 +128,4 @@ void OS_IdleLoop_Impl(void);
  ------------------------------------------------------------------*/
 void OS_ApplicationShutdown_Impl(void);
 
-/*----------------------------------------------------------------
-
-   Function: OS_WaitForStateChange_Impl
-
-   Purpose: Block the caller until some sort of change event
-   has occurred for the given object type, such as a record changing
-   state i.e. the acquisition or release of a lock/refcount from
-   another thread.
-
-   It is not guaranteed what, if any, state change has actually
-   occured when this function returns.  This may be implement as
-   a simple OS_TaskDelay().
-
- ------------------------------------------------------------------*/
-void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts);
-
 #endif  /* OS_SHARED_COMMON_H  */

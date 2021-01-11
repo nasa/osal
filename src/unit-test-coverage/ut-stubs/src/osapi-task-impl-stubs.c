@@ -39,6 +39,7 @@
 ** Task API
 */
 UT_DEFAULT_STUB(OS_TaskMatch_Impl, (const OS_object_token_t *token))
+UT_DEFAULT_STUB(OS_TaskDetach_Impl, (const OS_object_token_t *token))
 UT_DEFAULT_STUB(OS_TaskCreate_Impl, (const OS_object_token_t *token, uint32 flags))
 UT_DEFAULT_STUB(OS_TaskDelete_Impl, (const OS_object_token_t *token))
 void OS_TaskExit_Impl(void)
