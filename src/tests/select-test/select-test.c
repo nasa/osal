@@ -49,7 +49,6 @@ OS_SockAddr_t s2_addr;
 OS_SockAddr_t c_addr;
 OS_SockAddr_t c2_addr;
 osal_id_t     bin_sem_id;
-osal_id_t     bin_sem_id2;
 
 /* *************************************** MAIN ************************************** */
 
@@ -67,24 +66,16 @@ void BinSemSetup(void)
 {
     uint32            status;
     OS_bin_sem_prop_t bin_sem_prop;
-    OS_bin_sem_prop_t bin_sem_prop2;
 
     /*
      * Create the binary semaphore
      * BinSem1 is used to control when the server can accept connections
-     * BinSem2 is used to make sure all sub task finish before the main task does.
      */
     status = OS_BinSemCreate(&bin_sem_id, "BinSem1", 0, 0);
     UtAssert_True(status == OS_SUCCESS, "BinSem1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(bin_sem_id), (int)status);
 
     status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
     UtAssert_True(status == OS_SUCCESS, "BinSem1 value=%d Rc=%d", (int)bin_sem_prop.value, (int)status);
-
-    status = OS_BinSemCreate(&bin_sem_id2, "BinSem2", 0, 0);
-    UtAssert_True(status == OS_SUCCESS, "BinSem2 create Id=%lx Rc=%d", OS_ObjectIdToInteger(bin_sem_id2), (int)status);
-
-    status = OS_BinSemGetInfo(bin_sem_id2, &bin_sem_prop2);
-    UtAssert_True(status == OS_SUCCESS, "BinSem2 value=%d Rc=%d", (int)bin_sem_prop2.value, (int)status);
 }
 
 void Setup_Server(void)
@@ -167,9 +158,6 @@ void Server_Fn(void)
 
     status = OS_close(connsock_id);
     UtAssert_True(status == OS_SUCCESS, "status after close connsock_id = %d", (int)status);
-
-    status = OS_BinSemGive(bin_sem_id2);
-    UtAssert_True(status == OS_SUCCESS, "BinSem2 Server 1 give Rc=%d", (int)status);
 } /* end Server_Fn */
 
 void Setup_Server2(void)
@@ -267,24 +255,17 @@ void Setup_Multi(void)
 
 void Teardown_Single(void)
 {
-    uint32 status;
-
-    OS_close(c_socket_id);
-    status = OS_BinSemTake(bin_sem_id2);
-    UtAssert_True(status == OS_SUCCESS, "BinSem2 Teardown single take Rc=%d", (int)status);
-
-    OS_BinSemDelete(bin_sem_id);
-    OS_BinSemDelete(bin_sem_id2);
+    OS_close(c_socket_id); 
+    OS_BinSemDelete(bin_sem_id);  
 }
 
 void Teardown_Multi(void)
-{
-    uint32 status;
+{    
+    //Server 1 is intentionaly left waiting so we close it out here.
+    OS_close(s_socket_id);
+    OS_TaskDelete(s_task_id);
 
-    status = OS_BinSemGive(bin_sem_id);
-    UtAssert_True(status == OS_SUCCESS, "BinSem1 Teardown multi give Rc=%d", (int)status);
-
-    OS_close(c2_socket_id);
+    OS_close(c2_socket_id); 
     Teardown_Single();
 }
 
@@ -303,7 +284,7 @@ void TestSelectSingleRead(void)
      */
 
     /* Create a server task/thread */
-    int32 status = OS_TaskCreate(&s_task_id, "Server", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
+    int32 status = OS_TaskCreate(&s_task_id, "ServerSingleRead", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
                                  OSAL_PRIORITY_C(50), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
 
@@ -353,7 +334,7 @@ void TestSelectMultipleRead(void)
      */
 
     /* Create a server task/thread */
-    status = OS_TaskCreate(&s_task_id, "Server", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
+    status = OS_TaskCreate(&s_task_id, "ServerMultiRead", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
                            OSAL_PRIORITY_C(50), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
 
@@ -361,7 +342,7 @@ void TestSelectMultipleRead(void)
     actual = OS_SocketConnect(c_socket_id, &s_addr, 10);
     UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
 
-    status = OS_TaskCreate(&s2_task_id, "Server2", Server_Fn2, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
+    status = OS_TaskCreate(&s2_task_id, "ServerMultiRead2", Server_Fn2, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
                            OSAL_PRIORITY_C(50), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
 
@@ -402,7 +383,7 @@ void TestSelectSingleWrite(void)
      */
 
     /* Create a server task/thread */
-    int32 status = OS_TaskCreate(&s_task_id, "Server", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
+    int32 status = OS_TaskCreate(&s_task_id, "ServerSingleWrite", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
                                  OSAL_PRIORITY_C(50), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
 
@@ -470,7 +451,7 @@ void TestSelectMultipleWrite(void)
      */
 
     /* Create a server task/thread */
-    status = OS_TaskCreate(&s_task_id, "Server", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
+    status = OS_TaskCreate(&s_task_id, "ServerMultiWrite", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
                            OSAL_PRIORITY_C(50), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
 
@@ -478,7 +459,7 @@ void TestSelectMultipleWrite(void)
     actual = OS_SocketConnect(c_socket_id, &s_addr, 10);
     UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
 
-    status = OS_TaskCreate(&s2_task_id, "Server2", Server_Fn2, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
+    status = OS_TaskCreate(&s2_task_id, "ServerMultiWrite2", Server_Fn2, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
                            OSAL_PRIORITY_C(50), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
 
