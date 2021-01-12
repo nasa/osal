@@ -405,6 +405,7 @@ int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, size_t buflen, cons
     /* Check Parameters */
     OS_CHECK_POINTER(buffer);
     OS_CHECK_SIZE(buflen);
+    OS_CHECK_POINTER(RemoteAddr);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, LOCAL_OBJID_TYPE, sock_id, &token);
     if (return_code == OS_SUCCESS)
