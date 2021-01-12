@@ -69,6 +69,16 @@ typedef struct
  * This mimics the behavior of a "FS_BASED" entry in the VolumeTable but is registered
  * at runtime.  It is intended to be called by the PSP/BSP prior to starting the application.
  *
+ * @note OSAL virtual mount points are required to be a single, non-empty top-level directory
+ * name.  Virtual path names always follow the form /<virt_mount_point>/<relative_path>/<file>.
+ * Only the relative path may be omitted/empty (i.e. /<virt_mount_point>/<file>) but the
+ * virtual mount point must be present and not an empty string.  In particular this means
+ * it is not possible to directly refer to files in the "root" of the native file system
+ * from OSAL.  However it is possible to create a virtual map to the root, such as by calling:
+ *
+ *      OS_FileSysAddFixedMap(&fs_id, "/", "/root");
+ *
+ *
  * @param[out]  filesys_id  A non-zero OSAL ID reflecting the file system
  * @param[in]   phys_path   The native system directory (an existing mount point)
  * @param[in]   virt_path   The virtual mount point of this filesystem
