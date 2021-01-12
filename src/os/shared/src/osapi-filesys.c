@@ -618,6 +618,37 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_FileSysStatVolume
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf)
+{
+    int32             return_code;
+    OS_object_token_t token;
+
+    /* Check parameters */
+    OS_CHECK_PATHNAME(name);
+    OS_CHECK_POINTER(statbuf);
+
+    return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
+                                         (void *)name, &token);
+
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_FileSysStatVolume_Impl(&token, statbuf);
+
+        OS_ObjectIdRelease(&token);
+    }
+
+    return return_code;
+
+} /* end OS_FileSysStatVolume */
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_chkfs
  *
  *  Purpose: Implemented per public OSAL API

@@ -84,22 +84,6 @@ enum
     OS_FILESYS_TYPE_MAX
 };
 
-/*
- * The data type filled in by the "statvfs" call.
- *
- * This is defined here since there is no public API to get this info,
- * only the total bytes free is accessible via the current OSAL API.
- *
- * However, returning the detailed info at this level means that the
- * more detailed information could be made available with a new API call.
- */
-typedef struct
-{
-    size_t            block_size;
-    osal_blockcount_t total_blocks;
-    osal_blockcount_t blocks_free;
-} OS_statvfs_t;
-
 typedef struct
 {
     char device_name[OS_FS_DEV_NAME_LEN]; /**< The name of the underlying block device, if applicable */
