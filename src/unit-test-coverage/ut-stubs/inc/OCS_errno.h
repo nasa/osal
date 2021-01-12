@@ -34,6 +34,9 @@
 #define OCS_EMSGSIZE  0x1804
 #define OCS_ETIMEDOUT 0x1805
 #define OCS_ESPIPE    0x1806
+#define OCS_ENOTSUP   0x1807
+#define OCS_ENOSYS    0x1808
+#define OCS_EROFS     0x1809
 
 /* ----------------------------------------- */
 /* types normally defined in errno.h */

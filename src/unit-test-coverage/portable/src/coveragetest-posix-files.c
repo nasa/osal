@@ -35,6 +35,7 @@
 #include <OCS_unistd.h>
 #include <OCS_fcntl.h>
 #include <OCS_stat.h>
+#include <OCS_errno.h>
 
 void Test_OS_FileOpen_Impl(void)
 {
@@ -114,6 +115,10 @@ void Test_OS_FileChmod_Impl(void)
     /* failure mode 2 (fchmod) */
     UT_SetDefaultReturnValue(UT_KEY(OCS_fchmod), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
+
+    /* non implemented error, e.g. such as DOS Filesystem with no perms  */
+    OCS_errno = OCS_ENOTSUP;
+    OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERR_NOT_IMPLEMENTED);
     UT_ClearForceFail(UT_KEY(OCS_fchmod));
 
     /* all permission bits with uid/gid match */
