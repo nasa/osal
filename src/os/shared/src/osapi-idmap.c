@@ -1540,6 +1540,9 @@ int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t object_id, osal_i
     osal_objtype_t actual_type;
     int32          return_code;
 
+    /* Check Parameters */
+    OS_CHECK_POINTER(ArrayIndex);
+
     obj_index   = OS_ObjectIdToSerialNumber_Impl(object_id);
     actual_type = OS_ObjectIdToType_Impl(object_id);
 

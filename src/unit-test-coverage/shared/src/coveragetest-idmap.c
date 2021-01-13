@@ -411,6 +411,10 @@ void Test_OS_ObjectIdToArrayIndex(void)
     expected = OS_ERR_INVALID_ID;
     actual   = OS_ObjectIdToArrayIndex(0xFFFF, UT_OBJID_OTHER, &local_idx);
     UtAssert_True(actual == expected, "OS_ObjectIdToArrayIndex() (%ld) == OS_ERR_INVALID_ID", (long)actual);
+
+    expected = OS_INVALID_POINTER;
+    actual   = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TASK, objid, NULL);
+    UtAssert_True(actual == expected, "OS_ObjectIdToArrayIndex() (%ld) == OS_INVALID_POINTER", (long)actual);
 }
 
 void Test_OS_ObjectIdFindByName(void)
