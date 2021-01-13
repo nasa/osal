@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 
 #include "os-impl-files.h"
 #include "os-shared-file.h"
@@ -133,10 +134,11 @@ int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, i
  *-----------------------------------------------------------------*/
 int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
 {
-    struct stat st;
-    mode_t      readbits;
-    mode_t      writebits;
-    mode_t      execbits;
+    struct stat     st;
+    mode_t          readbits;
+    mode_t          writebits;
+    mode_t          execbits;
+    struct timespec filetime;
 
     if (stat(local_path, &st) < 0)
     {
@@ -144,7 +146,31 @@ int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
     }
 
     FileStats->FileSize = st.st_size;
-    FileStats->FileTime = st.st_mtime;
+
+    /*
+     * NOTE: Traditional timestamps are only a whole number of seconds (time_t)
+     * POSIX.1-2008 expands this to have a full "struct timespec" with nanosecond
+     * resolution.
+     *
+     * GLIBC (and likely other C libraries that use similar feature selection)
+     * will expose this value based on _POSIX_C_SOURCE or _XOPEN_SOURCE minimum
+     * values.  Otherwise this just falls back to standard 1-second resolution
+     * available via the "st_mtime" member.
+     */
+#if (_POSIX_C_SOURCE >= 200809L) || (_XOPEN_SOURCE >= 700)
+    /*
+     * Better - use the full resolution (seconds + nanoseconds) as specified in POSIX.1-2008
+     */
+    filetime = st.st_mtim;
+#else
+    /*
+     * Fallback - every POSIX-compliant implementation must expose "st_mtime" field.
+     */
+    filetime.tv_sec  = st.st_mtime;
+    filetime.tv_nsec = 0;
+#endif
+
+    FileStats->FileTime = OS_TimeAssembleFromNanoseconds(filetime.tv_sec, filetime.tv_nsec);
 
     /* note that the "fst_mode" member is already zeroed by the caller */
     if (S_ISDIR(st.st_mode))

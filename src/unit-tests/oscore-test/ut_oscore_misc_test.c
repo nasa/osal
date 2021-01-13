@@ -290,8 +290,8 @@ void UT_os_getlocaltime_test()
         for (i = 0; i < 5; i++)
         {
             UtPrintf("OS_GetLocalTime() - #3 Nominal ");
-            UtPrintf("[Expecting output after API call to increase over time: %ld.%ld]\n", (long)time_struct.seconds,
-                      (long)time_struct.microsecs);
+            UtPrintf("[Expecting output after API call to increase over time: %ld.%ld]\n",
+                      (long)OS_TimeGetTotalSeconds(time_struct), (long)OS_TimeGetMicrosecondsPart(time_struct));
 
             OS_TaskDelay(20);
             OS_GetLocalTime(&time_struct);
@@ -379,23 +379,21 @@ void UT_os_setlocaltime_test()
         for (i = 0; i < 5; i++)
         {
             UtPrintf("OS_SetLocalTime() - #3 Nominal ");
-            UtPrintf("[Expecting output before API call to increase over time: %ld.%ld]\n", (long)time_struct.seconds,
-                      (long)time_struct.microsecs);
+            UtPrintf("[Expecting output before API call to increase over time: %ld.%ld]\n",
+                      (long)OS_TimeGetTotalSeconds(time_struct), (long)OS_TimeGetMicrosecondsPart(time_struct));
 
             OS_TaskDelay(20);
             OS_GetLocalTime(&time_struct);
         }
     }
 
-    memset(&time_struct, 0x00, sizeof(time_struct));
-    time_struct.seconds   = 20000;
-    time_struct.microsecs = 123;
+    time_struct = OS_TimeAssembleFromNanoseconds(20000, 123000);
 
     res = OS_SetLocalTime(&time_struct);
     if (res == OS_SUCCESS)
     {
-        UtPrintf("OS_SetLocalTime() - #3 Nominal [New time set at %ld.%ld]\n", (long)time_struct.seconds,
-                  (long)time_struct.microsecs);
+        UtPrintf("OS_SetLocalTime() - #3 Nominal [New time set at %ld.%ld]\n", (long)OS_TimeGetTotalSeconds(time_struct),
+                  (long)OS_TimeGetMicrosecondsPart(time_struct));
 
         res = OS_GetLocalTime(&time_struct);
         if (res == OS_SUCCESS)
@@ -404,7 +402,7 @@ void UT_os_setlocaltime_test()
             {
                 UtPrintf("OS_SetLocalTime() - #3 Nominal ");
                 UtPrintf("[Expecting output after API call to increase over time: %ld.%ld]\n",
-                          (long)time_struct.seconds, (long)time_struct.microsecs);
+                          (long)OS_TimeGetTotalSeconds(time_struct), (long)OS_TimeGetMicrosecondsPart(time_struct));
 
                 OS_TaskDelay(20);
                 OS_GetLocalTime(&time_struct);
