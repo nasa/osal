@@ -30,6 +30,7 @@
 /* POSIX-specific  errnos */
 #define OCS_EINTR     0x1801
 #define OCS_EAGAIN    0x1802
+#define OCS_EEXIST    0x180a
 #define OCS_EINVAL    0x1803
 #define OCS_EMSGSIZE  0x1804
 #define OCS_ETIMEDOUT 0x1805
