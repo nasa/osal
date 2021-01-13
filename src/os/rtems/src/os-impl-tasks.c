@@ -175,6 +175,20 @@ int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_TaskDetach_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
+{
+    /* No-op on RTEMS */
+    return OS_SUCCESS;
+}
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_TaskExit_Impl
  *
  *  Purpose: Implemented per internal OSAL API
@@ -359,7 +373,7 @@ int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_p
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskValidateSystemData_Impl(const void *sysdata, uint32 sysdata_size)
+int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size)
 {
     if (sysdata == NULL || sysdata_size != sizeof(rtems_id))
     {

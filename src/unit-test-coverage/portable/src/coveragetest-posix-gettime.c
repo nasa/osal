@@ -35,9 +35,8 @@ void Test_OS_GetLocalTime_Impl(void)
      * Test Case For:
      * int32 OS_GetLocalTime_Impl(OS_time_t *time_struct)
      */
-    OS_time_t timeval;
-    timeval.seconds   = 1;
-    timeval.microsecs = 1;
+    OS_time_t timeval = {0};
+
     OSAPI_TEST_FUNCTION_RC(OS_GetLocalTime_Impl, (&timeval), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_clock_gettime), -1);
@@ -50,9 +49,8 @@ void Test_OS_SetLocalTime_Impl(void)
      * Test Case For:
      * int32 OS_SetLocalTime_Impl(const OS_time_t *time_struct)
      */
-    OS_time_t timeval;
-    timeval.seconds   = 1;
-    timeval.microsecs = 1;
+    OS_time_t timeval = {0};
+
     OSAPI_TEST_FUNCTION_RC(OS_SetLocalTime_Impl, (&timeval), OS_SUCCESS);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_clock_settime), -1);

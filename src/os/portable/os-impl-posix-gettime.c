@@ -73,9 +73,8 @@ int32 OS_GetLocalTime_Impl(OS_time_t *time_struct)
 
     if (Status == 0)
     {
-        time_struct->seconds   = time.tv_sec;
-        time_struct->microsecs = time.tv_nsec / 1000;
-        ReturnCode             = OS_SUCCESS;
+        *time_struct = OS_TimeAssembleFromNanoseconds(time.tv_sec, time.tv_nsec);
+        ReturnCode   = OS_SUCCESS;
     }
     else
     {
@@ -100,8 +99,8 @@ int32 OS_SetLocalTime_Impl(const OS_time_t *time_struct)
     int32           ReturnCode;
     struct timespec time;
 
-    time.tv_sec  = time_struct->seconds;
-    time.tv_nsec = (time_struct->microsecs * 1000);
+    time.tv_sec  = OS_TimeGetTotalSeconds(*time_struct);
+    time.tv_nsec = OS_TimeGetNanosecondsPart(*time_struct);
 
     Status = clock_settime(OSAL_GETTIME_SOURCE_CLOCK, &time);
 

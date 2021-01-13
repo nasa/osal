@@ -33,6 +33,7 @@ set(VXWORKS_IMPL_SRCLIST
     ../portable/os-impl-bsd-select.c
     ../portable/os-impl-posix-io.c
     ../portable/os-impl-posix-files.c
+    ../portable/os-impl-posix-dirs.c
 )
 
 if (OSAL_CONFIG_INCLUDE_SHELL)
@@ -45,15 +46,6 @@ else ()
     )
 endif ()
 
-if (CMAKE_SYSTEM_VERSION VERSION_GREATER_EQUAL 7.0)
-    list(APPEND VXWORKS_IMPL_SRCLIST
-        ../portable/os-impl-posix-dirs.c
-    )
-else ()
-    list(APPEND VXWORKS_IMPL_SRCLIST
-        src/os-impl-dirs.c
-    )
-endif ()
 # If some form of module loading is configured,
 # then build the module loader
 if (OSAL_CONFIG_INCLUDE_DYNAMIC_LOADER)
@@ -86,3 +78,8 @@ add_library(osal_vxworks_impl OBJECT
     ${VXWORKS_BASE_SRCLIST}
     ${VXWORKS_IMPL_SRCLIST}
 )
+
+if (CMAKE_SYSTEM_VERSION VERSION_LESS 7.0)
+    target_compile_definitions(osal_vxworks_impl PRIVATE OSAL_VXWORKS6_COMPATIBILITY)
+endif ()
+

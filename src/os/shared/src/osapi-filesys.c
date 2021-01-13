@@ -65,6 +65,21 @@ const char OS_FILESYS_RAMDISK_VOLNAME_PREFIX[] = "RAM";
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_FileSysFilterFree
+ *
+ *  Purpose: Local helper routine, not part of OSAL API.
+ *           Iterator function to match only the free/open entries
+ *
+ *  Returns: true if the entry is free, false if it is in use
+ *
+ *-----------------------------------------------------------------*/
+bool OS_FileSysFilterFree(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
+{
+    return !OS_ObjectIdDefined(obj->active_id);
+}
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_FileSys_FindVirtMountPoint
  *
  *  Purpose: Local helper routine, not part of OSAL API.
@@ -603,6 +618,37 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_FileSysStatVolume
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf)
+{
+    int32             return_code;
+    OS_object_token_t token;
+
+    /* Check parameters */
+    OS_CHECK_PATHNAME(name);
+    OS_CHECK_POINTER(statbuf);
+
+    return_code = OS_ObjectIdGetBySearch(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, OS_FileSys_FindVirtMountPoint,
+                                         (void *)name, &token);
+
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_FileSysStatVolume_Impl(&token, statbuf);
+
+        OS_ObjectIdRelease(&token);
+    }
+
+    return return_code;
+
+} /* end OS_FileSysStatVolume */
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_chkfs
  *
  *  Purpose: Implemented per public OSAL API
@@ -688,7 +734,7 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
  *-----------------------------------------------------------------*/
 int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
 {
-    osal_index_t idx;
+    OS_object_iter_t iter;
 
     /* Check parameters */
     OS_CHECK_POINTER(filesys_info);
@@ -698,29 +744,19 @@ int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
     filesys_info->MaxFds     = OS_MAX_NUM_OPEN_FILES;
     filesys_info->MaxVolumes = OS_MAX_FILE_SYSTEMS;
 
-    OS_Lock_Global(OS_OBJECT_TYPE_OS_STREAM);
-
-    for (idx = 0; idx < OS_MAX_NUM_OPEN_FILES; idx++)
+    OS_ObjectIdIteratorInit(OS_FileSysFilterFree, NULL, OS_OBJECT_TYPE_OS_STREAM, &iter);
+    while (OS_ObjectIdIteratorGetNext(&iter))
     {
-        if (!OS_ObjectIdDefined(OS_global_stream_table[idx].active_id))
-        {
-            filesys_info->FreeFds++;
-        }
+        ++filesys_info->FreeFds;
     }
+    OS_ObjectIdIteratorDestroy(&iter);
 
-    OS_Unlock_Global(OS_OBJECT_TYPE_OS_STREAM);
-
-    OS_Lock_Global(OS_OBJECT_TYPE_OS_FILESYS);
-
-    for (idx = 0; idx < OS_MAX_FILE_SYSTEMS; idx++)
+    OS_ObjectIdIteratorInit(OS_FileSysFilterFree, NULL, OS_OBJECT_TYPE_OS_FILESYS, &iter);
+    while (OS_ObjectIdIteratorGetNext(&iter))
     {
-        if (!OS_ObjectIdDefined(OS_global_filesys_table[idx].active_id))
-        {
-            filesys_info->FreeVolumes++;
-        }
+        ++filesys_info->FreeVolumes;
     }
-
-    OS_Unlock_Global(OS_OBJECT_TYPE_OS_FILESYS);
+    OS_ObjectIdIteratorDestroy(&iter);
 
     return (OS_SUCCESS);
 } /* end OS_GetFsInfo */

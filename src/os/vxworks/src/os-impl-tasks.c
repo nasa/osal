@@ -289,6 +289,20 @@ int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_TaskDetach_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
+{
+    /* No-op on VxWorks */
+    return OS_SUCCESS;
+}
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_TaskExit_Impl
  *
  *  Purpose: Implemented per internal OSAL API
@@ -400,16 +414,16 @@ int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
  *-----------------------------------------------------------------*/
 osal_id_t OS_TaskGetId_Impl(void)
 {
-    OS_impl_task_internal_record_t *lrec;
-    size_t                          idx;
-    osal_id_t                       id;
+    void     *lrec;
+    size_t    idx;
+    osal_id_t id;
 
     id   = OS_OBJECT_ID_UNDEFINED;
-    lrec = (OS_impl_task_internal_record_t *)taskTcb(taskIdSelf());
+    lrec = taskTcb(taskIdSelf());
 
     if (lrec != NULL)
     {
-        idx = lrec - &OS_impl_task_table[0];
+        idx = (OS_impl_task_internal_record_t *)lrec - &OS_impl_task_table[0];
         if (idx < OS_MAX_TASKS)
         {
             id = OS_global_task_table[idx].active_id;

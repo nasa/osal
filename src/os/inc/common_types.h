@@ -53,8 +53,7 @@ extern "C"
 ** Define compiler specific macros
 ** The __extension__ compiler pragma is required
 ** for the uint64 type using GCC with the ANSI C90 standard.
-** Other macros can go in here as needed, for example alignment
-** pragmas.
+** Other macros can go in here as needed.
 **
 ** NOTE: The white-box (coverage) unit testing may need to disable
 ** these extra attributes.  These test builds define the OSAPI_NO_SPECIAL_ATTRIBS
@@ -62,14 +61,10 @@ extern "C"
 */
 #if defined(__GNUC__) && !defined(OSAPI_NO_SPECIAL_ATTRIBS)
 #define _EXTENSION_     __extension__
-#define OS_PACK         __attribute__((packed))
-#define OS_ALIGN(n)     __attribute__((aligned(n)))
 #define OS_USED         __attribute__((used))
 #define OS_PRINTF(n, m) __attribute__((format(printf, n, m)))
 #else
 #define _EXTENSION_
-#define OS_PACK
-#define OS_ALIGN(n)
 #define OS_USED
 #define OS_PRINTF(n, m)
 #endif

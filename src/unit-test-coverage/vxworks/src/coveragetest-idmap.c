@@ -41,22 +41,13 @@ void Test_OS_Lock_Global_Impl(void)
      * Test Case For:
      * int32 OS_Lock_Global_Impl(uint32 idtype)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_Lock_Global_Impl(10000), OS_ERROR);
-
-    /*
-     * Confirm that if vxid is 0/NULL that the function returns error
-     * and does not call semTake.
-     */
-    UT_IdMapTest_SetImplTableMutex(OS_OBJECT_TYPE_OS_TASK, (OCS_SEM_ID)0);
-    OSAPI_TEST_FUNCTION_RC(OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semTake)) == 0, "semTake() NOT called");
 
     UT_IdMapTest_SetImplTableMutex(OS_OBJECT_TYPE_OS_TASK, &TestGlobalSem);
-    OSAPI_TEST_FUNCTION_RC(OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
+    OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semTake)) == 1, "semTake() called");
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_semTake), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
+    OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK); /* for coverage of error path */
 }
 
 void Test_OS_Unlock_Global_Impl(void)
@@ -65,11 +56,13 @@ void Test_OS_Unlock_Global_Impl(void)
      * Test Case For:
      * int32 OS_Unlock_Global_Impl(uint32 idtype)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(10000), OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(0), OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
+
+    UT_IdMapTest_SetImplTableMutex(OS_OBJECT_TYPE_OS_TASK, &TestGlobalSem);
+    OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK);
+    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semGive)) == 1, "semTake() called");
+
     UT_SetDefaultReturnValue(UT_KEY(OCS_semGive), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
+    OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK); /* for coverage of error path */
 }
 
 void Test_OS_API_Impl_Init(void)

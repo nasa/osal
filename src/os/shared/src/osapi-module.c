@@ -452,6 +452,7 @@ int32 OS_SymbolTableDump(const char *filename, size_t SizeLimit)
 {
     int32 return_code;
     char  translated_path[OS_MAX_LOCAL_PATH_LEN];
+    OS_object_token_t token;
 
     /*
     ** Check parameters
@@ -476,11 +477,15 @@ int32 OS_SymbolTableDump(const char *filename, size_t SizeLimit)
      * underlying implementation may safely use globals for
      * state storage.
      */
-    OS_Lock_Global(LOCAL_OBJID_TYPE);
+    return_code = OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, &token);
+    if (return_code != OS_SUCCESS)
+    {
+        return (return_code);
+    }
 
     return_code = OS_SymbolTableDump_Impl(translated_path, SizeLimit);
 
-    OS_Unlock_Global(LOCAL_OBJID_TYPE);
+    OS_ObjectIdTransactionCancel(&token);
 
     return (return_code);
 

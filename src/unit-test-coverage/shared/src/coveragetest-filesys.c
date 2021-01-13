@@ -328,6 +328,57 @@ void Test_OS_fsBytesFree(void)
     UtAssert_True(actual == expected, "OS_fsBytesFree() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
 }
 
+void Test_OS_FileSysStatVolume(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf)
+     */
+
+    OS_statvfs_t statbuf;
+    OS_statvfs_t statref;
+    int32        expected;
+    int32        actual;
+
+    statref.block_size   = OSAL_SIZE_C(1024);
+    statref.blocks_free  = OSAL_BLOCKCOUNT_C(1111);
+    statref.total_blocks = OSAL_BLOCKCOUNT_C(2222);
+    UT_SetDataBuffer(UT_KEY(OS_FileSysStatVolume_Impl), &statref, sizeof(statref), false);
+    OS_filesys_table[1].flags = OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM |
+                                OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
+
+    expected = OS_SUCCESS;
+    actual   = OS_FileSysStatVolume("/cf", &statbuf);
+    UtAssert_True(actual == expected, "OS_FileSysStatVolume() (%ld) == OS_SUCCESS", (long)actual);
+
+    UtAssert_True(statbuf.block_size == statref.block_size, "blocks_size (%lu) == %lu", (unsigned long)statbuf.block_size,
+                  (unsigned long)statref.block_size);
+    UtAssert_True(statbuf.total_blocks == statref.total_blocks, "total_blocks (%lu) == %lu",
+                  (unsigned long)statbuf.total_blocks, (unsigned long)statref.total_blocks);
+    UtAssert_True(statbuf.blocks_free == statref.blocks_free, "blocks_free (%lu) == %lu", (unsigned long)statbuf.blocks_free,
+                  (unsigned long)statref.blocks_free);
+
+    /* validate error checking */
+    expected = OS_INVALID_POINTER;
+    actual   = OS_FileSysStatVolume(NULL, &statbuf);
+    UtAssert_True(actual == expected, "OS_FileSysStatVolume() (%ld) == OS_INVALID_POINTER", (long)actual);
+    actual = OS_FileSysStatVolume("/cf", NULL);
+    UtAssert_True(actual == expected, "OS_FileSysStatVolume() (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    /* Test Fail due to no matching VolTab entry */
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch), OS_ERR_NAME_NOT_FOUND);
+    expected = OS_ERR_NAME_NOT_FOUND;
+    actual   = OS_FileSysStatVolume("/cf", &statbuf);
+    UtAssert_True(actual == expected, "OS_FileSysStatVolume() (%ld) == OS_ERR_NAME_NOT_FOUND", (long)actual);
+    UT_ResetState(UT_KEY(OS_ObjectIdGetBySearch));
+
+    /* Verify pass through of impl error */
+    UT_SetDefaultReturnValue(UT_KEY(OS_FileSysStatVolume_Impl), OS_ERR_OPERATION_NOT_SUPPORTED);
+    expected = OS_ERR_OPERATION_NOT_SUPPORTED;
+    actual   = OS_FileSysStatVolume("/cf", &statbuf);
+    UtAssert_True(actual == expected, "OS_FileSysStatVolume() (%ld) == OS_ERR_OPERATION_NOT_SUPPORTED", (long)actual);
+}
+
 void Test_OS_chkfs(void)
 {
     /*
@@ -404,6 +455,10 @@ void Test_OS_GetFsInfo(void)
     int32       actual   = ~OS_SUCCESS;
     os_fsinfo_t filesys_info;
 
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdIteratorGetNext), 1);
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdIteratorGetNext), 3, 0);
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdIteratorGetNext), 4, 0);
+
     actual = OS_GetFsInfo(&filesys_info);
 
     UtAssert_True(actual == expected, "OS_FileSysInfo() (%ld) == OS_SUCCESS", (long)actual);
@@ -414,11 +469,11 @@ void Test_OS_GetFsInfo(void)
                   "filesys_info.MaxVolumes (%lu) == OS_MAX_FILE_SYSTEMS", (unsigned long)filesys_info.MaxVolumes);
 
     /* since there are no open files, the free fd count should match the max */
-    UtAssert_True(filesys_info.FreeFds == OS_MAX_NUM_OPEN_FILES, "filesys_info.FreeFds (%lu) == OS_MAX_NUM_OPEN_FILES",
+    UtAssert_True(filesys_info.FreeFds == 2, "filesys_info.FreeFds (%lu) == 2",
                   (unsigned long)filesys_info.FreeFds);
 
-    UtAssert_True(filesys_info.FreeVolumes == OS_MAX_FILE_SYSTEMS,
-                  "filesys_info.FreeVolumes (%lu) == OS_MAX_FILE_SYSTEMS", (unsigned long)filesys_info.FreeVolumes);
+    UtAssert_True(filesys_info.FreeVolumes == 3, "filesys_info.FreeVolumes (%lu) == 3",
+                    (unsigned long)filesys_info.FreeVolumes);
 
     expected = OS_INVALID_POINTER;
     actual   = OS_GetFsInfo(NULL);
@@ -577,4 +632,5 @@ void UtTest_Setup(void)
     ADD_TEST(OS_GetFsInfo);
     ADD_TEST(OS_TranslatePath);
     ADD_TEST(OS_FileSys_FindVirtMountPoint);
+    ADD_TEST(OS_FileSysStatVolume);
 }

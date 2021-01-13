@@ -234,6 +234,10 @@ void Test_OS_TimeBaseGetFreeRun(void)
     int32  actual   = OS_TimeBaseGetFreeRun(UT_OBJID_1, &freerun);
 
     UtAssert_True(actual == expected, "OS_TimeBaseGetFreeRun() (%ld) == OS_SUCCESS", (long)actual);
+
+    expected = OS_INVALID_POINTER;
+    actual   = OS_TimeBaseGetFreeRun(UT_OBJID_1, NULL);
+    UtAssert_True(actual == expected, "OS_TimeBaseGetFreeRun() (%ld) == OS_INVALID_POINTER", (long)actual);
 }
 
 void Test_OS_TimeBase_CallbackThread(void)

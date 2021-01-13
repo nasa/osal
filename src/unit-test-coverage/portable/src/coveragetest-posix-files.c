@@ -35,6 +35,7 @@
 #include <OCS_unistd.h>
 #include <OCS_fcntl.h>
 #include <OCS_stat.h>
+#include <OCS_errno.h>
 
 void Test_OS_FileOpen_Impl(void)
 {
@@ -81,6 +82,9 @@ void Test_OS_FileStat_Impl(void)
     RefStat.st_mode  = ~((OCS_mode_t)0);
     RefStat.st_size  = 1234;
     RefStat.st_mtime = 5678;
+    /* Also set the full resolution timespec */
+    RefStat.st_mtim.tv_sec  = 5678;
+    RefStat.st_mtim.tv_nsec = 3456;
     UT_SetDataBuffer(UT_KEY(OCS_stat), &RefStat, sizeof(RefStat), false);
     OSAPI_TEST_FUNCTION_RC(OS_FileStat_Impl, ("local", &FileStats), OS_SUCCESS);
 
@@ -90,7 +94,7 @@ void Test_OS_FileStat_Impl(void)
     UtAssert_True(OS_FILESTAT_READ(FileStats), "File Read Bit set");
     UtAssert_True(OS_FILESTAT_ISDIR(FileStats), "Directory Bit set");
     UtAssert_True(OS_FILESTAT_SIZE(FileStats) == 1234, "Size match");
-    UtAssert_True(OS_FILESTAT_TIME(FileStats) == 5678, "Time match");
+    UtAssert_True(OS_FILESTAT_TIME(FileStats) == 5678, "Time match (seconds)");
 }
 
 void Test_OS_FileChmod_Impl(void)
@@ -114,6 +118,10 @@ void Test_OS_FileChmod_Impl(void)
     /* failure mode 2 (fchmod) */
     UT_SetDefaultReturnValue(UT_KEY(OCS_fchmod), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
+
+    /* non implemented error, e.g. such as DOS Filesystem with no perms  */
+    OCS_errno = OCS_ENOTSUP;
+    OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERR_NOT_IMPLEMENTED);
     UT_ClearForceFail(UT_KEY(OCS_fchmod));
 
     /* all permission bits with uid/gid match */
@@ -122,6 +130,9 @@ void Test_OS_FileChmod_Impl(void)
     RefStat.st_mode  = ~((OCS_mode_t)0);
     RefStat.st_size  = 1234;
     RefStat.st_mtime = 5678;
+    /* Also set the full resolution timespec */
+    RefStat.st_mtim.tv_sec  = 5678;
+    RefStat.st_mtim.tv_nsec = 3456;
     UT_SetDataBuffer(UT_KEY(OCS_fstat), &RefStat, sizeof(RefStat), false);
 
     /* nominal 1 - full permissions with file owned by own uid/gid */
