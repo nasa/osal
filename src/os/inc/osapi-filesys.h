@@ -70,8 +70,8 @@ typedef struct
  * at runtime.  It is intended to be called by the PSP/BSP prior to starting the application.
  *
  * @note OSAL virtual mount points are required to be a single, non-empty top-level directory
- * name.  Virtual path names always follow the form /<virt_mount_point>/<relative_path>/<file>.
- * Only the relative path may be omitted/empty (i.e. /<virt_mount_point>/<file>) but the
+ * name.  Virtual path names always follow the form /\<virt_mount_point\>/\<relative_path\>/\<file\>.
+ * Only the relative path may be omitted/empty (i.e. /\<virt_mount_point\>/\<file\>) but the
  * virtual mount point must be present and not an empty string.  In particular this means
  * it is not possible to directly refer to files in the "root" of the native file system
  * from OSAL.  However it is possible to create a virtual map to the root, such as by calling:
