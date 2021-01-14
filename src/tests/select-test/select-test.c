@@ -328,8 +328,8 @@ void TestSelectSingleRead(void)
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(StateFlags == OS_STREAM_STATE_READABLE, "OS_SelectSingle() (%d) == OS_STREAM_STATE_READABLE",
-                  StateFlags);
+    UtAssert_True(StateFlags == OS_STREAM_STATE_READABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_READABLE",
+                  (unsigned int)StateFlags);
 }
 
 void TestSelectMultipleRead(void)
@@ -441,8 +441,8 @@ void TestSelectSingleWrite(void)
 
         /* Verify Outputs */
         UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-        UtAssert_True(StateFlags == OS_STREAM_STATE_WRITABLE, "OS_SelectSingle() (%d) == OS_STREAM_STATE_WRITABLE",
-                      StateFlags);
+        UtAssert_True(StateFlags == OS_STREAM_STATE_WRITABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_WRITABLE",
+                      (unsigned int)StateFlags);
     }
 }
 
@@ -532,16 +532,16 @@ void TestSelectSingleFile(void)
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(StateFlags == OS_STREAM_STATE_READABLE, "OS_SelectSingle() (%d) == OS_STREAM_STATE_READABLE",
-                  StateFlags);
+    UtAssert_True(StateFlags == OS_STREAM_STATE_READABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_READABLE",
+                  (unsigned int)StateFlags);
 
     StateFlags = OS_STREAM_STATE_WRITABLE;
     actual     = OS_SelectSingle(fd, &StateFlags, 100);
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(StateFlags == OS_STREAM_STATE_WRITABLE, "OS_SelectSingle() (%d) == OS_STREAM_STATE_WRITABLE",
-                  StateFlags);
+    UtAssert_True(StateFlags == OS_STREAM_STATE_WRITABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_WRITABLE",
+                  (unsigned int)StateFlags);
 
     expected   = OS_ERROR_TIMEOUT;
     StateFlags = OS_STREAM_STATE_BOUND;
