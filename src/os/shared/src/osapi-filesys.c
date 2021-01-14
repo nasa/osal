@@ -533,6 +533,8 @@ int32 OS_unmount(const char *mountpoint)
     return return_code;
 } /* end OS_unmount */
 
+#ifndef OSAL_OMIT_DEPRECATED
+
 /*----------------------------------------------------------------
  *
  * Function: OS_fsBlocksFree
@@ -615,6 +617,8 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
     return return_code;
 
 } /* end OS_fsBytesFree */
+
+#endif      /* OSAL_OMIT_DEPRECATED */
 
 /*----------------------------------------------------------------
  *
