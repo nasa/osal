@@ -112,6 +112,7 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
     OS_object_token_t            token;
     OS_stream_internal_record_t *stream;
 
+    /* Check parameters */
     OS_CHECK_POINTER(filedes);
 
     /*
@@ -630,6 +631,7 @@ int32 OS_FileOpenCheck(const char *Filename)
     OS_object_iter_t             iter;
     OS_stream_internal_record_t *stream;
 
+    /* Check parameters */
     OS_CHECK_POINTER(Filename);
 
     return_code = OS_ERROR;
@@ -666,6 +668,7 @@ int32 OS_CloseFileByName(const char *Filename)
     OS_object_iter_t             iter;
     OS_stream_internal_record_t *stream;
 
+    /* Check parameters */
     OS_CHECK_POINTER(Filename);
 
     return_code = OS_FS_ERR_PATH_INVALID;

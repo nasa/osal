@@ -101,6 +101,14 @@ int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName, con
     int32                      return_code = OS_ERR_NOT_IMPLEMENTED;
     OS_static_symbol_record_t *StaticSym   = OS_STATIC_SYMTABLE_SOURCE;
 
+    /*
+    * Check parameters
+    *
+    * Note "ModuleName" is not checked, because in certain configurations it can be validly null. 
+    */
+    OS_CHECK_POINTER(SymbolAddress);
+    OS_CHECK_POINTER(SymbolName);
+
     while (StaticSym != NULL)
     {
         if (StaticSym->Name == NULL)
@@ -138,6 +146,9 @@ int32 OS_ModuleLoad_Static(const char *ModuleName)
 {
     int32                      return_code = OS_ERR_NAME_NOT_FOUND;
     OS_static_symbol_record_t *StaticSym   = OS_STATIC_SYMTABLE_SOURCE;
+
+    /* Check parameters */
+    OS_CHECK_POINTER(ModuleName);
 
     while (StaticSym != NULL)
     {
@@ -194,11 +205,11 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
     OS_module_internal_record_t *module;
 
     /*
-     ** Check parameters
-     **
-     ** Note "filename" is not checked, because in certain configurations it can be validly
-     ** null.  filename is checked for NULL-ness by the OS_TranslatePath() later.
-     */
+     * Check parameters
+     *
+     * Note "filename" is not checked, because in certain configurations it can be validly
+     * null.  filename is checked for NULL-ness by the OS_TranslatePath() later.
+    */
     OS_CHECK_POINTER(module_id);
     OS_CHECK_APINAME(module_name);
 
@@ -454,9 +465,7 @@ int32 OS_SymbolTableDump(const char *filename, size_t SizeLimit)
     char  translated_path[OS_MAX_LOCAL_PATH_LEN];
     OS_object_token_t token;
 
-    /*
-    ** Check parameters
-    */
+    /* Check parameters */
     OS_CHECK_POINTER(filename);
 
     /*

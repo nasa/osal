@@ -101,6 +101,7 @@ int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name)
     uint32                       return_code;
     const OS_ErrorTable_Entry_t *Error;
 
+    /* Check parameters */
     OS_CHECK_POINTER(err_name);
 
     Error = OS_GLOBAL_ERROR_NAME_TABLE;

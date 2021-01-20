@@ -55,6 +55,10 @@ void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const char *For
 {
     va_list va;
 
+    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
+    //OS_CHECK_POINTER(Func);
+    //OS_CHECK_POINTER(Format);
+
     if (OS_SharedGlobalVars.DebugLevel >= Level)
     {
         va_start(va, Format);
