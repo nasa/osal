@@ -43,6 +43,11 @@
  *
  * Called by the user to register a new test case with the library.
  *
+ * Note: Nested addition of tests is not supported.  Calling
+ *       UtTest_Add from within a test function added using UtTest_Add
+ *       will not cause the nested test to execute, and will be
+ *       silently ignored.
+ *
  * \param Test     Main test function to call.
  * \param Setup    Setup function, called before the test function
  * \param Teardown Cleanup function, called after the test function
