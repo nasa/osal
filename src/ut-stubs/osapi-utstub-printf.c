@@ -63,8 +63,12 @@ void OS_printf(const char *string, ...)
     int32   status;
     size_t  length = strlen(string);
     va_list va;
+    char    str[128];
 
     va_start(va, string);
+
+    vsnprintf(str, sizeof(str), string, va);
+    UtDebug("OS_printf: %s", str);
 
     status = UT_DefaultStubImplWithArgs(__func__, UT_KEY(OS_printf), 0, va);
 
