@@ -65,10 +65,14 @@ void OS_printf(const char *string, ...)
     va_list va;
     char    str[128];
 
+    /* Output the message when in debug mode */
     va_start(va, string);
-
     vsnprintf(str, sizeof(str), string, va);
     UtDebug("OS_printf: %s", str);
+    va_end(va);
+
+    /* Reset va list for next use */
+    va_start(va, string);
 
     status = UT_DefaultStubImplWithArgs(__func__, UT_KEY(OS_printf), 0, va);
 
