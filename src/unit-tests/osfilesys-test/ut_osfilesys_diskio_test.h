@@ -69,8 +69,6 @@ void UT_os_translatepath_test(void);
 
 void UT_os_checkfs_test(void);
 
-void UT_os_fsblocksfree_test(void);
-void UT_os_fsbytesfree_test(void);
 void UT_os_fsstatvolume_test(void);
 
 /*--------------------------------------------------------------------------------*/
