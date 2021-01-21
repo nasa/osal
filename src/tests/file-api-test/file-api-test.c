@@ -330,7 +330,8 @@ void TestReadWriteLseek(void)
     status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat = %d", (int)status);
 
-    size = strlen(buffer);
+    /* Write the string including null character */
+    size = strlen(buffer) + 1;
 
     /* test write portion of R/W mode */
     status = OS_write(fd, (void *)buffer, size);
