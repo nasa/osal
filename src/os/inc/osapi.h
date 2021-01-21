@@ -30,6 +30,11 @@
 #ifndef OSAPI_H
 #define OSAPI_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /*
  * Note - the "osapi-os-filesys.h" file previously included these system headers
  * plus a couple others.  Some existing code used stdio/stdlib functions but did
