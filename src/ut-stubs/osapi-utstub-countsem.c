@@ -55,7 +55,7 @@ int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_init
 
     if (status == OS_SUCCESS)
     {
-        *sem_id = UT_AllocStubObjId(UT_OBJTYPE_COUNTSEM);
+        *sem_id = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_COUNTSEM);
     }
     else
     {
@@ -95,7 +95,7 @@ int32 OS_CountSemDelete(osal_id_t sem_id)
 
     if (status == OS_SUCCESS)
     {
-        UT_DeleteStubObjId(UT_OBJTYPE_COUNTSEM, sem_id);
+        UT_DeleteStubObjId(OS_OBJECT_TYPE_OS_COUNTSEM, sem_id);
     }
 
     return status;
@@ -167,7 +167,7 @@ int32 OS_CountSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_CountSemGetIdByName), sem_id, sizeof(*sem_id)) < sizeof(*sem_id))
     {
-        UT_ObjIdCompose(1, UT_OBJTYPE_COUNTSEM, sem_id);
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_COUNTSEM, sem_id);
     }
 
     return status;
@@ -201,7 +201,7 @@ int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_CountSemGetInfo), count_prop, sizeof(*count_prop)) < sizeof(*count_prop))
     {
-        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &count_prop->creator);
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &count_prop->creator);
         strncpy(count_prop->name, "Name", OS_MAX_API_NAME - 1);
         count_prop->name[OS_MAX_API_NAME - 1] = '\0';
     }

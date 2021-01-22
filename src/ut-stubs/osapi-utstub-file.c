@@ -126,7 +126,7 @@ int32 OS_creat(const char *path, int32 access)
 
     if (status == OS_SUCCESS)
     {
-        objid  = UT_AllocStubObjId(UT_OBJTYPE_FILESTREAM);
+        objid  = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_STREAM);
         status = OS_ObjectIdToInteger(objid);
     }
 
@@ -150,7 +150,7 @@ int32 OS_open(const char *path, int32 access, uint32 mode)
 
     if (status == OS_SUCCESS)
     {
-        objid  = UT_AllocStubObjId(UT_OBJTYPE_FILESTREAM);
+        objid  = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_STREAM);
         status = OS_ObjectIdToInteger(objid);
     }
 
@@ -175,7 +175,7 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
     status = UT_DEFAULT_IMPL(OS_OpenCreate);
     if (status == OS_SUCCESS)
     {
-        *filedes = UT_AllocStubObjId(UT_OBJTYPE_FILESTREAM);
+        *filedes = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_STREAM);
     }
     else
     {
@@ -200,7 +200,7 @@ int32 OS_close(osal_id_t filedes)
 
     if (status == OS_SUCCESS)
     {
-        UT_DeleteStubObjId(UT_OBJTYPE_FILESTREAM, filedes);
+        UT_DeleteStubObjId(OS_OBJECT_TYPE_OS_STREAM, filedes);
     }
 
     return status;
@@ -430,7 +430,7 @@ int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop)
         {
             memset(fd_prop, 0, sizeof(*fd_prop));
             fd_prop->IsValid = true;
-            UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &fd_prop->User);
+            UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &fd_prop->User);
         }
     }
 

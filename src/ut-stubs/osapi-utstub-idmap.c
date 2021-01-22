@@ -43,7 +43,7 @@
 /*
  * UT Helper function to create a fake object lock token
  */
-static void UT_TokenCompose(uint32 lock_mode, uint32 indx, UT_ObjType_t objtype, OS_object_token_t *token)
+static void UT_TokenCompose(uint32 lock_mode, uint32 indx, osal_objtype_t objtype, OS_object_token_t *token)
 {
     token->lock_mode = lock_mode;
     token->obj_type  = objtype;
@@ -72,7 +72,7 @@ uint32 OS_GetMaxForObjectType(osal_objtype_t idtype)
 {
     int32 max;
 
-    if (idtype > UT_OBJTYPE_NONE && idtype < UT_OBJTYPE_MAX)
+    if (idtype > OS_OBJECT_TYPE_UNDEFINED && idtype < OS_OBJECT_TYPE_USER)
     {
         max = OSAL_MAX_VALID_PER_TYPE;
     }
@@ -93,7 +93,7 @@ uint32 OS_GetBaseForObjectType(osal_objtype_t idtype)
 {
     int32 base;
 
-    if (idtype > UT_OBJTYPE_NONE && idtype < UT_OBJTYPE_MAX)
+    if (idtype > OS_OBJECT_TYPE_UNDEFINED && idtype < OS_OBJECT_TYPE_USER)
     {
         base = OSAL_MAX_VALID_PER_TYPE * (idtype - 1);
     }
@@ -112,9 +112,9 @@ uint32 OS_GetBaseForObjectType(osal_objtype_t idtype)
  *****************************************************************************/
 int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t id, osal_index_t *ArrayIndex)
 {
-    int32        Status;
-    UT_ObjType_t checktype;
-    uint32       tempserial;
+    int32          Status;
+    osal_objtype_t checktype;
+    uint32         tempserial;
 
     Status = UT_DEFAULT_IMPL(OS_ObjectIdToArrayIndex);
 
@@ -457,9 +457,9 @@ int32 OS_ConvertToArrayIndex(osal_id_t object_id, osal_index_t *ArrayIndex)
 
     if (return_code == OS_SUCCESS)
     {
-        UT_ObjType_t ObjType;
+        osal_objtype_t ObjType;
         UT_ObjIdDecompose(object_id, &tempserial, &ObjType);
-        if (ObjType != UT_OBJTYPE_NONE && ObjType < UT_OBJTYPE_MAX)
+        if (ObjType != OS_OBJECT_TYPE_UNDEFINED && ObjType < OS_OBJECT_TYPE_USER)
         {
             tempserial %= UT_MAXOBJS[ObjType];
         }
@@ -603,7 +603,7 @@ void OS_ObjectIdIteratorDestroy(OS_object_iter_t *iter)
     UT_DEFAULT_IMPL(OS_ObjectIdIteratorDestroy);
 }
 
-int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t, void*))
+int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t, void *))
 {
     int32 Status;
 
@@ -623,53 +623,13 @@ osal_objtype_t OS_IdentifyObject(osal_id_t object_id)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_IdentifyObject), object_id);
 
-    UT_ObjType_t ObjType;
-    uint32       checkindx;
-    int32        DefaultType;
+    osal_objtype_t ObjType;
+    uint32         checkindx;
+    int32          DefaultType;
 
     UT_ObjIdDecompose(object_id, &checkindx, &ObjType);
 
-    switch (ObjType)
-    {
-        case UT_OBJTYPE_TASK:
-            DefaultType = OS_OBJECT_TYPE_OS_TASK;
-            break;
-        case UT_OBJTYPE_QUEUE:
-            DefaultType = OS_OBJECT_TYPE_OS_QUEUE;
-            break;
-        case UT_OBJTYPE_COUNTSEM:
-            DefaultType = OS_OBJECT_TYPE_OS_COUNTSEM;
-            break;
-        case UT_OBJTYPE_BINSEM:
-            DefaultType = OS_OBJECT_TYPE_OS_BINSEM;
-            break;
-        case UT_OBJTYPE_MUTEX:
-            DefaultType = OS_OBJECT_TYPE_OS_MUTEX;
-            break;
-        case UT_OBJTYPE_TIMECB:
-            DefaultType = OS_OBJECT_TYPE_OS_TIMECB;
-            break;
-        case UT_OBJTYPE_MODULE:
-            DefaultType = OS_OBJECT_TYPE_OS_MODULE;
-            break;
-        case UT_OBJTYPE_FILESTREAM:
-            DefaultType = OS_OBJECT_TYPE_OS_STREAM;
-            break;
-        case UT_OBJTYPE_TIMEBASE:
-            DefaultType = OS_OBJECT_TYPE_OS_TIMEBASE;
-            break;
-        case UT_OBJTYPE_DIR:
-            DefaultType = OS_OBJECT_TYPE_OS_DIR;
-            break;
-        case UT_OBJTYPE_FILESYS:
-            DefaultType = OS_OBJECT_TYPE_OS_FILESYS;
-            break;
-        default:
-            DefaultType = OS_OBJECT_TYPE_UNDEFINED;
-            break;
-    }
-
-    DefaultType = UT_DEFAULT_IMPL_RC(OS_IdentifyObject, DefaultType);
+    DefaultType = UT_DEFAULT_IMPL_RC(OS_IdentifyObject, ObjType);
 
     return DefaultType;
 }

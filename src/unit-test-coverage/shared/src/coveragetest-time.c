@@ -154,6 +154,14 @@ void Test_OS_TimerCreate(void)
     actual   = OS_TimerCreate(&objid, "UT", &accuracy, UT_TimerCallback);
     UtAssert_True(actual == expected, "OS_TimerCreate() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
     UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
+
+    /* This function creates its own timebase.  If OS_DoTimerAdd() fails this timebase needs to be deleted */
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    expected = OS_ERROR;
+    actual   = OS_TimerCreate(&objid, "UT", &accuracy, UT_TimerCallback);
+    UtAssert_True(actual == expected, "OS_TimerCreate() (%ld) == OS_ERROR", (long)actual);
+    UT_ResetState(UT_KEY(OS_ObjectIdGetById));
+    UtAssert_STUB_COUNT(OS_TimeBaseDelete, 1);
 }
 
 void Test_OS_TimerSet(void)
@@ -195,35 +203,56 @@ void Test_OS_TimerDelete(void)
      * Test Case For:
      * int32 OS_TimerDelete(uint32 timer_id)
      */
-    int32     expected = OS_SUCCESS;
-    int32     actual   = OS_TimerDelete(UT_OBJID_1);
-    osal_id_t timebase_id;
+    int32                          expected;
+    int32                          actual;
+    osal_id_t                      timebase_id;
+    osal_id_t                      timer_objid_1, timer_objid_2;
+    OS_timebase_internal_record_t *timebase;
+    OS_object_token_t              timebase_token;
+    uint32                         accuracy;
 
+    expected = OS_SUCCESS;
+
+    /* The ObjIds in the ring need to match what will be in the token */
+    /* Get a "timebase" from the stub so the objid will validate */
+    OS_TimeBaseCreate(&timebase_id, "ut", NULL);
+    OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMEBASE, timebase_id, &timebase_token);
+    timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, timebase_token);
+    OS_TimerAdd(&timer_objid_1, "UT1", timebase_id, UT_TimerArgCallback, NULL);
+    OS_TimerAdd(&timer_objid_2, "UT2", timebase_id, UT_TimerArgCallback, NULL);
+
+    /* Sanity check: After adding the two timers the "first_cb" should be pointing at timer 2 */
+    UtAssert_True(OS_ObjectIdEqual(timebase->first_cb, timer_objid_2), "First CB at timer 2");
+
+    actual = OS_TimerDelete(timer_objid_2);
     UtAssert_True(actual == expected, "OS_TimerDelete() (%ld) == OS_SUCCESS", (long)actual);
 
-    OS_timecb_table[1].timebase_token.obj_type = OS_OBJECT_TYPE_OS_TIMEBASE;
-    OS_timecb_table[1].timebase_token.obj_id   = UT_OBJID_1;
-    OS_timecb_table[1].timebase_token.obj_idx  = UT_INDEX_0;
-    OS_timecb_table[2].timebase_token          = OS_timecb_table[1].timebase_token;
-    OS_timecb_table[2].next_cb                 = UT_OBJID_1;
-    OS_timecb_table[1].next_cb                 = UT_OBJID_1;
-    OS_timebase_table[0].first_cb              = UT_OBJID_2;
-    actual                                     = OS_TimerDelete(UT_OBJID_2);
+    /* After deleting timer 2 the "first_cb" should be pointing at timer 1 */
+    UtAssert_True(OS_ObjectIdEqual(timebase->first_cb, timer_objid_1), "First CB at timer 1");
+
+    /* Re-add timer 2 again */
+    OS_TimerAdd(&timer_objid_2, "UT2", timebase_id, UT_TimerArgCallback, NULL);
+
+    /* Sanity check: the "first_cb" should be pointing at timer 2 again */
+    UtAssert_True(OS_ObjectIdEqual(timebase->first_cb, timer_objid_2), "First CB at timer 2");
+
+    /* delete timer 1 */
+    actual = OS_TimerDelete(timer_objid_1);
     UtAssert_True(actual == expected, "OS_TimerDelete() (%ld) == OS_SUCCESS", (long)actual);
 
-    OS_timebase_table[0].first_cb = UT_OBJID_1;
-    actual                        = OS_TimerDelete(UT_OBJID_1);
+    /* The "first_cb" should be still pointing at timer 2 */
+    UtAssert_True(OS_ObjectIdEqual(timebase->first_cb, timer_objid_2), "First CB at timer 2");
+
+    actual = OS_TimerDelete(timer_objid_2);
     UtAssert_True(actual == expected, "OS_TimerDelete() (%ld) == OS_SUCCESS", (long)actual);
+
+    /* The "first_cb" should be undefined */
+    UtAssert_True(!OS_ObjectIdDefined(timebase->first_cb), "First CB at OS_OBJECT_ID_UNDEFINED");
 
     /* verify deletion of the dedicated timebase objects
      * these are implicitly created as part of timer creation for API compatibility */
-    OS_TimeBaseCreate(&timebase_id, "ut", NULL);
-    OS_UT_SetupTestTargetIndex(OS_OBJECT_TYPE_OS_TIMECB, UT_INDEX_1);
-    OS_timecb_table[1].flags                   = TIMECB_FLAG_DEDICATED_TIMEBASE;
-    OS_timecb_table[1].timebase_token.obj_type = OS_OBJECT_TYPE_OS_TIMEBASE;
-    OS_timecb_table[1].timebase_token.obj_id   = timebase_id;
-    OS_timecb_table[1].timebase_token.obj_idx  = OS_ObjectIdToInteger(timebase_id) & OS_OBJECT_INDEX_MASK;
-    actual                                     = OS_TimerDelete(UT_OBJID_1);
+    OS_TimerCreate(&timer_objid_1, "UT1", &accuracy, UT_TimerCallback);
+    actual = OS_TimerDelete(timer_objid_1);
     UtAssert_True(actual == expected, "OS_TimerDelete() (%ld) == OS_SUCCESS", (long)actual);
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_TimeBaseDelete)) == 1, "OS_TimerDelete() invoked OS_TimeBaseDelete()");
 

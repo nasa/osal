@@ -54,7 +54,7 @@ int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_Ti
 
     if (status == OS_SUCCESS)
     {
-        *timebase_id = UT_AllocStubObjId(UT_OBJTYPE_TIMEBASE);
+        *timebase_id = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_TIMEBASE);
     }
     else
     {
@@ -97,7 +97,7 @@ int32 OS_TimeBaseDelete(osal_id_t timebase_id)
 
     if (status == OS_SUCCESS)
     {
-        UT_DeleteStubObjId(UT_OBJTYPE_TIMEBASE, timebase_id);
+        UT_DeleteStubObjId(OS_OBJECT_TYPE_OS_TIMEBASE, timebase_id);
     }
 
     return status;
@@ -120,7 +120,7 @@ int32 OS_TimeBaseGetIdByName(osal_id_t *timebase_id, const char *timebase_name)
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_TimeBaseGetIdByName), timebase_id, sizeof(*timebase_id)) < sizeof(*timebase_id))
     {
-        UT_ObjIdCompose(1, UT_OBJTYPE_TIMEBASE, timebase_id);
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TIMEBASE, timebase_id);
     }
 
     return status;
@@ -143,7 +143,7 @@ int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_pro
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_TimeBaseGetInfo), timebase_prop, sizeof(*timebase_prop)) < sizeof(*timebase_prop))
     {
-        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &timebase_prop->creator);
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &timebase_prop->creator);
         strncpy(timebase_prop->name, "Name", OS_MAX_API_NAME - 1);
         timebase_prop->name[OS_MAX_API_NAME - 1] = '\0';
     }
