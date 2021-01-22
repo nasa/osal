@@ -80,12 +80,6 @@ int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data)
 {
     int32 status;
 
-    /*
-    * Check parameters
-    *
-    * Note "data" is not checked, because in certain configurations it can be validly null. 
-    */    
-
     if (OS_SharedGlobalVars.EventHandler != NULL)
     {
         status = OS_SharedGlobalVars.EventHandler(event, object_id, data);
@@ -281,9 +275,6 @@ void OS_ApplicationExit(int32 Status)
 void OS_CleanUpObject(osal_id_t object_id, void *arg)
 {
     uint32 *ObjectCount;
-
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    //OS_CHECK_POINTER(arg);
 
     ObjectCount = (uint32 *)arg;
     ++(*ObjectCount);

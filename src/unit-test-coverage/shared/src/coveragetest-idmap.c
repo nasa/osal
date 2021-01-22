@@ -432,11 +432,6 @@ void Test_OS_ObjectIdFindByName(void)
     int32     actual   = OS_ObjectIdFindByName(OS_OBJECT_TYPE_UNDEFINED, NULL, &objid);
     UtAssert_True(actual == expected, "OS_ObjectFindIdByName(%s) (%ld) == OS_ERR_NAME_NOT_FOUND", "NULL", (long)actual);
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_ObjectIdFindByName(OS_OBJECT_TYPE_UNDEFINED, TaskName, NULL);
-    UtAssert_True(actual == expected, "OS_ObjectFindIdByName(%s) (%ld) == OS_INVALID_POINTER", "NULL", (long)actual);
-
-
     /*
      * Pass in a name that is beyond OS_MAX_API_NAME
      */

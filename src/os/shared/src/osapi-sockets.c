@@ -96,10 +96,6 @@ void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Ad
     uint16                       port;
     OS_stream_internal_record_t *sock;
 
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    //OS_CHECK_POINTER(token);
-    //OS_CHECK_POINTER(Addr);
-
     sock = OS_OBJECT_TABLE_GET(OS_stream_table, *token);
 
     if (OS_SocketAddrToString_Impl(sock->stream_name, OS_MAX_API_NAME, Addr) != OS_SUCCESS)
@@ -364,10 +360,10 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockA
     int32                        return_code;
 
     /*
-    * Check parameters
-    *
-    * Note "RemoteAddr" is not checked, because in certain configurations it can be validly null. 
-    */
+     * Check parameters
+     *
+     * Note "RemoteAddr" is not checked, because in certain configurations it can be validly null.
+     */
     OS_CHECK_POINTER(buffer);
     OS_CHECK_SIZE(buflen);
 

@@ -91,7 +91,6 @@ typedef struct
     void *           user_arg;
 } OS_creator_filter_t;
 
-
 /*
  * Global ID storage tables
  */
@@ -243,11 +242,7 @@ uint32 OS_GetBaseForObjectType(osal_objtype_t idtype)
  *-----------------------------------------------------------------*/
 bool OS_ForEachFilterCreator(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
-    /* Check parameters */
-    OS_CHECK_POINTER(ref);
-    OS_CHECK_POINTER(obj); 
-    
-    OS_creator_filter_t *filter = ref;   
+    OS_creator_filter_t *filter = ref;
 
     /*
      * Check if the obj_id is both valid and matches
@@ -267,16 +262,12 @@ bool OS_ForEachFilterCreator(void *ref, const OS_object_token_t *token, const OS
  *-----------------------------------------------------------------*/
 int32 OS_ForEachDoCallback(osal_id_t obj_id, void *ref)
 {
-    /* Check parameters */
-    OS_CHECK_POINTER(ref);
-
     OS_creator_filter_t *filter = ref;
 
     /* Just invoke the user callback */
     filter->user_callback(obj_id, filter->user_arg);
     return OS_SUCCESS;
 }
-
 
 /*----------------------------------------------------------------
  *
@@ -290,9 +281,6 @@ int32 OS_ForEachDoCallback(osal_id_t obj_id, void *ref)
  *-----------------------------------------------------------------*/
 OS_common_record_t *OS_ObjectIdGlobalFromToken(const OS_object_token_t *token)
 {
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    //OS_CHECK_POINTER(token);
-
     uint32 base_idx = OS_GetBaseForObjectType(token->obj_type);
     return &OS_common_table[base_idx + token->obj_idx];
 }
@@ -313,11 +301,6 @@ OS_common_record_t *OS_ObjectIdGlobalFromToken(const OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 bool OS_ObjectNameMatch(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
-    /* Check parameters */
-    OS_CHECK_POINTER(ref);
-    OS_CHECK_POINTER(token);
-    OS_CHECK_POINTER(obj);
-    
     return (obj->name_entry != NULL && strcmp((const char *)ref, obj->name_entry) == 0);
 } /* end OS_ObjectNameMatch */
 
@@ -339,9 +322,6 @@ bool OS_ObjectNameMatch(void *ref, const OS_object_token_t *token, const OS_comm
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS_object_token_t *token)
 {
-    /* Check parameters */
-    OS_CHECK_POINTER(token);
-    
     memset(token, 0, sizeof(*token));
 
     if (OS_SharedGlobalVars.Initialized == false)
@@ -390,9 +370,6 @@ int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype
  *-----------------------------------------------------------------*/
 void OS_ObjectIdTransactionCancel(OS_object_token_t *token)
 {
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    //OS_CHECK_POINTER(token);
-    
     if (token->lock_mode != OS_LOCK_MODE_NONE)
     {
         OS_Unlock_Global(token);
@@ -444,9 +421,6 @@ int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
     uint32              attempts    = 0;
     OS_common_record_t *obj;
     osal_id_t           expected_id;
-
-    /* Check parameters */
-    OS_CHECK_POINTER(token);
 
     obj         = OS_ObjectIdGlobalFromToken(token);
     expected_id = OS_ObjectIdFromToken(token);
@@ -607,13 +581,6 @@ int32 OS_ObjectIdFindNextMatch(OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_obj
     OS_common_record_t *base;
     OS_common_record_t *record;
 
-    /*
-    * Check parameters
-    *
-    * Note "arg" is not checked, because in certain configurations it can be validly null. 
-    */
-    OS_CHECK_POINTER(token);
-
     return_code   = OS_ERR_NAME_NOT_FOUND;
     base          = &OS_common_table[OS_GetBaseForObjectType(token->obj_type)];
     obj_count     = OS_GetMaxForObjectType(token->obj_type);
@@ -668,9 +635,6 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
     int32               return_code;
     OS_common_record_t *obj = NULL;
     OS_objtype_state_t *objtype_state;
-
-    /* Check parameters */
-    OS_CHECK_POINTER(token);
 
     base_id       = OS_GetBaseForObjectType(token->obj_type);
     max_id        = OS_GetMaxForObjectType(token->obj_type);
@@ -750,9 +714,6 @@ void OS_Lock_Global(OS_object_token_t *token)
     osal_id_t           self_task_id;
     OS_objtype_state_t *objtype;
 
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    //OS_CHECK_POINTER(token);
-
     if (token->obj_type < OS_OBJECT_TYPE_USER && token->lock_mode != OS_LOCK_MODE_NONE)
     {
         objtype      = &OS_objtype_state[token->obj_type];
@@ -784,16 +745,17 @@ void OS_Lock_Global(OS_object_token_t *token)
          * This makes it different for every operation, and different depending
          * on what task is calling the function.
          */
-        token->lock_key.key_value = OS_LOCK_KEY_FIXED_VALUE |
-                                    ((OS_ObjectIdToInteger(self_task_id) ^ objtype->transaction_count) & 0xFFFFFF);
+        token->lock_key.key_value =
+            OS_LOCK_KEY_FIXED_VALUE | ((OS_ObjectIdToInteger(self_task_id) ^ objtype->transaction_count) & 0xFFFFFF);
 
         ++objtype->transaction_count;
 
         if (objtype->owner_key.key_value != 0)
         {
             /* this is almost certainly a bug */
-            OS_DEBUG("ERROR: global %u acquired by task 0x%lx when already assigned key 0x%lx\n", (unsigned int)token->obj_type,
-                     OS_ObjectIdToInteger(self_task_id), (unsigned long)objtype->owner_key.key_value);
+            OS_DEBUG("ERROR: global %u acquired by task 0x%lx when already assigned key 0x%lx\n",
+                     (unsigned int)token->obj_type, OS_ObjectIdToInteger(self_task_id),
+                     (unsigned long)objtype->owner_key.key_value);
         }
         else
         {
@@ -802,8 +764,8 @@ void OS_Lock_Global(OS_object_token_t *token)
     }
     else
     {
-        OS_DEBUG("ERROR: cannot lock global %u for mode %u\n",
-            (unsigned int)token->obj_type, (unsigned int)token->lock_mode);
+        OS_DEBUG("ERROR: cannot lock global %u for mode %u\n", (unsigned int)token->obj_type,
+                 (unsigned int)token->lock_mode);
     }
 }
 
@@ -815,9 +777,6 @@ void OS_Lock_Global(OS_object_token_t *token)
 void OS_Unlock_Global(OS_object_token_t *token)
 {
     OS_objtype_state_t *objtype;
-
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    //OS_CHECK_POINTER(token);
 
     if (token->obj_type < OS_OBJECT_TYPE_USER && token->lock_mode != OS_LOCK_MODE_NONE)
     {
@@ -835,8 +794,9 @@ void OS_Unlock_Global(OS_object_token_t *token)
             objtype->owner_key.key_value != token->lock_key.key_value)
         {
             /* this is almost certainly a bug */
-            OS_DEBUG("ERROR: global %u released using mismatched key=0x%lx expected=0x%lx\n", (unsigned int)token->obj_type,
-                     (unsigned long)token->lock_key.key_value, (unsigned long)objtype->owner_key.key_value);
+            OS_DEBUG("ERROR: global %u released using mismatched key=0x%lx expected=0x%lx\n",
+                     (unsigned int)token->obj_type, (unsigned long)token->lock_key.key_value,
+                     (unsigned long)objtype->owner_key.key_value);
         }
 
         objtype->owner_key = OS_LOCK_KEY_INVALID;
@@ -846,8 +806,8 @@ void OS_Unlock_Global(OS_object_token_t *token)
     }
     else
     {
-        OS_DEBUG("ERROR: cannot unlock global %u for mode %u\n",
-            (unsigned int)token->obj_type, (unsigned int)token->lock_mode);
+        OS_DEBUG("ERROR: cannot unlock global %u for mode %u\n", (unsigned int)token->obj_type,
+                 (unsigned int)token->lock_mode);
     }
 }
 
@@ -866,9 +826,6 @@ void OS_WaitForStateChange(OS_object_token_t *token, uint32 attempts)
 {
     osal_key_t          saved_unlock_key;
     OS_objtype_state_t *objtype;
-
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    //OS_CHECK_POINTER(token);
 
     /*
      * This needs to release the lock, to allow other
@@ -919,13 +876,6 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_object_token_t *token, o
 {
     osal_id_t final_id;
 
-    /*
-    * Check parameters
-    *
-    * Note "outid" is not checked, because in certain configurations it can be validly null. 
-    */
-    OS_CHECK_POINTER(token);
-
     /* if operation was unsuccessful, then clear
      * the active_id field within the record, so
      * the record can be re-used later.
@@ -969,9 +919,6 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_object_token_t *token, o
 int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_object_token_t *token)
 {
     osal_id_t final_id;
-
-    /* Check parameters */
-    OS_CHECK_POINTER(token);
 
     /* Clear the OSAL ID if successful - this returns the record to the pool */
     if (operation_status == OS_SUCCESS)
@@ -1072,9 +1019,6 @@ int32 OS_ObjectIdFindByName(osal_objtype_t idtype, const char *name, osal_id_t *
     int32             return_code;
     OS_object_token_t token;
 
-    /* Check parameters */
-    OS_CHECK_POINTER(object_id);
-
     /*
      * As this is an internal-only function, calling it will NULL is allowed.
      * This is required by the file/dir/socket API since these DO allow multiple
@@ -1162,14 +1106,6 @@ int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, osal_objtype_t idtype, osal_i
 void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id)
 {
     OS_common_record_t *record;
-
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    /*
-    * Check parameters
-    *
-    * Note "final_id" is not checked, because in certain configurations it can be validly null. 
-    */
-    //OS_CHECK_POINTER(token);    
 
     if (token->lock_mode == OS_LOCK_MODE_NONE)
     {
@@ -1342,10 +1278,6 @@ int32 OS_ObjectIdAllocateNew(osal_objtype_t idtype, const char *name, OS_object_
  ------------------------------------------------------------------*/
 void OS_ObjectIdTransferToken(OS_object_token_t *token_from, OS_object_token_t *token_to)
 {
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    //OS_CHECK_POINTER(token_to);
-    //OS_CHECK_POINTER(token_from);
-    
     /* start with a simple copy */
     *token_to = *token_from;
 
@@ -1365,13 +1297,6 @@ void OS_ObjectIdTransferToken(OS_object_token_t *token_from, OS_object_token_t *
 int32 OS_ObjectIdIteratorInit(OS_ObjectMatchFunc_t matchfunc, void *matcharg, osal_objtype_t objtype,
                               OS_object_iter_t *iter)
 {
-    /*
-    * Check parameters
-    *
-    * Note "matcharg" is not checked, because in certain configurations it can be validly null. 
-    */
-    OS_CHECK_POINTER(iter);
-    
     iter->match = matchfunc;
     iter->arg   = matcharg;
     iter->limit = OS_GetMaxForObjectType(objtype);
@@ -1387,9 +1312,6 @@ int32 OS_ObjectIdIteratorInit(OS_ObjectMatchFunc_t matchfunc, void *matcharg, os
  ------------------------------------------------------------------*/
 bool OS_ObjectFilterActive(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
-    /* Check parameters */
-    OS_CHECK_POINTER(obj);
-    
     return OS_ObjectIdDefined(obj->active_id);
 }
 
@@ -1412,8 +1334,6 @@ bool OS_ObjectIdIteratorGetNext(OS_object_iter_t *iter)
 {
     OS_common_record_t *record;
     bool                got_next;
-    
-    OS_CHECK_POINTER(iter);
 
     got_next           = false;
     iter->token.obj_id = OS_OBJECT_ID_UNDEFINED;
@@ -1455,10 +1375,6 @@ void OS_ObjectIdIteratorDestroy(OS_object_iter_t *iter)
 int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t, void *))
 {
     int32 status;
-
-    /* Check parameters */
-    OS_CHECK_POINTER(iter);
-    OS_CHECK_POINTER(func);
 
     /*
      * This needs to temporarily unlock the global,
@@ -1517,13 +1433,14 @@ void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void 
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-void OS_ForEachObjectOfType(osal_objtype_t idtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
+void OS_ForEachObjectOfType(osal_objtype_t idtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr,
+                            void *callback_arg)
 {
     OS_object_iter_t    iter;
     OS_creator_filter_t filter;
 
     /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    //OS_CHECK_POINTER(callback_arg)
+    // OS_CHECK_POINTER(callback_arg)
 
     filter.creator_id    = creator_id;
     filter.user_callback = callback_ptr;

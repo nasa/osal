@@ -106,12 +106,13 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
     OS_timebase_internal_record_t *timebase;
 
     /*
-     ** Check Parameters
+     * Check parameters
+     *
+     * Note "callback_arg" is not checked, because in certain configurations it can be validly null.
      */
     OS_CHECK_POINTER(timer_id);
     OS_CHECK_APINAME(timer_name);
     OS_CHECK_POINTER(callback_ptr);
-    OS_CHECK_POINTER(callback_arg);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -218,9 +219,6 @@ int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebas
 static void OS_Timer_NoArgCallback(osal_id_t objid, void *arg)
 {
     OS_Timer_ArgWrapper_t Conv;
-
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    //OS_CHECK_POINTER(arg);
 
     /*
      * Note - did not write this as simply *((OS_SimpleCallback_t)arg) because

@@ -540,9 +540,6 @@ int32 OS_Milli2Ticks(uint32 milli_seconds, int *ticks)
     uint64 num_of_ticks;
     int32  return_code = OS_SUCCESS;
 
-    /* Check parameters */
-    OS_CHECK_POINTER(ticks);
-
     num_of_ticks = (((uint64)milli_seconds * OS_SharedGlobalVars.TicksPerSecond) + 999) / 1000;
 
     /* Check against maximum int32 (limit from some OS's) */

@@ -90,10 +90,10 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
     int32 return_code;
 
     /*
-    * Check parameters
-    *
-    * Note "ReadSet" and "WriteSet" are not checked, because in certain configurations they can be validly null. 
-    */
+     * Check parameters
+     *
+     * Note "ReadSet" and "WriteSet" are not checked, because in certain configurations they can be validly null.
+     */
 
     /*
      * This does not currently increment any refcounts.

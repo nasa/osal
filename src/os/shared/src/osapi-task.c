@@ -85,9 +85,6 @@ static int32 OS_TaskPrepare(osal_id_t task_id, osal_task_entry *entrypt)
     OS_object_token_t          token;
     OS_task_internal_record_t *task;
 
-    /* Check parameters */
-    OS_CHECK_POINTER(entrypt);
-
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_TASK, task_id, &token);
     if (return_code == OS_SUCCESS)
     {
@@ -182,10 +179,10 @@ int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry f
     OS_task_internal_record_t *task;
 
     /*
-    * Check parameters
-    *
-    * Note "stack_pointer" is not checked, because in certain configurations it can be validly null. 
-    */    
+     * Check parameters
+     *
+     * Note "stack_pointer" is not checked, because in certain configurations it can be validly null.
+     */
     OS_CHECK_POINTER(task_id);
     OS_CHECK_POINTER(function_pointer);
     OS_CHECK_APINAME(task_name);

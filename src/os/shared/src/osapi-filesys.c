@@ -75,9 +75,6 @@ const char OS_FILESYS_RAMDISK_VOLNAME_PREFIX[] = "RAM";
  *-----------------------------------------------------------------*/
 bool OS_FileSysFilterFree(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
-    /* Check parameters */
-    OS_CHECK_POINTER(obj);
-    
     return !OS_ObjectIdDefined(obj->active_id);
 }
 
@@ -94,10 +91,6 @@ bool OS_FileSysFilterFree(void *ref, const OS_object_token_t *token, const OS_co
  *-----------------------------------------------------------------*/
 bool OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
-     /* Check parameters */
-    OS_CHECK_POINTER(ref);
-    OS_CHECK_POINTER(token);
-    
     OS_filesys_internal_record_t *filesys;
     const char *                  target = (const char *)ref;
     size_t                        mplen;
@@ -133,10 +126,10 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
     OS_object_token_t             token;
 
     /*
-    * Check parameters
-    *
-    * Note "address" is not checked, because in certain configurations it can be validly null. 
-    */
+     * Check parameters
+     *
+     * Note "address" is not checked, because in certain configurations it can be validly null.
+     */
     OS_CHECK_STRING(fsdevname, sizeof(filesys->device_name), OS_FS_ERR_PATH_TOO_LONG);
     OS_CHECK_STRING(fsvolname, sizeof(filesys->volume_name), OS_FS_ERR_PATH_TOO_LONG);
 

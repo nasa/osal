@@ -142,12 +142,6 @@ static int32 OS_Console_CopyOut(OS_console_internal_record_t *console, const cha
     size_t      WriteOffset;
     int32       return_code;
 
-    /* Check parameters */
-    OS_CHECK_POINTER(console);
-    OS_CHECK_POINTER(Str);
-    OS_CHECK_POINTER(NextWritePos);
-
-
     return_code = OS_ERROR;
     pmsg        = Str;
     WriteOffset = *NextWritePos;
@@ -263,7 +257,7 @@ void OS_printf(const char *String, ...)
     int     actualsz;
 
     /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    //OS_CHECK_POINTER(String);
+    // OS_CHECK_POINTER(String);
 
     if (!OS_SharedGlobalVars.Initialized)
     {
