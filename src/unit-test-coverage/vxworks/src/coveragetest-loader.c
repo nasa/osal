@@ -55,10 +55,10 @@ void Test_OS_ModuleLoad_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(&token, "local"), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(&token, "local"), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_open));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_open));
     UT_SetDefaultReturnValue(UT_KEY(OCS_loadModule), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(&token, "local"), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_loadModule));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_loadModule));
 }
 
 void Test_OS_ModuleUnload_Impl(void)
@@ -71,7 +71,7 @@ void Test_OS_ModuleUnload_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_ModuleUnload_Impl(&token), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_KEY(OCS_unldByModuleId), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ModuleUnload_Impl(&token), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_unldByModuleId));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_unldByModuleId));
 }
 
 void Test_OS_ModuleGetInfo_Impl(void)
@@ -93,7 +93,7 @@ void Test_OS_ModuleGetInfo_Impl(void)
     memset(&module_prop, 0, sizeof(module_prop));
     UT_SetDefaultReturnValue(UT_KEY(OCS_moduleInfoGet), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ModuleGetInfo_Impl(&token, &module_prop), OS_SUCCESS);
-    UT_ClearForceFail(UT_KEY(OCS_moduleInfoGet));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_moduleInfoGet));
     UtAssert_True(!module_prop.addr.valid, "addresses in output not valid");
 }
 

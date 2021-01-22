@@ -85,7 +85,7 @@ void Test_OS_TimerAdd(void)
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_TimerAdd(&objid, "UT", UT_OBJID_1, UT_TimerArgCallback, &arg);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_memchr));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
     expected = OS_INVALID_POINTER;
     actual   = OS_TimerAdd(&objid, "UT", UT_OBJID_1, NULL, &arg);
@@ -95,19 +95,19 @@ void Test_OS_TimerAdd(void)
     expected = OS_ERR_INCORRECT_OBJ_STATE;
     actual   = OS_TimerAdd(&objid, "UT", UT_OBJID_1, UT_TimerArgCallback, &arg);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TaskGetId_Impl));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl));
 
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
     expected = OS_ERROR;
     actual   = OS_TimerAdd(&objid, "UT", UT_OBJID_1, UT_TimerArgCallback, &arg);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERROR", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdGetById));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdGetById));
 
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERROR);
     expected = OS_ERROR;
     actual   = OS_TimerAdd(&objid, "UT", UT_OBJID_1, UT_TimerArgCallback, &arg);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERROR", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdAllocateNew));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew));
 }
 
 void Test_OS_TimerCreate(void)
@@ -147,13 +147,13 @@ void Test_OS_TimerCreate(void)
     expected = OS_ERROR;
     actual   = OS_TimerCreate(&objid, "UT", &accuracy, UT_TimerCallback);
     UtAssert_True(actual == expected, "OS_TimerCreate() (%ld) == OS_ERROR", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TimeBaseCreate));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TimeBaseCreate));
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_TimerCreate(&objid, "UT", &accuracy, UT_TimerCallback);
     UtAssert_True(actual == expected, "OS_TimerCreate() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_memchr));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 }
 
 void Test_OS_TimerSet(void)
@@ -186,7 +186,7 @@ void Test_OS_TimerSet(void)
     expected = OS_ERR_INCORRECT_OBJ_STATE;
     actual   = OS_TimerSet(UT_OBJID_2, 0, 1);
     UtAssert_True(actual == expected, "OS_TimerSet() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TaskGetId_Impl));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl));
 }
 
 void Test_OS_TimerDelete(void)
@@ -234,7 +234,7 @@ void Test_OS_TimerDelete(void)
     expected = OS_ERR_INCORRECT_OBJ_STATE;
     actual   = OS_TimerDelete(UT_OBJID_2);
     UtAssert_True(actual == expected, "OS_TimerDelete() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TaskGetId_Impl));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl));
 }
 
 void Test_OS_TimerGetIdByName(void)
@@ -250,7 +250,7 @@ void Test_OS_TimerGetIdByName(void)
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_TimerGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_TimerGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
     actual   = OS_TimerGetIdByName(&objid, "NF");
@@ -264,7 +264,7 @@ void Test_OS_TimerGetIdByName(void)
     expected = OS_ERR_INCORRECT_OBJ_STATE;
     actual   = OS_TimerGetIdByName(&objid, "NF");
     UtAssert_True(actual == expected, "OS_TimerGetIdByName() (%ld) == %ld", (long)actual, (long)expected);
-    UT_ClearForceFail(UT_KEY(OS_TaskGetId_Impl));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl));
 }
 
 void Test_OS_TimerGetInfo(void)
@@ -301,7 +301,7 @@ void Test_OS_TimerGetInfo(void)
     expected = OS_ERR_INCORRECT_OBJ_STATE;
     actual   = OS_TimerGetInfo(UT_OBJID_1, &timer_prop);
     UtAssert_True(actual == expected, "OS_TimerGetInfo() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TaskGetId_Impl));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl));
 }
 
 /* Osapi_Test_Setup
