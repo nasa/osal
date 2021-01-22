@@ -28,6 +28,6 @@ jobs:
       - name: Run a one-line script
         uses: heinrichreimer/github-changelog-generator-action@v2.1.1
         with:
-          token: $
+          token: 379b24ef10db3e152e9ca626679177a09a1351ee
           issues: true
           issuesWoLabels: true
