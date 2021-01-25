@@ -44,9 +44,28 @@
  */
 typedef struct
 {
-    uint32 seconds;
-    uint32 microsecs;
+    int64 ticks;     /**< Ticks elapsed since reference point */
 } OS_time_t;
+
+
+/**
+ * @brief Multipliers/divisors to convert ticks into standardized units
+ * 
+ * Various fixed conversion factor constants used by the conversion routines
+ * 
+ * A 100ns tick time allows max intervals of about +/- 14000 years in
+ * a 64-bit signed integer value.
+ * 
+ * @note Applications should not directly use these values, but rather use
+ * conversion routines below to obtain standardized units (seconds/microseconds/etc).
+ */
+enum
+{
+    OS_TIME_TICK_RESOLUTION_NS = 100,
+    OS_TIME_TICKS_PER_SECOND   = 1000000000 / OS_TIME_TICK_RESOLUTION_NS,
+    OS_TIME_TICKS_PER_MSEC     = 1000000 / OS_TIME_TICK_RESOLUTION_NS,
+    OS_TIME_TICKS_PER_USEC     = 1000 / OS_TIME_TICK_RESOLUTION_NS
+};
 
 /** @defgroup OSAPIClock OSAL Real Time Clock APIs
  * @{
@@ -108,7 +127,7 @@ int32 OS_SetLocalTime(const OS_time_t *time_struct);
  */
 static inline int64 OS_TimeGetTotalSeconds(OS_time_t tm)
 {
-    return (tm.seconds);
+    return (tm.ticks / OS_TIME_TICKS_PER_SECOND);
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -122,7 +141,7 @@ static inline int64 OS_TimeGetTotalSeconds(OS_time_t tm)
  */
 static inline int64 OS_TimeGetTotalMilliseconds(OS_time_t tm)
 {
-    return (((int64)tm.seconds * 1000) + (tm.microsecs / 1000));
+    return (tm.ticks / OS_TIME_TICKS_PER_MSEC);
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -136,7 +155,7 @@ static inline int64 OS_TimeGetTotalMilliseconds(OS_time_t tm)
  */
 static inline int64 OS_TimeGetTotalMicroseconds(OS_time_t tm)
 {
-    return (((int64)tm.seconds * 1000000) + tm.microsecs);
+    return (tm.ticks / OS_TIME_TICKS_PER_USEC);
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -154,7 +173,7 @@ static inline int64 OS_TimeGetTotalMicroseconds(OS_time_t tm)
  */
 static inline int64 OS_TimeGetTotalNanoseconds(OS_time_t tm)
 {
-    return (((int64)tm.seconds * 1000000000) + (tm.microsecs * 1000));
+    return (tm.ticks * OS_TIME_TICK_RESOLUTION_NS);
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -169,7 +188,7 @@ static inline int64 OS_TimeGetTotalNanoseconds(OS_time_t tm)
  */
 static inline int64 OS_TimeGetFractionalPart(OS_time_t tm)
 {
-    return (tm.microsecs);
+    return (tm.ticks % OS_TIME_TICKS_PER_SECOND);
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -194,7 +213,8 @@ static inline uint32 OS_TimeGetSubsecondsPart(OS_time_t tm)
      * It also must round up, otherwise this may result in a value one
      * less than the original when converted back to usec again.
      */
-    return (((OS_TimeGetFractionalPart(tm) << 26) + 15624) / 15625);
+    int64 frac = (OS_TimeGetFractionalPart(tm) << 30) + (OS_TIME_TICKS_PER_SECOND >> 2);
+    return (uint32)((frac - 1) / (OS_TIME_TICKS_PER_SECOND >> 2));
 }
 
 
@@ -212,7 +232,7 @@ static inline uint32 OS_TimeGetSubsecondsPart(OS_time_t tm)
  */
 static inline uint32 OS_TimeGetMillisecondsPart(OS_time_t tm)
 {
-    return OS_TimeGetFractionalPart(tm) / 1000;
+    return (uint32)OS_TimeGetFractionalPart(tm) / OS_TIME_TICKS_PER_MSEC;
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -237,7 +257,7 @@ static inline uint32 OS_TimeGetMillisecondsPart(OS_time_t tm)
  */
 static inline uint32 OS_TimeGetMicrosecondsPart(OS_time_t tm)
 {
-    return OS_TimeGetFractionalPart(tm);
+    return (uint32)OS_TimeGetFractionalPart(tm) / OS_TIME_TICKS_PER_USEC;
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -256,7 +276,7 @@ static inline uint32 OS_TimeGetMicrosecondsPart(OS_time_t tm)
  */
 static inline uint32 OS_TimeGetNanosecondsPart(OS_time_t tm)
 {
-    return OS_TimeGetFractionalPart(tm) * 1000;
+    return (uint32)OS_TimeGetFractionalPart(tm) * OS_TIME_TICK_RESOLUTION_NS;
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -278,8 +298,8 @@ static inline uint32 OS_TimeGetNanosecondsPart(OS_time_t tm)
 static inline OS_time_t OS_TimeAssembleFromNanoseconds(int64 seconds, uint32 nanoseconds)
 {
     OS_time_t result;
-    result.seconds   = seconds;
-    result.microsecs = nanoseconds / 1000;
+    result.ticks = seconds * OS_TIME_TICKS_PER_SECOND;
+    result.ticks += nanoseconds / OS_TIME_TICK_RESOLUTION_NS;
     return result;
 }
 
@@ -302,8 +322,8 @@ static inline OS_time_t OS_TimeAssembleFromNanoseconds(int64 seconds, uint32 nan
 static inline OS_time_t OS_TimeAssembleFromMicroseconds(int64 seconds, uint32 microseconds)
 {
     OS_time_t result;
-    result.seconds   = seconds;
-    result.microsecs = microseconds;
+    result.ticks = seconds * OS_TIME_TICKS_PER_SECOND;
+    result.ticks += microseconds * OS_TIME_TICKS_PER_USEC;
     return result;
 }
 
@@ -326,8 +346,8 @@ static inline OS_time_t OS_TimeAssembleFromMicroseconds(int64 seconds, uint32 mi
 static inline OS_time_t OS_TimeAssembleFromMilliseconds(int64 seconds, uint32 milliseconds)
 {
     OS_time_t result;
-    result.seconds   = seconds;
-    result.microsecs = milliseconds * 1000;
+    result.ticks = seconds * OS_TIME_TICKS_PER_SECOND;
+    result.ticks += milliseconds * OS_TIME_TICKS_PER_MSEC;
     return result;
 }
 
@@ -350,9 +370,9 @@ static inline OS_time_t OS_TimeAssembleFromMilliseconds(int64 seconds, uint32 mi
 static inline OS_time_t OS_TimeAssembleFromSubseconds(int64 seconds, uint32 subseconds)
 {
     OS_time_t result;
-    result.seconds = seconds;
+    result.ticks = seconds * OS_TIME_TICKS_PER_SECOND;
     /* this should not round in any way, as the 32-bit input value has higher precision */
-    result.microsecs = ((int64)subseconds * 15625) >> 26;
+    result.ticks += ((int64)subseconds * (OS_TIME_TICKS_PER_SECOND >> 2)) >> 30;
     return result;
 }
 
@@ -367,15 +387,7 @@ static inline OS_time_t OS_TimeAssembleFromSubseconds(int64 seconds, uint32 subs
  */
 static inline OS_time_t OS_TimeAdd(OS_time_t time1, OS_time_t time2)
 {
-    OS_time_t result = time1;
-    result.seconds += time2.seconds;
-    result.microsecs += time2.microsecs;
-    if (result.microsecs >= 1000000)
-    {
-        ++result.seconds;
-        result.microsecs -= 1000000;
-    }
-    return result;
+    return ((OS_time_t) { time1.ticks + time2.ticks });
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -389,15 +401,7 @@ static inline OS_time_t OS_TimeAdd(OS_time_t time1, OS_time_t time2)
  */
 static inline OS_time_t OS_TimeSubtract(OS_time_t time1, OS_time_t time2)
 {
-    OS_time_t result = time1;
-    result.seconds -= time2.seconds;
-    result.microsecs -= time2.microsecs;
-    if (result.microsecs >= 1000000)
-    {
-        --result.seconds;
-        result.microsecs += 1000000;
-    }
-    return result;
+    return ((OS_time_t) { time1.ticks - time2.ticks });
 }
 
 
