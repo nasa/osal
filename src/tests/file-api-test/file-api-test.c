@@ -253,7 +253,7 @@ void TestChmod(void)
     /*Make a file to test on. Start in Read only mode */
     strncpy(filename, "/drive0/Filename1", sizeof(filename) - 1);
     filename[sizeof(filename) - 1] = 0;
-    status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_ONLY);
+    status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_CREATE , OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat = %d", (int)status);
     status = OS_close(fd);
     UtAssert_True(status == OS_SUCCESS, "status after close = %d", (int)status);
