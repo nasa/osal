@@ -108,12 +108,6 @@ osal_id_t UT_AllocStubObjId(UT_ObjType_t ObjType);
 void UT_DeleteStubObjId(UT_ObjType_t ObjType, osal_id_t ObjId);
 
 /*
- * Helper function - Report any queue objects found open
- * (for compatibility with CFE tests, only checks queues)
- */
-void UT_CheckForOpenSockets(void);
-
-/*
  * Helper function - Clear all OSAL UT stub objects
  * Resets the stub object table back to its initial/empty state
  */
