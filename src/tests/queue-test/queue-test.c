@@ -33,7 +33,9 @@ void QueueTimeoutSetup(void);
 void QueueTimeoutCheck(void);
 
 #define MSGQ_DEPTH 50
-#define MSGQ_SIZE  4
+#define MSGQ_SIZE  sizeof(uint32)
+#define MSGQ_TOTAL 10
+#define MSGQ_BURST  3
 
 /* Task 1 */
 #define TASK_1_STACK_SIZE 1024
@@ -64,8 +66,9 @@ void TimerFunction(osal_id_t timer_id)
 void task_1(void)
 {
     int32  status;
-    uint32 data_received;
     size_t data_size;
+    uint32   data_received ;
+    uint32   expected = 0;
 
     OS_printf("Starting task 1\n");
 
@@ -83,7 +86,10 @@ void task_1(void)
         if (status == OS_SUCCESS)
         {
             ++task_1_messages;
-            OS_printf("TASK 1: Recieved a message on the queue\n");
+            UtAssert_True(data_received == expected, "TASK 1: data_received (%u) == expected (%u)",
+                          data_received, expected);
+
+            expected++;
         }
         else if (status == OS_QUEUE_TIMEOUT)
         {
@@ -108,6 +114,8 @@ void QueueTimeoutCheck(void)
     UtAssert_True(status == OS_SUCCESS, "Timer delete Rc=%d", (int)status);
     status = OS_TaskDelete(task_1_id);
     UtAssert_True(status == OS_SUCCESS, "Task 1 delete Rc=%d", (int)status);
+    status = OS_QueueDelete(msgq_id);
+    UtAssert_True(status == OS_SUCCESS, "Queue 1 delete Rc=%d", (int)status);
 
     /* None of the tasks should have any failures in their own counters */
     UtAssert_True(task_1_failures == 0, "Task 1 failures = %u", (unsigned int)task_1_failures);
@@ -125,19 +133,6 @@ void QueueTimeoutCheck(void)
     limit = ((timer_counter - 20) / 12);
     UtAssert_True(task_1_timeouts >= limit, "Task 1 timeouts %u >= %u", (unsigned int)task_1_timeouts,
                   (unsigned int)limit);
-}
-
-void UtTest_Setup(void)
-{
-    if (OS_API_Init() != OS_SUCCESS)
-    {
-        UtAssert_Abort("OS_API_Init() failed");
-    }
-
-    /*
-     * Register the test setup and check routines in UT assert
-     */
-    UtTest_Add(QueueTimeoutCheck, QueueTimeoutSetup, NULL, "QueueTimeoutTest");
 }
 
 void QueueTimeoutSetup(void)
@@ -177,4 +172,86 @@ void QueueTimeoutSetup(void)
     {
         OS_TaskDelay(100);
     }
+}
+
+void QueueMessageCheck(void)
+{
+    int32 status;
+
+    OS_printf("Delay for half a second before checking\n");
+    OS_TaskDelay(500);
+
+    status = OS_TimerDelete(timer_id);
+    UtAssert_True(status == OS_SUCCESS, "Timer delete Rc=%d", (int)status);
+    status = OS_TaskDelete(task_1_id);
+    UtAssert_True(status == OS_SUCCESS, "Task 1 delete Rc=%d", (int)status);
+    status = OS_QueueDelete(msgq_id);
+    UtAssert_True(status == OS_SUCCESS, "Queue 1 delete Rc=%d", (int)status);
+
+    /* None of the tasks should have any failures in their own counters */
+    UtAssert_True(task_1_failures == 0, "Task 1 failures = %u", (unsigned int)task_1_failures);
+    UtAssert_True(task_1_messages == 10, "Task 1 messages = %u", (unsigned int)task_1_messages);
+    UtAssert_True(task_1_timeouts == 0, "Task 1 timeouts = %u", (unsigned int)task_1_timeouts);
+}
+
+void QueueMessageSetup(void)
+{
+    int32  status;
+    uint32 accuracy;
+    int        i;
+    uint32 Data = 0;
+    task_1_failures = 0;
+    task_1_messages = 0;
+    task_1_timeouts = 0;
+  
+    status = OS_QueueCreate(&msgq_id, "MsgQ", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
+    UtAssert_True(status == OS_SUCCESS, "MsgQ create Id=%lx Rc=%d", OS_ObjectIdToInteger(msgq_id), (int)status);
+
+    /*
+    ** Create the "consumer" task.
+    */
+    status = OS_TaskCreate(&task_1_id, "Task 1", task_1, OSAL_STACKPTR_C(task_1_stack), sizeof(task_1_stack),
+                           OSAL_PRIORITY_C(TASK_1_PRIORITY), 0);
+    UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_1_id), (int)status);
+
+    /*
+    ** Create a timer
+    */
+    status = OS_TimerCreate(&timer_id, "Timer 1", &accuracy, &(TimerFunction));
+    UtAssert_True(status == OS_SUCCESS, "Timer 1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(timer_id), (int)status);
+    UtPrintf("Timer Accuracy = %u microseconds \n", (unsigned int)accuracy);
+
+    /*
+    ** Start the timer
+    */
+    status = OS_TimerSet(timer_id, timer_start, timer_interval);
+    UtAssert_True(status == OS_SUCCESS, "Timer 1 set Rc=%d", (int)status);
+
+    /* 
+    * Put 10 messages onto the que with some time inbetween the later messages   
+    * to make sure the que handles both storing and waiting for messages 
+    */
+    for (i = 0; i < MSGQ_TOTAL; i++)
+    {
+        if(i > MSGQ_BURST)
+            OS_TaskDelay(400);
+
+        Data = i;
+        status = OS_QueuePut(msgq_id, (void *)&Data, sizeof(Data), 0);
+        UtAssert_True(status == OS_SUCCESS, "OS Queue Put Rc=%d", (int)status);
+    }
+}
+
+void UtTest_Setup(void)
+{
+    if (OS_API_Init() != OS_SUCCESS)
+    {
+        UtAssert_Abort("OS_API_Init() failed");
+    }
+
+    /*
+     * Register the test setup and check routines in UT assert
+     */
+    UtTest_Add(QueueTimeoutCheck, QueueTimeoutSetup, NULL, "QueueTimeoutTest");
+    UtTest_Add(QueueMessageCheck, QueueMessageSetup, NULL, "QueueMessageCheck");
 }
