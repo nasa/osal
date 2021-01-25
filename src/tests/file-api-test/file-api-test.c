@@ -943,4 +943,13 @@ void TestOpenFileAPI(void)
     */
     status = OS_CloseFileByName(filename2);
     UtAssert_True(status < OS_SUCCESS, "status after OS_CloseFileByName 2 = %d", (int)status);
+
+    /* Try removing the files from the drive to end the function */
+    status = OS_remove(filename1);
+    UtAssert_True(status == OS_SUCCESS, "status after remove filename1 = %d", (int)status);
+    status = OS_remove(filename2);
+    UtAssert_True(status == OS_SUCCESS, "status after remove filename2 = %d", (int)status);
+    status = OS_remove(filename3);
+    UtAssert_True(status == OS_SUCCESS, "status after remove filename3 = %d", (int)status);
+
 }
