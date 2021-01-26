@@ -12,7 +12,11 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-       
+
+defaults:
+  run:
+    working-directory: osal
+    
 jobs:
   build:
     name: "Changelog Generation"
