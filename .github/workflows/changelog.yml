@@ -20,6 +20,7 @@ jobs:
     steps:
       - name: "Check-out"
         uses: actions/checkout@v2
+        
       - name: "Generate full changelog"
         id: generate-full-changelog
         uses: ./
@@ -34,8 +35,10 @@ jobs:
           compareLink: true
           stripGeneratorNotice: true
           verbose: true
+
       - name: "Print changelog to console"
         run: cat CHANGELOG.md
+        
       - name: "Upload changelog"
         uses: actions/upload-artifact@v1.0.0
         with:
