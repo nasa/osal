@@ -153,6 +153,8 @@ int32 OS_unmount(const char *mountpoint)
     return status;
 }
 
+#ifndef OSAL_OMIT_DEPRECATED 
+
 /*****************************************************************************
  *
  * Stub function for OS_fsBlocksFree()
@@ -191,6 +193,8 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
 
     return status;
 }
+
+#endif /* OSAL_OMIT_DEPRECATED */
 
 /*****************************************************************************
  *

@@ -68,11 +68,11 @@ void Test_OS_ConsoleCreate_Impl(void)
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_semCInitialize), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_SEM_FAILURE);
-    UT_ClearForceFail(UT_KEY(OCS_semCInitialize));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_semCInitialize));
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_taskSpawn), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_taskSpawn));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_taskSpawn));
 
     token.obj_idx = OS_MAX_CONSOLES + 1;
     OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_ERR_NOT_IMPLEMENTED);

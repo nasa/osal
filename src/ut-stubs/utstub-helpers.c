@@ -184,26 +184,3 @@ void UT_ObjIdDecompose(osal_id_t id, uint32 *indx, UT_ObjType_t *objtype)
     *indx             = idv & 0xFFFFUL;
     *objtype          = (idv >> 16) ^ 0x4000UL;
 }
-
-/*
-** Report and close any sockets found open
-** Moved here temporarily to ensure full compatibility with CFE implementation
-**
-** NOTE - this historically only checked for queues that were created but not
-** cleaned up.  Although the current impl could check for anything, only queues
-** are done for now.
-*/
-void UT_CheckForOpenSockets(void)
-{
-    UT_ObjTypeState_t *StatePtr;
-    uint32             i;
-
-    StatePtr = &UT_ObjState[UT_OBJTYPE_QUEUE];
-    for (i = 0; i <= StatePtr->LastIssueNumber; ++i)
-    {
-        if ((StatePtr->ValidBits[i >> 3] & (1 << (i & 0x07))) != 0)
-        {
-            UtAssert_Failed("UT_Queue %d left open.\n", (int)i);
-        }
-    }
-}

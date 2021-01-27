@@ -50,6 +50,8 @@ OS_SockAddr_t c_addr;
 OS_SockAddr_t c2_addr;
 osal_id_t     bin_sem_id;
 
+#define OS_TEST_SELECT_FILENAME "/drive0/select_test.txt"
+
 /* *************************************** MAIN ************************************** */
 
 char *           fsAddrPtr = NULL;
@@ -58,7 +60,7 @@ static osal_id_t setup_file(void)
     osal_id_t id;
     OS_mkfs(fsAddrPtr, "/ramdev0", "RAM", 512, 20);
     OS_mount("/ramdev0", "/drive0");
-    OS_OpenCreate(&id, "/drive0/select_test.txt", OS_FILE_FLAG_CREATE, OS_READ_WRITE);
+    OS_OpenCreate(&id, OS_TEST_SELECT_FILENAME, OS_FILE_FLAG_CREATE, OS_READ_WRITE);
     return id;
 }
 
@@ -299,7 +301,7 @@ void TestSelectSingleRead(void)
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_ERROR_TIMEOUT", (long)actual);
-    UtAssert_True(StateFlags == 0, "OS_SelectSingle() (%d) == None", StateFlags);
+    UtAssert_True(StateFlags == 0, "OS_SelectSingle() (0x%x) == None", (unsigned int)StateFlags);
 
     status = OS_BinSemGive(bin_sem_id);
 
@@ -309,8 +311,8 @@ void TestSelectSingleRead(void)
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(StateFlags == OS_STREAM_STATE_READABLE, "OS_SelectSingle() (%d) == OS_STREAM_STATE_READABLE",
-                  StateFlags);
+    UtAssert_True(StateFlags == OS_STREAM_STATE_READABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_READABLE",
+                  (unsigned int)StateFlags);
 }
 
 void TestSelectMultipleRead(void)
@@ -414,7 +416,7 @@ void TestSelectSingleWrite(void)
         expected = OS_ERROR_TIMEOUT;
         /* Verify Outputs */
         UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_ERROR_TIMEOUT", (long)actual);
-        UtAssert_True(StateFlags == 0, "OS_SelectSingle() (%d) == None", StateFlags);
+        UtAssert_True(StateFlags == 0, "OS_SelectSingle() (0x%x) == None", (unsigned int)StateFlags);
 
         expected   = OS_SUCCESS;
         StateFlags = OS_STREAM_STATE_WRITABLE;
@@ -422,8 +424,8 @@ void TestSelectSingleWrite(void)
 
         /* Verify Outputs */
         UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-        UtAssert_True(StateFlags == OS_STREAM_STATE_WRITABLE, "OS_SelectSingle() (%d) == OS_STREAM_STATE_WRITABLE",
-                      StateFlags);
+        UtAssert_True(StateFlags == OS_STREAM_STATE_WRITABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_WRITABLE",
+                      (unsigned int)StateFlags);
     }
 }
 
@@ -513,16 +515,16 @@ void TestSelectSingleFile(void)
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(StateFlags == OS_STREAM_STATE_READABLE, "OS_SelectSingle() (%d) == OS_STREAM_STATE_READABLE",
-                  StateFlags);
+    UtAssert_True(StateFlags == OS_STREAM_STATE_READABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_READABLE",
+                  (unsigned int)StateFlags);
 
     StateFlags = OS_STREAM_STATE_WRITABLE;
     actual     = OS_SelectSingle(fd, &StateFlags, 100);
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(StateFlags == OS_STREAM_STATE_WRITABLE, "OS_SelectSingle() (%d) == OS_STREAM_STATE_WRITABLE",
-                  StateFlags);
+    UtAssert_True(StateFlags == OS_STREAM_STATE_WRITABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_WRITABLE",
+                  (unsigned int)StateFlags);
 
     expected   = OS_ERROR_TIMEOUT;
     StateFlags = OS_STREAM_STATE_BOUND;
@@ -530,7 +532,11 @@ void TestSelectSingleFile(void)
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_ERROR_TIMEOUT", (long)actual);
-    UtAssert_True(StateFlags == 0, "OS_SelectSingle() (%d) == None", StateFlags);
+    UtAssert_True(StateFlags == 0, "OS_SelectSingle() (0x%x) == None", (unsigned int)StateFlags);
+
+    /* Close and remove file */
+    OS_close(fd);
+    OS_remove(OS_TEST_SELECT_FILENAME);
 }
 
 void UtTest_Setup(void)

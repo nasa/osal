@@ -2057,11 +2057,12 @@ void UT_os_outputtofile_test()
         }
     }
 
+UT_os_outputtofile_test_exit_tag:
+
     /* Reset test environment */
     OS_close(g_fDescs[0]);
     OS_remove(g_fNames[0]);
 
-UT_os_outputtofile_test_exit_tag:
     return;
 }
 

@@ -19,4 +19,7 @@ while(MOD GREATER 0)
     PREFIX ""
     LIBRARY_OUTPUT_DIRECTORY utmod)
   add_dependencies(osal_loader_UT MODULE${MOD})
+  foreach(TGT ${INSTALL_TARGET_LIST})
+    install(TARGETS MODULE${MOD} DESTINATION ${TGT}/${UT_INSTALL_SUBDIR}/utmod)
+  endforeach()
 endwhile(MOD GREATER 0)

@@ -103,7 +103,7 @@ void Test_OS_TimeBaseCreate(void)
     expected = OS_ERR_NAME_TOO_LONG;
     actual   = OS_TimeBaseCreate(&objid, "UT", UT_TimerSync);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_memchr));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
     UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
     expected = OS_ERR_INCORRECT_OBJ_STATE;
@@ -166,7 +166,7 @@ void Test_OS_TimeBaseGetIdByName(void)
     actual = OS_TimeBaseGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_TimeBaseGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
     actual   = OS_TimeBaseGetIdByName(&objid, "NF");
