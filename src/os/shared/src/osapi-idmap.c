@@ -1439,9 +1439,6 @@ void OS_ForEachObjectOfType(osal_objtype_t idtype, osal_id_t creator_id, OS_ArgC
     OS_object_iter_t    iter;
     OS_creator_filter_t filter;
 
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    // OS_CHECK_POINTER(callback_arg)
-
     filter.creator_id    = creator_id;
     filter.user_callback = callback_ptr;
     filter.user_arg      = callback_arg;

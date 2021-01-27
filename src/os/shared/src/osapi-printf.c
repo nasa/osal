@@ -256,8 +256,7 @@ void OS_printf(const char *String, ...)
     char    msg_buffer[OS_BUFFER_SIZE];
     int     actualsz;
 
-    /* TODO: void pointer, https://github.com/nasa/osal/issues/765 */
-    // OS_CHECK_POINTER(String);
+    BUGCHECK((String) != NULL, )
 
     if (!OS_SharedGlobalVars.Initialized)
     {
