@@ -36,19 +36,19 @@
 
 #include "osapi-idmap.h"
 
-const uint32 UT_MAXOBJS[UT_OBJTYPE_MAX] = {[UT_OBJTYPE_TASK]       = OS_MAX_TASKS,
-                                           [UT_OBJTYPE_QUEUE]      = OS_MAX_QUEUES,
-                                           [UT_OBJTYPE_COUNTSEM]   = OS_MAX_COUNT_SEMAPHORES,
-                                           [UT_OBJTYPE_BINSEM]     = OS_MAX_BIN_SEMAPHORES,
-                                           [UT_OBJTYPE_MUTEX]      = OS_MAX_MUTEXES,
-                                           [UT_OBJTYPE_TIMECB]     = OS_MAX_TIMERS,
-                                           [UT_OBJTYPE_MODULE]     = OS_MAX_MODULES,
-                                           [UT_OBJTYPE_FILESTREAM] = OS_MAX_NUM_OPEN_FILES,
-                                           [UT_OBJTYPE_TIMEBASE]   = OS_MAX_TIMEBASES,
-                                           [UT_OBJTYPE_FILESYS]    = OS_MAX_FILE_SYSTEMS,
-                                           [UT_OBJTYPE_DIR]        = OS_MAX_NUM_OPEN_DIRS};
+const uint32 UT_MAXOBJS[OS_OBJECT_TYPE_USER] = {[OS_OBJECT_TYPE_OS_TASK]     = OS_MAX_TASKS,
+                                                [OS_OBJECT_TYPE_OS_QUEUE]    = OS_MAX_QUEUES,
+                                                [OS_OBJECT_TYPE_OS_COUNTSEM] = OS_MAX_COUNT_SEMAPHORES,
+                                                [OS_OBJECT_TYPE_OS_BINSEM]   = OS_MAX_BIN_SEMAPHORES,
+                                                [OS_OBJECT_TYPE_OS_MUTEX]    = OS_MAX_MUTEXES,
+                                                [OS_OBJECT_TYPE_OS_TIMECB]   = OS_MAX_TIMERS,
+                                                [OS_OBJECT_TYPE_OS_MODULE]   = OS_MAX_MODULES,
+                                                [OS_OBJECT_TYPE_OS_STREAM]   = OS_MAX_NUM_OPEN_FILES,
+                                                [OS_OBJECT_TYPE_OS_TIMEBASE] = OS_MAX_TIMEBASES,
+                                                [OS_OBJECT_TYPE_OS_FILESYS]  = OS_MAX_FILE_SYSTEMS,
+                                                [OS_OBJECT_TYPE_OS_DIR]      = OS_MAX_NUM_OPEN_DIRS};
 
-static UT_ObjTypeState_t UT_ObjState[UT_OBJTYPE_MAX];
+static UT_ObjTypeState_t UT_ObjState[OS_OBJECT_TYPE_USER];
 
 /**
  * Initialization function
@@ -64,7 +64,7 @@ void UT_ClearAllStubObjects(void)
 /*
  * Helper function - "allocate" a fake object ID of the given type
  */
-osal_id_t UT_AllocStubObjId(UT_ObjType_t ObjType)
+osal_id_t UT_AllocStubObjId(osal_objtype_t ObjType)
 {
     UT_ObjTypeState_t *StatePtr;
     uint8              ObjMask;
@@ -73,7 +73,7 @@ osal_id_t UT_AllocStubObjId(UT_ObjType_t ObjType)
 
     UT_Stub_CallOnce(UT_ClearAllStubObjects);
 
-    if (ObjType == UT_OBJTYPE_NONE || ObjType >= UT_OBJTYPE_MAX)
+    if (ObjType == OS_OBJECT_TYPE_UNDEFINED || ObjType >= OS_OBJECT_TYPE_USER)
     {
         /* Code is broken, abort the test
          * (This signifies an error in the stub code itself hence the abort)
@@ -115,11 +115,11 @@ osal_id_t UT_AllocStubObjId(UT_ObjType_t ObjType)
 /*
  * Helper function - "deallocate" a fake object ID of the given type
  */
-void UT_DeleteStubObjId(UT_ObjType_t ObjType, osal_id_t ObjId)
+void UT_DeleteStubObjId(osal_objtype_t ObjType, osal_id_t ObjId)
 {
     UT_ObjTypeState_t *StatePtr;
     uint8              ObjMask;
-    UT_ObjType_t       checktype;
+    osal_objtype_t     checktype;
     uint32             checkidx;
     bool               ObjWasValid;
 
@@ -171,14 +171,14 @@ void UT_DeleteStubObjId(UT_ObjType_t ObjType, osal_id_t ObjId)
     }
 }
 
-void UT_ObjIdCompose(uint32 indx, UT_ObjType_t objtype, osal_id_t *id)
+void UT_ObjIdCompose(uint32 indx, osal_objtype_t objtype, osal_id_t *id)
 {
     /* note - the OS_ObjectIdFromInteger() is an inline function,
      * and therefore this uses the real thing and not a stub  */
     *id = OS_ObjectIdFromInteger((unsigned long)indx | ((0x4000UL | objtype) << 16));
 }
 
-void UT_ObjIdDecompose(osal_id_t id, uint32 *indx, UT_ObjType_t *objtype)
+void UT_ObjIdDecompose(osal_id_t id, uint32 *indx, osal_objtype_t *objtype)
 {
     unsigned long idv = OS_ObjectIdToInteger(id);
     *indx             = idv & 0xFFFFUL;

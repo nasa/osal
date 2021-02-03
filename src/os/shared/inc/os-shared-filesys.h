@@ -190,5 +190,6 @@ int32 OS_FileSysUnmountVolume_Impl(const OS_object_token_t *token);
 bool  OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, size_t blocksize,
                             osal_blockcount_t numblocks, bool should_format);
+bool  OS_FileSysFilterFree(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 
-#endif  /* OS_SHARED_FILESYS_H  */
+#endif /* OS_SHARED_FILESYS_H  */

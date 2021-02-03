@@ -54,7 +54,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
 
     if (status == OS_SUCCESS)
     {
-        *filesys_id = UT_AllocStubObjId(UT_OBJTYPE_FILESYS);
+        *filesys_id = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_FILESYS);
     }
     else
     {
@@ -210,7 +210,8 @@ int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf)
 
     status = UT_DEFAULT_IMPL(OS_FileSysStatVolume);
 
-    if (status == OS_SUCCESS && UT_Stub_CopyToLocal(UT_KEY(OS_FileSysStatVolume), statbuf, sizeof(*statbuf)) < sizeof(*statbuf))
+    if (status == OS_SUCCESS &&
+        UT_Stub_CopyToLocal(UT_KEY(OS_FileSysStatVolume), statbuf, sizeof(*statbuf)) < sizeof(*statbuf))
     {
         memset(statbuf, 0, sizeof(*statbuf));
     }

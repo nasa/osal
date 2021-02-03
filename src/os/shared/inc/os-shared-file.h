@@ -183,4 +183,13 @@ int32 OS_FileRename_Impl(const char *old_path, const char *new_path);
  ------------------------------------------------------------------*/
 int32 OS_FileChmod_Impl(const char *local_path, uint32 access);
 
-#endif  /* OS_SHARED_FILE_H  */
+
+/*
+ * Internal helper function
+ *
+ * Not called outside this unit, but need to be prototyped
+ * here for coverage test.
+ */
+int32 OS_FileIteratorClose(osal_id_t filedes, void *arg);
+
+#endif /* OS_SHARED_FILE_H  */

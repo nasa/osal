@@ -376,9 +376,10 @@ void Test_OS_GetFsInfo(void)
      * Test Case For:
      * int32 OS_GetFsInfo(OS_FsInfo_t  *filesys_info)
      */
-    int32       expected = OS_SUCCESS;
-    int32       actual   = ~OS_SUCCESS;
-    os_fsinfo_t filesys_info;
+    int32              expected = OS_SUCCESS;
+    int32              actual   = ~OS_SUCCESS;
+    os_fsinfo_t        filesys_info;
+    OS_common_record_t rec;
 
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdIteratorGetNext), 1);
     UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdIteratorGetNext), 3, 0);
@@ -394,15 +395,21 @@ void Test_OS_GetFsInfo(void)
                   "filesys_info.MaxVolumes (%lu) == OS_MAX_FILE_SYSTEMS", (unsigned long)filesys_info.MaxVolumes);
 
     /* since there are no open files, the free fd count should match the max */
-    UtAssert_True(filesys_info.FreeFds == 2, "filesys_info.FreeFds (%lu) == 2",
-                  (unsigned long)filesys_info.FreeFds);
+    UtAssert_True(filesys_info.FreeFds == 2, "filesys_info.FreeFds (%lu) == 2", (unsigned long)filesys_info.FreeFds);
 
     UtAssert_True(filesys_info.FreeVolumes == 3, "filesys_info.FreeVolumes (%lu) == 3",
-                    (unsigned long)filesys_info.FreeVolumes);
+                  (unsigned long)filesys_info.FreeVolumes);
 
     expected = OS_INVALID_POINTER;
     actual   = OS_GetFsInfo(NULL);
     UtAssert_True(actual == expected, "OS_GetFsInfo() (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    /* This function uses a helper OS_FileSysFilterFree() that needs to be called for coverage. */
+    /* It is just a wrapper around OS_ObjectIdDefined() for the record ID */
+    memset(&rec, 0, sizeof(rec));
+    UtAssert_True(OS_FileSysFilterFree(NULL, NULL, &rec), "OS_FileSysFilterFree() (unused record)");
+    rec.active_id = UT_OBJID_1;
+    UtAssert_True(!OS_FileSysFilterFree(NULL, NULL, &rec), "!OS_FileSysFilterFree() (used record)");
 }
 
 void Test_OS_TranslatePath(void)

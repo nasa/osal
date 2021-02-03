@@ -85,12 +85,26 @@ void Test_OS_MutSemGive(void)
      * Test Case For:
      * int32 OS_MutSemGive ( uint32 sem_id )
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OS_mutex_internal_record_t *mutex;
+    int32                       expected;
+    int32                       actual;
 
-    actual = OS_MutSemGive(UT_OBJID_1);
+    expected = OS_SUCCESS;
+
+    /* Set up for "last owner" matching the calling task (nominal) */
+    mutex             = &OS_mutex_table[1];
+    mutex->last_owner = OS_TaskGetId();
+    actual            = OS_MutSemGive(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_MutSemGive() (%ld) == OS_SUCCESS", (long)actual);
+
+    /* owner should be unset */
+    UtAssert_True(!OS_ObjectIdDefined(mutex->last_owner), "Mutex owner unset");
+
+    /* Call again when not "owned".  This still works (or at least it calls the OS impl)
+     * but should generate a debug message */
+    actual = OS_MutSemGive(UT_OBJID_1);
+    UtAssert_True(actual == expected, "OS_MutSemGive(), not owned (%ld) == OS_SUCCESS", (long)actual);
 }
 
 void Test_OS_MutSemTake(void)
@@ -99,11 +113,24 @@ void Test_OS_MutSemTake(void)
      * Test Case For:
      * int32 OS_MutSemTake ( uint32 sem_id )
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OS_mutex_internal_record_t *mutex;
+    int32                       expected;
+    int32                       actual;
 
+    expected = OS_SUCCESS;
+
+    /* Set up for "last owner" being undefined (nominal) */
+    mutex             = &OS_mutex_table[1];
+    mutex->last_owner = OS_OBJECT_ID_UNDEFINED;
+    actual            = OS_MutSemTake(UT_OBJID_1);
+    UtAssert_True(actual == expected, "OS_MutSemTake() (%ld) == OS_SUCCESS", (long)actual);
+
+    /* owner should be set */
+    UtAssert_True(OS_ObjectIdDefined(mutex->last_owner), "Mutex owner set");
+
+    /* Call again when not already "owned".  This still works (or at least it calls the OS impl)
+     * but should generate a debug message */
     actual = OS_MutSemTake(UT_OBJID_1);
-
     UtAssert_True(actual == expected, "OS_MutSemTake() (%ld) == OS_SUCCESS", (long)actual);
 }
 

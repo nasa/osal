@@ -52,7 +52,7 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
 
     if (status == OS_SUCCESS)
     {
-        *sock_id = UT_AllocStubObjId(UT_OBJTYPE_SOCKET);
+        *sock_id = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_STREAM);
     }
 
     return status;
@@ -209,7 +209,7 @@ int32 OS_SocketGetIdByName(osal_id_t *sock_id, const char *sock_name)
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_SocketGetIdByName), sock_id, sizeof(*sock_id)) < sizeof(*sock_id))
     {
-        UT_ObjIdCompose(1, UT_OBJTYPE_SOCKET, sock_id);
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_STREAM, sock_id);
     }
 
     return status;
@@ -236,7 +236,7 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
         CopySize = UT_Stub_CopyToLocal(UT_KEY(OS_SocketGetInfo), sock_prop, sizeof(*sock_prop));
         if (CopySize < sizeof(*sock_prop))
         {
-            UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &sock_prop->creator);
+            UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &sock_prop->creator);
             strncpy(sock_prop->name, "ut", sizeof(sock_prop->name));
         }
     }

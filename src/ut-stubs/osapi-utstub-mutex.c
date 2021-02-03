@@ -70,7 +70,7 @@ int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options)
 
     if (status == OS_SUCCESS)
     {
-        *sem_id = UT_AllocStubObjId(UT_OBJTYPE_MUTEX);
+        *sem_id = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_MUTEX);
     }
     else
     {
@@ -110,7 +110,7 @@ int32 OS_MutSemDelete(osal_id_t sem_id)
 
     if (status == OS_SUCCESS)
     {
-        UT_DeleteStubObjId(UT_OBJTYPE_MUTEX, sem_id);
+        UT_DeleteStubObjId(OS_OBJECT_TYPE_OS_MUTEX, sem_id);
     }
 
     return status;
@@ -195,7 +195,7 @@ int32 OS_MutSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_MutSemGetIdByName), sem_id, sizeof(*sem_id)) < sizeof(*sem_id))
     {
-        UT_ObjIdCompose(1, UT_OBJTYPE_MUTEX, sem_id);
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_MUTEX, sem_id);
     }
 
     return status;
@@ -231,7 +231,7 @@ int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
     {
         strncpy(mut_prop->name, "Name", OS_MAX_API_NAME - 1);
         mut_prop->name[OS_MAX_API_NAME - 1] = '\0';
-        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &mut_prop->creator);
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &mut_prop->creator);
     }
 
     return status;
