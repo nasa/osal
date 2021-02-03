@@ -429,8 +429,7 @@ void Test_OS_ObjectIdFindByName(void)
     char      TaskName[] = "UT_find";
     osal_id_t objid;
     int32     expected = OS_ERR_NAME_NOT_FOUND;
-    int32     actual   = OS_ObjectIdFindByName(OS_OBJECT_TYPE_UNDEFINED, NULL, NULL);
-
+    int32     actual   = OS_ObjectIdFindByName(OS_OBJECT_TYPE_UNDEFINED, NULL, &objid);
     UtAssert_True(actual == expected, "OS_ObjectFindIdByName(%s) (%ld) == OS_ERR_NAME_NOT_FOUND", "NULL", (long)actual);
 
     /*

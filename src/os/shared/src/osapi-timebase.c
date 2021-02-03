@@ -263,6 +263,7 @@ int32 OS_TimeBaseGetIdByName(osal_id_t *timer_id, const char *timebase_name)
     int32          return_code;
     osal_objtype_t objtype;
 
+    /* Check parameters */
     OS_CHECK_POINTER(timer_id);
     OS_CHECK_APINAME(timebase_name);
 

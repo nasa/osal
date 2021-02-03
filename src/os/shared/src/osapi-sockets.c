@@ -359,7 +359,11 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockA
     OS_object_token_t            token;
     int32                        return_code;
 
-    /* Check Parameters */
+    /*
+     * Check parameters
+     *
+     * Note "RemoteAddr" is not checked, because in certain configurations it can be validly null.
+     */
     OS_CHECK_POINTER(buffer);
     OS_CHECK_SIZE(buflen);
 
@@ -493,6 +497,7 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
 {
+    /* Check parameters */
     OS_CHECK_POINTER(Addr);
 
     return OS_SocketAddrInit_Impl(Addr, Domain);
@@ -508,6 +513,7 @@ int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Addr)
 {
+    /* Check parameters */
     OS_CHECK_POINTER(Addr);
     OS_CHECK_POINTER(buffer);
     OS_CHECK_SIZE(buflen);
@@ -525,6 +531,7 @@ int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Ad
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string)
 {
+    /* Check parameters */
     OS_CHECK_POINTER(Addr);
     OS_CHECK_POINTER(string);
 
@@ -541,6 +548,7 @@ int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr)
 {
+    /* Check parameters */
     OS_CHECK_POINTER(Addr);
     OS_CHECK_POINTER(PortNum);
 
@@ -557,6 +565,7 @@ int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum)
 {
+    /* Check parameters */
     OS_CHECK_POINTER(Addr);
 
     return OS_SocketAddrSetPort_Impl(Addr, PortNum);

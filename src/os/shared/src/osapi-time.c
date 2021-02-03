@@ -106,7 +106,9 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
     OS_timebase_internal_record_t *timebase;
 
     /*
-     ** Check Parameters
+     * Check parameters
+     *
+     * Note "callback_arg" is not checked, because in certain configurations it can be validly null.
      */
     OS_CHECK_POINTER(timer_id);
     OS_CHECK_APINAME(timer_name);
@@ -478,6 +480,7 @@ int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name)
     int32          return_code;
     osal_objtype_t objtype;
 
+    /* Check parameters */
     OS_CHECK_POINTER(timer_id);
     OS_CHECK_POINTER(timer_name);
 

@@ -118,7 +118,7 @@ int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
     OS_dir_internal_record_t *dir;
     int32                     return_code;
 
-    /* Check inputs */
+    /* Check parameters */
     OS_CHECK_POINTER(dir_id);
 
     return_code = OS_TranslatePath(path, local_path);
@@ -183,7 +183,7 @@ int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
     OS_object_token_t token;
     int32             return_code;
 
-    /* Check inputs */
+    /* Check parameters */
     OS_CHECK_POINTER(dirent);
 
     /* Make sure the file descriptor is legit before using it */

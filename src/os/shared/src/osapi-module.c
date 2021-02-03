@@ -194,11 +194,11 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
     OS_module_internal_record_t *module;
 
     /*
-     ** Check parameters
-     **
-     ** Note "filename" is not checked, because in certain configurations it can be validly
-     ** null.  filename is checked for NULL-ness by the OS_TranslatePath() later.
-     */
+     * Check parameters
+     *
+     * Note "filename" is not checked, because in certain configurations it can be validly
+     * null.  filename is checked for NULL-ness by the OS_TranslatePath() later.
+    */
     OS_CHECK_POINTER(module_id);
     OS_CHECK_APINAME(module_name);
 
@@ -454,9 +454,7 @@ int32 OS_SymbolTableDump(const char *filename, size_t SizeLimit)
     char  translated_path[OS_MAX_LOCAL_PATH_LEN];
     OS_object_token_t token;
 
-    /*
-    ** Check parameters
-    */
+    /* Check parameters */
     OS_CHECK_POINTER(filename);
 
     /*

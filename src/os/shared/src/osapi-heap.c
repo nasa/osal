@@ -50,6 +50,7 @@
  *-----------------------------------------------------------------*/
 int32 OS_HeapGetInfo(OS_heap_prop_t *heap_prop)
 {
+    /* Check parameters */
     OS_CHECK_POINTER(heap_prop);
 
     return OS_HeapGetInfo_Impl(heap_prop);
