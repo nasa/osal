@@ -1,4 +1,5 @@
-Travis-CI: [![Build Status](https://travis-ci.com/nasa/osal.svg)](https://travis-ci.com/nasa/osal)
+![Static Analysis](https://github.com/nasa/osal/workflows/Static%20Analysis/badge.svg)
+![Format Check](https://github.com/nasa/osal/workflows/Format%20Check/badge.svg)
 
 # Core Flight System : Framework : Operating System Abstraction Layer
 

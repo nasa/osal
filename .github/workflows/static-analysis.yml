@@ -12,6 +12,7 @@ jobs:
   static-analysis:
     name: Run cppcheck
     runs-on: ubuntu-18.04
+    timeout-minutes: 15
 
     strategy:
       fail-fast: false
