@@ -735,7 +735,7 @@ void Test_OS_ConvertToArrayIndex(void)
      *
      */
     int32        expected = OS_SUCCESS;
-    int32        actual   = ~OS_SUCCESS; // OS_ConvertToArrayIndex();
+    int32        actual;
     osal_id_t    refobjid;
     osal_index_t local_idx;
 
@@ -1029,13 +1029,8 @@ void Test_OS_ObjectIdIterator(void)
 {
     /*
      * Test Case For:
-     * int32 OS_ObjectIdIteratorInit(OS_ObjectMatchFunc_t matchfunc, void *matcharg, osal_objtype_t objtype,
-                              OS_object_iter_t *iter);
-     * bool OS_ObjectFilterActive(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
-     * int32 OS_ObjectIdIterateActive(osal_objtype_t objtype, OS_object_iter_t *iter);
-     * bool OS_ObjectIdIteratorGetNext(OS_object_iter_t *iter);
-     * void OS_ObjectIdIteratorDestroy(OS_object_iter_t *iter);
-     * int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t, void *));
+     * OS_ObjectIdIteratorInit, OS_ObjectFilterActive, OS_ObjectIdIterateActive
+     * OS_ObjectIdIteratorGetNext, OS_ObjectIdIteratorDestroy, OS_ObjectIdIteratorProcessEntry
      */
     OS_object_iter_t iter;
     OS_common_record_t rec;
