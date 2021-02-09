@@ -631,7 +631,7 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
 {
     uint32              max_id;
     uint32              base_id;
-    uint32              local_id;
+    uint32              local_id = 0;
     uint32              serial;
     uint32              i;
     int32               return_code;
