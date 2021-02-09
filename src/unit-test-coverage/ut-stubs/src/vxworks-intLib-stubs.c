@@ -50,10 +50,10 @@ static void OCS_intLib_dummyfunc(void) {}
 
 OCS_VOIDFUNCPTR *OCS_INUM_TO_IVEC(unsigned int ui)
 {
-    int32            Status = UT_DEFAULT_IMPL(OCS_INUM_TO_IVEC);
-    OCS_VOIDFUNCPTR *VecTbl;
-    OCS_VOIDFUNCPTR  DummyVec;
-    size_t           VecTblSize;
+    int32                  Status = UT_DEFAULT_IMPL(OCS_INUM_TO_IVEC);
+    OCS_VOIDFUNCPTR        *VecTbl;
+    static OCS_VOIDFUNCPTR DummyVec;
+    size_t                 VecTblSize;
 
     if (Status == 0)
     {
