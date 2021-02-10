@@ -111,7 +111,7 @@ int32 OS_ConsoleAPI_Init(void)
         OS_SharedGlobalVars.PrintfEnabled = true;
     }
 
-    return OS_SUCCESS;
+    return return_code;
 } /* end OS_ConsoleAPI_Init */
 
 /*
