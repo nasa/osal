@@ -319,7 +319,7 @@ int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_pro
         record   = OS_OBJECT_TABLE_GET(OS_global_timebase_table, token);
         timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, token);
 
-        strncpy(timebase_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(timebase_prop->name, record->name_entry, sizeof(timebase_prop->name) - 1);
         timebase_prop->creator               = record->creator;
         timebase_prop->nominal_interval_time = timebase->nominal_interval_time;
         timebase_prop->freerun_time          = timebase->freerun_time;

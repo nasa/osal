@@ -477,7 +477,7 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_stream_table, token);
 
-        strncpy(sock_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(sock_prop->name, record->name_entry, sizeof(sock_prop->name) - 1);
         sock_prop->creator = record->creator;
         return_code        = OS_SocketGetInfo_Impl(&token, sock_prop);
 

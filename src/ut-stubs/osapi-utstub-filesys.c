@@ -249,7 +249,8 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
     int32 status;
 
     status = UT_DEFAULT_IMPL(OS_FS_GetPhysDriveName);
-    strncpy(PhysDriveName, MountPoint, OS_FS_PHYS_NAME_LEN);
+    strncpy(PhysDriveName, MountPoint, OS_FS_PHYS_NAME_LEN - 1);
+    PhysDriveName[OS_FS_PHYS_NAME_LEN - 1] = 0;
 
     return status;
 }
@@ -288,7 +289,8 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     if (status == OS_SUCCESS && VirtualPath != NULL && LocalPath != NULL &&
         UT_Stub_CopyToLocal(UT_KEY(OS_TranslatePath), LocalPath, OS_MAX_LOCAL_PATH_LEN) == 0)
     {
-        strncpy(LocalPath, VirtualPath, OS_MAX_LOCAL_PATH_LEN);
+        strncpy(LocalPath, VirtualPath, OS_MAX_LOCAL_PATH_LEN - 1);
+        LocalPath[OS_MAX_LOCAL_PATH_LEN - 1] = 0;
     }
 
     return status;

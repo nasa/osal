@@ -197,8 +197,8 @@ int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
         UT_Stub_CopyToLocal(UT_KEY(OS_BinSemGetInfo), bin_prop, sizeof(*bin_prop)) < sizeof(*bin_prop))
     {
         UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &bin_prop->creator);
-        strncpy(bin_prop->name, "Name", OS_MAX_API_NAME - 1);
-        bin_prop->name[OS_MAX_API_NAME - 1] = '\0';
+        strncpy(bin_prop->name, "Name", sizeof(bin_prop->name) - 1);
+        bin_prop->name[sizeof(bin_prop->name) - 1] = '\0';
     }
 
     return status;

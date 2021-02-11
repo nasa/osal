@@ -538,7 +538,7 @@ int32 OS_TimerGetInfo(osal_id_t timer_id, OS_timer_prop_t *timer_prop)
         timecb   = OS_OBJECT_TABLE_GET(OS_timecb_table, token);
         timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, timecb->timebase_token);
 
-        strncpy(timer_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(timer_prop->name, record->name_entry, sizeof(timer_prop->name) - 1);
         timer_prop->creator       = record->creator;
         timer_prop->interval_time = (uint32)timecb->interval_time;
         timer_prop->accuracy      = timebase->accuracy_usec;

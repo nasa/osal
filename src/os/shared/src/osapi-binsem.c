@@ -289,7 +289,7 @@ int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_bin_sem_table, token);
 
-        strncpy(bin_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(bin_prop->name, record->name_entry, sizeof(bin_prop->name) - 1);
         bin_prop->creator = record->creator;
         return_code       = OS_BinSemGetInfo_Impl(&token, bin_prop);
 
