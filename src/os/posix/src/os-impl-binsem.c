@@ -199,6 +199,17 @@ int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 initial_value,
         cond_created = 1;
 
         /*
+         * Check sem call, avoids unreachable destroy logic
+         */
+        ret = pthread_cond_signal(&(sem->cv));
+        if (ret != 0)
+        {
+            OS_DEBUG("Error: initial pthread_cond_signal failed: %s\n", strerror(ret));
+            return_code = OS_SEM_FAILURE;
+            break;
+        }
+
+        /*
          ** fill out the proper OSAL table fields
          */
 
