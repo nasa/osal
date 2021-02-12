@@ -128,4 +128,28 @@ void OS_IdleLoop_Impl(void);
  ------------------------------------------------------------------*/
 void OS_ApplicationShutdown_Impl(void);
 
+
+/*----------------------------------------------------------------
+
+   Function: OS_strnlen
+
+    Purpose: Utility function to safely find the length of a string
+             within a fixed-size array buffer.
+
+             Provides a local OSAL routine to get the functionality
+             of the (non-C99) "strnlen()" function, via the 
+             C89/C99 standard "memchr()" function instead.
+    
+ ------------------------------------------------------------------*/
+static inline size_t OS_strnlen(const char *s, size_t maxlen)
+{
+    const char *end = memchr(s, 0, maxlen);
+    if (end != NULL)
+    {
+        /* actual length of string is difference */
+        maxlen = end - s;
+    }
+    return maxlen;
+}
+
 #endif  /* OS_SHARED_COMMON_H  */

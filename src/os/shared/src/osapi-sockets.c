@@ -42,6 +42,7 @@
 #include "os-shared-idmap.h"
 #include "os-shared-file.h"
 #include "os-shared-sockets.h"
+#include "os-shared-common.h"
 
 /*
  * Other OSAL public APIs used by this module
@@ -104,7 +105,7 @@ void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Ad
     }
     if (OS_SocketAddrGetPort_Impl(&port, Addr) == OS_SUCCESS)
     {
-        len = strlen(sock->stream_name);
+        len = OS_strnlen(sock->stream_name, sizeof(sock->stream_name));
         snprintf(&sock->stream_name[len], OS_MAX_API_NAME - len, ":%u", (unsigned int)port);
     }
     sock->stream_name[OS_MAX_API_NAME - 1] = 0;
@@ -112,7 +113,7 @@ void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Ad
     if (parent_name)
     {
         /* Append the name from the parent socket. */
-        len = strlen(sock->stream_name);
+        len = OS_strnlen(sock->stream_name, sizeof(sock->stream_name));
         snprintf(&sock->stream_name[len], sizeof(sock->stream_name) - len, "-%s", parent_name);
         sock->stream_name[sizeof(sock->stream_name) - 1] = 0;
     }

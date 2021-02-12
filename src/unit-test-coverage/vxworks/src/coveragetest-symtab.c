@@ -69,9 +69,9 @@ void Test_OS_SymTableIterator_Impl(void)
 
     OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000), true);
     OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 101), false);
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), OS_MAX_SYM_LEN + 10);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000), false);
-    UT_ClearDefaultReturnValue(UT_KEY(OCS_strlen));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
     UT_SetDefaultReturnValue(UT_KEY(OCS_write), -1);
     OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000), false);
     UT_ClearDefaultReturnValue(UT_KEY(OCS_write));

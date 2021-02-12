@@ -1502,7 +1502,7 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size)
 
         if (record->name_entry != NULL)
         {
-            name_len = strlen(record->name_entry);
+            name_len = OS_strnlen(record->name_entry, buffer_size);
             if (buffer_size <= name_len)
             {
                 /* indicates the name does not fit into supplied buffer */
