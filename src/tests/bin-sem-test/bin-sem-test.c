@@ -68,7 +68,7 @@ int counter = 0;
  *
  * On RTEMS even a call to BinSemGetInfo has very ill effects.
  */
-void TimerFunction(osal_id_t timer_id)
+void TimerFunction(osal_id_t local_timer_id)
 {
     int32 status;
 

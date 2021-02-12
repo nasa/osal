@@ -58,7 +58,7 @@ uint32    timer_start    = 10000;
 uint32    timer_interval = 100000; /* 1000 = 1000 hz, 10000 == 100 hz */
 uint32    timer_accuracy;
 
-void TimerFunction(osal_id_t timer_id)
+void TimerFunction(osal_id_t local_timer_id)
 {
     timer_counter++;
 }
