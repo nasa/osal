@@ -56,4 +56,4 @@
 #define fcntl OCS_fcntl
 #define open  OCS_open
 
-#endif  /* OSAL_OVERRIDE_FCNTL_H */
+#endif /* OSAL_OVERRIDE_FCNTL_H */

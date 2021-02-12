@@ -70,7 +70,7 @@ int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry f
 
     if (status == OS_SUCCESS)
     {
-        *task_id = UT_AllocStubObjId(UT_OBJTYPE_TASK);
+        *task_id = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_TASK);
     }
     else
     {
@@ -106,7 +106,7 @@ int32 OS_TaskDelete(osal_id_t task_id)
 
     if (status == OS_SUCCESS)
     {
-        UT_DeleteStubObjId(UT_OBJTYPE_TASK, task_id);
+        UT_DeleteStubObjId(OS_OBJECT_TYPE_OS_TASK, task_id);
     }
 
     return status;
@@ -224,7 +224,7 @@ osal_id_t OS_TaskGetId(void)
     int32     status;
 
     status = UT_DEFAULT_IMPL_RC(OS_TaskGetId, 1);
-    UT_ObjIdCompose(status, UT_OBJTYPE_TASK, &TaskId);
+    UT_ObjIdCompose(status, OS_OBJECT_TYPE_OS_TASK, &TaskId);
 
     return TaskId;
 }
@@ -246,7 +246,7 @@ int32 OS_TaskGetIdByName(osal_id_t *task_id, const char *task_name)
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_TaskGetIdByName), task_id, sizeof(*task_id)) < sizeof(*task_id))
     {
-        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, task_id);
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, task_id);
     }
 
     return status;
@@ -281,11 +281,11 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_TaskGetInfo), task_prop, sizeof(*task_prop)) < sizeof(*task_prop))
     {
-        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &task_prop->creator);
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &task_prop->creator);
         task_prop->stack_size = OSAL_SIZE_C(100);
         task_prop->priority   = OSAL_PRIORITY_C(150);
-        strncpy(task_prop->name, "UnitTest", OS_MAX_API_NAME - 1);
-        task_prop->name[OS_MAX_API_NAME - 1] = '\0';
+        strncpy(task_prop->name, "UnitTest", sizeof(task_prop->name) - 1);
+        task_prop->name[sizeof(task_prop->name) - 1] = '\0';
     }
 
     return status;
@@ -316,7 +316,7 @@ int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t 
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_TaskFindIdBySystemData), task_id, sizeof(*task_id)) < sizeof(*task_id))
     {
-        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, task_id);
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, task_id);
     }
 
     return status;

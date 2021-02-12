@@ -31,7 +31,6 @@
 #define OS_CHK_ONLY 0 /**< Unused, API takes bool */
 #define OS_REPAIR   1 /**< Unused, API takes bool */
 
-
 /** @brief OSAL file system info */
 typedef struct
 {
@@ -203,10 +202,10 @@ int32 OS_unmount(const char *mountpoint);
  * @retval #OS_INVALID_POINTER if name is NULL
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the name is too long
  * @retval #OS_ERROR if the OS call failed
- * 
+ *
  * @deprecated Replaced by OS_FileSysStatVolume() -
  *             Value can be obtained by reading the "blocks_free" struct member.
- * 
+ *
  */
 int32 OS_fsBlocksFree(const char *name);
 
@@ -227,13 +226,13 @@ int32 OS_fsBlocksFree(const char *name);
  * @retval #OS_INVALID_POINTER if name is NULL
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the name is too long
  * @retval #OS_ERROR if the OS call failed
- * 
- * @deprecated Replaced by OS_FileSysStatVolume().  
+ *
+ * @deprecated Replaced by OS_FileSysStatVolume().
  *             Value can be obtained by multiplying the "blocks_free" by the "block_size" struct members.
  */
 int32 OS_fsBytesFree(const char *name, uint64 *bytes_free);
 
-#endif  /* OSAL_OMIT_DEPRECATED */
+#endif /* OSAL_OMIT_DEPRECATED */
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -325,6 +324,5 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath);
  */
 int32 OS_GetFsInfo(os_fsinfo_t *filesys_info);
 /**@}*/
-
 
 #endif

@@ -25,4 +25,4 @@
 /* alias to signal.h */
 #include <signal.h>
 
-#endif  /* OSAL_OVERRIDE_SYS_SIGNAL_H */
+#endif /* OSAL_OVERRIDE_SYS_SIGNAL_H */

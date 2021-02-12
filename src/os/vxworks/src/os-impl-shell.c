@@ -34,6 +34,7 @@
 #include "os-shared-shell.h"
 #include "os-shared-file.h"
 #include "os-shared-idmap.h"
+#include "os-shared-common.h"
 
 #include <shellLib.h>
 #include <taskLib.h>
@@ -78,12 +79,12 @@ int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
         cmd_impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, cmd_token);
 
         /* copy the command to the file, and then seek back to the beginning of the file */
-        OS_write(fdCmd, Cmd, strlen(Cmd));
+        OS_write(fdCmd, Cmd, OS_strnlen(Cmd, OS_MAX_CMD_LEN));
         OS_lseek(fdCmd, 0, OS_SEEK_SET);
 
         /* Create a shell task the will run the command in the file, push output to OS_fd */
-        Result = shellGenericInit("INTERPRETER=Cmd", 0, NULL, &shellName, false, false,
-                                  cmd_impl->fd, out_impl->fd, out_impl->fd);
+        Result = shellGenericInit("INTERPRETER=Cmd", 0, NULL, &shellName, false, false, cmd_impl->fd, out_impl->fd,
+                                  out_impl->fd);
     }
 
     if (Result == OK)

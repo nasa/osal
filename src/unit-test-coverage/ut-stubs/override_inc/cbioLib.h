@@ -28,4 +28,4 @@
 /* mappings for declarations in cbioLib.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_CBIOLIB_H */
+#endif /* OSAL_OVERRIDE_CBIOLIB_H */

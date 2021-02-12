@@ -57,9 +57,9 @@ static int32 TimeBaseInitGlobal(void *UserObj, int32 StubRetcode, uint32 CallCou
 
 static int32 ObjectDeleteCountHook(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context)
 {
-    uint32 *counter = (uint32 *)Context->ArgPtr[1];
+    uint32 *counter = UT_Hook_GetArgValueByName(Context, "callback_arg", uint32 *);
 
-    if (CallCount == 0)
+    if (CallCount < 2)
     {
         *counter = 1;
     }
@@ -75,6 +75,11 @@ static int32 SetShutdownFlagHook(void *UserObj, int32 StubRetcode, uint32 CallCo
 {
     OS_ApplicationShutdown(true);
     return StubRetcode;
+}
+
+static int32 TestEventHandlerHook(OS_Event_t event, osal_id_t object_id, void *data)
+{
+    return UT_DEFAULT_IMPL(TestEventHandlerHook);
 }
 
 /*
@@ -258,6 +263,37 @@ void Test_OS_IdleLoopAndShutdown(void)
     UtAssert_True(CallCount == 1, "OS_ApplicationShutdown_Impl() call count (%lu) == 1", (unsigned long)CallCount);
 }
 
+void Test_OS_NotifyEvent(void)
+{
+    /*
+     * Test cases for:
+     * int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data)
+     * int32 OS_RegisterEventHandler(OS_EventHandler_t handler)
+     */
+
+    OS_SharedGlobalVars.EventHandler = NULL;
+
+    /* With no hook function registered OS_NotifyEvent() should return success */
+    OSAPI_TEST_FUNCTION_RC(OS_NotifyEvent(OS_EVENT_RESERVED, OS_OBJECT_ID_UNDEFINED, NULL), OS_SUCCESS);
+
+    /* Registering a NULL hook function should fail */
+    OSAPI_TEST_FUNCTION_RC(OS_RegisterEventHandler(NULL), OS_INVALID_POINTER);
+
+    /* Now Register the locally-defined hook function */
+    OSAPI_TEST_FUNCTION_RC(OS_RegisterEventHandler(TestEventHandlerHook), OS_SUCCESS);
+
+    /* Now this should invoke the test hook */
+    OSAPI_TEST_FUNCTION_RC(OS_NotifyEvent(OS_EVENT_RESERVED, OS_OBJECT_ID_UNDEFINED, NULL), OS_SUCCESS);
+    UtAssert_STUB_COUNT(TestEventHandlerHook, 1);
+
+    /* Should also return whatever the hook returned */
+    UT_SetDefaultReturnValue(UT_KEY(TestEventHandlerHook), -12345);
+    OSAPI_TEST_FUNCTION_RC(OS_NotifyEvent(OS_EVENT_RESERVED, OS_OBJECT_ID_UNDEFINED, NULL), -12345);
+    UtAssert_STUB_COUNT(TestEventHandlerHook, 2);
+
+    OS_SharedGlobalVars.EventHandler = NULL;
+}
+
 /* ------------------- End of test cases --------------------------------------*/
 
 /* Osapi_Test_Setup
@@ -288,4 +324,5 @@ void UtTest_Setup(void)
     ADD_TEST(OS_CleanUpObject);
     ADD_TEST(OS_IdleLoopAndShutdown);
     ADD_TEST(OS_ApplicationExit);
+    ADD_TEST(OS_NotifyEvent);
 }

@@ -116,7 +116,7 @@ void UT_os_initfs_test()
     /*-----------------------------------------------------*/
     testDesc = "#2 Nominal";
 
-    /* Call to OS_FS_Init() is inside OS_API_Init(); */
+    /* Call to OS_FS_Init is inside OS_API_Init */
     res = OS_API_Init();
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {

@@ -86,7 +86,7 @@ int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
 
     if (Status == OS_SUCCESS)
     {
-        *dir_id = UT_AllocStubObjId(UT_OBJTYPE_DIR);
+        *dir_id = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_DIR);
     }
     else
     {
@@ -111,7 +111,7 @@ int32 OS_DirectoryClose(osal_id_t dir_id)
 
     if (Status == OS_SUCCESS)
     {
-        UT_DeleteStubObjId(UT_OBJTYPE_DIR, dir_id);
+        UT_DeleteStubObjId(OS_OBJECT_TYPE_OS_DIR, dir_id);
     }
 
     return Status;

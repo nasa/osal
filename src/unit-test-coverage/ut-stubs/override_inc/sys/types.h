@@ -34,4 +34,4 @@
 #define gid_t   OCS_gid_t
 #define uid_t   OCS_uid_t
 
-#endif  /* OSAL_OVERRIDE_SYS_TYPES_H */
+#endif /* OSAL_OVERRIDE_SYS_TYPES_H */

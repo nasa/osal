@@ -90,50 +90,49 @@ typedef struct
 #define UtAssert_True(Expression, ...) UtAssertEx(Expression, UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Evaluates a expression as either true or false.  true means the test passed, false means the test failed. */
-#define     UtAssert_Bool(Expression, ...) \
-        UtAssertEx(Expression, UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_Bool(Expression, ...) UtAssertEx(Expression, UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Asserts a test failure */
 #define UtAssert_Failed(...) UtAssertEx(false, UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Compares two integers and determines if they are equal within a specified absolute tolerance. */
-#define     UtAssert_IntegerCmpAbs(x, y, Tolerance, ...) \
-                UtAssertEx((abs((x) - (y)) <= (Tolerance)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_IntegerCmpAbs(x, y, Tolerance, ...) \
+    UtAssertEx((abs((x) - (y)) <= (Tolerance)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Compares two floating point numbers and determines if they are equal within a specified absolute tolerance. */
-#define     UtAssert_DoubleCmpAbs(x, y, Tolerance, ...) \
-                UtAssertEx((fabs((x) - (y)) <= (Tolerance)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_DoubleCmpAbs(x, y, Tolerance, ...) \
+    UtAssertEx((fabs((x) - (y)) <= (Tolerance)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Compares two floating point numbers and determines if they are equal within a specified relative tolerance. */
-#define     UtAssert_DoubleCmpRel(x, y, Ratio, ...) \
-                UtAssertEx((fabs((x) - (y))/(x) <= (Ratio)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_DoubleCmpRel(x, y, Ratio, ...) \
+    UtAssertEx((fabs((x) - (y)) / (x) <= (Ratio)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Compares two strings and determines if they are equal. */
-#define     UtAssert_StrCmp(String1, String2, ...) \
-                UtAssertEx((strcmp(String1, String2) == 0), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_StrCmp(String1, String2, ...) \
+    UtAssertEx((strcmp(String1, String2) == 0), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Compares at most Length characters of two strings and determines if they are equal. */
-#define     UtAssert_StrnCmp(String1, String2, Length, ...) \
-                UtAssertEx((strncmp(String1, String2, Length) == 0), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_StrnCmp(String1, String2, Length, ...) \
+    UtAssertEx((strncmp(String1, String2, Length) == 0), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Compares two regions of memory and determines if they are equal. */
-#define     UtAssert_MemCmp(Memory1, Memory2, Length, ...) \
-                UtAssertEx((memcmp(Memory1, Memory2, Length) == 0), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_MemCmp(Memory1, Memory2, Length, ...) \
+    UtAssertEx((memcmp(Memory1, Memory2, Length) == 0), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Compares a region of memory to a static pattern and determines if they are equal.  Note: Use UtMemSet to
  * fill a region of memory with a static pattern. */
-#define     UtAssert_MemCmpValue(Memory, Value, Length, ...) \
-                UtAssertEx((UtMemCmpValue(Memory, Value, Length)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_MemCmpValue(Memory, Value, Length, ...) \
+    UtAssertEx((UtMemCmpValue(Memory, Value, Length)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Compares a region of memory to a byte count pattern and determines if they are equal.  Note: Use UtMemFill to
  * fill a region of memory with a byte count pattern. */
-#define     UtAssert_MemCmpCount(Memory, Length, ...) \
-                UtAssertEx((UtMemCmpCount(Memory, Length)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_MemCmpCount(Memory, Length, ...) \
+    UtAssertEx((UtMemCmpCount(Memory, Length)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* Compares a region of memory with the contents of a binary file and determines if they are equal.  Note: Use
  * UtMem2BinFile to copy a region of memory to a binary file. */
-#define     UtAssert_Mem2BinFileCmp(Memory, Filename, ...) \
-                UtAssertEx((UtMem2BinFileCmp(Memory, Filename)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+#define UtAssert_Mem2BinFileCmp(Memory, Filename, ...) \
+    UtAssertEx((UtMem2BinFileCmp(Memory, Filename)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /* A wrapper around UtAssertEx that allows the user to specify the failure type and a more descriptive message */
 #define UtAssert_Type(Type, Expression, ...) \

@@ -302,8 +302,8 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
          *  - This is used internally for reporting accuracy,
          *  - TicksPerSecond values over 2M will return zero
          */
-        OS_SharedGlobalVars.MicroSecPerTick = (1000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) /
-                                              OS_SharedGlobalVars.TicksPerSecond;
+        OS_SharedGlobalVars.MicroSecPerTick =
+            (1000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) / OS_SharedGlobalVars.TicksPerSecond;
     } while (0);
 
     return (return_code);

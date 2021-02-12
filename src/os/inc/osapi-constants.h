@@ -34,7 +34,6 @@
 #define OS_PEND  (-1)
 #define OS_CHECK (0)
 
-
 /**
  * @brief Initializer for the osal_id_t type which will not match any valid value
  */
@@ -53,6 +52,5 @@
  * mount point or device name
  */
 #define OS_MAX_LOCAL_PATH_LEN (OS_MAX_PATH_LEN + OS_FS_PHYS_NAME_LEN)
-
 
 #endif

@@ -36,4 +36,4 @@
 /* prototypes normally declared in poll.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_POLL_H */
+#endif /*  OCS_POLL_H */

@@ -35,4 +35,4 @@
 #define memPartInfoGet OCS_memPartInfoGet
 #define memSysPartId   OCS_memSysPartId
 
-#endif  /* OSAL_OVERRIDE_MEMPARTLIB_H */
+#endif /* OSAL_OVERRIDE_MEMPARTLIB_H */

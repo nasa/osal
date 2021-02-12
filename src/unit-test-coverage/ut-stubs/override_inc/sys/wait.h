@@ -28,4 +28,4 @@
 /* mappings for declarations in sys/wait.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_SYS_WAIT_H */
+#endif /* OSAL_OVERRIDE_SYS_WAIT_H */

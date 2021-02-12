@@ -28,4 +28,4 @@
 /* mappings for declarations in netdb.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_NETDB_H */
+#endif /* OSAL_OVERRIDE_NETDB_H */

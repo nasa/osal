@@ -42,7 +42,7 @@
  * mkdir() in a consistent, POSIX compliant fashion.
  */
 #ifdef OSAL_VXWORKS6_COMPATIBILITY
-#define mkdir(path,mode) mkdir(path)
+#define mkdir(path, mode) mkdir(path)
 #endif
 
 typedef struct
@@ -55,4 +55,4 @@ typedef struct
  */
 extern OS_impl_dir_internal_record_t OS_impl_dir_table[OS_MAX_NUM_OPEN_DIRS];
 
-#endif  /* OS_IMPL_DIRS_H  */
+#endif /* OS_IMPL_DIRS_H  */

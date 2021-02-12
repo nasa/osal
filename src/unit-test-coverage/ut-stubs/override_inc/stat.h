@@ -40,4 +40,4 @@
 #define statvfs OCS_statvfs
 #define statfs  OCS_statvfs
 
-#endif  /* OSAL_OVERRIDE_STAT_H */
+#endif /* OSAL_OVERRIDE_STAT_H */

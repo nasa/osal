@@ -234,7 +234,7 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
     actualstackbase += actualsz; /* move to last byte of stack block */
 #endif
 
-    status = taskInit((WIND_TCB*)&lrec->tcb,                                        /* address of new task's TCB */
+    status = taskInit((WIND_TCB *)&lrec->tcb,                            /* address of new task's TCB */
                       (char *)task->task_name, vxpri,                    /* priority of new task */
                       vxflags,                                           /* task option word */
                       (char *)actualstackbase,                           /* base of new task's stack */
@@ -414,7 +414,7 @@ int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
  *-----------------------------------------------------------------*/
 osal_id_t OS_TaskGetId_Impl(void)
 {
-    void     *lrec;
+    void *    lrec;
     size_t    idx;
     osal_id_t id;
 

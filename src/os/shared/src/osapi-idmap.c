@@ -91,7 +91,6 @@ typedef struct
     void *           user_arg;
 } OS_creator_filter_t;
 
-
 /*
  * Global ID storage tables
  */
@@ -269,7 +268,6 @@ int32 OS_ForEachDoCallback(osal_id_t obj_id, void *ref)
     filter->user_callback(obj_id, filter->user_arg);
     return OS_SUCCESS;
 }
-
 
 /*----------------------------------------------------------------
  *
@@ -631,7 +629,7 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
 {
     uint32              max_id;
     uint32              base_id;
-    uint32              local_id;
+    uint32              local_id = 0;
     uint32              serial;
     uint32              i;
     int32               return_code;
@@ -747,16 +745,17 @@ void OS_Lock_Global(OS_object_token_t *token)
          * This makes it different for every operation, and different depending
          * on what task is calling the function.
          */
-        token->lock_key.key_value = OS_LOCK_KEY_FIXED_VALUE |
-                                    ((OS_ObjectIdToInteger(self_task_id) ^ objtype->transaction_count) & 0xFFFFFF);
+        token->lock_key.key_value =
+            OS_LOCK_KEY_FIXED_VALUE | ((OS_ObjectIdToInteger(self_task_id) ^ objtype->transaction_count) & 0xFFFFFF);
 
         ++objtype->transaction_count;
 
         if (objtype->owner_key.key_value != 0)
         {
             /* this is almost certainly a bug */
-            OS_DEBUG("ERROR: global %u acquired by task 0x%lx when already assigned key 0x%lx\n", (unsigned int)token->obj_type,
-                     OS_ObjectIdToInteger(self_task_id), (unsigned long)objtype->owner_key.key_value);
+            OS_DEBUG("ERROR: global %u acquired by task 0x%lx when already assigned key 0x%lx\n",
+                     (unsigned int)token->obj_type, OS_ObjectIdToInteger(self_task_id),
+                     (unsigned long)objtype->owner_key.key_value);
         }
         else
         {
@@ -765,8 +764,8 @@ void OS_Lock_Global(OS_object_token_t *token)
     }
     else
     {
-        OS_DEBUG("ERROR: cannot lock global %u for mode %u\n",
-            (unsigned int)token->obj_type, (unsigned int)token->lock_mode);
+        OS_DEBUG("ERROR: cannot lock global %u for mode %u\n", (unsigned int)token->obj_type,
+                 (unsigned int)token->lock_mode);
     }
 }
 
@@ -795,8 +794,9 @@ void OS_Unlock_Global(OS_object_token_t *token)
             objtype->owner_key.key_value != token->lock_key.key_value)
         {
             /* this is almost certainly a bug */
-            OS_DEBUG("ERROR: global %u released using mismatched key=0x%lx expected=0x%lx\n", (unsigned int)token->obj_type,
-                     (unsigned long)token->lock_key.key_value, (unsigned long)objtype->owner_key.key_value);
+            OS_DEBUG("ERROR: global %u released using mismatched key=0x%lx expected=0x%lx\n",
+                     (unsigned int)token->obj_type, (unsigned long)token->lock_key.key_value,
+                     (unsigned long)objtype->owner_key.key_value);
         }
 
         objtype->owner_key = OS_LOCK_KEY_INVALID;
@@ -806,8 +806,8 @@ void OS_Unlock_Global(OS_object_token_t *token)
     }
     else
     {
-        OS_DEBUG("ERROR: cannot unlock global %u for mode %u\n",
-            (unsigned int)token->obj_type, (unsigned int)token->lock_mode);
+        OS_DEBUG("ERROR: cannot unlock global %u for mode %u\n", (unsigned int)token->obj_type,
+                 (unsigned int)token->lock_mode);
     }
 }
 
@@ -1433,7 +1433,8 @@ void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void 
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-void OS_ForEachObjectOfType(osal_objtype_t idtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg)
+void OS_ForEachObjectOfType(osal_objtype_t idtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr,
+                            void *callback_arg)
 {
     OS_object_iter_t    iter;
     OS_creator_filter_t filter;
@@ -1501,7 +1502,7 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size)
 
         if (record->name_entry != NULL)
         {
-            name_len = strlen(record->name_entry);
+            name_len = OS_strnlen(record->name_entry, buffer_size);
             if (buffer_size <= name_len)
             {
                 /* indicates the name does not fit into supplied buffer */

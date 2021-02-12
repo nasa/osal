@@ -31,4 +31,4 @@
 /* ----------------------------------------- */
 #define ataDevCreate OCS_ataDevCreate
 
-#endif  /* OSAL_OVERRIDE_DRV_HDISK_ATADRV_H */
+#endif /* OSAL_OVERRIDE_DRV_HDISK_ATADRV_H */

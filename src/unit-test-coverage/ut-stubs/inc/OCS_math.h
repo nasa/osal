@@ -36,4 +36,4 @@
 /* prototypes normally declared in math.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_MATH_H */
+#endif /*  OCS_MATH_H */

@@ -35,4 +35,4 @@
 #define readdir   OCS_readdir
 #define rewinddir OCS_rewinddir
 
-#endif  /* OSAL_OVERRIDE_DIRENT_H */
+#endif /* OSAL_OVERRIDE_DIRENT_H */

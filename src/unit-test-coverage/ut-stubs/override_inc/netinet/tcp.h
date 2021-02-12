@@ -28,4 +28,4 @@
 /* mappings for declarations in netinet/tcp.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_NETINET_TCP_H */
+#endif /* OSAL_OVERRIDE_NETINET_TCP_H */

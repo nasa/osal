@@ -28,4 +28,4 @@
 /* mappings for declarations in version.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_VERSION_H */
+#endif /* OSAL_OVERRIDE_VERSION_H */

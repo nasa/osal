@@ -66,4 +66,4 @@
 void Osapi_Test_Setup(void);
 void Osapi_Test_Teardown(void);
 
-#endif  /* OS_PORTABLE_COVERAGETEST_H  */
+#endif /* OS_PORTABLE_COVERAGETEST_H  */

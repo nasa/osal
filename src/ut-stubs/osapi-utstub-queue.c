@@ -78,7 +78,7 @@ int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcoun
 
     if (status == OS_SUCCESS)
     {
-        *queue_id = UT_AllocStubObjId(UT_OBJTYPE_QUEUE);
+        *queue_id = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_QUEUE);
     }
     else
     {
@@ -121,7 +121,7 @@ int32 OS_QueueDelete(osal_id_t queue_id)
 
     if (status == OS_SUCCESS)
     {
-        UT_DeleteStubObjId(UT_OBJTYPE_QUEUE, queue_id);
+        UT_DeleteStubObjId(OS_OBJECT_TYPE_OS_QUEUE, queue_id);
     }
 
     return status;
@@ -235,7 +235,7 @@ int32 OS_QueueGetIdByName(osal_id_t *queue_id, const char *queue_name)
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_QueueGetIdByName), queue_id, sizeof(*queue_id)) < sizeof(*queue_id))
     {
-        UT_ObjIdCompose(1, UT_OBJTYPE_QUEUE, queue_id);
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_QUEUE, queue_id);
     }
 
     return status;
@@ -269,9 +269,9 @@ int32 OS_QueueGetInfo(osal_id_t queue_id, OS_queue_prop_t *queue_prop)
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_QueueGetInfo), queue_prop, sizeof(*queue_prop)) < sizeof(*queue_prop))
     {
-        UT_ObjIdCompose(1, UT_OBJTYPE_TASK, &queue_prop->creator);
-        strncpy(queue_prop->name, "Name", OS_MAX_API_NAME - 1);
-        queue_prop->name[OS_MAX_API_NAME - 1] = '\0';
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &queue_prop->creator);
+        strncpy(queue_prop->name, "Name", sizeof(queue_prop->name) - 1);
+        queue_prop->name[sizeof(queue_prop->name) - 1] = '\0';
     }
 
     return status;

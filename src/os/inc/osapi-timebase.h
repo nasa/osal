@@ -31,7 +31,7 @@
 /*
 ** Typedefs
 */
-typedef uint32 (*OS_TimerSync_t)(osal_id_t timer_id);   /**< @brief Timer sync */
+typedef uint32 (*OS_TimerSync_t)(osal_id_t timer_id); /**< @brief Timer sync */
 
 /** @brief Time base properties */
 typedef struct

@@ -47,4 +47,4 @@
 #define sysconf     OCS_sysconf
 #define write       OCS_write
 
-#endif  /* OSAL_OVERRIDE_UNISTD_H */
+#endif /* OSAL_OVERRIDE_UNISTD_H */

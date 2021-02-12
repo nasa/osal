@@ -54,4 +54,4 @@ extern OCS_FILE *OCS_stdin;
 extern OCS_FILE *OCS_stdout;
 extern OCS_FILE *OCS_stderr;
 
-#endif  /*  OCS_STDIO_H */
+#endif /*  OCS_STDIO_H */

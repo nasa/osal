@@ -28,4 +28,4 @@
 /* mappings for declarations in termios.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_TERMIOS_H */
+#endif /* OSAL_OVERRIDE_TERMIOS_H */

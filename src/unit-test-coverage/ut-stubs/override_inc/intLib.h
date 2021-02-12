@@ -36,4 +36,4 @@
 #define intUnlock    OCS_intUnlock
 #define INUM_TO_IVEC OCS_INUM_TO_IVEC
 
-#endif  /* OSAL_OVERRIDE_INTLIB_H */
+#endif /* OSAL_OVERRIDE_INTLIB_H */

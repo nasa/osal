@@ -272,7 +272,7 @@ int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_mutex_table, token);
 
-        strncpy(mut_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(mut_prop->name, record->name_entry, sizeof(mut_prop->name) - 1);
         mut_prop->creator = record->creator;
 
         return_code = OS_MutSemGetInfo_Impl(&token, mut_prop);

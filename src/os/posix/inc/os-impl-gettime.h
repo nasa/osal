@@ -33,4 +33,4 @@
 
 #define OSAL_GETTIME_SOURCE_CLOCK CLOCK_MONOTONIC
 
-#endif  /* OS_IMPL_GETTIME_H  */
+#endif /* OS_IMPL_GETTIME_H  */

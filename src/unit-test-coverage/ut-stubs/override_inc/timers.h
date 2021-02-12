@@ -29,4 +29,4 @@
  * Note: this is just an alias for time.h
  */
 
-#endif  /* OSAL_OVERRIDE_TIMERS_H */
+#endif /* OSAL_OVERRIDE_TIMERS_H */

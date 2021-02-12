@@ -62,7 +62,7 @@ void UT_os_mut_sem_get_info_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSCORE_MUTEX_TEST_H */
+#endif /* UT_OSCORE_MUTEX_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_oscore_mutex_test.h

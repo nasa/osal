@@ -47,8 +47,6 @@
 #include "osapi-filesys.h"
 #include "osapi-sockets.h"
 
-
-
 /*
  * Sanity checks on the user-supplied configuration
  * The relevent OS_MAX limit should be defined and greater than zero
@@ -112,6 +110,7 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
     OS_object_token_t            token;
     OS_stream_internal_record_t *stream;
 
+    /* Check parameters */
     OS_CHECK_POINTER(filedes);
 
     /*
@@ -474,7 +473,8 @@ int32 OS_rename(const char *old, const char *new)
 
             if (stream->socket_domain == OS_SocketDomain_INVALID && strcmp(stream->stream_name, old) == 0)
             {
-                strcpy(stream->stream_name, new);
+                strncpy(stream->stream_name, new, sizeof(stream->stream_name) - 1);
+                stream->stream_name[sizeof(stream->stream_name) - 1] = 0;
             }
         }
 
@@ -605,7 +605,7 @@ int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_stream_table, token);
 
-        strncpy(fd_prop->Path, record->name_entry, OS_MAX_PATH_LEN - 1);
+        strncpy(fd_prop->Path, record->name_entry, sizeof(fd_prop->Path) - 1);
         fd_prop->User    = record->creator;
         fd_prop->IsValid = true;
 
@@ -630,6 +630,7 @@ int32 OS_FileOpenCheck(const char *Filename)
     OS_object_iter_t             iter;
     OS_stream_internal_record_t *stream;
 
+    /* Check parameters */
     OS_CHECK_POINTER(Filename);
 
     return_code = OS_ERROR;
@@ -666,6 +667,7 @@ int32 OS_CloseFileByName(const char *Filename)
     OS_object_iter_t             iter;
     OS_stream_internal_record_t *stream;
 
+    /* Check parameters */
     OS_CHECK_POINTER(Filename);
 
     return_code = OS_FS_ERR_PATH_INVALID;

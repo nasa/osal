@@ -36,4 +36,4 @@
 /* prototypes normally declared in version.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_VERSION_H */
+#endif /*  OCS_VERSION_H */

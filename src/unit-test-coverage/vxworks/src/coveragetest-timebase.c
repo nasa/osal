@@ -110,9 +110,15 @@ void Test_OS_TimeBaseCreate_Impl(void)
      * This should be done first as it will assign the "external_sync"
      * and therefore cause future calls to skip this block.
      */
-    memset(&id, 0x01, sizeof(id));
+    id = OS_ObjectIdFromInteger(OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT);
+
+    OS_global_timebase_table[0].active_id = id;
+    UT_TimeBaseTest_Setup(UT_INDEX_0, OCS_SIGRTMIN, false);
+
+    id = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(id) + 1);
+
     OS_global_timebase_table[1].active_id = id;
-    UT_TimeBaseTest_Setup(UT_INDEX_1, OCS_SIGRTMIN, false);
+    UT_TimeBaseTest_Setup(UT_INDEX_1, 1 + OCS_SIGRTMIN, false);
     UT_SetDefaultReturnValue(UT_KEY(OCS_sigismember), true);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(&token), OS_TIMER_ERR_UNAVAILABLE);
     UT_ResetState(UT_KEY(OCS_sigismember));
@@ -158,6 +164,11 @@ void Test_OS_TimeBaseCreate_Impl(void)
     UT_SetDefaultReturnValue(UT_KEY(OCS_timer_create), -1);
     UT_TimeBaseTest_CallRegisterTimer(OS_OBJECT_ID_UNDEFINED);
     UtAssert_True(UT_TimeBaseTest_CheckTimeBaseErrorState(UT_INDEX_0), "timer registration failure state");
+
+    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_1);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    UT_TimeBaseTest_CallRegisterTimer(OS_OBJECT_ID_UNDEFINED);
+    UtAssert_True(!UT_TimeBaseTest_CheckTimeBaseRegisteredState(UT_INDEX_0), "timer registration bad ID");
 }
 
 void Test_OS_VxWorks_SigWait(void)

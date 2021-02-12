@@ -101,9 +101,9 @@ int32 OS_QueueCreate_Impl(const OS_object_token_t *token, uint32 flags)
     ** (RTEMS_FIFO or RTEMS_PRIORITY) is irrelevant since only one task waits
     ** on each queue.
     */
-    status = rtems_message_queue_create(r_name,                   /* 32-bit RTEMS object name; not used */
-                                        queue->max_depth,         /* maximum number of messages in queue (queue depth) */
-                                        queue->max_size,          /* maximum size in bytes of a message */
+    status = rtems_message_queue_create(r_name,           /* 32-bit RTEMS object name; not used */
+                                        queue->max_depth, /* maximum number of messages in queue (queue depth) */
+                                        queue->max_size,  /* maximum size in bytes of a message */
                                         RTEMS_FIFO | RTEMS_LOCAL, /* attributes (default) */
                                         &(impl->id)               /* object ID returned for queue */
     );

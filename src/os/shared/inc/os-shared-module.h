@@ -130,4 +130,4 @@ int32 OS_SymbolTableDump_Impl(const char *filename, size_t size_limit);
 int32 OS_ModuleLoad_Static(const char *ModuleName);
 int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName, const char *ModuleName);
 
-#endif  /* OS_SHARED_MODULE_H  */
+#endif /* OS_SHARED_MODULE_H  */

@@ -63,7 +63,7 @@ void UT_os_count_sem_get_info_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSCORE_COUNTSEM_TEST_H */
+#endif /* UT_OSCORE_COUNTSEM_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_oscore_countsem_test.h

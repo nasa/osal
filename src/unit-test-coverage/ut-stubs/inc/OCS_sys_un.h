@@ -36,4 +36,4 @@
 /* prototypes normally declared in sys/un.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_SYS_UN_H */
+#endif /*  OCS_SYS_UN_H */

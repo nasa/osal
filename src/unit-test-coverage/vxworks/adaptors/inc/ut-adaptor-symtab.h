@@ -32,4 +32,4 @@
 
 int32 UT_SymTabTest_CallIteratorFunc(const char *name, void *val, size_t TestSize, size_t SizeLimit);
 
-#endif  /* UT_ADAPTOR_SYMTAB_H  */
+#endif /* UT_ADAPTOR_SYMTAB_H  */

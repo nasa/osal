@@ -38,4 +38,4 @@
 
 extern int OCS_ioctl(int fd, unsigned long request, ...);
 
-#endif  /*  OCS_SYS_IOCTL_H */
+#endif /*  OCS_SYS_IOCTL_H */

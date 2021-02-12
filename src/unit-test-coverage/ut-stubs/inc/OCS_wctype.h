@@ -36,4 +36,4 @@
 /* prototypes normally declared in wctype.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_WCTYPE_H */
+#endif /*  OCS_WCTYPE_H */

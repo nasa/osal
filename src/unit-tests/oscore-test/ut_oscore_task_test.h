@@ -69,7 +69,7 @@ void UT_os_task_get_id_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSCORE_TASK_TEST_H */
+#endif /* UT_OSCORE_TASK_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_oscore_task_test.h

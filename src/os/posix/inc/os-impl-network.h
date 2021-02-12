@@ -30,4 +30,4 @@
 
 #include <unistd.h>
 
-#endif  /* OS_IMPL_NETWORK_H  */
+#endif /* OS_IMPL_NETWORK_H  */

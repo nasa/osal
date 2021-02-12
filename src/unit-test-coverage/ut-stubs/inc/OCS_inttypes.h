@@ -36,4 +36,4 @@
 /* prototypes normally declared in inttypes.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_INTTYPES_H */
+#endif /*  OCS_INTTYPES_H */

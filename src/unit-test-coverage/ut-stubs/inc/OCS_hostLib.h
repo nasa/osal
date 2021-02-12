@@ -44,4 +44,4 @@
 /* ----------------------------------------- */
 extern int OCS_hostGetByName(char *name);
 
-#endif  /* OCS_HOSTLIB_H  */
+#endif /* OCS_HOSTLIB_H  */

@@ -56,4 +56,4 @@ extern int         OCS_rmdir(const char *path);
 extern long int    OCS_sysconf(int name);
 extern OCS_ssize_t OCS_write(int fd, const void *buf, size_t n);
 
-#endif  /*  OCS_UNISTD_H */
+#endif /*  OCS_UNISTD_H */

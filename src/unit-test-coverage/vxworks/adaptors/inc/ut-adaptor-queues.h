@@ -45,4 +45,4 @@ extern size_t const UT_Ref_OS_impl_queue_table_SIZE;
 
 int32 UT_Call_OS_VxWorks_QueueAPI_Impl_Init(void);
 
-#endif  /* UT_ADAPTOR_QUEUES_H  */
+#endif /* UT_ADAPTOR_QUEUES_H  */

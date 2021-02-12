@@ -32,4 +32,4 @@ typedef struct OCS_BLK_DEV
 } OCS_BLK_DEV;
 typedef OCS_BLK_DEV *OCS_BLK_DEV_ID;
 
-#endif  /*  OCS_BLKIO_H */
+#endif /*  OCS_BLKIO_H */

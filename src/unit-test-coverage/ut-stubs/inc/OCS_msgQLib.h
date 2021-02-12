@@ -54,4 +54,4 @@ extern OCS_STATUS   OCS_msgQDelete(OCS_MSG_Q_ID msgQId);
 extern int          OCS_msgQReceive(OCS_MSG_Q_ID msgQId, char *buffer, OCS_UINT maxNBytes, int timeout);
 extern OCS_STATUS   OCS_msgQSend(OCS_MSG_Q_ID msgQId, char *buffer, OCS_UINT nBytes, int timeout, int priority);
 
-#endif  /*  OCS_MSGQLIB_H */
+#endif /*  OCS_MSGQLIB_H */

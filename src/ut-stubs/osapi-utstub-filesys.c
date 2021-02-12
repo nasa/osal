@@ -54,7 +54,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
 
     if (status == OS_SUCCESS)
     {
-        *filesys_id = UT_AllocStubObjId(UT_OBJTYPE_FILESYS);
+        *filesys_id = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_FILESYS);
     }
     else
     {
@@ -153,7 +153,7 @@ int32 OS_unmount(const char *mountpoint)
     return status;
 }
 
-#ifndef OSAL_OMIT_DEPRECATED 
+#ifndef OSAL_OMIT_DEPRECATED
 
 /*****************************************************************************
  *
@@ -210,7 +210,8 @@ int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf)
 
     status = UT_DEFAULT_IMPL(OS_FileSysStatVolume);
 
-    if (status == OS_SUCCESS && UT_Stub_CopyToLocal(UT_KEY(OS_FileSysStatVolume), statbuf, sizeof(*statbuf)) < sizeof(*statbuf))
+    if (status == OS_SUCCESS &&
+        UT_Stub_CopyToLocal(UT_KEY(OS_FileSysStatVolume), statbuf, sizeof(*statbuf)) < sizeof(*statbuf))
     {
         memset(statbuf, 0, sizeof(*statbuf));
     }
@@ -248,7 +249,8 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
     int32 status;
 
     status = UT_DEFAULT_IMPL(OS_FS_GetPhysDriveName);
-    strncpy(PhysDriveName, MountPoint, OS_FS_PHYS_NAME_LEN);
+    strncpy(PhysDriveName, MountPoint, OS_FS_PHYS_NAME_LEN - 1);
+    PhysDriveName[OS_FS_PHYS_NAME_LEN - 1] = 0;
 
     return status;
 }
@@ -287,7 +289,8 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     if (status == OS_SUCCESS && VirtualPath != NULL && LocalPath != NULL &&
         UT_Stub_CopyToLocal(UT_KEY(OS_TranslatePath), LocalPath, OS_MAX_LOCAL_PATH_LEN) == 0)
     {
-        strncpy(LocalPath, VirtualPath, OS_MAX_LOCAL_PATH_LEN);
+        strncpy(LocalPath, VirtualPath, OS_MAX_LOCAL_PATH_LEN - 1);
+        LocalPath[OS_MAX_LOCAL_PATH_LEN - 1] = 0;
     }
 
     return status;

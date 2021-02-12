@@ -30,4 +30,4 @@
 /* ----------------------------------------- */
 #define shellGenericInit OCS_shellGenericInit
 
-#endif  /* OSAL_OVERRIDE_SHELLLIB_H */
+#endif /* OSAL_OVERRIDE_SHELLLIB_H */

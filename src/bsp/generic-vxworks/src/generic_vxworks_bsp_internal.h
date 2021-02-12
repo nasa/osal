@@ -33,4 +33,4 @@
 */
 #include "bsp-impl.h"
 
-#endif  /* GENERIC_VXWORKS_BSP_INTERNAL_H */
+#endif /* GENERIC_VXWORKS_BSP_INTERNAL_H */

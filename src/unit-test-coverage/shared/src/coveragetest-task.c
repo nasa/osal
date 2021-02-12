@@ -109,7 +109,8 @@ void Test_OS_TaskCreate(void)
     osal_id_t objid;
     int32     actual;
 
-    actual = OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(128), OSAL_PRIORITY_C(0), 0);
+    actual =
+        OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(128), OSAL_PRIORITY_C(0), 0);
 
     UtAssert_True(actual == expected, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
@@ -255,7 +256,8 @@ void Test_OS_TaskGetInfo(void)
     UtAssert_True(actual == expected, "OS_TaskGetInfo() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(task_prop.creator, ==, UT_OBJID_OTHER);
     UtAssert_True(strcmp(task_prop.name, "ABC") == 0, "task_prop.name (%s) == ABC", task_prop.name);
-    UtAssert_True(task_prop.stack_size == 222, "task_prop.stack_size (%lu) == 222", (unsigned long)task_prop.stack_size);
+    UtAssert_True(task_prop.stack_size == 222, "task_prop.stack_size (%lu) == 222",
+                  (unsigned long)task_prop.stack_size);
     UtAssert_True(task_prop.priority == 133, "task_prop.priority (%lu) == 133", (unsigned long)task_prop.priority);
 
     OS_task_table[1].stack_size = OSAL_SIZE_C(0);

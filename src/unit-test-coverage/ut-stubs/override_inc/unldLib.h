@@ -31,4 +31,4 @@
 /* ----------------------------------------- */
 #define unldByModuleId OCS_unldByModuleId
 
-#endif  /* OSAL_OVERRIDE_UNLDLIB_H */
+#endif /* OSAL_OVERRIDE_UNLDLIB_H */

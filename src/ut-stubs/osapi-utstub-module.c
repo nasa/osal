@@ -94,7 +94,7 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
 
     if (status == OS_SUCCESS)
     {
-        *module_id = UT_AllocStubObjId(UT_OBJTYPE_MODULE);
+        *module_id = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_MODULE);
     }
     else
     {
@@ -134,7 +134,7 @@ int32 OS_ModuleUnload(osal_id_t module_id)
 
     if (status == OS_SUCCESS)
     {
-        UT_DeleteStubObjId(UT_OBJTYPE_MODULE, module_id);
+        UT_DeleteStubObjId(OS_OBJECT_TYPE_OS_MODULE, module_id);
     }
 
     return status;

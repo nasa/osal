@@ -36,4 +36,4 @@
 /* prototypes normally declared in netinet/tcp.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_NETINET_TCP_H */
+#endif /*  OCS_NETINET_TCP_H */

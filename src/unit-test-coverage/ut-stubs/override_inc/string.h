@@ -41,4 +41,4 @@
 #define strncat  OCS_strncat
 #define strerror OCS_strerror
 
-#endif  /* OSAL_OVERRIDE_STRING_H */
+#endif /* OSAL_OVERRIDE_STRING_H */

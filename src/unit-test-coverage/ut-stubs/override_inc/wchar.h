@@ -28,4 +28,4 @@
 /* mappings for declarations in wchar.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_WCHAR_H */
+#endif /* OSAL_OVERRIDE_WCHAR_H */

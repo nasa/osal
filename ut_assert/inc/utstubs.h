@@ -209,7 +209,7 @@ void UT_ClearDefaultReturnValue(UT_EntryKey_t FuncKey);
  *
  * \param FuncKey The stub function to add the return code to.
  * \param Value Arbitrary failure mode value (may or may not be used by the stub)
- * 
+ *
  * @deprecated replaced by UT_SetDefaultReturnValue
  */
 void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value);
@@ -220,7 +220,7 @@ void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value);
  * This undoes the action of UT_SetDefaultReturnValue()
  *
  * \param FuncKey The stub function entry to clear.
- * 
+ *
  * @deprecated replaced by UT_ClearDefaultReturnValue
  */
 void UT_ClearForceFail(UT_EntryKey_t FuncKey);
@@ -463,8 +463,15 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
  *
  * This version should be used on stubs that take no arguments
  * and are expected to return 0 in the nominal case
+ *
+ * NOTE - Adding a NULL to the va list is only done for the
+ *        two macros that do not have a va list passed in by the
+ *        caller and is NOT a general pattern. Hooks that handle
+ *        va lists should utilize the UT_KEY to process
+ *        va lists correctly based on the implementation (no
+ *        general pattern should be assumed).
  */
-#define UT_DEFAULT_IMPL(FuncName) UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), 0)
+#define UT_DEFAULT_IMPL(FuncName) UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), 0, NULL)
 
 /**
  * Macro to simplify usage of the UT_DefaultStubImpl() function
@@ -475,8 +482,15 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
  *
  * This version should be used on stubs that take no arguments
  * and are expected to return nonzero in the nominal case
+ *
+ * NOTE - Adding a NULL to the va list is only done for the
+ *        two macros that do not have a va list passed in by the
+ *        caller and is NOT a general pattern. Hooks that handle
+ *        va lists should utilize the UT_KEY to process
+ *        va lists correctly based on the implementation (no
+ *        general pattern should be assumed).
  */
-#define UT_DEFAULT_IMPL_RC(FuncName, Rc) UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), Rc)
+#define UT_DEFAULT_IMPL_RC(FuncName, Rc) UT_DefaultStubImpl(#FuncName, UT_KEY(FuncName), Rc, NULL)
 
 /**
  * Macro to simplify usage of the UT_DefaultStubImpl() function
@@ -526,4 +540,4 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
         return UT_DEFAULT_IMPL(FuncName); \
     }
 
-#endif  /* UTSTUBS_H */
+#endif /* UTSTUBS_H */

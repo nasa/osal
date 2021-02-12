@@ -111,7 +111,7 @@ int32 OS_ConsoleAPI_Init(void)
         OS_SharedGlobalVars.PrintfEnabled = true;
     }
 
-    return OS_SUCCESS;
+    return return_code;
 } /* end OS_ConsoleAPI_Init */
 
 /*
@@ -255,6 +255,8 @@ void OS_printf(const char *String, ...)
     va_list va;
     char    msg_buffer[OS_BUFFER_SIZE];
     int     actualsz;
+
+    BUGCHECK((String) != NULL, )
 
     if (!OS_SharedGlobalVars.Initialized)
     {

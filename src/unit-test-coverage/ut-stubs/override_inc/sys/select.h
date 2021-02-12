@@ -50,4 +50,4 @@
 #define FD_CLR   OCS_FD_CLR
 #define FD_ZERO  OCS_FD_ZERO
 
-#endif  /* SELECT_H  */
+#endif /* SELECT_H  */

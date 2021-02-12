@@ -30,4 +30,4 @@
 /* -----------------------------------------  */
 #define errnoGet OCS_errnoGet
 
-#endif  /* OSAL_OVERRIDE_ERRNOLIB_H */
+#endif /* OSAL_OVERRIDE_ERRNOLIB_H */

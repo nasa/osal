@@ -100,7 +100,7 @@ int32 OS_BinSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_initia
     OS_object_token_t             token;
     OS_bin_sem_internal_record_t *binsem;
 
-    /* Check inputs */
+    /* Check parameters */
     OS_CHECK_POINTER(sem_id);
     OS_CHECK_APINAME(sem_name);
 
@@ -255,7 +255,7 @@ int32 OS_BinSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
 {
     int32 return_code;
 
-    /* Check inputs */
+    /* Check parameters */
     OS_CHECK_POINTER(sem_id);
     OS_CHECK_POINTER(sem_name);
 
@@ -278,7 +278,7 @@ int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
     OS_object_token_t   token;
     int32               return_code;
 
-    /* Check inputs */
+    /* Check parameters */
     OS_CHECK_POINTER(bin_prop);
 
     memset(bin_prop, 0, sizeof(OS_bin_sem_prop_t));
@@ -289,7 +289,7 @@ int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_bin_sem_table, token);
 
-        strncpy(bin_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(bin_prop->name, record->name_entry, sizeof(bin_prop->name) - 1);
         bin_prop->creator = record->creator;
         return_code       = OS_BinSemGetInfo_Impl(&token, bin_prop);
 

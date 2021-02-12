@@ -51,4 +51,4 @@
 #define symEach       OCS_symEach
 #define symFind       OCS_symFind
 
-#endif  /* SYMLIB_H  */
+#endif /* SYMLIB_H  */

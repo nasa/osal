@@ -36,4 +36,4 @@
 #include <limits.h>  /* for correct INT_MAX, etc. */
 #include <stdbool.h> /* for correct boolean semantics */
 
-#endif  /*  OCS_BASETYPES_H */
+#endif /*  OCS_BASETYPES_H */

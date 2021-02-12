@@ -37,4 +37,4 @@
 /* prototypes normally declared in logLib.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_LOGLIB_H */
+#endif /*  OCS_LOGLIB_H */

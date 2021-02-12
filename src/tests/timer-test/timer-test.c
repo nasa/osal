@@ -111,12 +111,12 @@ void TimerTestSetup(void)
 void TimerTestTask(void)
 {
 
-    int             i = 0;
-    int32           TimerStatus[NUMBER_OF_TIMERS];
-    osal_index_t    TableId;
-    osal_id_t       TimerID[NUMBER_OF_TIMERS];
-    char            TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4", "TIMER5"};
-    uint32          ClockAccuracy;
+    int          i = 0;
+    int32        TimerStatus[NUMBER_OF_TIMERS];
+    osal_index_t TableId;
+    osal_id_t    TimerID[NUMBER_OF_TIMERS];
+    char         TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4", "TIMER5"};
+    uint32       ClockAccuracy;
 
     for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
     {

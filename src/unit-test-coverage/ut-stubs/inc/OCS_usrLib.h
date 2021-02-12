@@ -37,4 +37,4 @@
 /* prototypes normally declared in usrLib.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_USRLIB_H */
+#endif /*  OCS_USRLIB_H */

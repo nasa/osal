@@ -28,4 +28,4 @@
 /* mappings for declarations in poll.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_POLL_H */
+#endif /* OSAL_OVERRIDE_POLL_H */

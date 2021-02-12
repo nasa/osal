@@ -28,4 +28,4 @@
 /* mappings for declarations in fenv.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_FENV_H */
+#endif /* OSAL_OVERRIDE_FENV_H */

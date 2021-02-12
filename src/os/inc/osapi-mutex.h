@@ -28,7 +28,6 @@
 #include "osconfig.h"
 #include "common_types.h"
 
-
 /** @brief OSAL mutex properties */
 typedef struct
 {

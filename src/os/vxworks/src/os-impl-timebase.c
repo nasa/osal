@@ -218,10 +218,10 @@ void OS_VxWorks_RegisterTimer(osal_id_t obj_id)
     OS_object_token_t                   token;
     struct sigevent                     evp;
     int                                 status;
-	int32 retcode;
+    int32                               retcode;
 
     retcode = OS_ObjectIdGetById(OS_LOCK_MODE_RESERVED, OS_OBJECT_TYPE_OS_TIMEBASE, obj_id, &token);
-	if (retcode == OS_SUCCESS)
+    if (retcode == OS_SUCCESS)
     {
         local = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, token);
 
@@ -251,12 +251,12 @@ void OS_VxWorks_RegisterTimer(osal_id_t obj_id)
             local->timer_state = OS_TimerRegState_SUCCESS;
         }
 
-		OS_ObjectIdRelease(&token);
+        OS_ObjectIdRelease(&token);
     }
-	else
-	{
-		OS_DEBUG("OS_VxWorks_RegisterTimer() bad ID, code=%d\n", (int)retcode);
-	}
+    else
+    {
+        OS_DEBUG("OS_VxWorks_RegisterTimer() bad ID, code=%d\n", (int)retcode);
+    }
 } /* end OS_VxWorks_RegisterTimer */
 
 /****************************************************************************************
@@ -462,9 +462,9 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
     {
         local->handler_task = taskSpawn(timebase->timebase_name, OSAL_TIMEBASE_TASK_PRIORITY, /* priority */
                                         OSAL_TIMEBASE_TASK_OPTION_WORD,                       /* task option word */
-                                        OSAL_TIMEBASE_TASK_STACK_SIZE,                        /* size (bytes) of stack needed */
-                                        (FUNCPTR)OS_VxWorks_TimeBaseTask,                     /* Timebase helper task entry point */
-                                        OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)),    /* 1st arg is ID */
+                                        OSAL_TIMEBASE_TASK_STACK_SIZE,    /* size (bytes) of stack needed */
+                                        (FUNCPTR)OS_VxWorks_TimeBaseTask, /* Timebase helper task entry point */
+                                        OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), /* 1st arg is ID */
                                         0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         /* check if taskSpawn failed */
@@ -566,8 +566,8 @@ int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uin
             if (status == OK)
             {
                 local->configured_start_time = (timeout.it_value.tv_sec * 1000000) + (timeout.it_value.tv_nsec / 1000);
-                local->configured_interval_time = (timeout.it_interval.tv_sec * 1000000) +
-                                                  (timeout.it_interval.tv_nsec / 1000);
+                local->configured_interval_time =
+                    (timeout.it_interval.tv_sec * 1000000) + (timeout.it_interval.tv_nsec / 1000);
 
                 if (local->configured_start_time != start_time)
                 {

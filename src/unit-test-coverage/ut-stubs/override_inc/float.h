@@ -28,4 +28,4 @@
 /* mappings for declarations in float.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_FLOAT_H */
+#endif /* OSAL_OVERRIDE_FLOAT_H */

@@ -257,17 +257,17 @@ void Setup_Multi(void)
 
 void Teardown_Single(void)
 {
-    OS_close(c_socket_id); 
-    OS_BinSemDelete(bin_sem_id);  
+    OS_close(c_socket_id);
+    OS_BinSemDelete(bin_sem_id);
 }
 
 void Teardown_Multi(void)
-{    
-    //Server 1 is intentionaly left waiting so we close it out here.
+{
+    // Server 1 is intentionaly left waiting so we close it out here.
     OS_close(s_socket_id);
     OS_TaskDelete(s_task_id);
 
-    OS_close(c2_socket_id); 
+    OS_close(c2_socket_id);
     Teardown_Single();
 }
 
@@ -286,8 +286,8 @@ void TestSelectSingleRead(void)
      */
 
     /* Create a server task/thread */
-    int32 status = OS_TaskCreate(&s_task_id, "ServerSingleRead", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
-                                 OSAL_PRIORITY_C(50), 0);
+    int32 status = OS_TaskCreate(&s_task_id, "ServerSingleRead", Server_Fn, OSAL_TASK_STACK_ALLOCATE,
+                                 OSAL_SIZE_C(16384), OSAL_PRIORITY_C(50), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
 
     /* Connect to a server */
@@ -385,8 +385,8 @@ void TestSelectSingleWrite(void)
      */
 
     /* Create a server task/thread */
-    int32 status = OS_TaskCreate(&s_task_id, "ServerSingleWrite", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
-                                 OSAL_PRIORITY_C(50), 0);
+    int32 status = OS_TaskCreate(&s_task_id, "ServerSingleWrite", Server_Fn, OSAL_TASK_STACK_ALLOCATE,
+                                 OSAL_SIZE_C(16384), OSAL_PRIORITY_C(50), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
 
     /* Connect to a server */

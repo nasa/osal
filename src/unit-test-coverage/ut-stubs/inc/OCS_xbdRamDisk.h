@@ -37,4 +37,4 @@
 /* prototypes normally declared in xbdRamDisk.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_XBDRAMDISK_H */
+#endif /*  OCS_XBDRAMDISK_H */

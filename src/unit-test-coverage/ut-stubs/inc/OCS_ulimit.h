@@ -37,4 +37,4 @@
 /* ----------------------------------------- */
 long OCS_ulimit(int cmd, long newlimit);
 
-#endif  /*  OCS_ULIMIT_H */
+#endif /*  OCS_ULIMIT_H */

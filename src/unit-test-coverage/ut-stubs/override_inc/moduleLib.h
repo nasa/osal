@@ -34,4 +34,4 @@
 
 #define moduleInfoGet OCS_moduleInfoGet
 
-#endif  /* OSAL_OVERRIDE_MODULELIB_H */
+#endif /* OSAL_OVERRIDE_MODULELIB_H */

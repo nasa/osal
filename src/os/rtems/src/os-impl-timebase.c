@@ -235,8 +235,8 @@ int32 OS_Rtems_TimeBaseAPI_Impl_Init(void)
      * This really should be an exact/whole number result; otherwise this
      * will round to the nearest nanosecond.
      */
-    RTEMS_GlobalVars.ClockAccuracyNsec = (1000000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) /
-                                         OS_SharedGlobalVars.TicksPerSecond;
+    RTEMS_GlobalVars.ClockAccuracyNsec =
+        (1000000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) / OS_SharedGlobalVars.TicksPerSecond;
 
     /*
      * Finally compute the Microseconds per tick
@@ -331,8 +331,8 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
          * The tick_sem is a simple semaphore posted by the ISR and taken by the
          * timebase helper task (created later).
          */
-        rtems_sc = rtems_semaphore_create(r_name, 0, RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_PRIORITY, 0,
-                                          &local->tick_sem);
+        rtems_sc =
+            rtems_semaphore_create(r_name, 0, RTEMS_SIMPLE_BINARY_SEMAPHORE | RTEMS_PRIORITY, 0, &local->tick_sem);
         if (rtems_sc != RTEMS_SUCCESSFUL)
         {
             OS_DEBUG("Error: Tick Sem could not be created: %d\n", (int)rtems_sc);

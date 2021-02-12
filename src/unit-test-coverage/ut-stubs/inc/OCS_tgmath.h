@@ -36,4 +36,4 @@
 /* prototypes normally declared in tgmath.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_TGMATH_H */
+#endif /*  OCS_TGMATH_H */

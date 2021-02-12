@@ -32,4 +32,4 @@
 
 #define loadModule OCS_loadModule
 
-#endif  /* OSAL_OVERRIDE_LOADLIB_H */
+#endif /* OSAL_OVERRIDE_LOADLIB_H */

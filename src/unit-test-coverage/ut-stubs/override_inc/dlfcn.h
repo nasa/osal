@@ -33,4 +33,4 @@
 #define dlopen  OCS_dlopen
 #define dlsym   OCS_dlsym
 
-#endif  /* OSAL_OVERRIDE_DLFCN_H */
+#endif /* OSAL_OVERRIDE_DLFCN_H */

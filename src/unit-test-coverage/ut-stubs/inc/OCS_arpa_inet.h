@@ -39,4 +39,4 @@
 extern const char *OCS_inet_ntop(int af, const void *cp, char *buf, size_t len);
 extern int         OCS_inet_pton(int af, const char *cp, void *buf);
 
-#endif  /*  OCS_ARPA_INET_H */
+#endif /*  OCS_ARPA_INET_H */

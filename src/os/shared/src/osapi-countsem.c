@@ -92,7 +92,7 @@ int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_init
     OS_object_token_t               token;
     OS_count_sem_internal_record_t *countsem;
 
-    /* Check inputs */
+    /* Check parameters */
     OS_CHECK_POINTER(sem_id);
     OS_CHECK_APINAME(sem_name);
 
@@ -224,7 +224,7 @@ int32 OS_CountSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
 {
     int32 return_code;
 
-    /* Check inputs */
+    /* Check parameters */
     OS_CHECK_POINTER(sem_id);
     OS_CHECK_POINTER(sem_name);
 
@@ -247,7 +247,7 @@ int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
     OS_object_token_t   token;
     int32               return_code;
 
-    /* Check inputs */
+    /* Check parameters */
     OS_CHECK_POINTER(count_prop);
 
     memset(count_prop, 0, sizeof(OS_count_sem_prop_t));
@@ -258,7 +258,7 @@ int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_count_sem_table, token);
 
-        strncpy(count_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(count_prop->name, record->name_entry, sizeof(count_prop->name) - 1);
         count_prop->creator = record->creator;
 
         return_code = OS_CountSemGetInfo_Impl(&token, count_prop);

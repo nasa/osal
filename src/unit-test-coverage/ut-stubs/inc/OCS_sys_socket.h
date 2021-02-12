@@ -55,4 +55,4 @@ extern OCS_ssize_t OCS_sendto(int fd, const void *buf, size_t n, int flags, cons
 extern int         OCS_setsockopt(int fd, int level, int optname, const void *optval, OCS_socklen_t optlen);
 extern int         OCS_socket(int domain, int type, int protocol);
 
-#endif  /*  OCS_SYS_SOCKET_H */
+#endif /*  OCS_SYS_SOCKET_H */

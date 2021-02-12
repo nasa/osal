@@ -39,4 +39,4 @@
 
 extern OCS_STATUS OCS_taskVarAdd(int tid, int *pVar);
 
-#endif  /*  OCS_TASKVARLIB_H */
+#endif /*  OCS_TASKVARLIB_H */

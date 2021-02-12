@@ -39,4 +39,4 @@
 #define setsockopt OCS_setsockopt
 #define socket     OCS_socket
 
-#endif  /* OSAL_OVERRIDE_SYS_SOCKET_H */
+#endif /* OSAL_OVERRIDE_SYS_SOCKET_H */

@@ -36,4 +36,4 @@
 /* prototypes normally declared in termios.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_TERMIOS_H */
+#endif /*  OCS_TERMIOS_H */

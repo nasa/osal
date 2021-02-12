@@ -37,4 +37,4 @@
 /* ----------------------------------------- */
 #define hostGetByName OCS_hostGetByName
 
-#endif  /* HOSTLIB_H  */
+#endif /* HOSTLIB_H  */
