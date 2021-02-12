@@ -138,7 +138,7 @@ OS_common_record_t *OS_ObjectIdGlobalFromToken(const OS_object_token_t *token)
 {
     static OS_common_record_t fake_record;
     int32                     status;
-    OS_common_record_t *      recptr;
+    OS_common_record_t *      recptr = &fake_record;
 
     status = UT_DEFAULT_IMPL(OS_ObjectIdGlobalFromToken);
     if (status == 0 &&
