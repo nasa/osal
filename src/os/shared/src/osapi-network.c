@@ -65,7 +65,7 @@ int32 OS_NetworkAPI_Init(void)
  *-----------------------------------------------------------------*/
 int32 OS_NetworkGetHostName(char *host_name, size_t name_len)
 {
-    uint32 return_code;
+    int32 return_code;
 
     /* Check parameters */
     OS_CHECK_POINTER(host_name);
