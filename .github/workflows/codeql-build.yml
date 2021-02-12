@@ -1,0 +1,58 @@
+name: "CodeQL Analysis"
+
+on:
+  push:
+  pull_request:
+
+env:
+  SIMULATION: native
+  ENABLE_UNIT_TESTS: true
+  OMIT_DEPRECATED: true
+  BUILDTYPE: release
+
+jobs:
+
+  CodeQL-Build:
+    runs-on: ubuntu-18.04
+    timeout-minutes: 15
+
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout bundle
+        uses: actions/checkout@v2
+        with:
+          repository: nasa/cFS
+          submodules: true
+
+      - name: Checkout submodule
+        uses: actions/checkout@v2
+        with:
+          path: osal
+
+      - name: Check versions
+        run: git submodule
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+         languages: c
+         queries: +security-extended, security-and-quality
+
+      # Setup the build system
+      - name: Set up for build
+        run: |
+          cp ./cfe/cmake/Makefile.sample Makefile
+          cp -r ./cfe/cmake/sample_defs sample_defs
+          make prep
+
+      # Build the code
+      - name: Build
+        run: |
+          make osal
+          make native/default_cpu1/osal/tests/
+          make native/default_cpu1/osal/unit-test-coverage/
+          make native/default_cpu1/osal/unit-tests/
+          make native/default_cpu1/osal/ut-stubs/
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
