@@ -42,6 +42,7 @@
  */
 #include "os-shared-filesys.h"
 #include "os-shared-idmap.h"
+#include "os-shared-common.h"
 
 enum
 {
@@ -102,8 +103,9 @@ bool OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, co
         return false;
     }
 
-    mplen = strlen(filesys->virtual_mountpt);
-    return (mplen > 0 && strncmp(target, filesys->virtual_mountpt, mplen) == 0 &&
+    mplen = OS_strnlen(filesys->virtual_mountpt, sizeof(filesys->virtual_mountpt));
+    return (mplen > 0 && mplen < sizeof(filesys->virtual_mountpt) &&
+            strncmp(target, filesys->virtual_mountpt, mplen) == 0 &&
             (target[mplen] == '/' || target[mplen] == 0));
 } /* end OS_FileSys_FindVirtMountPoint */
 
@@ -257,7 +259,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
         ++dev_name;
     }
 
-    if (strlen(dev_name) >= OS_FS_DEV_NAME_LEN)
+    if (memchr(dev_name,0,sizeof(filesys->volume_name)) == NULL)
     {
         return OS_ERR_NAME_TOO_LONG;
     }
@@ -793,7 +795,7 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     /*
     ** Check length
     */
-    VirtPathLen = strlen(VirtualPath);
+    VirtPathLen = OS_strnlen(VirtualPath, OS_MAX_PATH_LEN);
     if (VirtPathLen >= OS_MAX_PATH_LEN)
     {
         return OS_FS_ERR_PATH_TOO_LONG;
@@ -808,7 +810,7 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
 
     /* strrchr returns a pointer to the last '/' char, so we advance one char */
     name_ptr = name_ptr + 1;
-    if (strlen(name_ptr) >= OS_MAX_FILE_NAME)
+    if (memchr(name_ptr, 0, OS_MAX_FILE_NAME) == NULL)
     {
         return OS_FS_ERR_NAME_TOO_LONG;
     }
@@ -838,8 +840,8 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
 
         if ((filesys->flags & OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM) != 0)
         {
-            SysMountPointLen = strlen(filesys->system_mountpt);
-            VirtPathBegin    = strlen(filesys->virtual_mountpt);
+            SysMountPointLen = OS_strnlen(filesys->system_mountpt, sizeof(filesys->system_mountpt));
+            VirtPathBegin    = OS_strnlen(filesys->virtual_mountpt, sizeof(filesys->virtual_mountpt));
             if (SysMountPointLen < OS_MAX_LOCAL_PATH_LEN)
             {
                 memcpy(LocalPath, filesys->system_mountpt, SysMountPointLen);
