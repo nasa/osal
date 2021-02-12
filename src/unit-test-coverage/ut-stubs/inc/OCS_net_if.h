@@ -36,4 +36,4 @@
 /* prototypes normally declared in net/if.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_NET_IF_H */
+#endif /*  OCS_NET_IF_H */

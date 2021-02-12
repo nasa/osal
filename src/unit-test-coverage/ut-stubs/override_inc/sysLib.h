@@ -30,4 +30,4 @@
 /* ----------------------------------------- */
 #define sysClkRateGet OCS_sysClkRateGet
 
-#endif  /* OSAL_OVERRIDE_SYSLIB_H */
+#endif /* OSAL_OVERRIDE_SYSLIB_H */

@@ -54,4 +54,4 @@ int32 OS_GetLocalTime_Impl(OS_time_t *time_struct);
  ------------------------------------------------------------------*/
 int32 OS_SetLocalTime_Impl(const OS_time_t *time_struct);
 
-#endif  /* OS_SHARED_CLOCK_H  */
+#endif /* OS_SHARED_CLOCK_H  */

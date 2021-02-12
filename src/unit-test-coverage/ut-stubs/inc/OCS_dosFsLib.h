@@ -43,4 +43,4 @@
 /* ----------------------------------------- */
 extern OCS_STATUS OCS_dosFsVolFormat(char *path, int opt, OCS_FUNCPTR pPromptFunc);
 
-#endif  /*  OCS_DOSFSLIB_H */
+#endif /*  OCS_DOSFSLIB_H */

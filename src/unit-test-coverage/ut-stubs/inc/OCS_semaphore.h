@@ -49,4 +49,4 @@ extern int OCS_sem_post(OCS_sem_t *sem);
 extern int OCS_sem_timedwait(OCS_sem_t *sem, const struct OCS_timespec *abstime);
 extern int OCS_sem_wait(OCS_sem_t *sem);
 
-#endif  /*  OCS_SEMAPHORE_H */
+#endif /*  OCS_SEMAPHORE_H */

@@ -39,4 +39,4 @@
 #define mq_timedsend    OCS_mq_timedsend
 #define mq_unlink       OCS_mq_unlink
 
-#endif  /* OSAL_OVERRIDE_MQUEUE_H */
+#endif /* OSAL_OVERRIDE_MQUEUE_H */

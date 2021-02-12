@@ -58,4 +58,4 @@ typedef struct OCS_MODULE_INFO
 
 extern OCS_STATUS OCS_moduleInfoGet(OCS_MODULE_ID moduleId, OCS_MODULE_INFO *pModuleInfo);
 
-#endif  /*  OCS_MODULELIB_H */
+#endif /*  OCS_MODULELIB_H */

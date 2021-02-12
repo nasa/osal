@@ -113,4 +113,4 @@ void Osapi_Test_Setup(void);
  */
 void Osapi_Test_Teardown(void);
 
-#endif  /* OS_SHARED_COVERAGETEST_H  */
+#endif /* OS_SHARED_COVERAGETEST_H  */

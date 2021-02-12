@@ -45,4 +45,4 @@
 #define stdout OCS_stdout
 #define stderr OCS_stderr
 
-#endif  /* OSAL_OVERRIDE_STDIO_H */
+#endif /* OSAL_OVERRIDE_STDIO_H */

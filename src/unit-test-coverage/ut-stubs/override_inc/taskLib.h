@@ -53,4 +53,4 @@
 #define taskInit        OCS_taskInit
 #define taskTcb         OCS_taskTcb
 
-#endif  /* OSAL_OVERRIDE_TASKLIB_H */
+#endif /* OSAL_OVERRIDE_TASKLIB_H */

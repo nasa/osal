@@ -39,4 +39,4 @@
 /* ----------------------------------------- */
 extern OCS_BLK_DEV *OCS_ataDevCreate(int ctrl, int drive, unsigned int nBlocks, unsigned int blkOffset);
 
-#endif  /*  OCS_DRV_HDISK_ATADRV_H */
+#endif /*  OCS_DRV_HDISK_ATADRV_H */

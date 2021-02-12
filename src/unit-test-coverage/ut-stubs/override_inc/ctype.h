@@ -30,4 +30,4 @@
 
 #define isgraph OCS_isgraph
 
-#endif  /* OSAL_OVERRIDE_CTYPE_H */
+#endif /* OSAL_OVERRIDE_CTYPE_H */

@@ -80,7 +80,7 @@ void UT_os_closefilebyname_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSFILE_FILEIO_H */
+#endif /* UT_OSFILE_FILEIO_H */
 
 /*================================================================================*
 ** End of File: ut_osfile_fileio.h

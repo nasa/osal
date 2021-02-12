@@ -38,7 +38,9 @@
  */
 #define OS_MAJOR_VERSION 5 /*!< @brief ONLY APPLY for OFFICIAL releases. Major version number. */
 #define OS_MINOR_VERSION 0 /*!< @brief ONLY APPLY for OFFICIAL releases. Minor version number. */
-#define OS_REVISION      99 /*!< @brief ONLY APPLY for OFFICIAL releases. Revision version number. A value of "99" indicates an unreleased development version.  */
+#define OS_REVISION                                                                                                   \
+    99 /*!< @brief ONLY APPLY for OFFICIAL releases. Revision version number. A value of "99" indicates an unreleased \
+          development version.  */
 
 #define OS_MISSION_REV 0 /*!< @brief ONLY USED by MISSION Implementations. Mission revision */
 
@@ -70,7 +72,7 @@ OSAL 4.1 is present.
  */
 #define OSAL_API_VERSION ((OS_MAJOR_VERSION * 10000) + (OS_MINOR_VERSION * 100) + OS_REVISION)
 
-#endif  /* OSAPI_VERSION_H */
+#endif /* OSAPI_VERSION_H */
 
 /************************/
 /*  End of File Comment */

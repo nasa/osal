@@ -35,4 +35,4 @@
 /* mappings for declarations in selectLib.h */
 /* ----------------------------------------- */
 
-#endif  /* SELECTLIB_H  */
+#endif /* SELECTLIB_H  */

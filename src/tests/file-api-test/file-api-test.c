@@ -246,53 +246,62 @@ void TestOpenClose(void)
 ---------------------------------------------------------------------------------------*/
 void TestChmod(void)
 {
-    char      filename[OS_MAX_PATH_LEN];    
+    char      filename[OS_MAX_PATH_LEN];
     int32     status;
     osal_id_t fd;
 
     /*Make a file to test on. Start in Read only mode */
     strncpy(filename, "/drive0/Filename1", sizeof(filename) - 1);
     filename[sizeof(filename) - 1] = 0;
-    status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_CREATE , OS_READ_WRITE);
+    status                         = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_CREATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat = %d", (int)status);
     status = OS_close(fd);
     UtAssert_True(status == OS_SUCCESS, "status after close = %d", (int)status);
 
     /*Testing Write Only */
     status = OS_chmod(filename, OS_WRITE_ONLY);
-    if(status != OS_ERR_NOT_IMPLEMENTED){
+    if (status != OS_ERR_NOT_IMPLEMENTED)
+    {
         UtAssert_True(status == OS_SUCCESS, "status after chmod = %d", (int)status);
         status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_NONE, OS_WRITE_ONLY);
         UtAssert_True(status >= OS_SUCCESS, "status after reopen = %d", (int)status);
         status = OS_close(fd);
         UtAssert_True(status == OS_SUCCESS, "status after close = %d", (int)status);
-    }else{
-         UtPrintf("OS_chmod not implemented for write only\n");
-    }   
+    }
+    else
+    {
+        UtPrintf("OS_chmod not implemented for write only\n");
+    }
 
     /*Testing Read Only */
     status = OS_chmod(filename, OS_READ_ONLY);
-    if(status != OS_ERR_NOT_IMPLEMENTED){
+    if (status != OS_ERR_NOT_IMPLEMENTED)
+    {
         UtAssert_True(status == OS_SUCCESS, "status after chmod = %d", (int)status);
         status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_NONE, OS_READ_ONLY);
         UtAssert_True(status >= OS_SUCCESS, "status after reopen = %d", (int)status);
         status = OS_close(fd);
-        UtAssert_True(status == OS_SUCCESS, "status after close = %d", (int)status); 
-    }else{
+        UtAssert_True(status == OS_SUCCESS, "status after close = %d", (int)status);
+    }
+    else
+    {
         UtPrintf("OS_chmod not implemented for read only\n");
-    }      
+    }
 
     /*Testing Read Write */
     status = OS_chmod(filename, OS_READ_WRITE);
-    if(status != OS_ERR_NOT_IMPLEMENTED){
+    if (status != OS_ERR_NOT_IMPLEMENTED)
+    {
         UtAssert_True(status == OS_SUCCESS, "status after chmod = %d", (int)status);
         status = OS_OpenCreate(&fd, filename, OS_FILE_FLAG_NONE, OS_READ_WRITE);
         UtAssert_True(status >= OS_SUCCESS, "status after reopen = %d", (int)status);
         status = OS_close(fd);
-        UtAssert_True(status == OS_SUCCESS, "status after close = %d", (int)status); 
-    }else{
+        UtAssert_True(status == OS_SUCCESS, "status after close = %d", (int)status);
+    }
+    else
+    {
         UtPrintf("OS_chmod not implemented for read write\n");
-    }   
+    }
 
     /*Removing the file */
     status = OS_remove(filename);
@@ -453,8 +462,8 @@ void TestMkRmDirFreeBytes(void)
     /* NOTE: The blocks free call is not necessarily implemented on all filesystems.
      * So the response of OS_ERR_NOT_IMPLEMENTED is acceptable. */
     status = OS_FileSysStatVolume("/drive0", &statbuf);
-    UtAssert_True(status == OS_ERR_NOT_IMPLEMENTED || status == OS_SUCCESS, "Checking Free Blocks: status=%d blocks=%lu",
-                  (int)status, (unsigned long)statbuf.blocks_free);
+    UtAssert_True(status == OS_ERR_NOT_IMPLEMENTED || status == OS_SUCCESS,
+                  "Checking Free Blocks: status=%d blocks=%lu", (int)status, (unsigned long)statbuf.blocks_free);
 
     /* make the two directories */
     status = OS_mkdir(dir1, 0);
@@ -490,8 +499,8 @@ void TestMkRmDirFreeBytes(void)
     memset(buffer1, 0, sizeof(buffer1));
     memset(buffer2, 0, sizeof(buffer2));
     status = OS_FileSysStatVolume("/drive0", &statbuf);
-    UtAssert_True(status == OS_ERR_NOT_IMPLEMENTED || status == OS_SUCCESS, "Checking Free Blocks: status=%d blocks=%lu",
-                  (int)status, (unsigned long)statbuf.blocks_free);
+    UtAssert_True(status == OS_ERR_NOT_IMPLEMENTED || status == OS_SUCCESS,
+                  "Checking Free Blocks: status=%d blocks=%lu", (int)status, (unsigned long)statbuf.blocks_free);
 
     /* read back out of the files what we wrote into them */
     size   = strlen(copybuffer1);
@@ -531,8 +540,8 @@ void TestMkRmDirFreeBytes(void)
     UtAssert_True(status == OS_SUCCESS, "status after rmdir 2 = %d", (int)status);
 
     status = OS_FileSysStatVolume("/drive0", &statbuf);
-    UtAssert_True(status == OS_ERR_NOT_IMPLEMENTED || status == OS_SUCCESS, "Checking Free Blocks: status=%d blocks=%lu",
-                  (int)status, (unsigned long)statbuf.blocks_free);
+    UtAssert_True(status == OS_ERR_NOT_IMPLEMENTED || status == OS_SUCCESS,
+                  "Checking Free Blocks: status=%d blocks=%lu", (int)status, (unsigned long)statbuf.blocks_free);
 }
 
 /*---------------------------------------------------------------------------------------
@@ -951,5 +960,4 @@ void TestOpenFileAPI(void)
     UtAssert_True(status == OS_SUCCESS, "status after remove filename2 = %d", (int)status);
     status = OS_remove(filename3);
     UtAssert_True(status == OS_SUCCESS, "status after remove filename3 = %d", (int)status);
-
 }

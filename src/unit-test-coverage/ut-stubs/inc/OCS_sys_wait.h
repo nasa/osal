@@ -36,4 +36,4 @@
 /* prototypes normally declared in sys/wait.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_SYS_WAIT_H */
+#endif /*  OCS_SYS_WAIT_H */

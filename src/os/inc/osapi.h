@@ -98,7 +98,6 @@ extern "C"
 
 #include "osapi-bsp.h"
 
-
 #ifdef __cplusplus
 }
 #endif

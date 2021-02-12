@@ -36,4 +36,4 @@
 #define S_objLib_OBJ_TIMEOUT     OCS_S_objLib_OBJ_TIMEOUT
 #define S_objLib_OBJ_NO_METHOD   OCS_S_objLib_OBJ_NO_METHOD
 
-#endif  /* OSAL_OVERRIDE_OBJLIB_H */
+#endif /* OSAL_OVERRIDE_OBJLIB_H */

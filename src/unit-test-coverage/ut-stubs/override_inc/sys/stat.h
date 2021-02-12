@@ -25,4 +25,4 @@
 /* alias to stat.h */
 #include <stat.h>
 
-#endif  /* OSAL_OVERRIDE_SYS_STAT_H */
+#endif /* OSAL_OVERRIDE_SYS_STAT_H */

@@ -213,7 +213,6 @@ UT_os_module_symbol_lookup_test_exit_tag:
     return;
 }
 
-
 /*--------------------------------------------------------------------------------*
 ** Syntax: OS_SymbolTableDump
 ** Purpose: Dumps the system symbol table to the given filename

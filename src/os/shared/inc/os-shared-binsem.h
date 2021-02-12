@@ -122,4 +122,4 @@ int32 OS_BinSemDelete_Impl(const OS_object_token_t *token);
  ------------------------------------------------------------------*/
 int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop);
 
-#endif  /* OS_SHARED_BINSEM_H  */
+#endif /* OS_SHARED_BINSEM_H  */

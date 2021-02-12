@@ -44,4 +44,4 @@ extern void UT_ConsoleTest_TaskEntry(int arg);
  */
 extern void UT_ConsoleTest_SetConsoleAsync(osal_index_t local_id, bool is_async);
 
-#endif  /* UT_ADAPTOR_CONSOLE_H  */
+#endif /* UT_ADAPTOR_CONSOLE_H  */

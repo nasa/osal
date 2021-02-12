@@ -44,4 +44,4 @@ extern SymbolDumpState_t OS_VxWorks_SymbolDumpState;
 
 BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_arg_t arg, SYM_GROUP group);
 
-#endif  /* OS_IMPL_SYMTAB_H  */
+#endif /* OS_IMPL_SYMTAB_H  */

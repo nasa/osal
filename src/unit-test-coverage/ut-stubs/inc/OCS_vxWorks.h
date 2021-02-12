@@ -76,4 +76,4 @@ typedef void (*OCS_VOIDFUNCPTR)(void);
 /* prototypes normally declared in vxWorks.h */
 /* ----------------------------------------- */
 
-#endif  /* OCS_VXWORKS_H  */
+#endif /* OCS_VXWORKS_H  */

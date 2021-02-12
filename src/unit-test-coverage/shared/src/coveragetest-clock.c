@@ -65,17 +65,17 @@ void Test_OS_TimeAccessConversions(void)
 {
     /*
      * Test cases for the various time access and conversion functions:
-     * 
+     *
      * int64 OS_TimeGetTotalSeconds(OS_time_t tm)
      * int64 OS_TimeGetTotalMilliseconds(OS_time_t tm)
      * int64 OS_TimeGetTotalMicroseconds(OS_time_t tm)
      * int64 OS_TimeGetTotalNanoseconds(OS_time_t tm)
-     * 
+     *
      * uint32 OS_TimeGetSubsecondsPart(OS_time_t tm)
      * uint32 OS_TimeGetMillisecondsPart(OS_time_t tm)
      * uint32 OS_TimeGetMicrosecondsPart(OS_time_t tm)
      * uint32 OS_TimeGetNanosecondsPart(OS_time_t tm)
-     * 
+     *
      * OS_time_t OS_TimeAssembleFromMilliseconds(int64 seconds, uint32 milliseconds)
      * OS_time_t OS_TimeAssembleFromMicroseconds(int64 seconds, uint32 microseconds)
      * OS_time_t OS_TimeAssembleFromNanoseconds(int64 seconds, uint32 nanoseconds)
@@ -90,23 +90,23 @@ void Test_OS_TimeAccessConversions(void)
     OS_time_t t4;
 
     /* To base-2 32-bit fixed point: 0.234567890 s * 0x100000000 ~= 0x3c0ca428 */
-    t1 = OS_TimeAssembleFromNanoseconds(1,234567890);
+    t1 = OS_TimeAssembleFromNanoseconds(1, 234567890);
 
     /* From base-2 32-bit fixed point: 0x87654321 / 0x100000000 ~= 0.528888888 s */
-    t2 = OS_TimeAssembleFromSubseconds(2,0x87654321);
+    t2 = OS_TimeAssembleFromSubseconds(2, 0x87654321);
 
     /* To base-2 32-bit fixed point: 0.045678 s * 0x100000000 ~= 0x0bb18dad */
-    t3 = OS_TimeAssembleFromMicroseconds(0,45678);
+    t3 = OS_TimeAssembleFromMicroseconds(0, 45678);
 
     /* To base-2 32-bit fixed point: 0.901 s * 0x100000000 ~= 0xe6a7ef9e */
-    t4 = OS_TimeAssembleFromMilliseconds(1,901);
+    t4 = OS_TimeAssembleFromMilliseconds(1, 901);
 
     /* These functions only return the total (whole + fraction) in the requested units */
     UtAssert_UINT32_EQ(OS_TimeGetTotalSeconds(t1), 1);
     UtAssert_UINT32_EQ(OS_TimeGetTotalSeconds(t2), 2);
     UtAssert_UINT32_EQ(OS_TimeGetTotalSeconds(t3), 0);
     UtAssert_UINT32_EQ(OS_TimeGetTotalSeconds(t4), 1);
-    
+
     UtAssert_UINT32_EQ(OS_TimeGetTotalMilliseconds(t1), 1234);
     UtAssert_UINT32_EQ(OS_TimeGetTotalMilliseconds(t2), 2528);
     UtAssert_UINT32_EQ(OS_TimeGetTotalMilliseconds(t3), 45);
@@ -151,16 +151,14 @@ void Test_OS_TimeAccessConversions(void)
     UtAssert_UINT32_EQ(OS_TimeGetTotalMilliseconds(t4), 1234);
 
     /* Add/Subtract that will require carry */
-    t1 = OS_TimeAssembleFromNanoseconds(3,777777777);
-    t2 = OS_TimeAssembleFromNanoseconds(4,888888888);
+    t1 = OS_TimeAssembleFromNanoseconds(3, 777777777);
+    t2 = OS_TimeAssembleFromNanoseconds(4, 888888888);
 
     t3 = OS_TimeAdd(t1, t2);
     UtAssert_UINT32_EQ(OS_TimeGetTotalMilliseconds(t3), 8666);
     t4 = OS_TimeSubtract(t3, t2);
     UtAssert_UINT32_EQ(OS_TimeGetTotalMilliseconds(t4), 3777);
 }
-
-
 
 /* Osapi_Test_Setup
  *

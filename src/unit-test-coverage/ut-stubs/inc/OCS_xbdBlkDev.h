@@ -42,4 +42,4 @@ typedef int OCS_device_t;
 extern OCS_device_t OCS_xbdBlkDevCreateSync(OCS_BLK_DEV *bd, const char *name);
 extern OCS_STATUS   OCS_xbdBlkDevDelete(OCS_device_t dev, OCS_BLK_DEV **ppbd);
 
-#endif  /*  OCS_XBDBLKDEV_H */
+#endif /*  OCS_XBDBLKDEV_H */

@@ -153,7 +153,7 @@ int32 OS_unmount(const char *mountpoint)
     return status;
 }
 
-#ifndef OSAL_OMIT_DEPRECATED 
+#ifndef OSAL_OMIT_DEPRECATED
 
 /*****************************************************************************
  *

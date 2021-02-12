@@ -30,4 +30,4 @@
 #define inet_ntop OCS_inet_ntop
 #define inet_pton OCS_inet_pton
 
-#endif  /* OSAL_OVERRIDE_ARPA_INET_H */
+#endif /* OSAL_OVERRIDE_ARPA_INET_H */

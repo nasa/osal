@@ -76,4 +76,4 @@
 #define pthread_setspecific           OCS_pthread_setspecific
 #define pthread_sigmask               OCS_pthread_sigmask
 
-#endif  /* OSAL_OVERRIDE_PTHREAD_H */
+#endif /* OSAL_OVERRIDE_PTHREAD_H */

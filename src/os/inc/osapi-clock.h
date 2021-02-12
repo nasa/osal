@@ -44,18 +44,17 @@
  */
 typedef struct
 {
-    int64 ticks;     /**< Ticks elapsed since reference point */
+    int64 ticks; /**< Ticks elapsed since reference point */
 } OS_time_t;
-
 
 /**
  * @brief Multipliers/divisors to convert ticks into standardized units
- * 
+ *
  * Various fixed conversion factor constants used by the conversion routines
- * 
+ *
  * A 100ns tick time allows max intervals of about +/- 14000 years in
  * a 64-bit signed integer value.
- * 
+ *
  * @note Applications should not directly use these values, but rather use
  * conversion routines below to obtain standardized units (seconds/microseconds/etc).
  */
@@ -98,7 +97,6 @@ int32 OS_GetLocalTime(OS_time_t *time_struct);
  * @return Set local time status, see @ref OSReturnCodes
  */
 int32 OS_SetLocalTime(const OS_time_t *time_struct);
-
 
 /*-------------------------------------------------------------------------------------*/
 /*
@@ -216,7 +214,6 @@ static inline uint32 OS_TimeGetSubsecondsPart(OS_time_t tm)
     int64 frac = (OS_TimeGetFractionalPart(tm) << 30) + (OS_TIME_TICKS_PER_SECOND >> 2);
     return (uint32)((frac - 1) / (OS_TIME_TICKS_PER_SECOND >> 2));
 }
-
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -351,7 +348,6 @@ static inline OS_time_t OS_TimeAssembleFromMilliseconds(int64 seconds, uint32 mi
     return result;
 }
 
-
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Assemble/Convert a number of seconds + subseconds into an OS_time_t interval
@@ -387,7 +383,7 @@ static inline OS_time_t OS_TimeAssembleFromSubseconds(int64 seconds, uint32 subs
  */
 static inline OS_time_t OS_TimeAdd(OS_time_t time1, OS_time_t time2)
 {
-    return ((OS_time_t) { time1.ticks + time2.ticks });
+    return ((OS_time_t) {time1.ticks + time2.ticks});
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -401,9 +397,8 @@ static inline OS_time_t OS_TimeAdd(OS_time_t time1, OS_time_t time2)
  */
 static inline OS_time_t OS_TimeSubtract(OS_time_t time1, OS_time_t time2)
 {
-    return ((OS_time_t) { time1.ticks - time2.ticks });
+    return ((OS_time_t) {time1.ticks - time2.ticks});
 }
-
 
 /**@}*/
 

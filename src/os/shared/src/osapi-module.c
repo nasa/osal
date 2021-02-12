@@ -46,7 +46,6 @@
  */
 #include "osapi-filesys.h"
 
-
 /*
  * Sanity checks on the user-supplied configuration
  * The relevent OS_MAX limit should be defined
@@ -112,7 +111,7 @@ int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName, con
             break;
         }
         if (strcmp(StaticSym->Name, SymbolName) == 0 &&
-                (ModuleName == NULL || strcmp(StaticSym->Module, ModuleName) == 0))
+            (ModuleName == NULL || strcmp(StaticSym->Module, ModuleName) == 0))
         {
             /* found matching symbol */
             *SymbolAddress = (cpuaddr)StaticSym->Address;
@@ -198,7 +197,7 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
      *
      * Note "filename" is not checked, because in certain configurations it can be validly
      * null.  filename is checked for NULL-ness by the OS_TranslatePath() later.
-    */
+     */
     OS_CHECK_POINTER(module_id);
     OS_CHECK_APINAME(module_name);
 
@@ -450,8 +449,8 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
  *-----------------------------------------------------------------*/
 int32 OS_SymbolTableDump(const char *filename, size_t SizeLimit)
 {
-    int32 return_code;
-    char  translated_path[OS_MAX_LOCAL_PATH_LEN];
+    int32             return_code;
+    char              translated_path[OS_MAX_LOCAL_PATH_LEN];
     OS_object_token_t token;
 
     /* Check parameters */

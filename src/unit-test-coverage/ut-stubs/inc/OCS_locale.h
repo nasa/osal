@@ -36,4 +36,4 @@
 /* prototypes normally declared in locale.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_LOCALE_H */
+#endif /*  OCS_LOCALE_H */

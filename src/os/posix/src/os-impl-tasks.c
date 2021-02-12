@@ -421,8 +421,8 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
     ret_long = sysconf(_SC_PAGESIZE);
     if (ret_long < 0)
     {
-       OS_DEBUG("Could not get page size via sysconf: %s\n", strerror(errno));
-       return OS_ERROR;
+        OS_DEBUG("Could not get page size via sysconf: %s\n", strerror(errno));
+        return OS_ERROR;
     }
     POSIX_GlobalVars.PageSize = ret_long;
 

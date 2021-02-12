@@ -45,4 +45,4 @@ struct OCS_sched_param
 extern int OCS_sched_get_priority_max(int policy);
 extern int OCS_sched_get_priority_min(int policy);
 
-#endif  /*  OCS_SCHED_H */
+#endif /*  OCS_SCHED_H */

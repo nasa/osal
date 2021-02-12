@@ -28,4 +28,4 @@
 /* mappings for declarations in iv.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_IV_H */
+#endif /* OSAL_OVERRIDE_IV_H */

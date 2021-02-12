@@ -82,4 +82,4 @@ int32 OS_VxWorks_GenericSemGive(SEM_ID vxid);
 
 int32 OS_VxWorks_TableMutex_Init(osal_objtype_t idtype);
 
-#endif  /* OS_VXWORKS_H  */
+#endif /* OS_VXWORKS_H  */

@@ -29,4 +29,4 @@
 /* ----------------------------------------- */
 #define ulimit OCS_ulimit
 
-#endif  /* OSAL_OVERRIDE_ULIMIT_H */
+#endif /* OSAL_OVERRIDE_ULIMIT_H */

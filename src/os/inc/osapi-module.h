@@ -25,7 +25,6 @@
 #ifndef OSAPI_MODULE_H
 #define OSAPI_MODULE_H
 
-
 #include "osconfig.h"
 #include "common_types.h"
 
@@ -47,7 +46,7 @@
  * to unload the module in the future, if the symbols are in use by other entities.
  *
  */
-#define OS_MODULE_FLAG_GLOBAL_SYMBOLS       0x00
+#define OS_MODULE_FLAG_GLOBAL_SYMBOLS 0x00
 
 /**
  * @brief Requests OS_ModuleLoad() to keep the symbols local/private to this module
@@ -69,7 +68,7 @@
  * application must ensure that all references obtained in this manner have
  * been cleaned up/released before unloading the module.
  */
-#define OS_MODULE_FLAG_LOCAL_SYMBOLS        0x01
+#define OS_MODULE_FLAG_LOCAL_SYMBOLS 0x01
 
 /*
 ** Typedefs

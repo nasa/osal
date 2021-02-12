@@ -90,4 +90,4 @@ extern void OCS_OS_BSP_ConsoleOutput_Impl(const char *Str, size_t DataLen);
  ------------------------------------------------------------------*/
 extern void OCS_OS_BSP_ConsoleSetMode_Impl(uint32_t ModeBits);
 
-#endif  /* OCS_BSP_IMPL_H  */
+#endif /* OCS_BSP_IMPL_H  */

@@ -38,4 +38,4 @@
 #define mmap        OCS_mmap
 #define munmap      OCS_munmap
 
-#endif  /* OSAL_OVERRIDE_SYS_MMAN_H */
+#endif /* OSAL_OVERRIDE_SYS_MMAN_H */

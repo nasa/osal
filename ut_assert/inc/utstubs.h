@@ -209,7 +209,7 @@ void UT_ClearDefaultReturnValue(UT_EntryKey_t FuncKey);
  *
  * \param FuncKey The stub function to add the return code to.
  * \param Value Arbitrary failure mode value (may or may not be used by the stub)
- * 
+ *
  * @deprecated replaced by UT_SetDefaultReturnValue
  */
 void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value);
@@ -220,7 +220,7 @@ void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value);
  * This undoes the action of UT_SetDefaultReturnValue()
  *
  * \param FuncKey The stub function entry to clear.
- * 
+ *
  * @deprecated replaced by UT_ClearDefaultReturnValue
  */
 void UT_ClearForceFail(UT_EntryKey_t FuncKey);
@@ -540,4 +540,4 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
         return UT_DEFAULT_IMPL(FuncName); \
     }
 
-#endif  /* UTSTUBS_H */
+#endif /* UTSTUBS_H */

@@ -68,13 +68,13 @@ osal_id_t msgq_2;
 osal_id_t msgq_3;
 
 osal_id_t bin_0;
-osal_id_t bin_1; 
+osal_id_t bin_1;
 osal_id_t bin_2;
 osal_id_t bin_3;
 
 osal_id_t mut_0;
-osal_id_t mut_1; 
-osal_id_t mut_2; 
+osal_id_t mut_1;
+osal_id_t mut_2;
 osal_id_t mut_3;
 
 /* helper function for "OS_ForEachObject" test cases */
@@ -219,21 +219,21 @@ void TestTasks(void)
 
     InitializeTaskIds();
     /* Create Task 0 again */
-    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
-                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
+    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack),
+                           sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate, recreate 0");
 
     /* Try and create another "Task 0", should fail as we already have one named "Task 0" */
-    status = OS_TaskCreate(&task_1_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
-                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
+    status = OS_TaskCreate(&task_1_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack),
+                           sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status != OS_SUCCESS, "OS_TaskCreate, dupe name 0");
 
-    status = OS_TaskCreate(&task_2_id, "Task 2", task_generic_no_exit, OSAL_STACKPTR_C(task_2_stack), sizeof(task_2_stack),
-                           OSAL_PRIORITY_C(TASK_2_PRIORITY), 0);
+    status = OS_TaskCreate(&task_2_id, "Task 2", task_generic_no_exit, OSAL_STACKPTR_C(task_2_stack),
+                           sizeof(task_2_stack), OSAL_PRIORITY_C(TASK_2_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate, recreate 2");
 
-    status = OS_TaskCreate(&task_3_id, "Task 3", task_generic_no_exit, OSAL_STACKPTR_C(task_3_stack), sizeof(task_3_stack),
-                           OSAL_PRIORITY_C(TASK_3_PRIORITY), 0);
+    status = OS_TaskCreate(&task_3_id, "Task 3", task_generic_no_exit, OSAL_STACKPTR_C(task_3_stack),
+                           sizeof(task_3_stack), OSAL_PRIORITY_C(TASK_3_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate, recreate 3");
 
     status = OS_TaskGetIdByName(&task_0_id, "Task 0");
@@ -521,40 +521,40 @@ void TestMutexes(void)
 /* ************************************************************************** */
 void InitializeTaskIds(void)
 {
-    task_0_id  = OS_OBJECT_ID_UNDEFINED;
-    task_1_id  = OS_OBJECT_ID_UNDEFINED;
-    task_2_id  = OS_OBJECT_ID_UNDEFINED;
-    task_3_id  = OS_OBJECT_ID_UNDEFINED;
+    task_0_id = OS_OBJECT_ID_UNDEFINED;
+    task_1_id = OS_OBJECT_ID_UNDEFINED;
+    task_2_id = OS_OBJECT_ID_UNDEFINED;
+    task_3_id = OS_OBJECT_ID_UNDEFINED;
     return;
 } /* end InitializeTaskIds */
 
 /* **************************************************************************** */
 void InitializeQIds(void)
 {
-    msgq_0  = OS_OBJECT_ID_UNDEFINED;
-    msgq_1  = OS_OBJECT_ID_UNDEFINED;
-    msgq_2  = OS_OBJECT_ID_UNDEFINED;
-    msgq_3  = OS_OBJECT_ID_UNDEFINED;
+    msgq_0 = OS_OBJECT_ID_UNDEFINED;
+    msgq_1 = OS_OBJECT_ID_UNDEFINED;
+    msgq_2 = OS_OBJECT_ID_UNDEFINED;
+    msgq_3 = OS_OBJECT_ID_UNDEFINED;
     return;
 } /* end InitializeQIds */
 
 /* ***************************************************************************** */
 void InitializeBinIds(void)
 {
-    bin_0  = OS_OBJECT_ID_UNDEFINED;
-    bin_1  = OS_OBJECT_ID_UNDEFINED;
-    bin_2  = OS_OBJECT_ID_UNDEFINED;
-    bin_3  = OS_OBJECT_ID_UNDEFINED;
+    bin_0 = OS_OBJECT_ID_UNDEFINED;
+    bin_1 = OS_OBJECT_ID_UNDEFINED;
+    bin_2 = OS_OBJECT_ID_UNDEFINED;
+    bin_3 = OS_OBJECT_ID_UNDEFINED;
     return;
 } /* end InitializeBinIds */
 
 /* ***************************************************************************** */
 void InitializeMutIds(void)
 {
-    mut_0  = OS_OBJECT_ID_UNDEFINED;
-    mut_1  = OS_OBJECT_ID_UNDEFINED;
-    mut_2  = OS_OBJECT_ID_UNDEFINED;
-    mut_3  = OS_OBJECT_ID_UNDEFINED;
+    mut_0 = OS_OBJECT_ID_UNDEFINED;
+    mut_1 = OS_OBJECT_ID_UNDEFINED;
+    mut_2 = OS_OBJECT_ID_UNDEFINED;
+    mut_3 = OS_OBJECT_ID_UNDEFINED;
     return;
 } /* end InitializeMutIds */
 
@@ -569,8 +569,8 @@ void TestGetInfos(void)
 
     /* first step is to create an object to to get the properties of */
 
-    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
-                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
+    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack),
+                           sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate");
 
     status = OS_QueueCreate(&msgq_0, "q 0", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
@@ -619,8 +619,8 @@ void TestGenericQueries(void)
     TestCallbackState_t State;
     char                ResourceName[OS_MAX_API_NAME];
 
-    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
-                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
+    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack),
+                           sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate (%ld) == OS_SUCCESS", (long)status);
 
     status = OS_QueueCreate(&msgq_0, "q 0", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);

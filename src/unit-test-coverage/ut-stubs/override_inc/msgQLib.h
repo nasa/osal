@@ -42,4 +42,4 @@
 #define msgQReceive OCS_msgQReceive
 #define msgQSend    OCS_msgQSend
 
-#endif  /* OSAL_OVERRIDE_MSGQLIB_H */
+#endif /* OSAL_OVERRIDE_MSGQLIB_H */

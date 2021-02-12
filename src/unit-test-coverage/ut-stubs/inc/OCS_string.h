@@ -50,4 +50,4 @@ extern char * OCS_strcat(char *dest, const char *src);
 extern char * OCS_strncat(char *dest, const char *src, size_t n);
 extern char * OCS_strerror(int errnum);
 
-#endif  /*  OCS_STRING_H */
+#endif /*  OCS_STRING_H */

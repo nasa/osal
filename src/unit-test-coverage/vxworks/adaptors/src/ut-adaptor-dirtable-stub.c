@@ -33,4 +33,3 @@
 #include <os-shared-dir.h>
 
 OS_impl_dir_internal_record_t OS_impl_dir_table[OS_MAX_NUM_OPEN_DIRS];
-

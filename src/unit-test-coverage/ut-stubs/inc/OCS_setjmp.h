@@ -36,4 +36,4 @@
 /* prototypes normally declared in setjmp.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_SETJMP_H */
+#endif /*  OCS_SETJMP_H */

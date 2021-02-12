@@ -54,4 +54,4 @@ extern OCS_STATUS OCS_memPartInfoGet(OCS_PART_ID         partId, /* partition ID
 
 extern OCS_PART_ID OCS_memSysPartId;
 
-#endif  /*  OCS_MEMPARTLIB_H */
+#endif /*  OCS_MEMPARTLIB_H */

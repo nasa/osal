@@ -32,4 +32,4 @@
 
 #define ramDevCreate OCS_ramDevCreate
 
-#endif  /* OSAL_OVERRIDE_RAMDRV_H */
+#endif /* OSAL_OVERRIDE_RAMDRV_H */

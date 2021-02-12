@@ -122,4 +122,4 @@ extern int OCS_pthread_setschedprio(OCS_pthread_t target_thread, int prio);
 extern int OCS_pthread_setspecific(OCS_pthread_key_t key, const void *pointer);
 extern int OCS_pthread_sigmask(int how, const OCS_sigset_t *set, OCS_sigset_t *oldset);
 
-#endif  /*  OCS_PTHREAD_H */
+#endif /*  OCS_PTHREAD_H */

@@ -64,7 +64,7 @@ void UT_os_timergetinfo_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSTIMER_TIMERIO_TEST_H */
+#endif /* UT_OSTIMER_TIMERIO_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_ostimer_timerio_test.h

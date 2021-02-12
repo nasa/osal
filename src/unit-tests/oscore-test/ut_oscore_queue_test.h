@@ -62,7 +62,7 @@ void UT_os_queue_get_info_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSCORE_QUEUE_TEST_H */
+#endif /* UT_OSCORE_QUEUE_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_oscore_queue_test.h

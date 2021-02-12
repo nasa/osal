@@ -33,4 +33,4 @@
 #define htonl OCS_htonl
 #define ntohl OCS_ntohl
 
-#endif  /* OSAL_OVERRIDE_NETINET_IN_H */
+#endif /* OSAL_OVERRIDE_NETINET_IN_H */

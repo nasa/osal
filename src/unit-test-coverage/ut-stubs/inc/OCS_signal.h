@@ -74,4 +74,4 @@ extern int              OCS_sigprocmask(int how, const OCS_sigset_t *set, OCS_si
 extern int              OCS_sigsuspend(const OCS_sigset_t *set);
 extern int              OCS_sigwait(const OCS_sigset_t *set, int *sig);
 
-#endif  /*  OCS_SIGNAL_H */
+#endif /*  OCS_SIGNAL_H */

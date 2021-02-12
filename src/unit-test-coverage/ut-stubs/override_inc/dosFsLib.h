@@ -36,4 +36,4 @@
 
 #define dosFsVolFormat OCS_dosFsVolFormat
 
-#endif  /* OSAL_OVERRIDE_DOSFSLIB_H */
+#endif /* OSAL_OVERRIDE_DOSFSLIB_H */

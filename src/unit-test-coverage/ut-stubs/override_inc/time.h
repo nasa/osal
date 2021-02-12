@@ -51,4 +51,4 @@
 #define timer_settime   OCS_timer_settime
 #define timer_connect   OCS_timer_connect
 
-#endif  /* OSAL_OVERRIDE_TIME_H */
+#endif /* OSAL_OVERRIDE_TIME_H */

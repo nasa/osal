@@ -36,4 +36,4 @@
 /* prototypes normally declared in sys/ipc.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_SYS_IPC_H */
+#endif /*  OCS_SYS_IPC_H */

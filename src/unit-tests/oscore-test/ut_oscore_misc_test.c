@@ -291,7 +291,7 @@ void UT_os_getlocaltime_test()
         {
             UtPrintf("OS_GetLocalTime() - #3 Nominal ");
             UtPrintf("[Expecting output after API call to increase over time: %ld.%ld]\n",
-                      (long)OS_TimeGetTotalSeconds(time_struct), (long)OS_TimeGetMicrosecondsPart(time_struct));
+                     (long)OS_TimeGetTotalSeconds(time_struct), (long)OS_TimeGetMicrosecondsPart(time_struct));
 
             OS_TaskDelay(20);
             OS_GetLocalTime(&time_struct);
@@ -380,7 +380,7 @@ void UT_os_setlocaltime_test()
         {
             UtPrintf("OS_SetLocalTime() - #3 Nominal ");
             UtPrintf("[Expecting output before API call to increase over time: %ld.%ld]\n",
-                      (long)OS_TimeGetTotalSeconds(time_struct), (long)OS_TimeGetMicrosecondsPart(time_struct));
+                     (long)OS_TimeGetTotalSeconds(time_struct), (long)OS_TimeGetMicrosecondsPart(time_struct));
 
             OS_TaskDelay(20);
             OS_GetLocalTime(&time_struct);
@@ -392,8 +392,8 @@ void UT_os_setlocaltime_test()
     res = OS_SetLocalTime(&time_struct);
     if (res == OS_SUCCESS)
     {
-        UtPrintf("OS_SetLocalTime() - #3 Nominal [New time set at %ld.%ld]\n", (long)OS_TimeGetTotalSeconds(time_struct),
-                  (long)OS_TimeGetMicrosecondsPart(time_struct));
+        UtPrintf("OS_SetLocalTime() - #3 Nominal [New time set at %ld.%ld]\n",
+                 (long)OS_TimeGetTotalSeconds(time_struct), (long)OS_TimeGetMicrosecondsPart(time_struct));
 
         res = OS_GetLocalTime(&time_struct);
         if (res == OS_SUCCESS)
@@ -402,7 +402,7 @@ void UT_os_setlocaltime_test()
             {
                 UtPrintf("OS_SetLocalTime() - #3 Nominal ");
                 UtPrintf("[Expecting output after API call to increase over time: %ld.%ld]\n",
-                          (long)OS_TimeGetTotalSeconds(time_struct), (long)OS_TimeGetMicrosecondsPart(time_struct));
+                         (long)OS_TimeGetTotalSeconds(time_struct), (long)OS_TimeGetMicrosecondsPart(time_struct));
 
                 OS_TaskDelay(20);
                 OS_GetLocalTime(&time_struct);

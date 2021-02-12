@@ -105,8 +105,7 @@ bool OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, co
 
     mplen = OS_strnlen(filesys->virtual_mountpt, sizeof(filesys->virtual_mountpt));
     return (mplen > 0 && mplen < sizeof(filesys->virtual_mountpt) &&
-            strncmp(target, filesys->virtual_mountpt, mplen) == 0 &&
-            (target[mplen] == '/' || target[mplen] == 0));
+            strncmp(target, filesys->virtual_mountpt, mplen) == 0 && (target[mplen] == '/' || target[mplen] == 0));
 } /* end OS_FileSys_FindVirtMountPoint */
 
 /*----------------------------------------------------------------
@@ -261,7 +260,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
         ++dev_name;
     }
 
-    if (memchr(dev_name,0,sizeof(filesys->volume_name)) == NULL)
+    if (memchr(dev_name, 0, sizeof(filesys->volume_name)) == NULL)
     {
         return OS_ERR_NAME_TOO_LONG;
     }
@@ -624,7 +623,7 @@ int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
 
 } /* end OS_fsBytesFree */
 
-#endif      /* OSAL_OMIT_DEPRECATED */
+#endif /* OSAL_OMIT_DEPRECATED */
 
 /*----------------------------------------------------------------
  *

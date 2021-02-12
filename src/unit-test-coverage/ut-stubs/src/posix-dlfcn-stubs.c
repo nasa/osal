@@ -39,4 +39,4 @@ extern char *OCS_dlerror(void);
 extern void *OCS_dlopen(const char *file, int mode);
 extern void *OCS_dlsym(void *handle, const char *name);
 
-#endif  /*  OCS_DLFCN_H */
+#endif /*  OCS_DLFCN_H */

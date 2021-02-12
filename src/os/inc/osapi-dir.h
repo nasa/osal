@@ -28,8 +28,6 @@
 #include "osconfig.h"
 #include "common_types.h"
 
-
-
 /** @brief Directory entry */
 typedef struct
 {

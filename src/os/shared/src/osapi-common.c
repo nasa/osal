@@ -339,12 +339,9 @@ void OS_DeleteAllObjects(void)
         ++TryCount;
 
         /* Delete timers and tasks first, as they could be actively using other object types  */
-        OS_ForEachObjectOfType(OS_OBJECT_TYPE_OS_TIMECB, OS_OBJECT_CREATOR_ANY,
-                OS_CleanUpObject, &ObjectCount);
-        OS_ForEachObjectOfType(OS_OBJECT_TYPE_OS_TIMEBASE, OS_OBJECT_CREATOR_ANY,
-                OS_CleanUpObject, &ObjectCount);
-        OS_ForEachObjectOfType(OS_OBJECT_TYPE_OS_TASK, OS_OBJECT_CREATOR_ANY,
-                OS_CleanUpObject, &ObjectCount);
+        OS_ForEachObjectOfType(OS_OBJECT_TYPE_OS_TIMECB, OS_OBJECT_CREATOR_ANY, OS_CleanUpObject, &ObjectCount);
+        OS_ForEachObjectOfType(OS_OBJECT_TYPE_OS_TIMEBASE, OS_OBJECT_CREATOR_ANY, OS_CleanUpObject, &ObjectCount);
+        OS_ForEachObjectOfType(OS_OBJECT_TYPE_OS_TASK, OS_OBJECT_CREATOR_ANY, OS_CleanUpObject, &ObjectCount);
 
         /* Then try to delete all other remaining objects of any type */
         OS_ForEachObject(OS_OBJECT_CREATOR_ANY, OS_CleanUpObject, &ObjectCount);

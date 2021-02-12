@@ -79,4 +79,4 @@ OCS_STATUS OCS_taskInit(OCS_WIND_TCB *pTcb, char *name, int priority, int option
 
 OCS_WIND_TCB *OCS_taskTcb(OCS_TASK_ID tid);
 
-#endif  /*  OCS_TASKLIB_H */
+#endif /*  OCS_TASKLIB_H */

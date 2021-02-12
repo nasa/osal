@@ -36,4 +36,4 @@
 #include <netinet/in.h>
 #include <hostLib.h>
 
-#endif  /* OS_IMPL_NETWORK_H  */
+#endif /* OS_IMPL_NETWORK_H  */

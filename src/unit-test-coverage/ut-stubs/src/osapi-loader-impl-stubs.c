@@ -40,5 +40,6 @@ UT_DEFAULT_STUB(OS_ModuleLoad_Impl, (const OS_object_token_t *token, const char 
 UT_DEFAULT_STUB(OS_ModuleUnload_Impl, (const OS_object_token_t *token))
 UT_DEFAULT_STUB(OS_ModuleGetInfo_Impl, (const OS_object_token_t *token, OS_module_prop_t *module_prop))
 UT_DEFAULT_STUB(OS_GlobalSymbolLookup_Impl, (cpuaddr * SymbolAddress, const char *SymbolName))
-UT_DEFAULT_STUB(OS_ModuleSymbolLookup_Impl, (const OS_object_token_t *token, cpuaddr *SymbolAddress, const char *SymbolName))
+UT_DEFAULT_STUB(OS_ModuleSymbolLookup_Impl,
+                (const OS_object_token_t *token, cpuaddr *SymbolAddress, const char *SymbolName))
 UT_DEFAULT_STUB(OS_SymbolTableDump_Impl, (const char *filename, size_t size_limit))
