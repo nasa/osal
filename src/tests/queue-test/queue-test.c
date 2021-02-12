@@ -87,7 +87,7 @@ void task_1(void)
         {
             ++task_1_messages;
             UtAssert_True(data_received == expected, "TASK 1: data_received (%u) == expected (%u)",
-                          data_received, expected);
+                          (unsigned int)data_received, (unsigned int)expected);
 
             expected++;
         }
