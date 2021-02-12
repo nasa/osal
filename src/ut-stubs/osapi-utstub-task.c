@@ -284,8 +284,8 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
         UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &task_prop->creator);
         task_prop->stack_size = OSAL_SIZE_C(100);
         task_prop->priority   = OSAL_PRIORITY_C(150);
-        strncpy(task_prop->name, "UnitTest", OS_MAX_API_NAME - 1);
-        task_prop->name[OS_MAX_API_NAME - 1] = '\0';
+        strncpy(task_prop->name, "UnitTest", sizeof(task_prop->name) - 1);
+        task_prop->name[sizeof(task_prop->name) - 1] = '\0';
     }
 
     return status;

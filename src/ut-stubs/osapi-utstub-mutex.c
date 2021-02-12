@@ -229,8 +229,8 @@ int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_MutSemGetInfo), mut_prop, sizeof(*mut_prop)) < sizeof(*mut_prop))
     {
-        strncpy(mut_prop->name, "Name", OS_MAX_API_NAME - 1);
-        mut_prop->name[OS_MAX_API_NAME - 1] = '\0';
+        strncpy(mut_prop->name, "Name", sizeof(mut_prop->name) - 1);
+        mut_prop->name[sizeof(mut_prop->name) - 1] = '\0';
         UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &mut_prop->creator);
     }
 

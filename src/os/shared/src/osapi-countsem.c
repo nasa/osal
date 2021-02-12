@@ -258,7 +258,7 @@ int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_count_sem_table, token);
 
-        strncpy(count_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(count_prop->name, record->name_entry, sizeof(count_prop->name) - 1);
         count_prop->creator = record->creator;
 
         return_code = OS_CountSemGetInfo_Impl(&token, count_prop);

@@ -237,7 +237,8 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
         if (CopySize < sizeof(*sock_prop))
         {
             UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &sock_prop->creator);
-            strncpy(sock_prop->name, "ut", sizeof(sock_prop->name));
+            strncpy(sock_prop->name, "ut", sizeof(sock_prop->name) - 1);
+            sock_prop->name[sizeof(sock_prop->name) - 1] = 0;
         }
     }
 

@@ -152,7 +152,7 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
         filesys->blocksize = blocksize;
         filesys->numblocks = numblocks;
         filesys->address   = address;
-        strcpy(filesys->volume_name, fsvolname);
+        strncpy(filesys->volume_name, fsvolname, sizeof(filesys->volume_name) - 1);
 
         /*
          * Determine basic type of filesystem, if not already known
@@ -461,7 +461,8 @@ int32 OS_mount(const char *devname, const char *mountpoint)
             /* mark as mounted in the local table.
              * For now this does both sides (system and virtual) */
             filesys->flags |= OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
-            strcpy(filesys->virtual_mountpt, mountpoint);
+            strncpy(filesys->virtual_mountpt, mountpoint, sizeof(filesys->virtual_mountpt) - 1);
+            filesys->virtual_mountpt[sizeof(filesys->virtual_mountpt) - 1] = 0;
         }
 
         OS_ObjectIdRelease(&token);

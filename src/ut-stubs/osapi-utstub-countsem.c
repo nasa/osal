@@ -202,8 +202,8 @@ int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
         UT_Stub_CopyToLocal(UT_KEY(OS_CountSemGetInfo), count_prop, sizeof(*count_prop)) < sizeof(*count_prop))
     {
         UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &count_prop->creator);
-        strncpy(count_prop->name, "Name", OS_MAX_API_NAME - 1);
-        count_prop->name[OS_MAX_API_NAME - 1] = '\0';
+        strncpy(count_prop->name, "Name", sizeof(count_prop->name) - 1);
+        count_prop->name[sizeof(count_prop->name) - 1] = '\0';
     }
 
     return status;

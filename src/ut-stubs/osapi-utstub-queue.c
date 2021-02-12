@@ -270,8 +270,8 @@ int32 OS_QueueGetInfo(osal_id_t queue_id, OS_queue_prop_t *queue_prop)
         UT_Stub_CopyToLocal(UT_KEY(OS_QueueGetInfo), queue_prop, sizeof(*queue_prop)) < sizeof(*queue_prop))
     {
         UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &queue_prop->creator);
-        strncpy(queue_prop->name, "Name", OS_MAX_API_NAME - 1);
-        queue_prop->name[OS_MAX_API_NAME - 1] = '\0';
+        strncpy(queue_prop->name, "Name", sizeof(queue_prop->name) - 1);
+        queue_prop->name[sizeof(queue_prop->name) - 1] = '\0';
     }
 
     return status;

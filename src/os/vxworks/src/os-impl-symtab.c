@@ -196,7 +196,8 @@ BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_
     /*
     ** Copy symbol name
     */
-    strncpy(symRecord.SymbolName, name, OS_MAX_SYM_LEN);
+    strncpy(symRecord.SymbolName, name, sizeof(symRecord.SymbolName) - 1);
+    symRecord.SymbolName[sizeof(symRecord.SymbolName) - 1] = 0;
 
     /*
     ** Save symbol address

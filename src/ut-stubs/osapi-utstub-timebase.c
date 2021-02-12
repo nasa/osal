@@ -144,8 +144,8 @@ int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_pro
         UT_Stub_CopyToLocal(UT_KEY(OS_TimeBaseGetInfo), timebase_prop, sizeof(*timebase_prop)) < sizeof(*timebase_prop))
     {
         UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &timebase_prop->creator);
-        strncpy(timebase_prop->name, "Name", OS_MAX_API_NAME - 1);
-        timebase_prop->name[OS_MAX_API_NAME - 1] = '\0';
+        strncpy(timebase_prop->name, "Name", sizeof(timebase_prop->name) - 1);
+        timebase_prop->name[sizeof(timebase_prop->name) - 1] = '\0';
     }
 
     return status;

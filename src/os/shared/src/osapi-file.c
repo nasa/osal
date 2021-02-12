@@ -475,7 +475,8 @@ int32 OS_rename(const char *old, const char *new)
 
             if (stream->socket_domain == OS_SocketDomain_INVALID && strcmp(stream->stream_name, old) == 0)
             {
-                strcpy(stream->stream_name, new);
+                strncpy(stream->stream_name, new, sizeof(stream->stream_name) - 1);
+                stream->stream_name[sizeof(stream->stream_name) - 1] = 0;
             }
         }
 
@@ -606,7 +607,7 @@ int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_stream_table, token);
 
-        strncpy(fd_prop->Path, record->name_entry, OS_MAX_PATH_LEN - 1);
+        strncpy(fd_prop->Path, record->name_entry, sizeof(fd_prop->Path) - 1);
         fd_prop->User    = record->creator;
         fd_prop->IsValid = true;
 
