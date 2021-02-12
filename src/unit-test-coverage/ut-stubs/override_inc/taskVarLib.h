@@ -31,4 +31,4 @@
 
 #define taskVarAdd OCS_taskVarAdd
 
-#endif  /* OSAL_OVERRIDE_TASKVARLIB_H */
+#endif /* OSAL_OVERRIDE_TASKVARLIB_H */

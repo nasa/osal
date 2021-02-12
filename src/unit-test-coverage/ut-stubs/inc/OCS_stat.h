@@ -74,4 +74,4 @@ extern int OCS_fstat(int fd, struct OCS_stat *buf);
 
 extern int OCS_statvfs(const char *file, struct OCS_statvfs *buf);
 
-#endif  /*  OCS_STAT_H */
+#endif /*  OCS_STAT_H */

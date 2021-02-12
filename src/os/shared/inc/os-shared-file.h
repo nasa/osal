@@ -183,7 +183,6 @@ int32 OS_FileRename_Impl(const char *old_path, const char *new_path);
  ------------------------------------------------------------------*/
 int32 OS_FileChmod_Impl(const char *local_path, uint32 access);
 
-
 /*
  * Internal helper function
  *

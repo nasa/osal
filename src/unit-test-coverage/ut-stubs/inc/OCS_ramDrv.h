@@ -39,4 +39,4 @@
 /* ----------------------------------------- */
 extern OCS_BLK_DEV *OCS_ramDevCreate(char *ramAddr, int bytesPerSec, int secPerTrack, int nSectors, int secOffset);
 
-#endif  /*  OCS_RAMDRV_H */
+#endif /*  OCS_RAMDRV_H */

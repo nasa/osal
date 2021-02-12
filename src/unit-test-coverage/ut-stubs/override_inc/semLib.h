@@ -54,4 +54,4 @@
 #define semTake        OCS_semTake
 #define semGive        OCS_semGive
 
-#endif  /* OSAL_OVERRIDE_SEMLIB_H */
+#endif /* OSAL_OVERRIDE_SEMLIB_H */

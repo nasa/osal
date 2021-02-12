@@ -28,7 +28,6 @@
 #include "osconfig.h"
 #include "common_types.h"
 
-
 /**
  * @brief A set of events that can be used with BSP event callback routines
  */
@@ -97,7 +96,6 @@ typedef enum
  * @return status Execution status, see @ref OSReturnCodes.
  */
 typedef int32 (*OS_EventHandler_t)(OS_Event_t event, osal_id_t object_id, void *data);
-
 
 /** @defgroup OSAPICore OSAL Core Operation APIs
  *

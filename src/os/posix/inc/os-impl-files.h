@@ -48,4 +48,4 @@ extern gid_t OS_IMPL_SELF_EGID;
 
 extern const int OS_IMPL_REGULAR_FILE_FLAGS;
 
-#endif  /* OS_IMPL_FILES_H  */
+#endif /* OS_IMPL_FILES_H  */

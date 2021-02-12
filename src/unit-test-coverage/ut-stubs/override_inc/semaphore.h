@@ -36,4 +36,4 @@
 #define sem_timedwait OCS_sem_timedwait
 #define sem_wait      OCS_sem_wait
 
-#endif  /* OSAL_OVERRIDE_SEMAPHORE_H */
+#endif /* OSAL_OVERRIDE_SEMAPHORE_H */

@@ -107,4 +107,4 @@ int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, size_t 
  ------------------------------------------------------------------*/
 int32 OS_QueueGetInfo_Impl(const OS_object_token_t *token, OS_queue_prop_t *queue_prop);
 
-#endif  /* OS_SHARED_QUEUE_H  */
+#endif /* OS_SHARED_QUEUE_H  */

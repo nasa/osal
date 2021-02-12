@@ -37,4 +37,4 @@
 /* prototypes normally declared in ramDiskCbio.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_RAMDISKCBIO_H */
+#endif /*  OCS_RAMDISKCBIO_H */

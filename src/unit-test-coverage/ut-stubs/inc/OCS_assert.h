@@ -38,4 +38,4 @@
 
 void OCS_assert(bool expression);
 
-#endif  /*  OCS_ASSERT_H */
+#endif /*  OCS_ASSERT_H */

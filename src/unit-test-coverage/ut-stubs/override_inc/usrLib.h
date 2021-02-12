@@ -29,4 +29,4 @@
 /* mappings for declarations in usrLib.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_USRLIB_H */
+#endif /* OSAL_OVERRIDE_USRLIB_H */

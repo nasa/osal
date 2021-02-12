@@ -236,8 +236,8 @@ void Test_OS_unmount(void)
     UtAssert_True(actual == expected, "OS_mount() (%ld) == OS_ERR_NAME_NOT_FOUND", (long)actual);
 
     /* set up so record is in the right state for mounting */
-    OS_filesys_table[1].flags = OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM |
-                                OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
+    OS_filesys_table[1].flags =
+        OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
     expected = OS_SUCCESS;
     actual   = OS_unmount("/ram0");
     UtAssert_True(actual == expected, "OS_unmount(nominal) (%ld) == OS_SUCCESS", (long)actual);
@@ -268,19 +268,19 @@ void Test_OS_FileSysStatVolume(void)
     statref.blocks_free  = OSAL_BLOCKCOUNT_C(1111);
     statref.total_blocks = OSAL_BLOCKCOUNT_C(2222);
     UT_SetDataBuffer(UT_KEY(OS_FileSysStatVolume_Impl), &statref, sizeof(statref), false);
-    OS_filesys_table[1].flags = OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM |
-                                OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
+    OS_filesys_table[1].flags =
+        OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
 
     expected = OS_SUCCESS;
     actual   = OS_FileSysStatVolume("/cf", &statbuf);
     UtAssert_True(actual == expected, "OS_FileSysStatVolume() (%ld) == OS_SUCCESS", (long)actual);
 
-    UtAssert_True(statbuf.block_size == statref.block_size, "blocks_size (%lu) == %lu", (unsigned long)statbuf.block_size,
-                  (unsigned long)statref.block_size);
+    UtAssert_True(statbuf.block_size == statref.block_size, "blocks_size (%lu) == %lu",
+                  (unsigned long)statbuf.block_size, (unsigned long)statref.block_size);
     UtAssert_True(statbuf.total_blocks == statref.total_blocks, "total_blocks (%lu) == %lu",
                   (unsigned long)statbuf.total_blocks, (unsigned long)statref.total_blocks);
-    UtAssert_True(statbuf.blocks_free == statref.blocks_free, "blocks_free (%lu) == %lu", (unsigned long)statbuf.blocks_free,
-                  (unsigned long)statref.blocks_free);
+    UtAssert_True(statbuf.blocks_free == statref.blocks_free, "blocks_free (%lu) == %lu",
+                  (unsigned long)statbuf.blocks_free, (unsigned long)statref.blocks_free);
 
     /* validate error checking */
     expected = OS_INVALID_POINTER;
@@ -356,8 +356,8 @@ void Test_OS_FS_GetPhysDriveName(void)
     actual   = OS_FS_GetPhysDriveName(NameBuf, "none");
     UtAssert_True(actual == expected, "OS_FS_GetPhysDriveName() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
 
-    OS_filesys_table[1].flags = OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM |
-                                OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
+    OS_filesys_table[1].flags =
+        OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
     expected = OS_SUCCESS;
     actual   = OS_FS_GetPhysDriveName(NameBuf, "none");
     UtAssert_True(actual == expected, "OS_FS_GetPhysDriveName() (%ld) == OS_SUCCESS", (long)actual);
@@ -422,8 +422,8 @@ void Test_OS_TranslatePath(void)
     int32 actual   = ~OS_SUCCESS;
 
     /* Set up the local record for success */
-    OS_filesys_table[1].flags = OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM |
-                                OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
+    OS_filesys_table[1].flags =
+        OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
     strcpy(OS_filesys_table[1].virtual_mountpt, "/cf");
     strcpy(OS_filesys_table[1].system_mountpt, "/mnt/cf");
 

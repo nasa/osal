@@ -36,4 +36,4 @@
 /* prototypes normally declared in fenv.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_FENV_H */
+#endif /*  OCS_FENV_H */

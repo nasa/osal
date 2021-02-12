@@ -39,4 +39,4 @@
 
 extern int OCS_errnoGet(void);
 
-#endif  /*  OCS_ERRNOLIB_H */
+#endif /*  OCS_ERRNOLIB_H */

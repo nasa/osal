@@ -29,4 +29,4 @@
 /* mappings for declarations in sys/times.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_SYS_TIMES_H */
+#endif /* OSAL_OVERRIDE_SYS_TIMES_H */

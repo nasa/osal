@@ -46,4 +46,4 @@ typedef struct
  */
 extern OS_impl_file_internal_record_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FILES];
 
-#endif  /* OS_IMPL_IO_H  */
+#endif /* OS_IMPL_IO_H  */

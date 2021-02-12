@@ -36,4 +36,4 @@
 /* prototypes normally declared in complex.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_COMPLEX_H */
+#endif /*  OCS_COMPLEX_H */

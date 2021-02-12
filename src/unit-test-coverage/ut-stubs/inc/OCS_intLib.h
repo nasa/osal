@@ -44,4 +44,4 @@ extern int              OCS_intLock(void);
 extern int              OCS_intUnlock(int lockKey);
 extern OCS_VOIDFUNCPTR *OCS_INUM_TO_IVEC(unsigned int ui);
 
-#endif  /*  OCS_INTLIB_H */
+#endif /*  OCS_INTLIB_H */

@@ -63,7 +63,7 @@
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSLOADER_TEST_PLATFORMS_H */
+#endif /* UT_OSLOADER_TEST_PLATFORMS_H */
 
 /*================================================================================*
 ** End of File: ut_osloader_test_platforms.h

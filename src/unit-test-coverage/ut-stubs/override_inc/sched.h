@@ -36,4 +36,4 @@
 #define sched_get_priority_max OCS_sched_get_priority_max
 #define sched_get_priority_min OCS_sched_get_priority_min
 
-#endif  /* OSAL_OVERRIDE_SCHED_H */
+#endif /* OSAL_OVERRIDE_SCHED_H */

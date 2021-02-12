@@ -55,4 +55,4 @@ extern int  OCS_FD_ISSET(int fd, OCS_fd_set *set);
 extern void OCS_FD_CLR(int fd, OCS_fd_set *set);
 extern void OCS_FD_ZERO(OCS_fd_set *set);
 
-#endif  /* OCS_SYS_SELECT_H  */
+#endif /* OCS_SYS_SELECT_H  */

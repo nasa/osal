@@ -44,4 +44,4 @@
  */
 extern int32 UT_Call_OS_VxWorks_DirAPI_Impl_Init(void);
 
-#endif  /* UT_ADAPTOR_DIRS_H  */
+#endif /* UT_ADAPTOR_DIRS_H  */

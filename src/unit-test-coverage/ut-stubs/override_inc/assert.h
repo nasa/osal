@@ -30,4 +30,4 @@
 
 #define assert OCS_assert
 
-#endif  /* OSAL_OVERRIDE_ASSERT_H */
+#endif /* OSAL_OVERRIDE_ASSERT_H */

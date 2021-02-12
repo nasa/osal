@@ -37,4 +37,4 @@
 #define malloc       OCS_malloc
 #define free         OCS_free
 
-#endif  /* OSAL_OVERRIDE_STDLIB_H */
+#endif /* OSAL_OVERRIDE_STDLIB_H */

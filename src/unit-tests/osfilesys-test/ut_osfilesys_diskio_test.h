@@ -73,7 +73,7 @@ void UT_os_fsstatvolume_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSFILESYS_DISKIO_TEST_H */
+#endif /* UT_OSFILESYS_DISKIO_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_osfilesys_diskio_test.h

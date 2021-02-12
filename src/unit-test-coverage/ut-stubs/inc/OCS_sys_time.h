@@ -37,4 +37,4 @@
 /* prototypes normally declared in sys/time.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_SYS_TIME_H */
+#endif /*  OCS_SYS_TIME_H */

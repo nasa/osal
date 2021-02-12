@@ -1053,7 +1053,6 @@ UT_os_checkfs_test_exit_tag:
     return;
 }
 
-
 /*--------------------------------------------------------------------------------*
 ** Syntax: int32 OS_fsstatvolume(const char *name)
 ** Purpose: Returns the number of blocks free in a the file system

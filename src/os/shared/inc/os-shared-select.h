@@ -78,4 +78,4 @@ int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, 
  ------------------------------------------------------------------*/
 int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
 
-#endif  /* OS_SHARED_SELECT_H  */
+#endif /* OS_SHARED_SELECT_H  */

@@ -36,4 +36,4 @@
 /* prototypes normally declared in float.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_FLOAT_H */
+#endif /*  OCS_FLOAT_H */

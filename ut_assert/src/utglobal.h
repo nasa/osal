@@ -64,4 +64,4 @@ typedef struct
  */
 extern UtAssert_Global_t UtAssert_Global;
 
-#endif  /* UTASSERT_GLOBAL_H  */
+#endif /* UTASSERT_GLOBAL_H  */

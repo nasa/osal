@@ -35,4 +35,4 @@
 #define xbdBlkDevCreateSync OCS_xbdBlkDevCreateSync
 #define xbdBlkDevDelete     OCS_xbdBlkDevDelete
 
-#endif  /* OSAL_OVERRIDE_XBDBLKDEV_H */
+#endif /* OSAL_OVERRIDE_XBDBLKDEV_H */

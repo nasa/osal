@@ -135,7 +135,7 @@ static inline bool UtOsalImplemented(int32 Fn, const char *File, uint32 Line)
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OS_SUPPORT_H */
+#endif /* UT_OS_SUPPORT_H */
 
 /*================================================================================*
 ** End of File: ut_os_support.h

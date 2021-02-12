@@ -64,4 +64,4 @@ extern OS_timecb_internal_record_t OS_timecb_table[OS_MAX_TIMERS];
 ---------------------------------------------------------------------------------------*/
 int32 OS_TimerCbAPI_Init(void);
 
-#endif  /* OS_SHARED_TIME_H  */
+#endif /* OS_SHARED_TIME_H  */

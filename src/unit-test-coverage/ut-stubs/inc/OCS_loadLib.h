@@ -40,4 +40,4 @@
 
 extern OCS_MODULE_ID OCS_loadModule(int fd, unsigned int symFlag);
 
-#endif  /*  OCS_LOADLIB_H */
+#endif /*  OCS_LOADLIB_H */

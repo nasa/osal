@@ -36,4 +36,4 @@
 /* prototypes normally declared in strings.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_STRINGS_H */
+#endif /*  OCS_STRINGS_H */

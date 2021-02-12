@@ -518,8 +518,9 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
                     }
                 }
 
-            } while (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timecb->next_cb, &cb_token) == OS_SUCCESS &&
-                    !OS_ObjectIdEqual(OS_ObjectIdFromToken(&cb_token), timebase->first_cb));
+            } while (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timecb->next_cb, &cb_token) ==
+                         OS_SUCCESS &&
+                     !OS_ObjectIdEqual(OS_ObjectIdFromToken(&cb_token), timebase->first_cb));
         }
 
         OS_TimeBaseUnlock_Impl(&token);

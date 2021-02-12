@@ -38,4 +38,4 @@
 /* ----------------------------------------- */
 extern int OCS_sysClkRateGet(void);
 
-#endif  /*  OCS_SYSLIB_H */
+#endif /*  OCS_SYSLIB_H */

@@ -28,4 +28,4 @@
 /* mappings for declarations in complex.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_COMPLEX_H */
+#endif /* OSAL_OVERRIDE_COMPLEX_H */

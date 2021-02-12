@@ -45,4 +45,4 @@ typedef struct
  */
 extern OS_impl_dir_internal_record_t OS_impl_dir_table[OS_MAX_NUM_OPEN_DIRS];
 
-#endif  /* OS_IMPL_DIRS_H  */
+#endif /* OS_IMPL_DIRS_H  */

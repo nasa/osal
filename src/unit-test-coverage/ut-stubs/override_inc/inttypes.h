@@ -28,4 +28,4 @@
 /* mappings for declarations in inttypes.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_INTTYPES_H */
+#endif /* OSAL_OVERRIDE_INTTYPES_H */

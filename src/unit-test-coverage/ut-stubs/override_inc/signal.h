@@ -56,4 +56,4 @@
 #define sigsuspend  OCS_sigsuspend
 #define sigwait     OCS_sigwait
 
-#endif  /* OSAL_OVERRIDE_SIGNAL_H */
+#endif /* OSAL_OVERRIDE_SIGNAL_H */

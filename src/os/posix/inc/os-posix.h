@@ -107,6 +107,6 @@ int32 OS_Posix_FileSysAPI_Impl_Init(void);
 
 int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype);
 
-void  OS_Posix_CompAbsDelayTime(uint32 msecs, struct timespec *tm);
+void OS_Posix_CompAbsDelayTime(uint32 msecs, struct timespec *tm);
 
-#endif  /* OS_POSIX_H  */
+#endif /* OS_POSIX_H  */

@@ -44,4 +44,4 @@
 /* prototypes normally declared in objLib.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_OBJLIB_H */
+#endif /*  OCS_OBJLIB_H */

@@ -58,7 +58,7 @@ void UT_os_networkgethostname_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSNETWORK_MISC_TEST_H */
+#endif /* UT_OSNETWORK_MISC_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_osnetwork_misc_test.h

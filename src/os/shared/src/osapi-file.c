@@ -47,8 +47,6 @@
 #include "osapi-filesys.h"
 #include "osapi-sockets.h"
 
-
-
 /*
  * Sanity checks on the user-supplied configuration
  * The relevent OS_MAX limit should be defined and greater than zero

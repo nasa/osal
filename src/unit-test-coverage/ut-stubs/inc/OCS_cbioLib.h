@@ -37,4 +37,4 @@
 /* prototypes normally declared in cbioLib.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_CBIOLIB_H */
+#endif /*  OCS_CBIOLIB_H */

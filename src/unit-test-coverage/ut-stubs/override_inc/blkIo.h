@@ -32,4 +32,4 @@
 #define BLK_DEV    OCS_BLK_DEV
 #define BLK_DEV_ID OCS_BLK_DEV_ID
 
-#endif  /* OSAL_OVERRIDE_BLKIO_H */
+#endif /* OSAL_OVERRIDE_BLKIO_H */

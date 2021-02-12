@@ -46,4 +46,4 @@
 /* The "in.h" header file supplied in VxWorks 6.9 is missing the "in_port_t" typedef */
 typedef u_short in_port_t;
 
-#endif  /* OS_IMPL_SOCKETS_H  */
+#endif /* OS_IMPL_SOCKETS_H  */

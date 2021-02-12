@@ -53,4 +53,4 @@
 
 #define _Vx_usr_arg_t OCS_Vx_usr_arg_t
 
-#endif  /* VXWORKS_H  */
+#endif /* VXWORKS_H  */

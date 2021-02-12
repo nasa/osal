@@ -28,14 +28,12 @@
 #include "osconfig.h"
 #include "common_types.h"
 
-
 /** @defgroup OSSemaphoreStates OSAL Semaphore State Defines
  * @{
  */
 #define OS_SEM_FULL  1 /**< @brief Semaphore full state */
 #define OS_SEM_EMPTY 0 /**< @brief Semaphore empty state */
 /**@}*/
-
 
 /** @brief OSAL binary semaphore properties */
 typedef struct

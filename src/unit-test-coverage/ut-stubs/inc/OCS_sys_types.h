@@ -43,4 +43,4 @@ typedef int          OCS_uid_t;
 /* prototypes normally declared in sys/types.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_SYS_TYPES_H */
+#endif /*  OCS_SYS_TYPES_H */

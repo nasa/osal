@@ -79,4 +79,4 @@ extern int OCS_timer_settime(OCS_timer_t timerid, int flags, const struct OCS_it
 
 extern int OCS_timer_connect(OCS_timer_t timerid, OCS_TIMER_CONNECT_FUNC func, int arg);
 
-#endif  /*  OCS_TIME_H */
+#endif /*  OCS_TIME_H */

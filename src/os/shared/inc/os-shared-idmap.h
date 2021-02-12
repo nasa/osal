@@ -52,7 +52,8 @@ typedef enum
     OS_LOCK_MODE_NONE,      /**< Quick ID validity check, does not lock global table at all (use with caution) */
     OS_LOCK_MODE_GLOBAL,    /**< Confirm ID match, and if successful, leave global table locked */
     OS_LOCK_MODE_REFCOUNT,  /**< Confirm ID match, increment refcount, and unlock global table.  ID is not changed. */
-    OS_LOCK_MODE_EXCLUSIVE, /**< Confirm ID match AND refcount equal zero, then change ID to RESERVED value and unlock global. */
+    OS_LOCK_MODE_EXCLUSIVE, /**< Confirm ID match AND refcount equal zero, then change ID to RESERVED value and unlock
+                               global. */
     OS_LOCK_MODE_RESERVED   /**< Confirm ID is already set to RESERVED, otherwise like OS_LOCK_MODE_GLOBAL. */
 } OS_lock_mode_t;
 
@@ -213,7 +214,6 @@ void OS_WaitForStateChange(OS_object_token_t *token, uint32 attempts);
 
  ------------------------------------------------------------------*/
 void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts);
-
 
 /*
    Function prototypes for routines implemented in common layers but private to OSAL
@@ -533,7 +533,7 @@ static inline const OS_object_token_t *OS_ObjectIdIteratorRef(OS_object_iter_t *
 
     Returns: None
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t,void*));
+int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t, void *));
 
 /*
  * Internal helper functions
@@ -545,4 +545,4 @@ bool  OS_ObjectNameMatch(void *ref, const OS_object_token_t *token, const OS_com
 int32 OS_ObjectIdFindNextMatch(OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_object_token_t *token);
 int32 OS_ObjectIdFindNextFree(OS_object_token_t *token);
 
-#endif  /* OS_SHARED_IDMAP_H  */
+#endif /* OS_SHARED_IDMAP_H  */

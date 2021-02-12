@@ -36,4 +36,4 @@
 /* prototypes normally declared in wchar.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_WCHAR_H */
+#endif /*  OCS_WCHAR_H */

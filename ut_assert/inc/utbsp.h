@@ -100,4 +100,4 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage);
  */
 void UT_BSP_EndTest(const UtAssert_TestCounter_t *TestCounters);
 
-#endif  /* UTBSP_H */
+#endif /* UTBSP_H */

@@ -32,4 +32,4 @@
 #define va_start(ap, last) OCS_va_start(ap, last)
 #define va_end(ap)         OCS_va_end(ap)
 
-#endif  /* OSAL_OVERRIDE_STDARG_H */
+#endif /* OSAL_OVERRIDE_STDARG_H */

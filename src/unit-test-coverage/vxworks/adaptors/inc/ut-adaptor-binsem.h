@@ -48,4 +48,4 @@ extern const UT_EntryKey_t UT_StubKey_GenericSemGive;
 
 extern int32 UT_Call_OS_VxWorks_BinSemAPI_Impl_Init(void);
 
-#endif  /* UT_ADAPTOR_BINSEM_H  */
+#endif /* UT_ADAPTOR_BINSEM_H  */

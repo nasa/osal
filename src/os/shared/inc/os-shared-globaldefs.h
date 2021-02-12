@@ -69,10 +69,10 @@ typedef struct OS_object_token OS_object_token_t;
  */
 typedef union
 {
-    void *             opaque_arg;
-    OS_ArgCallback_t   arg_callback_func;
-    osal_id_t          id;
-    osal_index_t       idx;
+    void *           opaque_arg;
+    OS_ArgCallback_t arg_callback_func;
+    osal_id_t        id;
+    osal_index_t     idx;
 } OS_U32ValueWrapper_t;
 
 /*
@@ -109,7 +109,7 @@ extern void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const ch
  * (e.g. read/write) return a size as an int32 type, and therefore the
  * operation cannot exceed the bounds of this type.
  */
-#define OS_CHECK_SIZE(val) ARGCHECK((val) > 0 && (val) < (UINT32_MAX/2), OS_ERR_INVALID_SIZE)
+#define OS_CHECK_SIZE(val) ARGCHECK((val) > 0 && (val) < (UINT32_MAX / 2), OS_ERR_INVALID_SIZE)
 
 /*
  * An OSAL-specific check macro for arbitrary string argument validation.

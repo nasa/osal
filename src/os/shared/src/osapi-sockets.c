@@ -49,7 +49,6 @@
  */
 #include "osapi-select.h"
 
-
 /*
  * Global data for the API
  */

@@ -38,4 +38,4 @@
 
 extern int OCS_isgraph(int c);
 
-#endif  /*  OCS_CTYPE_H */
+#endif /*  OCS_CTYPE_H */

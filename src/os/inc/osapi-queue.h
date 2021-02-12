@@ -35,7 +35,6 @@ typedef struct
     osal_id_t creator;
 } OS_queue_prop_t;
 
-
 /** @defgroup OSAPIMsgQueue OSAL Message Queue APIs
  * @{
  */

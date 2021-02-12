@@ -46,4 +46,4 @@ extern size_t const UT_Ref_OS_impl_mutex_table_SIZE;
 
 int32 UT_Call_OS_VxWorks_MutexAPI_Impl_Init(void);
 
-#endif  /* UT_ADAPTOR_MUTEX_H  */
+#endif /* UT_ADAPTOR_MUTEX_H  */

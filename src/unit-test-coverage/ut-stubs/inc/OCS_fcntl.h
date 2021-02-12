@@ -81,4 +81,4 @@
 extern int OCS_fcntl(int fd, int cmd, ...);
 extern int OCS_open(const char *file, int oflag, ...);
 
-#endif  /*  OCS_FCNTL_H */
+#endif /*  OCS_FCNTL_H */

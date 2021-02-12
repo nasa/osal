@@ -29,7 +29,6 @@
 #include "common_types.h"
 #include "osapi-clock.h"
 
-
 /** @defgroup OSFileAccess OSAL File Access Option Defines
  * @{
  */

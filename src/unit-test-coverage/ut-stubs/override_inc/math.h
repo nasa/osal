@@ -28,4 +28,4 @@
 /* mappings for declarations in math.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_MATH_H */
+#endif /* OSAL_OVERRIDE_MATH_H */

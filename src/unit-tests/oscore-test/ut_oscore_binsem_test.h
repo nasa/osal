@@ -64,7 +64,7 @@ void UT_os_bin_sem_get_info_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSCORE_BINSEM_TEST_H */
+#endif /* UT_OSCORE_BINSEM_TEST_H */
 
 /*================================================================================*
 ** End of File: ut_oscore_binsem_test.h

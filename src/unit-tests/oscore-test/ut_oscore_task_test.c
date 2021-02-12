@@ -815,7 +815,7 @@ void UT_os_task_get_id_test()
         OS_TaskDelay(500);
 
         UtPrintf("OS_TaskGetId() - #1 Nominal [This is the expected task Id=%lx]\n",
-                  OS_ObjectIdToInteger(g_task_ids[1]));
+                 OS_ObjectIdToInteger(g_task_ids[1]));
 
         res = OS_TaskDelete(g_task_ids[1]); /* Won't hurt if its already deleted */
 

@@ -45,4 +45,4 @@
 void *OCS_mmap(void *addr, size_t length, int prot, int flags, int fd, OCS_off_t offset);
 int   OCS_munmap(void *addr, size_t length);
 
-#endif  /*  OCS_SYS_MMAN_H */
+#endif /*  OCS_SYS_MMAN_H */

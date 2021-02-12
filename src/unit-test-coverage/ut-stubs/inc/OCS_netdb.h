@@ -36,4 +36,4 @@
 /* prototypes normally declared in netdb.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_NETDB_H */
+#endif /*  OCS_NETDB_H */
