@@ -48,7 +48,7 @@ static int32 UT_GenericReadStub(const char *fname, UT_EntryKey_t fkey, void *buf
     int32  status;
     size_t CopySize;
 
-    status = UT_DefaultStubImpl(fname, fkey, 0x7FFFFFFF);
+    status = UT_DefaultStubImpl(fname, fkey, 0x7FFFFFFF, NULL);
 
     if (status == 0x7FFFFFFF)
     {
@@ -86,7 +86,7 @@ static int32 UT_GenericWriteStub(const char *fname, UT_EntryKey_t fkey, const vo
     int32  status;
     size_t CopySize;
 
-    status = UT_DefaultStubImpl(fname, fkey, 0x7FFFFFFF);
+    status = UT_DefaultStubImpl(fname, fkey, 0x7FFFFFFF, NULL);
 
     if (status == 0x7FFFFFFF)
     {
