@@ -115,7 +115,7 @@ void TestDatagramNetworkApi_Setup(void)
     actual = OS_SocketOpen(&socket_id, OS_SocketDomain_INET6, OS_SocketType_DATAGRAM);
     if (actual == OS_ERR_NOT_IMPLEMENTED)
     {
-        UtPrintf("INET6 not supported\n");
+        UtAssert_Type(NA, false, "INET6 not supported");
     }
     else
     {
@@ -135,7 +135,7 @@ void TestDatagramNetworkApi_Setup(void)
     actual = OS_SocketAddrInit(&addr, OS_SocketDomain_INET6);
     if (actual == OS_ERR_NOT_IMPLEMENTED)
     {
-        UtPrintf("INET6 not supported\n");
+        UtAssert_Type(NA, false, "INET6 not supported");
     }
     else
     {
@@ -145,7 +145,7 @@ void TestDatagramNetworkApi_Setup(void)
     actual = OS_SocketAddrInit(NULL, OS_SocketDomain_INET6);
     if (actual == OS_ERR_NOT_IMPLEMENTED)
     {
-        UtPrintf("INET6 not supported\n");
+        UtAssert_Type(NA, false, "INET6 not supported");
     }
     else
     {

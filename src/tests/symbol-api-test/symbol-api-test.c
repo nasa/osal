@@ -48,24 +48,42 @@ void TestSymbolApi(void)
     */
     UtPrintf("Dumping symbol table with a limit of 32768 bytes\n");
     status = OS_SymbolTableDump("/ram/SymbolTable32k.dat", 32768);
-    UtAssert_True(status == OS_SUCCESS || status == OS_ERR_NOT_IMPLEMENTED, "status after 32k OS_SymbolTableDump = %d",
-                  (int)status);
+    if (status == OS_ERR_NOT_IMPLEMENTED)
+    {
+        UtAssert_Type(NA, false, "Module API not implemented");
+    }
+    else
+    {
+        UtAssert_True(status == OS_SUCCESS, "status after 32k OS_SymbolTableDump = %d", (int)status);
+    }
 
     /*
     ** dump the symbol table with a 128k byte limit
     */
     UtPrintf("Dumping symbol table with a limit of 131072 bytes\n");
     status = OS_SymbolTableDump("/ram/SymbolTable128k.dat", 131072);
-    UtAssert_True(status == OS_SUCCESS || status == OS_ERR_NOT_IMPLEMENTED, "status after 128k OS_SymbolTableDump = %d",
-                  (int)status);
+    if (status == OS_ERR_NOT_IMPLEMENTED)
+    {
+        UtAssert_Type(NA, false, "Module API not implemented");
+    }
+    else
+    {
+        UtAssert_True(status == OS_SUCCESS, "status after 128k OS_SymbolTableDump = %d", (int)status);
+    }
 
     /*
     ** dump the symbol table with a 512k byte limit
     */
     UtPrintf("Dumping symbol table with a limit of 524288 bytes\n");
     status = OS_SymbolTableDump("/ram/SymbolTable512k.dat", 524288);
-    UtAssert_True(status == OS_SUCCESS || status == OS_ERR_NOT_IMPLEMENTED, "status after 512k OS_SymbolTableDump = %d",
-                  (int)status);
+    if (status == OS_ERR_NOT_IMPLEMENTED)
+    {
+        UtAssert_Type(NA, false, "Module API not implemented");
+    }
+    else
+    {
+        UtAssert_True(status == OS_SUCCESS, "status after 512k OS_SymbolTableDump = %d", (int)status);
+    }
 
     /*
     ** Test the symbol lookup
