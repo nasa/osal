@@ -98,23 +98,21 @@ void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Ad
 
     sock = OS_OBJECT_TABLE_GET(OS_stream_table, *token);
 
-    if (OS_SocketAddrToString_Impl(sock->stream_name, OS_MAX_API_NAME, Addr) != OS_SUCCESS)
+    if (OS_SocketAddrToString_Impl(sock->stream_name, sizeof(sock->stream_name), Addr) != OS_SUCCESS)
     {
         sock->stream_name[0] = 0;
     }
     if (OS_SocketAddrGetPort_Impl(&port, Addr) == OS_SUCCESS)
     {
         len = OS_strnlen(sock->stream_name, sizeof(sock->stream_name));
-        snprintf(&sock->stream_name[len], OS_MAX_API_NAME - len, ":%u", (unsigned int)port);
+        snprintf(&sock->stream_name[len], sizeof(sock->stream_name) - len, ":%u", (unsigned int)port);
     }
-    sock->stream_name[OS_MAX_API_NAME - 1] = 0;
 
     if (parent_name)
     {
         /* Append the name from the parent socket. */
         len = OS_strnlen(sock->stream_name, sizeof(sock->stream_name));
         snprintf(&sock->stream_name[len], sizeof(sock->stream_name) - len, "-%s", parent_name);
-        sock->stream_name[sizeof(sock->stream_name) - 1] = 0;
     }
 } /* end OS_CreateSocketName */
 
