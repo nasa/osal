@@ -108,57 +108,6 @@ static int32 UT_GenericWriteStub(const char *fname, UT_EntryKey_t fkey, const vo
     return status;
 }
 
-#ifndef OSAL_OMIT_DEPRECATED
-
-/*****************************************************************************
- *
- * Stub function for OS_creat()
- *
- *****************************************************************************/
-int32 OS_creat(const char *path, int32 access)
-{
-    UT_Stub_RegisterContext(UT_KEY(OS_creat), path);
-    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_creat), access);
-    osal_id_t objid;
-    int32     status;
-
-    status = UT_DEFAULT_IMPL(OS_creat);
-
-    if (status == OS_SUCCESS)
-    {
-        objid  = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_STREAM);
-        status = OS_ObjectIdToInteger(objid);
-    }
-
-    return status;
-}
-
-/*****************************************************************************
- *
- * Stub function for OS_open()
- *
- *****************************************************************************/
-int32 OS_open(const char *path, int32 access, uint32 mode)
-{
-    UT_Stub_RegisterContext(UT_KEY(OS_open), path);
-    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_open), access);
-    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_open), mode);
-    osal_id_t objid;
-    int32     status;
-
-    status = UT_DEFAULT_IMPL(OS_open);
-
-    if (status == OS_SUCCESS)
-    {
-        objid  = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_STREAM);
-        status = OS_ObjectIdToInteger(objid);
-    }
-
-    return status;
-}
-
-#endif
-
 /*****************************************************************************
  *
  * Stub function for OS_OpenCreate()

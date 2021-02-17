@@ -153,49 +153,6 @@ int32 OS_unmount(const char *mountpoint)
     return status;
 }
 
-#ifndef OSAL_OMIT_DEPRECATED
-
-/*****************************************************************************
- *
- * Stub function for OS_fsBlocksFree()
- *
- *****************************************************************************/
-int32 OS_fsBlocksFree(const char *name)
-{
-    UT_Stub_RegisterContext(UT_KEY(OS_fsBlocksFree), name);
-
-    int32 status;
-
-    status = UT_DEFAULT_IMPL_RC(OS_fsBlocksFree, 100);
-
-    return status;
-}
-
-/*****************************************************************************
- *
- * Stub function for OS_fsBytesFree()
- *
- *****************************************************************************/
-int32 OS_fsBytesFree(const char *name, uint64 *bytes_free)
-{
-    UT_Stub_RegisterContext(UT_KEY(OS_fsBytesFree), name);
-    UT_Stub_RegisterContext(UT_KEY(OS_fsBytesFree), bytes_free);
-
-    int32 status;
-
-    status = UT_DEFAULT_IMPL(OS_fsBytesFree);
-
-    if (status == OS_SUCCESS &&
-        UT_Stub_CopyToLocal(UT_KEY(OS_fsBytesFree), bytes_free, sizeof(*bytes_free)) < sizeof(*bytes_free))
-    {
-        *bytes_free = 10000;
-    }
-
-    return status;
-}
-
-#endif /* OSAL_OMIT_DEPRECATED */
-
 /*****************************************************************************
  *
  * Stub function for OS_FileSysStatVolume()

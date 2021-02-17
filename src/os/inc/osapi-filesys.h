@@ -188,52 +188,6 @@ int32 OS_rmfs(const char *devname);
  */
 int32 OS_unmount(const char *mountpoint);
 
-#ifndef OSAL_OMIT_DEPRECATED
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Obtain number of blocks free
- *
- * Returns the number of free blocks in a volume
- *
- * @param[in]  name      The device/path to operate on
- *
- * @return Block count or appropriate error code, see @ref OSReturnCodes
- * @retval #OS_INVALID_POINTER if name is NULL
- * @retval #OS_FS_ERR_PATH_TOO_LONG if the name is too long
- * @retval #OS_ERROR if the OS call failed
- *
- * @deprecated Replaced by OS_FileSysStatVolume() -
- *             Value can be obtained by reading the "blocks_free" struct member.
- *
- */
-int32 OS_fsBlocksFree(const char *name);
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Obtains the number of free bytes in a volume
- *
- * Returns the number of free bytes in a volume
- *
- * @note uses a 64 bit data type to support filesystems that
- * are greater than 4 Gigabytes
- *
- * @param[in]  name       The device/path to operate on
- * @param[out] bytes_free The number of free bytes
- *
- * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_INVALID_POINTER if name is NULL
- * @retval #OS_FS_ERR_PATH_TOO_LONG if the name is too long
- * @retval #OS_ERROR if the OS call failed
- *
- * @deprecated Replaced by OS_FileSysStatVolume().
- *             Value can be obtained by multiplying the "blocks_free" by the "block_size" struct members.
- */
-int32 OS_fsBytesFree(const char *name, uint64 *bytes_free);
-
-#endif /* OSAL_OMIT_DEPRECATED */
-
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Obtains information about size and free space in a volume
