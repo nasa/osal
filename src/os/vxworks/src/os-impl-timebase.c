@@ -399,11 +399,12 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
             if (!sigismember(&inuse, signo))
             {
                 /* signal is available, stop search */
+                local->assigned_signal = signo;
                 break;
             }
         }
 
-        if (signo < SIGRTMIN || signo > SIGRTMAX)
+        if (local->assigned_signal == 0)
         {
             /* no available signal for timer */
             OS_DEBUG("No free RT signals to use for simulated time base\n");
@@ -421,7 +422,6 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
              * Therefore, we choose the signal now, but defer calling
              * timer_create to the internal helper task.
              */
-            local->assigned_signal = signo;
             sigaddset(&local->timer_sigset, signo);
 
             /*
