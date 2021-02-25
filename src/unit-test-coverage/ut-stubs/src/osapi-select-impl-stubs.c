@@ -33,5 +33,20 @@
 #include "utstubs.h"
 #include "os-shared-select.h"
 
-UT_DEFAULT_STUB(OS_SelectSingle_Impl, (const OS_object_token_t *token, uint32 *SelectFlags, int32 msecs))
-UT_DEFAULT_STUB(OS_SelectMultiple_Impl, (OS_FdSet * ReadSet, OS_FdSet *WriteSet, int32 msecs))
+int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, int32 msecs)
+{
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SelectSingle_Impl), token);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SelectSingle_Impl), SelectFlags);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SelectSingle_Impl), msecs);
+
+    return UT_DEFAULT_IMPL(OS_SelectSingle_Impl);
+}
+
+int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
+{
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SelectMultiple_Impl), ReadSet);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SelectMultiple_Impl), WriteSet);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_SelectMultiple_Impl), msecs);
+
+    return UT_DEFAULT_IMPL(OS_SelectMultiple_Impl);
+}
