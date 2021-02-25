@@ -30,12 +30,17 @@ const char *OCS_inet_ntop(int af, const void *cp, char *buf, size_t len)
 {
     int32 Status;
 
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_inet_ntop), af);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_inet_ntop), cp);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_inet_ntop), buf);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_inet_ntop), len);
+
     Status = UT_DEFAULT_IMPL(OCS_inet_ntop);
 
     if (Status == 0)
     {
         /* "nominal" response */
-        return inet_ntop(af, cp, buf, len);
+        return buf;
     }
 
     return (char *)0;
@@ -43,5 +48,9 @@ const char *OCS_inet_ntop(int af, const void *cp, char *buf, size_t len)
 
 int OCS_inet_pton(int af, const char *cp, void *buf)
 {
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_inet_pton), af);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_inet_pton), cp);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_inet_pton), buf);
+
     return UT_DEFAULT_IMPL(OCS_inet_pton);
 }
