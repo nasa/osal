@@ -117,65 +117,6 @@ typedef enum
  * @{
  */
 
-#ifndef OSAL_OMIT_DEPRECATED
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Creates a file specified by path
- *
- * Creates a file specified by const char *path, with read/write
- * permissions by access. The file is also automatically opened by the
- * create call.
- *
- * @param[in] path File name to create
- * @param[in] access Intended access mode - see @ref OSFileAccess
- *
- * @note Valid handle IDs are never negative.  Failure of this
- * call can be checked by testing if the result is less than 0.
- *
- * @return A file handle ID or appropriate error code, see @ref OSReturnCodes
- * @retval #OS_INVALID_POINTER if path is NULL
- * @retval #OS_FS_ERR_PATH_TOO_LONG if path exceeds the maximum number of chars
- * @retval #OS_FS_ERR_PATH_INVALID if path cannot be parsed
- * @retval #OS_FS_ERR_NAME_TOO_LONG if the name of the file is too long
- * @retval #OS_ERROR if permissions are unknown or OS call fails
- * @retval #OS_ERR_NO_FREE_IDS if there are no free file descriptors left
- *
- * @deprecated Replaced by OS_OpenCreate() with flags set to
- *             OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE.
- */
-int32 OS_creat(const char *path, int32 access);
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Opens a file
- *
- * Opens a file.
- *
- * @param[in] path   File name to create
- * @param[in] access Intended access mode - see @ref OSFileAccess
- * @param[in] mode   The file permissions. This parameter is passed through to the
- *		     native open call, but will be ignored. The file mode (or permissions)
- *                   are ignored by the POSIX open call when the O_CREAT access flag is not passed in.
- *
- * @note Valid handle IDs are never negative.  Failure of this
- * call can be checked by testing if the result is less than 0.
- *
- * @return A file handle ID or appropriate error code, see @ref OSReturnCodes
- * @retval #OS_INVALID_POINTER if path is NULL
- * @retval #OS_FS_ERR_PATH_TOO_LONG if path exceeds the maximum number of chars
- * @retval #OS_FS_ERR_PATH_INVALID if path cannot be parsed
- * @retval #OS_FS_ERR_NAME_TOO_LONG if the name of the file is too long
- * @retval #OS_ERROR if permissions are unknown or OS call fails
- * @retval #OS_ERR_NO_FREE_IDS if there are no free file descriptors left
- *
- * @deprecated Replaced by OS_OpenCreate() with flags set to
- *             OS_FILE_FLAG_NONE.
- */
-int32 OS_open(const char *path, int32 access, uint32 mode);
-
-#endif
-
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Open or create a file
