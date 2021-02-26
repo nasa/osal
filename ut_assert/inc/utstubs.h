@@ -315,7 +315,7 @@ void UT_Stub_CallOnce(void (*Func)(void));
 bool UT_Stub_CheckDeferredRetcode(UT_EntryKey_t FuncKey, int32 *Retcode);
 
 /**
- * Check for a forced failure mode entry for the given stub function
+ * Check for a default return value entry for the given stub function
  *
  * If a UT_SetDefaultReturnValue() option is in place for the given function this
  * will return true and increment the internal usage counter.
@@ -324,7 +324,7 @@ bool UT_Stub_CheckDeferredRetcode(UT_EntryKey_t FuncKey, int32 *Retcode);
  * \param Value Set to the value supplied to UT_SetDefaultReturnValue()
  * \returns true if force fail mode is active
  */
-bool UT_Stub_CheckForceFail(UT_EntryKey_t FuncKey, int32 *Value);
+bool UT_Stub_CheckDefaultReturnValue(UT_EntryKey_t FuncKey, int32 *Value);
 
 /**
  * Copies data from a test-supplied buffer to the local buffer
