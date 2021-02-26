@@ -197,35 +197,6 @@ void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value);
  */
 void UT_ClearDefaultReturnValue(UT_EntryKey_t FuncKey);
 
-#ifndef OSAL_OMIT_DEPRECATED
-/**
- * Enable or disable the forced failure mode for the given stub function
- *
- * This triggers a constant failure mode from the stub function, if implemented.
- * The stub function will invoke a given failure path as defined by
- * the stub implementation.
- *
- * A count of the number of times the failure mode is invoked will be maintained.
- *
- * \param FuncKey The stub function to add the return code to.
- * \param Value Arbitrary failure mode value (may or may not be used by the stub)
- *
- * @deprecated replaced by UT_SetDefaultReturnValue
- */
-void UT_SetForceFail(UT_EntryKey_t FuncKey, int32 Value);
-
-/**
- * Disable the forced failure mode for the given stub function
- *
- * This undoes the action of UT_SetDefaultReturnValue()
- *
- * \param FuncKey The stub function entry to clear.
- *
- * @deprecated replaced by UT_ClearDefaultReturnValue
- */
-void UT_ClearForceFail(UT_EntryKey_t FuncKey);
-#endif
-
 /**
  * Set a Hook function for a particular call
  *
@@ -315,7 +286,7 @@ void UT_Stub_CallOnce(void (*Func)(void));
 bool UT_Stub_CheckDeferredRetcode(UT_EntryKey_t FuncKey, int32 *Retcode);
 
 /**
- * Check for a forced failure mode entry for the given stub function
+ * Check for a default return value entry for the given stub function
  *
  * If a UT_SetDefaultReturnValue() option is in place for the given function this
  * will return true and increment the internal usage counter.
@@ -324,7 +295,7 @@ bool UT_Stub_CheckDeferredRetcode(UT_EntryKey_t FuncKey, int32 *Retcode);
  * \param Value Set to the value supplied to UT_SetDefaultReturnValue()
  * \returns true if force fail mode is active
  */
-bool UT_Stub_CheckForceFail(UT_EntryKey_t FuncKey, int32 *Value);
+bool UT_Stub_CheckDefaultReturnValue(UT_EntryKey_t FuncKey, int32 *Value);
 
 /**
  * Copies data from a test-supplied buffer to the local buffer
