@@ -33,6 +33,7 @@
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/stat.h>
 
 #include "common_types.h"
 #include "utassert.h"
@@ -55,10 +56,17 @@ typedef struct
 
 bool UtMem2BinFile(const void *Memory, const char *Filename, uint32 Length)
 {
-    FILE *fp;
+    FILE *      fp;
+    struct stat dststat;
 
     if ((fp = fopen(Filename, "w")))
     {
+        if (stat(Filename, &dststat) == 0)
+        {
+            chmod(Filename, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
+            stat(Filename, &dststat);
+        }
+
         fwrite(Memory, Length, 1, fp);
         fclose(fp);
         return (true);
@@ -95,12 +103,18 @@ bool UtBinFile2Mem(void *Memory, const char *Filename, uint32 Length)
 
 bool UtMem2HexFile(const void *Memory, const char *Filename, uint32 Length)
 {
-    FILE * fp;
-    uint32 i;
-    uint32 j;
+    FILE *      fp;
+    uint32      i;
+    uint32      j;
+    struct stat dststat;
 
     if ((fp = fopen(Filename, "w")))
     {
+        if (stat(Filename, &dststat) == 0)
+        {
+            chmod(Filename, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
+            stat(Filename, &dststat);
+        }
 
         for (i = 0; i < Length; i += 16)
         {
