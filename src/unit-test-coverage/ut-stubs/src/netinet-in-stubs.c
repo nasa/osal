@@ -18,21 +18,29 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/types.h */
-#ifndef OSAL_OVERRIDE_SYS_TYPES_H
-#define OSAL_OVERRIDE_SYS_TYPES_H
+/**
+ * \brief    Stubs for netinet/in.h
+ * \ingroup  ut-stubs
+ */
+#include "utstubs.h"
+#include <OCS_arpa_inet.h>
 
-#include <OCS_sys_types.h>
+uint16_t OCS_htons(uint16_t hostshort)
+{
+    return UT_DEFAULT_IMPL(OCS_htons);
+}
 
-/* ----------------------------------------- */
-/* mappings for declarations in sys/types.h */
-/* ----------------------------------------- */
-#define ssize_t OCS_ssize_t
-#define off_t   OCS_off_t
-#define mode_t  OCS_mode_t
-#define pid_t   OCS_pid_t
-#define gid_t   OCS_gid_t
-#define uid_t   OCS_uid_t
-#define u_short OCS_u_short
+uint16_t OCS_ntohs(uint16_t netshort)
+{
+    return UT_DEFAULT_IMPL(OCS_ntohs);
+}
 
-#endif /* OSAL_OVERRIDE_SYS_TYPES_H */
+uint32_t OCS_htonl(uint32_t hostlong)
+{
+    return UT_DEFAULT_IMPL(OCS_htonl);
+}
+
+uint32_t OCS_ntohl(uint32_t netlong)
+{
+    return UT_DEFAULT_IMPL(OCS_ntohl);
+}
