@@ -173,8 +173,10 @@ void TestCreatRemove(void)
     UtAssert_True(status == OS_SUCCESS, "status after remove max name length file = %d", (int)status);
 
     /* try creating with file name too big, should fail */
+    fd     = ~OS_OBJECT_ID_UNDEFINED;
     status = OS_OpenCreate(&fd, longfilename, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status < OS_SUCCESS, "status after create file name too long = %d", (int)status);
+    UtAssert_UINT32_EQ(fd, OS_OBJECT_ID_UNDEFINED);
 
     /* try removing with file name too big. Should Fail */
     status = OS_remove(longfilename);
@@ -233,8 +235,10 @@ void TestOpenClose(void)
     UtAssert_True(status != OS_SUCCESS, "status after close = %d", (int)status);
 
     /*  open a file that was never in the system */
+    fd     = ~OS_OBJECT_ID_UNDEFINED;
     status = OS_OpenCreate(&fd, "/drive0/FileNotHere", OS_FILE_FLAG_NONE, OS_READ_ONLY);
     UtAssert_True(status < OS_SUCCESS, "status after open = %d", (int)status);
+    UtAssert_UINT32_EQ(fd, OS_OBJECT_ID_UNDEFINED);
 
     /* try removing the file from the drive  to end the function */
     status = OS_remove(filename);

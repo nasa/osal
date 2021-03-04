@@ -66,10 +66,10 @@
 typedef union
 {
     char               data[OS_SOCKADDR_MAX_LEN];
-    struct sockaddr    sockaddr;
-    struct sockaddr_in sockaddr_in;
+    struct sockaddr    sa;
+    struct sockaddr_in sa_in;
 #ifdef OS_NETWORK_SUPPORTS_IPV6
-    struct sockaddr_in6 sockaddr_in6;
+    struct sockaddr_in6 sa_in6;
 #endif
 } OS_SockAddr_Accessor_t;
 
@@ -565,8 +565,8 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
         return OS_ERR_NOT_IMPLEMENTED;
     }
 
-    Addr->ActualLength           = OSAL_SIZE_C(addrlen);
-    Accessor->sockaddr.sa_family = sa_family;
+    Addr->ActualLength     = OSAL_SIZE_C(addrlen);
+    Accessor->sa.sa_family = sa_family;
 
     return OS_SUCCESS;
 } /* end OS_SocketAddrInit_Impl */
@@ -586,14 +586,14 @@ int32 OS_SocketAddrToString_Impl(char *buffer, size_t buflen, const OS_SockAddr_
 
     Accessor = (const OS_SockAddr_Accessor_t *)&Addr->AddrData;
 
-    switch (Accessor->sockaddr.sa_family)
+    switch (Accessor->sa.sa_family)
     {
         case AF_INET:
-            addrbuffer = &Accessor->sockaddr_in.sin_addr;
+            addrbuffer = &Accessor->sa_in.sin_addr;
             break;
 #ifdef OS_NETWORK_SUPPORTS_IPV6
         case AF_INET6:
-            addrbuffer = &Accessor->sockaddr_in6.sin6_addr;
+            addrbuffer = &Accessor->sa_in6.sin6_addr;
             break;
 #endif
         default:
@@ -601,7 +601,7 @@ int32 OS_SocketAddrToString_Impl(char *buffer, size_t buflen, const OS_SockAddr_
             break;
     }
 
-    if (inet_ntop(Accessor->sockaddr.sa_family, addrbuffer, buffer, buflen) == NULL)
+    if (inet_ntop(Accessor->sa.sa_family, addrbuffer, buffer, buflen) == NULL)
     {
         return OS_ERROR;
     }
@@ -624,14 +624,14 @@ int32 OS_SocketAddrFromString_Impl(OS_SockAddr_t *Addr, const char *string)
 
     Accessor = (OS_SockAddr_Accessor_t *)&Addr->AddrData;
 
-    switch (Accessor->sockaddr.sa_family)
+    switch (Accessor->sa.sa_family)
     {
         case AF_INET:
-            addrbuffer = &Accessor->sockaddr_in.sin_addr;
+            addrbuffer = &Accessor->sa_in.sin_addr;
             break;
 #ifdef OS_NETWORK_SUPPORTS_IPV6
         case AF_INET6:
-            addrbuffer = &Accessor->sockaddr_in6.sin6_addr;
+            addrbuffer = &Accessor->sa_in6.sin6_addr;
             break;
 #endif
         default:
@@ -639,7 +639,7 @@ int32 OS_SocketAddrFromString_Impl(OS_SockAddr_t *Addr, const char *string)
             break;
     }
 
-    if (inet_pton(Accessor->sockaddr.sa_family, string, addrbuffer) < 0)
+    if (inet_pton(Accessor->sa.sa_family, string, addrbuffer) < 0)
     {
         return OS_ERROR;
     }
@@ -662,14 +662,14 @@ int32 OS_SocketAddrGetPort_Impl(uint16 *PortNum, const OS_SockAddr_t *Addr)
 
     Accessor = (const OS_SockAddr_Accessor_t *)&Addr->AddrData;
 
-    switch (Accessor->sockaddr.sa_family)
+    switch (Accessor->sa.sa_family)
     {
         case AF_INET:
-            sa_port = Accessor->sockaddr_in.sin_port;
+            sa_port = Accessor->sa_in.sin_port;
             break;
 #ifdef OS_NETWORK_SUPPORTS_IPV6
         case AF_INET6:
-            sa_port = Accessor->sockaddr_in6.sin6_port;
+            sa_port = Accessor->sa_in6.sin6_port;
             break;
 #endif
         default:
@@ -698,14 +698,14 @@ int32 OS_SocketAddrSetPort_Impl(OS_SockAddr_t *Addr, uint16 PortNum)
     sa_port  = htons(PortNum);
     Accessor = (OS_SockAddr_Accessor_t *)&Addr->AddrData;
 
-    switch (Accessor->sockaddr.sa_family)
+    switch (Accessor->sa.sa_family)
     {
         case AF_INET:
-            Accessor->sockaddr_in.sin_port = sa_port;
+            Accessor->sa_in.sin_port = sa_port;
             break;
 #ifdef OS_NETWORK_SUPPORTS_IPV6
         case AF_INET6:
-            Accessor->sockaddr_in6.sin6_port = sa_port;
+            Accessor->sa_in6.sin6_port = sa_port;
             break;
 #endif
         default:

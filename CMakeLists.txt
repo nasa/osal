@@ -249,6 +249,7 @@ set(OSAL_SRCLIST
     src/os/shared/src/osapi-task.c
     src/os/shared/src/osapi-timebase.c
     src/os/shared/src/osapi-time.c
+    src/os/shared/src/osapi-version.c
 )
 
 if (OSAL_CONFIG_DEBUG_PRINTF)

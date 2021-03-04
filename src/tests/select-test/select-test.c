@@ -282,7 +282,7 @@ void Teardown_Multi(void)
 {
     if (networkImplemented)
     {
-        // Server 1 is intentionaly left waiting so we close it out here.
+        /* Server 1 is intentionaly left waiting so we close it out here. */
         OS_close(s_socket_id);
         OS_TaskDelete(s_task_id);
 

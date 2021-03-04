@@ -23,6 +23,7 @@ set(MODULE_LIST
     task
     timebase
     time
+    version
 )
 
 set(SHARED_COVERAGE_LINK_LIST

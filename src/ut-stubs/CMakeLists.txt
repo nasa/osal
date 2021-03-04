@@ -35,6 +35,7 @@ add_library(ut_osapi_stubs STATIC
     osapi-utstub-task.c
     osapi-utstub-time.c
     osapi-utstub-timebase.c
+    osapi-utstub-version.c
 )
 
 # Some of the internal API definitions in stubs are based on

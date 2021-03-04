@@ -36,11 +36,12 @@
 # the OCS functions that are actually used. 
 #
 add_library(ut_libc_stubs STATIC EXCLUDE_FROM_ALL
-    src/bsd-select-stubs.c
+    src/arpa-inet-stubs.c
     src/libc-ctype-stubs.c
     src/libc-stdio-stubs.c
     src/libc-stdlib-stubs.c
     src/libc-string-stubs.c
+    src/netinet-in-stubs.c
     src/posix-dirent-stubs.c
     src/posix-dlfcn-stubs.c
     src/posix-errno-stubs.c
@@ -54,6 +55,8 @@ add_library(ut_libc_stubs STATIC EXCLUDE_FROM_ALL
     src/posix-stat-stubs.c
     src/posix-time-stubs.c
     src/posix-unistd-stubs.c
+    src/sys-socket-stubs.c
+    src/sys-select-stubs.c
     src/vxworks-ataDrv-stubs.c
     src/vxworks-dosFsLib-stubs.c
     src/vxworks-errnoLib-stubs.c

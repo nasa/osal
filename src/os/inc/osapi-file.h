@@ -125,7 +125,7 @@ typedef enum
  * of outputting the ID/descriptor separately from the return value, rather
  * than relying on the user to convert it back.
  *
- * @param[out] filedes  The handle ID
+ * @param[out] filedes  The handle ID (OS_OBJECT_ID_UNDEFINED on failure)
  * @param[in] path      File name to create or open
  * @param[in] flags     The file permissions - see @ref OS_file_flag_t
  * @param[in] access    Intended access mode - see @ref OSFileAccess

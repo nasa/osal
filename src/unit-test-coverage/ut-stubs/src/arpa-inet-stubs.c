@@ -18,21 +18,30 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/types.h */
-#ifndef OSAL_OVERRIDE_SYS_TYPES_H
-#define OSAL_OVERRIDE_SYS_TYPES_H
+/**
+ * \brief    Stubs for arpa/inet.h
+ * \ingroup  ut-stubs
+ */
+#include <arpa/inet.h>
+#include "utstubs.h"
+#include <OCS_arpa_inet.h>
 
-#include <OCS_sys_types.h>
+const char *OCS_inet_ntop(int af, const void *cp, char *buf, size_t len)
+{
+    int32 Status;
 
-/* ----------------------------------------- */
-/* mappings for declarations in sys/types.h */
-/* ----------------------------------------- */
-#define ssize_t OCS_ssize_t
-#define off_t   OCS_off_t
-#define mode_t  OCS_mode_t
-#define pid_t   OCS_pid_t
-#define gid_t   OCS_gid_t
-#define uid_t   OCS_uid_t
-#define u_short OCS_u_short
+    Status = UT_DEFAULT_IMPL(OCS_inet_ntop);
 
-#endif /* OSAL_OVERRIDE_SYS_TYPES_H */
+    if (Status == 0)
+    {
+        /* "nominal" response */
+        return inet_ntop(af, cp, buf, len);
+    }
+
+    return (char *)0;
+}
+
+int OCS_inet_pton(int af, const char *cp, void *buf)
+{
+    return UT_DEFAULT_IMPL(OCS_inet_pton);
+}
