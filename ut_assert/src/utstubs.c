@@ -637,13 +637,6 @@ void UT_SetVaHookFunction(UT_EntryKey_t FuncKey, UT_VaHookFunc_t HookFunc, void 
     UT_DoSetHookFunction(FuncKey, Value, UserObj, true);
 }
 
-void UT_SetVaHookOverrideStubFunction(UT_EntryKey_t FuncKey, UT_VaHookFunc_t HookFunc, void *UserObj)
-{    
-    UT_DoSetOverride(FuncKey);
-
-    UT_SetVaHookFunction(FuncKey, HookFunc, UserObj);
-}
-
 const void *UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Name, size_t ExpectedTypeSize)
 {
     uint32                      i;

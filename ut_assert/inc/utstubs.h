@@ -279,22 +279,6 @@ void UT_SetHookFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *Use
 void UT_SetVaHookFunction(UT_EntryKey_t FuncKey, UT_VaHookFunc_t HookFunc, void *UserObj);
 
 /**
- * Set a Hook function for a particular call, but override any remaining stub functionality
- * for va_list using functions.  However, some systems have limited support for va_list, so 
- * this might not be available on those systems.  Tests should use the generic (non-va) hook 
- * function unless the arguments are truly necessary.
- *
- * This triggers a callback to a user-defined function when the stub is invoked.
- * Upon return to the original stub the OverrideStub will be true and any remaining
- * code lines in stub (that are purposefully bypassed by the stub) will not be executed.
- *
- * \param FuncKey  The stub function to add the hook to.
- * \param HookFunc User defined hook function.  Set NULL to delete/clear an entry.
- * \param UserObj  Arbitrary user data object to pass to the hook function
- */
-void UT_SetVaHookOverrideStubFunction(UT_EntryKey_t FuncKey, UT_VaHookFunc_t HookFunc, void *UserObj);
-
-/**
  * Get a count for the number of times a stub was invoked, at its most recent return value
  *
  * Test cases may check this to determine if a particular stub was called during the test.
