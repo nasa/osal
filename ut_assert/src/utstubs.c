@@ -59,6 +59,7 @@ typedef enum
     UT_ENTRYTYPE_CALLBACK_HOOK,    /**< Pointer to a custom callback/hook function */
     UT_ENTRYTYPE_CALLBACK_CONTEXT, /**< Context data for callback/hook function */
     UT_ENTRYTYPE_CALL_ONCE,        /**< Records a "call once" directive */
+    UT_ENTRYTYPE_OVERRIDE_STUB,    /**< Records when stub after hook call behavior should not be used */
 } UT_EntryType_t;
 
 typedef struct
@@ -181,6 +182,24 @@ static UT_StubTableEntry_t *UT_GetStubEntry(UT_EntryKey_t FuncKey, UT_EntryType_
     }
 
     return (StubPtr);
+}
+
+static void UT_DoSetOverride(UT_EntryKey_t FuncKey)
+{
+    UT_StubTableEntry_t *StubPtr;
+
+    /* check if there is already an entry */
+    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_OVERRIDE_STUB);
+
+    /* If NULL, then this is the first set, set a UT_ENTRYTYPE_OVERRIDE_STUB */
+    if (StubPtr == NULL)
+    {
+        StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
+
+        StubPtr->FuncKey     = FuncKey;
+        StubPtr->EntryType   = UT_ENTRYTYPE_OVERRIDE_STUB;
+    }
+
 }
 
 void UT_ResetState(UT_EntryKey_t FuncKey)
@@ -602,6 +621,13 @@ void UT_SetHookFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *Use
     UT_DoSetHookFunction(FuncKey, Value, UserObj, false);
 }
 
+void UT_SetHookOverrideStubFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *UserObj)
+{    
+    UT_DoSetOverride(FuncKey);
+
+    UT_SetHookFunction(FuncKey, HookFunc, UserObj);
+}
+
 void UT_SetVaHookFunction(UT_EntryKey_t FuncKey, UT_VaHookFunc_t HookFunc, void *UserObj)
 {
     UT_HookFuncPtr_t Value;
@@ -609,6 +635,13 @@ void UT_SetVaHookFunction(UT_EntryKey_t FuncKey, UT_VaHookFunc_t HookFunc, void 
     Value.Va = HookFunc;
 
     UT_DoSetHookFunction(FuncKey, Value, UserObj, true);
+}
+
+void UT_SetVaHookOverrideStubFunction(UT_EntryKey_t FuncKey, UT_VaHookFunc_t HookFunc, void *UserObj)
+{    
+    UT_DoSetOverride(FuncKey);
+
+    UT_SetVaHookFunction(FuncKey, HookFunc, UserObj);
 }
 
 const void *UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Name, size_t ExpectedTypeSize)
@@ -852,4 +885,15 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
     va_end(va);
 
     return Retcode;
+}
+
+bool UT_StubIsOverridden(UT_EntryKey_t FuncKey)
+{
+    UT_StubTableEntry_t  *StubPtr;
+
+    /* get override status */
+    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_OVERRIDE_STUB);
+
+    /* StubPtr will be NULL when override is not set */
+    return (StubPtr != NULL);
 }
