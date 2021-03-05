@@ -184,24 +184,6 @@ static UT_StubTableEntry_t *UT_GetStubEntry(UT_EntryKey_t FuncKey, UT_EntryType_
     return (StubPtr);
 }
 
-static void UT_DoSetOverride(UT_EntryKey_t FuncKey)
-{
-    UT_StubTableEntry_t *StubPtr;
-
-    /* check if there is already an entry */
-    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_OVERRIDE_STUB);
-
-    /* If NULL, then this is the first set, set a UT_ENTRYTYPE_OVERRIDE_STUB */
-    if (StubPtr == NULL)
-    {
-        StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
-
-        StubPtr->FuncKey     = FuncKey;
-        StubPtr->EntryType   = UT_ENTRYTYPE_OVERRIDE_STUB;
-    }
-
-}
-
 void UT_ResetState(UT_EntryKey_t FuncKey)
 {
     UT_StubTableEntry_t *StubPtr;
@@ -623,7 +605,19 @@ void UT_SetHookFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *Use
 
 void UT_SetHookOverrideStubFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *UserObj)
 {    
-    UT_DoSetOverride(FuncKey);
+    UT_StubTableEntry_t *StubPtr;
+
+    /* check if there is already an entry */
+    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_OVERRIDE_STUB);
+
+    /* If NULL, then this is the first set, set a UT_ENTRYTYPE_OVERRIDE_STUB */
+    if (StubPtr == NULL)
+    {
+        StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
+
+        StubPtr->FuncKey     = FuncKey;
+        StubPtr->EntryType   = UT_ENTRYTYPE_OVERRIDE_STUB;
+    }
 
     UT_SetHookFunction(FuncKey, HookFunc, UserObj);
 }
