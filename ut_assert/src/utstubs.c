@@ -876,7 +876,7 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
 
 bool UT_StubIsOverridden(UT_EntryKey_t FuncKey)
 {
-    UT_StubTableEntry_t  *StubPtr;
+    UT_StubTableEntry_t *StubPtr;
 
     /* get override status */
     StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_OVERRIDE_STUB);
