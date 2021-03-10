@@ -142,34 +142,6 @@ extern "C"
     CompileTimeAssert(sizeof(int64) == 8, Typeint64WrongSize);
     CompileTimeAssert(sizeof(cpuaddr) >= sizeof(void *), TypePtrWrongSize);
 
-/*
- * TEMPORARY COMPATIBILITY MACRO
- *
- * Any code that depends on this macro should be fixed so as to not need it.
- * The value for this had been set by the BSP makefiles but this is not reliable,
- * especially on processors that support both big- and little- endian modes e.g.
- * ARM and MIPS.
- *
- * This is deprecated and only here to bridge the gap until code that depends
- * on this can be fixed.  Do not write any new code that uses this macro.
- *
- * If using an older makefile that defines one of the BIT_ORDER macros already,
- * then this entire section is skipped and the macro is used as-is.
- */
-#if !defined(SOFTWARE_BIG_BIT_ORDER) && !defined(SOFTWARE_LITTLE_BIT_ORDER)
-
-#if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || defined(__BIG_ENDIAN__) || defined(__ARMEB__) || \
-    defined(__THUMBEB__) || defined(__AARCH64EB__) || defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
-/* It is a big-endian target architecture */
-#define SOFTWARE_BIG_BIT_ORDER
-#elif defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN || defined(__LITTLE_ENDIAN__) || defined(__ARMEL__) || \
-    defined(__THUMBEL__) || defined(__AARCH64EL__) || defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
-/* It is a little-endian target architecture */
-#define SOFTWARE_LITTLE_BIT_ORDER
-#endif
-
-#endif /* !defined(SOFTWARE_BIG_BIT_ORDER) && !defined(SOFTWARE_LITTLE_BIT_ORDER) */
-
 #ifdef __cplusplus
 }
 #endif
