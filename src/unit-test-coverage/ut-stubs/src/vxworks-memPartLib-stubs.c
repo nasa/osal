@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_memPartLib.h>
+#include "OCS_memPartLib.h"
 
 OCS_STATUS OCS_memPartShow(OCS_PART_ID partId, int type)
 {

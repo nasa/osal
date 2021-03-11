@@ -28,10 +28,10 @@
 #include "ut-adaptor-symtab.h"
 #include "os-shared-module.h"
 
-#include <OCS_string.h>
-#include <OCS_unistd.h>
-#include <OCS_fcntl.h>
-#include <OCS_symLib.h>
+#include "OCS_string.h"
+#include "OCS_unistd.h"
+#include "OCS_fcntl.h"
+#include "OCS_symLib.h"
 
 void Test_OS_GlobalSymbolLookup_Impl(void)
 {

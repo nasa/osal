@@ -22,7 +22,7 @@
 #ifndef OCS_NETINET_IN_H
 #define OCS_NETINET_IN_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in netinet/in.h */

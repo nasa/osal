@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_WCHAR_H
 #define OSAL_OVERRIDE_WCHAR_H
 
-#include <OCS_wchar.h>
+#include "OCS_wchar.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in wchar.h */

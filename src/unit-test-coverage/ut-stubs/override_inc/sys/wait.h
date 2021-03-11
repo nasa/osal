@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SYS_WAIT_H
 #define OSAL_OVERRIDE_SYS_WAIT_H
 
-#include <OCS_sys_wait.h>
+#include "OCS_sys_wait.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/wait.h */

@@ -22,7 +22,7 @@
 #ifndef OCS_FCNTL_H
 #define OCS_FCNTL_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in fcntl.h */

@@ -29,7 +29,7 @@
 #define OS_SHARED_DIR_H
 
 #include "osapi-dir.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /* directory objects */
 typedef struct

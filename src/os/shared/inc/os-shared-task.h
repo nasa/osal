@@ -29,7 +29,7 @@
 #define OS_SHARED_TASK_H
 
 #include "osapi-task.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /*tasks */
 typedef struct

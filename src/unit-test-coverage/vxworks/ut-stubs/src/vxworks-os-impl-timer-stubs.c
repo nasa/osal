@@ -28,6 +28,6 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <os-shared-timebase.h>
+#include "os-shared-timebase.h"
 
 UT_DEFAULT_STUB(OS_VxWorks_TimeBaseAPI_Impl_Init, (void))

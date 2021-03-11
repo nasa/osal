@@ -29,11 +29,11 @@
 
 #include "os-shared-file.h"
 
-#include <OCS_stdlib.h>
-#include <OCS_taskLib.h>
-#include <OCS_shellLib.h>
-#include <OCS_unistd.h>
-#include <OCS_stat.h>
+#include "OCS_stdlib.h"
+#include "OCS_taskLib.h"
+#include "OCS_shellLib.h"
+#include "OCS_unistd.h"
+#include "OCS_stat.h"
 
 void Test_OS_VxWorks_StreamAPI_Impl_Init(void)
 {

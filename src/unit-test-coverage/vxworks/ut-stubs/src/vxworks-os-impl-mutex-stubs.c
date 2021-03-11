@@ -28,6 +28,6 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <os-shared-mutex.h>
+#include "os-shared-mutex.h"
 
 UT_DEFAULT_STUB(OS_VxWorks_MutexAPI_Impl_Init, (void))

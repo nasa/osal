@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_PTHREAD_H
 #define OSAL_OVERRIDE_PTHREAD_H
 
-#include <OCS_pthread.h>
+#include "OCS_pthread.h"
 #include <sched.h>
 
 /* ----------------------------------------- */

@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_VERSION_H
 #define OSAL_OVERRIDE_VERSION_H
 
-#include <OCS_version.h>
+#include "OCS_version.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in version.h */

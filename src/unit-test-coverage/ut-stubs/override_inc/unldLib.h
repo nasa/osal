@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_UNLDLIB_H
 #define OSAL_OVERRIDE_UNLDLIB_H
 
-#include <OCS_unldLib.h>
+#include "OCS_unldLib.h"
 #include <vxWorks.h>
 #include <moduleLib.h>
 

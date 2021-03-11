@@ -29,8 +29,8 @@
 #include "os-shared-queue.h"
 #include "os-shared-timebase.h"
 
-#include <OCS_msgQLib.h>
-#include <OCS_errno.h>
+#include "OCS_msgQLib.h"
+#include "OCS_errno.h"
 
 void Test_OS_VxWorks_QueueAPI_Impl_Init(void)
 {

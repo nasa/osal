@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_NETINET_TCP_H
 #define OSAL_OVERRIDE_NETINET_TCP_H
 
-#include <OCS_netinet_tcp.h>
+#include "OCS_netinet_tcp.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in netinet/tcp.h */

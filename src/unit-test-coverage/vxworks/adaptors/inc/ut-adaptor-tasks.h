@@ -29,7 +29,7 @@
 #define UT_ADAPTOR_TASKS_H
 
 #include "common_types.h"
-#include <OCS_taskLib.h>
+#include "OCS_taskLib.h"
 
 extern void *const  UT_Ref_OS_impl_task_table;
 extern size_t const UT_Ref_OS_impl_task_table_SIZE;

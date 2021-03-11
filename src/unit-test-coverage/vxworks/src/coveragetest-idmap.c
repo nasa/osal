@@ -30,8 +30,8 @@
 
 #include "os-shared-idmap.h"
 
-#include <OCS_errno.h>
-#include <OCS_objLib.h>
+#include "OCS_errno.h"
+#include "OCS_objLib.h"
 
 OCS_SEM TestGlobalSem;
 

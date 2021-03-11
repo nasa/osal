@@ -29,8 +29,8 @@
 #include "osconfig.h"
 #include "ut-adaptor-queues.h"
 
-#include <os-vxworks.h>
-#include <os-impl-queues.h>
+#include "os-vxworks.h"
+#include "os-impl-queues.h"
 
 void *const  UT_Ref_OS_impl_queue_table      = OS_impl_queue_table;
 size_t const UT_Ref_OS_impl_queue_table_SIZE = sizeof(OS_impl_queue_table);

@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SEMLIB_H
 #define OSAL_OVERRIDE_SEMLIB_H
 
-#include <OCS_semLib.h>
+#include "OCS_semLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

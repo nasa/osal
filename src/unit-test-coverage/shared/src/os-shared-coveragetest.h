@@ -28,9 +28,9 @@
 #ifndef OS_SHARED_COVERAGETEST_H
 #define OS_SHARED_COVERAGETEST_H
 
-#include <utassert.h>
-#include <uttest.h>
-#include <utstubs.h>
+#include "utassert.h"
+#include "uttest.h"
+#include "utstubs.h"
 #include "osapi.h"
 
 #include "os-shared-idmap.h"

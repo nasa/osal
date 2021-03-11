@@ -27,7 +27,7 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-task.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 static uint32 UT_TestHook_Count = 0;
 

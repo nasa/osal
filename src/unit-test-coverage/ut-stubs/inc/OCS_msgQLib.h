@@ -22,9 +22,9 @@
 #ifndef OCS_MSGQLIB_H
 #define OCS_MSGQLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
-#include <OCS_objLib.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
+#include "OCS_objLib.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in msgQLib.h */

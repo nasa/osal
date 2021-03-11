@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SIGNAL_H
 #define OSAL_OVERRIDE_SIGNAL_H
 
-#include <OCS_signal.h>
+#include "OCS_signal.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in signal.h */

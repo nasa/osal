@@ -22,7 +22,7 @@
 #ifndef OCS_SYS_UN_H
 #define OCS_SYS_UN_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/un.h */

@@ -32,8 +32,8 @@
 #include "os-shared-idmap.h"
 #include "os-shared-timebase.h"
 
-#include <OCS_errno.h>
-#include <OCS_objLib.h>
+#include "OCS_errno.h"
+#include "OCS_objLib.h"
 
 void Test_OS_VxWorks_BinSemAPI_Impl_Init(void)
 {

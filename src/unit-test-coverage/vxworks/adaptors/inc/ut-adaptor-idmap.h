@@ -29,7 +29,7 @@
 #define UT_ADAPTOR_IDMAP_H
 
 #include "common_types.h"
-#include <OCS_semLib.h>
+#include "OCS_semLib.h"
 
 /*****************************************************
  *

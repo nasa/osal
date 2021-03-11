@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_NETDB_H
 #define OSAL_OVERRIDE_NETDB_H
 
-#include <OCS_netdb.h>
+#include "OCS_netdb.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in netdb.h */

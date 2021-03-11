@@ -29,7 +29,7 @@
 #define OS_SHARED_IDMAP_H
 
 #include "osapi-idmap.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 #define OS_OBJECT_ID_RESERVED ((osal_id_t) {0xFFFFFFFF})
 

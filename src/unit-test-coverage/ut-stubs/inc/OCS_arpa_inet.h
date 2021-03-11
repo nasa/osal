@@ -22,7 +22,7 @@
 #ifndef OCS_ARPA_INET_H
 #define OCS_ARPA_INET_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in arpa/inet.h */

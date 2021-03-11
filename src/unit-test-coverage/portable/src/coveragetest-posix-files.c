@@ -30,12 +30,12 @@
 #include "os-shared-file.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_stdio.h>
-#include <OCS_stdlib.h>
-#include <OCS_unistd.h>
-#include <OCS_fcntl.h>
-#include <OCS_stat.h>
-#include <OCS_errno.h>
+#include "OCS_stdio.h"
+#include "OCS_stdlib.h"
+#include "OCS_unistd.h"
+#include "OCS_fcntl.h"
+#include "OCS_stat.h"
+#include "OCS_errno.h"
 
 void Test_OS_FileOpen_Impl(void)
 {

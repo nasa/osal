@@ -22,7 +22,7 @@
 #ifndef OCS_COMPLEX_H
 #define OCS_COMPLEX_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in complex.h */

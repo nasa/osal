@@ -22,7 +22,7 @@
 #ifndef OCS_LOCALE_H
 #define OCS_LOCALE_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in locale.h */

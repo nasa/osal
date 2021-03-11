@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_OBJLIB_H
 #define OSAL_OVERRIDE_OBJLIB_H
 
-#include <OCS_objLib.h>
+#include "OCS_objLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

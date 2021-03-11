@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_ASSERT_H
 #define OSAL_OVERRIDE_ASSERT_H
 
-#include <OCS_assert.h>
+#include "OCS_assert.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in assert.h */

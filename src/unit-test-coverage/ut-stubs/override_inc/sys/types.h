@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SYS_TYPES_H
 #define OSAL_OVERRIDE_SYS_TYPES_H
 
-#include <OCS_sys_types.h>
+#include "OCS_sys_types.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/types.h */

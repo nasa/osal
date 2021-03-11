@@ -22,8 +22,8 @@
 #ifndef OCS_SYS_SOCKET_H
 #define OCS_SYS_SOCKET_H
 
-#include <OCS_basetypes.h>
-#include <OCS_sys_types.h>
+#include "OCS_basetypes.h"
+#include "OCS_sys_types.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/socket.h */

@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_WCTYPE_H
 #define OSAL_OVERRIDE_WCTYPE_H
 
-#include <OCS_wctype.h>
+#include "OCS_wctype.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in wctype.h */

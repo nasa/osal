@@ -31,7 +31,7 @@
 #include "os-shared-task.h"
 #include "os-shared-common.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 #include <limits.h>
 
 static uint32 TimerSyncCount  = 0;

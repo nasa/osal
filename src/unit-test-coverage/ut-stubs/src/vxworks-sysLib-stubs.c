@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_sysLib.h>
+#include "OCS_sysLib.h"
 
 int OCS_sysClkRateGet(void)
 {

@@ -32,10 +32,10 @@
 #include "os-shared-idmap.h"
 #include "os-shared-select.h"
 
-#include <OCS_stdlib.h>
-#include <OCS_unistd.h>
-#include <OCS_fcntl.h>
-#include <OCS_errno.h>
+#include "OCS_stdlib.h"
+#include "OCS_unistd.h"
+#include "OCS_fcntl.h"
+#include "OCS_errno.h"
 
 void Test_OS_GenericClose_Impl(void)
 {

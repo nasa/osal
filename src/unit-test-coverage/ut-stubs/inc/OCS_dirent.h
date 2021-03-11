@@ -22,7 +22,7 @@
 #ifndef OCS_DIRENT_H
 #define OCS_DIRENT_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in dirent.h */

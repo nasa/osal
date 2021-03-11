@@ -29,7 +29,7 @@
 #define OS_SHARED_PRINTF_H
 
 #include "osapi-printf.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /*
  * Variables related to the console buffer.

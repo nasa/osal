@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_TASKLIB_H
 #define OSAL_OVERRIDE_TASKLIB_H
 
-#include <OCS_taskLib.h>
+#include "OCS_taskLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

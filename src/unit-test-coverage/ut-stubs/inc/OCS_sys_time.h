@@ -22,8 +22,8 @@
 #ifndef OCS_SYS_TIME_H
 #define OCS_SYS_TIME_H
 
-#include <OCS_basetypes.h>
-#include <OCS_time.h>
+#include "OCS_basetypes.h"
+#include "OCS_time.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/time.h */

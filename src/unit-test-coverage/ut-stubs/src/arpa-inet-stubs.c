@@ -24,7 +24,7 @@
  */
 #include <arpa/inet.h>
 #include "utstubs.h"
-#include <OCS_arpa_inet.h>
+#include "OCS_arpa_inet.h"
 
 const char *OCS_inet_ntop(int af, const void *cp, char *buf, size_t len)
 {

@@ -22,7 +22,7 @@
 #ifndef OCS_STRING_H
 #define OCS_STRING_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in string.h */

@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_symLib.h>
+#include "OCS_symLib.h"
 
 struct OCS_SYMBOL
 {

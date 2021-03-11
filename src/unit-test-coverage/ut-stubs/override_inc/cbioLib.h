@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_CBIOLIB_H
 #define OSAL_OVERRIDE_CBIOLIB_H
 
-#include <OCS_cbioLib.h>
+#include "OCS_cbioLib.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in cbioLib.h */

@@ -28,6 +28,6 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <os-shared-binsem.h>
+#include "os-shared-binsem.h"
 
 UT_DEFAULT_STUB(OS_VxWorks_BinSemAPI_Impl_Init, (void))

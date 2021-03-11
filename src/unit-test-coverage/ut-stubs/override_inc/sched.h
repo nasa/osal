@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SCHED_H
 #define OSAL_OVERRIDE_SCHED_H
 
-#include <OCS_sched.h>
+#include "OCS_sched.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sched.h */

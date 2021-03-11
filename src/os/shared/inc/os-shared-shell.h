@@ -29,7 +29,7 @@
 #define OS_SHARED_SHELL_H
 
 #include "osapi-shell.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /****************************************************************************************
                  SHELL API LOW-LEVEL IMPLEMENTATION FUNCTIONS

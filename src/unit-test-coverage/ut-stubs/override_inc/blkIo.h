@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_BLKIO_H
 #define OSAL_OVERRIDE_BLKIO_H
 
-#include <OCS_blkIo.h>
+#include "OCS_blkIo.h"
 #include <vxWorks.h>
 
 /* ---------------------------------------*/

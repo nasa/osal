@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_DLFCN_H
 #define OSAL_OVERRIDE_DLFCN_H
 
-#include <OCS_dlfcn.h>
+#include "OCS_dlfcn.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in dlfcn.h */

@@ -22,7 +22,7 @@
 #ifndef OCS_MATH_H
 #define OCS_MATH_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in math.h */

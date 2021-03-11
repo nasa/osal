@@ -22,9 +22,9 @@
 #ifndef OCS_STAT_H
 #define OCS_STAT_H
 
-#include <OCS_basetypes.h>
-#include <OCS_sys_types.h>
-#include <OCS_time.h>
+#include "OCS_basetypes.h"
+#include "OCS_sys_types.h"
+#include "OCS_time.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/stat.h */

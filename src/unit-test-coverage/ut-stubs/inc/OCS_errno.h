@@ -22,7 +22,7 @@
 #ifndef OCS_ERRNO_H
 #define OCS_ERRNO_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in errno.h */

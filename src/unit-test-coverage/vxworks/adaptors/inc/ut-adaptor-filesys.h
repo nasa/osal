@@ -29,7 +29,7 @@
 #define UT_ADAPTOR_FILESYS_H
 
 #include "common_types.h"
-#include <OCS_xbdBlkDev.h>
+#include "OCS_xbdBlkDev.h"
 
 extern void *const  UT_Ref_OS_impl_filesys_table;
 extern size_t const UT_Ref_OS_impl_filesys_table_SIZE;

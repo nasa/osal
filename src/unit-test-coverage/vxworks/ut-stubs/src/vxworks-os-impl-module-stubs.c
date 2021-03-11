@@ -28,6 +28,6 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <os-shared-module.h>
+#include "os-shared-module.h"
 
 UT_DEFAULT_STUB(OS_VxWorks_ModuleAPI_Impl_Init, (void))

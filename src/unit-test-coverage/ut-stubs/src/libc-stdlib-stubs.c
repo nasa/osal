@@ -25,7 +25,7 @@
 #include "utstubs.h"
 #include "utassert.h"
 
-#include <OCS_stdlib.h>
+#include "OCS_stdlib.h"
 
 /*
  * The malloc emulator relies on two magic numbers;
