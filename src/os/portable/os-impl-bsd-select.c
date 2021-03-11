@@ -72,7 +72,7 @@
  *
  * returns: Highest numbered file descriptor in the output fd_set
  *-----------------------------------------------------------------*/
-static int OS_FdSet_ConvertIn_Impl(fd_set *os_set, OS_FdSet *OSAL_set)
+static int OS_FdSet_ConvertIn_Impl(fd_set *os_set, const OS_FdSet *OSAL_set)
 {
     size_t       offset;
     size_t       bit;
