@@ -66,6 +66,14 @@ enum
 
 OS_stream_internal_record_t OS_stream_table[OS_MAX_NUM_OPEN_FILES];
 
+/*
+ * OS_cp copyblock size - in theory could be adjusted
+ * to match page size for performance so providing a unique
+ * define here.  Given a requirement/request could be transitioned
+ * to a configuration parameter
+ */
+#define OS_CP_BLOCK_SIZE 512
+
 /*----------------------------------------------------------------
  *
  * Helper function to close a file from an iterator
@@ -420,7 +428,7 @@ int32 OS_cp(const char *src, const char *dest)
     int32     wr_total;
     osal_id_t file1;
     osal_id_t file2;
-    uint8     copyblock[512];
+    uint8     copyblock[OS_CP_BLOCK_SIZE];
 
     /* Check Parameters */
     OS_CHECK_POINTER(src);
