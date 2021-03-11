@@ -125,10 +125,6 @@ extern "C"
      */
     typedef void (*OS_ArgCallback_t)(osal_id_t object_id, void *arg);
 
-#ifndef NULL /* pointer to nothing */
-#define NULL ((void *)0)
-#endif
-
     /*
     ** Check Sizes
     */
