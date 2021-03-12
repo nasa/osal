@@ -138,7 +138,7 @@ int32 OS_GenericSeek_Impl(const OS_object_token_t *token, int32 offset, uint32 w
              * Use a different error code to differentiate from an
              * error involving a bad whence/offset
              */
-            retval = OS_ERR_NOT_IMPLEMENTED;
+            retval = OS_ERR_OPERATION_NOT_SUPPORTED;
         }
         else
         {
