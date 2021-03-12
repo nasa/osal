@@ -315,7 +315,7 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
 
 static void *OS_TimeBasePthreadEntry(void *arg)
 {
-    OS_U32ValueWrapper_t local_arg;
+    OS_VoidPtrValueWrapper_t local_arg;
 
     local_arg.opaque_arg = arg;
     OS_TimeBase_CallbackThread(local_arg.id);
@@ -340,7 +340,7 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
     struct timespec                     ts;
     OS_impl_timebase_internal_record_t *local;
     OS_timebase_internal_record_t *     timebase;
-    OS_U32ValueWrapper_t                arg;
+    OS_VoidPtrValueWrapper_t            arg;
 
     local    = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
     timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, *token);

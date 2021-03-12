@@ -90,7 +90,7 @@ void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 static void *OS_ConsoleTask_Entry(void *arg)
 {
-    OS_U32ValueWrapper_t               local_arg;
+    OS_VoidPtrValueWrapper_t           local_arg;
     OS_impl_console_internal_record_t *local;
     OS_object_token_t                  token;
 
@@ -123,7 +123,7 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
     OS_impl_console_internal_record_t *local;
     pthread_t                          consoletask;
     int32                              return_code;
-    OS_U32ValueWrapper_t               local_arg = {0};
+    OS_VoidPtrValueWrapper_t           local_arg = {0};
 
     local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
 
