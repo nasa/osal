@@ -71,6 +71,13 @@ void Test_OS_SelectSingle_Impl(void)
     UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &nowtime, sizeof(nowtime), false);
     UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &latertime, sizeof(latertime), false);
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 2100), OS_ERROR);
+
+    /* Test cases where the FD exceeds FD_SETSIZE */
+    SelectFlags = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
+    UT_PortablePosixIOTest_Set_FD(UT_INDEX_0, OCS_FD_SETSIZE);
+    UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+
 } /* end OS_SelectSingle_Impl */
 
 void Test_OS_SelectMultiple_Impl(void)
@@ -81,6 +88,9 @@ void Test_OS_SelectMultiple_Impl(void)
     OS_FdSet ReadSet;
     OS_FdSet WriteSet;
 
+    UT_PortablePosixIOTest_Set_FD(UT_INDEX_0, 0);
+    UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
+
     memset(&ReadSet, 0, sizeof(ReadSet));
     memset(&WriteSet, 0xff, sizeof(WriteSet));
     OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_SUCCESS);
@@ -88,6 +98,24 @@ void Test_OS_SelectMultiple_Impl(void)
     memset(&WriteSet, 0, sizeof(WriteSet));
     UT_SetDefaultReturnValue(UT_KEY(OCS_select), 0);
     OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 1), OS_ERROR_TIMEOUT);
+
+    /* Test where the FD set is empty */
+    memset(&ReadSet, 0, sizeof(ReadSet));
+    memset(&WriteSet, 0, sizeof(WriteSet));
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (NULL, NULL, 0), OS_ERR_INVALID_ID);
+
+    /* Test cases where the FD exceeds FD_SETSIZE in the read set */
+    UT_PortablePosixIOTest_Set_FD(UT_INDEX_0, OCS_FD_SETSIZE);
+    UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
+    memset(&ReadSet, 0xff, sizeof(ReadSet));
+    memset(&WriteSet, 0, sizeof(WriteSet));
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+
+    /* Test cases where the FD exceeds FD_SETSIZE in the write set */
+    memset(&ReadSet, 0, sizeof(ReadSet));
+    memset(&WriteSet, 0xff, sizeof(WriteSet));
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+
 } /* end OS_SelectMultiple_Impl */
 
 /* ------------------- End of test cases --------------------------------------*/

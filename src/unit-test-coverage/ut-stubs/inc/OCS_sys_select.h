@@ -35,6 +35,8 @@
 /* constants normally defined in sys/select.h */
 /* ----------------------------------------- */
 
+#define OCS_FD_SETSIZE 10
+
 /* ----------------------------------------- */
 /* types normally defined in sys/select.h */
 /* ----------------------------------------- */
