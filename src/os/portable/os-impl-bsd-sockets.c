@@ -156,10 +156,24 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
      * any blocking would be done explicitly via the select() wrappers
      */
     os_flags = fcntl(impl->fd, F_GETFL);
-    os_flags |= OS_IMPL_SOCKET_FLAGS;
-    fcntl(impl->fd, F_SETFL, os_flags);
-
-    impl->selectable = ((os_flags & O_NONBLOCK) != 0);
+    if (os_flags == -1)
+    {
+        /* No recourse if F_GETFL fails - just report the error and move on. */
+        OS_DEBUG("fcntl(F_GETFL): %s\n", strerror(errno));
+    }
+    else
+    {
+        os_flags |= OS_IMPL_SOCKET_FLAGS;
+        if (fcntl(impl->fd, F_SETFL, os_flags) == -1)
+        {
+            /* No recourse if F_SETFL fails - just report the error and move on. */
+            OS_DEBUG("fcntl(F_SETFL): %s\n", strerror(errno));
+        }
+        else
+        {
+            impl->selectable = ((os_flags & O_NONBLOCK) != 0);
+        }
+    }
 
     return OS_SUCCESS;
 } /* end OS_SocketOpen_Impl */
@@ -360,10 +374,24 @@ int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_
                  * any blocking would be done explicitly via the select() wrappers
                  */
                 os_flags = fcntl(conn_impl->fd, F_GETFL);
-                os_flags |= OS_IMPL_SOCKET_FLAGS;
-                fcntl(conn_impl->fd, F_SETFL, os_flags);
-
-                conn_impl->selectable = ((os_flags & O_NONBLOCK) != 0);
+                if (os_flags == -1)
+                {
+                    /* No recourse if F_GETFL fails - just report the error and move on. */
+                    OS_DEBUG("fcntl(F_GETFL): %s\n", strerror(errno));
+                }
+                else
+                {
+                    os_flags |= OS_IMPL_SOCKET_FLAGS;
+                    if (fcntl(conn_impl->fd, F_SETFL, os_flags) == -1)
+                    {
+                        /* No recourse if F_SETFL fails - just report the error and move on. */
+                        OS_DEBUG("fcntl(F_SETFL): %s\n", strerror(errno));
+                    }
+                    else
+                    {
+                        conn_impl->selectable = ((os_flags & O_NONBLOCK) != 0);
+                    }
+                }
             }
         }
     }
