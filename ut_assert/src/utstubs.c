@@ -615,8 +615,8 @@ void UT_SetHookOverrideStubFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFun
     {
         StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
 
-        StubPtr->FuncKey     = FuncKey;
-        StubPtr->EntryType   = UT_ENTRYTYPE_OVERRIDE_STUB;
+        StubPtr->FuncKey   = FuncKey;
+        StubPtr->EntryType = UT_ENTRYTYPE_OVERRIDE_STUB;
     }
 
     UT_SetHookFunction(FuncKey, HookFunc, UserObj);

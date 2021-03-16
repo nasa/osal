@@ -258,7 +258,8 @@ void UT_SetHookFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *Use
  * \param FuncKey  The stub function to add the hook to.
  * \param HookFunc User defined hook function.  Set NULL to delete/clear an entry.
  * \param UserObj  Arbitrary user data object to pass to the hook function
- */void UT_SetHookOverrideStubFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *UserObj);
+ */
+void UT_SetHookOverrideStubFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *UserObj);
 
 /**
  * Set a variable-argument Hook function for a particular call
