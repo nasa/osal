@@ -604,7 +604,7 @@ void UT_SetHookFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *Use
 }
 
 void UT_SetHookOverrideStubFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *UserObj)
-{    
+{
     UT_StubTableEntry_t *StubPtr;
 
     /* check if there is already an entry */
