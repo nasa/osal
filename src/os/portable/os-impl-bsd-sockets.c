@@ -102,10 +102,13 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
     switch (stream->socket_type)
     {
         case OS_SocketType_DATAGRAM:
-            os_type = SOCK_DGRAM;
+            os_type  = SOCK_DGRAM;
+            os_proto = IPPROTO_UDP;
             break;
+
         case OS_SocketType_STREAM:
-            os_type = SOCK_STREAM;
+            os_type  = SOCK_STREAM;
+            os_proto = IPPROTO_TCP;
             break;
 
         default:
@@ -124,17 +127,6 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
 #endif
         default:
             return OS_ERR_NOT_IMPLEMENTED;
-    }
-
-    /* Only AF_INET* at this point, can add cases if support is expanded */
-    switch (stream->socket_type)
-    {
-        case OS_SocketType_DATAGRAM:
-            os_proto = IPPROTO_UDP;
-            break;
-        case OS_SocketType_STREAM:
-            os_proto = IPPROTO_TCP;
-            break;
     }
 
     impl->fd = socket(os_domain, os_type, os_proto);
