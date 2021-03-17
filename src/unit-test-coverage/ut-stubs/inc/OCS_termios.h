@@ -22,7 +22,7 @@
 #ifndef OCS_TERMIOS_H
 #define OCS_TERMIOS_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in termios.h */

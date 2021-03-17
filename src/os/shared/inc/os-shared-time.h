@@ -30,8 +30,8 @@
 
 #include "osapi-timer.h"
 
-#include <os-shared-globaldefs.h>
-#include <os-shared-idmap.h>
+#include "os-shared-globaldefs.h"
+#include "os-shared-idmap.h"
 
 #define TIMECB_FLAG_DEDICATED_TIMEBASE 0x1
 

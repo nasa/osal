@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_DIRENT_H
 #define OSAL_OVERRIDE_DIRENT_H
 
-#include <OCS_dirent.h>
+#include "OCS_dirent.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in dirent.h */

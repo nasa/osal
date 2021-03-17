@@ -22,7 +22,7 @@
 #ifndef OCS_POLL_H
 #define OCS_POLL_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in poll.h */

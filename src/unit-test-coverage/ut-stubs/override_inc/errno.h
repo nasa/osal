@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_ERRNO_H
 #define OSAL_OVERRIDE_ERRNO_H
 
-#include <OCS_errno.h>
+#include "OCS_errno.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in errno.h */

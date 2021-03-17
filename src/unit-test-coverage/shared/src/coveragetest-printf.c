@@ -28,7 +28,7 @@
 #include "os-shared-printf.h"
 #include "os-shared-common.h"
 
-#include <OCS_stdio.h>
+#include "OCS_stdio.h"
 
 char TestConsoleBuffer[16];
 

@@ -28,8 +28,8 @@
 
 #include "os-shared-network.h"
 
-#include <OCS_unistd.h>
-#include <OCS_hostLib.h>
+#include "OCS_unistd.h"
+#include "OCS_hostLib.h"
 
 /*----------------------------------------------------------------
  *

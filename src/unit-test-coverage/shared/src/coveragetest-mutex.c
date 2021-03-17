@@ -27,7 +27,7 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-mutex.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /*
 **********************************************************************************

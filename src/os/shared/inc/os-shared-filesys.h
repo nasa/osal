@@ -29,7 +29,7 @@
 #define OS_SHARED_FILESYS_H
 
 #include "osapi-filesys.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /**
  * This flag will be set on the internal record to indicate

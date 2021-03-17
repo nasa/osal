@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SETJMP_H
 #define OSAL_OVERRIDE_SETJMP_H
 
-#include <OCS_setjmp.h>
+#include "OCS_setjmp.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in setjmp.h */

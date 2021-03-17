@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_DRV_HDISK_ATADRV_H
 #define OSAL_OVERRIDE_DRV_HDISK_ATADRV_H
 
-#include <OCS_drv_hdisk_ataDrv.h>
+#include "OCS_drv_hdisk_ataDrv.h"
 #include <vxWorks.h>
 #include <blkIo.h>
 

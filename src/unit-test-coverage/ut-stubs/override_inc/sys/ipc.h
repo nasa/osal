@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SYS_IPC_H
 #define OSAL_OVERRIDE_SYS_IPC_H
 
-#include <OCS_sys_ipc.h>
+#include "OCS_sys_ipc.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/ipc.h */

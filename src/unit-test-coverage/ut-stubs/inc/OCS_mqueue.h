@@ -22,9 +22,9 @@
 #ifndef OCS_MQUEUE_H
 #define OCS_MQUEUE_H
 
-#include <OCS_basetypes.h>
-#include <OCS_sys_types.h>
-#include <OCS_time.h>
+#include "OCS_basetypes.h"
+#include "OCS_sys_types.h"
+#include "OCS_time.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in mqueue.h */

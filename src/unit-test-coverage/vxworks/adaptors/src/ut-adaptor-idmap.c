@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <os-vxworks.h>
+#include "os-vxworks.h"
 #include "os-impl-idmap.h"
 #include "ut-adaptor-idmap.h"
 

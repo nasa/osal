@@ -45,7 +45,7 @@
 #ifndef OCS_BSP_IMPL_H
 #define OCS_BSP_IMPL_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 #define OCS_OS_BSP_CONSOLEMODE_NORMAL    0x2101
 #define OCS_OS_BSP_CONSOLEMODE_RED       0x2102

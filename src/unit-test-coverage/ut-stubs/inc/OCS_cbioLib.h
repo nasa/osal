@@ -22,8 +22,8 @@
 #ifndef OCS_CBIOLIB_H
 #define OCS_CBIOLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in cbioLib.h */

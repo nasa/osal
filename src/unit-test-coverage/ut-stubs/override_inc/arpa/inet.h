@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_ARPA_INET_H
 #define OSAL_OVERRIDE_ARPA_INET_H
 
-#include <OCS_arpa_inet.h>
+#include "OCS_arpa_inet.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in arpa/inet.h */

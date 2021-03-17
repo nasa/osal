@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_msgQLib.h>
+#include "OCS_msgQLib.h"
 
 static OCS_MSG_Q LOCAL_UT_MSGQ = {0};
 

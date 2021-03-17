@@ -22,9 +22,9 @@
 #ifndef OCS_XBDBLKDEV_H
 #define OCS_XBDBLKDEV_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
-#include <OCS_blkIo.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
+#include "OCS_blkIo.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in xbdBlkDev.h */

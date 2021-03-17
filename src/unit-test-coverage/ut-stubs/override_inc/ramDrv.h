@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_RAMDRV_H
 #define OSAL_OVERRIDE_RAMDRV_H
 
-#include <OCS_ramDrv.h>
+#include "OCS_ramDrv.h"
 #include <vxWorks.h>
 #include <blkIo.h>
 

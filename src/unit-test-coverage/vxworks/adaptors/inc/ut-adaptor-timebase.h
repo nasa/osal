@@ -29,8 +29,8 @@
 #define UT_ADAPTOR_TIMEBASE_H
 
 #include "common_types.h"
-#include <OCS_symLib.h>
-#include <OCS_time.h>
+#include "OCS_symLib.h"
+#include "OCS_time.h"
 
 extern void *const  UT_Ref_OS_impl_timebase_table;
 extern size_t const UT_Ref_OS_impl_timebase_table_SIZE;

@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SYS_MMAN_H
 #define OSAL_OVERRIDE_SYS_MMAN_H
 
-#include <OCS_sys_mman.h>
+#include "OCS_sys_mman.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/mman.h */

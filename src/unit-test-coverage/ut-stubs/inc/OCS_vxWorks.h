@@ -28,7 +28,7 @@
 #ifndef OCS_VXWORKS_H
 #define OCS_VXWORKS_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in vxWorks.h */

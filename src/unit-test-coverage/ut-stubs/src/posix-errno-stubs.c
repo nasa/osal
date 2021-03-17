@@ -23,6 +23,6 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_errno.h>
+#include "OCS_errno.h"
 
 int OCS_errno = 0;

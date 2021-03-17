@@ -29,7 +29,7 @@
 #define OS_SHARED_MODULE_H
 
 #include "osapi-module.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 typedef enum
 {

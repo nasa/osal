@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_stat.h>
+#include "OCS_stat.h"
 
 int OCS_fchmod(int fd, OCS_mode_t mode)
 {

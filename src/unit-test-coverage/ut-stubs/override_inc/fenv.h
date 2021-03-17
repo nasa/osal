@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_FENV_H
 #define OSAL_OVERRIDE_FENV_H
 
-#include <OCS_fenv.h>
+#include "OCS_fenv.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in fenv.h */

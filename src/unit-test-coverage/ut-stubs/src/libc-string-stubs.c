@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include "utstubs.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 void *OCS_memset(void *s, int c, size_t n)
 {

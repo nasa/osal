@@ -29,8 +29,8 @@
 #define UT_ADAPTOR_MUTEX_H
 
 #include "common_types.h"
-#include <OCS_taskLib.h>
-#include <OCS_semLib.h>
+#include "OCS_taskLib.h"
+#include "OCS_semLib.h"
 
 extern void *const  UT_Ref_OS_impl_mutex_table;
 extern size_t const UT_Ref_OS_impl_mutex_table_SIZE;

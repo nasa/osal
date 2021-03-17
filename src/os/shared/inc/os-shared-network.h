@@ -29,7 +29,7 @@
 #define OS_SHARED_NETWORK_H
 
 #include "osapi-network.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /****************************************************************************************
               NETWORK / SOCKET API LOW-LEVEL IMPLEMENTATION FUNCTIONS

@@ -29,13 +29,13 @@
 
 #include "os-shared-module.h"
 
-#include <OCS_string.h>
-#include <OCS_fcntl.h>
-#include <OCS_unistd.h>
-#include <OCS_errnoLib.h>
-#include <OCS_moduleLib.h>
-#include <OCS_loadLib.h>
-#include <OCS_unldLib.h>
+#include "OCS_string.h"
+#include "OCS_fcntl.h"
+#include "OCS_unistd.h"
+#include "OCS_errnoLib.h"
+#include "OCS_moduleLib.h"
+#include "OCS_loadLib.h"
+#include "OCS_unldLib.h"
 
 void Test_OS_VxWorks_ModuleAPI_Impl_Init(void)
 {

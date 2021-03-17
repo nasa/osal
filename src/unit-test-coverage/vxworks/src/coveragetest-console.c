@@ -29,11 +29,11 @@
 #include "ut-adaptor-console.h"
 #include "os-shared-printf.h"
 
-#include <OCS_unistd.h>
-#include <OCS_semLib.h>
-#include <OCS_taskLib.h>
-#include <OCS_errnoLib.h>
-#include <OCS_stdio.h>
+#include "OCS_unistd.h"
+#include "OCS_semLib.h"
+#include "OCS_taskLib.h"
+#include "OCS_errnoLib.h"
+#include "OCS_stdio.h"
 
 void Test_OS_ConsoleWakeup_Impl(void)
 {

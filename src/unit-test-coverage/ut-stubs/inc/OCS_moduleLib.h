@@ -22,8 +22,8 @@
 #ifndef OCS_MODULELIB_H
 #define OCS_MODULELIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in moduleLib.h */

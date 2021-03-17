@@ -27,7 +27,7 @@
 #include "os-vxworks-coveragetest.h"
 #include "os-shared-heap.h"
 
-#include <OCS_memPartLib.h>
+#include "OCS_memPartLib.h"
 
 void Test_OS_HeapGetInfo_Impl(void)
 {

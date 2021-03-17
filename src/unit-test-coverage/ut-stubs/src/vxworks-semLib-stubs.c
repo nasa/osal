@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_semLib.h>
+#include "OCS_semLib.h"
 
 static OCS_SEM LOCAL_UT_SEM = {0};
 

@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_STDLIB_H
 #define OSAL_OVERRIDE_STDLIB_H
 
-#include <OCS_stdlib.h>
+#include "OCS_stdlib.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in stdlib.h */

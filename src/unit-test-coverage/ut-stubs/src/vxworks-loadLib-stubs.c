@@ -23,8 +23,8 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_loadLib.h>
-#include <OCS_unldLib.h>
+#include "OCS_loadLib.h"
+#include "OCS_unldLib.h"
 
 static OCS_MODULE LOCAL_MODULE = {0};
 

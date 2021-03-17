@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_CTYPE_H
 #define OSAL_OVERRIDE_CTYPE_H
 
-#include <OCS_ctype.h>
+#include "OCS_ctype.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in ctype.h */

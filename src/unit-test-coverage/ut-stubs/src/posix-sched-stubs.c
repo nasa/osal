@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_sched.h>
+#include "OCS_sched.h"
 
 int OCS_sched_get_priority_max(int policy)
 {

@@ -29,8 +29,8 @@
 #include "osconfig.h"
 #include "ut-adaptor-timebase.h"
 
-#include <os-vxworks.h>
-#include <os-impl-timebase.h>
+#include "os-vxworks.h"
+#include "os-impl-timebase.h"
 
 void *const  UT_Ref_OS_impl_timebase_table      = OS_impl_timebase_table;
 size_t const UT_Ref_OS_impl_timebase_table_SIZE = sizeof(OS_impl_timebase_table);

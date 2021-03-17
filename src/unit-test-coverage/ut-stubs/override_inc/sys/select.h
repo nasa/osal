@@ -28,7 +28,7 @@
 #ifndef SELECT_H
 #define SELECT_H
 
-#include <OCS_sys_select.h>
+#include "OCS_sys_select.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/select.h */

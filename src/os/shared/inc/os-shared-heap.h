@@ -29,7 +29,7 @@
 #define OS_SHARED_HEAP_H
 
 #include "osapi-heap.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /****************************************************************************************
                     MEMORY HEAP API LOW-LEVEL IMPLEMENTATION FUNCTIONS

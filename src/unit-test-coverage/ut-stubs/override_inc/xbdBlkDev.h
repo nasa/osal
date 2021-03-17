@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_XBDBLKDEV_H
 #define OSAL_OVERRIDE_XBDBLKDEV_H
 
-#include <OCS_xbdBlkDev.h>
+#include "OCS_xbdBlkDev.h"
 #include <vxWorks.h>
 #include <blkIo.h>
 

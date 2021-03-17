@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_UNISTD_H
 #define OSAL_OVERRIDE_UNISTD_H
 
-#include <OCS_unistd.h>
+#include "OCS_unistd.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in unistd.h */

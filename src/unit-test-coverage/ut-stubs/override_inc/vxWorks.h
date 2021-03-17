@@ -28,7 +28,7 @@
 #ifndef VXWORKS_H
 #define VXWORKS_H
 
-#include <OCS_vxWorks.h>
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in vxWorks.h */

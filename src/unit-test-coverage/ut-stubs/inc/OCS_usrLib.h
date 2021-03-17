@@ -22,8 +22,8 @@
 #ifndef OCS_USRLIB_H
 #define OCS_USRLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in usrLib.h */

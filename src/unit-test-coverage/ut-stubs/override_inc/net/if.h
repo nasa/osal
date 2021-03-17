@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_NET_IF_H
 #define OSAL_OVERRIDE_NET_IF_H
 
-#include <OCS_net_if.h>
+#include "OCS_net_if.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in net/if.h */

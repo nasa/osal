@@ -29,7 +29,7 @@
 #include "osconfig.h"
 #include "ut-adaptor-portable-posix-files.h"
 
-#include <os-impl-files.h>
+#include "os-impl-files.h"
 
 OCS_uid_t UT_PortablePosixFileTest_GetSelfEUID(void)
 {

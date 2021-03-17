@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_LOGLIB_H
 #define OSAL_OVERRIDE_LOGLIB_H
 
-#include <OCS_logLib.h>
+#include "OCS_logLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

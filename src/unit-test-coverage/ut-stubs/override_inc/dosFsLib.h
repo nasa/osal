@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_DOSFSLIB_H
 #define OSAL_OVERRIDE_DOSFSLIB_H
 
-#include <OCS_dosFsLib.h>
+#include "OCS_dosFsLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

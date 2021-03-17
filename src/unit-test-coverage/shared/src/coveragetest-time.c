@@ -29,7 +29,7 @@
 #include "os-shared-timebase.h"
 #include "os-shared-task.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 static uint32 UT_TimerCount    = 0;
 static uint32 UT_TimerArgCount = 0;

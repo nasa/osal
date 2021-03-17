@@ -22,8 +22,8 @@
 #ifndef OCS_SYSLIB_H
 #define OCS_SYSLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sysLib.h */

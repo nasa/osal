@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_INTLIB_H
 #define OSAL_OVERRIDE_INTLIB_H
 
-#include <OCS_intLib.h>
+#include "OCS_intLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

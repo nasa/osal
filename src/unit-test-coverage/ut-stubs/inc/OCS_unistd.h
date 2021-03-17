@@ -22,8 +22,8 @@
 #ifndef OCS_UNISTD_H
 #define OCS_UNISTD_H
 
-#include <OCS_basetypes.h>
-#include <OCS_sys_types.h>
+#include "OCS_basetypes.h"
+#include "OCS_sys_types.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in unistd.h */

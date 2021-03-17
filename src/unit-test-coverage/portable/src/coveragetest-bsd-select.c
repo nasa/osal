@@ -28,7 +28,7 @@
 #include "os-shared-select.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_sys_select.h>
+#include "OCS_sys_select.h"
 
 void Test_OS_SelectSingle_Impl(void)
 {

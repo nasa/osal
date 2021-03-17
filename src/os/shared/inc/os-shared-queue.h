@@ -29,7 +29,7 @@
 #define OS_SHARED_QUEUE_H
 
 #include "osapi-queue.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 typedef struct
 {

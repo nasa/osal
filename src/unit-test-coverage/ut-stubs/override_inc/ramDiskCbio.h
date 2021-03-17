@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_RAMDISKCBIO_H
 #define OSAL_OVERRIDE_RAMDISKCBIO_H
 
-#include <OCS_ramDiskCbio.h>
+#include "OCS_ramDiskCbio.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

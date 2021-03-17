@@ -29,11 +29,11 @@
 #include "ut-adaptor-timebase.h"
 #include "os-shared-timebase.h"
 
-#include <OCS_taskLib.h>
-#include <OCS_signal.h>
-#include <OCS_time.h>
-#include <OCS_sysLib.h>
-#include <OCS_semLib.h>
+#include "OCS_taskLib.h"
+#include "OCS_signal.h"
+#include "OCS_time.h"
+#include "OCS_sysLib.h"
+#include "OCS_semLib.h"
 
 void Test_OS_VxWorks_TimeBaseAPI_Impl_Init(void)
 {

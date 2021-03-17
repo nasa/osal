@@ -28,6 +28,6 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <os-shared-dir.h>
+#include "os-shared-dir.h"
 
 UT_DEFAULT_STUB(OS_VxWorks_DirAPI_Impl_Init, (void))

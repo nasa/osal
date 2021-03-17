@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_FCNTL_H
 #define OSAL_OVERRIDE_FCNTL_H
 
-#include <OCS_fcntl.h>
+#include "OCS_fcntl.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in fcntl.h */

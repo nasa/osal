@@ -22,7 +22,7 @@
 #ifndef OCS_NETDB_H
 #define OCS_NETDB_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in netdb.h */

@@ -29,7 +29,7 @@
 #define OS_SHARED_CLOCK_H
 
 #include "osapi-clock.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /*
  * Clock API low-level handlers

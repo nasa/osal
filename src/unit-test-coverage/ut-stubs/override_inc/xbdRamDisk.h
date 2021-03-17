@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_XBDRAMDISK_H
 #define OSAL_OVERRIDE_XBDRAMDISK_H
 
-#include <OCS_xbdRamDisk.h>
+#include "OCS_xbdRamDisk.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

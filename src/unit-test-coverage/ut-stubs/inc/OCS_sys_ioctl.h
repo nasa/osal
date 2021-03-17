@@ -22,7 +22,7 @@
 #ifndef OCS_SYS_IOCTL_H
 #define OCS_SYS_IOCTL_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/ioctl.h */

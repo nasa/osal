@@ -23,7 +23,7 @@
  * \ingroup  ut-stubs
  */
 #include "utstubs.h"
-#include <OCS_arpa_inet.h>
+#include "OCS_arpa_inet.h"
 
 uint16_t OCS_htons(uint16_t hostshort)
 {
