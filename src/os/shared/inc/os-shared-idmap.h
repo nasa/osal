@@ -364,7 +364,7 @@ void OS_ObjectIdTransactionCancel(OS_object_token_t *token);
 
     Returns: None
  ------------------------------------------------------------------*/
-void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id);
+void OS_ObjectIdTransactionFinish(OS_object_token_t *token, const osal_id_t *final_id);
 
 /*----------------------------------------------------------------
    Function: OS_ObjectIdConvertToken
