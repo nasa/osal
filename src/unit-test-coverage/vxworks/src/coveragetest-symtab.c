@@ -67,14 +67,32 @@ void Test_OS_SymTableIterator_Impl(void)
      */
     uint32 Data = 0;
 
+    /* nominal case - nothing goes wrong */
     OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000), true);
+    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_GetIteratorStatus(), OS_SUCCESS);
+
+    /* Check case where next entry will exceed size limit */
     OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 101), false);
+    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_GetIteratorStatus(), OS_ERR_OUTPUT_TOO_LARGE);
+
+    /* Check case where entry has a name that is too long */
     UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000), false);
+    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_GetIteratorStatus(), OS_ERR_NAME_TOO_LONG);
     UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
+
+    /* Check case where writing to file fails */
     UT_SetDefaultReturnValue(UT_KEY(OCS_write), -1);
     OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000), false);
+    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_GetIteratorStatus(), OS_ERROR);
     UT_ClearDefaultReturnValue(UT_KEY(OCS_write));
+}
+
+static int32 UT_symEachHook(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context)
+{
+    uint32 Data = 0;
+    UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000);
+    return StubRetcode;
 }
 
 void Test_OS_SymbolTableDump_Impl(void)
@@ -82,10 +100,18 @@ void Test_OS_SymbolTableDump_Impl(void)
     /* Test Case For:
      * int32 OS_SymbolTableDump_Impl ( const char *filename, uint32 SizeLimit )
      */
-    OSAPI_TEST_FUNCTION_RC(OS_SymbolTableDump_Impl("file", 10000), OS_SUCCESS);
+
+    /* With no action in symEach(), this will yield an empty file, which is an error */
+    OSAPI_TEST_FUNCTION_RC(OS_SymbolTableDump_Impl("file", 10000), OS_ERROR);
+
+    /* Check failure in open() */
     UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_SymbolTableDump_Impl("file", 10000), OS_ERROR);
     UT_ClearDefaultReturnValue(UT_KEY(OCS_open));
+
+    /* Set up a hook function for symEach() to provide at least one entry */
+    UT_SetHookFunction(UT_KEY(OCS_symEach), UT_symEachHook, NULL);
+    OSAPI_TEST_FUNCTION_RC(OS_SymbolTableDump_Impl("file", 10000), OS_SUCCESS);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
