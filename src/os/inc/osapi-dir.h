@@ -121,7 +121,7 @@ int32 OS_mkdir(const char *path, uint32 access);
 /**
  * @brief Removes a directory from the file system.
  *
- * Removes a directory from  the structure.
+ * Removes a directory from the structure.
  * The directory must be empty prior to this operation.
  *
  * @param[in]  path      The directory to remove

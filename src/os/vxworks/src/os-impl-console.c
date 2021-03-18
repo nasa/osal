@@ -119,6 +119,7 @@ int OS_VxWorks_ConsoleTask_Entry(int arg)
         OS_ObjectIdRelease(&token);
     }
 
+    /* Return OK since called from taskSpawn, error is reported in debug message */
     return OK;
 } /* end OS_ConsoleTask_Entry */
 

@@ -255,21 +255,11 @@ void OS_ApplicationExit(int32 Status)
     }
 } /* end OS_ApplicationExit */
 
-/*---------------------------------------------------------------------------------------
-   Name: OS_CleanUpObject
-
-   Purpose: Implements a single API call that can delete ANY object
-            Will dispatch to the correct delete implementation for that object type
-
-   Returns: None
-
----------------------------------------------------------------------------------------*/
-
 /*----------------------------------------------------------------
  *
  * Function: OS_CleanUpObject
  *
- *  Purpose: Local helper routine, not part of OSAL API.
+ *  Purpose: Local helper routine that can delete ANY object, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
 void OS_CleanUpObject(osal_id_t object_id, void *arg)

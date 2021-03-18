@@ -319,8 +319,8 @@ int32 OS_VxWorks_TimeBaseAPI_Impl_Init(void)
 
     /*
      * Finally compute the Microseconds per tick
-     * This must further round again to the nearest microsecond, so it is undesirable to use
-     * this for time computations if the result is not exact.
+     * This must further round again to the nearest microsecond (using the + 500 / 1000),
+     * so it is undesirable to use this for time computations if the result is not exact.
      */
     OS_SharedGlobalVars.MicroSecPerTick = (OS_ClockAccuracyNsec + 500) / 1000;
 

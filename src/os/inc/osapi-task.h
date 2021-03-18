@@ -144,6 +144,7 @@ int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer);
  * @brief Delay a task for specified amount of milliseconds
  *
  * Causes the current thread to be suspended from execution for the period of millisecond.
+ * This is a scheduled wait (clock_nanosleep/rtems_task_wake_after/taskDelay), not a "busy" wait.
  *
  * @param[in]   millisecond    Amount of time to delay
  *
