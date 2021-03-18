@@ -274,7 +274,7 @@ void TestChmod(void)
     }
     else
     {
-        UtPrintf("OS_chmod not implemented for write only\n");
+        UtAssert_NA("OS_chmod not implemented for write only");
     }
 
     /*Testing Read Only */
@@ -289,7 +289,7 @@ void TestChmod(void)
     }
     else
     {
-        UtPrintf("OS_chmod not implemented for read only\n");
+        UtAssert_NA("OS_chmod not implemented for read only");
     }
 
     /*Testing Read Write */
@@ -304,7 +304,7 @@ void TestChmod(void)
     }
     else
     {
-        UtPrintf("OS_chmod not implemented for read write\n");
+        UtAssert_NA("OS_chmod not implemented for read write");
     }
 
     /*Removing the file */

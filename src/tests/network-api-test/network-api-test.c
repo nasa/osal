@@ -122,7 +122,7 @@ void TestDatagramNetworkApi_Setup(void)
         actual = OS_SocketOpen(&socket_id, OS_SocketDomain_INET6, OS_SocketType_DATAGRAM);
         if (actual == OS_ERR_NOT_IMPLEMENTED)
         {
-            UtPrintf("INET6 not supported\n");
+            UtAssert_NA("INET6 not supported");
         }
         else
         {
@@ -142,7 +142,7 @@ void TestDatagramNetworkApi_Setup(void)
         actual = OS_SocketAddrInit(&addr, OS_SocketDomain_INET6);
         if (actual == OS_ERR_NOT_IMPLEMENTED)
         {
-            UtPrintf("INET6 not supported\n");
+            UtAssert_NA("INET6 not supported");
         }
         else
         {
@@ -152,7 +152,7 @@ void TestDatagramNetworkApi_Setup(void)
         actual = OS_SocketAddrInit(NULL, OS_SocketDomain_INET6);
         if (actual == OS_ERR_NOT_IMPLEMENTED)
         {
-            UtPrintf("INET6 not supported\n");
+            UtAssert_NA("INET6 not supported");
         }
         else
         {
@@ -378,7 +378,7 @@ void TestDatagramNetworkApi(void)
     }
     else
     {
-        UtAssert_Type(NA, false, "Network API not implemented");
+        UtAssert_NA("Network API not implemented");
     }
 
 } /* end TestDatagramNetworkApi */
@@ -466,7 +466,7 @@ void TestStreamNetworkApi(void)
     actual      = OS_SocketOpen(&s_socket_id, OS_SocketDomain_INET, OS_SocketType_STREAM);
     if (actual == OS_ERR_NOT_IMPLEMENTED)
     {
-        UtAssert_Type(NA, false, "Network API not implemented");
+        UtAssert_NA("Network API not implemented");
     }
     else
     {
