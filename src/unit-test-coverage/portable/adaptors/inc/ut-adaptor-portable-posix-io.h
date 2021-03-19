@@ -39,5 +39,6 @@
  *
  *****************************************************/
 void UT_PortablePosixIOTest_Set_Selectable(osal_index_t local_id, bool is_selectable);
+void UT_PortablePosixIOTest_Set_FD(osal_index_t local_id, int fd);
 
 #endif /* UT_ADAPTOR_PORTABLE_POSIX_IO_H  */

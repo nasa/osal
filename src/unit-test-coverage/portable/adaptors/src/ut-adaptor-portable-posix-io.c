@@ -35,3 +35,8 @@ void UT_PortablePosixIOTest_Set_Selectable(osal_index_t local_id, bool is_select
 {
     OS_impl_filehandle_table[local_id].selectable = is_selectable;
 }
+
+void UT_PortablePosixIOTest_Set_FD(osal_index_t local_id, int fd)
+{
+    OS_impl_filehandle_table[local_id].fd = fd;
+}

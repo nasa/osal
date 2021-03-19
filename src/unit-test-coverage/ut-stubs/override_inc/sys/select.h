@@ -50,4 +50,6 @@
 #define FD_CLR   OCS_FD_CLR
 #define FD_ZERO  OCS_FD_ZERO
 
+#define FD_SETSIZE OCS_FD_SETSIZE
+
 #endif /* SELECT_H  */
