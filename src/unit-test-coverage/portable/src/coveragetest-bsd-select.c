@@ -112,10 +112,13 @@ void Test_OS_SelectMultiple_Impl(void)
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
 
     memset(&ReadSet, 0, sizeof(ReadSet));
-    memset(&WriteSet, 0xff, sizeof(WriteSet));
-    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_SUCCESS);
-    memset(&ReadSet, 0xff, sizeof(ReadSet));
     memset(&WriteSet, 0, sizeof(WriteSet));
+    WriteSet.object_ids[0] = 1;
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_SUCCESS);
+
+    memset(&ReadSet, 0, sizeof(ReadSet));
+    memset(&WriteSet, 0, sizeof(WriteSet));
+    ReadSet.object_ids[0] = 1;
     UT_SetDefaultReturnValue(UT_KEY(OCS_select), 0);
     OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 1), OS_ERROR_TIMEOUT);
 
@@ -133,6 +136,13 @@ void Test_OS_SelectMultiple_Impl(void)
 
     /* Test cases where the FD exceeds FD_SETSIZE in the write set */
     memset(&ReadSet, 0, sizeof(ReadSet));
+    memset(&WriteSet, 0xff, sizeof(WriteSet));
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+
+    /* Test cases where additional bits are set in the OS_FdSet */
+    UT_PortablePosixIOTest_Set_FD(UT_INDEX_0, 0);
+    UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
+    memset(&ReadSet, 0xff, sizeof(ReadSet));
     memset(&WriteSet, 0xff, sizeof(WriteSet));
     OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
 

@@ -92,9 +92,9 @@ static int32 OS_FdSet_ConvertIn_Impl(int *os_maxfd, fd_set *os_set, const OS_FdS
             if ((objids & 0x01) != 0 && id < OS_MAX_NUM_OPEN_FILES)
             {
                 osfd = OS_impl_filehandle_table[id].fd;
-                if (osfd >= 0 && OS_impl_filehandle_table[id].selectable)
+                if (osfd >= 0)
                 {
-                    if (osfd >= FD_SETSIZE)
+                    if (osfd >= FD_SETSIZE || !OS_impl_filehandle_table[id].selectable)
                     {
                         /* out of range of select() implementation */
                         status = OS_ERR_OPERATION_NOT_SUPPORTED;
