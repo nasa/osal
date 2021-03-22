@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_STRINGS_H
 #define OSAL_OVERRIDE_STRINGS_H
 
-#include <OCS_strings.h>
+#include "OCS_strings.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in strings.h */

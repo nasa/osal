@@ -28,8 +28,8 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <os-shared-common.h>
-#include <OCS_semLib.h>
+#include "os-shared-common.h"
+#include "OCS_semLib.h"
 
 UT_DEFAULT_STUB(OS_API_Impl_Init, (osal_objtype_t idtype))
 

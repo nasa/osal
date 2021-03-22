@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_sys_select.h>
+#include "OCS_sys_select.h"
 
 int OCS_select(int nfds, OCS_fd_set *readfds, OCS_fd_set *writefds, OCS_fd_set *exceptfds, struct OCS_timeval *timeout)
 {

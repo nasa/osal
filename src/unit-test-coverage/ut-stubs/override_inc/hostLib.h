@@ -29,7 +29,7 @@
 #ifndef HOSTLIB_H
 #define HOSTLIB_H
 
-#include <OCS_hostLib.h>
+#include "OCS_hostLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

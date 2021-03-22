@@ -29,7 +29,7 @@
 #define OS_SHARED_TIMEBASE_H
 
 #include "osapi-timebase.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 typedef struct
 {

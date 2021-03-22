@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_STAT_H
 #define OSAL_OVERRIDE_STAT_H
 
-#include <OCS_stat.h>
+#include "OCS_stat.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/stat.h */

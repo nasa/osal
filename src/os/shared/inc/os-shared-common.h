@@ -29,7 +29,7 @@
 #define OS_SHARED_COMMON_H
 
 #include "osapi-common.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /*
  * A "magic number" that when written to the "ShutdownFlag" member

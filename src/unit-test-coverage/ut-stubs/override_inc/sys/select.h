@@ -28,7 +28,7 @@
 #ifndef SELECT_H
 #define SELECT_H
 
-#include <OCS_sys_select.h>
+#include "OCS_sys_select.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/select.h */
@@ -49,5 +49,7 @@
 #define FD_ISSET OCS_FD_ISSET
 #define FD_CLR   OCS_FD_CLR
 #define FD_ZERO  OCS_FD_ZERO
+
+#define FD_SETSIZE OCS_FD_SETSIZE
 
 #endif /* SELECT_H  */

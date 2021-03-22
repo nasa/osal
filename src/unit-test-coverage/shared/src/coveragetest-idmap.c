@@ -29,7 +29,7 @@
 #include "os-shared-common.h"
 #include "os-shared-task.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 typedef struct
 {

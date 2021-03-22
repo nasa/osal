@@ -23,7 +23,7 @@
  * \ingroup  ut-stubs
  */
 #include "utstubs.h"
-#include <OCS_sys_socket.h>
+#include "OCS_sys_socket.h"
 
 int OCS_accept(int fd, struct OCS_sockaddr *addr, OCS_socklen_t *addr_len)
 {

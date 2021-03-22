@@ -29,8 +29,8 @@
 #include "osconfig.h"
 #include "ut-adaptor-loader.h"
 
-#include <os-vxworks.h>
-#include <os-impl-symtab.h>
+#include "os-vxworks.h"
+#include "os-impl-symtab.h"
 
 /*
  * A UT-specific wrapper function to invoke the Symbol Table Iterator.

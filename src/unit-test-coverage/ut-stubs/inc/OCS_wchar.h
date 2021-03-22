@@ -22,7 +22,7 @@
 #ifndef OCS_WCHAR_H
 #define OCS_WCHAR_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in wchar.h */

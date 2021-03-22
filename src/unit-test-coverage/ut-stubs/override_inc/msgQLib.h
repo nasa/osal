@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_MSGQLIB_H
 #define OSAL_OVERRIDE_MSGQLIB_H
 
-#include <OCS_msgQLib.h>
+#include "OCS_msgQLib.h"
 #include <vxWorks.h>
 #include <objLib.h>
 

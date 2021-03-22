@@ -28,7 +28,7 @@
 #ifndef OS_SHARED_ERRORS_H
 #define OS_SHARED_ERRORS_H
 
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /* Mapping of integer error number to name */
 typedef struct

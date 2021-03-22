@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SYS_TIMES_H
 #define OSAL_OVERRIDE_SYS_TIMES_H
 
-#include <OCS_sys_times.h>
+#include "OCS_sys_times.h"
 #include <time.h>
 
 /* ----------------------------------------- */

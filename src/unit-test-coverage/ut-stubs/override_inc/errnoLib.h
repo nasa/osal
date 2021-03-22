@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_ERRNOLIB_H
 #define OSAL_OVERRIDE_ERRNOLIB_H
 
-#include <OCS_errnoLib.h>
+#include "OCS_errnoLib.h"
 #include <vxWorks.h>
 
 /* -----------------------------------------  */

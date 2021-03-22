@@ -22,8 +22,8 @@
 #ifndef OCS_SEMAPHORE_H
 #define OCS_SEMAPHORE_H
 
-#include <OCS_basetypes.h>
-#include <OCS_time.h>
+#include "OCS_basetypes.h"
+#include "OCS_time.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in semaphore.h */

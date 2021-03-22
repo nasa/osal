@@ -32,9 +32,9 @@
  * Includes
  */
 
-#include <utassert.h>
-#include <uttest.h>
-#include <utstubs.h>
+#include "utassert.h"
+#include "uttest.h"
+#include "utstubs.h"
 
 #include "os-shared-globaldefs.h"
 

@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include "utstubs.h"
 
-#include <OCS_stdio.h>
+#include "OCS_stdio.h"
 
 struct OCS_FILE
 {

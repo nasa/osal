@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_ULIMIT_H
 #define OSAL_OVERRIDE_ULIMIT_H
 
-#include <OCS_ulimit.h>
+#include "OCS_ulimit.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in ulimit.h */

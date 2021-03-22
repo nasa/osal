@@ -22,7 +22,7 @@
 #ifndef OCS_DLFCN_H
 #define OCS_DLFCN_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in dlfcn.h */

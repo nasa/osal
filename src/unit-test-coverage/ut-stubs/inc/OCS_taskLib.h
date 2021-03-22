@@ -22,8 +22,8 @@
 #ifndef OCS_TASKLIB_H
 #define OCS_TASKLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in taskLib.h */

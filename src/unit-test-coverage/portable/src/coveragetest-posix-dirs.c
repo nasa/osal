@@ -29,12 +29,12 @@
 #include "os-shared-dir.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_stdlib.h>
-#include <OCS_dirent.h>
-#include <OCS_unistd.h>
-#include <OCS_fcntl.h>
-#include <OCS_stat.h>
-#include <OCS_errno.h>
+#include "OCS_stdlib.h"
+#include "OCS_dirent.h"
+#include "OCS_unistd.h"
+#include "OCS_fcntl.h"
+#include "OCS_stat.h"
+#include "OCS_errno.h"
 
 void Test_OS_DirCreate_Impl(void)
 {

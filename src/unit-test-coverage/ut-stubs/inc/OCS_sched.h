@@ -22,7 +22,7 @@
 #ifndef OCS_SCHED_H
 #define OCS_SCHED_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sched.h */

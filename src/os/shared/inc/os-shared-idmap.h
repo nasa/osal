@@ -29,7 +29,7 @@
 #define OS_SHARED_IDMAP_H
 
 #include "osapi-idmap.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 #define OS_OBJECT_ID_RESERVED ((osal_id_t) {0xFFFFFFFF})
 
@@ -364,7 +364,7 @@ void OS_ObjectIdTransactionCancel(OS_object_token_t *token);
 
     Returns: None
  ------------------------------------------------------------------*/
-void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id);
+void OS_ObjectIdTransactionFinish(OS_object_token_t *token, const osal_id_t *final_id);
 
 /*----------------------------------------------------------------
    Function: OS_ObjectIdConvertToken

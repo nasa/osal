@@ -338,7 +338,7 @@ void TestSelectSingleRead(void)
     }
     else
     {
-        UtAssert_Type(NA, false, "Network API not implemented");
+        UtAssert_NA("Network API not implemented");
     }
 }
 
@@ -396,7 +396,7 @@ void TestSelectMultipleRead(void)
     }
     else
     {
-        UtAssert_Type(NA, false, "Network API not implemented");
+        UtAssert_NA("Network API not implemented");
     }
 }
 
@@ -467,7 +467,7 @@ void TestSelectSingleWrite(void)
     }
     else
     {
-        UtAssert_Type(NA, false, "Network API not implemented");
+        UtAssert_NA("Network API not implemented");
     }
 }
 
@@ -548,7 +548,7 @@ void TestSelectMultipleWrite(void)
     }
     else
     {
-        UtAssert_Type(NA, false, "Network API not implemented");
+        UtAssert_NA("Network API not implemented");
     }
 }
 

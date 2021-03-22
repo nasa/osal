@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_COMPLEX_H
 #define OSAL_OVERRIDE_COMPLEX_H
 
-#include <OCS_complex.h>
+#include "OCS_complex.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in complex.h */

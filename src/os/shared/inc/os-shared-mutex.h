@@ -29,7 +29,7 @@
 #define OS_SHARED_MUTEX_H
 
 #include "osapi-mutex.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 typedef struct
 {

@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_fcntl.h>
+#include "OCS_fcntl.h"
 
 int OCS_fcntl(int fd, int cmd, ...)
 {

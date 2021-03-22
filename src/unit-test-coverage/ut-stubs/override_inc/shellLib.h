@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SHELLLIB_H
 #define OSAL_OVERRIDE_SHELLLIB_H
 
-#include <OCS_shellLib.h>
+#include "OCS_shellLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SEMAPHORE_H
 #define OSAL_OVERRIDE_SEMAPHORE_H
 
-#include <OCS_semaphore.h>
+#include "OCS_semaphore.h"
 #include <time.h>
 
 /* ----------------------------------------- */

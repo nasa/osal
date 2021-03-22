@@ -198,7 +198,6 @@ int32 OS_MutSemTake(osal_id_t sem_id)
     OS_mutex_internal_record_t *mutex;
     OS_object_token_t           token;
     int32                       return_code;
-    osal_id_t                   self_task;
 
     /* Check Parameters */
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
@@ -209,16 +208,8 @@ int32 OS_MutSemTake(osal_id_t sem_id)
         return_code = OS_MutSemTake_Impl(&token);
         if (return_code == OS_SUCCESS)
         {
-            self_task = OS_TaskGetId();
-
-            if (OS_ObjectIdDefined(mutex->last_owner))
-            {
-                OS_DEBUG("WARNING: Task %lu taking mutex %lu while owned by task %lu\n",
-                         OS_ObjectIdToInteger(self_task), OS_ObjectIdToInteger(sem_id),
-                         OS_ObjectIdToInteger(mutex->last_owner));
-            }
-
-            mutex->last_owner = self_task;
+            /* Always set the owner if OS_MutSemTake_Impl() returned success */
+            mutex->last_owner = OS_TaskGetId();
         }
     }
 

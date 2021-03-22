@@ -28,6 +28,6 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <os-shared-countsem.h>
+#include "os-shared-countsem.h"
 
 UT_DEFAULT_STUB(OS_VxWorks_CountSemAPI_Impl_Init, (void))

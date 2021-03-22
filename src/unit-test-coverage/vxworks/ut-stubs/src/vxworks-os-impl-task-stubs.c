@@ -28,6 +28,6 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <os-shared-task.h>
+#include "os-shared-task.h"
 
 UT_DEFAULT_STUB(OS_VxWorks_TaskAPI_Impl_Init, (void))

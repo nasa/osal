@@ -95,6 +95,9 @@ typedef struct
 /* Asserts a test failure */
 #define UtAssert_Failed(...) UtAssertEx(false, UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
+/* Assert a test Not Applicable */
+#define UtAssert_NA(...) UtAssertEx(false, UTASSERT_CASETYPE_NA, __FILE__, __LINE__, __VA_ARGS__)
+
 /* Compares two integers and determines if they are equal within a specified absolute tolerance. */
 #define UtAssert_IntegerCmpAbs(x, y, Tolerance, ...) \
     UtAssertEx((abs((x) - (y)) <= (Tolerance)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)

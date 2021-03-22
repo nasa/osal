@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_STDARG_H
 #define OSAL_OVERRIDE_STDARG_H
 
-#include <OCS_stdarg.h>
+#include "OCS_stdarg.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in stdarg.h */

@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_MATH_H
 #define OSAL_OVERRIDE_MATH_H
 
-#include <OCS_math.h>
+#include "OCS_math.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in math.h */

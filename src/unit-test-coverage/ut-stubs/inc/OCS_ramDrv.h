@@ -22,9 +22,9 @@
 #ifndef OCS_RAMDRV_H
 #define OCS_RAMDRV_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
-#include <OCS_blkIo.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
+#include "OCS_blkIo.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in ramDrv.h */

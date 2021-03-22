@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_FLOAT_H
 #define OSAL_OVERRIDE_FLOAT_H
 
-#include <OCS_float.h>
+#include "OCS_float.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in float.h */

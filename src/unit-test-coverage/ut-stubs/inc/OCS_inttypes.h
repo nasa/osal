@@ -22,7 +22,7 @@
 #ifndef OCS_INTTYPES_H
 #define OCS_INTTYPES_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in inttypes.h */

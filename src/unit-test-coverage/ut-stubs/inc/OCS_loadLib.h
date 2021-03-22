@@ -22,9 +22,9 @@
 #ifndef OCS_LOADLIB_H
 #define OCS_LOADLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_moduleLib.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_moduleLib.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in loadLib.h */

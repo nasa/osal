@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_SYS_SOCKET_H
 #define OSAL_OVERRIDE_SYS_SOCKET_H
 
-#include <OCS_sys_socket.h>
+#include "OCS_sys_socket.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/socket.h */

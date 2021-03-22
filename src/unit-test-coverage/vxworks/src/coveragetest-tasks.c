@@ -31,7 +31,7 @@
 #include "os-shared-idmap.h"
 #include "os-shared-timebase.h"
 
-#include <OCS_stdlib.h>
+#include "OCS_stdlib.h"
 
 /*
  * A chunk of memory usable as a heap for malloc() emulation

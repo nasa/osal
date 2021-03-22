@@ -29,7 +29,7 @@
 #include "os-shared-task.h"
 #include "os-shared-timebase.h"
 
-#include <OCS_stdlib.h>
+#include "OCS_stdlib.h"
 
 /*
 ** OS_CleanUpObject() is an internal helper function.

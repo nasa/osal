@@ -352,8 +352,6 @@ void OS_DeleteAllObjects(void)
         }
         OS_TaskDelay(5);
     }
-    while (ObjectCount > 0 && TryCount < 5)
-        ;
 } /* end OS_DeleteAllObjects */
 
 /*----------------------------------------------------------------

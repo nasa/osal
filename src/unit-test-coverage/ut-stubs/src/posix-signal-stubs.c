@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_signal.h>
+#include "OCS_signal.h"
 
 int OCS_kill(OCS_pid_t pid, int sig)
 {

@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_INTTYPES_H
 #define OSAL_OVERRIDE_INTTYPES_H
 
-#include <OCS_inttypes.h>
+#include "OCS_inttypes.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in inttypes.h */

@@ -22,8 +22,8 @@
 #ifndef OCS_STDIO_H
 #define OCS_STDIO_H
 
-#include <OCS_basetypes.h>
-#include <OCS_stdarg.h>
+#include "OCS_basetypes.h"
+#include "OCS_stdarg.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in stdio.h */

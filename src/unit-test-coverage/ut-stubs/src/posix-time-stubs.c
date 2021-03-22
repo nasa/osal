@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_time.h>
+#include "OCS_time.h"
 
 int OCS_clock_getres(OCS_clockid_t clock_id, struct OCS_timespec *res)
 {

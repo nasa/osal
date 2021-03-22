@@ -22,7 +22,7 @@
 #ifndef OCS_ASSERT_H
 #define OCS_ASSERT_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in assert.h */

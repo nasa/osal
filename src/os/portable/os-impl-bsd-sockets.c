@@ -73,6 +73,15 @@ typedef union
 #endif
 } OS_SockAddr_Accessor_t;
 
+/*
+ * Confirm that the abstract socket address buffer size (OS_SOCKADDR_MAX_LEN) is
+ * large enough to store any of the enabled address types.  If this is true, the
+ * size of the above union will match OS_SOCKADDR_MAX_LEN.  However, if any
+ * implemention-provided struct types are larger than this, the union will be
+ * larger, and this indicates a configuration error.
+ */
+CompileTimeAssert(sizeof(OS_SockAddr_Accessor_t) == OS_SOCKADDR_MAX_LEN, SockAddrSize);
+
 /****************************************************************************************
                                     Sockets API
  ***************************************************************************************/
@@ -102,10 +111,13 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
     switch (stream->socket_type)
     {
         case OS_SocketType_DATAGRAM:
-            os_type = SOCK_DGRAM;
+            os_type  = SOCK_DGRAM;
+            os_proto = IPPROTO_UDP;
             break;
+
         case OS_SocketType_STREAM:
-            os_type = SOCK_STREAM;
+            os_type  = SOCK_STREAM;
+            os_proto = IPPROTO_TCP;
             break;
 
         default:
@@ -124,17 +136,6 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
 #endif
         default:
             return OS_ERR_NOT_IMPLEMENTED;
-    }
-
-    /* Only AF_INET* at this point, can add cases if support is expanded */
-    switch (stream->socket_type)
-    {
-        case OS_SocketType_DATAGRAM:
-            os_proto = IPPROTO_UDP;
-            break;
-        case OS_SocketType_STREAM:
-            os_proto = IPPROTO_TCP;
-            break;
     }
 
     impl->fd = socket(os_domain, os_type, os_proto);
@@ -200,7 +201,7 @@ int32 OS_SocketBind_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Ad
             break;
     }
 
-    if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN)
+    if (addrlen == 0)
     {
         return OS_ERR_BAD_ADDRESS;
     }
@@ -273,10 +274,24 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
         {
             if (errno != EINPROGRESS)
             {
+                OS_DEBUG("connect: %s\n", strerror(errno));
                 return_code = OS_ERROR;
             }
             else
             {
+                /*
+                 * If the socket was created in nonblocking mode (O_NONBLOCK flag) then the connect
+                 * runs in the background and connect() returns EINPROGRESS.  In this case we still
+                 * want to provide the "normal" (blocking) semantics to the calling app, such that
+                 * when OS_SocketConnect() returns, the socket is ready for use.
+                 *
+                 * To provide consistent behavior to calling apps, this does a select() to wait
+                 * for the socket to become writable, meaning that the remote side is connected.
+                 *
+                 * An important point here is that the calling app can control the timeout.  If the
+                 * normal/blocking connect() was used, the OS/IP stack controls the timeout, and it
+                 * can be quite long.
+                 */
                 operation = OS_STREAM_STATE_WRITABLE;
                 if (impl->selectable)
                 {
@@ -290,6 +305,10 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
                     }
                     else
                     {
+                        /*
+                         * The SO_ERROR socket flag should also read back zero.
+                         * If not zero, something went wrong during connect
+                         */
                         sockopt   = 0;
                         slen      = sizeof(sockopt);
                         os_status = getsockopt(impl->fd, SOL_SOCKET, SO_ERROR, &sockopt, &slen);
@@ -560,7 +579,7 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
             break;
     }
 
-    if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN)
+    if (addrlen == 0)
     {
         return OS_ERR_NOT_IMPLEMENTED;
     }

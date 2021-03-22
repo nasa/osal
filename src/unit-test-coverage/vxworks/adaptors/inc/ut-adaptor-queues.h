@@ -29,7 +29,7 @@
 #define UT_ADAPTOR_QUEUES_H
 
 #include "common_types.h"
-#include <OCS_msgQLib.h>
+#include "OCS_msgQLib.h"
 
 extern void *const  UT_Ref_OS_impl_queue_table;
 extern size_t const UT_Ref_OS_impl_queue_table_SIZE;

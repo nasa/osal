@@ -368,35 +368,6 @@ int32 OS_SocketGetIdByName(osal_id_t *sock_id, const char *sock_name);
  */
 int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop);
 
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief  Gets the network ID of the local machine
- *
- * The ID is an implementation-defined value and may not be consistent
- * in meaning across different platform types.
- *
- * @note This API may be removed in a future version of OSAL due to
- *       inconsistencies between platforms.
- *
- * @return The ID or fixed value of -1 if the host id could not be found.
- *         Note it is not possible to differentiate between error codes and valid
- *         network IDs here. It is assumed, however, that -1 is never a valid ID.
- */
-int32 OS_NetworkGetID(void);
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Gets the local machine network host name
- *
- * If configured in the underlying network stack,
- * this function retrieves the local hostname of the system.
- *
- * @param[out]  host_name    Buffer to hold name information
- * @param[in]   name_len     Maximum length of host name buffer
- *
- * @return Execution status, see @ref OSReturnCodes
- */
-int32 OS_NetworkGetHostName(char *host_name, size_t name_len);
 /**@}*/
 
 #endif

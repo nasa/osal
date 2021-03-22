@@ -29,9 +29,9 @@
 #define UT_ADAPTOR_BINSEM_H
 
 #include "common_types.h"
-#include <utstubs.h>
-#include <OCS_taskLib.h>
-#include <OCS_semLib.h>
+#include "utstubs.h"
+#include "OCS_taskLib.h"
+#include "OCS_semLib.h"
 
 extern void *const  UT_Ref_OS_impl_bin_sem_table;
 extern size_t const UT_Ref_OS_impl_bin_sem_table_SIZE;

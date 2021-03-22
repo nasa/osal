@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_TGMATH_H
 #define OSAL_OVERRIDE_TGMATH_H
 
-#include <OCS_tgmath.h>
+#include "OCS_tgmath.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in tgmath.h */

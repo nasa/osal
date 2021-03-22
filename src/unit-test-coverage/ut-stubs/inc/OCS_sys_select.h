@@ -28,12 +28,14 @@
 #ifndef OCS_SYS_SELECT_H
 #define OCS_SYS_SELECT_H
 
-#include <OCS_basetypes.h>
-#include <OCS_time.h>
+#include "OCS_basetypes.h"
+#include "OCS_time.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/select.h */
 /* ----------------------------------------- */
+
+#define OCS_FD_SETSIZE 10
 
 /* ----------------------------------------- */
 /* types normally defined in sys/select.h */

@@ -29,7 +29,7 @@
 #define OS_SHARED_FILE_H
 
 #include "osapi-file.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 typedef struct
 {

@@ -29,7 +29,7 @@
 #define OS_SHARED_SELECT_H
 
 #include "osapi-select.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /*
  * Select API

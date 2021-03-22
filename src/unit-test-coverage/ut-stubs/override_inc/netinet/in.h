@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_NETINET_IN_H
 #define OSAL_OVERRIDE_NETINET_IN_H
 
-#include <OCS_netinet_in.h>
+#include "OCS_netinet_in.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in netinet/in.h */

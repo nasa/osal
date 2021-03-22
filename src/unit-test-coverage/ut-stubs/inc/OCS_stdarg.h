@@ -22,7 +22,7 @@
 #ifndef OCS_STDARG_H
 #define OCS_STDARG_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in stdarg.h */

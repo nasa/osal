@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_IV_H
 #define OSAL_OVERRIDE_IV_H
 
-#include <OCS_iv.h>
+#include "OCS_iv.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in iv.h */

@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_dirent.h>
+#include "OCS_dirent.h"
 
 struct OCS_DIR
 {

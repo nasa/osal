@@ -47,7 +47,7 @@
 #include <rtems/malloc.h>
 #include <rtems/rtems/intr.h>
 
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /****************************************************************************************
                                      DEFINES

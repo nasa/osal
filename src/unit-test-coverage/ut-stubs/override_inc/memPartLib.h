@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_MEMPARTLIB_H
 #define OSAL_OVERRIDE_MEMPARTLIB_H
 
-#include <OCS_memPartLib.h>
+#include "OCS_memPartLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

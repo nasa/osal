@@ -28,7 +28,7 @@
 #ifndef OS_IMPL_TASKS_H
 #define OS_IMPL_TASKS_H
 
-#include <os-shared-task.h>
+#include "os-shared-task.h"
 
 #include "osconfig.h"
 #include <pthread.h>

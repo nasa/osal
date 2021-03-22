@@ -28,8 +28,8 @@
 #include "osconfig.h"
 #include "ut-adaptor-filetable-stub.h"
 
-#include <os-vxworks.h>
-#include <os-impl-files.h>
+#include "os-vxworks.h"
+#include "os-impl-files.h"
 
 OS_impl_file_internal_record_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FILES];
 

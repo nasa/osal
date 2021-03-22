@@ -1103,7 +1103,7 @@ int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, osal_objtype_t idtype, osal_i
  * be changed.
  *
  *-----------------------------------------------------------------*/
-void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id)
+void OS_ObjectIdTransactionFinish(OS_object_token_t *token, const osal_id_t *final_id)
 {
     OS_common_record_t *record;
 

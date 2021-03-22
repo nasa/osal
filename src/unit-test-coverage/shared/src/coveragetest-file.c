@@ -28,7 +28,7 @@
 #include "os-shared-file.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /*
 **********************************************************************************

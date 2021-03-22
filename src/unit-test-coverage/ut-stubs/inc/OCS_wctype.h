@@ -22,7 +22,7 @@
 #ifndef OCS_WCTYPE_H
 #define OCS_WCTYPE_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in wctype.h */

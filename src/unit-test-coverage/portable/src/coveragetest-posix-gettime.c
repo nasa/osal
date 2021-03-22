@@ -27,7 +27,7 @@
 #include "os-portable-coveragetest.h"
 #include "os-shared-clock.h"
 
-#include <OCS_time.h>
+#include "OCS_time.h"
 
 void Test_OS_GetLocalTime_Impl(void)
 {

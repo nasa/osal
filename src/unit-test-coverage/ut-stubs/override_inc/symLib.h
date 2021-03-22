@@ -28,7 +28,7 @@
 #ifndef SYMLIB_H
 #define SYMLIB_H
 
-#include <OCS_symLib.h>
+#include "OCS_symLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */

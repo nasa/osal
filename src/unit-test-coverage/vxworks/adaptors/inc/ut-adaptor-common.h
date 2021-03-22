@@ -29,8 +29,8 @@
 #define UT_ADAPTOR_COMMON_H
 
 #include "common_types.h"
-#include <utstubs.h>
-#include <OCS_semLib.h>
+#include "utstubs.h"
+#include "OCS_semLib.h"
 
 /*****************************************************
  *

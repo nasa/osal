@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_TERMIOS_H
 #define OSAL_OVERRIDE_TERMIOS_H
 
-#include <OCS_termios.h>
+#include "OCS_termios.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in termios.h */

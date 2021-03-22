@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_MQUEUE_H
 #define OSAL_OVERRIDE_MQUEUE_H
 
-#include <OCS_mqueue.h>
+#include "OCS_mqueue.h"
 #include <time.h>
 
 /* ----------------------------------------- */

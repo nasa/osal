@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_STDIO_H
 #define OSAL_OVERRIDE_STDIO_H
 
-#include <OCS_stdio.h>
+#include "OCS_stdio.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in stdio.h */

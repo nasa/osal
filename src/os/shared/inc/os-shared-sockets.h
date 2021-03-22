@@ -29,7 +29,7 @@
 #define OS_SHARED_SOCKETS_H
 
 #include "osapi-sockets.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /*
  * Sockets API abstraction layer

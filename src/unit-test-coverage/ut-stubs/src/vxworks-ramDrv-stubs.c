@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_ramDrv.h>
+#include "OCS_ramDrv.h"
 
 static OCS_BLK_DEV LOCAL_RAMDEV = {0};
 

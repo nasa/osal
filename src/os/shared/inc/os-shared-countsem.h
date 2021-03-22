@@ -29,7 +29,7 @@
 #define OS_SHARED_COUNTSEM_H
 
 #include "osapi-countsem.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /* other objects that have only an API name and no other data */
 typedef struct

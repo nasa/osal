@@ -29,7 +29,7 @@
 #include "os-shared-idmap.h"
 #include "os-shared-file.h"
 
-#include <OCS_stdio.h>
+#include "OCS_stdio.h"
 
 void Test_OS_SocketAPI_Init(void)
 {

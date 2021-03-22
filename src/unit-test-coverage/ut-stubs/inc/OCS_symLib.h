@@ -29,8 +29,8 @@
 #ifndef OCS_SYMLIB_H
 #define OCS_SYMLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in symLib.h */

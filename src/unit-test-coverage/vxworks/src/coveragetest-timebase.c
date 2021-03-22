@@ -29,11 +29,11 @@
 #include "ut-adaptor-timebase.h"
 #include "os-shared-timebase.h"
 
-#include <OCS_taskLib.h>
-#include <OCS_signal.h>
-#include <OCS_time.h>
-#include <OCS_sysLib.h>
-#include <OCS_semLib.h>
+#include "OCS_taskLib.h"
+#include "OCS_signal.h"
+#include "OCS_time.h"
+#include "OCS_sysLib.h"
+#include "OCS_semLib.h"
 
 void Test_OS_VxWorks_TimeBaseAPI_Impl_Init(void)
 {
@@ -191,7 +191,12 @@ void Test_OS_VxWorks_SigWait(void)
     UT_SetDataBuffer(UT_KEY(OCS_timer_settime), &config_value, sizeof(config_value), false);
     UT_SetDataBuffer(UT_KEY(OCS_timer_gettime), &config_value, sizeof(config_value), false);
     UT_TimeBaseTest_Setup(UT_INDEX_0, signo, true);
-    OS_TimeBaseSet_Impl(&token, 1111111, 2222222);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1111111, 2222222), OS_SUCCESS);
+
+    UT_SetDataBuffer(UT_KEY(OCS_timer_settime), &config_value, sizeof(config_value), false);
+    UT_SetDeferredRetcode(UT_KEY(OCS_timer_gettime), 1, OCS_ERROR);
+    UT_TimeBaseTest_Setup(UT_INDEX_0, signo, true);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1111111, 2222222), OS_ERROR);
 
     UT_SetDataBuffer(UT_KEY(OCS_sigwait), &signo, sizeof(signo), false);
     OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 1111111);

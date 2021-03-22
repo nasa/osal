@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_LOCALE_H
 #define OSAL_OVERRIDE_LOCALE_H
 
-#include <OCS_locale.h>
+#include "OCS_locale.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in locale.h */

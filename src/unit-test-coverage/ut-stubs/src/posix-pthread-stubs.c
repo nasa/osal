@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_pthread.h>
+#include "OCS_pthread.h"
 
 int OCS_pthread_attr_destroy(OCS_pthread_attr_t *attr)
 {

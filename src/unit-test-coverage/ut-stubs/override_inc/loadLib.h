@@ -22,7 +22,7 @@
 #ifndef OSAL_OVERRIDE_LOADLIB_H
 #define OSAL_OVERRIDE_LOADLIB_H
 
-#include <OCS_loadLib.h>
+#include "OCS_loadLib.h"
 #include <vxWorks.h>
 #include <moduleLib.h>
 
