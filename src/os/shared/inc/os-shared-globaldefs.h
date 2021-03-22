@@ -65,6 +65,9 @@ typedef struct OS_object_token OS_object_token_t;
  * Wrapper for encoding of other types into a generic void* type required as argument
  * to callbacks and pthread entry/return values, etc.
  *
+ * This is used where OSAL needs to pass non-pointer/integer values through an interface
+ * that accepts a void* opaque pass-through argument.
+ *
  * Note this can only encode types with sizes <= sizeof(void*)
  */
 typedef union
@@ -73,7 +76,14 @@ typedef union
     OS_ArgCallback_t arg_callback_func;
     osal_id_t        id;
     osal_index_t     idx;
-} OS_U32ValueWrapper_t;
+} OS_VoidPtrValueWrapper_t;
+
+/*
+ * The wrapper structure size should be equal to void* - if not this means
+ * one or more of the other members are bigger than void*, and therefore cannot
+ * be passed directly through the intended interface
+ */
+CompileTimeAssert(sizeof(OS_VoidPtrValueWrapper_t) == sizeof(void *), VoidValueWrapperSize);
 
 /*
  * The "OS_DEBUG" is a no-op unless OSAL_CONFIG_DEBUG_PRINTF is enabled.

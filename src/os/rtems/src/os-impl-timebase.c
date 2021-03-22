@@ -128,7 +128,7 @@ void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 static rtems_timer_service_routine OS_TimeBase_ISR(rtems_id rtems_timer_id, void *arg)
 {
-    OS_U32ValueWrapper_t                user_data;
+    OS_VoidPtrValueWrapper_t            user_data;
     OS_object_token_t                   token;
     OS_impl_timebase_internal_record_t *local;
 
@@ -427,7 +427,7 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uint32 interval_time)
 {
-    OS_U32ValueWrapper_t                user_data;
+    OS_VoidPtrValueWrapper_t            user_data;
     OS_impl_timebase_internal_record_t *local;
     int32                               return_code;
     int                                 status;
