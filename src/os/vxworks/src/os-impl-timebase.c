@@ -546,8 +546,6 @@ int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uin
 
         if (status == OK)
         {
-            return_code = OS_SUCCESS;
-
             /*
              * VxWorks will round the interval up to the next higher
              * system tick interval.  Sometimes this can make a substantial
@@ -565,6 +563,8 @@ int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uin
             status = timer_gettime(local->host_timerid, &timeout);
             if (status == OK)
             {
+                return_code = OS_SUCCESS;
+
                 local->configured_start_time = (timeout.it_value.tv_sec * 1000000) + (timeout.it_value.tv_nsec / 1000);
                 local->configured_interval_time =
                     (timeout.it_interval.tv_sec * 1000000) + (timeout.it_interval.tv_nsec / 1000);
@@ -581,6 +581,13 @@ int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uin
                              OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), (unsigned long)interval_time,
                              (unsigned long)local->configured_interval_time);
                 }
+            }
+            else
+            {
+                return_code = OS_ERROR;
+
+                OS_DEBUG("WARNING: timer %lu timer_gettime() failed - timer not configured properly?\n",
+                         OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)));
             }
         }
         else
