@@ -265,10 +265,24 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
         {
             if (errno != EINPROGRESS)
             {
+                OS_DEBUG("connect: %s\n", strerror(errno));
                 return_code = OS_ERROR;
             }
             else
             {
+                /*
+                 * If the socket was created in nonblocking mode (O_NONBLOCK flag) then the connect
+                 * runs in the background and connect() returns EINPROGRESS.  In this case we still
+                 * want to provide the "normal" (blocking) semantics to the calling app, such that
+                 * when OS_SocketConnect() returns, the socket is ready for use.
+                 *
+                 * To provide consistent behavior to calling apps, this does a select() to wait
+                 * for the socket to become writable, meaning that the remote side is connected.
+                 *
+                 * An important point here is that the calling app can control the timeout.  If the
+                 * normal/blocking connect() was used, the OS/IP stack controls the timeout, and it
+                 * can be quite long.
+                 */
                 operation = OS_STREAM_STATE_WRITABLE;
                 if (impl->selectable)
                 {
@@ -282,6 +296,10 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
                     }
                     else
                     {
+                        /*
+                         * The SO_ERROR socket flag should also read back zero.
+                         * If not zero, something went wrong during connect
+                         */
                         sockopt   = 0;
                         slen      = sizeof(sockopt);
                         os_status = getsockopt(impl->fd, SOL_SOCKET, SO_ERROR, &sockopt, &slen);
