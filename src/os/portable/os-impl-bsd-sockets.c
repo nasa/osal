@@ -73,6 +73,15 @@ typedef union
 #endif
 } OS_SockAddr_Accessor_t;
 
+/*
+ * Confirm that the abstract socket address buffer size (OS_SOCKADDR_MAX_LEN) is
+ * large enough to store any of the enabled address types.  If this is true, the
+ * size of the above union will match OS_SOCKADDR_MAX_LEN.  However, if any
+ * implemention-provided struct types are larger than this, the union will be
+ * larger, and this indicates a configuration error.
+ */
+CompileTimeAssert(sizeof(OS_SockAddr_Accessor_t) == OS_SOCKADDR_MAX_LEN, SockAddrSize);
+
 /****************************************************************************************
                                     Sockets API
  ***************************************************************************************/
@@ -192,7 +201,7 @@ int32 OS_SocketBind_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Ad
             break;
     }
 
-    if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN)
+    if (addrlen == 0)
     {
         return OS_ERR_BAD_ADDRESS;
     }
@@ -570,7 +579,7 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
             break;
     }
 
-    if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN)
+    if (addrlen == 0)
     {
         return OS_ERR_NOT_IMPLEMENTED;
     }
