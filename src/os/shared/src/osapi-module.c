@@ -48,10 +48,7 @@
 
 /*
  * Sanity checks on the user-supplied configuration
- * The relevent OS_MAX limit should be defined
- *
- * OS_MAX_MODULES is allowed to be zero in which case the
- * table is not instantiated.
+ * The relevent OS_MAX limit should be defined and greater than zero
  */
 #if !defined(OS_MAX_MODULES) || (OS_MAX_MODULES <= 0)
 #error "osconfig.h must define OS_MAX_MODULES to a valid value"
