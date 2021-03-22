@@ -29,6 +29,7 @@
 #include "os-shared-idmap.h"
 
 #include "OCS_sys_select.h"
+#include "OCS_errno.h"
 
 void Test_OS_SelectSingle_Impl(void)
 {
@@ -39,6 +40,7 @@ void Test_OS_SelectSingle_Impl(void)
     OS_object_token_t   token;
     struct OCS_timespec nowtime;
     struct OCS_timespec latertime;
+    struct OCS_timespec latertime2;
 
     memset(&token, 0, sizeof(token));
 
@@ -52,6 +54,23 @@ void Test_OS_SelectSingle_Impl(void)
     SelectFlags = 0;
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 0), OS_SUCCESS);
 
+    /* try a case where select() needs to be repeated to achieve the desired wait time */
+    UT_SetDefaultReturnValue(UT_KEY(OCS_select), -1);
+    OCS_errno = OCS_EINTR;
+    UT_SetDeferredRetcode(UT_KEY(OCS_select), 2, 0);
+    SelectFlags        = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
+    nowtime.tv_sec     = 1;
+    nowtime.tv_nsec    = 0;
+    latertime.tv_sec   = 1;
+    latertime.tv_nsec  = 800000000;
+    latertime2.tv_sec  = 2;
+    latertime2.tv_nsec = 200000000;
+    UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &nowtime, sizeof(nowtime), false);
+    UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &nowtime, sizeof(nowtime), false);
+    UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &latertime, sizeof(latertime), false);
+    UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &latertime2, sizeof(latertime2), false);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 1200), OS_ERROR_TIMEOUT);
+
     UT_SetDefaultReturnValue(UT_KEY(OCS_select), 0);
     SelectFlags       = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
     nowtime.tv_sec    = 1;
@@ -63,6 +82,7 @@ void Test_OS_SelectSingle_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 999), OS_ERROR_TIMEOUT);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_select), -1);
+    OCS_errno         = OCS_ETIMEDOUT;
     SelectFlags       = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
     nowtime.tv_sec    = 1;
     nowtime.tv_nsec   = 0;

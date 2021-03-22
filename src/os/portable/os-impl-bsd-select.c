@@ -222,7 +222,7 @@ static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, int32 msecs)
             if (tv.tv_usec < 0)
             {
                 tv.tv_usec += 1000000;
-                ++tv.tv_sec;
+                --tv.tv_sec;
             }
         }
 
