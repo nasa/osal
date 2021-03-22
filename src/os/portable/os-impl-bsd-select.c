@@ -227,7 +227,7 @@ static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, int32 msecs)
         }
 
         os_status = select(maxfd + 1, rd_set, wr_set, NULL, tvptr);
-    } while (os_status < 0 && errno == EINTR);
+    } while (os_status < 0 && (errno == EINTR || errno == EAGAIN));
 
     if (os_status < 0)
     {
