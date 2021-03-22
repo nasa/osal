@@ -104,8 +104,26 @@ bool OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, co
     }
 
     mplen = OS_strnlen(filesys->virtual_mountpt, sizeof(filesys->virtual_mountpt));
-    return (mplen > 0 && mplen < sizeof(filesys->virtual_mountpt) &&
-            strncmp(target, filesys->virtual_mountpt, mplen) == 0 && (target[mplen] == '/' || target[mplen] == 0));
+
+    /*
+     * The virtual_mountpt member should be a substring of the search target.
+     * If this matches a basic substring check then it may be match
+     */
+    if (mplen == 0 || mplen >= sizeof(filesys->virtual_mountpt) ||
+        strncmp(target, filesys->virtual_mountpt, mplen) != 0)
+    {
+        /* not a substring, so not a match */
+        return false;
+    }
+
+    /*
+     * Confirm that the substring ends at either a directory separator
+     * or the end of string  (so exact mount points also match).
+     *
+     * For instance consider a virtual_mountpt of /mnt/abc and searching
+     * for target=/mnt/abcd - this should return false in that case.
+     */
+    return (target[mplen] == '/' || target[mplen] == 0);
 } /* end OS_FileSys_FindVirtMountPoint */
 
 /*----------------------------------------------------------------
