@@ -164,6 +164,7 @@ int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *mo
     MODULE_INFO                       vxModuleInfo;
     STATUS                            vxStatus;
     OS_impl_module_internal_record_t *impl;
+    int32                             return_code;
 
     impl = OS_OBJECT_TABLE_GET(OS_impl_module_table, *token);
 
@@ -176,6 +177,7 @@ int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *mo
     if (vxStatus == ERROR)
     {
         OS_DEBUG("OSAL: OS_ModuleInfoGet Error from vxWorks: %d\n", vxStatus);
+        return_code = OS_ERROR;
     }
     else
     {
@@ -186,8 +188,10 @@ int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *mo
         module_prop->addr.data_size    = vxModuleInfo.segInfo.dataSize;
         module_prop->addr.bss_address  = (cpuaddr)vxModuleInfo.segInfo.bssAddr;
         module_prop->addr.bss_size     = vxModuleInfo.segInfo.bssSize;
+
+        return_code = OS_SUCCESS;
     }
 
-    return (OS_SUCCESS);
+    return (return_code);
 
 } /* end OS_ModuleGetInfo_Impl */
