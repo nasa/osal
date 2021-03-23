@@ -87,7 +87,7 @@ int32 OS_QueueAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcount_t queue_depth, size_t data_size,
+int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcount_t queue_depth, size_t max_size,
                      uint32 flags)
 {
     int32                       return_code;
@@ -97,7 +97,7 @@ int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcoun
     /* validate inputs */
     OS_CHECK_POINTER(queue_id);
     OS_CHECK_APINAME(queue_name);
-    OS_CHECK_SIZE(data_size);
+    OS_CHECK_SIZE(max_size);
     ARGCHECK(queue_depth <= OS_QUEUE_MAX_DEPTH, OS_QUEUE_INVALID_SIZE);
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
@@ -110,7 +110,7 @@ int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcoun
         OS_OBJECT_INIT(token, queue, queue_name, queue_name);
 
         queue->max_depth = queue_depth;
-        queue->max_size  = data_size;
+        queue->max_size  = max_size;
 
         /* Now call the OS-specific implementation.  This reads info from the queue table. */
         return_code = OS_QueueCreate_Impl(&token, flags);

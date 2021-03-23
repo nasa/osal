@@ -175,7 +175,7 @@ BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_
     if (memchr(name, 0, OS_MAX_SYM_LEN) == NULL)
     {
         OS_DEBUG("%s(): symbol name too long\n", __func__);
-        state->StatusCode = OS_ERROR;
+        state->StatusCode = OS_ERR_NAME_TOO_LONG;
         return (false);
     }
 
@@ -190,6 +190,7 @@ BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_
         ** However this is not considered an error, just a stop condition.
         */
         OS_DEBUG("%s(): symbol table size exceeded\n", __func__);
+        state->StatusCode = OS_ERR_OUTPUT_TOO_LARGE;
         return (false);
     }
 
@@ -262,6 +263,16 @@ int32 OS_SymbolTableDump_Impl(const char *filename, size_t size_limit)
         (void)symEach(sysSymTbl, OS_SymTableIterator_Impl, 0);
 
         close(state->fd);
+    }
+
+    /*
+     * If output size was zero this means a failure of the symEach call,
+     * in that it didn't iterate over anything at all.
+     */
+    if (state->StatusCode == OS_SUCCESS && state->CurrSize == 0)
+    {
+        OS_DEBUG("%s(): No symbols found!\n", __func__);
+        state->StatusCode = OS_ERROR;
     }
 
     return (state->StatusCode);

@@ -82,7 +82,7 @@ int32 OS_DirCreate_Impl(const char *local_path, uint32 access)
 
         if (errno == EEXIST)
         {
-            /* it exists, but not necessarily a directory */
+            /* Success if already exists and is a directory */
             if (stat(local_path, &st) == 0 && S_ISDIR(st.st_mode))
             {
                 return_code = OS_SUCCESS;
