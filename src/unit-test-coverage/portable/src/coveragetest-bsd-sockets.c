@@ -29,6 +29,9 @@
 #include "os-shared-file.h"
 
 #include "OCS_sys_socket.h"
+#include "OCS_fcntl.h"
+
+#include "ut-adaptor-portable-posix-io.h"
 
 void Test_OS_SocketOpen_Impl(void)
 {
@@ -36,6 +39,7 @@ void Test_OS_SocketOpen_Impl(void)
 
     /* Set up token for index 0 */
     token.obj_idx = UT_INDEX_0;
+    UT_PortablePosixIOTest_ResetImpl(token.obj_idx);
 
     /* Invalid socket type */
     OS_stream_table[0].socket_type = -1;
@@ -55,6 +59,25 @@ void Test_OS_SocketOpen_Impl(void)
     OS_stream_table[0].socket_type   = OS_SocketType_STREAM;
     OS_stream_table[0].socket_domain = OS_SocketDomain_INET6;
     OSAPI_TEST_FUNCTION_RC(OS_SocketOpen_Impl, (&token), OS_SUCCESS);
+    UtAssert_True(UT_PortablePosixIOTest_Get_Selectable(token.obj_idx), "Socket is selectable");
+
+    /* Failure in fcntl() GETFL */
+    UT_PortablePosixIOTest_ResetImpl(token.obj_idx);
+    UT_ResetState(UT_KEY(OCS_fcntl));
+    UT_SetDeferredRetcode(UT_KEY(OCS_fcntl), 1, -1);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketOpen_Impl, (&token), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OCS_fcntl, 1);
+    UtAssert_True(!UT_PortablePosixIOTest_Get_Selectable(token.obj_idx),
+                  "Socket not selectable without O_NONBLOCK flag");
+
+    /* Failure in fcntl() SETFL */
+    UT_PortablePosixIOTest_ResetImpl(token.obj_idx);
+    UT_ResetState(UT_KEY(OCS_fcntl));
+    UT_SetDeferredRetcode(UT_KEY(OCS_fcntl), 2, -1);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketOpen_Impl, (&token), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OCS_fcntl, 2);
+    UtAssert_True(!UT_PortablePosixIOTest_Get_Selectable(token.obj_idx),
+                  "Socket not selectable without O_NONBLOCK flag");
 }
 
 /* ------------------- End of test cases --------------------------------------*/
