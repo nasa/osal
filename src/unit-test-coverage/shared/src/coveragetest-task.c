@@ -184,17 +184,6 @@ void Test_OS_TaskSetPriority(void)
 
     UtAssert_True(actual == expected, "OS_TaskSetPriority() (%ld) == OS_SUCCESS", (long)actual);
 }
-void Test_OS_TaskRegister(void)
-{
-    /*
-     * Test Case For:
-     * int32 OS_TaskRegister (void)
-     */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_TaskRegister();
-
-    UtAssert_True(actual == expected, "OS_TaskRegister() (%ld) == OS_SUCCESS", (long)actual);
-}
 void Test_OS_TaskGetId(void)
 {
     /*
@@ -360,7 +349,6 @@ void UtTest_Setup(void)
     ADD_TEST(OS_TaskExit);
     ADD_TEST(OS_TaskDelay);
     ADD_TEST(OS_TaskSetPriority);
-    ADD_TEST(OS_TaskRegister);
     ADD_TEST(OS_TaskGetId);
     ADD_TEST(OS_TaskGetIdByName);
     ADD_TEST(OS_TaskGetInfo);

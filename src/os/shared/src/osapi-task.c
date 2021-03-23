@@ -331,25 +331,6 @@ int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_TaskRegister
- *
- *  Purpose: Implemented per public OSAL API
- *           See description in API and header file for detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_TaskRegister(void)
-{
-    OS_object_token_t token;
-
-    /*
-     * Just to retain compatibility (really, only the unit test cares)
-     * this will return NON success when called from a non-task context
-     */
-    return OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, OS_TaskGetId_Impl(), &token);
-} /* end OS_TaskRegister */
-
-/*----------------------------------------------------------------
- *
  * Function: OS_TaskGetId
  *
  *  Purpose: Implemented per public OSAL API

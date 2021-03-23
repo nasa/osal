@@ -166,7 +166,7 @@ int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_p
     Purpose: Perform registration actions after new task creation
 
         NOTE: This is invoked via the OS_TaskEntryPoint() immediately
-              after new task creation, not through OS_TaskRegister() API
+              after new task creation
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/

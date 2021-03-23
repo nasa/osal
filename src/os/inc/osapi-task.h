@@ -171,18 +171,6 @@ int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority);
 
 /*-------------------------------------------------------------------------------------*/
 /**
- * @brief Obsolete
- * @deprecated Explicit registration call no longer needed
- *
- * Obsolete function retained for compatibility purposes.
- * Does Nothing in the current implementation.
- *
- * @return #OS_SUCCESS (always), see @ref OSReturnCodes
- */
-int32 OS_TaskRegister(void);
-
-/*-------------------------------------------------------------------------------------*/
-/**
  * @brief Obtain the task id of the calling task
  *
  * This function returns the task id of the calling task

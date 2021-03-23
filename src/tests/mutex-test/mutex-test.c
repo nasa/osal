@@ -60,7 +60,6 @@ void task_1(void)
     uint32 status;
 
     OS_printf("Starting task 1\n");
-    OS_TaskRegister();
 
     while (1)
     {
@@ -112,7 +111,6 @@ void task_2(void)
     uint32 status;
 
     OS_printf("Starting task 2\n");
-    OS_TaskRegister();
 
     while (1)
     {
@@ -165,7 +163,6 @@ void task_3(void)
     uint32 status;
 
     OS_printf("Starting task 3\n");
-    OS_TaskRegister();
 
     while (1)
     {
