@@ -21,9 +21,6 @@
 /**
  * \file utstub-helpers.h
  *
- *  Created on: May 24, 2018
- *      Author: joseph.p.hickey@nasa.gov
- *
  * Internal header file for OSAL UT stub functions
  *
  * The stub implementation can be used for unit testing applications built

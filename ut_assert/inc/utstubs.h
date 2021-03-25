@@ -21,9 +21,6 @@
 /**
  * \file
  *
- *  Created on: Feb 25, 2015
- *      Author: joseph.p.hickey@nasa.gov
- *
  * Types and definitions for the generic Unit Test Stub framework implemented
  * as part of OSAL.
  *

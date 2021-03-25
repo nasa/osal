@@ -22,7 +22,6 @@
  * \file
  *
  * \ingroup  rtems
- * \author   joseph.p.hickey@nasa.gov
  *
  * Purpose: This file contains definitions that are shared across the RTEMS
  *          OSAL implementation.  This file is private to the RTEMS port and it

@@ -22,7 +22,6 @@
  * \file
  *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  * Internal type/macro definitions used across the "shared" OSAPI layer.
  * These definitions are internal to OSAL but shared/referenced across all subsystems

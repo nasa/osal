@@ -22,7 +22,6 @@
  * \file
  *
  * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 

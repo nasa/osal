@@ -21,8 +21,6 @@
 /**
  * \file
  *
- * Author:  Alan Cudmore - Code 582
- *
  * Purpose: Contains functions prototype definitions and variables declarations
  *          for the OS Abstraction Layer, Core OS module
  */

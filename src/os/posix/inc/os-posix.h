@@ -22,7 +22,6 @@
  * \file
  *
  * \ingroup  posix
- * \author   joseph.p.hickey@nasa.gov
  *
  * Purpose: This file contains definitions that are shared across the POSIX
  *          OSAL implementation.  This file is private to the POSIX port and it
