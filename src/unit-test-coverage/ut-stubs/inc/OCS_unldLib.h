@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for unldLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for unldLib.h
+ */
+
 #ifndef OCS_UNLDLIB_H
 #define OCS_UNLDLIB_H
 
@@ -39,4 +45,4 @@
 /* ----------------------------------------- */
 extern OCS_STATUS OCS_unldByModuleId(OCS_MODULE_ID moduleId, int options);
 
-#endif /*  OCS_UNLDLIB_H */
+#endif /* OCS_UNLDLIB_H */

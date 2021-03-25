@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for tgmath.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for tgmath.h
+ */
+
 #ifndef OCS_TGMATH_H
 #define OCS_TGMATH_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in tgmath.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_TGMATH_H */
+#endif /* OCS_TGMATH_H */

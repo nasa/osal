@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/un.h */
-#ifndef OSAL_OVERRIDE_SYS_UN_H
-#define OSAL_OVERRIDE_SYS_UN_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/un.h
+ */
+
+#ifndef OVERRIDE_SYS_UN_H
+#define OVERRIDE_SYS_UN_H
 
 #include "OCS_sys_un.h"
 
@@ -28,4 +34,4 @@
 /* mappings for declarations in sys/un.h */
 /* ----------------------------------------- */
 
-#endif /* OSAL_OVERRIDE_SYS_UN_H */
+#endif /* OVERRIDE_SYS_UN_H */

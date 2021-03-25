@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for ramDiskCbio.h */
-#ifndef OSAL_OVERRIDE_RAMDISKCBIO_H
-#define OSAL_OVERRIDE_RAMDISKCBIO_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for ramDiskCbio.h
+ */
+
+#ifndef OVERRIDE_RAMDISKCBIO_H
+#define OVERRIDE_RAMDISKCBIO_H
 
 #include "OCS_ramDiskCbio.h"
 #include <vxWorks.h>
@@ -29,4 +35,4 @@
 /* mappings for declarations in ramDiskCbio.h */
 /* ----------------------------------------- */
 
-#endif /* OSAL_OVERRIDE_RAMDISKCBIO_H */
+#endif /* OVERRIDE_RAMDISKCBIO_H */

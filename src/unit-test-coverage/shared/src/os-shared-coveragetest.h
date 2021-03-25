@@ -19,10 +19,10 @@
  */
 
 /**
- * \file     os-shared-coveragetest.h
- * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup shared
  *
+ * Declarations and prototypes for os-shared-coveragetest
  */
 
 #ifndef OS_SHARED_COVERAGETEST_H
@@ -113,4 +113,4 @@ void Osapi_Test_Setup(void);
  */
 void Osapi_Test_Teardown(void);
 
-#endif /* OS_SHARED_COVERAGETEST_H  */
+#endif /* OS_SHARED_COVERAGETEST_H */

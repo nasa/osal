@@ -19,10 +19,8 @@
  */
 
 /**
- * \file     OCS_bsp-impl.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
- *
+ * \file
+ * \ingroup ut-stubs
  *
  * Purpose: Contains functions prototype definitions and variables declarations
  *          for the OSAL BSP layer
@@ -90,4 +88,4 @@ extern void OCS_OS_BSP_ConsoleOutput_Impl(const char *Str, size_t DataLen);
  ------------------------------------------------------------------*/
 extern void OCS_OS_BSP_ConsoleSetMode_Impl(uint32_t ModeBits);
 
-#endif /* OCS_BSP_IMPL_H  */
+#endif /* OCS_BSP_IMPL_H */

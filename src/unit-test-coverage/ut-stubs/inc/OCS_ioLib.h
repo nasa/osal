@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for ioLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for ioLib.h
+ */
+
 #ifndef OCS_IOLIB_H
 #define OCS_IOLIB_H
 
@@ -42,4 +48,4 @@
 
 extern int OCS_ioctl(int fd, unsigned long request, ...);
 
-#endif /*  OCS_IOLIB_H */
+#endif /* OCS_IOLIB_H */

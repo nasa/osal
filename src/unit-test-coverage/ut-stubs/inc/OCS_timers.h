@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for timers.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for timers.h
+ */
+
 #ifndef OCS_TIMERS_H
 #define OCS_TIMERS_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in timers.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_TIMERS_H */
+#endif /* OCS_TIMERS_H */

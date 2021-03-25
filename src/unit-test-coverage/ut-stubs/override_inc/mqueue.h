@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for mqueue.h */
-#ifndef OSAL_OVERRIDE_MQUEUE_H
-#define OSAL_OVERRIDE_MQUEUE_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for mqueue.h
+ */
+
+#ifndef OVERRIDE_MQUEUE_H
+#define OVERRIDE_MQUEUE_H
 
 #include "OCS_mqueue.h"
 #include <time.h>
@@ -39,4 +45,4 @@
 #define mq_timedsend    OCS_mq_timedsend
 #define mq_unlink       OCS_mq_unlink
 
-#endif /* OSAL_OVERRIDE_MQUEUE_H */
+#endif /* OVERRIDE_MQUEUE_H */

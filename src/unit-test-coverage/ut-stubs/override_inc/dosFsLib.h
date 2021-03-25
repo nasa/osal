@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for dosFsLib.h */
-#ifndef OSAL_OVERRIDE_DOSFSLIB_H
-#define OSAL_OVERRIDE_DOSFSLIB_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for dosFsLib.h
+ */
+
+#ifndef OVERRIDE_DOSFSLIB_H
+#define OVERRIDE_DOSFSLIB_H
 
 #include "OCS_dosFsLib.h"
 #include <vxWorks.h>
@@ -36,4 +42,4 @@
 
 #define dosFsVolFormat OCS_dosFsVolFormat
 
-#endif /* OSAL_OVERRIDE_DOSFSLIB_H */
+#endif /* OVERRIDE_DOSFSLIB_H */

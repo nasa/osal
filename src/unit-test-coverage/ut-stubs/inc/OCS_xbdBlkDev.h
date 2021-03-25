@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for xbdBlkDev.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for xbdBlkDev.h
+ */
+
 #ifndef OCS_XBDBLKDEV_H
 #define OCS_XBDBLKDEV_H
 
@@ -42,4 +48,4 @@ typedef int OCS_device_t;
 extern OCS_device_t OCS_xbdBlkDevCreateSync(OCS_BLK_DEV *bd, const char *name);
 extern OCS_STATUS   OCS_xbdBlkDevDelete(OCS_device_t dev, OCS_BLK_DEV **ppbd);
 
-#endif /*  OCS_XBDBLKDEV_H */
+#endif /* OCS_XBDBLKDEV_H */

@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub basic data types */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub basic data types
+ */
+
 #ifndef OCS_BLKIO_H
 #define OCS_BLKIO_H
 
@@ -32,4 +38,4 @@ typedef struct OCS_BLK_DEV
 } OCS_BLK_DEV;
 typedef OCS_BLK_DEV *OCS_BLK_DEV_ID;
 
-#endif /*  OCS_BLKIO_H */
+#endif /* OCS_BLKIO_H */

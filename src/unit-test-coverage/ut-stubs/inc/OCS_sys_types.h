@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/types.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/types.h
+ */
+
 #ifndef OCS_SYS_TYPES_H
 #define OCS_SYS_TYPES_H
 
@@ -44,4 +50,4 @@ typedef unsigned short int OCS_u_short;
 /* prototypes normally declared in sys/types.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_SYS_TYPES_H */
+#endif /* OCS_SYS_TYPES_H */

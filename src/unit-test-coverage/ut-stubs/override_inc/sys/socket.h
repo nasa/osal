@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/socket.h */
-#ifndef OSAL_OVERRIDE_SYS_SOCKET_H
-#define OSAL_OVERRIDE_SYS_SOCKET_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/socket.h
+ */
+
+#ifndef OVERRIDE_SYS_SOCKET_H
+#define OVERRIDE_SYS_SOCKET_H
 
 #include "OCS_sys_socket.h"
 
@@ -55,4 +61,4 @@
 #define SO_ERROR     OCS_SO_ERROR
 #define MSG_DONTWAIT OCS_MSG_DONTWAIT
 
-#endif /* OSAL_OVERRIDE_SYS_SOCKET_H */
+#endif /* OVERRIDE_SYS_SOCKET_H */

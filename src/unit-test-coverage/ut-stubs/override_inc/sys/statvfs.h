@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/statvfs.h */
-#ifndef OSAL_OVERRIDE_SYS_STATVFS_H
-#define OSAL_OVERRIDE_SYS_STATVFS_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/statvfs.h
+ */
+
+#ifndef OVERRIDE_SYS_STATVFS_H
+#define OVERRIDE_SYS_STATVFS_H
 
 /* alias to stat.h */
 #include <stat.h>
 
-#endif /* OSAL_OVERRIDE_SYS_STATVFS_H */
+#endif /* OVERRIDE_SYS_STATVFS_H */

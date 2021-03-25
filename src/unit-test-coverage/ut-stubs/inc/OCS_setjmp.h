@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for setjmp.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for setjmp.h
+ */
+
 #ifndef OCS_SETJMP_H
 #define OCS_SETJMP_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in setjmp.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_SETJMP_H */
+#endif /* OCS_SETJMP_H */

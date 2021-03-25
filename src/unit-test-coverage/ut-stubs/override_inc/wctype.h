@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for wctype.h */
-#ifndef OSAL_OVERRIDE_WCTYPE_H
-#define OSAL_OVERRIDE_WCTYPE_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for wctype.h
+ */
+
+#ifndef OVERRIDE_WCTYPE_H
+#define OVERRIDE_WCTYPE_H
 
 #include "OCS_wctype.h"
 
@@ -28,4 +34,4 @@
 /* mappings for declarations in wctype.h */
 /* ----------------------------------------- */
 
-#endif /* OSAL_OVERRIDE_WCTYPE_H */
+#endif /* OVERRIDE_WCTYPE_H */

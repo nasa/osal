@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for inttypes.h */
-#ifndef OSAL_OVERRIDE_INTTYPES_H
-#define OSAL_OVERRIDE_INTTYPES_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for inttypes.h
+ */
+
+#ifndef OVERRIDE_INTTYPES_H
+#define OVERRIDE_INTTYPES_H
 
 #include "OCS_inttypes.h"
 
@@ -28,4 +34,4 @@
 /* mappings for declarations in inttypes.h */
 /* ----------------------------------------- */
 
-#endif /* OSAL_OVERRIDE_INTTYPES_H */
+#endif /* OVERRIDE_INTTYPES_H */

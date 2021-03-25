@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for fcntl.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for fcntl.h
+ */
+
 #ifndef OCS_FCNTL_H
 #define OCS_FCNTL_H
 
@@ -81,4 +87,4 @@
 extern int OCS_fcntl(int fd, int cmd, ...);
 extern int OCS_open(const char *file, int oflag, ...);
 
-#endif /*  OCS_FCNTL_H */
+#endif /* OCS_FCNTL_H */

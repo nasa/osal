@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for drv/hdisk/ataDrv.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for drv/hdisk/ataDrv.h
+ */
+
 #ifndef OCS_DRV_HDISK_ATADRV_H
 #define OCS_DRV_HDISK_ATADRV_H
 
@@ -39,4 +45,4 @@
 /* ----------------------------------------- */
 extern OCS_BLK_DEV *OCS_ataDevCreate(int ctrl, int drive, unsigned int nBlocks, unsigned int blkOffset);
 
-#endif /*  OCS_DRV_HDISK_ATADRV_H */
+#endif /* OCS_DRV_HDISK_ATADRV_H */

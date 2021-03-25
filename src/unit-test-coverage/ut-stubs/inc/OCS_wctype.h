@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for wctype.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for wctype.h
+ */
+
 #ifndef OCS_WCTYPE_H
 #define OCS_WCTYPE_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in wctype.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_WCTYPE_H */
+#endif /* OCS_WCTYPE_H */

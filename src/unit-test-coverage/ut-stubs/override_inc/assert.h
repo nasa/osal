@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for assert.h */
-#ifndef OSAL_OVERRIDE_ASSERT_H
-#define OSAL_OVERRIDE_ASSERT_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for assert.h
+ */
+
+#ifndef OVERRIDE_ASSERT_H
+#define OVERRIDE_ASSERT_H
 
 #include "OCS_assert.h"
 
@@ -30,4 +36,4 @@
 
 #define assert OCS_assert
 
-#endif /* OSAL_OVERRIDE_ASSERT_H */
+#endif /* OVERRIDE_ASSERT_H */

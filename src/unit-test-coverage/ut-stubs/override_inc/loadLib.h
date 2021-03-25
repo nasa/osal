@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for loadLib.h */
-#ifndef OSAL_OVERRIDE_LOADLIB_H
-#define OSAL_OVERRIDE_LOADLIB_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for loadLib.h
+ */
+
+#ifndef OVERRIDE_LOADLIB_H
+#define OVERRIDE_LOADLIB_H
 
 #include "OCS_loadLib.h"
 #include <vxWorks.h>
@@ -32,4 +38,4 @@
 
 #define loadModule OCS_loadModule
 
-#endif /* OSAL_OVERRIDE_LOADLIB_H */
+#endif /* OVERRIDE_LOADLIB_H */
