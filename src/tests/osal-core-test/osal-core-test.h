@@ -18,7 +18,8 @@
  *  limitations under the License.
  */
 
-/* File: test.h
+/**
+ * \file
  *
  * Purpose:
  * This is a simple header file used to remove a lot of the task definitions
@@ -26,8 +27,8 @@
  *
  */
 
-#ifndef INCLUDE_osal_core_test_h
-#define INCLUDE_osal_core_test_h
+#ifndef OSAL_CORE_TEST_H
+#define OSAL_CORE_TEST_H
 
 /* Task 0 */
 #define TASK_0_STACK_SIZE 1024
@@ -49,4 +50,4 @@
 #define MSGQ_DEPTH 50
 #define MSGQ_SIZE  4
 
-#endif /* INCLUDE_osal_core_test_h */
+#endif /* OSAL_CORE_TEST_H */

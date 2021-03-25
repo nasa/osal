@@ -18,11 +18,12 @@
  *  limitations under the License.
  */
 
-/*================================================================================*
-** File:  ut_osloader_module_test.h
-** Owner: Tam Ngo
-** Date:  April 2013
-**================================================================================*/
+/**
+ * \file
+ *
+ * Owner: Tam Ngo
+ * Date:  April 2013
+ */
 
 #ifndef UT_OSLOADER_MODULE_TEST_H
 #define UT_OSLOADER_MODULE_TEST_H
@@ -60,7 +61,3 @@ void UT_os_module_info_test(void);
 /*--------------------------------------------------------------------------------*/
 
 #endif /* UT_OSLOADER_MODULE_TEST_H */
-
-/*================================================================================*
-** End of File: ut_osloader_module_test.h
-**================================================================================*/
