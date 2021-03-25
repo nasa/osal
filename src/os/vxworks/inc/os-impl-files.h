@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-impl-files.h
+ * \file
+ *
  * \ingroup  vxworks
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -47,4 +48,4 @@
  */
 #define OS_IMPL_REGULAR_FILE_FLAGS 0
 
-#endif /* OS_IMPL_FILES_H  */
+#endif /* OS_IMPL_FILES_H */

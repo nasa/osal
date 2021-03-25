@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-shared-errors.h
+ * \file
+ *
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -39,4 +40,4 @@ typedef struct
 
 extern const OS_ErrorTable_Entry_t OS_IMPL_ERROR_NAME_TABLE[];
 
-#endif /* OS_SHARED_ERRORS_H  */
+#endif /* OS_SHARED_ERRORS_H */

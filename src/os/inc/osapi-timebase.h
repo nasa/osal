@@ -18,8 +18,10 @@
  *  limitations under the License.
  */
 
-/*
- * @file osapi-timebase.h
+/**
+ * \file
+ *
+ * Declarations and prototypes for timebase abstraction
  */
 
 #ifndef OSAPI_TIMEBASE_H
@@ -185,4 +187,4 @@ int32 OS_TimeBaseGetFreeRun(osal_id_t timebase_id, uint32 *freerun_val);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_TIMEBASE_H */

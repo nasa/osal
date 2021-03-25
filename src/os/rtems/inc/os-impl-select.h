@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-impl-select.h
+ * \file
+ *
  * \ingroup  rtems
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -33,4 +34,4 @@
 #include <sys/select.h>
 #include <sys/time.h>
 
-#endif /* OS_IMPL_SELECT_H  */
+#endif /* OS_IMPL_SELECT_H */

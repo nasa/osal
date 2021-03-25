@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-impl-timebase.h
+ * \file
+ *
  * \ingroup  vxworks
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -61,4 +62,4 @@ typedef struct
 
 extern OS_impl_timebase_internal_record_t OS_impl_timebase_table[OS_MAX_TIMEBASES];
 
-#endif /* OS_IMPL_TIMEBASE_H  */
+#endif /* OS_IMPL_TIMEBASE_H */

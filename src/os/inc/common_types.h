@@ -18,8 +18,8 @@
  *  limitations under the License.
  */
 
-/*
- *  Filename: common_types.h
+/**
+ * \file
  *
  *  Purpose:
  *	    Unit specification for common types.
@@ -184,4 +184,4 @@ extern "C"
 #define OSAL_INDEX_C(X)      ((osal_index_t)(X))
 #define OSAL_OBJTYPE_C(X)    ((osal_objtype_t)(X))
 
-#endif /* _common_types_ */
+#endif /* COMMON_TYPES_H */

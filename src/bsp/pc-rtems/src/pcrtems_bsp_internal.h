@@ -18,8 +18,8 @@
  *  limitations under the License.
  */
 
-/*
- * File:  pcrtems_bsp_internal.h
+/**
+ * \file
  *
  * Purpose:
  *   Header file for internal data to the PC-RTEMS BSP

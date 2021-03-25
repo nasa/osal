@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-posix.h
+ * \file
+ *
  * \ingroup  posix
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -34,7 +35,6 @@
 /****************************************************************************************
                                     COMMON INCLUDE FILES
  ***************************************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -109,4 +109,4 @@ int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype);
 
 void OS_Posix_CompAbsDelayTime(uint32 msecs, struct timespec *tm);
 
-#endif /* OS_POSIX_H  */
+#endif /* OS_POSIX_H */

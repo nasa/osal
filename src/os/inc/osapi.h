@@ -18,8 +18,8 @@
  *  limitations under the License.
  */
 
-/*
- * File: osapi.h
+/**
+ * \file
  *
  * Author:  Alan Cudmore - Code 582
  *
@@ -102,4 +102,4 @@ extern "C"
 }
 #endif
 
-#endif
+#endif /* OSAPI_H */

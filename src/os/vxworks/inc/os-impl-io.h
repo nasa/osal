@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-impl-io.h
+ * \file
+ *
  * \ingroup  vxworks
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -55,4 +56,4 @@ extern OS_impl_file_internal_record_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_F
  */
 #define GENERIC_IO_CONST_DATA_CAST (void *)
 
-#endif /* OS_IMPL_IO_H  */
+#endif /* OS_IMPL_IO_H */

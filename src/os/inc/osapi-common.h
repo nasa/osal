@@ -18,8 +18,10 @@
  *  limitations under the License.
  */
 
-/*
- * @file osapi-common.h
+/**
+ * \file
+ *
+ * Declarations and prototypes for general OSAL functions that are not part of a subsystem
  */
 
 #ifndef OSAPI_COMMON_H
@@ -210,4 +212,4 @@ int32 OS_RegisterEventHandler(OS_EventHandler_t handler);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_COMMON_H */

@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-shared-heap.h
+ * \file
+ *
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -48,4 +49,4 @@
  ------------------------------------------------------------------*/
 int32 OS_HeapGetInfo_Impl(OS_heap_prop_t *heap_prop);
 
-#endif /* OS_SHARED_HEAP_H  */
+#endif /* OS_SHARED_HEAP_H */

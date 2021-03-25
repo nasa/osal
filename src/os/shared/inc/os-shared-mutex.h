@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-shared-mutex.h
+ * \file
+ *
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -97,4 +98,4 @@ int32 OS_MutSemDelete_Impl(const OS_object_token_t *token);
  ------------------------------------------------------------------*/
 int32 OS_MutSemGetInfo_Impl(const OS_object_token_t *token, OS_mut_sem_prop_t *mut_prop);
 
-#endif /* OS_SHARED_MUTEX_H  */
+#endif /* OS_SHARED_MUTEX_H */

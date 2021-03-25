@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-shared-task.h
+ * \file
+ *
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -192,4 +193,4 @@ bool OS_TaskIdMatchSystemData_Impl(void *ref, const OS_object_token_t *token, co
  ------------------------------------------------------------------*/
 int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size);
 
-#endif /* OS_SHARED_TASK_H  */
+#endif /* OS_SHARED_TASK_H */

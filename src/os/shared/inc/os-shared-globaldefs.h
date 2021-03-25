@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-shared-globaldefs.h
+ * \file
+ *
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -28,8 +29,8 @@
  * so they are put into a common header file.
  */
 
-#ifndef OSAPI_SHARED_GLOBALDEFS_H_
-#define OSAPI_SHARED_GLOBALDEFS_H_
+#ifndef OS_SHARED_GLOBALDEFS_H
+#define OS_SHARED_GLOBALDEFS_H
 
 /* All subsystems reference the same config, common types, and other constants */
 #include "osconfig.h"
@@ -148,4 +149,4 @@ extern void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const ch
  */
 #define OS_CHECK_PATHNAME(str) OS_CHECK_STRING(str, OS_MAX_PATH_LEN, OS_FS_ERR_PATH_TOO_LONG)
 
-#endif /* OS_SHARED_GLOBALDEFS_H  */
+#endif /* OS_SHARED_GLOBALDEFS_H */

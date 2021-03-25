@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-shell.h
+ * \file
+ *
+ * Declarations and prototypes for shell abstraction
  */
 
 #ifndef OSAPI_SHELL_H
@@ -51,4 +53,4 @@ int32 OS_ShellOutputToFile(const char *Cmd, osal_id_t filedes);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_SHELL_H */

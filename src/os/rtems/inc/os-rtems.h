@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-rtems.h
+ * \file
+ *
  * \ingroup  rtems
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -100,4 +101,4 @@ int32 OS_Rtems_FileSysAPI_Impl_Init(void);
 
 int32 OS_Rtems_TableMutex_Init(osal_objtype_t idtype);
 
-#endif /* OS_RTEMS_H  */
+#endif /* OS_RTEMS_H */

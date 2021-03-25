@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-file.h
+ * \file
+ *
+ * Declarations and prototypes for file objects
  */
 
 #ifndef OSAPI_FILE_H
@@ -461,4 +463,4 @@ int32 OS_CloseAllFiles(void);
 int32 OS_CloseFileByName(const char *Filename);
 /**@}*/
 
-#endif
+#endif /* OSAPI_FILE_H */

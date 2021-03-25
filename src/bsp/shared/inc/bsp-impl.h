@@ -19,7 +19,8 @@
  */
 
 /**
- * \file   bsp-impl.h
+ * \file
+ *
  * \author joseph.p.hickey@nasa.gov
  *
  * Purpose: Contains functions prototype definitions and variables declarations

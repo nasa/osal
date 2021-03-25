@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-impl-console.h
+ * \file
+ *
  * \ingroup  rtems
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -42,4 +43,4 @@ typedef struct
 
 extern OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
 
-#endif /* OS_IMPL_CONSOLE_H  */
+#endif /* OS_IMPL_CONSOLE_H */

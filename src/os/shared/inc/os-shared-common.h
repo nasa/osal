@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-shared-common.h
+ * \file
+ *
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -151,4 +152,4 @@ static inline size_t OS_strnlen(const char *s, size_t maxlen)
     return maxlen;
 }
 
-#endif /* OS_SHARED_COMMON_H  */
+#endif /* OS_SHARED_COMMON_H */

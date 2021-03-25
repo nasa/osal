@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-printf.h
+ * \file
+ *
+ * Declarations and prototypes for printf/console output
  */
 
 #ifndef OSAPI_PRINTF_H
@@ -68,4 +70,4 @@ void OS_printf_disable(void);
 void OS_printf_enable(void);
 /**@}*/
 
-#endif
+#endif /* OSAPI_PRINTF_H */

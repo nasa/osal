@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-shared-file.h
+ * \file
+ *
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -191,4 +192,4 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access);
  */
 int32 OS_FileIteratorClose(osal_id_t filedes, void *arg);
 
-#endif /* OS_SHARED_FILE_H  */
+#endif /* OS_SHARED_FILE_H */

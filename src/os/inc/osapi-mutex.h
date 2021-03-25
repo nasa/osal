@@ -18,8 +18,10 @@
  *  limitations under the License.
  */
 
-/*
- * File: osapi-mutex.h
+/**
+ * \file
+ *
+ * Declarations and prototypes for mutexes
  */
 
 #ifndef OSAPI_MUTEX_H
@@ -149,4 +151,4 @@ int32 OS_MutSemGetIdByName(osal_id_t *sem_id, const char *sem_name);
 int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop);
 /**@}*/
 
-#endif
+#endif /* OSAPI_MUTEX_H */

@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-error.h
+ * \file
+ *
+ * OSAL error code definitions
  */
 
 #ifndef OSAPI_ERROR_H
@@ -117,4 +119,4 @@ typedef char os_err_name_t[OS_ERROR_NAME_LENGTH];
 int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name);
 /**@}*/
 
-#endif
+#endif /* OSAPI_ERROR_H */

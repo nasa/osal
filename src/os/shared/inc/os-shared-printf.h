@@ -19,7 +19,8 @@
  */
 
 /**
- * \file     os-shared-printf.h
+ * \file
+ *
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -103,4 +104,4 @@ void OS_ConsoleOutput_Impl(const OS_object_token_t *token);
  ------------------------------------------------------------------*/
 void OS_ConsoleWakeup_Impl(const OS_object_token_t *token);
 
-#endif /* OS_SHARED_PRINTF_H  */
+#endif /* OS_SHARED_PRINTF_H */

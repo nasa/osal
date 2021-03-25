@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-select.h
+ * \file
+ *
+ * Declarations and prototypes for select abstraction
  */
 
 #ifndef OSAPI_SELECT_H
@@ -154,4 +156,4 @@ int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid);
 bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid);
 /**@}*/
 
-#endif
+#endif /* OSAPI_SELECT_H */
