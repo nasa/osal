@@ -84,6 +84,7 @@ typedef char os_err_name_t[OS_ERROR_NAME_LENGTH];
 #define OS_ERR_STREAM_DISCONNECTED     (-37) /**< @brief Stream disconnected */
 #define OS_ERR_OPERATION_NOT_SUPPORTED (-38) /**< @brief Requested operation not support on supplied object(s) */
 #define OS_ERR_INVALID_SIZE            (-40) /**< @brief Invalid Size */
+#define OS_ERR_OUTPUT_TOO_LARGE        (-41) /**< @brief Size of output exceeds limit  */
 
 /*
 ** Defines for File System Calls
