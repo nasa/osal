@@ -180,31 +180,6 @@ int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority)
 
 /*****************************************************************************/
 /**
-** \brief OS_TaskRegister stub function
-**
-** \par Description
-**        This function is used to mimic the response of the OS API function
-**        OS_TaskRegister.  The user can adjust the response by setting the value
-**        of UT_OS_Fail prior to this function being called.
-**
-** \par Assumptions, External Events, and Notes:
-**        None
-**
-** \returns
-**        Returns either OS_SUCCESS or OS_ERROR.
-**
-******************************************************************************/
-int32 OS_TaskRegister(void)
-{
-    int32 status;
-
-    status = UT_DEFAULT_IMPL(OS_TaskRegister);
-
-    return status;
-}
-
-/*****************************************************************************/
-/**
 ** \brief OS_TaskGetId stub function
 **
 ** \par Description

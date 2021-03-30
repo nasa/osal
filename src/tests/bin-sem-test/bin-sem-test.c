@@ -106,8 +106,6 @@ void task_1(void)
 
     OS_printf("Starting task 1\n");
 
-    OS_TaskRegister();
-
     OS_printf("Delay for 1 second before starting\n");
     OS_TaskDelay(1000);
 

@@ -96,7 +96,6 @@ void task_1(void)
     uint32 status;
 
     OS_printf("Starting task 1\n");
-    OS_TaskRegister();
 
     while (task_1_work < SEMTEST_WORK_LIMIT)
     {
@@ -123,7 +122,6 @@ void task_2(void)
     uint32 status;
 
     OS_printf("Starting task 2\n");
-    OS_TaskRegister();
 
     while (task_2_work < SEMTEST_WORK_LIMIT)
     {
