@@ -117,18 +117,19 @@ static int32 OS_FdSet_ConvertIn_Impl(int *os_maxfd, fd_set *os_set, const OS_FdS
     return status;
 } /* end OS_FdSet_ConvertIn_Impl */
 
-/*----------------------------------------------------------------
- * Function: OS_FdSet_ConvertOut_Impl
+/*----------------------------------------------------------------*/
+/**
+ * \brief Convert a POSIX fd_set structure into an OSAL OS_FdSet
+ *        which can then be returned back to the application.
  *
- *  Purpose: Local helper routine, not part of OSAL API.
+ * Local helper routine, not part of OSAL API.
  *
- *          Convert a POSIX fd_set structure into an OSAL OS_FdSet
- *          which can then be returned back to the application.
+ * This un-sets bits in OSAL_set that are set in the OS_set
  *
- *          This actually un-sets any bits in the "Input" parameter
- *          which are also set in the "output" parameter.
+ * \param[in]      OS_set   The fd_set from select
+ * \param[in, out] OSAL_set The OS_FdSet updated by this helper
  *-----------------------------------------------------------------*/
-static void OS_FdSet_ConvertOut_Impl(fd_set *output, OS_FdSet *Input)
+static void OS_FdSet_ConvertOut_Impl(fd_set *OS_set, OS_FdSet *OSAL_set)
 {
     size_t       offset;
     size_t       bit;
@@ -136,9 +137,9 @@ static void OS_FdSet_ConvertOut_Impl(fd_set *output, OS_FdSet *Input)
     uint8        objids;
     int          osfd;
 
-    for (offset = 0; offset < sizeof(Input->object_ids); ++offset)
+    for (offset = 0; offset < sizeof(OSAL_set->object_ids); ++offset)
     {
-        objids = Input->object_ids[offset];
+        objids = OSAL_set->object_ids[offset];
         bit    = 0;
         while (objids != 0)
         {
@@ -146,9 +147,9 @@ static void OS_FdSet_ConvertOut_Impl(fd_set *output, OS_FdSet *Input)
             if ((objids & 0x01) != 0 && id < OS_MAX_NUM_OPEN_FILES)
             {
                 osfd = OS_impl_filehandle_table[id].fd;
-                if (osfd < 0 || !FD_ISSET(osfd, output))
+                if (osfd < 0 || !FD_ISSET(osfd, OS_set))
                 {
-                    Input->object_ids[offset] &= ~(1 << bit);
+                    OSAL_set->object_ids[offset] &= ~(1 << bit);
                 }
             }
             ++bit;
@@ -187,7 +188,7 @@ static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, int32 msecs)
     }
     else
     {
-        /* eliminates a false warning about possibly uninitialized use */
+        /* Zero for consistency and to avoid possible confusion if not cleared */
         memset(&ts_end, 0, sizeof(ts_end));
     }
 

@@ -281,10 +281,7 @@ void OS_printf(const char *String, ...)
     }
     else if (OS_SharedGlobalVars.PrintfEnabled)
     {
-        /*
-         * Call vsnprintf() to determine the actual size of the
-         * string we are going to write to the buffer after formatting.
-         */
+        /* Format and determine the size of string to write */
         va_start(va, String);
         actualsz = vsnprintf(msg_buffer, sizeof(msg_buffer), String, va);
         va_end(va);

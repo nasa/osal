@@ -109,8 +109,6 @@ void UtTest_Setup(void)
 
 void task_generic_no_exit(void)
 {
-    OS_TaskRegister();
-
     while (1)
     {
         OS_TaskDelay(100);

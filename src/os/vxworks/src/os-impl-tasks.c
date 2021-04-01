@@ -166,7 +166,7 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
      * NOTE: Allocation of the stack requires a malloc() of some form.
      * This is what taskSpawn() effectively does internally to create
      * stack.  If the system malloc() is unacceptable here then this
-     * could be replaced with a statically-allocated OSAL stack buffer.
+     * could be replaced with a locally scoped statically allocated buffer.
      *
      * ALSO NOTE: The stack-rounding macros are normally supplied from
      * vxWorks.h on relevant platforms.  If not provided then it is

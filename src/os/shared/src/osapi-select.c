@@ -141,6 +141,11 @@ int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid)
     return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
     if (return_code == OS_SUCCESS)
     {
+        /*
+         * Sets the bit in the uint8 object_ids array that corresponds
+         * to the local_id where local_id >> 3 determines the array element,
+         * and the mask/shift sets the bit within that element.
+         */
         Set->object_ids[local_id >> 3] |= 1 << (local_id & 0x7);
     }
 
@@ -166,6 +171,11 @@ int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid)
     return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
     if (return_code == OS_SUCCESS)
     {
+        /*
+         * Clears the bit in the uint8 object_ids array that corresponds
+         * to the local_id where local_id >> 3 determines the array element,
+         * and the mask/shift clears the bit within that element.
+         */
         Set->object_ids[local_id >> 3] &= ~(1 << (local_id & 0x7));
     }
 
@@ -194,5 +204,10 @@ bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid)
         return false;
     }
 
+    /*
+     * Returns boolean for if the bit in the uint8 object_ids array that corresponds
+     * to the local_id is set where local_id >> 3 determines the array element,
+     * and the mask/shift checks the bit within that element.
+     */
     return ((Set->object_ids[local_id >> 3] >> (local_id & 0x7)) & 0x1);
 } /* end OS_SelectFdIsSet */

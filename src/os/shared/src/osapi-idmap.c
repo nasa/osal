@@ -971,7 +971,7 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS
         /*
          * The "ConvertToken" routine will return with the global lock
          * in a state appropriate for returning to the caller, as indicated
-         * by the "check_mode" parameter.
+         * by the "lock_mode" parameter.
          */
         return_code = OS_ObjectIdConvertToken(token);
     }
