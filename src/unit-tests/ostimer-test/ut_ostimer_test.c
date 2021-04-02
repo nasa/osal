@@ -193,6 +193,9 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     UT_os_init_timer_misc();
 
     UtTest_Add(UT_os_timercreate_test, UT_os_setup_timercreate_test, NULL, "OS_TimerCreate");
