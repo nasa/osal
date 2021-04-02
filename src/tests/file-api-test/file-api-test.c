@@ -57,6 +57,9 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     /*
      * This test case requires a fixed virtual dir for one test case.
      * Just map /test to a dir of the same name, relative to current dir.

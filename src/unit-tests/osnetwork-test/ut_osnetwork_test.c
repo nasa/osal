@@ -65,6 +65,9 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     UtTest_Add(UT_os_networkgetid_test, NULL, NULL, "OS_NetworkGetID");
     UtTest_Add(UT_os_networkgethostname_test, NULL, NULL, "OS_NetworkGetHostName");
 }
