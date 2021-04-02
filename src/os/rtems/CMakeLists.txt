@@ -36,15 +36,10 @@ set(RTEMS_IMPL_SRCLIST
     ../portable/os-impl-posix-dirs.c
 )
 
-if (OSAL_CONFIG_INCLUDE_SHELL)
-    list(APPEND RTEMS_IMPL_SRCLIST
-       src/os-impl-shell.c
-    )
-else ()
-    list(APPEND RTEMS_IMPL_SRCLIST
-       ../portable/os-impl-no-shell.c
-    )
-endif ()
+# Currently the "shell output to file" for RTEMS is not implemented
+list(APPEND RTEMS_IMPL_SRCLIST
+    ../portable/os-impl-no-shell.c
+)
 
 # If some form of module loading is configured,
 # then build the module loader
