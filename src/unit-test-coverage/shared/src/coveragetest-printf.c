@@ -68,13 +68,13 @@ void Test_OS_printf(void)
 
     /* catch case where OS_printf called before init */
     OS_SharedGlobalVars.PrintfConsoleId = OS_OBJECT_ID_UNDEFINED;
-    OS_SharedGlobalVars.Initialized     = false;
+    OS_SharedGlobalVars.GlobalState     = 0;
     OS_printf("UnitTest1");
     UtAssert_True(OS_console_table[0].WritePos == 0, "WritePos (%lu) >= 0",
                   (unsigned long)OS_console_table[0].WritePos);
 
     /* because printf is disabled, the call count should _not_ increase here */
-    OS_SharedGlobalVars.Initialized = true;
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
     OS_printf_disable();
     OS_printf("UnitTest2");
     UtAssert_True(OS_console_table[0].WritePos == 0, "WritePos (%lu) >= 0",

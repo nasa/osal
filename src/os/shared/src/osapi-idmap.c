@@ -324,7 +324,11 @@ int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype
 {
     memset(token, 0, sizeof(*token));
 
-    if (OS_SharedGlobalVars.Initialized == false)
+    /*
+     * Confirm that OSAL has been fully initialized before allowing any transactions
+     */
+    if (OS_SharedGlobalVars.GlobalState != OS_INIT_MAGIC_NUMBER &&
+        OS_SharedGlobalVars.GlobalState != OS_SHUTDOWN_MAGIC_NUMBER)
     {
         return OS_ERROR;
     }
@@ -333,7 +337,7 @@ int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype
      * only "exclusive" locks allowed after shutdown request (this is mode used for delete).
      * All regular ops will be blocked.
      */
-    if (OS_SharedGlobalVars.ShutdownFlag == OS_SHUTDOWN_MAGIC_NUMBER && lock_mode != OS_LOCK_MODE_EXCLUSIVE)
+    if (OS_SharedGlobalVars.GlobalState == OS_SHUTDOWN_MAGIC_NUMBER && lock_mode != OS_LOCK_MODE_EXCLUSIVE)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
@@ -1211,7 +1215,10 @@ int32 OS_ObjectIdAllocateNew(osal_objtype_t idtype, const char *name, OS_object_
 {
     int32 return_code;
 
-    if (OS_SharedGlobalVars.ShutdownFlag == OS_SHUTDOWN_MAGIC_NUMBER)
+    /*
+     * No new objects can be created after Shutdown request
+     */
+    if (OS_SharedGlobalVars.GlobalState == OS_SHUTDOWN_MAGIC_NUMBER)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
     }

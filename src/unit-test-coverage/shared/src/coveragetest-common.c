@@ -95,34 +95,37 @@ void Test_OS_API_Init(void)
     /* Execute Test */
     Test_MicroSecPerTick            = 0;
     Test_TicksPerSecond             = 0;
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.GlobalState = 0;
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_ERROR);
+    UtAssert_UINT32_EQ(OS_SharedGlobalVars.GlobalState, OS_SHUTDOWN_MAGIC_NUMBER);
 
     Test_MicroSecPerTick            = 1000;
     Test_TicksPerSecond             = 1000;
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.GlobalState = 0;
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_SUCCESS);
 
     Test_MicroSecPerTick            = 1000;
     Test_TicksPerSecond             = 1001;
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.GlobalState = 0;
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_SUCCESS);
+    UtAssert_UINT32_EQ(OS_SharedGlobalVars.GlobalState, OS_INIT_MAGIC_NUMBER);
 
-    /* Second call should return ERROR */
-    OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_ERROR);
+    /* Second call should return SUCCESS (but is a no-op) */
+    OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_SUCCESS);
+    UtAssert_UINT32_EQ(OS_SharedGlobalVars.GlobalState, OS_INIT_MAGIC_NUMBER);
 
     /* other error paths */
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.GlobalState = 0;
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdInit), -222);
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), -222);
     UT_ResetState(UT_KEY(OS_ObjectIdInit));
 
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.GlobalState = 0;
     UT_SetDefaultReturnValue(UT_KEY(OS_API_Impl_Init), -333);
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), -333);
     UT_ResetState(UT_KEY(OS_API_Impl_Init));
 
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.GlobalState = 0;
     UT_SetDefaultReturnValue(UT_KEY(OS_TaskAPI_Init), -444);
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), -444);
     UT_ResetState(UT_KEY(OS_TaskAPI_Init));
@@ -254,6 +257,8 @@ void Test_OS_IdleLoopAndShutdown(void)
      * void OS_IdleLoop(void);
      */
     uint32 CallCount = 0;
+
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
 
     UT_SetHookFunction(UT_KEY(OS_IdleLoop_Impl), SetShutdownFlagHook, NULL);
     OS_IdleLoop();

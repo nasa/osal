@@ -100,7 +100,7 @@ static void *OS_ConsoleTask_Entry(void *arg)
         local = OS_OBJECT_TABLE_GET(OS_impl_console_table, token);
 
         /* Loop forever (unless shutdown is set) */
-        while (OS_SharedGlobalVars.ShutdownFlag != OS_SHUTDOWN_MAGIC_NUMBER)
+        while (OS_SharedGlobalVars.GlobalState != OS_SHUTDOWN_MAGIC_NUMBER)
         {
             OS_ConsoleOutput_Impl(&token);
             sem_wait(&local->data_sem);
