@@ -115,11 +115,11 @@ int32 OS_GenericClose_Impl(const OS_object_token_t *token);
    Function: OS_FileOpen_Impl
 
     Purpose: Opens the file indicated by "local_path" with permission
-             indicated by "access".
+             indicated by "access_mode".
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, int32 flags, int32 access);
+int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, int32 flags, int32 access_mode);
 
 /*----------------------------------------------------------------
    Function: OS_ShellOutputToFile_Impl
@@ -181,7 +181,7 @@ int32 OS_FileRename_Impl(const char *old_path, const char *new_path);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileChmod_Impl(const char *local_path, uint32 access);
+int32 OS_FileChmod_Impl(const char *local_path, uint32 access_mode);
 
 /*
  * Internal helper function

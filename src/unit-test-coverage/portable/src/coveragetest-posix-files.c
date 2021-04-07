@@ -41,7 +41,7 @@ void Test_OS_FileOpen_Impl(void)
 {
     /*
      * Test Case For:
-     * int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access)
+     * int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access_mode)
      */
     OS_object_token_t token;
 
@@ -101,7 +101,7 @@ void Test_OS_FileChmod_Impl(void)
 {
     /*
      * Test Case For:
-     * int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
+     * int32 OS_FileChmod_Impl(const char *local_path, uint32 access_mode)
      */
     struct OCS_stat RefStat;
 

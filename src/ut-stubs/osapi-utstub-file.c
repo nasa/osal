@@ -113,12 +113,12 @@ static int32 UT_GenericWriteStub(const char *fname, UT_EntryKey_t fkey, const vo
  * Stub function for OS_OpenCreate()
  *
  *****************************************************************************/
-int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access)
+int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access_mode)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_OpenCreate), filedes);
     UT_Stub_RegisterContext(UT_KEY(OS_OpenCreate), path);
     UT_Stub_RegisterContextGenericArg(UT_KEY(OS_OpenCreate), flags);
-    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_OpenCreate), access);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_OpenCreate), access_mode);
     int32 status;
 
     status = UT_DEFAULT_IMPL(OS_OpenCreate);
@@ -238,10 +238,10 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
  * Stub function for OS_chmod()
  *
  *****************************************************************************/
-int32 OS_chmod(const char *path, uint32 access)
+int32 OS_chmod(const char *path, uint32 access_mode)
 {
     UT_Stub_RegisterContext(UT_KEY(OS_chmod), path);
-    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_chmod), access);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_chmod), access_mode);
 
     int32 Status;
 
