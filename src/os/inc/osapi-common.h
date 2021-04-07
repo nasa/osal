@@ -140,6 +140,33 @@ int32 OS_API_Init(void);
 
 /*-------------------------------------------------------------------------------------*/
 /**
+ * @brief Teardown/de-initialization of OSAL API
+ *
+ * This is the inverse of OS_API_Init().  It will release all OS resources and
+ * return the system to a state similar to what it was prior to invoking
+ * OS_API_Init() initially.
+ *
+ * Normally for embedded applications, the OSAL is initialized after boot and will remain
+ * initialized in memory until the processor is rebooted.  However for testing and
+ * developement purposes, it is potentially useful to reset back to initial conditions.
+ *
+ * For testing purposes, this API is designed/intended to be compatible with the
+ * UtTest_AddTeardown() routine provided by the UT-Assert subsystem.
+ *
+ * @note This is a "best-effort" routine and it may not always be possible/guaranteed
+ * to recover all resources, particularly in the case of off-nominal conditions, or if
+ * a resource is used outside of OSAL.
+ *
+ * For example, while this will attempt to unload all dynamically-loaded modules, doing
+ * so may not be possible and/or may induce undefined behavior if resources are in use by
+ * tasks/functions outside of OSAL.
+ *
+ * @return None
+ */
+void OS_API_Teardown(void);
+
+/*-------------------------------------------------------------------------------------*/
+/**
  * @brief Background thread implementation - waits forever for events to occur.
  *
  * This should be called from the BSP main routine or initial thread after all other
