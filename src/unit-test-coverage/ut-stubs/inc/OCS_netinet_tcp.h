@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for netinet/tcp.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for netinet/tcp.h
+ */
+
 #ifndef OCS_NETINET_TCP_H
 #define OCS_NETINET_TCP_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in netinet/tcp.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_NETINET_TCP_H */
+#endif /* OCS_NETINET_TCP_H */

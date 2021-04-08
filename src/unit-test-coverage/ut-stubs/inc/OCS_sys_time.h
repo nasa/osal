@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/time.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/time.h
+ */
+
 #ifndef OCS_SYS_TIME_H
 #define OCS_SYS_TIME_H
 
@@ -37,4 +43,4 @@
 /* prototypes normally declared in sys/time.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_SYS_TIME_H */
+#endif /* OCS_SYS_TIME_H */

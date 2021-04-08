@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for errnoLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for errnoLib.h
+ */
+
 #ifndef OCS_ERRNOLIB_H
 #define OCS_ERRNOLIB_H
 
@@ -39,4 +45,4 @@
 
 extern int OCS_errnoGet(void);
 
-#endif /*  OCS_ERRNOLIB_H */
+#endif /* OCS_ERRNOLIB_H */

@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for shellLib.h */
-#ifndef OSAL_OVERRIDE_SHELLLIB_H
-#define OSAL_OVERRIDE_SHELLLIB_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for shellLib.h
+ */
+
+#ifndef OVERRIDE_SHELLLIB_H
+#define OVERRIDE_SHELLLIB_H
 
 #include "OCS_shellLib.h"
 #include <vxWorks.h>
@@ -30,4 +36,4 @@
 /* ----------------------------------------- */
 #define shellGenericInit OCS_shellGenericInit
 
-#endif /* OSAL_OVERRIDE_SHELLLIB_H */
+#endif /* OVERRIDE_SHELLLIB_H */

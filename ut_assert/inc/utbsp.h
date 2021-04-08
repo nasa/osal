@@ -19,10 +19,7 @@
  */
 
 /**
- * \file utbsp.h
- *
- *  Created on: Feb 25, 2015
- *      Author: joseph.p.hickey@nasa.gov
+ * \file
  *
  * Types and definitions for the generic Unit Test BSP interface implemented
  * as part of OSAL.

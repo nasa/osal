@@ -19,14 +19,14 @@
  */
 
 /**
- * \file     symLib.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
  *
+ * Declarations and prototypes for symLib
  */
 
-#ifndef SYMLIB_H
-#define SYMLIB_H
+#ifndef OVERRIDE_SYMLIB_H
+#define OVERRIDE_SYMLIB_H
 
 #include "OCS_symLib.h"
 #include <vxWorks.h>
@@ -51,4 +51,4 @@
 #define symEach       OCS_symEach
 #define symFind       OCS_symFind
 
-#endif /* SYMLIB_H  */
+#endif /* OVERRIDE_SYMLIB_H */

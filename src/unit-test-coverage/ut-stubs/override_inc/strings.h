@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for strings.h */
-#ifndef OSAL_OVERRIDE_STRINGS_H
-#define OSAL_OVERRIDE_STRINGS_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for strings.h
+ */
+
+#ifndef OVERRIDE_STRINGS_H
+#define OVERRIDE_STRINGS_H
 
 #include "OCS_strings.h"
 
@@ -28,4 +34,4 @@
 /* mappings for declarations in strings.h */
 /* ----------------------------------------- */
 
-#endif /* OSAL_OVERRIDE_STRINGS_H */
+#endif /* OVERRIDE_STRINGS_H */

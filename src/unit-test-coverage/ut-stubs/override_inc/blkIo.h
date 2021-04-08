@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for blkIo.h */
-#ifndef OSAL_OVERRIDE_BLKIO_H
-#define OSAL_OVERRIDE_BLKIO_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for blkIo.h
+ */
+
+#ifndef OVERRIDE_BLKIO_H
+#define OVERRIDE_BLKIO_H
 
 #include "OCS_blkIo.h"
 #include <vxWorks.h>
@@ -32,4 +38,4 @@
 #define BLK_DEV    OCS_BLK_DEV
 #define BLK_DEV_ID OCS_BLK_DEV_ID
 
-#endif /* OSAL_OVERRIDE_BLKIO_H */
+#endif /* OVERRIDE_BLKIO_H */

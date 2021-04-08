@@ -18,8 +18,8 @@
  *  limitations under the License.
  */
 
-/*
- * File: utassert.h
+/**
+ * \file
  *
  * Purpose: This code implements a standard set of asserts for use in unit tests.
  *
@@ -323,4 +323,4 @@ void UtAssert_DoReport(const char *File, uint32 LineNum, uint32 SegmentNum, uint
  */
 void UtAssert_DoTestSegmentReport(const char *SegmentName, const UtAssert_TestCounter_t *TestCounters);
 
-#endif
+#endif /* UTASSERT_H */

@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sysLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sysLib.h
+ */
+
 #ifndef OCS_SYSLIB_H
 #define OCS_SYSLIB_H
 
@@ -38,4 +44,4 @@
 /* ----------------------------------------- */
 extern int OCS_sysClkRateGet(void);
 
-#endif /*  OCS_SYSLIB_H */
+#endif /* OCS_SYSLIB_H */

@@ -19,10 +19,10 @@
  */
 
 /**
- * \file     ut-adaptor-timebase.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-timebase
  */
 
 #ifndef UT_ADAPTOR_TIMEBASE_H
@@ -62,4 +62,4 @@ bool UT_TimeBaseTest_CheckTimeBaseErrorState(osal_index_t local_id);
 /* Invoke the internal UsecToTimespec API */
 void UT_TimeBaseTest_UsecToTimespec(uint32 usecs, struct OCS_timespec *time_spec);
 
-#endif /* UT_ADAPTOR_TIMEBASE_H  */
+#endif /* UT_ADAPTOR_TIMEBASE_H */

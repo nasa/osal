@@ -19,14 +19,14 @@
  */
 
 /**
- * \file     selectLib.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
  *
+ * Declarations and prototypes for selectLib
  */
 
-#ifndef SELECTLIB_H
-#define SELECTLIB_H
+#ifndef OVERRIDE_SELECTLIB_H
+#define OVERRIDE_SELECTLIB_H
 
 #include <vxWorks.h>
 #include <sys/select.h>
@@ -35,4 +35,4 @@
 /* mappings for declarations in selectLib.h */
 /* ----------------------------------------- */
 
-#endif /* SELECTLIB_H  */
+#endif /* OVERRIDE_SELECTLIB_H */

@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for shellLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for shellLib.h
+ */
+
 #ifndef OCS_SHELLLIB_H
 #define OCS_SHELLLIB_H
 
@@ -40,4 +46,4 @@
 extern OCS_STATUS OCS_shellGenericInit(const char *config, int stackSize, const char *shellName, char **pShellName,
                                        OCS_BOOL interactive, OCS_BOOL loginAccess, int fdin, int fdout, int fderr);
 
-#endif /*  OCS_SHELLLIB_H */
+#endif /* OCS_SHELLLIB_H */

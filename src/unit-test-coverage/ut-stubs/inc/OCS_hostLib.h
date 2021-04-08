@@ -19,10 +19,10 @@
  */
 
 /**
- * \file     OCS_hostLib.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
  *
+ * Declarations and prototypes for OCS_hostLib
  */
 
 #ifndef OCS_HOSTLIB_H
@@ -44,4 +44,4 @@
 /* ----------------------------------------- */
 extern int OCS_hostGetByName(char *name);
 
-#endif /* OCS_HOSTLIB_H  */
+#endif /* OCS_HOSTLIB_H */

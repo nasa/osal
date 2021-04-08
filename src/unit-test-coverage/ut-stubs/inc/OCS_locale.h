@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for locale.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for locale.h
+ */
+
 #ifndef OCS_LOCALE_H
 #define OCS_LOCALE_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in locale.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_LOCALE_H */
+#endif /* OCS_LOCALE_H */

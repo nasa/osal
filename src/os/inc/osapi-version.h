@@ -18,12 +18,14 @@
  *  limitations under the License.
  */
 
-/*! @file osapi-version.h
- * @brief Purpose:
- *  @details Provide version identifiers for cFS' Operating System Abstraction Layer
+/**
+ * \file
+ *
+ * Provide version identifiers for cFS' Operating System Abstraction Layer
  *  See @ref cfsversions for version and build number and description
  *
  */
+
 #ifndef OSAPI_VERSION_H
 #define OSAPI_VERSION_H
 
@@ -32,7 +34,7 @@
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER   367
+#define OS_BUILD_NUMBER   378
 #define OS_BUILD_BASELINE "v5.1.0-rc1"
 
 /*
@@ -151,7 +153,3 @@ void OS_GetVersionNumber(uint8 VersionNumbers[4]);
 uint32 OS_GetBuildNumber(void);
 
 #endif /* OSAPI_VERSION_H */
-
-/************************/
-/*  End of File Comment */
-/************************/

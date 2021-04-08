@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for ulimit.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for ulimit.h
+ */
+
 #ifndef OCS_ULIMIT_H
 #define OCS_ULIMIT_H
 
@@ -37,4 +43,4 @@
 /* ----------------------------------------- */
 long OCS_ulimit(int cmd, long newlimit);
 
-#endif /*  OCS_ULIMIT_H */
+#endif /* OCS_ULIMIT_H */

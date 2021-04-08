@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/ioctl.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/ioctl.h
+ */
+
 #ifndef OCS_SYS_IOCTL_H
 #define OCS_SYS_IOCTL_H
 
@@ -38,4 +44,4 @@
 
 extern int OCS_ioctl(int fd, unsigned long request, ...);
 
-#endif /*  OCS_SYS_IOCTL_H */
+#endif /* OCS_SYS_IOCTL_H */

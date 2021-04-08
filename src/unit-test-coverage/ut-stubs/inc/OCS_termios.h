@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for termios.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for termios.h
+ */
+
 #ifndef OCS_TERMIOS_H
 #define OCS_TERMIOS_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in termios.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_TERMIOS_H */
+#endif /* OCS_TERMIOS_H */

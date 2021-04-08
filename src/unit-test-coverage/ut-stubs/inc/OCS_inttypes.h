@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for inttypes.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for inttypes.h
+ */
+
 #ifndef OCS_INTTYPES_H
 #define OCS_INTTYPES_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in inttypes.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_INTTYPES_H */
+#endif /* OCS_INTTYPES_H */

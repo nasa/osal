@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-sockets.h
+ * \file
+ *
+ * Declarations and prototypes for sockets abstraction
  */
 
 #ifndef OSAPI_SOCKETS_H
@@ -370,4 +372,4 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_SOCKETS_H */

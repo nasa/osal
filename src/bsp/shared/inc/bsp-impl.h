@@ -19,8 +19,7 @@
  */
 
 /**
- * \file   bsp-impl.h
- * \author joseph.p.hickey@nasa.gov
+ * \file
  *
  * Purpose: Contains functions prototype definitions and variables declarations
  *          for the OSAL BSP layer

@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-impl-network.h
+ * \file
+ *
  * \ingroup  posix
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -30,4 +30,4 @@
 
 #include <unistd.h>
 
-#endif /* OS_IMPL_NETWORK_H  */
+#endif /* OS_IMPL_NETWORK_H */

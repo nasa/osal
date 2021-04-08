@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-rtems.h
+ * \file
+ *
  * \ingroup  rtems
- * \author   joseph.p.hickey@nasa.gov
  *
  * Purpose: This file contains definitions that are shared across the RTEMS
  *          OSAL implementation.  This file is private to the RTEMS port and it
@@ -100,4 +100,4 @@ int32 OS_Rtems_FileSysAPI_Impl_Init(void);
 
 int32 OS_Rtems_TableMutex_Init(osal_objtype_t idtype);
 
-#endif /* OS_RTEMS_H  */
+#endif /* OS_RTEMS_H */

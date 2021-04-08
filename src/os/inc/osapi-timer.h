@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-timer.h
+ * \file
+ *
+ * Declarations and prototypes for timer abstraction (app callbacks)
  */
 
 #ifndef OSAPI_TIMER_H
@@ -208,4 +210,4 @@ int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name);
 int32 OS_TimerGetInfo(osal_id_t timer_id, OS_timer_prop_t *timer_prop);
 /**@}*/
 
-#endif
+#endif /* OSAPI_TIMER_H */

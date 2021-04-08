@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-shared-sockets.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -180,4 +180,4 @@ int32 OS_SocketAddrSetPort_Impl(OS_SockAddr_t *Addr, uint16 PortNum);
  */
 void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Addr, const char *parent_name);
 
-#endif /* OS_SHARED_SOCKETS_H  */
+#endif /* OS_SHARED_SOCKETS_H */

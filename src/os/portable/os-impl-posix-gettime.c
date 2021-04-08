@@ -28,6 +28,12 @@
  * The OS-specific code must \#include the correct headers that define the
  * prototypes for these functions before including this implementation file.
  *
+ * NOTE: The OS-specific header must also define which POSIX clock ID to use -
+ * this specifies the clockid_t parameter to use with clock_gettime().  In
+ * most cases this should be CLOCK_REALTIME to allow the clock to be set, and
+ * so the application will also see any manual/administrative clock changes.
+ *
+ * The clock ID is selected by defining the #OSAL_GETTIME_SOURCE_CLOCK macro.
  */
 
 /****************************************************************************************

@@ -18,8 +18,10 @@
  *  limitations under the License.
  */
 
-/*
- * File: osapi-binsem.h
+/**
+ * \file
+ *
+ * Declarations and prototypes for binary semaphores
  */
 
 #ifndef OSAPI_BINSEM_H
@@ -200,4 +202,4 @@ int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_BINSEM_H */

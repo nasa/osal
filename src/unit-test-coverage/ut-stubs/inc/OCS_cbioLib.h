@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for cbioLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for cbioLib.h
+ */
+
 #ifndef OCS_CBIOLIB_H
 #define OCS_CBIOLIB_H
 
@@ -37,4 +43,4 @@
 /* prototypes normally declared in cbioLib.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_CBIOLIB_H */
+#endif /* OCS_CBIOLIB_H */

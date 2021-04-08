@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for termios.h */
-#ifndef OSAL_OVERRIDE_TERMIOS_H
-#define OSAL_OVERRIDE_TERMIOS_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for termios.h
+ */
+
+#ifndef OVERRIDE_TERMIOS_H
+#define OVERRIDE_TERMIOS_H
 
 #include "OCS_termios.h"
 
@@ -28,4 +34,4 @@
 /* mappings for declarations in termios.h */
 /* ----------------------------------------- */
 
-#endif /* OSAL_OVERRIDE_TERMIOS_H */
+#endif /* OVERRIDE_TERMIOS_H */

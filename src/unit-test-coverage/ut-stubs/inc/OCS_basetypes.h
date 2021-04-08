@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub basic data types */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub basic data types
+ */
+
 #ifndef OCS_BASETYPES_H
 #define OCS_BASETYPES_H
 
@@ -36,4 +42,4 @@
 #include <limits.h>  /* for correct INT_MAX, etc. */
 #include <stdbool.h> /* for correct boolean semantics */
 
-#endif /*  OCS_BASETYPES_H */
+#endif /* OCS_BASETYPES_H */

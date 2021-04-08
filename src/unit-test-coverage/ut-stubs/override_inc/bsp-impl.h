@@ -19,14 +19,14 @@
  */
 
 /**
- * \file     bsp-impl.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
  *
+ * Declarations and prototypes for bsp-impl
  */
 
-#ifndef BSP_IMPL_H
-#define BSP_IMPL_H
+#ifndef OVERRIDE_BSP_IMPL_H
+#define OVERRIDE_BSP_IMPL_H
 
 #include "OCS_bsp-impl.h"
 
@@ -43,4 +43,4 @@
    END bsp-impl.h
  *********************/
 
-#endif /* BSP_IMPL_H  */
+#endif /* OVERRIDE_BSP_IMPL_H */

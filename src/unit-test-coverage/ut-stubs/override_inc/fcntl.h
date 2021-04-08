@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for fcntl.h */
-#ifndef OSAL_OVERRIDE_FCNTL_H
-#define OSAL_OVERRIDE_FCNTL_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for fcntl.h
+ */
+
+#ifndef OVERRIDE_FCNTL_H
+#define OVERRIDE_FCNTL_H
 
 #include "OCS_fcntl.h"
 
@@ -56,4 +62,4 @@
 #define fcntl OCS_fcntl
 #define open  OCS_open
 
-#endif /* OSAL_OVERRIDE_FCNTL_H */
+#endif /* OVERRIDE_FCNTL_H */

@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for complex.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for complex.h
+ */
+
 #ifndef OCS_COMPLEX_H
 #define OCS_COMPLEX_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in complex.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_COMPLEX_H */
+#endif /* OCS_COMPLEX_H */

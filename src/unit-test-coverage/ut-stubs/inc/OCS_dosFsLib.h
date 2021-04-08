@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for dosFsLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for dosFsLib.h
+ */
+
 #ifndef OCS_DOSFSLIB_H
 #define OCS_DOSFSLIB_H
 
@@ -43,4 +49,4 @@
 /* ----------------------------------------- */
 extern OCS_STATUS OCS_dosFsVolFormat(char *path, int opt, OCS_FUNCPTR pPromptFunc);
 
-#endif /*  OCS_DOSFSLIB_H */
+#endif /* OCS_DOSFSLIB_H */

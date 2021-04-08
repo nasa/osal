@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/signal.h */
-#ifndef OSAL_OVERRIDE_SYS_SIGNAL_H
-#define OSAL_OVERRIDE_SYS_SIGNAL_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/signal.h
+ */
+
+#ifndef OVERRIDE_SYS_SIGNAL_H
+#define OVERRIDE_SYS_SIGNAL_H
 
 /* alias to signal.h */
 #include <signal.h>
 
-#endif /* OSAL_OVERRIDE_SYS_SIGNAL_H */
+#endif /* OVERRIDE_SYS_SIGNAL_H */

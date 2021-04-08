@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-module.h
+ * \file
+ *
+ * Declarations and prototypes for module subsystem
  */
 
 #ifndef OSAPI_MODULE_H
@@ -231,4 +233,4 @@ int32 OS_ModuleUnload(osal_id_t module_id);
 int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_info);
 /**@}*/
 
-#endif
+#endif /* OSAPI_MODULE_H */

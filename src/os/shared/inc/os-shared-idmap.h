@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-shared-idmap.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -545,4 +545,4 @@ bool  OS_ObjectNameMatch(void *ref, const OS_object_token_t *token, const OS_com
 int32 OS_ObjectIdFindNextMatch(OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_object_token_t *token);
 int32 OS_ObjectIdFindNextFree(OS_object_token_t *token);
 
-#endif /* OS_SHARED_IDMAP_H  */
+#endif /* OS_SHARED_IDMAP_H */

@@ -33,6 +33,7 @@
 #include "os-impl-io.h"
 #include "os-shared-shell.h"
 #include "os-shared-file.h"
+#include "os-shared-task.h"
 #include "os-shared-idmap.h"
 #include "os-shared-common.h"
 
@@ -59,10 +60,12 @@ int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
     int32                           ReturnCode = OS_ERROR;
     int32                           Result;
     osal_id_t                       fdCmd;
-    char *                          shellName;
     OS_impl_file_internal_record_t *out_impl;
     OS_impl_file_internal_record_t *cmd_impl;
     OS_object_token_t               cmd_token;
+    char                            localShellName[OS_MAX_API_NAME];
+
+    snprintf(localShellName, sizeof(localShellName), "shll_%08lx", OS_ObjectIdToInteger(OS_TaskGetId()));
 
     /* Create a file to write the command to (or write over the old one) */
     Result =
@@ -83,7 +86,7 @@ int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
         OS_lseek(fdCmd, 0, OS_SEEK_SET);
 
         /* Create a shell task the will run the command in the file, push output to OS_fd */
-        Result = shellGenericInit("INTERPRETER=Cmd", 0, NULL, &shellName, false, false, cmd_impl->fd, out_impl->fd,
+        Result = shellGenericInit("INTERPRETER=Cmd", 0, localShellName, NULL, false, false, cmd_impl->fd, out_impl->fd,
                                   out_impl->fd);
     }
 
@@ -93,7 +96,7 @@ int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
         do
         {
             taskDelay(sysClkRateGet());
-        } while (taskNameToId(shellName) != ((TASK_ID)ERROR));
+        } while (taskNameToId(localShellName) != ((TASK_ID)ERROR));
 
         ReturnCode = OS_SUCCESS;
     }

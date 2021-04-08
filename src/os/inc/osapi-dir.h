@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-dir.h
+ * \file
+ *
+ * Declarations and prototypes for directories
  */
 
 #ifndef OSAPI_DIR_H
@@ -136,4 +138,4 @@ int32 OS_mkdir(const char *path, uint32 access);
 int32 OS_rmdir(const char *path);
 /**@}*/
 
-#endif
+#endif /* OSAPI_DIR_H */

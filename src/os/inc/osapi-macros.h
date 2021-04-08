@@ -18,8 +18,10 @@
  *  limitations under the License.
  */
 
-/*
- * @file osapi-macros.h
+/**
+ * \file
+ *
+ * Macro definitions that are used across all OSAL subsystems
  */
 
 #ifndef OSAPI_MACROS_H
@@ -136,4 +138,4 @@
  */
 #define LENGTHCHECK(str, len, errcode) ARGCHECK(memchr(str, '\0', len), errcode)
 
-#endif
+#endif /* OSAPI_MACROS_H */

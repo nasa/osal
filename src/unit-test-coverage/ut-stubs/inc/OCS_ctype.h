@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for ctype.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for ctype.h
+ */
+
 #ifndef OCS_CTYPE_H
 #define OCS_CTYPE_H
 
@@ -38,4 +44,4 @@
 
 extern int OCS_isgraph(int c);
 
-#endif /*  OCS_CTYPE_H */
+#endif /* OCS_CTYPE_H */

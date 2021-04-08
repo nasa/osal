@@ -18,19 +18,18 @@
  *  limitations under the License.
  */
 
-/*
- * File: uttest.c
+/**
+ * \file
  *
  * Purpose: This file contains functions to implement a standard way to execute unit tests.
  */
 
+#ifndef UTGLOBAL_H
+#define UTGLOBAL_H
+
 /*
  * Includes
  */
-
-#ifndef UTASSERT_GLOBAL_H
-#define UTASSERT_GLOBAL_H
-
 #include "osapi.h"
 #include "utassert.h"
 #include "utlist.h"
@@ -64,4 +63,4 @@ typedef struct
  */
 extern UtAssert_Global_t UtAssert_Global;
 
-#endif /* UTASSERT_GLOBAL_H  */
+#endif /* UTGLOBAL_H */
