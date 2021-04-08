@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for fenv.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for fenv.h
+ */
+
 #ifndef OCS_FENV_H
 #define OCS_FENV_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in fenv.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_FENV_H */
+#endif /* OCS_FENV_H */

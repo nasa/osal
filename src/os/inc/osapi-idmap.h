@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-idmap.h
+ * \file
+ *
+ * Declarations and prototypes for object IDs
  */
 
 #ifndef OSAPI_IDMAP_H
@@ -261,4 +263,4 @@ void OS_ForEachObjectOfType(osal_objtype_t objtype, osal_id_t creator_id, OS_Arg
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_IDMAP_H */

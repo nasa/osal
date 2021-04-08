@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for stdarg.h */
-#ifndef OSAL_OVERRIDE_STDARG_H
-#define OSAL_OVERRIDE_STDARG_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for stdarg.h
+ */
+
+#ifndef OVERRIDE_STDARG_H
+#define OVERRIDE_STDARG_H
 
 #include "OCS_stdarg.h"
 
@@ -32,4 +38,4 @@
 #define va_start(ap, last) OCS_va_start(ap, last)
 #define va_end(ap)         OCS_va_end(ap)
 
-#endif /* OSAL_OVERRIDE_STDARG_H */
+#endif /* OVERRIDE_STDARG_H */

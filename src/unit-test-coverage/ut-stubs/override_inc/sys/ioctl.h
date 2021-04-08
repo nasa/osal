@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/ioctl.h */
-#ifndef OSAL_OVERRIDE_SYS_IOCTL_H
-#define OSAL_OVERRIDE_SYS_IOCTL_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/ioctl.h
+ */
+
+#ifndef OVERRIDE_SYS_IOCTL_H
+#define OVERRIDE_SYS_IOCTL_H
 
 #include "OCS_sys_ioctl.h"
 
@@ -30,4 +36,4 @@
 
 #define ioctl OCS_ioctl
 
-#endif /* OSAL_OVERRIDE_SYS_IOCTL_H */
+#endif /* OVERRIDE_SYS_IOCTL_H */

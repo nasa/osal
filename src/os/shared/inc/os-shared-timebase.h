@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-shared-timebase.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -138,4 +138,4 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id);
  ------------------------------------------------------------------*/
 int32 OS_Milli2Ticks(uint32 milli_seconds, int *ticks);
 
-#endif /* OS_SHARED_TIMEBASE_H  */
+#endif /* OS_SHARED_TIMEBASE_H */

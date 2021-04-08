@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sched.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sched.h
+ */
+
 #ifndef OCS_SCHED_H
 #define OCS_SCHED_H
 
@@ -45,4 +51,4 @@ struct OCS_sched_param
 extern int OCS_sched_get_priority_max(int policy);
 extern int OCS_sched_get_priority_min(int policy);
 
-#endif /*  OCS_SCHED_H */
+#endif /* OCS_SCHED_H */

@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for logLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for logLib.h
+ */
+
 #ifndef OCS_LOGLIB_H
 #define OCS_LOGLIB_H
 
@@ -37,4 +43,4 @@
 /* prototypes normally declared in logLib.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_LOGLIB_H */
+#endif /* OCS_LOGLIB_H */

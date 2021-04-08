@@ -18,11 +18,12 @@
  *  limitations under the License.
  */
 
-/*================================================================================*
-** File:  ut_osfilesys_diskio_test.h
-** Owner: Tam Ngo
-** Date:  April 2013
-**================================================================================*/
+/**
+ * \file
+ *
+ * Owner: Tam Ngo
+ * Date:  April 2013
+ */
 
 #ifndef UT_OSFILESYS_DISKIO_TEST_H
 #define UT_OSFILESYS_DISKIO_TEST_H
@@ -74,7 +75,3 @@ void UT_os_fsstatvolume_test(void);
 /*--------------------------------------------------------------------------------*/
 
 #endif /* UT_OSFILESYS_DISKIO_TEST_H */
-
-/*================================================================================*
-** End of File: ut_osfilesys_diskio_test.h
-**================================================================================*/

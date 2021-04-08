@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for ramDrv.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for ramDrv.h
+ */
+
 #ifndef OCS_RAMDRV_H
 #define OCS_RAMDRV_H
 
@@ -39,4 +45,4 @@
 /* ----------------------------------------- */
 extern OCS_BLK_DEV *OCS_ramDevCreate(char *ramAddr, int bytesPerSec, int secPerTrack, int nSectors, int secOffset);
 
-#endif /*  OCS_RAMDRV_H */
+#endif /* OCS_RAMDRV_H */

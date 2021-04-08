@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-shared-countsem.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -112,4 +112,4 @@ int32 OS_CountSemDelete_Impl(const OS_object_token_t *token);
  ------------------------------------------------------------------*/
 int32 OS_CountSemGetInfo_Impl(const OS_object_token_t *token, OS_count_sem_prop_t *count_prop);
 
-#endif /* OS_SHARED_COUNTSEM_H  */
+#endif /* OS_SHARED_COUNTSEM_H */

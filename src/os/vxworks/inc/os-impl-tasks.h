@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-impl-tasks.h
+ * \file
+ *
  * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -51,4 +51,4 @@ typedef struct
 /* Tables where the OS object information is stored */
 extern OS_impl_task_internal_record_t OS_impl_task_table[OS_MAX_TASKS];
 
-#endif /* OS_IMPL_TASKS_H  */
+#endif /* OS_IMPL_TASKS_H */

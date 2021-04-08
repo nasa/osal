@@ -19,10 +19,10 @@
  */
 
 /**
- * \file     ut-adaptor-portable-posix-files.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-portable-posix-files
  */
 
 #ifndef UT_ADAPTOR_PORTABLE_POSIX_FILES_H
@@ -34,4 +34,4 @@
 OCS_uid_t UT_PortablePosixFileTest_GetSelfEUID(void);
 OCS_gid_t UT_PortablePosixFileTest_GetSelfEGID(void);
 
-#endif /* UT_ADAPTOR_PORTABLE_POSIX_FILES_H  */
+#endif /* UT_ADAPTOR_PORTABLE_POSIX_FILES_H */

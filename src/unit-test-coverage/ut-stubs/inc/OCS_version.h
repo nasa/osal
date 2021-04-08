@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for version.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for version.h
+ */
+
 #ifndef OCS_VERSION_H
 #define OCS_VERSION_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in version.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_VERSION_H */
+#endif /* OCS_VERSION_H */

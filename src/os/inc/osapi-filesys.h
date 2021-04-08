@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-filesys.h
+ * \file
+ *
+ * Declarations and prototypes for file systems
  */
 
 #ifndef OSAPI_FILESYS_H
@@ -76,7 +78,6 @@ typedef struct
  * from OSAL.  However it is possible to create a virtual map to the root, such as by calling:
  *
  *      OS_FileSysAddFixedMap(&fs_id, "/", "/root");
- *
  *
  * @param[out]  filesys_id  A non-zero OSAL ID reflecting the file system
  * @param[in]   phys_path   The native system directory (an existing mount point)
@@ -279,4 +280,4 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath);
 int32 OS_GetFsInfo(os_fsinfo_t *filesys_info);
 /**@}*/
 
-#endif
+#endif /* OSAPI_FILESYS_H */

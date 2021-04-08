@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-task.h
+ * \file
+ *
+ * Declarations and prototypes for task abstraction
  */
 
 #ifndef OSAPI_TASK_H
@@ -237,4 +239,4 @@ int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t 
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_TASK_H */

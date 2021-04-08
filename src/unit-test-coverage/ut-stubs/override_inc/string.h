@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for string.h */
-#ifndef OSAL_OVERRIDE_STRING_H
-#define OSAL_OVERRIDE_STRING_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for string.h
+ */
+
+#ifndef OVERRIDE_STRING_H
+#define OVERRIDE_STRING_H
 
 #include "OCS_string.h"
 
@@ -41,4 +47,4 @@
 #define strncat  OCS_strncat
 #define strerror OCS_strerror
 
-#endif /* OSAL_OVERRIDE_STRING_H */
+#endif /* OVERRIDE_STRING_H */

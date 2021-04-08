@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-clock.h
+ * \file
+ *
+ * Declarations and prototypes for osapi-clock module
  */
 
 #ifndef OSAPI_CLOCK_H
@@ -402,4 +404,4 @@ static inline OS_time_t OS_TimeSubtract(OS_time_t time1, OS_time_t time2)
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_CLOCK_H */

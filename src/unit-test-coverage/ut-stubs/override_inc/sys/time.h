@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/time.h */
-#ifndef OSAL_OVERRIDE_SYS_TIME_H
-#define OSAL_OVERRIDE_SYS_TIME_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/time.h
+ */
+
+#ifndef OVERRIDE_SYS_TIME_H
+#define OVERRIDE_SYS_TIME_H
 
 #include "OCS_sys_time.h"
 #include <time.h>
@@ -29,4 +35,4 @@
 /* mappings for declarations in sys/time.h */
 /* ----------------------------------------- */
 
-#endif /* OSAL_OVERRIDE_SYS_TIME_H */
+#endif /* OVERRIDE_SYS_TIME_H */

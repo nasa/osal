@@ -18,8 +18,10 @@
  *  limitations under the License.
  */
 
-/*
- * @file osapi-network.h
+/**
+ * \file
+ *
+ * Declarations and prototypes for network subsystem
  */
 
 #ifndef OSAPI_NETWORK_H
@@ -68,4 +70,4 @@ int32 OS_NetworkGetHostName(char *host_name, size_t name_len);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_NETWORK_H */

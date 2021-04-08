@@ -18,11 +18,12 @@
  *  limitations under the License.
  */
 
-/*================================================================================*
-** File:  ut_osnetwork_misc_test.h
-** Owner: Tam Ngo
-** Date:  April 2013
-**================================================================================*/
+/**
+ * \file
+ *
+ * Owner: Tam Ngo
+ * Date:  April 2013
+ */
 
 #ifndef UT_OSNETWORK_MISC_TEST_H
 #define UT_OSNETWORK_MISC_TEST_H
@@ -59,7 +60,3 @@ void UT_os_networkgethostname_test(void);
 /*--------------------------------------------------------------------------------*/
 
 #endif /* UT_OSNETWORK_MISC_TEST_H */
-
-/*================================================================================*
-** End of File: ut_osnetwork_misc_test.h
-**================================================================================*/

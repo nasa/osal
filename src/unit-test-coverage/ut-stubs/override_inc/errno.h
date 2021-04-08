@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for errno.h */
-#ifndef OSAL_OVERRIDE_ERRNO_H
-#define OSAL_OVERRIDE_ERRNO_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for errno.h
+ */
+
+#ifndef OVERRIDE_ERRNO_H
+#define OVERRIDE_ERRNO_H
 
 #include "OCS_errno.h"
 
@@ -40,4 +46,4 @@
 
 #define errno OCS_errno
 
-#endif /* OSAL_OVERRIDE_ERRNO_H */
+#endif /* OVERRIDE_ERRNO_H */

@@ -18,8 +18,8 @@
  *  limitations under the License.
  */
 
-/*
- * File: uttest.h
+/**
+ * \file
  *
  * Purpose: This file contains functions to implement a standard way to execute unit tests.
  *
@@ -100,4 +100,4 @@ void UtTest_Run(void);
  */
 void UtTest_Setup(void);
 
-#endif
+#endif /* UTTEST_H */

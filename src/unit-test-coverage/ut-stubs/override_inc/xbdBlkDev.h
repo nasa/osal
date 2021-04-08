@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for xbdBlkDev.h */
-#ifndef OSAL_OVERRIDE_XBDBLKDEV_H
-#define OSAL_OVERRIDE_XBDBLKDEV_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for xbdBlkDev.h
+ */
+
+#ifndef OVERRIDE_XBDBLKDEV_H
+#define OVERRIDE_XBDBLKDEV_H
 
 #include "OCS_xbdBlkDev.h"
 #include <vxWorks.h>
@@ -35,4 +41,4 @@
 #define xbdBlkDevCreateSync OCS_xbdBlkDevCreateSync
 #define xbdBlkDevDelete     OCS_xbdBlkDevDelete
 
-#endif /* OSAL_OVERRIDE_XBDBLKDEV_H */
+#endif /* OVERRIDE_XBDBLKDEV_H */

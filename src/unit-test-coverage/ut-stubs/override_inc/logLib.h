@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for logLib.h */
-#ifndef OSAL_OVERRIDE_LOGLIB_H
-#define OSAL_OVERRIDE_LOGLIB_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for logLib.h
+ */
+
+#ifndef OVERRIDE_LOGLIB_H
+#define OVERRIDE_LOGLIB_H
 
 #include "OCS_logLib.h"
 #include <vxWorks.h>
@@ -29,4 +35,4 @@
 /* mappings for declarations in logLib.h */
 /* ----------------------------------------- */
 
-#endif /* OSAL_OVERRIDE_LOGLIB_H */
+#endif /* OVERRIDE_LOGLIB_H */

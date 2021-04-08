@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-impl-filesys.h
+ * \file
+ *
  * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -42,4 +42,4 @@ typedef struct
 
 extern OS_impl_filesys_internal_record_t OS_impl_filesys_table[OS_MAX_FILE_SYSTEMS];
 
-#endif /* OS_IMPL_FILESYS_H  */
+#endif /* OS_IMPL_FILESYS_H */

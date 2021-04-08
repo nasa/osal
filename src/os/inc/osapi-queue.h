@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-queue.h
+ * \file
+ *
+ * Declarations and prototypes for queue subsystem
  */
 
 #ifndef OSAPI_QUEUE_H
@@ -47,7 +49,6 @@ typedef struct
  * will be allocated automatically or allocated by the code that sets up
  * the queue. Queue names must be unique; if the name already exists this
  * function fails. Names cannot be NULL.
- *
  *
  * @param[out]  queue_id will be set to the non-zero ID of the newly-created resource
  * @param[in]   queue_name the name of the new resource to create
@@ -163,4 +164,4 @@ int32 OS_QueueGetIdByName(osal_id_t *queue_id, const char *queue_name);
 int32 OS_QueueGetInfo(osal_id_t queue_id, OS_queue_prop_t *queue_prop);
 /**@}*/
 
-#endif
+#endif /* OSAPI_QUEUE_H */

@@ -18,8 +18,10 @@
  *  limitations under the License.
  */
 
-/*
- * @file osapi-constants.h
+/**
+ * \file
+ *
+ * General constants for OSAL that are shared across subsystems
  */
 
 #ifndef OSAPI_CONSTANTS_H
@@ -53,4 +55,4 @@
  */
 #define OS_MAX_LOCAL_PATH_LEN (OS_MAX_PATH_LEN + OS_FS_PHYS_NAME_LEN)
 
-#endif
+#endif /* OSAPI_CONSTANTS_H */

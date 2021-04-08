@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for usrLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for usrLib.h
+ */
+
 #ifndef OCS_USRLIB_H
 #define OCS_USRLIB_H
 
@@ -37,4 +43,4 @@
 /* prototypes normally declared in usrLib.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_USRLIB_H */
+#endif /* OCS_USRLIB_H */

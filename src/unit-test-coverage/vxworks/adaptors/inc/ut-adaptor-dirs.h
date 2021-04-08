@@ -19,10 +19,10 @@
  */
 
 /**
- * \file     ut-adaptor-dirs.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-dirs
  */
 
 #ifndef UT_ADAPTOR_DIRS_H
@@ -44,4 +44,4 @@
  */
 extern int32 UT_Call_OS_VxWorks_DirAPI_Impl_Init(void);
 
-#endif /* UT_ADAPTOR_DIRS_H  */
+#endif /* UT_ADAPTOR_DIRS_H */

@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for netinet/in.h */
-#ifndef OSAL_OVERRIDE_NETINET_IN_H
-#define OSAL_OVERRIDE_NETINET_IN_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for netinet/in.h
+ */
+
+#ifndef OVERRIDE_NETINET_IN_H
+#define OVERRIDE_NETINET_IN_H
 
 #include "OCS_netinet_in.h"
 
@@ -33,4 +39,4 @@
 #define htonl OCS_htonl
 #define ntohl OCS_ntohl
 
-#endif /* OSAL_OVERRIDE_NETINET_IN_H */
+#endif /* OVERRIDE_NETINET_IN_H */

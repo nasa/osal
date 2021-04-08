@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for stdlib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for stdlib.h
+ */
+
 #ifndef OCS_STDLIB_H
 #define OCS_STDLIB_H
 
@@ -46,4 +52,4 @@ extern int               OCS_system(const char *command);
 extern void *            OCS_malloc(size_t sz);
 extern void              OCS_free(void *ptr);
 
-#endif /*  OCS_STDLIB_H */
+#endif /* OCS_STDLIB_H */

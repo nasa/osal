@@ -18,7 +18,13 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for poll.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for poll.h
+ */
+
 #ifndef OCS_POLL_H
 #define OCS_POLL_H
 
@@ -36,4 +42,4 @@
 /* prototypes normally declared in poll.h */
 /* ----------------------------------------- */
 
-#endif /*  OCS_POLL_H */
+#endif /* OCS_POLL_H */

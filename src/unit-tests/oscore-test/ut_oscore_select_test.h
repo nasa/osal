@@ -18,11 +18,12 @@
  *  limitations under the License.
  */
 
-/*================================================================================*
-** File:  ut_oscore_select_test.h
-** Owner: Chris Knight
-** Date:  March 2020
-**================================================================================*/
+/**
+ * \file
+ *
+ * Owner: Chris Knight
+ * Date:  March 2020
+ */
 
 #ifndef UT_OSCORE_SELECT_TEST_H
 #define UT_OSCORE_SELECT_TEST_H
@@ -60,7 +61,3 @@ void UT_os_select_multi_test(void);
 /*--------------------------------------------------------------------------------*/
 
 #endif /* UT_OSCORE_SELECT_TEST_H */
-
-/*================================================================================*
-** End of File: ut_oscore_select_test.h
-**================================================================================*/

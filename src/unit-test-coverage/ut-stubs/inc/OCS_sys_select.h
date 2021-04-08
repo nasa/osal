@@ -19,10 +19,10 @@
  */
 
 /**
- * \file     OCS_sys_select.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
  *
+ * Declarations and prototypes for OCS_sys_select
  */
 
 #ifndef OCS_SYS_SELECT_H
@@ -57,4 +57,4 @@ extern int  OCS_FD_ISSET(int fd, OCS_fd_set *set);
 extern void OCS_FD_CLR(int fd, OCS_fd_set *set);
 extern void OCS_FD_ZERO(OCS_fd_set *set);
 
-#endif /* OCS_SYS_SELECT_H  */
+#endif /* OCS_SYS_SELECT_H */

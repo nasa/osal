@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for fenv.h */
-#ifndef OSAL_OVERRIDE_FENV_H
-#define OSAL_OVERRIDE_FENV_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for fenv.h
+ */
+
+#ifndef OVERRIDE_FENV_H
+#define OVERRIDE_FENV_H
 
 #include "OCS_fenv.h"
 
@@ -28,4 +34,4 @@
 /* mappings for declarations in fenv.h */
 /* ----------------------------------------- */
 
-#endif /* OSAL_OVERRIDE_FENV_H */
+#endif /* OVERRIDE_FENV_H */
