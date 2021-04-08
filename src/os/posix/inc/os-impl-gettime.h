@@ -31,6 +31,12 @@
 #include "osconfig.h"
 #include <time.h>
 
-#define OSAL_GETTIME_SOURCE_CLOCK CLOCK_MONOTONIC
+/**
+ * \brief Idenfies the clock ID for OSAL clock operations on POSIX
+ *
+ * This is the POSIX clock ID that will be used to implement
+ * OS_GetLocalTime() and OS_SetLocalTime().
+ */
+#define OSAL_GETTIME_SOURCE_CLOCK CLOCK_REALTIME
 
 #endif /* OS_IMPL_GETTIME_H */
