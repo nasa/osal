@@ -74,7 +74,7 @@ typedef struct
  *                              is the underlying tick value rounded to the nearest
  *                              microsecond integer.
  * @param[in]   callback_ptr    The function pointer of the timer callback or ISR that
- *                              will be called by the timer. The user’s function is
+ *                              will be called by the timer. The userâ€™s function is
  *                              declared as follows: <tt> void timer_callback(uint32 timer_id) </tt>
  *                              Where the timer_id is passed in to the function by the OSAL
  *

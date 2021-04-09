@@ -22,7 +22,7 @@
  * \file
  *
  *  Purpose:
- *	    Unit specification for common types.
+ *      Unit specification for common types.
  *
  *  Design Notes:
  *         Assumes make file has defined processor family
