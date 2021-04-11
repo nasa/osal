@@ -131,6 +131,18 @@ void Test_OS_API_Init(void)
     UT_ResetState(UT_KEY(OS_TaskAPI_Init));
 }
 
+void Test_OS_API_Teardown(void)
+{
+    /*
+     * Test Case For:
+     * void OS_API_Teardown(void);
+     */
+
+    /* Just need to call the API for coverage; there are no conditionals
+     * and the internal functions are each tested separately */
+    OS_API_Teardown();
+}
+
 void Test_OS_ApplicationExit(void)
 {
     /*
@@ -330,4 +342,5 @@ void UtTest_Setup(void)
     ADD_TEST(OS_IdleLoopAndShutdown);
     ADD_TEST(OS_ApplicationExit);
     ADD_TEST(OS_NotifyEvent);
+    ADD_TEST(OS_API_Teardown);
 }

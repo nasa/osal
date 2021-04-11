@@ -248,6 +248,28 @@ int32 OS_API_Init(void)
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_API_Teardown
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+void OS_API_Teardown(void)
+{
+    /*
+     * This should delete any remaining user-created objects/tasks
+     */
+    OS_DeleteAllObjects();
+
+    /*
+     * This should cause the "internal" objects (e.g. console utility task)
+     * to exit, and will prevent any new objects from being created.
+     */
+    OS_ApplicationShutdown(true);
+}
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_RegisterEventHandler
  *
  *  Purpose: Implemented per public OSAL API
