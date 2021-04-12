@@ -132,6 +132,9 @@ void UT_os_init_file_misc()
 
 void UtTest_Setup(void)
 {
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     UT_os_initfs_test();
 
     if (UT_os_setup_fs() == OS_SUCCESS)

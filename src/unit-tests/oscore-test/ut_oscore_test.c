@@ -188,6 +188,9 @@ void UT_os_init_task_get_info_test()
 
 void UtTest_Setup(void)
 {
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     UtTest_Add(UT_os_apiinit_test, NULL, NULL, "OS_API_Init");
 
     UtTest_Add(UT_os_printf_test, NULL, NULL, "OS_printf");

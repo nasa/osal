@@ -482,13 +482,13 @@ void Test_OS_ObjectIdGetById(void)
     OS_object_token_t   token2;
 
     /* verify that the call returns ERROR when not initialized */
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.GlobalState = 0;
     actual                          = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, 0, OS_OBJECT_ID_UNDEFINED, &token1);
     expected                        = OS_ERROR;
     UtAssert_True(actual == expected, "OS_ObjectIdGetById(uninitialized) (%ld) == OS_ERROR", (long)actual);
 
     /* set "true" for the remainder of tests */
-    OS_SharedGlobalVars.Initialized = true;
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
 
     OS_ObjectIdCompose_Impl(OS_OBJECT_TYPE_OS_TASK, 1000, &refobjid);
     OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TASK, refobjid, &local_idx);
@@ -516,17 +516,16 @@ void Test_OS_ObjectIdGetById(void)
     UtAssert_True(rptr->refcount == 0, "refcount (%u) == 0", (unsigned int)rptr->refcount);
 
     /* attempt to get non-exclusive lock during shutdown should fail */
-    OS_SharedGlobalVars.ShutdownFlag = OS_SHUTDOWN_MAGIC_NUMBER;
-    expected                         = OS_ERR_INCORRECT_OBJ_STATE;
-    actual                           = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TASK, refobjid, &token1);
+    OS_SharedGlobalVars.GlobalState = OS_SHUTDOWN_MAGIC_NUMBER;
+    expected                        = OS_ERR_INCORRECT_OBJ_STATE;
+    actual                          = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TASK, refobjid, &token1);
     UtAssert_True(actual == expected, "OS_ObjectIdGetById() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
-    OS_SharedGlobalVars.ShutdownFlag = 0;
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
 
     /* attempt to get lock for invalid type object should fail */
     expected = OS_ERR_INCORRECT_OBJ_TYPE;
     actual   = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, 0xFFFF, refobjid, &token1);
     UtAssert_True(actual == expected, "OS_ObjectIdGetById() (%ld) == OS_ERR_INCORRECT_OBJ_TYPE", (long)actual);
-    OS_SharedGlobalVars.ShutdownFlag = 0;
 
     /* clear out state entry */
     memset(&OS_global_task_table[local_idx], 0, sizeof(OS_global_task_table[local_idx]));
@@ -702,10 +701,10 @@ void Test_OS_ObjectIdAllocateNew(void)
     actual   = OS_ObjectIdGetByName(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &token);
     UtAssert_True(actual == expected, "OS_ObjectIdGetByName() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
 
-    OS_SharedGlobalVars.ShutdownFlag = OS_SHUTDOWN_MAGIC_NUMBER;
-    expected                         = OS_ERR_INCORRECT_OBJ_STATE;
-    actual                           = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &token);
-    OS_SharedGlobalVars.ShutdownFlag = 0;
+    OS_SharedGlobalVars.GlobalState = OS_SHUTDOWN_MAGIC_NUMBER;
+    expected                        = OS_ERR_INCORRECT_OBJ_STATE;
+    actual                          = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &token);
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
     UtAssert_True(actual == expected, "OS_ObjectIdAllocate() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
 
     expected = OS_ERR_INCORRECT_OBJ_TYPE;
@@ -773,8 +772,7 @@ void Test_OS_ObjectIdTransaction(void)
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 0);
 
     /* shutdown will prevent transactions */
-    OS_SharedGlobalVars.Initialized  = true;
-    OS_SharedGlobalVars.ShutdownFlag = OS_SHUTDOWN_MAGIC_NUMBER;
+    OS_SharedGlobalVars.GlobalState = OS_SHUTDOWN_MAGIC_NUMBER;
     OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_BINSEM, &token),
                            OS_ERR_INCORRECT_OBJ_STATE);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_NONE);
@@ -793,7 +791,7 @@ void Test_OS_ObjectIdTransaction(void)
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 1);
 
     /* other cases for normal operating mode */
-    OS_SharedGlobalVars.ShutdownFlag = 0;
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
     OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_COUNTSEM, &token),
                            OS_SUCCESS);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_GLOBAL);
@@ -1081,10 +1079,10 @@ void Osapi_Test_Setup(void)
 
     /*
      * The OS_SharedGlobalVars is also used here, but set the
-     * "Initialized" field to true by default, as this is needed by most tests.
+     * "GlobalState" field to init by default, as this is needed by most tests.
      */
     memset(&OS_SharedGlobalVars, 0, sizeof(OS_SharedGlobalVars));
-    OS_SharedGlobalVars.Initialized = true;
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
 }
 
 /*

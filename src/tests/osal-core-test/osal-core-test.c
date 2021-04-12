@@ -96,6 +96,9 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     UtTest_Add(TestTasks, NULL, NULL, "TASK");
     UtTest_Add(TestQueues, NULL, NULL, "MSGQ");
     UtTest_Add(TestBinaries, NULL, NULL, "BSEM");

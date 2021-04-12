@@ -58,9 +58,8 @@
 #include "os-shared-time.h"
 
 OS_SharedGlobalVars_t OS_SharedGlobalVars = {
-    .Initialized     = false,
+    .GlobalState     = 0,
     .PrintfEnabled   = false,
-    .ShutdownFlag    = 0,
     .MicroSecPerTick = 0, /* invalid, _must_ be set by implementation init */
     .TicksPerSecond  = 0, /* invalid, _must_ be set by implementation init */
     .EventHandler    = NULL,
@@ -112,13 +111,29 @@ int32 OS_API_Init(void)
     osal_objtype_t idtype;
     uint32         microSecPerSec;
 
-    if (OS_SharedGlobalVars.Initialized != false)
+    /*
+     * If OSAL is already initialized, not really a big issue, just return.
+     * This is not typically expected though, so its worth a debug statement.
+     *
+     * However this can validly occur when running tests on some platforms
+     * without a reset/reload between invocations.
+     */
+    if (OS_SharedGlobalVars.GlobalState == OS_INIT_MAGIC_NUMBER)
     {
-        OS_DEBUG("WARNING: BUG - initialization function called multiple times\n");
-        return OS_ERROR;
+        OS_DEBUG("NOTE: ignored redundant OS_API_Init() call\n");
+        return OS_SUCCESS;
     }
 
-    OS_SharedGlobalVars.Initialized = true;
+    /* Wipe global state structure to be sure everything is clean */
+    memset(&OS_SharedGlobalVars, 0, sizeof(OS_SharedGlobalVars));
+
+    /* Reset debug to default level if enabled */
+#if defined(OSAL_CONFIG_DEBUG_PRINTF)
+    OS_SharedGlobalVars.DebugLevel = 1;
+#endif
+
+    /* Set flag that says OSAL has been initialized */
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
 
     /* Initialize the common table that everything shares */
     return_code = OS_ObjectIdInit();
@@ -216,8 +231,42 @@ int32 OS_API_Init(void)
                  (long)OS_SharedGlobalVars.TicksPerSecond);
     }
 
+    if (return_code != OS_SUCCESS)
+    {
+        /*
+         * Some part of init failed, so set global flag that says OSAL is in shutdown state.
+         *
+         * In particular if certain internal resources (such as the console utility task)
+         * were created, this should cause those tasks to self-exit such that the system
+         * is ultimately returned to the same state it started in.
+         */
+        OS_SharedGlobalVars.GlobalState = OS_SHUTDOWN_MAGIC_NUMBER;
+    }
+
     return (return_code);
 } /* end OS_API_Init */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_API_Teardown
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+void OS_API_Teardown(void)
+{
+    /*
+     * This should delete any remaining user-created objects/tasks
+     */
+    OS_DeleteAllObjects();
+
+    /*
+     * This should cause the "internal" objects (e.g. console utility task)
+     * to exit, and will prevent any new objects from being created.
+     */
+    OS_ApplicationShutdown(true);
+}
 
 /*----------------------------------------------------------------
  *
@@ -359,7 +408,7 @@ void OS_IdleLoop()
      * In most "real" embedded systems, this will never happen.
      * However it will happen in debugging situations (CTRL+C, etc).
      */
-    while (OS_SharedGlobalVars.ShutdownFlag != OS_SHUTDOWN_MAGIC_NUMBER)
+    while (OS_SharedGlobalVars.GlobalState != OS_SHUTDOWN_MAGIC_NUMBER)
     {
         OS_IdleLoop_Impl();
     }
@@ -377,7 +426,7 @@ void OS_ApplicationShutdown(uint8 flag)
 {
     if (flag == true)
     {
-        OS_SharedGlobalVars.ShutdownFlag = OS_SHUTDOWN_MAGIC_NUMBER;
+        OS_SharedGlobalVars.GlobalState = OS_SHUTDOWN_MAGIC_NUMBER;
     }
 
     /*
