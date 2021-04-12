@@ -39,8 +39,3 @@ void UT_ConsoleTest_TaskEntry(int arg)
 {
     OS_VxWorks_ConsoleTask_Entry(arg);
 }
-
-void UT_ConsoleTest_SetConsoleAsync(osal_index_t local_id, bool is_async)
-{
-    OS_impl_console_table[local_id].is_async = is_async;
-}

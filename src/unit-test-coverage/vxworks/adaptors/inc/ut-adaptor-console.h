@@ -39,9 +39,4 @@ extern size_t const UT_Ref_OS_impl_console_table_SIZE;
  */
 extern void UT_ConsoleTest_TaskEntry(int arg);
 
-/**
- * Force the "is_async" field to a given state for coverage testing
- */
-extern void UT_ConsoleTest_SetConsoleAsync(osal_index_t local_id, bool is_async);
-
 #endif /* UT_ADAPTOR_CONSOLE_H */

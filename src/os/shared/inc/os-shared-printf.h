@@ -50,6 +50,7 @@ typedef struct
     volatile size_t ReadPos;        /**< Offset of next byte to read */
     volatile size_t WritePos;       /**< Offset of next byte to write */
     uint32          OverflowEvents; /**< Number of lines dropped due to overflow */
+    bool            IsAsync;
 
 } OS_console_internal_record_t;
 
@@ -89,17 +90,15 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token);
 void OS_ConsoleOutput_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ConsoleOutput_Impl
+   Function: OS_ConsoleWakeup_Impl
 
     Purpose: Console output data notification
 
    This is a notification API that is invoked whenever there
    is new data available in the console output buffer.
 
-   For a synchronous console service, this may call
-   OS_ConsoleWrite_Impl() directly.  For an async console
-   service, this should wakeup the actual console servicing
-   thread.
+   It is only used of the console is configured for async operation,
+   and it should wakeup the actual console servicing thread.
  ------------------------------------------------------------------*/
 void OS_ConsoleWakeup_Impl(const OS_object_token_t *token);
 

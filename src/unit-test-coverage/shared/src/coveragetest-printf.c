@@ -64,7 +64,6 @@ void Test_OS_printf(void)
      * void OS_printf_disable(void);
      * void OS_printf_enable(void);
      */
-    uint32 CallCount = 0;
 
     /* catch case where OS_printf called before init */
     OS_SharedGlobalVars.PrintfConsoleId = OS_OBJECT_ID_UNDEFINED;
@@ -80,17 +79,29 @@ void Test_OS_printf(void)
     UtAssert_True(OS_console_table[0].WritePos == 0, "WritePos (%lu) >= 0",
                   (unsigned long)OS_console_table[0].WritePos);
 
-    /* normal case */
+    /* normal case - sync mode */
+    OS_console_table[0].IsAsync = false;
     OS_printf_enable();
-    OS_printf("UnitTest3");
-    CallCount = UT_GetStubCount(UT_KEY(OS_ConsoleWakeup_Impl));
-    UtAssert_True(CallCount == 1, "OS_ConsoleWakeup_Impl() call count (%lu) == 1", (unsigned long)CallCount);
-    UtAssert_True(OS_console_table[0].WritePos >= 9, "WritePos (%lu) >= 9",
+    OS_printf("UnitTest3s");
+    UtAssert_STUB_COUNT(OS_ConsoleWakeup_Impl, 0);
+    UtAssert_STUB_COUNT(OS_ConsoleOutput_Impl, 1);
+    UtAssert_True(OS_console_table[0].WritePos >= 10, "WritePos (%lu) >= 10",
+                  (unsigned long)OS_console_table[0].WritePos);
+
+    /* normal case - async mode */
+    OS_console_table[0].IsAsync  = true;
+    OS_console_table[0].WritePos = 0;
+    OS_printf("UnitTest3a");
+    UtAssert_STUB_COUNT(OS_ConsoleWakeup_Impl, 1);
+    UtAssert_STUB_COUNT(OS_ConsoleOutput_Impl, 1);
+    UtAssert_True(OS_console_table[0].WritePos >= 10, "WritePos (%lu) >= 10",
                   (unsigned long)OS_console_table[0].WritePos);
 
     /* print a long string that does not fit in the 16-char buffer */
     OS_printf_enable();
     OS_printf("UnitTest4BufferLengthExceeded");
+    UtAssert_True(OS_console_table[0].OverflowEvents == 1, "OverflowEvents (%lu) == 1",
+                  (unsigned long)OS_console_table[0].OverflowEvents);
 
     /* test writing with a non-empty console name */
     strncpy(OS_console_table[0].device_name, "ut", sizeof(OS_console_table[0].device_name) - 1);
