@@ -34,12 +34,15 @@ void Test_OS_GetErrorName(void)
      * int32 OS_GetErrorName(int32 error_num, os_err_name_t* err_name);
      */
     os_err_name_t err_name;
-    int32         expected = OS_SUCCESS;
-    int32         actual   = OS_GetErrorName(OS_ERROR, &err_name);
 
-    UtAssert_True(actual == expected, "OS_GetErrorName(%s) (%ld) == OS_SUCCESS", "OS_ERROR", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_GetErrorName(OS_ERROR, &err_name), OS_SUCCESS);
     UtAssert_True(strcmp(err_name, "OS_ERROR") == 0, "string(%s) == OS_ERROR", err_name);
 
+    OSAPI_TEST_FUNCTION_RC(OS_GetErrorName(-4444, &err_name), OS_SUCCESS);
+    UtAssert_True(strcmp(err_name, "UT_ERROR") == 0, "string(%s) == UT_ERROR", err_name);
+
+    OSAPI_TEST_FUNCTION_RC(OS_GetErrorName(-4445, &err_name), OS_ERROR);
+    UtAssert_True(strcmp(err_name, "OS_UNKNOWN(-4445)") == 0, "string(%s) == OS_UNKNOWN(-4445)", err_name);
     OSAPI_TEST_FUNCTION_RC(OS_GetErrorName(-555555, &err_name), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_GetErrorName(-555555, NULL), OS_INVALID_POINTER);
 }

@@ -29,6 +29,8 @@
 
 #include "OCS_string.h"
 
+#define UT_ERR_UNIQUE 0xDEADBEEF
+
 /*
 **********************************************************************************
 **          PUBLIC API FUNCTIONS
@@ -58,6 +60,7 @@ void Test_OS_FileSysAddFixedMap(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", NULL), OS_INVALID_POINTER);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, NULL, "/virt"), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(NULL, "/phys", "/virt"), OS_INVALID_POINTER);
 
     UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_FS_ERR_PATH_TOO_LONG);
@@ -70,6 +73,13 @@ void Test_OS_FileSysAddFixedMap(void)
     UT_ResetState(UT_KEY(OCS_memchr));
     UT_ResetState(UT_KEY(OCS_strrchr));
 
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdAllocateNew), 1, UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), UT_ERR_UNIQUE);
+    UT_SetDeferredRetcode(UT_KEY(OS_FileSysStartVolume_Impl), 1, UT_ERR_UNIQUE + 1);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), UT_ERR_UNIQUE + 1);
+    UT_SetDeferredRetcode(UT_KEY(OS_FileSysMountVolume_Impl), 1, UT_ERR_UNIQUE + 2);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), UT_ERR_UNIQUE + 2);
+
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_SUCCESS);
 }
@@ -81,46 +91,53 @@ void Test_OS_mkfs(void)
      * int32 OS_mkfs (char *address, const char *devname, const char * volname,
      *          uint32 blocksize, uint32 numblocks)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
-
     char TestBuffer[128];
 
-    actual = OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_SUCCESS", (long)actual);
+    /* Success case for existing entry */
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)), OS_SUCCESS);
 
     /*
      * Test an entry NOT found in the OS_VolumeTable
      */
-    actual = OS_mkfs(TestBuffer, "/rd1", "vol1", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(TestBuffer, "/rd1", "vol1", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)), OS_SUCCESS);
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_mkfs(NULL, NULL, NULL, OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_INVALID_POINTER", (long)actual);
+    /* NULL addr with RAM volume to cover branches */
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(NULL, "/rd1", "RAM1", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
-    expected = OS_FS_ERR_PATH_TOO_LONG;
-    actual   = OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
-    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(TestBuffer, NULL, "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(TestBuffer, "/ramdev0", NULL, OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)),
+                           OS_INVALID_POINTER);
 
-    /* set up for failure due to empty strings */
-    expected = OS_FS_ERR_PATH_INVALID;
-    actual   = OS_mkfs(TestBuffer, "", "", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
+    /* First string check error */
+    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)),
+                           OS_FS_ERR_PATH_TOO_LONG);
+
+    /* Second string check error */
+    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 2, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)),
+                           OS_FS_ERR_PATH_TOO_LONG);
+
+    /* failure due to empty strings */
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(TestBuffer, "", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)),
+                           OS_FS_ERR_PATH_INVALID);
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(TestBuffer, "/ramdev0", "", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)),
+                           OS_FS_ERR_PATH_INVALID);
 
     /* set up for failure due to formatting */
     UT_SetDefaultReturnValue(UT_KEY(OS_FileSysFormatVolume_Impl), OS_FS_ERR_DRIVE_NOT_CREATED);
-    expected = OS_FS_ERR_DRIVE_NOT_CREATED;
-    actual   = OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_FS_ERR_DRIVE_NOT_CREATED (format failure)", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)),
+                           OS_FS_ERR_DRIVE_NOT_CREATED);
+
+    /* Start failure */
+    UT_SetDefaultReturnValue(UT_KEY(OS_FileSysStartVolume_Impl), OS_ERR_INCORRECT_OBJ_STATE);
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)),
+                           OS_FS_ERR_DEVICE_NOT_FREE);
 
     /* set up for failure due to no free slots */
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
-    expected = OS_FS_ERR_DEVICE_NOT_FREE;
-    actual   = OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_mkfs() (%ld) == OS_FS_ERR_DEVICE_NOT_FREE", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_mkfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)),
+                           OS_FS_ERR_DEVICE_NOT_FREE);
 }
 
 void Test_OS_rmfs(void)
@@ -159,32 +176,26 @@ void Test_OS_initfs(void)
      * int32 OS_initfs (char *address,const char *devname, const char *volname,
      *          uint32 blocksize, uint32 numblocks)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
-
     char TestBuffer[128];
 
-    actual = OS_initfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_initfs() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_initfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_initfs(NULL, "/hda2", "vol2", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)), OS_SUCCESS);
 
-    actual = OS_initfs(NULL, "/hda2", "vol2", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_initfs() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_initfs(NULL, NULL, NULL, OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)), OS_INVALID_POINTER);
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_initfs(NULL, NULL, NULL, OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_initfs() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
-    expected = OS_FS_ERR_PATH_TOO_LONG;
-    actual   = OS_initfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_initfs() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
-    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
+    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_initfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)),
+                           OS_FS_ERR_PATH_TOO_LONG);
 
     /* set up for failure */
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
-    expected = OS_FS_ERR_DEVICE_NOT_FREE;
-    actual   = OS_initfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0));
-    UtAssert_True(actual == expected, "OS_initfs() (%ld) == OS_FS_ERR_DEVICE_NOT_FREE", (long)actual);
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdAllocateNew), 1, OS_ERR_NO_FREE_IDS);
+    OSAPI_TEST_FUNCTION_RC(OS_initfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)),
+                           OS_FS_ERR_DEVICE_NOT_FREE);
+
+    /* Start failure */
+    UT_SetDefaultReturnValue(UT_KEY(OS_FileSysStartVolume_Impl), OS_ERR_INCORRECT_OBJ_STATE);
+    OSAPI_TEST_FUNCTION_RC(OS_initfs(TestBuffer, "/ramdev0", "vol", OSAL_SIZE_C(0), OSAL_BLOCKCOUNT_C(0)),
+                           OS_FS_ERR_DEVICE_NOT_FREE);
 }
 
 void Test_OS_mount(void)
@@ -193,34 +204,30 @@ void Test_OS_mount(void)
      * Test Case For:
      * int32 OS_mount (const char *devname, const char* mountpoint)
      */
-    int32 expected;
-    int32 actual;
-
-    expected = OS_ERR_NAME_NOT_FOUND;
-    actual   = OS_mount("/ramdev5", "/ram5");
-    UtAssert_True(actual == expected, "OS_mount() (%ld) == OS_ERR_NAME_NOT_FOUND", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_mount("/ramdev5", "/ram5"), OS_ERR_NAME_NOT_FOUND);
 
     /* Test unknown/unset system mountpoint */
     OS_filesys_table[1].flags             = OS_FILESYS_FLAG_IS_READY;
     OS_filesys_table[1].system_mountpt[0] = 0;
-    expected = OS_ERR_NAME_NOT_FOUND; /* should be OS_FS_ERR_PATH_INVALID, but compat return overwrites */
-    actual   = OS_mount("/ramdev5", "/ram5");
-    UtAssert_True(actual == expected, "OS_mount(no mountpt) (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
+    /* should be OS_FS_ERR_PATH_INVALID, but compat return overwrites */
+    OSAPI_TEST_FUNCTION_RC(OS_mount("/ramdev5", "/ram5"), OS_ERR_NAME_NOT_FOUND);
 
     /* set up so record is in the right state for mounting */
-    expected = OS_SUCCESS;
     snprintf(OS_filesys_table[1].system_mountpt, sizeof(OS_filesys_table[1].system_mountpt), "/ut");
-    actual = OS_mount("/ramdev5", "/ram5");
-    UtAssert_True(actual == expected, "OS_mount(nominal) (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_mount("/ramdev5", "/ram5"), OS_SUCCESS);
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_mount(NULL, NULL);
-    UtAssert_True(actual == expected, "OS_mount() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_mount(NULL, "/ram5"), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_mount("/ramdev5", NULL), OS_INVALID_POINTER);
 
-    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
-    expected = OS_FS_ERR_PATH_TOO_LONG;
-    actual   = OS_mount("/ramdev0", "/ram0");
-    UtAssert_True(actual == expected, "OS_mount() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
+    /* Path too long errors */
+    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_mount("/ramdev0", "/ram0"), OS_FS_ERR_PATH_TOO_LONG);
+    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 2, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_mount("/ramdev0", "/ram0"), OS_FS_ERR_PATH_TOO_LONG);
+
+    /* Fail OS_ObjectIdGetByName */
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetByName), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_mount("/ramdev5", "/ram5"), OS_ERR_NAME_NOT_FOUND);
 }
 
 void Test_OS_unmount(void)
@@ -229,28 +236,20 @@ void Test_OS_unmount(void)
      * Test Case For:
      * int32 OS_unmount (const char *mountpoint)
      */
-    int32 expected;
-    int32 actual;
-
-    expected = OS_ERR_NAME_NOT_FOUND;
-    actual   = OS_unmount("/ram0");
-    UtAssert_True(actual == expected, "OS_mount() (%ld) == OS_ERR_NAME_NOT_FOUND", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_unmount("/ram0"), OS_ERR_NAME_NOT_FOUND);
 
     /* set up so record is in the right state for mounting */
     OS_filesys_table[1].flags =
         OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
-    expected = OS_SUCCESS;
-    actual   = OS_unmount("/ram0");
-    UtAssert_True(actual == expected, "OS_unmount(nominal) (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_unmount("/ram0"), OS_SUCCESS);
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_unmount(NULL);
-    UtAssert_True(actual == expected, "OS_unmount() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_unmount(NULL), OS_INVALID_POINTER);
+
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetBySearch), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_unmount("/ram0"), OS_ERR_NAME_NOT_FOUND);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
-    expected = OS_FS_ERR_PATH_TOO_LONG;
-    actual   = OS_unmount("/ram0");
-    UtAssert_True(actual == expected, "OS_unmount() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_unmount("/ram0"), OS_FS_ERR_PATH_TOO_LONG);
 }
 
 void Test_OS_FileSysStatVolume(void)
@@ -349,33 +348,23 @@ void Test_OS_FS_GetPhysDriveName(void)
      * Test Case For:
      * int32 OS_FS_GetPhysDriveName(char * PhysDriveName, const char * MountPoint)
      */
-    int32 expected = OS_INVALID_POINTER;
-    int32 actual   = OS_FS_GetPhysDriveName(NULL, NULL);
-    char  NameBuf[OS_FS_PHYS_NAME_LEN];
+    char NameBuf[OS_FS_PHYS_NAME_LEN];
 
-    UtAssert_True(actual == expected, "OS_FS_GetPhysDriveName() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_FS_GetPhysDriveName(NULL, "none"), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_FS_GetPhysDriveName(NameBuf, NULL), OS_INVALID_POINTER);
 
-    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
-    expected = OS_FS_ERR_PATH_TOO_LONG;
-    actual   = OS_FS_GetPhysDriveName(NameBuf, "none");
-    UtAssert_True(actual == expected, "OS_FS_GetPhysDriveName() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
-    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
+    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FS_GetPhysDriveName(NameBuf, "none"), OS_FS_ERR_PATH_TOO_LONG);
 
-    expected = OS_ERR_INCORRECT_OBJ_STATE;
-    actual   = OS_FS_GetPhysDriveName(NameBuf, "none");
-    UtAssert_True(actual == expected, "OS_FS_GetPhysDriveName() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_FS_GetPhysDriveName(NameBuf, "none"), OS_ERR_INCORRECT_OBJ_STATE);
 
     OS_filesys_table[1].flags =
         OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
-    expected = OS_SUCCESS;
-    actual   = OS_FS_GetPhysDriveName(NameBuf, "none");
-    UtAssert_True(actual == expected, "OS_FS_GetPhysDriveName() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_FS_GetPhysDriveName(NameBuf, "none"), OS_SUCCESS);
 
     /* Test Fail due to no matching VolTab entry */
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch), OS_ERR_NAME_NOT_FOUND);
-    expected = OS_ERR_NAME_NOT_FOUND;
-    actual   = OS_FS_GetPhysDriveName(NameBuf, "none");
-    UtAssert_True(actual == expected, "OS_FS_GetPhysDriveName() (%ld) == OS_ERR_NAME_NOT_FOUND", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_FS_GetPhysDriveName(NameBuf, "none"), OS_ERR_NAME_NOT_FOUND);
 }
 
 void Test_OS_GetFsInfo(void)
@@ -500,7 +489,8 @@ void Test_OS_FileSys_FindVirtMountPoint(void)
      */
     bool               result;
     OS_common_record_t refobj;
-    const char         refstr[] = "/ut";
+    const char         refstr[]  = "/ut";
+    const char         refstr1[] = "/ut/";
     OS_object_token_t  token;
 
     memset(&token, 0, sizeof(token));
@@ -516,6 +506,16 @@ void Test_OS_FileSys_FindVirtMountPoint(void)
 
     OS_filesys_table[1].flags = OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
 
+    /* Branch coverage for mismatches */
+    result = OS_FileSys_FindVirtMountPoint((void *)refstr, &token, &refobj);
+    UtAssert_True(!result, "OS_FileSys_FindVirtMountPoint(%s) (mountpt=%s) == false", refstr,
+                  OS_filesys_table[1].virtual_mountpt);
+
+    memset(OS_filesys_table[1].virtual_mountpt, 'a', sizeof(OS_filesys_table[1].virtual_mountpt));
+    result = OS_FileSys_FindVirtMountPoint((void *)refstr, &token, &refobj);
+    UtAssert_True(!result, "OS_FileSys_FindVirtMountPoint(%s) (mountpt=%s) == false", refstr,
+                  OS_filesys_table[1].virtual_mountpt);
+
     /* Verify cases where one is a substring of the other -
      * these should also return false */
     strncpy(OS_filesys_table[1].virtual_mountpt, "/ut11", sizeof(OS_filesys_table[1].virtual_mountpt));
@@ -530,6 +530,11 @@ void Test_OS_FileSys_FindVirtMountPoint(void)
 
     strncpy(OS_filesys_table[1].virtual_mountpt, "/ut", sizeof(OS_filesys_table[1].virtual_mountpt));
     result = OS_FileSys_FindVirtMountPoint((void *)refstr, &token, &refobj);
+    UtAssert_True(result, "OS_FileSys_FindVirtMountPoint(%s) (nominal) == true", refstr);
+
+    /* Passing case with reference ending in "/" */
+    strncpy(OS_filesys_table[1].virtual_mountpt, "/ut", sizeof(OS_filesys_table[1].virtual_mountpt));
+    result = OS_FileSys_FindVirtMountPoint((void *)refstr1, &token, &refobj);
     UtAssert_True(result, "OS_FileSys_FindVirtMountPoint(%s) (nominal) == true", refstr);
 }
 

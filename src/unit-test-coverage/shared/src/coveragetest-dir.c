@@ -27,6 +27,8 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-dir.h"
 
+#define UT_ERR_UNIQUE 0xDEADBEEF
+
 /*
 **********************************************************************************
 **          PUBLIC API FUNCTIONS
@@ -39,10 +41,7 @@ void Test_OS_DirAPI_Init(void)
      * Test Case For:
      * int32 OS_DirAPI_Init(void)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_DirAPI_Init();
-
-    UtAssert_True(actual == expected, "OS_DirAPI_Init() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_DirAPI_Init(), OS_SUCCESS);
 }
 
 void Test_OS_mkdir(void)
@@ -51,10 +50,10 @@ void Test_OS_mkdir(void)
      * Test Case For:
      * int32 OS_mkdir (const char *path, uint32 access)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_mkdir("Dir", OS_READ_WRITE);
+    OSAPI_TEST_FUNCTION_RC(OS_mkdir("Dir", OS_READ_WRITE), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_mkdir() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_mkdir("Dir", OS_READ_WRITE), UT_ERR_UNIQUE);
 }
 
 void Test_OS_DirectoryOpen(void)
@@ -63,12 +62,18 @@ void Test_OS_DirectoryOpen(void)
      * Test Case For:
      * int32 OS_DirectoryOpen(uint32 *dir_id, const char *path)
      */
-    int32     expected = OS_SUCCESS;
     osal_id_t objid;
-    int32     actual = OS_DirectoryOpen(&objid, "Dir");
+    uint32    unique1 = UT_ERR_UNIQUE + 1;
 
-    UtAssert_True(actual == expected, "OS_DirectoryOpen() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(&objid, "Dir"), OS_SUCCESS);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
+
+    /* Branch coverage for errors */
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(&objid, "Dir"), UT_ERR_UNIQUE);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), unique1);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(&objid, "Dir"), unique1);
 
     /*
      * Note that the second arg (path) is validated by a separate unit (OS_TranslatePath),
@@ -83,10 +88,11 @@ void Test_OS_DirectoryClose(void)
      * Test Case For:
      * int32 OS_DirectoryClose(uint32 dir_id)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_DirectoryClose(UT_OBJID_1);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryClose(UT_OBJID_1), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_DirectoryClose() (%ld) == OS_SUCCESS", (long)actual);
+    /* Branch coverage for errors */
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryClose(UT_OBJID_1), UT_ERR_UNIQUE);
 }
 
 void Test_OS_DirectoryRead(void)
@@ -95,12 +101,13 @@ void Test_OS_DirectoryRead(void)
      * Test Case For:
      * int32 OS_DirectoryRead(uint32 dir_id, OS_DirEntry_t *dirent)
      */
-    int32       expected = OS_SUCCESS;
     os_dirent_t dirent;
 
-    int32 actual = OS_DirectoryRead(UT_OBJID_1, &dirent);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryRead(UT_OBJID_1, &dirent), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_DirectoryRead() (%ld) == OS_SUCCESS", (long)actual);
+    /* Branch coverage for errors */
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryRead(UT_OBJID_1, &dirent), UT_ERR_UNIQUE);
 
     OSAPI_TEST_FUNCTION_RC(OS_DirectoryRead(UT_OBJID_1, NULL), OS_INVALID_POINTER);
 }
@@ -111,10 +118,11 @@ void Test_OS_DirectoryRewind(void)
      * Test Case For:
      * int32 OS_DirectoryRewind(uint32 dir_id)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_DirectoryRewind(UT_OBJID_1);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryRewind(UT_OBJID_1), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_DirectoryRewind() (%ld) == OS_SUCCESS", (long)actual);
+    /* Branch coverage for errors */
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryRewind(UT_OBJID_1), UT_ERR_UNIQUE);
 }
 
 void Test_OS_rmdir(void)
@@ -123,10 +131,10 @@ void Test_OS_rmdir(void)
      * Test Case For:
      * int32  OS_rmdir (const char *path)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_rmdir("Dir");
+    OSAPI_TEST_FUNCTION_RC(OS_rmdir("Dir"), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_rmdir() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_rmdir("Dir"), UT_ERR_UNIQUE);
 }
 
 /* Osapi_Test_Setup

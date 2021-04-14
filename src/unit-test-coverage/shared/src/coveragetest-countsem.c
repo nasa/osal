@@ -29,6 +29,8 @@
 
 #include "OCS_string.h"
 
+#define UT_ERR_UNIQUE 0xDEADBEEF
+
 /*
 **********************************************************************************
 **          PUBLIC API FUNCTIONS
@@ -41,10 +43,7 @@ void Test_OS_CountSemAPI_Init(void)
      * Test Case For:
      * int32 OS_CountSemAPI_Init(void)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_CountSemAPI_Init();
-
-    UtAssert_True(actual == expected, "OS_CountSemAPI_Init() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemAPI_Init(), OS_SUCCESS);
 }
 
 void Test_OS_CountSemCreate(void)
@@ -54,17 +53,18 @@ void Test_OS_CountSemCreate(void)
      * int32 OS_CountSemCreate (uint32 *sem_id, const char *sem_name,
      *          uint32 sem_initial_value, uint32 options)
      */
-    int32     expected = OS_SUCCESS;
     osal_id_t objid;
-    int32     actual = OS_CountSemCreate(&objid, "UT", 0, 0);
 
-    UtAssert_True(actual == expected, "OS_CountSemCreate() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate(&objid, "UT", 0, 0), OS_SUCCESS);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
     OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate(NULL, "UT", 0, 0), OS_INVALID_POINTER);
     OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate(&objid, NULL, 0, 0), OS_INVALID_POINTER);
-    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate(&objid, "UT", 0, 0), OS_ERR_NAME_TOO_LONG);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate(&objid, "UT", 0, 0), UT_ERR_UNIQUE);
 }
 
 void Test_OS_CountSemDelete(void)
@@ -73,12 +73,10 @@ void Test_OS_CountSemDelete(void)
      * Test Case For:
      * int32 OS_CountSemDelete (uint32 sem_id)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemDelete(UT_OBJID_1), OS_SUCCESS);
 
-    actual = OS_CountSemDelete(UT_OBJID_1);
-
-    UtAssert_True(actual == expected, "OS_CountSemDelete() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemDelete(UT_OBJID_1), UT_ERR_UNIQUE);
 }
 
 void Test_OS_CountSemGive(void)
@@ -87,12 +85,10 @@ void Test_OS_CountSemGive(void)
      * Test Case For:
      * int32 OS_CountSemGive ( uint32 sem_id )
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemGive(UT_OBJID_1), OS_SUCCESS);
 
-    actual = OS_CountSemGive(UT_OBJID_1);
-
-    UtAssert_True(actual == expected, "OS_CountSemGive() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemGive(UT_OBJID_1), UT_ERR_UNIQUE);
 }
 
 void Test_OS_CountSemTake(void)
@@ -101,12 +97,10 @@ void Test_OS_CountSemTake(void)
      * Test Case For:
      * int32 OS_CountSemTake ( uint32 sem_id )
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemTake(UT_OBJID_1), OS_SUCCESS);
 
-    actual = OS_CountSemTake(UT_OBJID_1);
-
-    UtAssert_True(actual == expected, "OS_CountSemTake() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemTake(UT_OBJID_1), UT_ERR_UNIQUE);
 }
 
 void Test_OS_CountSemTimedWait(void)
@@ -115,12 +109,10 @@ void Test_OS_CountSemTimedWait(void)
      * Test Case For:
      * int32 OS_CountSemTimedWait ( uint32 sem_id, uint32 msecs )
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemTimedWait(UT_OBJID_1, 1), OS_SUCCESS);
 
-    actual = OS_CountSemTimedWait(UT_OBJID_1, 1);
-
-    UtAssert_True(actual == expected, "OS_CountSemTimedWait() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemTimedWait(UT_OBJID_1, 1), UT_ERR_UNIQUE);
 }
 
 void Test_OS_CountSemGetIdByName(void)
@@ -143,7 +135,8 @@ void Test_OS_CountSemGetIdByName(void)
     actual   = OS_CountSemGetIdByName(&objid, "NF");
     UtAssert_True(actual == expected, "OS_CountSemGetIdByName() (%ld) == %ld", (long)actual, (long)expected);
 
-    OSAPI_TEST_FUNCTION_RC(OS_CountSemGetIdByName(NULL, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemGetIdByName(NULL, "UT"), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemGetIdByName(&objid, NULL), OS_INVALID_POINTER);
 }
 
 void Test_OS_CountSemGetInfo(void)
@@ -165,6 +158,9 @@ void Test_OS_CountSemGetInfo(void)
     UtAssert_True(strcmp(prop.name, "ABC") == 0, "prop.name (%s) == ABC", prop.name);
 
     OSAPI_TEST_FUNCTION_RC(OS_CountSemGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
+    OSAPI_TEST_FUNCTION_RC(OS_CountSemGetInfo(UT_OBJID_1, &prop), UT_ERR_UNIQUE);
 }
 
 /* Osapi_Test_Setup

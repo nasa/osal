@@ -38,7 +38,6 @@ void Test_OS_ConsoleAPI_Init(void)
      * Test Case For:
      * int32 OS_ConsoleAPI_Init(void)
      */
-    uint32            CallCount = 0;
     OS_object_token_t token;
 
     /* make a custom token to force use of array index 0 */
@@ -51,9 +50,13 @@ void Test_OS_ConsoleAPI_Init(void)
 
     /* call for coverage */
     OS_ConsoleAPI_Init();
+    UtAssert_STUB_COUNT(OS_ConsoleCreate_Impl, 1);
+    UT_ResetState(UT_KEY(OS_ConsoleCreate_Impl));
 
-    CallCount = UT_GetStubCount(UT_KEY(OS_ConsoleCreate_Impl));
-    UtAssert_True(CallCount == 1, "OS_ConsoleCreate_Impl() call count (%lu) == 1", (unsigned long)CallCount);
+    /* Fail OS_ObjectIdAllocateNew */
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERROR);
+    OS_ConsoleAPI_Init();
+    UtAssert_STUB_COUNT(OS_ConsoleCreate_Impl, 0);
 }
 
 void Test_OS_printf(void)
@@ -100,12 +103,17 @@ void Test_OS_printf(void)
     /* print a long string that does not fit in the 16-char buffer */
     OS_printf_enable();
     OS_printf("UnitTest4BufferLengthExceeded");
-    UtAssert_True(OS_console_table[0].OverflowEvents == 1, "OverflowEvents (%lu) == 1",
-                  (unsigned long)OS_console_table[0].OverflowEvents);
+    UtAssert_UINT32_EQ(OS_console_table[0].OverflowEvents, 1);
 
     /* test writing with a non-empty console name */
     strncpy(OS_console_table[0].device_name, "ut", sizeof(OS_console_table[0].device_name) - 1);
     OS_printf("UnitTest5");
+
+    /* Cover branch for console name overflowing buffer*/
+    OS_console_table[0].WritePos = 0;
+    OS_console_table[0].ReadPos  = 1;
+    OS_printf("UnitTest5.5");
+    UtAssert_UINT32_EQ(OS_console_table[0].OverflowEvents, 3);
 
     /*
      * For coverage, exercise different paths depending on the return value
@@ -115,6 +123,15 @@ void Test_OS_printf(void)
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_vsnprintf), OS_BUFFER_SIZE + 10);
     OS_printf("UnitTest7");
+
+    /* Null case */
+    OS_printf(NULL);
+
+    /* OS_ObjectIdGetById failure */
+    UT_ResetState(UT_KEY(OS_ConsoleWakeup_Impl));
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    OS_printf("a");
+    UtAssert_STUB_COUNT(OS_ConsoleWakeup_Impl, 0);
 }
 
 /* Osapi_Test_Setup

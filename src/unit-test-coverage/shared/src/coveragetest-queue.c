@@ -41,10 +41,7 @@ void Test_OS_QueueAPI_Init(void)
      * Test Case For:
      * int32 OS_QueueAPI_Init(void)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_QueueAPI_Init();
-
-    UtAssert_True(actual == expected, "OS_QueueAPI_Init() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueAPI_Init(), OS_SUCCESS);
 }
 
 void Test_OS_QueueCreate(void)
@@ -54,30 +51,27 @@ void Test_OS_QueueCreate(void)
      * int32 OS_QueueCreate (uint32 *queue_id, const char *queue_name, uint32 queue_depth, uint32 data_size, uint32
      * flags)
      */
-    int32     expected = OS_SUCCESS;
     osal_id_t objid;
-    int32     actual = OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(4), 0);
 
-    UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(4), 0), OS_SUCCESS);
 
     /* test error cases */
-    expected = OS_INVALID_POINTER;
-    actual   = OS_QueueCreate(NULL, "UT", OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(4), 0);
-    UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate(NULL, "UT", OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(4), 0), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate(&objid, NULL, OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(4), 0), OS_INVALID_POINTER);
 
-    expected = OS_ERR_INVALID_SIZE;
-    actual   = OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(0), 0);
-    UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(0), 0), OS_ERR_INVALID_SIZE);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(UINT32_MAX), 0),
+                           OS_ERR_INVALID_SIZE);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
-    expected = OS_ERR_NAME_TOO_LONG;
-    actual   = OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(0), OSAL_SIZE_C(4), 0);
-    UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(0), OSAL_SIZE_C(4), 0), OS_ERR_NAME_TOO_LONG);
     UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
-    expected = OS_QUEUE_INVALID_SIZE;
-    actual   = OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(1 + OS_QUEUE_MAX_DEPTH), OSAL_SIZE_C(4), 0);
-    UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_QUEUE_INVALID_SIZE", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(1 + OS_QUEUE_MAX_DEPTH), OSAL_SIZE_C(4), 0),
+                           OS_QUEUE_INVALID_SIZE);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(4), 0), OS_ERROR);
 }
 
 void Test_OS_QueueDelete(void)
@@ -86,12 +80,11 @@ void Test_OS_QueueDelete(void)
      * Test Case For:
      * int32 OS_QueueDelete (uint32 queue_id)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
 
-    actual = OS_QueueDelete(UT_OBJID_1);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueDelete(UT_OBJID_1), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_QueueDelete() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueDelete(UT_OBJID_1), OS_ERROR);
 }
 
 void Test_OS_QueueGet(void)
@@ -100,26 +93,23 @@ void Test_OS_QueueGet(void)
      * Test Case For:
      * int32 OS_QueueGet (uint32 queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout)
      */
-    int32  expected = OS_SUCCESS;
-    int32  actual   = ~OS_SUCCESS;
     size_t actual_size;
     char   Buf[4];
 
-    actual = OS_QueueGet(UT_OBJID_1, Buf, sizeof(Buf), &actual_size, 0);
-
-    UtAssert_True(actual == expected, "OS_QueueGet() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGet(UT_OBJID_1, Buf, sizeof(Buf), &actual_size, 0), OS_SUCCESS);
 
     /* test error cases */
-    expected = OS_INVALID_POINTER;
-    actual   = OS_QueueGet(UT_OBJID_1, NULL, sizeof(Buf), &actual_size, 0);
-    UtAssert_True(actual == expected, "OS_QueueGet() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGet(UT_OBJID_1, NULL, sizeof(Buf), &actual_size, 0), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGet(UT_OBJID_1, Buf, sizeof(Buf), NULL, 0), OS_INVALID_POINTER);
 
     OS_queue_table[1].max_size = sizeof(Buf) + 10;
-    expected                   = OS_QUEUE_INVALID_SIZE;
-    actual                     = OS_QueueGet(UT_OBJID_1, Buf, sizeof(Buf), &actual_size, 0);
-    UtAssert_True(actual == expected, "OS_QueueGet() (%ld) == OS_QUEUE_INVALID_SIZE", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGet(UT_OBJID_1, Buf, sizeof(Buf), &actual_size, 0), OS_QUEUE_INVALID_SIZE);
 
-    OSAPI_TEST_FUNCTION_RC(OS_QueueGet(UT_OBJID_1, Buf, 0, &actual_size, 0), OS_ERR_INVALID_SIZE);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGet(UT_OBJID_1, Buf, OSAL_SIZE_C(0), &actual_size, 0), OS_ERR_INVALID_SIZE);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGet(UT_OBJID_1, Buf, OSAL_SIZE_C(UINT32_MAX), &actual_size, 0), OS_ERR_INVALID_SIZE);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGet(UT_OBJID_1, Buf, sizeof(Buf), &actual_size, 0), OS_ERROR);
 }
 
 void Test_OS_QueuePut(void)
@@ -128,26 +118,22 @@ void Test_OS_QueuePut(void)
      * Test Case For:
      * int32 OS_QueuePut (uint32 queue_id, const void *data, uint32 size, uint32 flags)
      */
-    int32      expected = OS_SUCCESS;
-    int32      actual   = ~OS_SUCCESS;
-    const char Data[4]  = "xyz";
+    const char Data[4] = "xyz";
 
     OS_queue_table[1].max_depth = 10;
     OS_queue_table[1].max_size  = sizeof(Data);
 
-    actual = OS_QueuePut(UT_OBJID_1, Data, sizeof(Data), 0);
-    UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueuePut(UT_OBJID_1, Data, sizeof(Data), 0), OS_SUCCESS);
 
     /* test error cases */
-    expected = OS_INVALID_POINTER;
-    actual   = OS_QueuePut(UT_OBJID_1, NULL, sizeof(Data), 0);
-    UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueuePut(UT_OBJID_1, NULL, sizeof(Data), 0), OS_INVALID_POINTER);
 
-    expected = OS_QUEUE_INVALID_SIZE;
-    actual   = OS_QueuePut(UT_OBJID_1, Data, 1 + sizeof(Data), 0);
-    UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_QUEUE_INVALID_SIZE", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueuePut(UT_OBJID_1, Data, 1 + sizeof(Data), 0), OS_QUEUE_INVALID_SIZE);
+    OSAPI_TEST_FUNCTION_RC(OS_QueuePut(UT_OBJID_1, Data, OSAL_SIZE_C(0), 0), OS_ERR_INVALID_SIZE);
+    OSAPI_TEST_FUNCTION_RC(OS_QueuePut(UT_OBJID_1, Data, OSAL_SIZE_C(UINT32_MAX), 0), OS_ERR_INVALID_SIZE);
 
-    OSAPI_TEST_FUNCTION_RC(OS_QueuePut(UT_OBJID_1, Data, 0, 0), OS_ERR_INVALID_SIZE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_QueuePut(UT_OBJID_1, Data, sizeof(Data), 0), OS_ERROR);
 }
 
 void Test_OS_QueueGetIdByName(void)
@@ -156,22 +142,16 @@ void Test_OS_QueueGetIdByName(void)
      * Test Case For:
      * int32 OS_QueueGetIdByName (uint32 *queue_id, const char *queue_name)
      */
-    int32     expected = OS_SUCCESS;
-    int32     actual   = ~OS_SUCCESS;
     osal_id_t objid;
 
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
-    actual = OS_QueueGetIdByName(&objid, "UT");
-    UtAssert_True(actual == expected, "OS_QueueGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGetIdByName(&objid, "UT"), OS_SUCCESS);
     UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
-    expected = OS_ERR_NAME_NOT_FOUND;
-    actual   = OS_QueueGetIdByName(&objid, "NF");
-    UtAssert_True(actual == expected, "OS_QueueGetIdByName() (%ld) == %ld", (long)actual, (long)expected);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGetIdByName(&objid, "NF"), OS_ERR_NAME_NOT_FOUND);
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_QueueGetIdByName(NULL, "NF");
-    UtAssert_True(actual == expected, "OS_QueueGetIdByName() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGetIdByName(NULL, "NF"), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGetIdByName(&objid, NULL), OS_INVALID_POINTER);
 }
 
 void Test_OS_QueueGetInfo(void)
@@ -180,8 +160,6 @@ void Test_OS_QueueGetInfo(void)
      * Test Case For:
      * int32 OS_QueueGetInfo (uint32 queue_id, OS_queue_prop_t *queue_prop)
      */
-    int32           expected = OS_SUCCESS;
-    int32           actual   = ~OS_SUCCESS;
     OS_queue_prop_t queue_prop;
     osal_id_t       id;
 
@@ -189,15 +167,14 @@ void Test_OS_QueueGetInfo(void)
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_QUEUE, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
 
-    actual = OS_QueueGetInfo(UT_OBJID_1, &queue_prop);
-
-    UtAssert_True(actual == expected, "OS_QueueGetInfo() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGetInfo(UT_OBJID_1, &queue_prop), OS_SUCCESS);
     UtAssert_MemCmp(&queue_prop.creator, &id, sizeof(osal_id_t), "queue_prop.creator == UT_OBJID_OTHER");
     UtAssert_True(strcmp(queue_prop.name, "ABC") == 0, "queue_prop.name (%s) == ABC", queue_prop.name);
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_QueueGetInfo(UT_OBJID_1, NULL);
-    UtAssert_True(actual == expected, "OS_QueueGetInfo() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGetInfo(UT_OBJID_1, &queue_prop), OS_ERROR);
 }
 
 /* Osapi_Test_Setup

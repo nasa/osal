@@ -35,7 +35,7 @@
 void *const  UT_Ref_OS_impl_console_table      = OS_impl_console_table;
 size_t const UT_Ref_OS_impl_console_table_SIZE = sizeof(OS_impl_console_table);
 
-void UT_ConsoleTest_TaskEntry(int arg)
+int UT_ConsoleTest_TaskEntry(int arg)
 {
-    OS_VxWorks_ConsoleTask_Entry(arg);
+    return OS_VxWorks_ConsoleTask_Entry(arg);
 }
