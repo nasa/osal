@@ -19,10 +19,8 @@
  */
 
 /**
- * \file osapi_stubs.c
+ * \file
  *
- *  Created on: Feb 25, 2015
- *      Author: joseph.p.hickey@nasa.gov
  *
  * Stub implementations for the functions defined in the OSAL API
  *
@@ -35,46 +33,26 @@
 #include "osapi-printf.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
-int32 OS_ConsoleAPI_Init(void)
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_printf' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OS_printf(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context, va_list va)
 {
-    return UT_DEFAULT_IMPL(OS_ConsoleAPI_Init);
-}
+    const char *string = UT_Hook_GetArgValueByName(Context, "string", const char *);
+    size_t      length = strlen(string);
+    char        str[128];
+    va_list     va_debugcopy;
+    int32       status;
 
-/*****************************************************************************
- *
- * Stub function for OS_ConsoleWrite()
- *
- *****************************************************************************/
-int32 OS_ConsoleWrite(uint32 console_id, const char *Str)
-{
-    UT_Stub_RegisterContext(UT_KEY(OS_ConsoleWrite), Str);
-    return UT_DEFAULT_IMPL(OS_ConsoleWrite);
-}
+    UT_Stub_GetInt32StatusCode(Context, &status);
 
-/*****************************************************************************
- *
- * Stub function for OS_printf()
- *
- *****************************************************************************/
-void OS_printf(const char *string, ...)
-{
-    UT_Stub_RegisterContext(UT_KEY(OS_printf), string);
-
-    int32   status;
-    size_t  length = strlen(string);
-    va_list va;
-    char    str[128];
-
-    /* Output the message when in debug mode */
-    va_start(va, string);
-    vsnprintf(str, sizeof(str), string, va);
+    va_copy(va_debugcopy, va);
+    /* Output the message when in debug mode (uses a copy of the va list) */
+    vsnprintf(str, sizeof(str), string, va_debugcopy);
     UtDebug("OS_printf: %s", str);
-    va_end(va);
-
-    /* Reset va list for next use */
-    va_start(va, string);
-
-    status = UT_DefaultStubImplWithArgs(__func__, UT_KEY(OS_printf), 0, va);
+    va_end(va_debugcopy);
 
     if (status >= 0)
     {
@@ -104,26 +82,4 @@ void OS_printf(const char *string, ...)
             UT_Stub_CopyFromLocal(UT_KEY(OS_printf), "\n", 1);
         }
     }
-
-    va_end(va);
-}
-
-/*****************************************************************************
- *
- * Stub function for OS_printf_disable()
- *
- *****************************************************************************/
-void OS_printf_disable(void)
-{
-    UT_DEFAULT_IMPL(OS_printf_disable);
-}
-
-/*****************************************************************************
- *
- * Stub function for OS_printf_enable()
- *
- *****************************************************************************/
-void OS_printf_enable(void)
-{
-    UT_DEFAULT_IMPL(OS_printf_enable);
 }

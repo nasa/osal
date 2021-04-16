@@ -19,10 +19,8 @@
  */
 
 /**
- * \file osapi_stubs.c
+ * \file
  *
- *  Created on: Feb 25, 2015
- *      Author: joseph.p.hickey@nasa.gov
  *
  * Stub implementations for the functions defined in the OSAL API
  *
@@ -35,15 +33,12 @@
 #include "osapi-version.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
-/*----------------------------------------------------------------
- *
- * Function: OS_GetVersionString
- *
- *  Purpose: Implemented per public OSAL API
- *           See description in API and header file for detail
- *
- *-----------------------------------------------------------------*/
-const char *OS_GetVersionString(void)
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_GetVersionString' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OS_GetVersionString(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
 {
     static const char DEFAULT[] = "UT";
     void *            Buffer;
@@ -59,18 +54,15 @@ const char *OS_GetVersionString(void)
         RetVal = Buffer;
     }
 
-    return RetVal;
+    UT_Stub_SetReturnValue(FuncKey, RetVal);
 }
 
-/*----------------------------------------------------------------
- *
- * Function: OS_GetVersionCodeName
- *
- *  Purpose: Implemented per public OSAL API
- *           See description in API and header file for detail
- *
- *-----------------------------------------------------------------*/
-const char *OS_GetVersionCodeName(void)
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_GetVersionCodeName' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OS_GetVersionCodeName(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
 {
     static const char DEFAULT[] = "UT";
     void *            Buffer;
@@ -86,36 +78,5 @@ const char *OS_GetVersionCodeName(void)
         RetVal = Buffer;
     }
 
-    return RetVal;
-}
-
-/*----------------------------------------------------------------
- *
- * Function: OS_GetVersionNumber
- *
- *  Purpose: Implemented per public OSAL API
- *           See description in API and header file for detail
- *
- *-----------------------------------------------------------------*/
-void OS_GetVersionNumber(uint8 VersionNumbers[4])
-{
-    UT_Stub_RegisterContext(UT_KEY(OS_GetVersionNumber), VersionNumbers);
-    UT_DEFAULT_IMPL(VersionNumbers);
-}
-
-/*----------------------------------------------------------------
- *
- * Function: OS_GetBuildNumber
- *
- *  Purpose: Implemented per public OSAL API
- *           See description in API and header file for detail
- *
- *-----------------------------------------------------------------*/
-uint32 OS_GetBuildNumber(void)
-{
-    int32 status;
-
-    status = UT_DEFAULT_IMPL(OS_GetBuildNumber);
-
-    return status;
+    UT_Stub_SetReturnValue(FuncKey, RetVal);
 }

@@ -19,10 +19,8 @@
  */
 
 /**
- * \file osapi_stubs.c
+ * \file
  *
- *  Created on: Feb 25, 2015
- *      Author: joseph.p.hickey@nasa.gov
  *
  * Stub implementations for the functions defined in the OSAL API
  *
@@ -32,22 +30,26 @@
  * can be executed.
  */
 
-#include "osapi-error.h" /* OSAL public API for this subsystem */
+#include "osapi-network.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
-int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name)
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_NetworkGetHostName' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OS_NetworkGetHostName(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
 {
-    UT_Stub_RegisterContextGenericArg(UT_KEY(OS_GetErrorName), error_num);
-    UT_Stub_RegisterContext(UT_KEY(OS_GetErrorName), err_name);
+    char * host_name = UT_Hook_GetArgValueByName(Context, "host_name", char *);
+    size_t name_len  = UT_Hook_GetArgValueByName(Context, "name_len", size_t);
+    int32  status;
 
-    int32 status;
+    UT_Stub_GetInt32StatusCode(Context, &status);
 
-    status = UT_DEFAULT_IMPL(OS_GetErrorName);
-
-    if (status == OS_SUCCESS && UT_Stub_CopyToLocal(UT_KEY(OS_GetErrorName), *err_name, sizeof(*err_name)) == 0)
+    if (status == OS_SUCCESS && name_len > 0 &&
+        UT_Stub_CopyToLocal(UT_KEY(OS_NetworkGetHostName), host_name, name_len) == 0)
     {
-        snprintf(*err_name, sizeof(*err_name), "ut%d", (int)error_num);
+        strncpy(host_name, "ut", name_len - 1);
+        host_name[name_len - 1] = 0;
     }
-
-    return status;
 }

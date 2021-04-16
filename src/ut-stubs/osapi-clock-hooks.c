@@ -19,10 +19,8 @@
  */
 
 /**
- * \file osapi_stubs.c
+ * \file
  *
- *  Created on: Feb 25, 2015
- *      Author: joseph.p.hickey@nasa.gov
  *
  * Stub implementations for the functions defined in the OSAL API
  *
@@ -35,44 +33,42 @@
 #include "osapi-clock.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
-/*****************************************************************************
- *
- * Stub function for OS_GetLocalTime()
- *
- *****************************************************************************/
-int32 OS_GetLocalTime(OS_time_t *time_struct)
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_GetLocalTime' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OS_GetLocalTime(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
 {
-    UT_Stub_RegisterContext(UT_KEY(OS_GetLocalTime), time_struct);
+    OS_time_t *time_struct = UT_Hook_GetArgValueByName(Context, "time_struct", OS_time_t *);
+    uint32     count       = UT_GetStubCount(FuncKey);
+    int32      status;
 
-    int32  status;
-    uint32 count;
-
-    status = UT_DEFAULT_IMPL(OS_GetLocalTime);
+    UT_Stub_GetInt32StatusCode(Context, &status);
 
     if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_GetLocalTime), time_struct, sizeof(*time_struct)) < sizeof(*time_struct))
     {
-        count        = UT_GetStubCount(UT_KEY(OS_GetLocalTime));
         *time_struct = OS_TimeAssembleFromNanoseconds(1 + (count / 100), 10000000 * (count % 100));
     }
 
-    return status;
-
 } /* end OS_GetLocalTime */
 
-/*****************************************************************************
- *
- * Stub function for OS_SetLocalTime()
- *
- *****************************************************************************/
-int32 OS_SetLocalTime(const OS_time_t *time_struct)
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_SetLocalTime' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OS_SetLocalTime(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
 {
-    UT_Stub_RegisterContext(UT_KEY(OS_SetLocalTime), time_struct);
+    const OS_time_t *time_struct = UT_Hook_GetArgValueByName(Context, "time_struct", const OS_time_t *);
+    int32            status;
 
-    int32 status;
+    UT_Stub_GetInt32StatusCode(Context, &status);
 
-    status = UT_DEFAULT_IMPL(OS_SetLocalTime);
-
-    return status;
+    if (status == OS_SUCCESS)
+    {
+        UT_Stub_CopyFromLocal(UT_KEY(OS_SetLocalTime), time_struct, sizeof(*time_struct));
+    }
 
 } /*end OS_SetLocalTime */

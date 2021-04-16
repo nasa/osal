@@ -19,10 +19,8 @@
  */
 
 /**
- * \file osapi_stubs.c
+ * \file
  *
- *  Created on: Feb 25, 2015
- *      Author: joseph.p.hickey@nasa.gov
  *
  * Stub implementations for the functions defined in the OSAL API
  *

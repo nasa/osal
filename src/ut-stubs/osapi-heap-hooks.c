@@ -19,8 +19,8 @@
  */
 
 /**
- * \file     osapi-utstub-bsp.c
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ *
  *
  * Stub implementations for the functions defined in the OSAL API
  *
@@ -30,39 +30,27 @@
  * can be executed.
  */
 
-#include "osapi-bsp.h" /* OSAL public API for this subsystem */
+#include "osapi-heap.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
 
 /*
- *********************************************************************************
- *          PUBLIC API (application-callable functions)
- *********************************************************************************
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_HeapGetInfo' stub
+ * -----------------------------------------------------------------
  */
-
-/*----------------------------------------------------------------
-   OS_BSP_GetArgC
-   See full description in header
- ------------------------------------------------------------------*/
-uint32 OS_BSP_GetArgC(void)
+void UT_DefaultHandler_OS_HeapGetInfo(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
 {
-    int32 status = UT_DEFAULT_IMPL(OS_BSP_GetArgC);
+    OS_heap_prop_t *heap_prop = UT_Hook_GetArgValueByName(Context, "heap_prop", OS_heap_prop_t *);
+    int32           status;
 
-    return status;
-}
+    UT_Stub_GetInt32StatusCode(Context, &status);
 
-/*----------------------------------------------------------------
-   OS_BSP_GetArgV
-   See full description in header
- ------------------------------------------------------------------*/
-char *const *OS_BSP_GetArgV(void)
-{
-    void *buffer = NULL;
-    int32 status;
-
-    status = UT_DEFAULT_IMPL(OS_BSP_GetArgV);
-    if (status == 0 && UT_Stub_CopyToLocal(UT_KEY(OS_BSP_GetArgV), &buffer, sizeof(buffer)) < sizeof(buffer))
+    if (status == OS_SUCCESS &&
+        UT_Stub_CopyToLocal(UT_KEY(OS_HeapGetInfo), heap_prop, sizeof(*heap_prop)) < sizeof(*heap_prop))
     {
-        buffer = NULL;
+        /* Return some random data */
+        heap_prop->free_bytes         = OSAL_SIZE_C(12345);
+        heap_prop->free_blocks        = OSAL_BLOCKCOUNT_C(6789);
+        heap_prop->largest_free_block = OSAL_SIZE_C(100);
     }
-    return buffer;
 }
