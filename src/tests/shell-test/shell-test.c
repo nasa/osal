@@ -71,7 +71,7 @@ void TestOutputToFile(void)
 
     /* Open In R/W mode */
     status = OS_OpenCreate(&fd, OS_TEST_SHELL_FILENAME, OS_FILE_FLAG_CREATE, OS_READ_WRITE);
-    UtAssert_True(status >= OS_SUCCESS, "status after creat = %d", (int)status);
+    UtAssert_True(status < OS_SUCCESS, "status after creat = %d", (int)status);
 
     /* assemble command */
     snprintf(cmd, sizeof(cmd), "%s \"%s\"", OS_TEST_SHELL_COMMAND, OS_TEST_SHELL_STRING);
