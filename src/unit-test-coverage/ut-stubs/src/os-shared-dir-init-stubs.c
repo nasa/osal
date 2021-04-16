@@ -19,17 +19,24 @@
  */
 
 /**
- * \file     osapi-shared-debug-stubs.c
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * @file
  *
+ * Auto-Generated stub implementations for functions defined in os-shared-dir header
  */
-#include "os-shared-globaldefs.h"
 
-/*****************************************************************************
- *
- * Stub function for OS_DebugPrintf()
- * This is only relevant when building OSAL with OSAL_CONFIG_DEBUG_PRINTF enabled
- *
- *****************************************************************************/
-void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const char *Format, ...) {}
+#include "os-shared-dir.h"
+#include "utgenstub.h"
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_DirAPI_Init()
+ * ----------------------------------------------------
+ */
+int32 OS_DirAPI_Init(void)
+{
+    UT_GenStub_SetupReturnBuffer(OS_DirAPI_Init, int32);
+
+    UT_GenStub_Execute(OS_DirAPI_Init, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_DirAPI_Init, int32);
+}

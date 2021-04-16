@@ -19,22 +19,26 @@
  */
 
 /**
- * \file     osapi-heap-impl-stubs.c
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * @file
  *
+ * Auto-Generated stub implementations for functions defined in os-shared-heap header
  */
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-#include "utstubs.h"
 
 #include "os-shared-heap.h"
+#include "utgenstub.h"
 
 /*
- * Heap API low-level handler
+ * ----------------------------------------------------
+ * Generated stub function for OS_HeapGetInfo_Impl()
+ * ----------------------------------------------------
  */
-UT_DEFAULT_STUB(OS_HeapGetInfo_Impl, (OS_heap_prop_t * heap_prop))
+int32 OS_HeapGetInfo_Impl(OS_heap_prop_t *heap_prop)
+{
+    UT_GenStub_SetupReturnBuffer(OS_HeapGetInfo_Impl, int32);
+
+    UT_GenStub_AddParam(OS_HeapGetInfo_Impl, OS_heap_prop_t *, heap_prop);
+
+    UT_GenStub_Execute(OS_HeapGetInfo_Impl, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_HeapGetInfo_Impl, int32);
+}

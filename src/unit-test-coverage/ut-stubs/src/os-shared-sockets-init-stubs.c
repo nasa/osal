@@ -19,30 +19,24 @@
  */
 
 /**
- * \file     osapi-idmap-impl-stubs.c
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * @file
  *
+ * Auto-Generated stub implementations for functions defined in os-shared-sockets header
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-#include "utstubs.h"
-
-#include "os-shared-idmap.h"
+#include "os-shared-sockets.h"
+#include "utgenstub.h"
 
 /*
- * Table locking and unlocking for global objects can be done at the shared code
- * layer but the actual implementation is OS-specific
+ * ----------------------------------------------------
+ * Generated stub function for OS_SocketAPI_Init()
+ * ----------------------------------------------------
  */
-void OS_Lock_Global_Impl(osal_objtype_t idtype)
+int32 OS_SocketAPI_Init(void)
 {
-    UT_DEFAULT_IMPL(OS_Lock_Global_Impl);
-}
-void OS_Unlock_Global_Impl(osal_objtype_t idtype)
-{
-    UT_DEFAULT_IMPL(OS_Unlock_Global_Impl);
+    UT_GenStub_SetupReturnBuffer(OS_SocketAPI_Init, int32);
+
+    UT_GenStub_Execute(OS_SocketAPI_Init, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_SocketAPI_Init, int32);
 }

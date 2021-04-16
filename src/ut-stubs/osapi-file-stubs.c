@@ -105,14 +105,14 @@ int32 OS_FileOpenCheck(const char *Filename)
  * Generated stub function for OS_OpenCreate()
  * ----------------------------------------------------
  */
-int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access)
+int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access_mode)
 {
     UT_GenStub_SetupReturnBuffer(OS_OpenCreate, int32);
 
     UT_GenStub_AddParam(OS_OpenCreate, osal_id_t *, filedes);
     UT_GenStub_AddParam(OS_OpenCreate, const char *, path);
     UT_GenStub_AddParam(OS_OpenCreate, int32, flags);
-    UT_GenStub_AddParam(OS_OpenCreate, int32, access);
+    UT_GenStub_AddParam(OS_OpenCreate, int32, access_mode);
 
     UT_GenStub_Execute(OS_OpenCreate, Basic, UT_DefaultHandler_OS_OpenCreate);
 
@@ -162,12 +162,12 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
  * Generated stub function for OS_chmod()
  * ----------------------------------------------------
  */
-int32 OS_chmod(const char *path, uint32 access)
+int32 OS_chmod(const char *path, uint32 access_mode)
 {
     UT_GenStub_SetupReturnBuffer(OS_chmod, int32);
 
     UT_GenStub_AddParam(OS_chmod, const char *, path);
-    UT_GenStub_AddParam(OS_chmod, uint32, access);
+    UT_GenStub_AddParam(OS_chmod, uint32, access_mode);
 
     UT_GenStub_Execute(OS_chmod, Basic, NULL);
 

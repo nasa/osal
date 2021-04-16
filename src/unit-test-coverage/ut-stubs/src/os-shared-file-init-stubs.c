@@ -19,25 +19,24 @@
  */
 
 /**
- * \file     portable-console-bsp-impl-stubs.c
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * @file
  *
+ * Auto-Generated stub implementations for functions defined in os-shared-file header
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-#include "utstubs.h"
-
-#include "os-shared-printf.h"
+#include "os-shared-file.h"
+#include "utgenstub.h"
 
 /*
-** Console output API (printf)
-*/
-void OS_ConsoleOutput_Impl(const OS_object_token_t *token)
+ * ----------------------------------------------------
+ * Generated stub function for OS_FileAPI_Init()
+ * ----------------------------------------------------
+ */
+int32 OS_FileAPI_Init(void)
 {
-    UT_DEFAULT_IMPL(OS_ConsoleOutput_Impl);
+    UT_GenStub_SetupReturnBuffer(OS_FileAPI_Init, int32);
+
+    UT_GenStub_Execute(OS_FileAPI_Init, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_FileAPI_Init, int32);
 }

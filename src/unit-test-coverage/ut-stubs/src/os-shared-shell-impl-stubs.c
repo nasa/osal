@@ -19,34 +19,27 @@
  */
 
 /**
- * \file     osapi-common-impl-stubs.c
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * @file
  *
+ * Auto-Generated stub implementations for functions defined in os-shared-shell header
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
+#include "os-shared-shell.h"
+#include "utgenstub.h"
 
-#include "utstubs.h"
-
-#include "os-shared-common.h"
-
-UT_DEFAULT_STUB(OS_API_Impl_Init, (osal_objtype_t idtype))
-
-void OS_IdleLoop_Impl(void)
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_ShellOutputToFile_Impl()
+ * ----------------------------------------------------
+ */
+int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
 {
-    UT_DEFAULT_IMPL(OS_IdleLoop_Impl);
-}
+    UT_GenStub_SetupReturnBuffer(OS_ShellOutputToFile_Impl, int32);
 
-void OS_ApplicationShutdown_Impl(void)
-{
-    UT_DEFAULT_IMPL(OS_ApplicationShutdown_Impl);
-}
+    UT_GenStub_AddParam(OS_ShellOutputToFile_Impl, const OS_object_token_t *, token);
+    UT_GenStub_AddParam(OS_ShellOutputToFile_Impl, const char *, Cmd);
 
-void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts)
-{
-    UT_DEFAULT_IMPL(OS_WaitForStateChange_Impl);
+    UT_GenStub_Execute(OS_ShellOutputToFile_Impl, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_ShellOutputToFile_Impl, int32);
 }

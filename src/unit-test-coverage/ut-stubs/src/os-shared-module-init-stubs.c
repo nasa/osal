@@ -19,29 +19,24 @@
  */
 
 /**
- * \file     osapi-console-impl-stubs.c
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * @file
  *
+ * Auto-Generated stub implementations for functions defined in os-shared-module header
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-#include "utstubs.h"
-
-#include "os-shared-printf.h"
+#include "os-shared-module.h"
+#include "utgenstub.h"
 
 /*
-** Console output API (printf)
-*/
-void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
+ * ----------------------------------------------------
+ * Generated stub function for OS_ModuleAPI_Init()
+ * ----------------------------------------------------
+ */
+int32 OS_ModuleAPI_Init(void)
 {
-    UT_DEFAULT_IMPL(OS_ConsoleWakeup_Impl);
-}
-int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
-{
-    return UT_DEFAULT_IMPL(OS_ConsoleCreate_Impl);
+    UT_GenStub_SetupReturnBuffer(OS_ModuleAPI_Init, int32);
+
+    UT_GenStub_Execute(OS_ModuleAPI_Init, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_ModuleAPI_Init, int32);
 }

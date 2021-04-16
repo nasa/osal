@@ -19,29 +19,24 @@
  */
 
 /**
- * \file     osapi-binsem-impl-stubs.c
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * @file
  *
+ * Auto-Generated stub implementations for functions defined in os-shared-countsem header
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-#include "utstubs.h"
-
-#include "os-shared-binsem.h"
+#include "os-shared-countsem.h"
+#include "utgenstub.h"
 
 /*
-** Semaphore API
-*/
+ * ----------------------------------------------------
+ * Generated stub function for OS_CountSemAPI_Init()
+ * ----------------------------------------------------
+ */
+int32 OS_CountSemAPI_Init(void)
+{
+    UT_GenStub_SetupReturnBuffer(OS_CountSemAPI_Init, int32);
 
-UT_DEFAULT_STUB(OS_BinSemCreate_Impl, (const OS_object_token_t *token, uint32 sem_initial_value, uint32 options))
-UT_DEFAULT_STUB(OS_BinSemFlush_Impl, (const OS_object_token_t *token))
-UT_DEFAULT_STUB(OS_BinSemGive_Impl, (const OS_object_token_t *token))
-UT_DEFAULT_STUB(OS_BinSemTake_Impl, (const OS_object_token_t *token))
-UT_DEFAULT_STUB(OS_BinSemTimedWait_Impl, (const OS_object_token_t *token, uint32 msecs))
-UT_DEFAULT_STUB(OS_BinSemDelete_Impl, (const OS_object_token_t *token))
-UT_DEFAULT_STUB(OS_BinSemGetInfo_Impl, (const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop))
+    UT_GenStub_Execute(OS_CountSemAPI_Init, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_CountSemAPI_Init, int32);
+}

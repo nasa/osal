@@ -19,39 +19,36 @@
  */
 
 /**
- * \file     osapi-filesys-impl-stubs.c
- * \ingroup  ut-stubs
+ * \file     osapi-utstub-idmap.c
  * \author   joseph.p.hickey@nasa.gov
  *
+ * Stub implementations for the functions defined in the OSAL API
+ *
+ * The stub implementation can be used for unit testing applications built
+ * on top of OSAL.  The stubs do not do any real function, but allow
+ * the return code to be crafted such that error paths in the application
+ * can be executed.
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-#include "utstubs.h"
+#include "osapi-filesys.h" /* OSAL public API for this subsystem */
 #include "os-shared-filesys.h"
+#include "utstubs.h"
 
 /*
- * File system abstraction layer
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_FileSysStatVolume_Impl' stub
+ * -----------------------------------------------------------------
  */
-UT_DEFAULT_STUB(OS_FileSysStartVolume_Impl, (const OS_object_token_t *token))
-UT_DEFAULT_STUB(OS_FileSysStopVolume_Impl, (const OS_object_token_t *token))
-UT_DEFAULT_STUB(OS_FileSysFormatVolume_Impl, (const OS_object_token_t *token))
-UT_DEFAULT_STUB(OS_FileSysCheckVolume_Impl, (const OS_object_token_t *token, bool repair))
-UT_DEFAULT_STUB(OS_FileSysMountVolume_Impl, (const OS_object_token_t *token))
-UT_DEFAULT_STUB(OS_FileSysUnmountVolume_Impl, (const OS_object_token_t *token))
-
-int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *result)
+void UT_DefaultHandler_OS_FileSysStatVolume_Impl(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
 {
-    int32 Status = UT_DEFAULT_IMPL(OS_FileSysStatVolume_Impl);
+    OS_statvfs_t *result = UT_Hook_GetArgValueByName(Context, "result", OS_statvfs_t *);
+    int32         status;
 
-    if (Status == OS_SUCCESS &&
+    UT_Stub_GetInt32StatusCode(Context, &status);
+
+    if (status == OS_SUCCESS &&
         UT_Stub_CopyToLocal(UT_KEY(OS_FileSysStatVolume_Impl), result, sizeof(*result)) < sizeof(*result))
     {
         memset(result, 0, sizeof(*result));
     }
-
-    return Status;
 }

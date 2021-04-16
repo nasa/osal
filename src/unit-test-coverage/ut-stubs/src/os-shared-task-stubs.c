@@ -19,27 +19,22 @@
  */
 
 /**
- * \file     osapi-mutex-impl-stubs.c
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * @file
  *
+ * Auto-Generated stub implementations for functions defined in os-shared-task header
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-#include "utstubs.h"
-
-#include "os-shared-mutex.h"
+#include "os-shared-task.h"
+#include "utgenstub.h"
 
 /*
-** Mutex API
-*/
+ * ----------------------------------------------------
+ * Generated stub function for OS_TaskEntryPoint()
+ * ----------------------------------------------------
+ */
+void OS_TaskEntryPoint(osal_id_t global_task_id)
+{
+    UT_GenStub_AddParam(OS_TaskEntryPoint, osal_id_t, global_task_id);
 
-UT_DEFAULT_STUB(OS_MutSemCreate_Impl, (const OS_object_token_t *token, uint32 options))
-UT_DEFAULT_STUB(OS_MutSemGive_Impl, (const OS_object_token_t *token))
-UT_DEFAULT_STUB(OS_MutSemTake_Impl, (const OS_object_token_t *token))
-UT_DEFAULT_STUB(OS_MutSemDelete_Impl, (const OS_object_token_t *token))
-UT_DEFAULT_STUB(OS_MutSemGetInfo_Impl, (const OS_object_token_t *token, OS_mut_sem_prop_t *mut_prop))
+    UT_GenStub_Execute(OS_TaskEntryPoint, Basic, NULL);
+}
