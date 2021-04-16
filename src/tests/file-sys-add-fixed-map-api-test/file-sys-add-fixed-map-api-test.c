@@ -63,8 +63,8 @@ void TestFileSysAddFixedMapApi(void)
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_SUCCESS", (long)actual);
 
     /* Test for invalid inputs */
-    //expected = OS_ERR_NAME_TAKEN;
-    actual   = OS_FileSysAddFixedMap(NULL, "./test", "/test");
+    // expected = OS_ERR_NAME_TAKEN;
+    actual = OS_FileSysAddFixedMap(NULL, "./test", "/test");
     UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_INVALID_POINTER;
