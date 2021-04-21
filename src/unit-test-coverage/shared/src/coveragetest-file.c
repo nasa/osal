@@ -52,7 +52,7 @@ void Test_OS_OpenCreate(void)
 {
     /*
      * Test Case For:
-     * int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access)
+     * int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access_mode)
      */
     int32     expected;
     int32     actual;
@@ -179,7 +179,7 @@ void Test_OS_chmod(void)
 {
     /*
      * Test Case For:
-     * int32 OS_chmod  (const char *path, uint32 access)
+     * int32 OS_chmod  (const char *path, uint32 access_mode)
      */
     int32 expected = OS_SUCCESS;
     int32 actual   = OS_chmod("/cf/file", 0);

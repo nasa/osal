@@ -110,7 +110,7 @@ int32 OS_FileAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access)
+int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access_mode)
 {
     int32                        return_code;
     char                         local_path[OS_MAX_LOCAL_PATH_LEN];
@@ -126,7 +126,7 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
     /*
     ** Check for a valid access mode
     */
-    if (access != OS_WRITE_ONLY && access != OS_READ_ONLY && access != OS_READ_WRITE)
+    if (access_mode != OS_WRITE_ONLY && access_mode != OS_READ_ONLY && access_mode != OS_READ_WRITE)
     {
         return OS_ERROR;
     }
@@ -148,7 +148,7 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
             OS_OBJECT_INIT(token, stream, stream_name, path);
 
             /* Now call the OS-specific implementation.  */
-            return_code = OS_FileOpen_Impl(&token, local_path, flags, access);
+            return_code = OS_FileOpen_Impl(&token, local_path, flags, access_mode);
 
             /* Check result, finalize record, and unlock global table. */
             return_code = OS_ObjectIdFinalizeNew(return_code, &token, filedes);
@@ -274,7 +274,7 @@ int32 OS_write(osal_id_t filedes, const void *buffer, size_t nbytes)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_chmod(const char *path, uint32 access)
+int32 OS_chmod(const char *path, uint32 access_mode)
 {
     char  local_path[OS_MAX_LOCAL_PATH_LEN];
     int32 return_code;
@@ -282,7 +282,7 @@ int32 OS_chmod(const char *path, uint32 access)
     return_code = OS_TranslatePath(path, local_path);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_FileChmod_Impl(local_path, access);
+        return_code = OS_FileChmod_Impl(local_path, access_mode);
     }
 
     return return_code;
