@@ -127,16 +127,16 @@ typedef enum
  * of outputting the ID/descriptor separately from the return value, rather
  * than relying on the user to convert it back.
  *
- * @param[out] filedes  The handle ID (OS_OBJECT_ID_UNDEFINED on failure)
- * @param[in] path      File name to create or open
- * @param[in] flags     The file permissions - see @ref OS_file_flag_t
- * @param[in] access    Intended access mode - see @ref OSFileAccess
+ * @param[out] filedes     The handle ID (OS_OBJECT_ID_UNDEFINED on failure)
+ * @param[in]  path        File name to create or open
+ * @param[in]  flags       The file permissions - see @ref OS_file_flag_t
+ * @param[in]  access_mode Intended access mode - see @ref OSFileAccess
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERROR if the command was not executed properly
  */
-int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access);
+int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access_mode);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -261,14 +261,14 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
 /**
  * @brief Changes the permissions of a file
  *
- * @param[in] path   File to change
- * @param[in] access Desired access mode - see @ref OSFileAccess
+ * @param[in] path        File to change
+ * @param[in] access_mode Desired access mode - see @ref OSFileAccess
  *
  * @note Some file systems do not implement permissions
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_chmod(const char *path, uint32 access);
+int32 OS_chmod(const char *path, uint32 access_mode);
 
 /*-------------------------------------------------------------------------------------*/
 /**

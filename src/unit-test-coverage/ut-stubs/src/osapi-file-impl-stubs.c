@@ -39,17 +39,18 @@
  * File API abstraction layer
  */
 
-UT_DEFAULT_STUB(OS_FileOpen_Impl, (const OS_object_token_t *token, const char *local_path, int32 flags, int32 access))
+UT_DEFAULT_STUB(OS_FileOpen_Impl,
+                (const OS_object_token_t *token, const char *local_path, int32 flags, int32 access_mode))
 UT_DEFAULT_STUB(OS_FileStat_Impl, (const char *local_path, os_fstat_t *filestat))
 UT_DEFAULT_STUB(OS_FileRemove_Impl, (const char *local_path))
 UT_DEFAULT_STUB(OS_FileRename_Impl, (const char *old_path, const char *new_path))
-UT_DEFAULT_STUB(OS_FileChmod_Impl, (const char *local_path, uint32 access))
+UT_DEFAULT_STUB(OS_FileChmod_Impl, (const char *local_path, uint32 access_mode))
 UT_DEFAULT_STUB(OS_ShellOutputToFile_Impl, (const OS_object_token_t *token, const char *Cmd))
 
 /*
  * Directory API abstraction layer
  */
-UT_DEFAULT_STUB(OS_DirCreate_Impl, (const char *local_path, uint32 access))
+UT_DEFAULT_STUB(OS_DirCreate_Impl, (const char *local_path, uint32 access_mode))
 UT_DEFAULT_STUB(OS_DirOpen_Impl, (const OS_object_token_t *token, const char *local_path))
 UT_DEFAULT_STUB(OS_DirClose_Impl, (const OS_object_token_t *token))
 UT_DEFAULT_STUB(OS_DirRead_Impl, (const OS_object_token_t *token, os_dirent_t *dirent))

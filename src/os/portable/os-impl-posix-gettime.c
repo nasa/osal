@@ -73,13 +73,13 @@ int32 OS_GetLocalTime_Impl(OS_time_t *time_struct)
 {
     int             Status;
     int32           ReturnCode;
-    struct timespec time;
+    struct timespec TimeSp;
 
-    Status = clock_gettime(OSAL_GETTIME_SOURCE_CLOCK, &time);
+    Status = clock_gettime(OSAL_GETTIME_SOURCE_CLOCK, &TimeSp);
 
     if (Status == 0)
     {
-        *time_struct = OS_TimeAssembleFromNanoseconds(time.tv_sec, time.tv_nsec);
+        *time_struct = OS_TimeAssembleFromNanoseconds(TimeSp.tv_sec, TimeSp.tv_nsec);
         ReturnCode   = OS_SUCCESS;
     }
     else
@@ -103,12 +103,12 @@ int32 OS_SetLocalTime_Impl(const OS_time_t *time_struct)
 {
     int             Status;
     int32           ReturnCode;
-    struct timespec time;
+    struct timespec TimeSp;
 
-    time.tv_sec  = OS_TimeGetTotalSeconds(*time_struct);
-    time.tv_nsec = OS_TimeGetNanosecondsPart(*time_struct);
+    TimeSp.tv_sec  = OS_TimeGetTotalSeconds(*time_struct);
+    TimeSp.tv_nsec = OS_TimeGetNanosecondsPart(*time_struct);
 
-    Status = clock_settime(OSAL_GETTIME_SOURCE_CLOCK, &time);
+    Status = clock_settime(OSAL_GETTIME_SOURCE_CLOCK, &TimeSp);
 
     if (Status == 0)
     {
