@@ -418,11 +418,8 @@ void Server_Fn(void)
     uint8         Buf_each_char_s[256] = {0};
     int32         Status;
 
-    /* Send all 256 chars to client */
-    for (iter = 0; iter < 256; iter++)
-    {
-        Buf_each_char_s[iter] = iter;
-    }
+    /* Fill the memory with a count pattern */
+    UtMemFill(Buf_each_char_s, sizeof(Buf_each_char_s));
 
     iter = 0;
     while (iter < UT_STREAM_CONNECTION_COUNT)
@@ -499,14 +496,7 @@ void TestStreamNetworkApi(void)
     OS_task_prop_t taskprop;
     char           Buf_rcv_c[4]           = {0};
     char           Buf_send_c[4]          = {0};
-    uint8          Buf_each_expected[256] = {0};
     uint8          Buf_each_char_rcv[256] = {0};
-
-    /* Init the char buffer */
-    for (iter = 0; iter < 256; iter++)
-    {
-        Buf_each_expected[iter] = iter;
-    }
 
     /*
      * NOTE: The server cannot directly use UtAssert because the library is not thread-safe
@@ -679,8 +669,7 @@ void TestStreamNetworkApi(void)
             expected = sizeof(Buf_each_char_rcv);
             actual   = OS_TimedRead(c_socket_id, Buf_each_char_rcv, sizeof(Buf_each_char_rcv), 10);
             UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
-            UtAssert_True(memcmp(Buf_each_expected, Buf_each_char_rcv, sizeof(Buf_each_expected)) == 0,
-                          "buffer content match");
+            UtAssert_MemCmpCount(Buf_each_char_rcv, sizeof(Buf_each_char_rcv), "Verify byte count pattern");
 
             /* Server should close the socket, reads will return 0 indicating EOF */
             expected = 0;
