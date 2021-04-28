@@ -160,6 +160,9 @@ int32 OS_close(osal_id_t filedes);
  *
  * Reads up to nbytes from a file, and puts them into buffer.
  *
+ * If the file position is at the end of file (or beyond, if the OS allows) then this
+ * function will return 0.
+ *
  * @param[in]  filedes  The handle ID to operate on
  * @param[out] buffer   Storage location for file data
  * @param[in]  nbytes   Maximum number of bytes to read
@@ -171,6 +174,7 @@ int32 OS_close(osal_id_t filedes);
  * @retval #OS_INVALID_POINTER if buffer is a null pointer
  * @retval #OS_ERROR if OS call failed
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval 0 if at end of file/stream data
  */
 int32 OS_read(osal_id_t filedes, void *buffer, size_t nbytes);
 
@@ -192,6 +196,7 @@ int32 OS_read(osal_id_t filedes, void *buffer, size_t nbytes);
  * @retval #OS_INVALID_POINTER if buffer is NULL
  * @retval #OS_ERROR if OS call failed
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval 0 if file/stream cannot accept any more data
  */
 int32 OS_write(osal_id_t filedes, const void *buffer, size_t nbytes);
 
@@ -201,28 +206,37 @@ int32 OS_write(osal_id_t filedes, const void *buffer, size_t nbytes);
  *
  * This implements a time-limited read and is primarily intended for use with
  * sockets but may also work with any other stream-like resource that the underlying
- * OS supports.
+ * OS supports, such as pipes or special devices.
  *
  * If data is immediately available on the file/socket, this will return that data
  * along with the actual number of bytes that were immediately available.  It will
  * not block.
  *
- * If no data is immediately available, this will wait up to the given timeout for
+ * If the file position is at the end of file or end of stream data (e.g. if the remote
+ * end has closed the connection), then this function will immediately return 0 without
+ * blocking for the timeout period.
+ *
+ * If no data is immediately available, but the underlying resource/stream is still
+ * connected to a peer, this will wait up to the given timeout for additional
  * data to appear.  If no data appears within the timeout period, then this returns
- * an error code (not zero).
+ * the #OS_ERROR_TIMEOUT status code.  This allows the caller to differentiate
+ * an open (but idle) socket connection from a connection which has been closed
+ * by the remote peer.
  *
  * In all cases this will return successfully as soon as at least 1 byte of actual
  * data is available.  It will not attempt to read the entire input buffer.
  *
  * If an EOF condition occurs prior to timeout, this function returns zero.
  *
- * @param[in] filedes   The handle ID to operate on
- * @param[in] buffer    Source location for file data
- * @param[in] nbytes    Maximum number of bytes to read
- * @param[in] timeout   Maximum time to wait, in milliseconds (OS_PEND = forever)
+ * @param[in]  filedes   The handle ID to operate on
+ * @param[out] buffer    Storage location for file data
+ * @param[in]  nbytes    Maximum number of bytes to read
+ * @param[in]  timeout   Maximum time to wait, in milliseconds (OS_PEND = forever)
  *
- * @return Byte count on success, zero for timeout, or appropriate error code,
- *         see @ref OSReturnCodes
+ * @returns Byte count on success or appropriate error code, see @ref OSReturnCodes
+ * @retval #OS_ERROR_TIMEOUT if no data became available during timeout period
+ * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval 0 if at end of file/stream data
  */
 int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout);
 
@@ -252,8 +266,10 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout
  * @param[in] nbytes    Maximum number of bytes to read
  * @param[in] timeout   Maximum time to wait, in milliseconds (OS_PEND = forever)
  *
- * @return Byte count on success, zero for timeout, or appropriate error code,
- *         see @ref OSReturnCodes
+ * @return A non-negative byte count or appropriate error code, see @ref OSReturnCodes
+ * @retval #OS_ERROR_TIMEOUT if no data became available during timeout period
+ * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval 0 if file/stream cannot accept any more data
  */
 int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 timeout);
 
