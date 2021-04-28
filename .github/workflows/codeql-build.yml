@@ -17,7 +17,6 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      # Checks out a copy of your repository on the ubuntu-latest machine
       - name: Checkout bundle
         uses: actions/checkout@v2
         with:
@@ -38,21 +37,17 @@ jobs:
          languages: c
          queries: +security-extended, security-and-quality
 
-      # Setup the build system
       - name: Set up for build
         run: |
           cp ./cfe/cmake/Makefile.sample Makefile
           cp -r ./cfe/cmake/sample_defs sample_defs
           make prep
 
-      # Build the code
       - name: Build
-        run: |
-          make osal
-          make native/default_cpu1/osal/tests/
-          make native/default_cpu1/osal/unit-test-coverage/
-          make native/default_cpu1/osal/unit-tests/
-          make native/default_cpu1/osal/ut-stubs/
+        run: make -j native/default_cpu1/osal/
+
+      - name: Run tests
+        run: (cd build/native/default_cpu1/osal && make test)
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
