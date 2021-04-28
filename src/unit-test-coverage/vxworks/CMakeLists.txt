@@ -52,7 +52,9 @@ set(VXWORKS_COVERAGE_LINK_LIST
         ut_vxworks_impl_stubs
         ut_bsp_impl_stubs
         ut_osapi_impl_stubs
+        ut_osapi_init_stubs
         ut_osapi_shared_stubs
+        ut_osapi_table_stubs
         ut_osapi_stubs
         ut_libc_stubs
 )

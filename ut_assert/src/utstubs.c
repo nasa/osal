@@ -56,9 +56,11 @@ typedef enum
     UT_ENTRYTYPE_FORCE_FAIL,       /**< Always return a designated code from stub */
     UT_ENTRYTYPE_DEFERRED_RC,      /**< Return a designated code from stub after "N" calls */
     UT_ENTRYTYPE_DATA_BUFFER,      /**< Storage for data buffers to simulate read/write or queue ops */
-    UT_ENTRYTYPE_CALLBACK_HOOK,    /**< Pointer to a custom callback/hook function */
+    UT_ENTRYTYPE_CALLBACK_HOOK,    /**< A custom callback/hook function to be invoked prior to handler */
     UT_ENTRYTYPE_CALLBACK_CONTEXT, /**< Context data for callback/hook function */
     UT_ENTRYTYPE_CALL_ONCE,        /**< Records a "call once" directive */
+    UT_ENTRYTYPE_FINAL_HANDLER,    /**< The final handler for the stub */
+    UT_ENTRYTYPE_RETURN_BUFFER,    /**< Storage for return value from stub */
 } UT_EntryType_t;
 
 typedef struct
@@ -76,9 +78,11 @@ typedef struct
 
 typedef union
 {
-    void *          Addr;
-    UT_HookFunc_t   Simple;
-    UT_VaHookFunc_t Va;
+    void *             Addr;
+    UT_HookFunc_t      SimpleHook;
+    UT_VaHookFunc_t    VaHook;
+    UT_HandlerFunc_t   SimpleHandler;
+    UT_VaHandlerFunc_t VaHandler;
 } UT_HookFuncPtr_t;
 
 typedef struct
@@ -118,8 +122,8 @@ static uint32              UT_MaxStubSearchLen             = 0;
 static void UT_ClearStubEntry(UT_StubTableEntry_t *StubPtr)
 {
     /* Be sure to call free() on any malloc'ed buffers before clearing */
-    if (StubPtr->EntryType == UT_ENTRYTYPE_DATA_BUFFER && StubPtr->Data.Buff.BasePtr != NULL &&
-        (StubPtr->ModeFlags & UT_MODEFLAG_ALLOC_BUF) != 0)
+    if ((StubPtr->EntryType == UT_ENTRYTYPE_DATA_BUFFER || StubPtr->EntryType == UT_ENTRYTYPE_RETURN_BUFFER) &&
+        StubPtr->Data.Buff.BasePtr != NULL && (StubPtr->ModeFlags & UT_MODEFLAG_ALLOC_BUF) != 0)
     {
         free(StubPtr->Data.Buff.BasePtr);
     }
@@ -404,6 +408,83 @@ bool UT_Stub_CheckDefaultReturnValue(UT_EntryKey_t FuncKey, int32 *Value)
     return (Result);
 }
 
+void UT_Stub_RegisterReturnType(UT_EntryKey_t FuncKey, size_t ReturnSize)
+{
+    UT_StubTableEntry_t *StubPtr;
+
+    if (ReturnSize > 0)
+    {
+        /* Check for existing buffer and re-use if same size (should be!) */
+        StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_RETURN_BUFFER);
+        if (StubPtr != NULL)
+        {
+            if (StubPtr->Data.Buff.TotalSize != ReturnSize)
+            {
+                UT_ClearStubEntry(StubPtr);
+                StubPtr = NULL;
+            }
+            else
+            {
+                StubPtr->Data.Buff.Position = 0;
+            }
+        }
+
+        if (StubPtr == NULL)
+        {
+            StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
+            if (StubPtr == NULL)
+            {
+                UtAssert_Abort("Cannot set return buffer - UT_MAX_FUNC_STUBS too low?");
+            }
+            else
+            {
+                StubPtr->FuncKey           = FuncKey;
+                StubPtr->EntryType         = UT_ENTRYTYPE_RETURN_BUFFER;
+                StubPtr->Data.Buff.BasePtr = malloc(ReturnSize);
+                if (StubPtr->Data.Buff.BasePtr == NULL)
+                {
+                    UtAssert_Abort("Cannot allocate data buffer - malloc() failed!");
+                }
+                else
+                {
+                    memset(StubPtr->Data.Buff.BasePtr, 0, ReturnSize);
+                    StubPtr->ModeFlags |= UT_MODEFLAG_ALLOC_BUF;
+                }
+
+                StubPtr->Data.Buff.TotalSize = ReturnSize;
+                StubPtr->Data.Buff.Position  = 0;
+            }
+        }
+    }
+}
+
+void *UT_Stub_GetReturnValuePtr(UT_EntryKey_t FuncKey, size_t ReturnSize)
+{
+    UT_StubTableEntry_t *StubPtr;
+    void *               ReturnPtr;
+
+    ReturnPtr = NULL;
+    StubPtr   = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_RETURN_BUFFER);
+
+    /* Sanity check on the size */
+    if (StubPtr != NULL && StubPtr->Data.Buff.TotalSize == ReturnSize)
+    {
+        ReturnPtr = StubPtr->Data.Buff.BasePtr;
+    }
+    else
+    {
+        /* This shouldn't happen, it means the stub tried to use a
+         * return buffer that does not exist or does not match size.
+         *
+         * It is most likely caused by a mismatch/incompatibility between
+         * stub and handler.  Aborting now is better than segfaulting later,
+         * as the errored call should still be on the stack trace */
+        UtAssert_Abort("Return buffer invalid");
+    }
+
+    return ReturnPtr;
+}
+
 void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, size_t BufferSize, bool AllocateCopy)
 {
     UT_StubTableEntry_t *StubPtr;
@@ -549,7 +630,8 @@ size_t UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, siz
 /*
  * Helper function used by UT_SetHookFunction() and UT_SetVaHookFunction()
  */
-static void UT_DoSetHookFunction(UT_EntryKey_t FuncKey, UT_HookFuncPtr_t Value, void *UserObj, bool IsVarg)
+static void UT_DoSetHookFunction(UT_EntryKey_t FuncKey, UT_EntryType_t EntryType, UT_HookFuncPtr_t Value, void *UserObj,
+                                 bool IsVarg)
 {
     UT_StubTableEntry_t *StubPtr;
 
@@ -557,7 +639,7 @@ static void UT_DoSetHookFunction(UT_EntryKey_t FuncKey, UT_HookFuncPtr_t Value, 
      * First find an existing hook entry for the function.
      * In case one is already set we do not duplicate
      */
-    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_CALLBACK_HOOK);
+    StubPtr = UT_GetStubEntry(FuncKey, EntryType);
     if (StubPtr == NULL && Value.Addr != NULL)
     {
         /* Creating force fail entry - repeat search and grab any unused slot */
@@ -577,7 +659,7 @@ static void UT_DoSetHookFunction(UT_EntryKey_t FuncKey, UT_HookFuncPtr_t Value, 
     {
         /* Caller wants to set the entry */
         StubPtr->FuncKey             = FuncKey;
-        StubPtr->EntryType           = UT_ENTRYTYPE_CALLBACK_HOOK;
+        StubPtr->EntryType           = EntryType;
         StubPtr->Data.Cb.CallbackArg = UserObj;
         StubPtr->Data.Cb.Ptr         = Value;
         StubPtr->Data.Cb.IsVarg      = IsVarg;
@@ -588,18 +670,36 @@ void UT_SetHookFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *Use
 {
     UT_HookFuncPtr_t Value;
 
-    Value.Simple = HookFunc;
+    Value.SimpleHook = HookFunc;
 
-    UT_DoSetHookFunction(FuncKey, Value, UserObj, false);
+    UT_DoSetHookFunction(FuncKey, UT_ENTRYTYPE_CALLBACK_HOOK, Value, UserObj, false);
 }
 
 void UT_SetVaHookFunction(UT_EntryKey_t FuncKey, UT_VaHookFunc_t HookFunc, void *UserObj)
 {
     UT_HookFuncPtr_t Value;
 
-    Value.Va = HookFunc;
+    Value.VaHook = HookFunc;
 
-    UT_DoSetHookFunction(FuncKey, Value, UserObj, true);
+    UT_DoSetHookFunction(FuncKey, UT_ENTRYTYPE_CALLBACK_HOOK, Value, UserObj, true);
+}
+
+void UT_SetHandlerFunction(UT_EntryKey_t FuncKey, UT_HandlerFunc_t HandlerFunc, void *UserObj)
+{
+    UT_HookFuncPtr_t Value;
+
+    Value.SimpleHandler = HandlerFunc;
+
+    UT_DoSetHookFunction(FuncKey, UT_ENTRYTYPE_FINAL_HANDLER, Value, UserObj, false);
+}
+
+void UT_SetVaHandlerFunction(UT_EntryKey_t FuncKey, UT_VaHandlerFunc_t HandlerFunc, void *UserObj)
+{
+    UT_HookFuncPtr_t Value;
+
+    Value.VaHandler = HandlerFunc;
+
+    UT_DoSetHookFunction(FuncKey, UT_ENTRYTYPE_FINAL_HANDLER, Value, UserObj, true);
 }
 
 const void *UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Name, size_t ExpectedTypeSize)
@@ -736,31 +836,85 @@ void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t FuncKey, const char *Name
     }
 }
 
+bool UT_Stub_GetInt32StatusCode(const UT_StubContext_t *Context, int32 *StatusCodeBuffer)
+{
+    if (StatusCodeBuffer != NULL)
+    {
+        *StatusCodeBuffer = Context->Int32StatusCode;
+    }
+
+    return Context->Int32StatusIsSet;
+}
+
+void UT_Stub_CopyToReturnValue(UT_EntryKey_t FuncKey, const void *BufferPtr, size_t BufferSize)
+{
+    UT_StubTableEntry_t *StubPtr;
+
+    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_RETURN_BUFFER);
+    if (StubPtr != NULL)
+    {
+        /* If the size does not match, there is a bug */
+        if (StubPtr->Data.Buff.TotalSize != BufferSize)
+        {
+            UtAssert_Abort("Size mismatch in setting return value");
+        }
+        else
+        {
+            memcpy(StubPtr->Data.Buff.BasePtr, BufferPtr, BufferSize);
+            StubPtr->Data.Buff.Position = BufferSize;
+        }
+    }
+}
+
 /**
  * Default implementation for a stub function that should be useful for most cases.
  * Checks first for a deferred retcode, then for a constant retcode, and a default if neither is present.
  * Prints a debug level status message to show that the function was called.
  */
-int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey, int32 DefaultRc, va_list va)
+int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey, int32 DefaultRc, va_list ArgList)
 {
-    int32                   Retcode;
-    const char *            RetcodeString;
-    UT_StubTableEntry_t *   StubPtr;
-    UT_StubTableEntry_t *   ContextTblPtr;
-    const UT_StubContext_t *ContextPtr;
-    uint32                  Counter;
+    const char *         RetcodeString;
+    UT_StubTableEntry_t *StubPtr;
+    UT_StubTableEntry_t *ContextTblPtr;
+    UT_StubContext_t     LocalContext;
+    uint32               Counter;
+    va_list              ArgListCopy;
 
-    if (!UT_Stub_CheckDeferredRetcode(FuncKey, &Retcode))
+    /*
+     * In this implementation a context is _always_ needed.
+     *
+     * First see if the stub has an already-registered context.  Any non-trivial stub
+     * should already have registered some arguments and/or a return code buffer.
+     *
+     * To handle an old-style/incomplete stub function or simple void/void stubs that
+     * do not have any arguments, a blank entry can be created on the fly.
+     */
+    ContextTblPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_CALLBACK_CONTEXT);
+    if (ContextTblPtr != NULL)
     {
-        if (!UT_Stub_CheckDefaultReturnValue(FuncKey, &Retcode))
-        {
-            Retcode = DefaultRc;
-        }
+        LocalContext = ContextTblPtr->Data.Context;
+
+        /* Always clear the context entry -- the next call will have a different one */
+        UT_ClearStubEntry(ContextTblPtr);
+    }
+    else
+    {
+        memset(&LocalContext, 0, sizeof(LocalContext));
+    }
+
+    LocalContext.Int32StatusIsSet = UT_Stub_CheckDeferredRetcode(FuncKey, &LocalContext.Int32StatusCode);
+    if (!LocalContext.Int32StatusIsSet)
+    {
+        LocalContext.Int32StatusIsSet = UT_Stub_CheckDefaultReturnValue(FuncKey, &LocalContext.Int32StatusCode);
+    }
+    if (!LocalContext.Int32StatusIsSet)
+    {
+        LocalContext.Int32StatusCode = DefaultRc;
     }
 
     if (FunctionName != NULL)
     {
-        if (Retcode == DefaultRc)
+        if (!LocalContext.Int32StatusIsSet)
         {
             RetcodeString = "DEFAULT";
         }
@@ -770,7 +924,7 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
             RetcodeString = "*SPECIAL*";
         }
 
-        UtDebug("%s called (%s,%d)", FunctionName, RetcodeString, (int)Retcode);
+        UtDebug("%s called (%s,%d)", FunctionName, RetcodeString, (int)LocalContext.Int32StatusCode);
     }
 
     Counter = 0;
@@ -791,20 +945,7 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
         StubPtr->FuncKey   = FuncKey;
         Counter            = StubPtr->Data.Rc.Count;
         ++StubPtr->Data.Rc.Count;
-        StubPtr->Data.Rc.Value = Retcode;
-    }
-
-    /* Handle a user-requested callback hook.
-     * First see if the stub has a registered context.
-     */
-    ContextTblPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_CALLBACK_CONTEXT);
-    if (ContextTblPtr == NULL)
-    {
-        ContextPtr = NULL;
-    }
-    else
-    {
-        ContextPtr = &ContextTblPtr->Data.Context;
+        StubPtr->Data.Rc.Value = LocalContext.Int32StatusCode;
     }
 
     StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_CALLBACK_HOOK);
@@ -812,21 +953,72 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
     {
         if (StubPtr->Data.Cb.IsVarg)
         {
-            Retcode = (*StubPtr->Data.Cb.Ptr.Va)(StubPtr->Data.Cb.CallbackArg, Retcode, Counter, ContextPtr, va);
+            va_copy(ArgListCopy, ArgList);
+            LocalContext.Int32StatusCode = StubPtr->Data.Cb.Ptr.VaHook(
+                StubPtr->Data.Cb.CallbackArg, LocalContext.Int32StatusCode, Counter, &LocalContext, ArgListCopy);
+            va_end(ArgListCopy);
         }
         else
         {
-            Retcode = (*StubPtr->Data.Cb.Ptr.Simple)(StubPtr->Data.Cb.CallbackArg, Retcode, Counter, ContextPtr);
+            LocalContext.Int32StatusCode = StubPtr->Data.Cb.Ptr.SimpleHook(
+                StubPtr->Data.Cb.CallbackArg, LocalContext.Int32StatusCode, Counter, &LocalContext);
+        }
+
+        LocalContext.Int32StatusIsSet = true;
+    }
+
+    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FINAL_HANDLER);
+    if (StubPtr != NULL)
+    {
+        if (StubPtr->Data.Cb.IsVarg)
+        {
+            StubPtr->Data.Cb.Ptr.VaHandler(StubPtr->Data.Cb.CallbackArg, FuncKey, &LocalContext, ArgList);
+        }
+        else
+        {
+            StubPtr->Data.Cb.Ptr.SimpleHandler(StubPtr->Data.Cb.CallbackArg, FuncKey, &LocalContext);
         }
     }
 
-    /* Always clear the context entry -- the next call will have a different one */
-    if (ContextTblPtr != NULL)
+    /*
+     * Handle propagation of return code.
+     *
+     *   "old style" stubs will translate the int32 return value from this function.
+     *     - Return Buffer will always be unset with these stubs
+     *     - This should continue to work with no special handling.
+     *
+     *   "new style" stubs will provide a return value buffer via UT_ENTRYTYPE_RETURN_BUFFER in the context.
+     *     - In this pattern the int32 return value of this function is _IGNORED_ by the calling stub.
+     *     - The only way to return a value to the caller is via the buffer.
+     *     - If the handler did _not_ populate the return value, then attempt to translate the local
+     *       Retcode here to the return value buffer.  This eases the transition, as the vast majority
+     *       of functions do return an int32, this can be the automatic case.
+     */
+    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_RETURN_BUFFER);
+    if (StubPtr != NULL && StubPtr->Data.Buff.Position == 0)
     {
-        UT_ClearStubEntry(ContextTblPtr);
+        /*
+         * This means that the stub expects the hook to fill the provided return buffer, but the hook did not
+         * actually call UT_Stub_SetReturnValue() to fill that buffer.  To mimic the old behavior where the hook
+         * return code was "passed through", attempt to copy the value now.  This works because for the majority
+         * of functions, the return type is actually int32, so it is compatible.
+         *
+         * But if the size is different, then this shouldn't be done, and generate a failure message
+         * to indicate the test case or stub/hook needs to be fixed.
+         */
+        if (StubPtr->Data.Buff.TotalSize == sizeof(LocalContext.Int32StatusCode))
+        {
+            memcpy(StubPtr->Data.Buff.BasePtr, &LocalContext.Int32StatusCode, sizeof(LocalContext.Int32StatusCode));
+        }
+        else
+        {
+            /* cannot copy - generate a "failure" message to indicate the problem */
+            UtAssert_Failed("Stub %s w/return size=%lu, value cannot be auto-translated from int32", FunctionName,
+                            (unsigned long)StubPtr->Data.Buff.TotalSize);
+        }
     }
 
-    return Retcode;
+    return LocalContext.Int32StatusCode;
 }
 
 /**
@@ -843,4 +1035,27 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
     va_end(va);
 
     return Retcode;
+}
+
+void UT_ExecuteBasicHandler(UT_EntryKey_t FuncKey, const char *FunctionName, UT_HandlerFunc_t DefaultHook)
+{
+    /* Check if the test case registered a hook, and use the default if not */
+    if (UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FINAL_HANDLER) == NULL && DefaultHook != NULL)
+    {
+        UT_SetHandlerFunction(FuncKey, DefaultHook, NULL);
+    }
+
+    UT_DefaultStubImpl(FunctionName, FuncKey, 0, NULL);
+}
+
+void UT_ExecuteVaHandler(UT_EntryKey_t FuncKey, const char *FunctionName, UT_VaHandlerFunc_t DefaultHook,
+                         va_list VaList)
+{
+    /* Check if the test case registered a hook, and use the default if not */
+    if (UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FINAL_HANDLER) == NULL && DefaultHook != NULL)
+    {
+        UT_SetVaHandlerFunction(FuncKey, DefaultHook, NULL);
+    }
+
+    UT_DefaultStubImplWithArgs(FunctionName, FuncKey, 0, VaList);
 }
