@@ -339,6 +339,49 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
 } /* end OS_SocketConnect_Impl */
 
 /*----------------------------------------------------------------
+   Function: OS_SocketShutdown_Impl
+
+    Purpose: Connects the socket to a remote address.
+             Socket must be of the STREAM variety.
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_SocketShutdown_Impl(const OS_object_token_t *token, OS_SocketShutdownMode_t Mode)
+{
+    OS_impl_file_internal_record_t *conn_impl;
+    int32                           return_code;
+    int                             how;
+
+    conn_impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
+
+    /* Note that when called via the shared layer,
+     * the "Mode" arg has already been checked/validated. */
+    if (Mode == OS_SocketShutdownMode_SHUT_READ)
+    {
+        how = SHUT_RD;
+    }
+    else if (Mode == OS_SocketShutdownMode_SHUT_WRITE)
+    {
+        how = SHUT_WR;
+    }
+    else
+    {
+        how = SHUT_RDWR;
+    }
+
+    if (shutdown(conn_impl->fd, how) == 0)
+    {
+        return_code = OS_SUCCESS;
+    }
+    else
+    {
+        return_code = OS_ERROR;
+    }
+
+    return return_code;
+} /* end OS_SocketShutdown_Impl */
+
+/*----------------------------------------------------------------
  *
  * Function: OS_SocketAccept_Impl
  *
