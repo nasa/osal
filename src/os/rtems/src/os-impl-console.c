@@ -67,7 +67,6 @@
 /* Console device */
 typedef struct
 {
-    bool     is_async;
     rtems_id data_sem;
     int      out_fd;
 } OS_impl_console_internal_record_t;
@@ -93,16 +92,9 @@ void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
 
     local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
 
-    if (local->is_async)
-    {
-        /* post the sem for the utility task to run */
-        rtems_semaphore_release(local->data_sem);
-    }
-    else
-    {
-        /* output directly */
-        OS_ConsoleOutput_Impl(token);
-    }
+    /* post the sem for the utility task to run */
+    rtems_semaphore_release(local->data_sem);
+
 } /* end OS_ConsoleWakeup_Impl */
 
 /*----------------------------------------------------------------
@@ -143,20 +135,21 @@ static void OS_ConsoleTask_Entry(rtems_task_argument arg)
 int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 {
     OS_impl_console_internal_record_t *local;
+    OS_console_internal_record_t *     console;
     int32                              return_code;
     rtems_name                         r_name;
     rtems_id                           r_task_id;
     rtems_status_code                  status;
 
-    local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
+    local   = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
+    console = OS_OBJECT_TABLE_GET(OS_console_table, *token);
 
     if (OS_ObjectIndexFromToken(token) == 0)
     {
-        return_code     = OS_SUCCESS;
-        local->is_async = OS_CONSOLE_ASYNC;
-        local->out_fd   = OSAL_CONSOLE_FILENO;
+        return_code   = OS_SUCCESS;
+        local->out_fd = OSAL_CONSOLE_FILENO;
 
-        if (local->is_async)
+        if (console->IsAsync)
         {
             OS_DEBUG("%s(): Starting Async Console Handler\n", __func__);
             /*

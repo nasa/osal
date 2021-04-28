@@ -36,7 +36,6 @@
 /* Console device */
 typedef struct
 {
-    bool  is_async;
     sem_t data_sem;
 } OS_impl_console_internal_record_t;
 

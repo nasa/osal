@@ -180,6 +180,31 @@ set(OSAL_CONFIG_DEBUG_PRINTF                    FALSE
     CACHE BOOL "Controls inclusion of OS_DEBUG statements in the code"
 )
 
+#
+# OS_CONFIG_CONSOLE_ASYNC
+# ----------------------------------
+#
+# Controls whether the console device writes (OS_printf) will be deferred
+# to a separate utility task or handled directly by the calling task.
+#
+# If set FALSE, the utility task WILL NOT be spawned, and all OS_printf()
+# calls will be synchronously written to the console device.
+#
+# If set TRUE, an extra utility task WILL be spawned, and the data from
+# all OS_printf() calls will be written to an output queue which is then
+# transferred to the console device by the utility task.
+#
+# When this is TRUE (default), it may improve real time performance by not
+# requiring the caller to delay on a potentially slow console device output.
+#
+# However decoupling in this manner requires creation of an extra task and
+# stack to handle the output, and a side effect is that the OS_printf() output
+# can become decoupled from the event/task where it actually occurred, or
+# messages might appear in a different order than they originally occurred.
+#
+set(OSAL_CONFIG_CONSOLE_ASYNC                   TRUE
+    CACHE BOOL "Controls spawning of a separate utility task for OS_printf"
+)
 
 #############################################
 # Resource Limits for the OS API

@@ -52,6 +52,7 @@ typedef struct
     volatile size_t ReadPos;        /**< Offset of next byte to read */
     volatile size_t WritePos;       /**< Offset of next byte to write */
     uint32          OverflowEvents; /**< Number of lines dropped due to overflow */
+    bool            IsAsync;        /**< Whether to write data via deferred utility task */
 
 } OS_console_internal_record_t;
 

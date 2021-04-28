@@ -37,7 +37,6 @@
 typedef struct
 {
     VX_COUNTING_SEMAPHORE(cmem);
-    bool    is_async;
     SEM_ID  datasem;
     TASK_ID taskid;
 } OS_impl_console_internal_record_t;
