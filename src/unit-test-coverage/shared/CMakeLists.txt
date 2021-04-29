@@ -30,7 +30,9 @@ set(SHARED_COVERAGE_LINK_LIST
         os-shared-coverage-support
         ut-adaptor-shared
         ut_osapi_impl_stubs
+        ut_osapi_init_stubs
         ut_osapi_shared_stubs
+        ut_osapi_table_stubs
         ut_osapi_stubs
         ut_libc_stubs
 )

@@ -104,6 +104,13 @@ struct OS_object_token
 typedef bool (*OS_ObjectMatchFunc_t)(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 
 /*
+ * A function to serve as callback with object ID iterators
+ *
+ * This is the prototype of callback functions for use with OS_ObjectIdIteratorProcessEntry()
+ */
+typedef int32 (*OS_ObjectIdIteratorProcessFunc_t)(osal_id_t, void *);
+
+/*
  * State object associated with an object iterator
  */
 typedef struct
@@ -533,7 +540,7 @@ static inline const OS_object_token_t *OS_ObjectIdIteratorRef(OS_object_iter_t *
 
     Returns: None
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t, void *));
+int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, OS_ObjectIdIteratorProcessFunc_t func);
 
 /*
  * Internal helper functions

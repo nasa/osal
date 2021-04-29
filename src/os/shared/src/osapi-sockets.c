@@ -266,7 +266,7 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
             if (return_code == OS_SUCCESS)
             {
                 conn_record = OS_OBJECT_TABLE_GET(OS_global_stream_table, conn_token);
-                conn        = OS_OBJECT_TABLE_GET(OS_stream_table, sock_token);
+                conn        = OS_OBJECT_TABLE_GET(OS_stream_table, conn_token);
 
                 /* Incr the refcount to record the fact that an operation is pending on this */
                 memset(conn, 0, sizeof(OS_stream_internal_record_t));

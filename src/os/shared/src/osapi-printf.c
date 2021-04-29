@@ -56,6 +56,16 @@
 #include "os-shared-idmap.h"
 #include "os-shared-printf.h"
 
+/*
+ * The choice of whether to run a separate utility task
+ * comes from osal compile-time config
+ */
+#ifdef OSAL_CONFIG_CONSOLE_ASYNC
+#define OS_CONSOLE_IS_ASYNC true
+#else
+#define OS_CONSOLE_IS_ASYNC false
+#endif
+
 /* reserve buffer memory for the printf console device */
 static char OS_printf_buffer_mem[(sizeof(OS_PRINTF_CONSOLE_NAME) + OS_BUFFER_SIZE) * OS_BUFFER_MSG_DEPTH];
 
@@ -99,6 +109,7 @@ int32 OS_ConsoleAPI_Init(void)
          */
         console->BufBase = OS_printf_buffer_mem;
         console->BufSize = sizeof(OS_printf_buffer_mem);
+        console->IsAsync = OS_CONSOLE_IS_ASYNC;
 
         return_code = OS_ConsoleCreate_Impl(&token);
 
@@ -234,7 +245,16 @@ int32 OS_ConsoleWrite(osal_id_t console_id, const char *Str)
          * This is done while still locked, so it can support
          * either a synchronous or asynchronous implementation.
          */
-        OS_ConsoleWakeup_Impl(&token);
+        if (console->IsAsync)
+        {
+            /* post the sem for the utility task to run */
+            OS_ConsoleWakeup_Impl(&token);
+        }
+        else
+        {
+            /* output directly */
+            OS_ConsoleOutput_Impl(&token);
+        }
 
         OS_ObjectIdRelease(&token);
     }

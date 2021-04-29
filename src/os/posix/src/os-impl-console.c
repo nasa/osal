@@ -68,16 +68,9 @@ void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
 
     local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
 
-    if (local->is_async)
-    {
-        /* post the sem for the utility task to run */
-        sem_post(&local->data_sem);
-    }
-    else
-    {
-        /* output directly */
-        OS_ConsoleOutput_Impl(token);
-    }
+    /* post the sem for the utility task to run */
+    sem_post(&local->data_sem);
+
 } /* end OS_ConsoleWakeup_Impl */
 
 /*----------------------------------------------------------------
@@ -121,18 +114,19 @@ static void *OS_ConsoleTask_Entry(void *arg)
 int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 {
     OS_impl_console_internal_record_t *local;
+    OS_console_internal_record_t *     console;
     pthread_t                          consoletask;
     int32                              return_code;
     OS_VoidPtrValueWrapper_t           local_arg = {0};
 
-    local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
+    console = OS_OBJECT_TABLE_GET(OS_console_table, *token);
+    local   = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
 
     if (token->obj_idx == 0)
     {
-        return_code     = OS_SUCCESS;
-        local->is_async = OS_CONSOLE_ASYNC;
+        return_code = OS_SUCCESS;
 
-        if (local->is_async)
+        if (console->IsAsync)
         {
             if (sem_init(&local->data_sem, 0, 0) < 0)
             {
