@@ -34,6 +34,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 
 #define OS_NETWORK_SUPPORTS_IPV6
 

@@ -267,3 +267,20 @@ int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, size_t buflen, cons
 
     return UT_GenStub_GetReturnValue(OS_SocketSendTo, int32);
 }
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_SocketShutdown()
+ * ----------------------------------------------------
+ */
+int32 OS_SocketShutdown(osal_id_t sock_id, OS_SocketShutdownMode_t Mode)
+{
+    UT_GenStub_SetupReturnBuffer(OS_SocketShutdown, int32);
+
+    UT_GenStub_AddParam(OS_SocketShutdown, osal_id_t, sock_id);
+    UT_GenStub_AddParam(OS_SocketShutdown, OS_SocketShutdownMode_t, Mode);
+
+    UT_GenStub_Execute(OS_SocketShutdown, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_SocketShutdown, int32);
+}

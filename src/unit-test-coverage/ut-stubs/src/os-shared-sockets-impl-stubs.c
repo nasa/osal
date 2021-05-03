@@ -241,3 +241,20 @@ int32 OS_SocketSendTo_Impl(const OS_object_token_t *token, const void *buffer, s
 
     return UT_GenStub_GetReturnValue(OS_SocketSendTo_Impl, int32);
 }
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_SocketShutdown_Impl()
+ * ----------------------------------------------------
+ */
+int32 OS_SocketShutdown_Impl(const OS_object_token_t *token, OS_SocketShutdownMode_t Mode)
+{
+    UT_GenStub_SetupReturnBuffer(OS_SocketShutdown_Impl, int32);
+
+    UT_GenStub_AddParam(OS_SocketShutdown_Impl, const OS_object_token_t *, token);
+    UT_GenStub_AddParam(OS_SocketShutdown_Impl, OS_SocketShutdownMode_t, Mode);
+
+    UT_GenStub_Execute(OS_SocketShutdown_Impl, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_SocketShutdown_Impl, int32);
+}

@@ -76,6 +76,16 @@ typedef enum
     OS_SocketType_MAX       /**< @brief Maximum */
 } OS_SocketType_t;
 
+/* NOTE: The shutdown mode enums are also a bitmask, so the specific values are important here */
+/** @brief Shutdown Mode */
+typedef enum
+{
+    OS_SocketShutdownMode_NONE           = 0, /**< @brief Reserved value, no effect */
+    OS_SocketShutdownMode_SHUT_READ      = 1, /**< @brief Disable future reading */
+    OS_SocketShutdownMode_SHUT_WRITE     = 2, /**< @brief Disable future writing */
+    OS_SocketShutdownMode_SHUT_READWRITE = 3  /**< @brief Disable future reading or writing */
+} OS_SocketShutdownMode_t;
+
 /**
  * @brief Storage buffer for generic network address
  *
@@ -278,6 +288,20 @@ int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr);
  * @return Execution status, see @ref OSReturnCodes
  */
 int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 timeout);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Implement graceful shutdown of a stream socket
+ *
+ * This can be utilized to indicate the end of data stream without immediately closing
+ * the socket, giving the remote side an indication that the data transfer is complete.
+ *
+ * @param[in]   sock_id  The socket ID
+ * @param[in]   Mode     Whether to shutdown reading, writing, or both.
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ */
+int32 OS_SocketShutdown(osal_id_t sock_id, OS_SocketShutdownMode_t Mode);
 
 /*-------------------------------------------------------------------------------------*/
 /**
