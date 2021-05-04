@@ -113,9 +113,8 @@ void Test_OS_TimedRead(void)
     UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
     UtAssert_True(memcmp(Buf, SrcBuf, actual) == 0, "buffer content match");
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimedRead(UT_OBJID_1, NULL, sizeof(Buf), 10);
-    UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, NULL, sizeof(Buf), 10), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, Buf, 0, 10), OS_ERR_INVALID_SIZE);
 }
 
 void Test_OS_TimedWrite(void)
@@ -135,9 +134,8 @@ void Test_OS_TimedWrite(void)
     UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
     UtAssert_True(memcmp(Buf, DstBuf, actual) == 0, "buffer content match");
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimedWrite(UT_OBJID_1, NULL, sizeof(Buf), 10);
-    UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, NULL, sizeof(Buf), 10), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, Buf, 0, 10), OS_ERR_INVALID_SIZE);
 }
 
 void Test_OS_read(void)

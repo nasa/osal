@@ -306,6 +306,9 @@ void Test_OS_SocketRecvFrom(void)
     actual                          = OS_SocketRecvFrom(UT_OBJID_1, &Buf, sizeof(Buf), &Addr, 0);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() non-bound (%ld) == OS_ERR_INCORRECT_OBJ_STATE",
                   (long)actual);
+
+    /* Fail w/OS_ERR_INVALID_SIZE */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketRecvFrom(UT_OBJID_1, &Buf, 0, &Addr, 0), OS_ERR_INVALID_SIZE);
 }
 
 /*****************************************************************************

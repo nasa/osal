@@ -139,6 +139,7 @@ typedef struct
  * @param[in]   Domain       The address family
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if Addr argument is NULL
  */
 int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain);
 
@@ -159,6 +160,8 @@ int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain);
  * @param[in]   Addr         The network address buffer to convert
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_SIZE if passed-in buflen is not valid
  */
 int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Addr);
 
@@ -181,6 +184,7 @@ int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Ad
  * @param[in]   string       The string to initialize the address from.
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string);
 
@@ -196,6 +200,7 @@ int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string);
  * @param[in]   Addr         The network address buffer
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr);
 
@@ -211,6 +216,7 @@ int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr);
  * @param[out]  Addr         The network address buffer
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum);
 /**@}*/
@@ -242,6 +248,7 @@ int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum);
  * @param[in]   Type     The type of the socket (STREAM or DATAGRAM)
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t Type);
 
@@ -260,6 +267,7 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
  * @param[in]   Addr     The local address to bind to
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr);
 
@@ -276,6 +284,7 @@ int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr);
  * @param[in]   timeout  The maximum amount of time to wait, or OS_PEND to wait forever
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if Addr argument is NULL
  */
 int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 timeout);
 
@@ -297,6 +306,7 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 timeo
  * @param[in]   timeout      The maximum amount of time to wait, or OS_PEND to wait forever
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *Addr, int32 timeout);
 
@@ -314,6 +324,8 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
  * @param[in]   timeout      The maximum amount of time to wait, or OS_PEND to wait forever
  *
  * @return Count of actual bytes received or error status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_SIZE if passed-in buflen is not valid
  */
 int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr, int32 timeout);
 
@@ -331,6 +343,8 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockA
  * @param[in]   RemoteAddr   Buffer containing the remote network address to send to
  *
  * @return Count of actual bytes sent or error status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_SIZE if passed-in buflen is not valid
  */
 int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, size_t buflen, const OS_SockAddr_t *RemoteAddr);
 

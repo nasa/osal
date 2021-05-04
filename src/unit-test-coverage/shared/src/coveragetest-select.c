@@ -47,6 +47,8 @@ void Test_OS_SelectSingle(void)
 
     /* Verify Outputs */
     UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
+
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle(UT_OBJID_1, NULL, 0), OS_INVALID_POINTER);
 }
 
 void Test_OS_SelectMultiple(void)

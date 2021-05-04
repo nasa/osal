@@ -40,13 +40,8 @@ void Test_OS_GetErrorName(void)
     UtAssert_True(actual == expected, "OS_GetErrorName(%s) (%ld) == OS_SUCCESS", "OS_ERROR", (long)actual);
     UtAssert_True(strcmp(err_name, "OS_ERROR") == 0, "string(%s) == OS_ERROR", err_name);
 
-    expected = OS_ERROR;
-    actual   = OS_GetErrorName(-555555, &err_name);
-    UtAssert_True(actual == expected, "OS_GetErrorName(%s) (%ld) == OS_SUCCESS", err_name, (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual   = OS_GetErrorName(-555555, NULL);
-    UtAssert_True(actual == expected, "OS_GetErrorName(NULL) (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_GetErrorName(-555555, &err_name), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_GetErrorName(-555555, NULL), OS_INVALID_POINTER);
 }
 
 /* Osapi_Test_Setup

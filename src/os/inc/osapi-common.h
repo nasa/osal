@@ -162,8 +162,6 @@ int32 OS_API_Init(void);
  * For example, while this will attempt to unload all dynamically-loaded modules, doing
  * so may not be possible and/or may induce undefined behavior if resources are in use by
  * tasks/functions outside of OSAL.
- *
- * @return None
  */
 void OS_API_Teardown(void);
 
@@ -234,6 +232,7 @@ void OS_ApplicationExit(int32 Status);
  * @return Execution status, see @ref OSReturnCodes.
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERROR   @copybrief OS_ERROR
+ * @retval #OS_INVALID_POINTER if handler is NULL
  */
 int32 OS_RegisterEventHandler(OS_EventHandler_t handler);
 

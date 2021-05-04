@@ -228,6 +228,8 @@ int32 OS_ConvertToArrayIndex(osal_id_t object_id, osal_index_t *ArrayIndex);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS                 @copybrief OS_SUCCESS
  * @retval #OS_ERR_INCORRECT_OBJ_TYPE  @copybrief OS_ERR_INCORRECT_OBJ_TYPE
+ * @retval #OS_ERR_INVALID_ID if the object_id argument is not valid
+ * @retval #OS_INVALID_POINTER if the ArrayIndex is NULL
  * */
 int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t object_id, osal_index_t *ArrayIndex);
 

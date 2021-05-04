@@ -93,6 +93,7 @@ typedef osal_task((*osal_task_entry)(void)); /**< @brief For task entry point */
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if any of the necessary pointers are NULL
+ * @retval #OS_ERR_INVALID_SIZE if the stack_size argument is zero
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_INVALID_PRIORITY if the priority is bad
  * @retval #OS_ERR_NO_FREE_IDS if there can be no more tasks created
@@ -234,6 +235,7 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop);
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_INVALID_POINTER if a pointer argument is NULL
  */
 int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t sysdata_size);
 
