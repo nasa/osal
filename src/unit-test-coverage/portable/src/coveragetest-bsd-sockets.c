@@ -213,6 +213,23 @@ void Test_OS_SocketConnect_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_SocketConnect_Impl, (&token, &addr, 0), OS_SUCCESS);
 }
 
+void Test_OS_SocketShutdown_Impl(void)
+{
+    OS_object_token_t token = {0};
+
+    /* Set up token for index 0 */
+    token.obj_idx = UT_INDEX_0;
+
+    /* Check all 3 valid modes */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketShutdown_Impl, (&token, OS_SocketShutdownMode_SHUT_READ), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketShutdown_Impl, (&token, OS_SocketShutdownMode_SHUT_WRITE), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketShutdown_Impl, (&token, OS_SocketShutdownMode_SHUT_READWRITE), OS_SUCCESS);
+
+    /* Check OS call failure */
+    UT_SetDeferredRetcode(UT_KEY(OCS_shutdown), 1, -1);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketShutdown_Impl, (&token, OS_SocketShutdownMode_SHUT_READ), OS_ERROR);
+}
+
 void Test_OS_SocketAccept_Impl(void)
 {
     OS_object_token_t sock_token = {0};
@@ -472,6 +489,7 @@ void UtTest_Setup(void)
     ADD_TEST(OS_SocketOpen_Impl);
     ADD_TEST(OS_SocketBind_Impl);
     ADD_TEST(OS_SocketConnect_Impl);
+    ADD_TEST(OS_SocketShutdown_Impl);
     ADD_TEST(OS_SocketAccept_Impl);
     ADD_TEST(OS_SocketRecvFrom_Impl);
     ADD_TEST(OS_SocketSendTo_Impl);

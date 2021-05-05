@@ -107,6 +107,14 @@ int OCS_setsockopt(int fd, int level, int optname, const void *optval, OCS_sockl
     return UT_DEFAULT_IMPL(OCS_setsockopt);
 }
 
+int OCS_shutdown(int fd, int how)
+{
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_shutdown), fd);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_shutdown), how);
+
+    return UT_DEFAULT_IMPL(OCS_shutdown);
+}
+
 int OCS_socket(int domain, int type, int protocol)
 {
     UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_socket), domain);

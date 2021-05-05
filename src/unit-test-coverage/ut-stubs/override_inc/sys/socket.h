@@ -46,6 +46,7 @@
 #define recvfrom     OCS_recvfrom
 #define sendto       OCS_sendto
 #define setsockopt   OCS_setsockopt
+#define shutdown     OCS_shutdown
 #define socket       OCS_socket
 
 #define EINPROGRESS  OCS_EINPROGRESS
@@ -60,5 +61,8 @@
 #define SO_REUSEADDR OCS_SO_REUSEADDR
 #define SO_ERROR     OCS_SO_ERROR
 #define MSG_DONTWAIT OCS_MSG_DONTWAIT
+#define SHUT_WR      OCS_SHUT_WR
+#define SHUT_RD      OCS_SHUT_RD
+#define SHUT_RDWR    OCS_SHUT_RDWR
 
 #endif /* OVERRIDE_SYS_SOCKET_H */

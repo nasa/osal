@@ -87,6 +87,7 @@ typedef char os_err_name_t[OS_ERROR_NAME_LENGTH];
 #define OS_ERR_OPERATION_NOT_SUPPORTED (-38) /**< @brief Requested operation not support on supplied object(s) */
 #define OS_ERR_INVALID_SIZE            (-40) /**< @brief Invalid Size */
 #define OS_ERR_OUTPUT_TOO_LARGE        (-41) /**< @brief Size of output exceeds limit  */
+#define OS_ERR_INVALID_ARGUMENT        (-42) /**< @brief Invalid argument value (other than ID or size) */
 
 /*
 ** Defines for File System Calls

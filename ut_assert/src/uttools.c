@@ -190,19 +190,22 @@ void UtPrintx(const void *Memory, uint32 Length)
     uint32       i;
     uint32       j;
     const uint8 *Byte_ptr = Memory;
-    char         OutputLine[50];
+    char         OutputLine[80];
     char *       OutPtr;
 
     i = 0;
-    while (1)
+    while (i < Length)
     {
+        snprintf(OutputLine, sizeof(OutputLine), "%16lx: ", (unsigned long)&Byte_ptr[i]);
         OutPtr = OutputLine;
+        OutPtr += strlen(OutputLine);
         for (j = 0; j < 16 && i < Length; j++, i++)
         {
             sprintf(OutPtr, "%02X  ", Byte_ptr[i]);
             OutPtr += 3;
         }
-        UtPrintf("%s\n", OutputLine);
+
+        UT_BSP_DoText(UTASSERT_CASETYPE_INFO, OutputLine);
     }
 }
 

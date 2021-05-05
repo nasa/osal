@@ -345,6 +345,62 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeo
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_SocketShutdown
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketShutdown(osal_id_t sock_id, OS_SocketShutdownMode_t Mode)
+{
+    OS_stream_internal_record_t *stream;
+    OS_object_token_t            token;
+    int32                        return_code;
+
+    /* Confirm that "Mode" is one of the 3 acceptable values */
+    BUGCHECK(Mode == OS_SocketShutdownMode_SHUT_READ || Mode == OS_SocketShutdownMode_SHUT_WRITE ||
+                 Mode == OS_SocketShutdownMode_SHUT_READWRITE,
+             OS_ERR_INVALID_ARGUMENT);
+
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sock_id, &token);
+    if (return_code == OS_SUCCESS)
+    {
+        stream = OS_OBJECT_TABLE_GET(OS_stream_table, token);
+
+        if (stream->socket_domain == OS_SocketDomain_INVALID)
+        {
+            return_code = OS_ERR_INCORRECT_OBJ_TYPE;
+        }
+        else if (stream->socket_type == OS_SocketType_STREAM && (stream->stream_state & OS_STREAM_STATE_CONNECTED) == 0)
+        {
+            /* Stream socket must not be connected */
+            return_code = OS_ERR_INCORRECT_OBJ_STATE;
+        }
+        else
+        {
+            return_code = OS_SocketShutdown_Impl(&token, Mode);
+
+            if (return_code == OS_SUCCESS)
+            {
+                if (Mode & OS_SocketShutdownMode_SHUT_READ)
+                {
+                    stream->stream_state &= ~OS_STREAM_STATE_READABLE;
+                }
+                if (Mode & OS_SocketShutdownMode_SHUT_WRITE)
+                {
+                    stream->stream_state &= ~OS_STREAM_STATE_WRITABLE;
+                }
+            }
+        }
+
+        OS_ObjectIdRelease(&token);
+    }
+
+    return return_code;
+} /* end OS_SocketShutdown */
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_SocketRecvFrom
  *
  *  Purpose: Implemented per public OSAL API

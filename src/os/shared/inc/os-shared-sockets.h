@@ -85,6 +85,15 @@ int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_
 int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr, int32 timeout);
 
 /*----------------------------------------------------------------
+   Function: OS_SocketShutdown_Impl
+
+    Purpose: Graceful shutdown of a stream socket
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_SocketShutdown_Impl(const OS_object_token_t *token, OS_SocketShutdownMode_t Mode);
+
+/*----------------------------------------------------------------
    Function: OS_SocketRecvFrom_Impl
 
     Purpose: Receives a datagram from the specified socket (must be of the DATAGRAM type)

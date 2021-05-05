@@ -76,6 +76,16 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
  *
  * See prototype for argument/return detail
  *-----------------------------------------------------------------*/
+int32 OS_SocketShutdown_Impl(const OS_object_token_t *token, OS_SocketShutdownMode_t Mode)
+{
+    return OS_ERR_NOT_IMPLEMENTED;
+}
+
+/*----------------------------------------------------------------
+ * Implementation for no network configuration
+ *
+ * See prototype for argument/return detail
+ *-----------------------------------------------------------------*/
 int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_token_t *conn_token,
                            OS_SockAddr_t *Addr, int32 timeout)
 {
