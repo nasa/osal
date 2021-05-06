@@ -78,17 +78,22 @@ int32 OS_Rtems_QueueAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueCreate_Impl(uint32 queue_id, uint32 flags)
+int32 OS_QueueCreate_Impl(const OS_object_token_t *token, uint32 flags)
 {
-    rtems_status_code status;
-    rtems_name        r_name;
+    rtems_status_code                status;
+    rtems_name                       r_name;
+    OS_impl_queue_internal_record_t *impl;
+    OS_queue_internal_record_t *     queue;
+
+    impl  = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
+    queue = OS_OBJECT_TABLE_GET(OS_queue_table, *token);
 
     /*
     ** RTEMS task names are 4 byte integers.
     ** It is convenient to use the OSAL queue ID in here, as we know it is already unique
     ** and trying to use the real queue name would be less than useful (only 4 chars)
     */
-    r_name = OS_ObjectIdToInteger(OS_global_queue_table[queue_id].active_id);
+    r_name = OS_ObjectIdToInteger(OS_ObjectIdFromToken(token));
 
     /*
     ** Create the message queue.
@@ -96,12 +101,11 @@ int32 OS_QueueCreate_Impl(uint32 queue_id, uint32 flags)
     ** (RTEMS_FIFO or RTEMS_PRIORITY) is irrelevant since only one task waits
     ** on each queue.
     */
-    status = rtems_message_queue_create(
-        r_name,                             /* 32-bit RTEMS object name; not used */
-        OS_queue_table[queue_id].max_depth, /* maximum number of messages in queue (queue depth) */
-        OS_queue_table[queue_id].max_size,  /* maximum size in bytes of a message */
-        RTEMS_FIFO | RTEMS_LOCAL,           /* attributes (default) */
-        &(OS_impl_queue_table[queue_id].id) /* object ID returned for queue */
+    status = rtems_message_queue_create(r_name,           /* 32-bit RTEMS object name; not used */
+                                        queue->max_depth, /* maximum number of messages in queue (queue depth) */
+                                        queue->max_size,  /* maximum size in bytes of a message */
+                                        RTEMS_FIFO | RTEMS_LOCAL, /* attributes (default) */
+                                        &(impl->id)               /* object ID returned for queue */
     );
 
     /*
@@ -125,12 +129,15 @@ int32 OS_QueueCreate_Impl(uint32 queue_id, uint32 flags)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueDelete_Impl(uint32 queue_id)
+int32 OS_QueueDelete_Impl(const OS_object_token_t *token)
 {
-    rtems_status_code status;
+    rtems_status_code                status;
+    OS_impl_queue_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
 
     /* Try to delete the queue */
-    status = rtems_message_queue_delete(OS_impl_queue_table[queue_id].id);
+    status = rtems_message_queue_delete(impl->id);
     if (status != RTEMS_SUCCESSFUL)
     {
         OS_DEBUG("Unhandled queue_delete error: %s\n", rtems_status_text(status));
@@ -149,17 +156,20 @@ int32 OS_QueueDelete_Impl(uint32 queue_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGet_Impl(uint32 queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout)
+int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, size_t *size_copied, int32 timeout)
 {
-    int32             return_code;
-    rtems_status_code status;
-    rtems_interval    ticks;
-    int               tick_count;
-    rtems_option      option_set;
-    size_t            rtems_size;
-    rtems_id          rtems_queue_id;
+    int32                            return_code;
+    rtems_status_code                status;
+    rtems_interval                   ticks;
+    int                              tick_count;
+    rtems_option                     option_set;
+    size_t                           rtems_size;
+    rtems_id                         rtems_queue_id;
+    OS_impl_queue_internal_record_t *impl;
 
-    rtems_queue_id = OS_impl_queue_table[queue_id].id;
+    impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
+
+    rtems_queue_id = impl->id;
 
     /* Get Message From Message Queue */
     if (timeout == OS_PEND)
@@ -243,12 +253,15 @@ int32 OS_QueueGet_Impl(uint32 queue_id, void *data, uint32 size, uint32 *size_co
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueuePut_Impl(uint32 queue_id, const void *data, uint32 size, uint32 flags)
+int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, size_t size, uint32 flags)
 {
-    rtems_status_code status;
-    rtems_id          rtems_queue_id;
+    rtems_status_code                status;
+    rtems_id                         rtems_queue_id;
+    OS_impl_queue_internal_record_t *impl;
 
-    rtems_queue_id = OS_impl_queue_table[queue_id].id;
+    impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
+
+    rtems_queue_id = impl->id;
 
     /* Write the buffer pointer to the queue.  If an error occurred, report it
     ** with the corresponding SB status code.
@@ -287,7 +300,7 @@ int32 OS_QueuePut_Impl(uint32 queue_id, const void *data, uint32 size, uint32 fl
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueGetInfo_Impl(uint32 queue_id, OS_queue_prop_t *queue_prop)
+int32 OS_QueueGetInfo_Impl(const OS_object_token_t *token, OS_queue_prop_t *queue_prop)
 {
     /* No extra info for queues in the OS implementation */
     return OS_SUCCESS;

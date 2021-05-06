@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for signal.h */
-#ifndef _OSAL_OVERRIDE_SIGNAL_H_
-#define _OSAL_OVERRIDE_SIGNAL_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for signal.h
+ */
 
-#include <OCS_signal.h>
+#ifndef OVERRIDE_SIGNAL_H
+#define OVERRIDE_SIGNAL_H
+
+#include "OCS_signal.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in signal.h */
@@ -56,4 +62,4 @@
 #define sigsuspend  OCS_sigsuspend
 #define sigwait     OCS_sigwait
 
-#endif /* _OSAL_OVERRIDE_SIGNAL_H_ */
+#endif /* OVERRIDE_SIGNAL_H */

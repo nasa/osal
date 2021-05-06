@@ -27,7 +27,7 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-countsem.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /*
 **********************************************************************************
@@ -59,12 +59,10 @@ void Test_OS_CountSemCreate(void)
     int32     actual = OS_CountSemCreate(&objid, "UT", 0, 0);
 
     UtAssert_True(actual == expected, "OS_CountSemCreate() (%ld) == OS_SUCCESS", (long)actual);
-#ifdef jphfix
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
-#endif
 
     OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate(NULL, NULL, 0, 0), OS_INVALID_POINTER);
-    UT_SetForceFail(UT_KEY(OCS_strlen), 10 + OS_MAX_API_NAME);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate(&objid, "UT", 0, 0), OS_ERR_NAME_TOO_LONG);
 }
 
@@ -134,11 +132,11 @@ void Test_OS_CountSemGetIdByName(void)
     int32     actual   = ~OS_SUCCESS;
     osal_id_t objid;
 
-    UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_CountSemGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_CountSemGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
     actual   = OS_CountSemGetIdByName(&objid, "NF");
@@ -156,21 +154,13 @@ void Test_OS_CountSemGetInfo(void)
     int32               expected = OS_SUCCESS;
     int32               actual   = ~OS_SUCCESS;
     OS_count_sem_prop_t prop;
-    uint32              local_index = 1;
-    OS_common_record_t  utrec;
-    OS_common_record_t *rptr = &utrec;
 
-    memset(&utrec, 0, sizeof(utrec));
-    utrec.creator    = UT_OBJID_OTHER;
-    utrec.name_entry = "ABC";
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
+    OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_COUNTSEM, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
+
     actual = OS_CountSemGetInfo(UT_OBJID_1, &prop);
 
     UtAssert_True(actual == expected, "OS_CountSemGetInfo() (%ld) == OS_SUCCESS", (long)actual);
-#ifdef jphfix
-    UtAssert_True(prop.creator == 111, "prop.creator (%lu) == 111", (unsigned long)prop.creator);
-#endif
+    OSAPI_TEST_OBJID(prop.creator, ==, UT_OBJID_OTHER);
     UtAssert_True(strcmp(prop.name, "ABC") == 0, "prop.name (%s) == ABC", prop.name);
 
     OSAPI_TEST_FUNCTION_RC(OS_CountSemGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);

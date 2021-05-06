@@ -48,24 +48,42 @@ void TestSymbolApi(void)
     */
     UtPrintf("Dumping symbol table with a limit of 32768 bytes\n");
     status = OS_SymbolTableDump("/ram/SymbolTable32k.dat", 32768);
-    UtAssert_True(status == OS_SUCCESS || status == OS_ERR_NOT_IMPLEMENTED, "status after 32k OS_SymbolTableDump = %d",
-                  (int)status);
+    if (status == OS_ERR_NOT_IMPLEMENTED)
+    {
+        UtAssert_NA("Module API not implemented");
+    }
+    else
+    {
+        UtAssert_True(status == OS_SUCCESS, "status after 32k OS_SymbolTableDump = %d", (int)status);
+    }
 
     /*
     ** dump the symbol table with a 128k byte limit
     */
     UtPrintf("Dumping symbol table with a limit of 131072 bytes\n");
     status = OS_SymbolTableDump("/ram/SymbolTable128k.dat", 131072);
-    UtAssert_True(status == OS_SUCCESS || status == OS_ERR_NOT_IMPLEMENTED, "status after 128k OS_SymbolTableDump = %d",
-                  (int)status);
+    if (status == OS_ERR_NOT_IMPLEMENTED)
+    {
+        UtAssert_NA("Module API not implemented");
+    }
+    else
+    {
+        UtAssert_True(status == OS_SUCCESS, "status after 128k OS_SymbolTableDump = %d", (int)status);
+    }
 
     /*
     ** dump the symbol table with a 512k byte limit
     */
     UtPrintf("Dumping symbol table with a limit of 524288 bytes\n");
     status = OS_SymbolTableDump("/ram/SymbolTable512k.dat", 524288);
-    UtAssert_True(status == OS_SUCCESS || status == OS_ERR_NOT_IMPLEMENTED, "status after 512k OS_SymbolTableDump = %d",
-                  (int)status);
+    if (status == OS_ERR_NOT_IMPLEMENTED)
+    {
+        UtAssert_NA("Module API not implemented");
+    }
+    else
+    {
+        UtAssert_True(status == OS_SUCCESS, "status after 512k OS_SymbolTableDump = %d", (int)status);
+    }
 
     /*
     ** Test the symbol lookup
@@ -93,6 +111,9 @@ void UtTest_Setup(void)
     {
         UtAssert_Abort("OS_API_Init() failed");
     }
+
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     /*
      * Register the test setup and check routines in UT assert

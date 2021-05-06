@@ -19,22 +19,22 @@
  */
 
 /**
- * \file     os-impl-symtab.h
+ * \file
+ *
  * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_SYMTAB_H_
-#define INCLUDE_OS_IMPL_SYMTAB_H_
+#ifndef OS_IMPL_SYMTAB_H
+#define OS_IMPL_SYMTAB_H
 
-#include <osconfig.h>
+#include "osconfig.h"
 #include <symLib.h>
 
 typedef struct
 {
-    uint32 Sizelimit;
-    uint32 CurrSize;
+    size_t Sizelimit;
+    size_t CurrSize;
     int32  StatusCode;
     int    fd;
 } SymbolDumpState_t;
@@ -44,4 +44,4 @@ extern SymbolDumpState_t OS_VxWorks_SymbolDumpState;
 
 BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_arg_t arg, SYM_GROUP group);
 
-#endif /* INCLUDE_OS_IMPL_SYMTAB_H_ */
+#endif /* OS_IMPL_SYMTAB_H */

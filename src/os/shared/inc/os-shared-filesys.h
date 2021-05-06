@@ -19,16 +19,17 @@
  */
 
 /**
- * \file     os-shared-filesys.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_FILESYS_H_
-#define INCLUDE_OS_SHARED_FILESYS_H_
+#ifndef OS_SHARED_FILESYS_H
+#define OS_SHARED_FILESYS_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-filesys.h"
+#include "os-shared-globaldefs.h"
 
 /**
  * This flag will be set on the internal record to indicate
@@ -83,22 +84,6 @@ enum
     OS_FILESYS_TYPE_MAX
 };
 
-/*
- * The data type filled in by the "statvfs" call.
- *
- * This is defined here since there is no public API to get this info,
- * only the total bytes free is accessible via the current OSAL API.
- *
- * However, returning the detailed info at this level means that the
- * more detailed information could be made available with a new API call.
- */
-typedef struct
-{
-    uint32 block_size;
-    uint64 total_blocks;
-    uint64 blocks_free;
-} OS_statvfs_t;
-
 typedef struct
 {
     char device_name[OS_FS_DEV_NAME_LEN]; /**< The name of the underlying block device, if applicable */
@@ -107,11 +92,11 @@ typedef struct
                                                    operating system */
     char virtual_mountpt[OS_MAX_PATH_LEN]; /**< The name/prefix in the OSAL Virtual File system exposed to applications
                                             */
-    char * address;
-    uint32 blocksize;
-    uint32 numblocks;
-    uint8  flags;
-    uint8  fstype;
+    char *            address;
+    size_t            blocksize;
+    osal_blockcount_t numblocks;
+    uint8             flags;
+    uint8             fstype;
 } OS_filesys_internal_record_t;
 
 /*
@@ -140,7 +125,7 @@ int32 OS_FileSysAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStartVolume_Impl(uint32 filesys_id);
+int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysStopVolume_Impl
@@ -149,7 +134,7 @@ int32 OS_FileSysStartVolume_Impl(uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStopVolume_Impl(uint32 filesys_id);
+int32 OS_FileSysStopVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysFormatVolume_Impl
@@ -158,7 +143,7 @@ int32 OS_FileSysStopVolume_Impl(uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id);
+int32 OS_FileSysFormatVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysCheckVolume_Impl
@@ -167,7 +152,7 @@ int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysCheckVolume_Impl(uint32 filesys_id, bool repair);
+int32 OS_FileSysCheckVolume_Impl(const OS_object_token_t *token, bool repair);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysStatVolume_Impl
@@ -176,7 +161,7 @@ int32 OS_FileSysCheckVolume_Impl(uint32 filesys_id, bool repair);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result);
+int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *result);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysMountVolume_Impl
@@ -185,7 +170,7 @@ int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysMountVolume_Impl(uint32 filesys_id);
+int32 OS_FileSysMountVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_FileSysUnmountVolume_Impl
@@ -194,7 +179,7 @@ int32 OS_FileSysMountVolume_Impl(uint32 filesys_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id);
+int32 OS_FileSysUnmountVolume_Impl(const OS_object_token_t *token);
 
 /*
  * Internal helper functions
@@ -202,8 +187,9 @@ int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id);
  * Not normally invoked outside this unit, except for unit testing
  */
 
-bool  OS_FileSys_FindVirtMountPoint(void *ref, uint32 local_id, const OS_common_record_t *obj);
-int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, uint32 blocksize,
-                            uint32 numblocks, bool should_format);
+bool  OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
+int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, size_t blocksize,
+                            osal_blockcount_t numblocks, bool should_format);
+bool  OS_FileSysFilterFree(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 
-#endif /* INCLUDE_OS_SHARED_FILESYS_H_ */
+#endif /* OS_SHARED_FILESYS_H */

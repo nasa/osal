@@ -32,6 +32,7 @@
  ***************************************************************************************/
 
 #include "os-posix.h"
+#include "os-shared-idmap.h"
 #include "os-shared-binsem.h"
 #include "os-impl-binsem.h"
 
@@ -118,7 +119,7 @@ int32 OS_Posix_BinSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 initial_value, uint32 options)
+int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 initial_value, uint32 options)
 {
     int                               ret;
     int                               attr_created;
@@ -141,7 +142,7 @@ int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 initial_value, uint32 options)
     attr_created  = 0;
     mutex_created = 0;
     cond_created  = 0;
-    sem           = &OS_impl_bin_sem_table[sem_id];
+    sem           = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
     memset(sem, 0, sizeof(*sem));
 
     do
@@ -198,6 +199,17 @@ int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 initial_value, uint32 options)
         cond_created = 1;
 
         /*
+         * Check sem call, avoids unreachable destroy logic
+         */
+        ret = pthread_cond_signal(&(sem->cv));
+        if (ret != 0)
+        {
+            OS_DEBUG("Error: initial pthread_cond_signal failed: %s\n", strerror(ret));
+            return_code = OS_SEM_FAILURE;
+            break;
+        }
+
+        /*
          ** fill out the proper OSAL table fields
          */
 
@@ -240,12 +252,12 @@ int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 initial_value, uint32 options)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemDelete_Impl(uint32 sem_id)
+int32 OS_BinSemDelete_Impl(const OS_object_token_t *token)
 {
     OS_impl_binsem_internal_record_t *sem;
     int32                             return_code;
 
-    sem = &OS_impl_bin_sem_table[sem_id];
+    sem = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
 
     if (pthread_cond_destroy(&(sem->cv)) != 0)
     {
@@ -279,11 +291,11 @@ int32 OS_BinSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGive_Impl(uint32 sem_id)
+int32 OS_BinSemGive_Impl(const OS_object_token_t *token)
 {
     OS_impl_binsem_internal_record_t *sem;
 
-    sem = &OS_impl_bin_sem_table[sem_id];
+    sem = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
 
     /*
      * Note there is a possibility that another thread is concurrently taking this sem,
@@ -324,11 +336,11 @@ int32 OS_BinSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemFlush_Impl(uint32 sem_id)
+int32 OS_BinSemFlush_Impl(const OS_object_token_t *token)
 {
     OS_impl_binsem_internal_record_t *sem;
 
-    sem = &OS_impl_bin_sem_table[sem_id];
+    sem = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
 
     /* Lock the mutex ( not the table! ) */
     if (OS_Posix_BinSemAcquireMutex(&sem->id) != OS_SUCCESS)
@@ -358,10 +370,13 @@ int32 OS_BinSemFlush_Impl(uint32 sem_id)
             becomes nonzero (via SemGive) or the semaphore gets flushed.
 
 ---------------------------------------------------------------------------------------*/
-static int32 OS_GenericBinSemTake_Impl(OS_impl_binsem_internal_record_t *sem, const struct timespec *timeout)
+static int32 OS_GenericBinSemTake_Impl(const OS_object_token_t *token, const struct timespec *timeout)
 {
-    sig_atomic_t flush_count;
-    int32        return_code;
+    sig_atomic_t                      flush_count;
+    int32                             return_code;
+    OS_impl_binsem_internal_record_t *sem;
+
+    sem = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
 
     /*
      * Note - this lock should be quickly available - should not delay here.
@@ -441,9 +456,9 @@ static int32 OS_GenericBinSemTake_Impl(OS_impl_binsem_internal_record_t *sem, co
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTake_Impl(uint32 sem_id)
+int32 OS_BinSemTake_Impl(const OS_object_token_t *token)
 {
-    return (OS_GenericBinSemTake_Impl(&OS_impl_bin_sem_table[sem_id], NULL));
+    return (OS_GenericBinSemTake_Impl(token, NULL));
 } /* end OS_BinSemTake_Impl */
 
 /*----------------------------------------------------------------
@@ -454,7 +469,7 @@ int32 OS_BinSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
+int32 OS_BinSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
 {
     struct timespec ts;
 
@@ -463,7 +478,7 @@ int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
      */
     OS_Posix_CompAbsDelayTime(msecs, &ts);
 
-    return (OS_GenericBinSemTake_Impl(&OS_impl_bin_sem_table[sem_id], &ts));
+    return (OS_GenericBinSemTake_Impl(token, &ts));
 } /* end OS_BinSemTimedWait_Impl */
 
 /*----------------------------------------------------------------
@@ -474,9 +489,13 @@ int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_BinSemGetInfo_Impl(uint32 sem_id, OS_bin_sem_prop_t *sem_prop)
+int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *sem_prop)
 {
+    OS_impl_binsem_internal_record_t *sem;
+
+    sem = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
+
     /* put the info into the stucture */
-    sem_prop->value = OS_impl_bin_sem_table[sem_id].current_value;
+    sem_prop->value = sem->current_value;
     return OS_SUCCESS;
 } /* end OS_BinSemGetInfo_Impl */

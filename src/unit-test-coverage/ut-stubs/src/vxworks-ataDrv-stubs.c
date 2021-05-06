@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_drv_hdisk_ataDrv.h>
+#include "OCS_drv_hdisk_ataDrv.h"
 
 static OCS_BLK_DEV LOCAL_ATADEV = {0};
 

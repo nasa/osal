@@ -130,7 +130,7 @@ void TestTimerAddApi(void)
 
     OS_GetLocalTime(&EndTime);
 
-    for (i = 0; i < NUMBER_OF_TIMERS; i++)
+    for (i = NUMBER_OF_TIMERS - 1; i >= 0; --i)
     {
         TimerStatus[i] = OS_TimerDelete(TimerID[i]);
     }
@@ -144,15 +144,7 @@ void TestTimerAddApi(void)
     /*
      * Time limited test
      */
-    microsecs = 1000000 * (EndTime.seconds - StartTime.seconds);
-    if (EndTime.microsecs < StartTime.microsecs)
-    {
-        microsecs -= StartTime.microsecs - EndTime.microsecs;
-    }
-    else
-    {
-        microsecs += EndTime.microsecs - StartTime.microsecs;
-    }
+    microsecs = OS_TimeGetTotalMicroseconds(OS_TimeSubtract(EndTime, StartTime));
 
     /* Make sure the ratio of the timers are OK */
     for (i = 0; i < NUMBER_OF_TIMERS; i++)
@@ -186,9 +178,9 @@ void TestTimerAddApi(void)
     actual   = OS_TimerAdd(&timer_id, "Timer", OS_OBJECT_ID_UNDEFINED, null_func, NULL);
     UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
-    expected = OS_TIMER_ERR_INVALID_ARGS;
+    expected = OS_INVALID_POINTER;
     actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, NULL, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
+    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     expected = OS_ERR_NAME_TAKEN;
     actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL);
@@ -206,6 +198,9 @@ void UtTest_Setup(void)
     {
         UtAssert_Abort("OS_API_Init() failed");
     }
+
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     /*
      * Register the test setup and check routines in UT assert

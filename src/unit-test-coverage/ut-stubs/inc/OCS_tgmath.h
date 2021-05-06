@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for tgmath.h */
-#ifndef _OSAL_STUB_TGMATH_H_
-#define _OSAL_STUB_TGMATH_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for tgmath.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_TGMATH_H
+#define OCS_TGMATH_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in tgmath.h */
@@ -36,4 +42,4 @@
 /* prototypes normally declared in tgmath.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_TGMATH_H_ */
+#endif /* OCS_TGMATH_H */

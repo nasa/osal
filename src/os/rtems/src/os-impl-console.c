@@ -38,6 +38,7 @@
 #include "os-rtems.h"
 #include "os-shared-printf.h"
 #include "os-shared-idmap.h"
+#include "os-shared-common.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -66,7 +67,6 @@
 /* Console device */
 typedef struct
 {
-    bool     is_async;
     rtems_id data_sem;
     int      out_fd;
 } OS_impl_console_internal_record_t;
@@ -86,20 +86,15 @@ OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_ConsoleWakeup_Impl(uint32 local_id)
+void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
 {
-    OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
+    OS_impl_console_internal_record_t *local;
 
-    if (local->is_async)
-    {
-        /* post the sem for the utility task to run */
-        rtems_semaphore_release(local->data_sem);
-    }
-    else
-    {
-        /* output directly */
-        OS_ConsoleOutput_Impl(local_id);
-    }
+    local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
+
+    /* post the sem for the utility task to run */
+    rtems_semaphore_release(local->data_sem);
+
 } /* end OS_ConsoleWakeup_Impl */
 
 /*----------------------------------------------------------------
@@ -111,14 +106,21 @@ void OS_ConsoleWakeup_Impl(uint32 local_id)
  *-----------------------------------------------------------------*/
 static void OS_ConsoleTask_Entry(rtems_task_argument arg)
 {
-    uint32                             local_id = arg;
+    OS_object_token_t                  token;
     OS_impl_console_internal_record_t *local;
 
-    local = &OS_impl_console_table[local_id];
-    while (true)
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_CONSOLE, OS_ObjectIdFromInteger(arg), &token) ==
+        OS_SUCCESS)
     {
-        OS_ConsoleOutput_Impl(local_id);
-        rtems_semaphore_obtain(local->data_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+        local = OS_OBJECT_TABLE_GET(OS_impl_console_table, token);
+
+        /* Loop forever (unless shutdown is set) */
+        while (OS_SharedGlobalVars.GlobalState != OS_SHUTDOWN_MAGIC_NUMBER)
+        {
+            OS_ConsoleOutput_Impl(&token);
+            rtems_semaphore_obtain(local->data_sem, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+        }
+        OS_ObjectIdRelease(&token);
     }
 } /* end OS_ConsoleTask_Entry */
 
@@ -130,21 +132,24 @@ static void OS_ConsoleTask_Entry(rtems_task_argument arg)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ConsoleCreate_Impl(uint32 local_id)
+int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 {
-    OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
+    OS_impl_console_internal_record_t *local;
+    OS_console_internal_record_t *     console;
     int32                              return_code;
     rtems_name                         r_name;
     rtems_id                           r_task_id;
     rtems_status_code                  status;
 
-    if (local_id == 0)
-    {
-        return_code     = OS_SUCCESS;
-        local->is_async = OS_CONSOLE_ASYNC;
-        local->out_fd   = OSAL_CONSOLE_FILENO;
+    local   = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
+    console = OS_OBJECT_TABLE_GET(OS_console_table, *token);
 
-        if (local->is_async)
+    if (OS_ObjectIndexFromToken(token) == 0)
+    {
+        return_code   = OS_SUCCESS;
+        local->out_fd = OSAL_CONSOLE_FILENO;
+
+        if (console->IsAsync)
         {
             OS_DEBUG("%s(): Starting Async Console Handler\n", __func__);
             /*
@@ -152,7 +157,7 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id)
             ** It is convenient to use the OSAL ID in here, as we know it is already unique
             ** and trying to use the real name would be less than useful (only 4 chars)
             */
-            r_name = OS_ObjectIdToInteger(OS_global_console_table[local_id].active_id);
+            r_name = OS_ObjectIdToInteger(OS_ObjectIdFromToken(token));
             status = rtems_semaphore_create(r_name, 0, RTEMS_PRIORITY, 0, &local->data_sem);
             if (status != RTEMS_SUCCESSFUL)
             {
@@ -175,9 +180,9 @@ int32 OS_ConsoleCreate_Impl(uint32 local_id)
                 else
                 {
                     /* will place the task in 'ready for scheduling' state */
-                    status = rtems_task_start(r_task_id,                      /*rtems task id*/
-                                              OS_ConsoleTask_Entry,           /* task entry point */
-                                              (rtems_task_argument)local_id); /* passed argument  */
+                    status = rtems_task_start(r_task_id,                    /*rtems task id*/
+                                              OS_ConsoleTask_Entry,         /* task entry point */
+                                              (rtems_task_argument)r_name); /* passed argument  */
 
                     if (status != RTEMS_SUCCESSFUL)
                     {

@@ -19,19 +19,19 @@
  */
 
 /**
- * \file     os-shared-coveragetest.h
- * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup shared
  *
+ * Declarations and prototypes for os-shared-coveragetest
  */
 
-#ifndef INCLUDE_OS_SHARED_COVERAGETEST_H_
-#define INCLUDE_OS_SHARED_COVERAGETEST_H_
+#ifndef OS_SHARED_COVERAGETEST_H
+#define OS_SHARED_COVERAGETEST_H
 
-#include <utassert.h>
-#include <uttest.h>
-#include <utstubs.h>
-#include <osapi.h>
+#include "utassert.h"
+#include "uttest.h"
+#include "utstubs.h"
+#include "osapi.h"
 
 #include "os-shared-idmap.h"
 
@@ -74,6 +74,35 @@ typedef union
 #define UT_OBJID_OTHER ((osal_id_t) {0x12345})
 #define UT_OBJID_MAX   ((osal_id_t) {0xFFFFFFFF})
 
+#define UT_INDEX_0 OSAL_INDEX_C(0)
+#define UT_INDEX_1 OSAL_INDEX_C(1)
+#define UT_INDEX_2 OSAL_INDEX_C(2)
+
+/*
+ * Set up an coverage test iterator of the given type.
+ *
+ * The OS_ObjectIdIteratorGetNext() stub routine will be configured
+ * to return the given range of IDs.
+ */
+void OS_UT_SetupIterator(osal_objtype_t obj_type, osal_index_t first_idx, osal_index_t num_entries);
+
+/*
+ * Set up the UT stubs for the target entry of the next test case.
+ *
+ * This configures the OS_ObjectIdGetById() stub to return a token
+ * that refers to the given entry index.
+ */
+void OS_UT_SetupTestTargetIndex(osal_objtype_t obj_type, osal_index_t test_idx);
+
+/*
+ * Set up the UT stubs for a "get info" test.
+ *
+ * This sets up a single entry in the global table with the given name and
+ * ID value.  It also configures the OS_ObjectIdGetById() stub to return a
+ * token that refers to the same table entry.
+ */
+void OS_UT_SetupBasicInfoTest(osal_objtype_t obj_type, osal_index_t test_idx, const char *name, osal_id_t creator);
+
 /*
  * Setup function prior to every test
  */
@@ -84,4 +113,4 @@ void Osapi_Test_Setup(void);
  */
 void Osapi_Test_Teardown(void);
 
-#endif /* INCLUDE_OS_SHARED_COVERAGETEST_H_ */
+#endif /* OS_SHARED_COVERAGETEST_H */

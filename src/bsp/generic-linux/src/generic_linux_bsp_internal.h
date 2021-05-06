@@ -18,17 +18,19 @@
  *  limitations under the License.
  */
 
-/*
- * File:  generic_linux_bsp_internal.h
+/**
+ * \file
  *
  * Purpose:
  *   Header file for internal data to the LINUX BSP
  */
 
-#ifndef GENERIC_LINUX_BSP_INTERNAL_H_
-#define GENERIC_LINUX_BSP_INTERNAL_H_
+#ifndef GENERIC_LINUX_BSP_INTERNAL_H
+#define GENERIC_LINUX_BSP_INTERNAL_H
 
-#include "osapi.h"
+#include "osapi-common.h"
+#include "osapi-bsp.h"
+#include "osapi-error.h"
 #include "bsp-impl.h"
 
 /*
@@ -44,4 +46,4 @@ typedef struct
  */
 extern OS_BSP_GenericLinuxGlobalData_t OS_BSP_GenericLinuxGlobal;
 
-#endif /* GENERIC_LINUX_BSP_INTERNAL_H_ */
+#endif /* GENERIC_LINUX_BSP_INTERNAL_H */

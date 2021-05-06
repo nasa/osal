@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_mqueue.h>
+#include "OCS_mqueue.h"
 
 int OCS_mq_close(OCS_mqd_t mqdes)
 {

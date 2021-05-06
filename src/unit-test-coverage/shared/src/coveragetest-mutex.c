@@ -27,7 +27,7 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-mutex.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /*
 **********************************************************************************
@@ -61,7 +61,7 @@ void Test_OS_MutSemCreate(void)
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
     OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate(NULL, NULL, 0), OS_INVALID_POINTER);
-    UT_SetForceFail(UT_KEY(OCS_strlen), 10 + OS_MAX_API_NAME);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate(&objid, "UT", 0), OS_ERR_NAME_TOO_LONG);
 }
 
@@ -85,12 +85,26 @@ void Test_OS_MutSemGive(void)
      * Test Case For:
      * int32 OS_MutSemGive ( uint32 sem_id )
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OS_mutex_internal_record_t *mutex;
+    int32                       expected;
+    int32                       actual;
 
-    actual = OS_MutSemGive(UT_OBJID_1);
+    expected = OS_SUCCESS;
+
+    /* Set up for "last owner" matching the calling task (nominal) */
+    mutex             = &OS_mutex_table[1];
+    mutex->last_owner = OS_TaskGetId();
+    actual            = OS_MutSemGive(UT_OBJID_1);
 
     UtAssert_True(actual == expected, "OS_MutSemGive() (%ld) == OS_SUCCESS", (long)actual);
+
+    /* owner should be unset */
+    UtAssert_True(!OS_ObjectIdDefined(mutex->last_owner), "Mutex owner unset");
+
+    /* Call again when not "owned".  This still works (or at least it calls the OS impl)
+     * but should generate a debug message */
+    actual = OS_MutSemGive(UT_OBJID_1);
+    UtAssert_True(actual == expected, "OS_MutSemGive(), not owned (%ld) == OS_SUCCESS", (long)actual);
 }
 
 void Test_OS_MutSemTake(void)
@@ -99,11 +113,24 @@ void Test_OS_MutSemTake(void)
      * Test Case For:
      * int32 OS_MutSemTake ( uint32 sem_id )
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OS_mutex_internal_record_t *mutex;
+    int32                       expected;
+    int32                       actual;
 
+    expected = OS_SUCCESS;
+
+    /* Set up for "last owner" being undefined (nominal) */
+    mutex             = &OS_mutex_table[1];
+    mutex->last_owner = OS_OBJECT_ID_UNDEFINED;
+    actual            = OS_MutSemTake(UT_OBJID_1);
+    UtAssert_True(actual == expected, "OS_MutSemTake() (%ld) == OS_SUCCESS", (long)actual);
+
+    /* owner should be set */
+    UtAssert_True(OS_ObjectIdDefined(mutex->last_owner), "Mutex owner set");
+
+    /* Call again when not already "owned".  This still works (or at least it calls the OS impl)
+     * but should generate a debug message */
     actual = OS_MutSemTake(UT_OBJID_1);
-
     UtAssert_True(actual == expected, "OS_MutSemTake() (%ld) == OS_SUCCESS", (long)actual);
 }
 
@@ -117,11 +144,11 @@ void Test_OS_MutSemGetIdByName(void)
     int32     actual   = ~OS_SUCCESS;
     osal_id_t objid;
 
-    UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_MutSemGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_MutSemGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
     actual   = OS_MutSemGetIdByName(&objid, "NF");
@@ -136,18 +163,12 @@ void Test_OS_MutSemGetInfo(void)
      * Test Case For:
      * int32 OS_MutSemGetInfo (uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
      */
-    int32               expected = OS_SUCCESS;
-    int32               actual   = ~OS_SUCCESS;
-    OS_mut_sem_prop_t   prop;
-    uint32              local_index = 1;
-    OS_common_record_t  utrec;
-    OS_common_record_t *rptr = &utrec;
+    int32             expected = OS_SUCCESS;
+    int32             actual   = ~OS_SUCCESS;
+    OS_mut_sem_prop_t prop;
 
-    memset(&utrec, 0, sizeof(utrec));
-    utrec.creator    = UT_OBJID_OTHER;
-    utrec.name_entry = "ABC";
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
+    OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_MUTEX, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
+
     actual = OS_MutSemGetInfo(UT_OBJID_1, &prop);
 
     UtAssert_True(actual == expected, "OS_MutSemGetInfo() (%ld) == OS_SUCCESS", (long)actual);

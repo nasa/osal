@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for ramDrv.h */
-#ifndef _OSAL_OVERRIDE_RAMDRV_H_
-#define _OSAL_OVERRIDE_RAMDRV_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for ramDrv.h
+ */
 
-#include <OCS_ramDrv.h>
+#ifndef OVERRIDE_RAMDRV_H
+#define OVERRIDE_RAMDRV_H
+
+#include "OCS_ramDrv.h"
 #include <vxWorks.h>
 #include <blkIo.h>
 
@@ -32,4 +38,4 @@
 
 #define ramDevCreate OCS_ramDevCreate
 
-#endif /* _OSAL_OVERRIDE_RAMDRV_H_ */
+#endif /* OVERRIDE_RAMDRV_H */

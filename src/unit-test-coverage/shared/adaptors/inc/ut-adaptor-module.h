@@ -19,17 +19,17 @@
  */
 
 /**
- * \file     ut-adaptor-module.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-module
  */
 
-#ifndef INCLUDE_UT_ADAPTOR_MODULE_H_
-#define INCLUDE_UT_ADAPTOR_MODULE_H_
+#ifndef UT_ADAPTOR_MODULE_H
+#define UT_ADAPTOR_MODULE_H
 
-#include <common_types.h>
-#include <osapi-os-loader.h>
+#include "common_types.h"
+#include "osapi-module.h"
 
 /*****************************************************
  *
@@ -49,7 +49,7 @@ void Osapi_Internal_ResetState(void);
 /* A dummy function for the static symbol lookup test.  Not called */
 void Test_DummyFunc(void);
 
-int32 Osapi_Call_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName);
+int32 Osapi_Call_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName, const char *ModuleName);
 int32 Osapi_Call_ModuleLoad_Static(const char *ModuleName);
 
-#endif /* INCLUDE_UT_ADAPTOR_MODULE_H_ */
+#endif /* UT_ADAPTOR_MODULE_H */

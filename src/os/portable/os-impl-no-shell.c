@@ -34,7 +34,7 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char *Cmd)
+int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 }

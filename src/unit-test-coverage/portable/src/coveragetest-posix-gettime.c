@@ -27,7 +27,7 @@
 #include "os-portable-coveragetest.h"
 #include "os-shared-clock.h"
 
-#include <OCS_time.h>
+#include "OCS_time.h"
 
 void Test_OS_GetLocalTime_Impl(void)
 {
@@ -35,12 +35,11 @@ void Test_OS_GetLocalTime_Impl(void)
      * Test Case For:
      * int32 OS_GetLocalTime_Impl(OS_time_t *time_struct)
      */
-    OS_time_t timeval;
-    timeval.seconds   = 1;
-    timeval.microsecs = 1;
+    OS_time_t timeval = {0};
+
     OSAPI_TEST_FUNCTION_RC(OS_GetLocalTime_Impl, (&timeval), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_clock_gettime), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_clock_gettime), -1);
     OSAPI_TEST_FUNCTION_RC(OS_GetLocalTime_Impl, (&timeval), OS_ERROR);
 }
 
@@ -50,12 +49,11 @@ void Test_OS_SetLocalTime_Impl(void)
      * Test Case For:
      * int32 OS_SetLocalTime_Impl(const OS_time_t *time_struct)
      */
-    OS_time_t timeval;
-    timeval.seconds   = 1;
-    timeval.microsecs = 1;
+    OS_time_t timeval = {0};
+
     OSAPI_TEST_FUNCTION_RC(OS_SetLocalTime_Impl, (&timeval), OS_SUCCESS);
 
-    UT_SetForceFail(UT_KEY(OCS_clock_settime), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_clock_settime), -1);
     OSAPI_TEST_FUNCTION_RC(OS_SetLocalTime_Impl, (&timeval), OS_ERROR);
 }
 

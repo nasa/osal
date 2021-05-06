@@ -18,15 +18,21 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for timers.h */
-#ifndef _OSAL_OVERRIDE_TIMERS_H_
-#define _OSAL_OVERRIDE_TIMERS_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for timers.h
+ */
 
-#include <OCS_timers.h>
+#ifndef OVERRIDE_TIMERS_H
+#define OVERRIDE_TIMERS_H
+
+#include "OCS_timers.h"
 #include <time.h>
 
 /*
  * Note: this is just an alias for time.h
  */
 
-#endif /* _OSAL_OVERRIDE_TIMERS_H_ */
+#endif /* OVERRIDE_TIMERS_H */

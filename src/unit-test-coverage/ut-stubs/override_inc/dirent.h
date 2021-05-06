@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for dirent.h */
-#ifndef _OSAL_OVERRIDE_DIRENT_H_
-#define _OSAL_OVERRIDE_DIRENT_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for dirent.h
+ */
 
-#include <OCS_dirent.h>
+#ifndef OVERRIDE_DIRENT_H
+#define OVERRIDE_DIRENT_H
+
+#include "OCS_dirent.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in dirent.h */
@@ -35,4 +41,4 @@
 #define readdir   OCS_readdir
 #define rewinddir OCS_rewinddir
 
-#endif /* _OSAL_OVERRIDE_DIRENT_H_ */
+#endif /* OVERRIDE_DIRENT_H */

@@ -125,7 +125,7 @@ void UT_os_count_sem_create_test()
      * The OSAL should define this for itself, but it currently does not.
      *  (This macro is not currently defined in RTEMS)
      */
-#ifdef SEM_VALUE_MAX
+#if defined SEM_VALUE_MAX && SEM_VALUE_MAX < UINT32_MAX
     res = OS_CountSemCreate(&count_sem_ids[0], "CountSem1", ((uint32)SEM_VALUE_MAX) + 1, 0);
     if (res == OS_INVALID_SEM_VALUE)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);

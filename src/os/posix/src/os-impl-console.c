@@ -31,8 +31,11 @@
 
 #include "os-posix.h"
 #include "os-impl-console.h"
+#include "os-impl-tasks.h"
 
+#include "os-shared-idmap.h"
 #include "os-shared-printf.h"
+#include "os-shared-common.h"
 
 /*
  * By default the console output is always asynchronous
@@ -59,20 +62,15 @@ OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_ConsoleWakeup_Impl(uint32 local_id)
+void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
 {
-    OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
+    OS_impl_console_internal_record_t *local;
 
-    if (local->is_async)
-    {
-        /* post the sem for the utility task to run */
-        sem_post(&local->data_sem);
-    }
-    else
-    {
-        /* output directly */
-        OS_ConsoleOutput_Impl(local_id);
-    }
+    local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
+
+    /* post the sem for the utility task to run */
+    sem_post(&local->data_sem);
+
 } /* end OS_ConsoleWakeup_Impl */
 
 /*----------------------------------------------------------------
@@ -85,15 +83,22 @@ void OS_ConsoleWakeup_Impl(uint32 local_id)
  *-----------------------------------------------------------------*/
 static void *OS_ConsoleTask_Entry(void *arg)
 {
-    OS_U32ValueWrapper_t               local_arg;
+    OS_VoidPtrValueWrapper_t           local_arg;
     OS_impl_console_internal_record_t *local;
+    OS_object_token_t                  token;
 
     local_arg.opaque_arg = arg;
-    local                = &OS_impl_console_table[local_arg.value];
-    while (true)
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_CONSOLE, local_arg.id, &token) == OS_SUCCESS)
     {
-        OS_ConsoleOutput_Impl(local_arg.value);
-        sem_wait(&local->data_sem);
+        local = OS_OBJECT_TABLE_GET(OS_impl_console_table, token);
+
+        /* Loop forever (unless shutdown is set) */
+        while (OS_SharedGlobalVars.GlobalState != OS_SHUTDOWN_MAGIC_NUMBER)
+        {
+            OS_ConsoleOutput_Impl(&token);
+            sem_wait(&local->data_sem);
+        }
+        OS_ObjectIdRelease(&token);
     }
     return NULL;
 } /* end OS_ConsoleTask_Entry */
@@ -106,33 +111,36 @@ static void *OS_ConsoleTask_Entry(void *arg)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ConsoleCreate_Impl(uint32 local_id)
+int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 {
-    OS_impl_console_internal_record_t *local = &OS_impl_console_table[local_id];
+    OS_impl_console_internal_record_t *local;
+    OS_console_internal_record_t *     console;
     pthread_t                          consoletask;
     int32                              return_code;
-    OS_U32ValueWrapper_t               local_arg = {0};
+    OS_VoidPtrValueWrapper_t           local_arg = {0};
 
-    if (local_id == 0)
+    console = OS_OBJECT_TABLE_GET(OS_console_table, *token);
+    local   = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
+
+    if (token->obj_idx == 0)
     {
-        return_code     = OS_SUCCESS;
-        local->is_async = OS_CONSOLE_ASYNC;
+        return_code = OS_SUCCESS;
 
-        if (local->is_async)
+        if (console->IsAsync)
         {
-            if (sem_init(&OS_impl_console_table[local_id].data_sem, 0, 0) < 0)
+            if (sem_init(&local->data_sem, 0, 0) < 0)
             {
                 return_code = OS_SEM_FAILURE;
             }
             else
             {
-                local_arg.value = local_id;
-                return_code     = OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
+                local_arg.id = OS_ObjectIdFromToken(token);
+                return_code  = OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
                                                                OS_ConsoleTask_Entry, local_arg.opaque_arg);
 
                 if (return_code != OS_SUCCESS)
                 {
-                    sem_destroy(&OS_impl_console_table[local_id].data_sem);
+                    sem_destroy(&local->data_sem);
                 }
             }
         }

@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include "utstubs.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 void *OCS_memset(void *s, int c, size_t n)
 {
@@ -36,6 +36,24 @@ void *OCS_memset(void *s, int c, size_t n)
     if (Status == 0)
     {
         Result = memset(s, c, n);
+    }
+    else
+    {
+        Result = NULL;
+    }
+
+    return Result;
+}
+
+void *OCS_memchr(const void *s, int c, size_t n)
+{
+    int32 Status;
+    void *Result;
+
+    Status = UT_DEFAULT_IMPL(OCS_memchr);
+    if (Status == 0)
+    {
+        Result = memchr(s, c, n);
     }
     else
     {

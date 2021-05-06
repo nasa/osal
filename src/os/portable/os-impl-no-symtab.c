@@ -27,33 +27,35 @@
  * for all calls.
  */
 
-#include <osapi.h>
+#include "osapi-module.h"
 #include "os-shared-module.h"
 
 /*----------------------------------------------------------------
+ * Implementation for no dynamic loader configuration
  *
- * Function: OS_SymbolLookup_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
+ * See prototype for argument/return detail
  *-----------------------------------------------------------------*/
-int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 {
     return OS_ERR_NOT_IMPLEMENTED;
-
-} /* end OS_SymbolLookup_Impl */
+}
 
 /*----------------------------------------------------------------
+ * Implementation for no dynamic loader configuration
  *
- * Function: OS_SymbolTableDump_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
+ * See prototype for argument/return detail
  *-----------------------------------------------------------------*/
-int32 OS_SymbolTableDump_Impl(const char *filename, uint32 SizeLimit)
+int32 OS_ModuleSymbolLookup_Impl(const OS_object_token_t *token, cpuaddr *SymbolAddress, const char *SymbolName)
+{
+    return OS_ERR_NOT_IMPLEMENTED;
+}
+
+/*----------------------------------------------------------------
+ * Implementation for no dynamic loader configuration
+ *
+ * See prototype for argument/return detail
+ *-----------------------------------------------------------------*/
+int32 OS_SymbolTableDump_Impl(const char *filename, size_t SizeLimit)
 {
     return (OS_ERR_NOT_IMPLEMENTED);
-
-} /* end OS_SymbolTableDump_Impl */
+}

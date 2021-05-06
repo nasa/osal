@@ -19,10 +19,8 @@
  */
 
 /**
- * \file     OCS_bsp-impl.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
- *
+ * \file
+ * \ingroup ut-stubs
  *
  * Purpose: Contains functions prototype definitions and variables declarations
  *          for the OSAL BSP layer
@@ -42,10 +40,10 @@
  *    BSP-provided console or debug terminal device.
  */
 
-#ifndef INCLUDE_OCS_BSP_IMPL_H_
-#define INCLUDE_OCS_BSP_IMPL_H_
+#ifndef OCS_BSP_IMPL_H
+#define OCS_BSP_IMPL_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 #define OCS_OS_BSP_CONSOLEMODE_NORMAL    0x2101
 #define OCS_OS_BSP_CONSOLEMODE_RED       0x2102
@@ -70,7 +68,7 @@
 
        Note: This should write the string as-is without buffering.
  ------------------------------------------------------------------*/
-extern void OCS_OS_BSP_ConsoleOutput_Impl(const char *Str, uint32_t DataLen);
+extern void OCS_OS_BSP_ConsoleOutput_Impl(const char *Str, size_t DataLen);
 
 /*----------------------------------------------------------------
    Function: OS_BSP_ConsoleSetMode_Impl
@@ -90,4 +88,4 @@ extern void OCS_OS_BSP_ConsoleOutput_Impl(const char *Str, uint32_t DataLen);
  ------------------------------------------------------------------*/
 extern void OCS_OS_BSP_ConsoleSetMode_Impl(uint32_t ModeBits);
 
-#endif /* INCLUDE_OCS_BSP_IMPL_H_ */
+#endif /* OCS_BSP_IMPL_H */

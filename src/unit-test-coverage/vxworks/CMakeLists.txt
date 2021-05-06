@@ -5,7 +5,7 @@ set(VXWORKS_MODULE_LIST
     common
     console
     countsem
-    dirs
+    dirs-globals
     files
     filesys
     idmap
@@ -24,16 +24,17 @@ set(VXWORKS_PORTABLE_BLOCK_LIST
     posix-gettime
     posix-io
     posix-files
+    posix-dirs
 
     console-bsp
     bsd-select
-    #bsd-sockets
+    bsd-sockets
 
     no-loader
     no-shell
-    #no-symtab
-    #no-network
-    #no-sockets
+    no-symtab
+    no-network
+    no-sockets
 )
 
 
@@ -51,7 +52,9 @@ set(VXWORKS_COVERAGE_LINK_LIST
         ut_vxworks_impl_stubs
         ut_bsp_impl_stubs
         ut_osapi_impl_stubs
+        ut_osapi_init_stubs
         ut_osapi_shared_stubs
+        ut_osapi_table_stubs
         ut_osapi_stubs
         ut_libc_stubs
 )
@@ -75,3 +78,6 @@ foreach(MODNAME ${VXWORKS_PORTABLE_BLOCK_LIST})
     )
 endforeach(MODNAME ${VXWORKS_PORTABLE_BLOCK_LIST})
 
+# Custom flags for specific tests to be able to cover all code
+set_property(SOURCE ${OSAL_SOURCE_DIR}/src/os/portable/os-impl-bsd-sockets.c
+             APPEND PROPERTY COMPILE_DEFINITIONS OS_NETWORK_SUPPORTS_IPV6)

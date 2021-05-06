@@ -116,7 +116,7 @@ void UT_os_initfs_test()
     /*-----------------------------------------------------*/
     testDesc = "#2 Nominal";
 
-    /* Call to OS_FS_Init() is inside OS_API_Init(); */
+    /* Call to OS_FS_Init is inside OS_API_Init */
     res = OS_API_Init();
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
@@ -136,20 +136,7 @@ void UT_os_initfs_test()
 }
 
 /*--------------------------------------------------------------------------------*
-** Syntax: int32 OS_creat(const char *path, int32 access)
-** Purpose: Creates a file of a given name and access mode, if doesn't exist;
-**          then opens it
-** Parameters: *path - pointer to the absolute path name of the file to be created
-**             access - access modes with which to open a file
-** Returns: OS_INVALID_POINTER if the pointer passed in is null
-**          OS_FS_ERR_PATH_INVALID is the path passed in is invalid
-**          OS_FS_ERR_PATH_TOO_LONG if the absolute path name passed in is too long
-**          OS_FS_ERR_NAME_TOO_LONG if the file name passed in is too long
-**          OS_ERROR if the OS call failed or file access is invalid
-**          OS_FS_ERR_NO_FREE_IDS if there are no more free file descriptors left in
-**                                the File Descriptor table
-**          A file descriptor value if succeeded
-**          OS_ERR_NOT_IMPLEMENTED if not implemented
+** Purpose: Test OS_OpenCreate for creating files
 ** -----------------------------------------------------
 ** Test #0: Not-implemented condition
 **   1) Call this routine
@@ -323,21 +310,7 @@ UT_os_createfile_test_exit_tag:
 }
 
 /*--------------------------------------------------------------------------------*
-** Syntax: int32 OS_open(const char *path, int32 access, uint32 mode)
-** Purpose: Opens a file of a given name and access mode; if it doesn't exist,
-**          creates it first
-** Parameters: *path - pointer to the absolute path name of the file to be created
-**             access - access modes with which to open a file
-**             mode - file permission which is not currently used
-** Returns: OS_INVALID_POINTER if the pointer passed in is null
-**          OS_FS_ERR_PATH_INVALID is the path passed in is invalid
-**          OS_FS_ERR_PATH_TOO_LONG if the absolute path name passed in is too long
-**          OS_FS_ERR_NAME_TOO_LONG if the file name passed in is too long
-**          OS_ERROR if the OS call failed or file access is invalid
-**          OS_FS_ERR_NO_FREE_IDS if there are no more free file descriptors left in
-**                                the File Descriptor table
-**          A file descriptor value if succeeded
-**          OS_ERR_NOT_IMPLEMENTED if not implemented
+** Purpose: Tests OS_OpenCreate for opening files
 ** -----------------------------------------------------
 ** Test #0: Not-implemented condition
 **   1) Call this routine
@@ -804,9 +777,9 @@ void UT_os_readfile_test()
     OS_close(g_fDescs[0]);
     OS_remove(g_fNames[0]);
 
-    UT_OS_LOG("OS_read() success test -- Write to file:\n\t%s\n", g_writeBuff);
+    UtPrintf("OS_read() success test -- Write to file:\n\t%s\n", g_writeBuff);
     ;
-    UT_OS_LOG("OS_read() success test -- Read from file:\n\t%s\n", g_readBuff);
+    UtPrintf("OS_read() success test -- Read from file:\n\t%s\n", g_readBuff);
     ;
 
 UT_os_readfile_test_exit_tag:
@@ -975,9 +948,9 @@ void UT_os_writefile_test()
     OS_close(g_fDescs[0]);
     OS_remove(g_fNames[0]);
 
-    UT_OS_LOG("OS_write() success test -- Write to file:\n\t%s\n", g_writeBuff);
+    UtPrintf("OS_write() success test -- Write to file:\n\t%s\n", g_writeBuff);
     ;
-    UT_OS_LOG("OS_write() success test -- Read from file:\n\t%s\n", g_readBuff);
+    UtPrintf("OS_write() success test -- Read from file:\n\t%s\n", g_readBuff);
     ;
 
 UT_os_writefile_test_exit_tag:
@@ -1037,7 +1010,8 @@ UT_os_writefile_test_exit_tag:
 void UT_os_lseekfile_test()
 {
     const char *testDesc;
-    int32       buffLen = 0, pos1 = 0, pos2 = 0, pos3 = 0;
+    size_t      buffLen;
+    int32       pos1 = 0, pos2 = 0, pos3 = 0;
 
     /*-----------------------------------------------------*/
     testDesc = "API not implemented";
@@ -1101,7 +1075,7 @@ void UT_os_lseekfile_test()
 
     memset(g_writeBuff, '\0', sizeof(g_writeBuff));
     strcpy(g_writeBuff, "THE BROWN FOX JUMPS OVER THE LAZY DOG.");
-    buffLen = (int32)strlen(g_writeBuff);
+    buffLen = strlen(g_writeBuff);
 
     if (OS_write(g_fDescs[0], g_writeBuff, buffLen) != buffLen)
     {
@@ -1128,11 +1102,7 @@ UT_os_lseekfile_test_exit_tag:
 }
 
 /*--------------------------------------------------------------------------------*
-** Syntax: int32 OS_chmod(const char *path, uint32 access)
-** Purpose: Changes access mode of a given file name
-** Parameters: *path - pointer to the path/name of the given file
-**             access - file access flags
-** Returns: OS_ERR_NOT_IMPLEMENTED if not implemented
+** Purpose: Test OS_chmod
 ** -----------------------------------------------------
 ** Test #0: Not-implemented condition
 **   1) Call this routine
@@ -2056,11 +2026,12 @@ void UT_os_outputtofile_test()
         }
     }
 
+UT_os_outputtofile_test_exit_tag:
+
     /* Reset test environment */
     OS_close(g_fDescs[0]);
     OS_remove(g_fNames[0]);
 
-UT_os_outputtofile_test_exit_tag:
     return;
 }
 

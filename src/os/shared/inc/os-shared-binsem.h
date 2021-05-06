@@ -19,16 +19,17 @@
  */
 
 /**
- * \file     os-shared-binsem.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_BINSEM_H_
-#define INCLUDE_OS_SHARED_BINSEM_H_
+#ifndef OS_SHARED_BINSEM_H
+#define OS_SHARED_BINSEM_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-binsem.h"
+#include "os-shared-globaldefs.h"
 
 /* other objects that have only an API name and no other data */
 typedef struct
@@ -62,7 +63,7 @@ int32 OS_BinSemAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options);
+int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 sem_initial_value, uint32 options);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemFlush_Impl
@@ -72,7 +73,7 @@ int32 OS_BinSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 optio
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemFlush_Impl(uint32 sem_id);
+int32 OS_BinSemFlush_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemGive_Impl
@@ -81,7 +82,7 @@ int32 OS_BinSemFlush_Impl(uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemGive_Impl(uint32 sem_id);
+int32 OS_BinSemGive_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemTake_Impl
@@ -91,7 +92,7 @@ int32 OS_BinSemGive_Impl(uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemTake_Impl(uint32 sem_id);
+int32 OS_BinSemTake_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemTimedWait_Impl
@@ -101,7 +102,7 @@ int32 OS_BinSemTake_Impl(uint32 sem_id);
     Returns: OS_SUCCESS on success, or relevant error code
              OS_SEM_TIMEOUT must be returned if the time limit was reached
  ------------------------------------------------------------------*/
-int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs);
+int32 OS_BinSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemDelete_Impl
@@ -110,7 +111,7 @@ int32 OS_BinSemTimedWait_Impl(uint32 sem_id, uint32 msecs);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemDelete_Impl(uint32 sem_id);
+int32 OS_BinSemDelete_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_BinSemGetInfo_Impl
@@ -119,6 +120,6 @@ int32 OS_BinSemDelete_Impl(uint32 sem_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_BinSemGetInfo_Impl(uint32 sem_id, OS_bin_sem_prop_t *bin_prop);
+int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop);
 
-#endif /* INCLUDE_OS_SHARED_BINSEM_H_ */
+#endif /* OS_SHARED_BINSEM_H */

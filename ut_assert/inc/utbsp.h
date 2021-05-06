@@ -19,10 +19,7 @@
  */
 
 /**
- * \file utbsp.h
- *
- *  Created on: Feb 25, 2015
- *      Author: joseph.p.hickey@nasa.gov
+ * \file
  *
  * Types and definitions for the generic Unit Test BSP interface implemented
  * as part of OSAL.
@@ -40,8 +37,8 @@
  * and the way pass/fail determinations are made.
  */
 
-#ifndef _UTBSP_H_
-#define _UTBSP_H_
+#ifndef UTBSP_H
+#define UTBSP_H
 
 #include "common_types.h"
 #include "utassert.h"
@@ -100,4 +97,4 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage);
  */
 void UT_BSP_EndTest(const UtAssert_TestCounter_t *TestCounters);
 
-#endif /* _UTBSP_H_ */
+#endif /* UTBSP_H */

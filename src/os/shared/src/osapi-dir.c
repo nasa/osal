@@ -35,6 +35,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "osapi-filesys.h"
+
 /*
  * User defined include files
  */
@@ -111,32 +113,31 @@ int32 OS_mkdir(const char *path, uint32 access)
  *-----------------------------------------------------------------*/
 int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
 {
-    char                local_path[OS_MAX_LOCAL_PATH_LEN];
-    OS_common_record_t *record;
-    uint32              local_id;
-    int32               return_code;
+    char                      local_path[OS_MAX_LOCAL_PATH_LEN];
+    OS_object_token_t         token;
+    OS_dir_internal_record_t *dir;
+    int32                     return_code;
 
-    if (dir_id == NULL || path == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(dir_id);
 
     return_code = OS_TranslatePath(path, local_path);
     if (return_code == OS_SUCCESS)
     {
         /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
-        return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, NULL, &local_id, &record);
+        return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, NULL, &token);
         if (return_code == OS_SUCCESS)
         {
-            /* Save all the data to our own internal table */
-            memset(&OS_dir_table[local_id], 0, sizeof(OS_dir_internal_record_t));
-            strncpy(OS_dir_table[local_id].dir_name, path, OS_MAX_PATH_LEN - 1);
+            dir = OS_OBJECT_TABLE_GET(OS_dir_table, token);
+
+            /* Reset the table entry and save the name */
+            OS_OBJECT_INIT(token, dir, dir_name, path);
 
             /* Now call the OS-specific implementation.  */
-            return_code = OS_DirOpen_Impl(local_id, local_path);
+            return_code = OS_DirOpen_Impl(&token, local_path);
 
             /* Check result, finalize record, and unlock global table. */
-            return_code = OS_ObjectIdFinalizeNew(return_code, record, dir_id);
+            return_code = OS_ObjectIdFinalizeNew(return_code, &token, dir_id);
         }
     }
 
@@ -153,18 +154,17 @@ int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
  *-----------------------------------------------------------------*/
 int32 OS_DirectoryClose(osal_id_t dir_id)
 {
-    OS_common_record_t *record;
-    uint32              local_id;
-    int32               return_code;
+    OS_object_token_t token;
+    int32             return_code;
 
     /* Make sure the file descriptor is legit before using it */
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, dir_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, dir_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_DirClose_Impl(local_id);
+        return_code = OS_DirClose_Impl(&token);
 
         /* Complete the operation via the common routine */
-        return_code = OS_ObjectIdFinalizeDelete(return_code, record);
+        return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
     }
 
     return return_code;
@@ -180,17 +180,14 @@ int32 OS_DirectoryClose(osal_id_t dir_id)
  *-----------------------------------------------------------------*/
 int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
 {
-    OS_common_record_t *record;
-    uint32              local_id;
-    int32               return_code;
+    OS_object_token_t token;
+    int32             return_code;
 
-    if (dirent == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(dirent);
 
     /* Make sure the file descriptor is legit before using it */
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, dir_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, dir_id, &token);
     if (return_code == OS_SUCCESS)
     {
         /*
@@ -203,9 +200,9 @@ int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
          * reads the "/" directory, the application will see the
          * real name (eeprom) and not the virtualized name (cf).
          */
-        return_code = OS_DirRead_Impl(local_id, dirent);
+        return_code = OS_DirRead_Impl(&token, dirent);
 
-        OS_Unlock_Global(LOCAL_OBJID_TYPE);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
@@ -222,15 +219,14 @@ int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
  *-----------------------------------------------------------------*/
 int32 OS_DirectoryRewind(osal_id_t dir_id)
 {
-    OS_common_record_t *record;
-    uint32              local_id;
-    int32               return_code;
+    OS_object_token_t token;
+    int32             return_code;
 
     /* Make sure the file descriptor is legit before using it */
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, dir_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, dir_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_DirRewind_Impl(local_id);
+        return_code = OS_DirRewind_Impl(&token);
     }
 
     return return_code;

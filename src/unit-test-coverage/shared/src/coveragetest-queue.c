@@ -27,7 +27,7 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-queue.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /*
 **********************************************************************************
@@ -56,23 +56,27 @@ void Test_OS_QueueCreate(void)
      */
     int32     expected = OS_SUCCESS;
     osal_id_t objid;
-    int32     actual = OS_QueueCreate(&objid, "UT", 0, 0, 0);
+    int32     actual = OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(4), 0);
 
     UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_SUCCESS", (long)actual);
 
     /* test error cases */
     expected = OS_INVALID_POINTER;
-    actual   = OS_QueueCreate(NULL, "UT", 0, 0, 0);
+    actual   = OS_QueueCreate(NULL, "UT", OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(4), 0);
     UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OCS_strlen), 2 + OS_MAX_API_NAME);
+    expected = OS_ERR_INVALID_SIZE;
+    actual   = OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(4), OSAL_SIZE_C(0), 0);
+    UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
+
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     expected = OS_ERR_NAME_TOO_LONG;
-    actual   = OS_QueueCreate(&objid, "UT", 0, 0, 0);
+    actual   = OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(0), OSAL_SIZE_C(4), 0);
     UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
-    UT_ClearForceFail(UT_KEY(OCS_strlen));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
     expected = OS_QUEUE_INVALID_SIZE;
-    actual   = OS_QueueCreate(&objid, "UT", 1 + OS_QUEUE_MAX_DEPTH, 0, 0);
+    actual   = OS_QueueCreate(&objid, "UT", OSAL_BLOCKCOUNT_C(1 + OS_QUEUE_MAX_DEPTH), OSAL_SIZE_C(4), 0);
     UtAssert_True(actual == expected, "OS_QueueCreate() (%ld) == OS_QUEUE_INVALID_SIZE", (long)actual);
 }
 
@@ -98,7 +102,7 @@ void Test_OS_QueueGet(void)
      */
     int32  expected = OS_SUCCESS;
     int32  actual   = ~OS_SUCCESS;
-    uint32 actual_size;
+    size_t actual_size;
     char   Buf[4];
 
     actual = OS_QueueGet(UT_OBJID_1, Buf, sizeof(Buf), &actual_size, 0);
@@ -126,14 +130,20 @@ void Test_OS_QueuePut(void)
     int32      actual   = ~OS_SUCCESS;
     const char Data[4]  = "xyz";
 
-    actual = OS_QueuePut(UT_OBJID_1, Data, sizeof(Data), 0);
+    OS_queue_table[1].max_depth = 10;
+    OS_queue_table[1].max_size  = sizeof(Data);
 
+    actual = OS_QueuePut(UT_OBJID_1, Data, sizeof(Data), 0);
     UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_SUCCESS", (long)actual);
 
     /* test error cases */
     expected = OS_INVALID_POINTER;
     actual   = OS_QueuePut(UT_OBJID_1, NULL, sizeof(Data), 0);
     UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    expected = OS_QUEUE_INVALID_SIZE;
+    actual   = OS_QueuePut(UT_OBJID_1, Data, 1 + sizeof(Data), 0);
+    UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_QUEUE_INVALID_SIZE", (long)actual);
 }
 
 void Test_OS_QueueGetIdByName(void)
@@ -146,10 +156,10 @@ void Test_OS_QueueGetIdByName(void)
     int32     actual   = ~OS_SUCCESS;
     osal_id_t objid;
 
-    UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_QueueGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_QueueGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
     actual   = OS_QueueGetIdByName(&objid, "NF");
@@ -166,20 +176,15 @@ void Test_OS_QueueGetInfo(void)
      * Test Case For:
      * int32 OS_QueueGetInfo (uint32 queue_id, OS_queue_prop_t *queue_prop)
      */
-    int32               expected = OS_SUCCESS;
-    int32               actual   = ~OS_SUCCESS;
-    OS_queue_prop_t     queue_prop;
-    osal_id_t           id;
-    uint32              local_index = 1;
-    OS_common_record_t  utrec;
-    OS_common_record_t *rptr = &utrec;
+    int32           expected = OS_SUCCESS;
+    int32           actual   = ~OS_SUCCESS;
+    OS_queue_prop_t queue_prop;
+    osal_id_t       id;
 
-    memset(&utrec, 0, sizeof(utrec));
-    id               = UT_OBJID_OTHER;
-    utrec.creator    = UT_OBJID_OTHER;
-    utrec.name_entry = "ABC";
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
+    id = UT_OBJID_OTHER;
+
+    OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_QUEUE, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
+
     actual = OS_QueueGetInfo(UT_OBJID_1, &queue_prop);
 
     UtAssert_True(actual == expected, "OS_QueueGetInfo() (%ld) == OS_SUCCESS", (long)actual);

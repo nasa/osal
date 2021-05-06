@@ -61,7 +61,7 @@ OS_impl_task_internal_record_t OS_impl_task_table[OS_MAX_TASKS];
  * to be within the range of [0,OS_MAX_TASK_PRIORITY]
  *
 ----------------------------------------------------------------------------*/
-static int OS_PriorityRemap(uint32 InputPri)
+static int OS_PriorityRemap(osal_priority_t InputPri)
 {
     int OutputPri;
 
@@ -116,7 +116,7 @@ static void OS_NoopSigHandler(int signal) {} /* end OS_NoopSigHandler */
 ---------------------------------------------------------------------------------------*/
 static void *OS_PthreadTaskEntry(void *arg)
 {
-    OS_U32ValueWrapper_t local_arg;
+    OS_VoidPtrValueWrapper_t local_arg;
 
     local_arg.opaque_arg = arg;
     OS_TaskEntryPoint(local_arg.id); /* Never returns */
@@ -206,6 +206,7 @@ static bool OS_Posix_GetSchedulerParams(int sched_policy, POSIX_PriorityLimits_t
 int32 OS_Posix_TaskAPI_Impl_Init(void)
 {
     int                    ret;
+    long                   ret_long;
     int                    sig;
     struct sched_param     sched_param;
     int                    sched_policy;
@@ -417,7 +418,13 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
     }
 #endif
 
-    POSIX_GlobalVars.PageSize = sysconf(_SC_PAGESIZE);
+    ret_long = sysconf(_SC_PAGESIZE);
+    if (ret_long < 0)
+    {
+        OS_DEBUG("Could not get page size via sysconf: %s\n", strerror(errno));
+        return OS_ERROR;
+    }
+    POSIX_GlobalVars.PageSize = ret_long;
 
     return OS_SUCCESS;
 } /* end OS_Posix_TaskAPI_Impl_Init */
@@ -429,8 +436,8 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t stacksz, PthreadFuncPtr_t entry,
-                                       void *entry_arg)
+int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority, size_t stacksz,
+                                       PthreadFuncPtr_t entry, void *entry_arg)
 {
     int                return_code = 0;
     pthread_attr_t     custom_attr;
@@ -474,6 +481,16 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t 
     if (return_code != 0)
     {
         OS_DEBUG("pthread_attr_setstacksize error in OS_TaskCreate: %s\n", strerror(return_code));
+        return (OS_ERROR);
+    }
+
+    /*
+    ** Set the thread to be joinable by default
+    */
+    return_code = pthread_attr_setdetachstate(&custom_attr, PTHREAD_CREATE_JOINABLE);
+    if (return_code != 0)
+    {
+        OS_DEBUG("pthread_attr_setdetachstate error in OS_TaskCreate: %s\n", strerror(return_code));
         return (OS_ERROR);
     }
 
@@ -541,12 +558,6 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t 
      ** Do not treat anything bad that happens after this point as fatal.
      ** The task is running, after all - better to leave well enough alone.
      */
-    return_code = pthread_detach(*pthr);
-    if (return_code != 0)
-    {
-        OS_DEBUG("pthread_detach error in OS_TaskCreate: %s\n", strerror(return_code));
-    }
-
     return_code = pthread_attr_destroy(&custom_attr);
     if (return_code != 0)
     {
@@ -564,20 +575,51 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t 
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
+int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
 {
-    OS_U32ValueWrapper_t arg;
-    int32                return_code;
+    OS_VoidPtrValueWrapper_t        arg;
+    int32                           return_code;
+    OS_impl_task_internal_record_t *impl;
+    OS_task_internal_record_t *     task;
 
     arg.opaque_arg = NULL;
-    arg.id         = OS_global_task_table[task_id].active_id;
+    arg.id         = OS_ObjectIdFromToken(token);
 
-    return_code =
-        OS_Posix_InternalTaskCreate_Impl(&OS_impl_task_table[task_id].id, OS_task_table[task_id].priority,
-                                         OS_task_table[task_id].stack_size, OS_PthreadTaskEntry, arg.opaque_arg);
+    task = OS_OBJECT_TABLE_GET(OS_task_table, *token);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    return_code = OS_Posix_InternalTaskCreate_Impl(&impl->id, task->priority, task->stack_size, OS_PthreadTaskEntry,
+                                                   arg.opaque_arg);
 
     return return_code;
 } /* end OS_TaskCreate_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskDetach_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
+{
+    OS_impl_task_internal_record_t *impl;
+    int                             ret;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    ret = pthread_detach(impl->id);
+
+    if (ret != 0)
+    {
+        OS_DEBUG("pthread_detach: Failed on Task ID = %lu, err = %s\n",
+                 OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), strerror(ret));
+        return OS_ERROR;
+    }
+
+    return OS_SUCCESS;
+}
 
 /*----------------------------------------------------------------
  *
@@ -587,9 +629,13 @@ int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskMatch_Impl(uint32 task_id)
+int32 OS_TaskMatch_Impl(const OS_object_token_t *token)
 {
-    if (pthread_equal(pthread_self(), OS_impl_task_table[task_id].id) == 0)
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    if (pthread_equal(pthread_self(), impl->id) == 0)
     {
         return OS_ERROR;
     }
@@ -605,15 +651,49 @@ int32 OS_TaskMatch_Impl(uint32 task_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskDelete_Impl(uint32 task_id)
+int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
 {
+    OS_impl_task_internal_record_t *impl;
+    void *                          retval;
+    int                             ret;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
     /*
     ** Try to delete the task
     ** If this fails, not much recourse - the only potential cause of failure
     ** to cancel here is that the thread ID is invalid because it already exited itself,
     ** and if that is true there is nothing wrong - everything is OK to continue normally.
     */
-    pthread_cancel(OS_impl_task_table[task_id].id);
+    ret = pthread_cancel(impl->id);
+    if (ret != 0)
+    {
+        OS_DEBUG("pthread_cancel: Failed on Task ID = %lu, err = %s\n",
+                 OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), strerror(ret));
+
+        /* fall through (will still return OS_SUCCESS) */
+    }
+    else
+    {
+        /*
+         * Note that "pthread_cancel" is a request - and successful return above
+         * only means that the cancellation request is pending.
+         *
+         * pthread_join() will wait until the thread has actually exited.
+         *
+         * This is important for CFE, as task deletion often occurs in
+         * conjunction with an application reload - which means the next
+         * call is likely to be OS_ModuleUnload().  So is critical that all
+         * tasks potentially executing code within that module have actually
+         * been stopped - not just pending cancellation.
+         */
+        ret = pthread_join(impl->id, &retval);
+        if (ret != 0)
+        {
+            OS_DEBUG("pthread_join: Failed on Task ID = %lu, err = %s\n",
+                     OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), strerror(ret));
+        }
+    }
     return OS_SUCCESS;
 
 } /* end OS_TaskDelete_Impl */
@@ -678,10 +758,14 @@ int32 OS_TaskDelay_Impl(uint32 millisecond)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskSetPriority_Impl(uint32 task_id, uint32 new_priority)
+int32 OS_TaskSetPriority_Impl(const OS_object_token_t *token, osal_priority_t new_priority)
 {
     int os_priority;
     int ret;
+
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
 
     if (POSIX_GlobalVars.EnableTaskPriorities)
     {
@@ -691,11 +775,11 @@ int32 OS_TaskSetPriority_Impl(uint32 task_id, uint32 new_priority)
         /*
         ** Set priority
         */
-        ret = pthread_setschedprio(OS_impl_task_table[task_id].id, os_priority);
+        ret = pthread_setschedprio(impl->id, os_priority);
         if (ret != 0)
         {
-            OS_DEBUG("pthread_setschedprio: Task ID = %u, prio = %d, err = %s\n", (unsigned int)task_id, os_priority,
-                     strerror(ret));
+            OS_DEBUG("pthread_setschedprio: Task ID = %lu, prio = %d, err = %s\n",
+                     OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), os_priority, strerror(ret));
             return (OS_ERROR);
         }
     }
@@ -713,8 +797,19 @@ int32 OS_TaskSetPriority_Impl(uint32 task_id, uint32 new_priority)
  *-----------------------------------------------------------------*/
 int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
 {
-    int32                return_code;
-    OS_U32ValueWrapper_t arg;
+    int32                    return_code;
+    OS_VoidPtrValueWrapper_t arg;
+    int                      old_state;
+    int                      old_type;
+
+    /*
+     * Set cancel state=ENABLED, type=DEFERRED
+     * This should be the default for new threads, but
+     * setting explicitly to be sure that a pthread_join()
+     * will work as expected in case this thread is deleted.
+     */
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &old_state);
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, &old_type);
 
     arg.opaque_arg = 0;
     arg.id         = global_task_id;
@@ -743,7 +838,7 @@ int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
  *-----------------------------------------------------------------*/
 osal_id_t OS_TaskGetId_Impl(void)
 {
-    OS_U32ValueWrapper_t self_record;
+    OS_VoidPtrValueWrapper_t self_record;
 
     self_record.opaque_arg = pthread_getspecific(POSIX_GlobalVars.ThreadKey);
 
@@ -758,7 +853,7 @@ osal_id_t OS_TaskGetId_Impl(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskGetInfo_Impl(uint32 task_id, OS_task_prop_t *task_prop)
+int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_prop)
 {
     return OS_SUCCESS;
 } /* end OS_TaskGetInfo_Impl */
@@ -771,11 +866,14 @@ int32 OS_TaskGetInfo_Impl(uint32 task_id, OS_task_prop_t *task_prop)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-bool OS_TaskIdMatchSystemData_Impl(void *ref, uint32 local_id, const OS_common_record_t *obj)
+bool OS_TaskIdMatchSystemData_Impl(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
-    const pthread_t *target = (const pthread_t *)ref;
+    const pthread_t *               target = (const pthread_t *)ref;
+    OS_impl_task_internal_record_t *impl;
 
-    return (pthread_equal(*target, OS_impl_task_table[local_id].id) != 0);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    return (pthread_equal(*target, impl->id) != 0);
 }
 
 /*----------------------------------------------------------------
@@ -786,7 +884,7 @@ bool OS_TaskIdMatchSystemData_Impl(void *ref, uint32 local_id, const OS_common_r
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskValidateSystemData_Impl(const void *sysdata, uint32 sysdata_size)
+int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size)
 {
     if (sysdata == NULL || sysdata_size != sizeof(pthread_t))
     {

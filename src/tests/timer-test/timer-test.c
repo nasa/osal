@@ -33,7 +33,7 @@
 #include "uttest.h"
 #include "utbsp.h"
 
-#define NUMBER_OF_TIMERS 4
+#define NUMBER_OF_TIMERS 5
 
 #define TASK_1_ID         1
 #define TASK_1_STACK_SIZE 4096
@@ -45,8 +45,8 @@ void TimerTestCheck(void);
 
 OS_time_t StartTime;
 OS_time_t EndTime;
-uint32    TimerStart[NUMBER_OF_TIMERS]    = {1000, 2000000, 3000000, 4000000};
-uint32    TimerInterval[NUMBER_OF_TIMERS] = {500000, 400000, 800000, 600000};
+uint32    TimerStart[NUMBER_OF_TIMERS]    = {1000, 2000000, 3000000, 4000000, 1000000};
+uint32    TimerInterval[NUMBER_OF_TIMERS] = {500000, 400000, 800000, 600000, 0};
 
 uint32 TimerTestTaskStack[TASK_1_STACK_SIZE];
 int32  timer_counter[NUMBER_OF_TIMERS];
@@ -59,9 +59,9 @@ uint32 timer_idlookup[OS_MAX_TIMERS];
  */
 void test_func(osal_id_t timer_id)
 {
-    uint32 indx;
-    OS_ConvertToArrayIndex(timer_id, &indx);
-    timer_counter[timer_idlookup[indx]]++;
+    osal_index_t idx;
+    OS_ConvertToArrayIndex(timer_id, &idx);
+    timer_counter[timer_idlookup[idx]]++;
 }
 
 /* ********************** MAIN **************************** */
@@ -73,6 +73,9 @@ void UtTest_Setup(void)
     {
         UtAssert_Abort("OS_API_Init() failed");
     }
+
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     /*
      * Register the timer test setup and check routines in UT assert
@@ -89,8 +92,8 @@ void TimerTestSetup(void)
      * In the new versions of OSAL, timers do NOT work in the "main" thread,
      * so we must create a task to handle them.
      */
-    status = OS_TaskCreate(&TimerTestTaskId, "Task 1", TimerTestTask, TimerTestTaskStack, TASK_1_STACK_SIZE,
-                           TASK_1_PRIORITY, 0);
+    status = OS_TaskCreate(&TimerTestTaskId, "Task 1", TimerTestTask, OSAL_STACKPTR_C(TimerTestTaskStack),
+                           sizeof(TimerTestTaskStack), OSAL_PRIORITY_C(TASK_1_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "Timer Test Task Created RC=%d", (int)status);
 
     /*
@@ -111,12 +114,12 @@ void TimerTestSetup(void)
 void TimerTestTask(void)
 {
 
-    int       i = 0;
-    int32     TimerStatus[NUMBER_OF_TIMERS];
-    uint32    TableId;
-    osal_id_t TimerID[NUMBER_OF_TIMERS];
-    char      TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4"};
-    uint32    ClockAccuracy;
+    int          i = 0;
+    int32        TimerStatus[NUMBER_OF_TIMERS];
+    osal_index_t TableId;
+    osal_id_t    TimerID[NUMBER_OF_TIMERS];
+    char         TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4", "TIMER5"};
+    uint32       ClockAccuracy;
 
     for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
     {
@@ -189,31 +192,34 @@ void TimerTestCheck(void)
     /*
      * Time limited test - check and exit
      */
-    microsecs = 1000000 * (EndTime.seconds - StartTime.seconds);
-    if (EndTime.microsecs < StartTime.microsecs)
-    {
-        microsecs -= StartTime.microsecs - EndTime.microsecs;
-    }
-    else
-    {
-        microsecs += EndTime.microsecs - StartTime.microsecs;
-    }
+    microsecs = OS_TimeGetTotalMicroseconds(OS_TimeSubtract(EndTime, StartTime));
 
     /* Make sure the ratio of the timers are OK */
     for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
     {
-        /*
-         * Expect one tick after the start time (i.e. first tick)
-         * Plus one tick for every interval that occurred during the test
-         */
-        expected = 1 + (microsecs - TimerStart[i]) / TimerInterval[i];
-        UtAssert_True(expected > 0, "Expected ticks = %u", (unsigned int)expected);
+        if (TimerInterval[i] == 0)
+        {
+            /*
+             * When the Timer Interval is 0, it's a one shot so expect eaxctly 1 tick
+             */
+            expected = 1;
+            UtAssert_True(timer_counter[i] == (expected), "Timer %d count = %d", (int)i, (int)(expected));
+        }
+        else
+        {
+            /*
+             * Expect one tick after the start time (i.e. first tick)
+             * Plus one tick for every interval that occurred during the test
+             */
+            expected = 1 + (microsecs - TimerStart[i]) / TimerInterval[i];
+            UtAssert_True(expected > 0, "Expected ticks = %u", (unsigned int)expected);
 
-        /*
-         * Since all these counts are affected by test system load,
-         * allow for some fudge factor before declaring failure
-         */
-        UtAssert_True(timer_counter[i] >= (expected - 3), "Timer %d count >= %d", (int)i, (int)(expected - 3));
-        UtAssert_True(timer_counter[i] <= (expected + 3), "Timer %d count <= %d", (int)i, (int)(expected + 3));
+            /*
+             * Since all these counts are affected by test system load,
+             * allow for some fudge factor before declaring failure
+             */
+            UtAssert_True(timer_counter[i] >= (expected - 3), "Timer %d count >= %d", (int)i, (int)(expected - 3));
+            UtAssert_True(timer_counter[i] <= (expected + 3), "Timer %d count <= %d", (int)i, (int)(expected + 3));
+        }
     }
 }

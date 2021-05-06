@@ -19,17 +19,16 @@
  */
 
 /**
- * \file     hostLib.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
  *
  * OSAL coverage stub replacement for hostLib.h
  */
 
-#ifndef INCLUDE_HOSTLIB_H_
-#define INCLUDE_HOSTLIB_H_
+#ifndef OVERRIDE_HOSTLIB_H
+#define OVERRIDE_HOSTLIB_H
 
-#include <OCS_hostLib.h>
+#include "OCS_hostLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */
@@ -37,4 +36,4 @@
 /* ----------------------------------------- */
 #define hostGetByName OCS_hostGetByName
 
-#endif /* INCLUDE_HOSTLIB_H_ */
+#endif /* OVERRIDE_HOSTLIB_H */

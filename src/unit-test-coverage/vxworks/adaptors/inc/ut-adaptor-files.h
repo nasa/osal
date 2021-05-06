@@ -19,16 +19,16 @@
  */
 
 /**
- * \file     ut-adaptor-files.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-files
  */
 
-#ifndef INCLUDE_UT_ADAPTOR_FILES_H_
-#define INCLUDE_UT_ADAPTOR_FILES_H_
+#ifndef UT_ADAPTOR_FILES_H
+#define UT_ADAPTOR_FILES_H
 
-#include <common_types.h>
+#include "common_types.h"
 
 /*****************************************************
  *
@@ -53,6 +53,6 @@ extern int32 UT_Call_OS_VxWorks_StreamAPI_Impl_Init(void);
 unsigned int UT_FileTest_GetSelfEUID(void);
 unsigned int UT_FileTest_GetSelfEGID(void);
 
-void UT_FileTest_Set_Selectable(uint32 local_id, bool is_selectable);
+void UT_FileTest_Set_Selectable(osal_index_t local_id, bool is_selectable);
 
-#endif /* INCLUDE_UT_ADAPTOR_FILES_H_ */
+#endif /* UT_ADAPTOR_FILES_H */

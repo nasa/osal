@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for wchar.h */
-#ifndef _OSAL_STUB_WCHAR_H_
-#define _OSAL_STUB_WCHAR_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for wchar.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_WCHAR_H
+#define OCS_WCHAR_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in wchar.h */
@@ -36,4 +42,4 @@
 /* prototypes normally declared in wchar.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_WCHAR_H_ */
+#endif /* OCS_WCHAR_H */

@@ -19,22 +19,21 @@
  */
 
 /**
- * \file     os-posix.h
+ * \file
+ *
  * \ingroup  posix
- * \author   joseph.p.hickey@nasa.gov
  *
  * Purpose: This file contains definitions that are shared across the POSIX
  *          OSAL implementation.  This file is private to the POSIX port and it
  *          may contain POSIX-specific definitions.
  */
 
-#ifndef INCLUDE_OS_POSIX_H_
-#define INCLUDE_OS_POSIX_H_
+#ifndef OS_POSIX_H
+#define OS_POSIX_H
 
 /****************************************************************************************
                                     COMMON INCLUDE FILES
  ***************************************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,7 +52,7 @@
 /*
  * Use the global definitions from the shared layer
  */
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -74,7 +73,7 @@ typedef struct
 typedef struct
 {
     bool                   EnableTaskPriorities;
-    uint32                 TruncateQueueDepth;
+    osal_blockcount_t      TruncateQueueDepth;
     uint32                 ClockAccuracyNsec;
     pthread_key_t          ThreadKey;
     sigset_t               MaximumSigMask;
@@ -105,10 +104,8 @@ int32 OS_Posix_StreamAPI_Impl_Init(void);
 int32 OS_Posix_DirAPI_Impl_Init(void);
 int32 OS_Posix_FileSysAPI_Impl_Init(void);
 
-int32 OS_Posix_TableMutex_Init(uint32 idtype);
+int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype);
 
-int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, uint32 priority, size_t stacksz, PthreadFuncPtr_t entry,
-                                       void *entry_arg);
-void  OS_Posix_CompAbsDelayTime(uint32 msecs, struct timespec *tm);
+void OS_Posix_CompAbsDelayTime(uint32 msecs, struct timespec *tm);
 
-#endif /* INCLUDE_OS_POSIX_H_ */
+#endif /* OS_POSIX_H */

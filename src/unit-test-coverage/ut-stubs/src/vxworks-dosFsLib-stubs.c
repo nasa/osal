@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_dosFsLib.h>
+#include "OCS_dosFsLib.h"
 
 /* ----------------------------------------- */
 /* prototypes normally declared in dosFsLib.h */

@@ -18,10 +18,16 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for iv.h */
-#ifndef _OSAL_STUB_IV_H_
-#define _OSAL_STUB_IV_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for iv.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_IV_H
+#define OCS_IV_H
 
-#endif /* _OSAL_STUB_IV_H_ */
+#include "OCS_basetypes.h"
+
+#endif /* OCS_IV_H */

@@ -25,7 +25,7 @@
 #include "utstubs.h"
 #include "utassert.h"
 
-#include <OCS_stdlib.h>
+#include "OCS_stdlib.h"
 
 /*
  * The malloc emulator relies on two magic numbers;
@@ -57,6 +57,13 @@ void OCS_exit(int c)
      * TBD: IT would be nice if this could use a setjmp-like
      * method to avoid returning here.
      */
+}
+
+void OCS_abort(void)
+{
+    UT_DEFAULT_IMPL(OCS_abort);
+
+    /* Note - same issue as with OCS_exit() - this isn't supposed to return */
 }
 
 unsigned long int OCS_strtoul(const char *nptr, char **endptr, int base)
@@ -92,7 +99,7 @@ void *OCS_malloc(size_t sz)
     cpuaddr           PoolEnd;
     cpuaddr           NextBlock;
     size_t            NextSize;
-    uint32            PoolSize;
+    size_t            PoolSize;
     uint32            CallCnt;
     struct MPOOL_REC *Rec;
 
@@ -163,7 +170,7 @@ void OCS_free(void *ptr)
     int32             Status;
     cpuaddr           BlockAddr;
     void *            PoolPtr;
-    uint32            PoolSize;
+    size_t            PoolSize;
     struct MPOOL_REC *Rec;
 
     /*

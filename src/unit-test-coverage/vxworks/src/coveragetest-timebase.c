@@ -29,11 +29,11 @@
 #include "ut-adaptor-timebase.h"
 #include "os-shared-timebase.h"
 
-#include <OCS_taskLib.h>
-#include <OCS_signal.h>
-#include <OCS_time.h>
-#include <OCS_sysLib.h>
-#include <OCS_semLib.h>
+#include "OCS_taskLib.h"
+#include "OCS_signal.h"
+#include "OCS_time.h"
+#include "OCS_sysLib.h"
+#include "OCS_semLib.h"
 
 void Test_OS_VxWorks_TimeBaseAPI_Impl_Init(void)
 {
@@ -41,7 +41,7 @@ void Test_OS_VxWorks_TimeBaseAPI_Impl_Init(void)
      * int32 OS_VxWorks_TimeBaseAPI_Impl_Init(void)
      */
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(), OS_SUCCESS);
-    UT_SetForceFail(UT_KEY(OCS_sysClkRateGet), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_sysClkRateGet), -1);
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(), OS_ERROR);
 }
 
@@ -50,7 +50,8 @@ void Test_OS_TimeBaseLock_Impl(void)
     /* Test Case For:
      * void OS_TimeBaseLock_Impl(uint32 local_id)
      */
-    OS_TimeBaseLock_Impl(0);
+    OS_object_token_t token = UT_TOKEN_0;
+    OS_TimeBaseLock_Impl(&token);
 }
 
 void Test_OS_TimeBaseUnlock_Impl(void)
@@ -58,13 +59,14 @@ void Test_OS_TimeBaseUnlock_Impl(void)
     /* Test Case For:
      * void OS_TimeBaseUnlock_Impl(uint32 local_id)
      */
-    OS_TimeBaseUnlock_Impl(0);
+    OS_object_token_t token = UT_TOKEN_0;
+    OS_TimeBaseUnlock_Impl(&token);
 }
 
 static int32 UT_TimeBaseTest_TimeBaseRegHook(void *UserObj, int32 StubRetcode, uint32 CallCount,
                                              const UT_StubContext_t *Context)
 {
-    UT_TimeBaseTest_SetTimeBaseRegState(0, true);
+    UT_TimeBaseTest_SetTimeBaseRegState(UT_INDEX_0, true);
     return 0;
 }
 
@@ -99,7 +101,8 @@ void Test_OS_TimeBaseCreate_Impl(void)
     /* Test Case For:
      * int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
      */
-    osal_id_t id;
+    osal_id_t         id;
+    OS_object_token_t token = UT_TOKEN_0;
 
     /*
      * Test paths though the signal number assignment.
@@ -107,29 +110,35 @@ void Test_OS_TimeBaseCreate_Impl(void)
      * This should be done first as it will assign the "external_sync"
      * and therefore cause future calls to skip this block.
      */
-    memset(&id, 0x01, sizeof(id));
+    id = OS_ObjectIdFromInteger(OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT);
+
+    OS_global_timebase_table[0].active_id = id;
+    UT_TimeBaseTest_Setup(UT_INDEX_0, OCS_SIGRTMIN, false);
+
+    id = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(id) + 1);
+
     OS_global_timebase_table[1].active_id = id;
-    UT_TimeBaseTest_Setup(1, OCS_SIGRTMIN, false);
-    UT_SetForceFail(UT_KEY(OCS_sigismember), true);
-    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(0), OS_TIMER_ERR_UNAVAILABLE);
+    UT_TimeBaseTest_Setup(UT_INDEX_1, 1 + OCS_SIGRTMIN, false);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_sigismember), true);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(&token), OS_TIMER_ERR_UNAVAILABLE);
     UT_ResetState(UT_KEY(OCS_sigismember));
 
     /* fail to initialize the sem */
-    UT_SetForceFail(UT_KEY(OCS_semMInitialize), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(0), OS_TIMER_ERR_INTERNAL);
-    UT_ClearForceFail(UT_KEY(OCS_semMInitialize));
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semMInitialize), -1);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(&token), OS_TIMER_ERR_INTERNAL);
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_semMInitialize));
 
     /* fail to spawn the task */
-    UT_SetForceFail(UT_KEY(OCS_taskSpawn), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(0), OS_TIMER_ERR_INTERNAL);
-    UT_ClearForceFail(UT_KEY(OCS_taskSpawn));
+    UT_SetDefaultReturnValue(UT_KEY(OCS_taskSpawn), -1);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(&token), OS_TIMER_ERR_INTERNAL);
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_taskSpawn));
 
     /*
      * this call to TimeBaseCreate_Impl should also fail, because
      * this mimics the situation where the reg global is never
      * set past OS_TimerRegState_INIT
      */
-    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(0), OS_TIMER_ERR_INTERNAL);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(&token), OS_TIMER_ERR_INTERNAL);
 
     /*
      * Do Nominal/success case now.
@@ -137,7 +146,7 @@ void Test_OS_TimeBaseCreate_Impl(void)
      * mimic registration success
      */
     UT_SetHookFunction(UT_KEY(OCS_taskSpawn), UT_TimeBaseTest_TimeBaseRegHook, NULL);
-    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(&token), OS_SUCCESS);
 
     /*
      * For coverage, call the  OS_VxWorks_TimeBaseTask() function.
@@ -147,14 +156,19 @@ void Test_OS_TimeBaseCreate_Impl(void)
     /*
      * Check outputs of OS_VxWorks_RegisterTimer() function.
      */
-    UT_TimeBaseTest_ClearTimeBaseRegState(0);
-    UT_TimeBaseTest_CallRegisterTimer(0);
-    UtAssert_True(UT_TimeBaseTest_CheckTimeBaseRegisteredState(0), "timer successfully registered");
+    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_1);
+    UT_TimeBaseTest_CallRegisterTimer(OS_OBJECT_ID_UNDEFINED);
+    UtAssert_True(UT_TimeBaseTest_CheckTimeBaseRegisteredState(UT_INDEX_0), "timer successfully registered");
 
-    UT_TimeBaseTest_ClearTimeBaseRegState(0);
-    UT_SetForceFail(UT_KEY(OCS_timer_create), -1);
-    UT_TimeBaseTest_CallRegisterTimer(0);
-    UtAssert_True(UT_TimeBaseTest_CheckTimeBaseErrorState(0), "timer registration failure state");
+    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_timer_create), -1);
+    UT_TimeBaseTest_CallRegisterTimer(OS_OBJECT_ID_UNDEFINED);
+    UtAssert_True(UT_TimeBaseTest_CheckTimeBaseErrorState(UT_INDEX_0), "timer registration failure state");
+
+    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_1);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    UT_TimeBaseTest_CallRegisterTimer(OS_OBJECT_ID_UNDEFINED);
+    UtAssert_True(!UT_TimeBaseTest_CheckTimeBaseRegisteredState(UT_INDEX_0), "timer registration bad ID");
 }
 
 void Test_OS_VxWorks_SigWait(void)
@@ -166,6 +180,7 @@ void Test_OS_VxWorks_SigWait(void)
     int                   signo = OCS_SIGRTMIN;
     struct OCS_itimerspec config_value;
     osal_id_t             id;
+    OS_object_token_t     token = UT_TOKEN_0;
 
     memset(&id, 0x02, sizeof(id));
     OS_global_timebase_table[0].active_id      = id;
@@ -175,17 +190,22 @@ void Test_OS_VxWorks_SigWait(void)
     memset(&config_value, 0, sizeof(config_value));
     UT_SetDataBuffer(UT_KEY(OCS_timer_settime), &config_value, sizeof(config_value), false);
     UT_SetDataBuffer(UT_KEY(OCS_timer_gettime), &config_value, sizeof(config_value), false);
-    UT_TimeBaseTest_Setup(0, signo, true);
-    OS_TimeBaseSet_Impl(0, 1111111, 2222222);
+    UT_TimeBaseTest_Setup(UT_INDEX_0, signo, true);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1111111, 2222222), OS_SUCCESS);
+
+    UT_SetDataBuffer(UT_KEY(OCS_timer_settime), &config_value, sizeof(config_value), false);
+    UT_SetDeferredRetcode(UT_KEY(OCS_timer_gettime), 1, OCS_ERROR);
+    UT_TimeBaseTest_Setup(UT_INDEX_0, signo, true);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1111111, 2222222), OS_ERROR);
 
     UT_SetDataBuffer(UT_KEY(OCS_sigwait), &signo, sizeof(signo), false);
-    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(0), 1111111);
+    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 1111111);
     UT_SetDataBuffer(UT_KEY(OCS_sigwait), &signo, sizeof(signo), false);
-    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(0), 2222222);
+    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 2222222);
     UT_SetDataBuffer(UT_KEY(OCS_sigwait), &signo, sizeof(signo), false);
-    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(0), 2222222);
+    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 2222222);
 
-    UT_TimeBaseTest_Setup(0, 0, false);
+    UT_TimeBaseTest_Setup(UT_INDEX_0, 0, false);
     OS_global_timebase_table[0].active_id      = OS_OBJECT_ID_UNDEFINED;
     OS_timebase_table[0].nominal_interval_time = 0;
 }
@@ -195,13 +215,15 @@ void Test_OS_TimeBaseSet_Impl(void)
     /* Test Case For:
      * int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(0, 1, 1), OS_ERR_NOT_IMPLEMENTED);
+    OS_object_token_t token = UT_TOKEN_0;
 
-    UT_TimeBaseTest_Setup(0, OCS_SIGRTMIN, false);
-    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(0, 1, 1), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1, 1), OS_ERR_NOT_IMPLEMENTED);
 
-    UT_SetForceFail(UT_KEY(OCS_timer_settime), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(0, 1, 1), OS_TIMER_ERR_INVALID_ARGS);
+    UT_TimeBaseTest_Setup(UT_INDEX_0, OCS_SIGRTMIN, false);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1, 1), OS_SUCCESS);
+
+    UT_SetDefaultReturnValue(UT_KEY(OCS_timer_settime), -1);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1, 1), OS_TIMER_ERR_INVALID_ARGS);
 }
 
 void Test_OS_TimeBaseDelete_Impl(void)
@@ -209,8 +231,10 @@ void Test_OS_TimeBaseDelete_Impl(void)
     /* Test Case For:
      * int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
      */
-    UT_TimeBaseTest_Setup(0, OCS_SIGRTMIN, false);
-    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseDelete_Impl(0), OS_SUCCESS);
+    OS_object_token_t token = UT_TOKEN_0;
+
+    UT_TimeBaseTest_Setup(UT_INDEX_0, OCS_SIGRTMIN, false);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseDelete_Impl(&token), OS_SUCCESS);
 }
 
 void Test_OS_TimeBaseGetInfo_Impl(void)
@@ -219,7 +243,9 @@ void Test_OS_TimeBaseGetInfo_Impl(void)
      * int32 OS_TimeBaseGetInfo_Impl (uint32 timer_id, OS_timebase_prop_t *timer_prop)
      */
     OS_timebase_prop_t timer_prop;
-    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseGetInfo_Impl(0, &timer_prop), OS_SUCCESS);
+    OS_object_token_t  token = UT_TOKEN_0;
+
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseGetInfo_Impl(&token, &timer_prop), OS_SUCCESS);
 }
 
 /* ------------------- End of test cases --------------------------------------*/

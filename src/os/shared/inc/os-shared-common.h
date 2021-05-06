@@ -19,27 +19,36 @@
  */
 
 /**
- * \file     os-shared-common.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_COMMON_H_
-#define INCLUDE_OS_SHARED_COMMON_H_
+#ifndef OS_SHARED_COMMON_H
+#define OS_SHARED_COMMON_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-common.h"
+#include "os-shared-globaldefs.h"
 
 /*
- * A "magic number" that when written to the "ShutdownFlag" member
- * of the global state structure indicates an active shutdown request.
+ * Flag values for the "GlobalState" member the global state structure
  */
-#define OS_SHUTDOWN_MAGIC_NUMBER 0xABADC0DE
+#define OS_INIT_MAGIC_NUMBER     0xBE57C0DE /**< Indicates that OS_API_Init() has been successfully run */
+#define OS_SHUTDOWN_MAGIC_NUMBER 0xABADC0DE /**< Indicates that a system shutdown request is pending */
 
 /* Global variables that are common between implementations */
 struct OS_shared_global_vars
 {
-    bool Initialized;
+    /*
+     * Tracks whether OS_API_Init() has been called or if
+     * there is a shutdown request pending.
+     *
+     * After boot/first startup this should have 0 (from BSS clearing)
+     * After OS_API_Init() is called this has OS_INIT_MAGIC_NUMBER
+     * After OS_ApplicationShutdown() this has OS_SHUTDOWN_MAGIC_NUMBER
+     */
+    volatile uint32 GlobalState;
 
     /*
      * The console device ID used for OS_printf() calls
@@ -47,13 +56,12 @@ struct OS_shared_global_vars
     osal_id_t PrintfConsoleId;
 
     /*
-     * PrintfEnabled and ShutdownFlag are marked "volatile"
+     * PrintfEnabled and GlobalState are marked "volatile"
      * because they are updated and read by different threads
      */
-    volatile bool   PrintfEnabled;
-    volatile uint32 ShutdownFlag;
-    int32           MicroSecPerTick;
-    int32           TicksPerSecond;
+    volatile bool PrintfEnabled;
+    uint32        MicroSecPerTick;
+    uint32        TicksPerSecond;
 
     /*
      * The event handler is an application-defined callback
@@ -87,7 +95,7 @@ int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data);
 
    returns: OS_SUCCESS on success, or relevant error code
 ---------------------------------------------------------------------------------------*/
-int32 OS_API_Impl_Init(uint32 idtype);
+int32 OS_API_Impl_Init(osal_objtype_t idtype);
 
 /*
  * This functions implement a the OS-specific portion
@@ -127,4 +135,27 @@ void OS_IdleLoop_Impl(void);
  ------------------------------------------------------------------*/
 void OS_ApplicationShutdown_Impl(void);
 
-#endif /* INCLUDE_OS_SHARED_COMMON_H_ */
+/*----------------------------------------------------------------
+
+   Function: OS_strnlen
+
+    Purpose: Utility function to safely find the length of a string
+             within a fixed-size array buffer.
+
+             Provides a local OSAL routine to get the functionality
+             of the (non-C99) "strnlen()" function, via the
+             C89/C99 standard "memchr()" function instead.
+
+ ------------------------------------------------------------------*/
+static inline size_t OS_strnlen(const char *s, size_t maxlen)
+{
+    const char *end = memchr(s, 0, maxlen);
+    if (end != NULL)
+    {
+        /* actual length of string is difference */
+        maxlen = end - s;
+    }
+    return maxlen;
+}
+
+#endif /* OS_SHARED_COMMON_H */

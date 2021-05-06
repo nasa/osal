@@ -29,11 +29,11 @@
 #include "ut-adaptor-console.h"
 #include "os-shared-printf.h"
 
-#include <OCS_unistd.h>
-#include <OCS_semLib.h>
-#include <OCS_taskLib.h>
-#include <OCS_errnoLib.h>
-#include <OCS_stdio.h>
+#include "OCS_unistd.h"
+#include "OCS_semLib.h"
+#include "OCS_taskLib.h"
+#include "OCS_errnoLib.h"
+#include "OCS_stdio.h"
 
 void Test_OS_ConsoleWakeup_Impl(void)
 {
@@ -41,35 +41,43 @@ void Test_OS_ConsoleWakeup_Impl(void)
      * Test Case For:
      * void OS_ConsoleWakeup_Impl(const char *string)
      */
+    OS_object_token_t token = UT_TOKEN_0;
 
-    /* no return code - check for coverage */
-    UT_ConsoleTest_SetConsoleAsync(0, true);
-    OS_ConsoleWakeup_Impl(0);
+    /* this just gives the sem, only called in async mode */
+    OS_ConsoleWakeup_Impl(&token);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semGive)) == 1, "semGive() called in async mode");
 
-    UT_SetForceFail(UT_KEY(OCS_semGive), -1);
-    OS_ConsoleWakeup_Impl(0);
-
-    UT_ConsoleTest_SetConsoleAsync(0, false);
-    OS_console_table[0].WritePos = 1;
-    OS_ConsoleWakeup_Impl(0);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OS_ConsoleOutput_Impl)) == 1, "OS_ConsoleOutput_Impl() called in sync mode");
+    /* Failure only causes a debug message to be generated, no error handling here */
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semGive), -1);
+    OS_ConsoleWakeup_Impl(&token);
 }
 
 void Test_OS_ConsoleCreate_Impl(void)
 {
-    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(0), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskSpawn)) == 1, "taskSpawn() called");
+    OS_object_token_t token;
 
-    UT_SetForceFail(UT_KEY(OCS_semCInitialize), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(0), OS_SEM_FAILURE);
-    UT_ClearForceFail(UT_KEY(OCS_semCInitialize));
+    memset(&token, 0, sizeof(token));
 
-    UT_SetForceFail(UT_KEY(OCS_taskSpawn), OCS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(0), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_taskSpawn));
+    /* Verify coverage when configured for sync mode */
+    OS_console_table[0].IsAsync = false;
+    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OCS_taskSpawn, 0); /* Task _was not_ spawned */
 
-    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(OS_MAX_CONSOLES + 1), OS_ERR_NOT_IMPLEMENTED);
+    /* Verify coverage when configured for async mode */
+    OS_console_table[0].IsAsync = true;
+    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OCS_taskSpawn, 1); /* Task _was_ spawned */
+
+    UT_SetDefaultReturnValue(UT_KEY(OCS_semCInitialize), OCS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_SEM_FAILURE);
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_semCInitialize));
+
+    UT_SetDefaultReturnValue(UT_KEY(OCS_taskSpawn), OCS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_ERROR);
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_taskSpawn));
+
+    token.obj_idx = OS_MAX_CONSOLES + 1;
+    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_ERR_NOT_IMPLEMENTED);
 
     /* Also call the actual console task, to get coverage on it.
      * This task has an infinite loop, which only exits if semTake fails */

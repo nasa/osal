@@ -42,6 +42,8 @@
 #include "os-shared-idmap.h"
 #include "os-shared-timebase.h"
 
+#include "osapi-printf.h"
+
 /****************************************************************************************
                                      DEFINES
  ***************************************************************************************/
@@ -90,19 +92,24 @@ int32 OS_Rtems_TaskAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
+int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
 {
-    rtems_status_code status;
-    rtems_name        r_name;
-    rtems_mode        r_mode;
-    rtems_attribute   r_attributes;
+    rtems_status_code               status;
+    rtems_name                      r_name;
+    rtems_mode                      r_mode;
+    rtems_attribute                 r_attributes;
+    OS_impl_task_internal_record_t *impl;
+    OS_task_internal_record_t *     task;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+    task = OS_OBJECT_TABLE_GET(OS_task_table, *token);
 
     /*
     ** RTEMS task names are 4 byte integers.
     ** It is convenient to use the OSAL task ID in here, as we know it is already unique
     ** and trying to use the real task name would be less than useful (only 4 chars)
     */
-    r_name = OS_ObjectIdToInteger(OS_global_task_table[task_id].active_id);
+    r_name = OS_ObjectIdToInteger(OS_ObjectIdFromToken(token));
     r_mode = RTEMS_PREEMPT | RTEMS_NO_ASR | RTEMS_NO_TIMESLICE | RTEMS_INTERRUPT_LEVEL(0);
 
     /*
@@ -115,8 +122,7 @@ int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
         r_attributes |= RTEMS_FLOATING_POINT;
     }
 
-    status = rtems_task_create(r_name, OS_task_table[task_id].priority, OS_task_table[task_id].stack_size, r_mode,
-                               r_attributes, &OS_impl_task_table[task_id].id);
+    status = rtems_task_create(r_name, task->priority, task->stack_size, r_mode, r_attributes, &impl->id);
 
     /* check if task_create failed */
     if (status != RTEMS_SUCCESSFUL)
@@ -127,15 +133,14 @@ int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
     }
 
     /* will place the task in 'ready for scheduling' state */
-    status = rtems_task_start(
-        OS_impl_task_table[task_id].id,                                                      /*rtems task id*/
-        (rtems_task_entry)OS_RtemsEntry,                                                     /* task entry point */
-        (rtems_task_argument)OS_ObjectIdToInteger(OS_global_task_table[task_id].active_id)); /* passed argument  */
+    status = rtems_task_start(impl->id,                        /*rtems task id*/
+                              (rtems_task_entry)OS_RtemsEntry, /* task entry point */
+                              (rtems_task_argument)r_name);    /* passed argument  */
 
     if (status != RTEMS_SUCCESSFUL)
     {
         OS_printf("rtems_task_start failed: %s\n", rtems_status_text(status));
-        rtems_task_delete(OS_impl_task_table[task_id].id);
+        rtems_task_delete(impl->id);
         return OS_ERROR;
     }
 
@@ -151,8 +156,12 @@ int32 OS_TaskCreate_Impl(uint32 task_id, uint32 flags)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskDelete_Impl(uint32 task_id)
+int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
 {
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
     /*
     ** Try to delete the task
     ** If this fails, not much recourse - the only potential cause of failure
@@ -160,9 +169,23 @@ int32 OS_TaskDelete_Impl(uint32 task_id)
     ** and if that is true there is nothing wrong - everything is OK to continue normally.
     */
 
-    rtems_task_delete(OS_impl_task_table[task_id].id);
+    rtems_task_delete(impl->id);
     return OS_SUCCESS;
 } /* end OS_TaskDelete_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskDetach_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
+{
+    /* No-op on RTEMS */
+    return OS_SUCCESS;
+}
 
 /*----------------------------------------------------------------
  *
@@ -221,13 +244,16 @@ int32 OS_TaskDelay_Impl(uint32 milli_second)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskSetPriority_Impl(uint32 task_id, uint32 new_priority)
+int32 OS_TaskSetPriority_Impl(const OS_object_token_t *token, osal_priority_t new_priority)
 {
-    rtems_task_priority old_pri;
-    rtems_status_code   status;
+    rtems_task_priority             old_pri;
+    rtems_status_code               status;
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
 
     /* Set RTEMS Task Priority */
-    status = rtems_task_set_priority(OS_impl_task_table[task_id].id, new_priority, &old_pri);
+    status = rtems_task_set_priority(impl->id, new_priority, &old_pri);
     if (status != RTEMS_SUCCESSFUL)
     {
         OS_DEBUG("Unhandled task_set_priority error: %s\n", rtems_status_text(status));
@@ -246,12 +272,16 @@ int32 OS_TaskSetPriority_Impl(uint32 task_id, uint32 new_priority)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskMatch_Impl(uint32 task_id)
+int32 OS_TaskMatch_Impl(const OS_object_token_t *token)
 {
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
     /*
     ** Get RTEMS Task Id
     */
-    if (rtems_task_self() != OS_impl_task_table[task_id].id)
+    if (rtems_task_self() != impl->id)
     {
         return (OS_ERROR);
     }
@@ -329,7 +359,7 @@ osal_id_t OS_TaskGetId_Impl(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskGetInfo_Impl(uint32 task_id, OS_task_prop_t *task_prop)
+int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_prop)
 {
     return OS_SUCCESS;
 
@@ -343,7 +373,7 @@ int32 OS_TaskGetInfo_Impl(uint32 task_id, OS_task_prop_t *task_prop)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskValidateSystemData_Impl(const void *sysdata, uint32 sysdata_size)
+int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size)
 {
     if (sysdata == NULL || sysdata_size != sizeof(rtems_id))
     {
@@ -360,9 +390,12 @@ int32 OS_TaskValidateSystemData_Impl(const void *sysdata, uint32 sysdata_size)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-bool OS_TaskIdMatchSystemData_Impl(void *ref, uint32 local_id, const OS_common_record_t *obj)
+bool OS_TaskIdMatchSystemData_Impl(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
-    const rtems_id *target = (const rtems_id *)ref;
+    const rtems_id *                target = (const rtems_id *)ref;
+    OS_impl_task_internal_record_t *impl;
 
-    return (*target == OS_impl_task_table[local_id].id);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    return (*target == impl->id);
 }

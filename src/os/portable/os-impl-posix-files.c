@@ -41,11 +41,15 @@
  *   remove()
  *   rename()
  */
+
+#include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 
 #include "os-impl-files.h"
 #include "os-shared-file.h"
+#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -63,16 +67,19 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access)
+int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, int32 flags, int32 access_mode)
 {
-    int os_perm;
-    int os_mode;
+    int                             os_perm;
+    int                             os_mode;
+    OS_impl_file_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
 
     /*
     ** Check for a valid access mode
     ** For creating a file, OS_READ_ONLY does not make sense
     */
-    switch (access)
+    switch (access_mode)
     {
         case OS_WRITE_ONLY:
             os_perm = O_WRONLY;
@@ -100,9 +107,9 @@ int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int
 
     os_mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
 
-    OS_impl_filehandle_table[local_id].fd = open(local_path, os_perm, os_mode);
+    impl->fd = open(local_path, os_perm, os_mode);
 
-    if (OS_impl_filehandle_table[local_id].fd < 0)
+    if (impl->fd < 0)
     {
         OS_DEBUG("open(%s): %s\n", local_path, strerror(errno));
         return OS_ERROR;
@@ -112,7 +119,7 @@ int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int
      * If the flags included O_NONBLOCK, then
      * enable the "select" call on this handle.
      */
-    OS_impl_filehandle_table[local_id].selectable = ((os_perm & O_NONBLOCK) != 0);
+    impl->selectable = ((os_perm & O_NONBLOCK) != 0);
 
     return OS_SUCCESS;
 } /* end OS_FileOpen_Impl */
@@ -127,10 +134,11 @@ int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int
  *-----------------------------------------------------------------*/
 int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
 {
-    struct stat st;
-    mode_t      readbits;
-    mode_t      writebits;
-    mode_t      execbits;
+    struct stat     st;
+    mode_t          readbits;
+    mode_t          writebits;
+    mode_t          execbits;
+    struct timespec filetime;
 
     if (stat(local_path, &st) < 0)
     {
@@ -138,7 +146,31 @@ int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
     }
 
     FileStats->FileSize = st.st_size;
-    FileStats->FileTime = st.st_mtime;
+
+    /*
+     * NOTE: Traditional timestamps are only a whole number of seconds (time_t)
+     * POSIX.1-2008 expands this to have a full "struct timespec" with nanosecond
+     * resolution.
+     *
+     * GLIBC (and likely other C libraries that use similar feature selection)
+     * will expose this value based on _POSIX_C_SOURCE or _XOPEN_SOURCE minimum
+     * values.  Otherwise this just falls back to standard 1-second resolution
+     * available via the "st_mtime" member.
+     */
+#if (_POSIX_C_SOURCE >= 200809L) || (_XOPEN_SOURCE >= 700)
+    /*
+     * Better - use the full resolution (seconds + nanoseconds) as specified in POSIX.1-2008
+     */
+    filetime = st.st_mtim;
+#else
+    /*
+     * Fallback - every POSIX-compliant implementation must expose "st_mtime" field.
+     */
+    filetime.tv_sec  = st.st_mtime;
+    filetime.tv_nsec = 0;
+#endif
+
+    FileStats->FileTime = OS_TimeAssembleFromNanoseconds(filetime.tv_sec, filetime.tv_nsec);
 
     /* note that the "fst_mode" member is already zeroed by the caller */
     if (S_ISDIR(st.st_mode))
@@ -191,19 +223,30 @@ int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
+int32 OS_FileChmod_Impl(const char *local_path, uint32 access_mode)
 {
     mode_t      readbits;
     mode_t      writebits;
     struct stat st;
     int         fd;
+    int32       status;
 
     /* Open file to avoid filename race potential */
-    fd = open(local_path, O_RDONLY);
+    fd = open(local_path, O_RDONLY, 0);
     if (fd < 0)
     {
-        return OS_ERROR;
+        fd = open(local_path, O_WRONLY, 0);
+        if (fd < 0)
+        {
+            OS_DEBUG("open(%s): %s (%d)\n", local_path, strerror(errno), errno);
+            return OS_ERROR;
+        }
     }
+
+    /*
+     * NOTE: After this point, execution must proceed to the end of this routine
+     * so that the "fd" opened above can be properly closed.
+     */
 
     /*
      * In order to preserve any OTHER mode bits,
@@ -216,58 +259,81 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
      */
     if (fstat(fd, &st) < 0)
     {
-        return OS_ERROR;
-    }
-
-    /* always check world bits */
-    readbits  = S_IROTH;
-    writebits = S_IWOTH;
-
-    if (OS_IMPL_SELF_EUID == st.st_uid)
-    {
-        /* we own the file so use user bits */
-        readbits |= S_IRUSR;
-        writebits |= S_IWUSR;
-    }
-
-    if (OS_IMPL_SELF_EGID == st.st_gid)
-    {
-        /* our group owns the file so use group bits */
-        readbits |= S_IRGRP;
-        writebits |= S_IWGRP;
-    }
-
-    if (access == OS_WRITE_ONLY || access == OS_READ_WRITE)
-    {
-        /* set all "write" mode bits */
-        st.st_mode |= writebits;
+        OS_DEBUG("fstat(%s): %s (%d)\n", local_path, strerror(errno), errno);
+        status = OS_ERROR;
     }
     else
     {
-        /* clear all "write" mode bits */
-        st.st_mode &= ~writebits;
-    }
+        /* always check world bits */
+        readbits  = S_IROTH;
+        writebits = S_IWOTH;
 
-    if (access == OS_READ_ONLY || access == OS_READ_WRITE)
-    {
-        /* set all "read" mode bits */
-        st.st_mode |= readbits;
-    }
-    else
-    {
-        /* clear all "read" mode bits */
-        st.st_mode &= ~readbits;
-    }
+        if (OS_IMPL_SELF_EUID == st.st_uid)
+        {
+            /* we own the file so use user bits */
+            readbits |= S_IRUSR;
+            writebits |= S_IWUSR;
+        }
 
-    /* finally, write the modified mode back to the file */
-    if (fchmod(fd, st.st_mode) < 0)
-    {
-        return OS_ERROR;
+        if (OS_IMPL_SELF_EGID == st.st_gid)
+        {
+            /* our group owns the file so use group bits */
+            readbits |= S_IRGRP;
+            writebits |= S_IWGRP;
+        }
+
+        if (access_mode == OS_WRITE_ONLY || access_mode == OS_READ_WRITE)
+        {
+            /* set all "write" mode bits */
+            st.st_mode |= writebits;
+        }
+        else
+        {
+            /* clear all "write" mode bits */
+            st.st_mode &= ~writebits;
+        }
+
+        if (access_mode == OS_READ_ONLY || access_mode == OS_READ_WRITE)
+        {
+            /* set all "read" mode bits */
+            st.st_mode |= readbits;
+        }
+        else
+        {
+            /* clear all "read" mode bits */
+            st.st_mode &= ~readbits;
+        }
+
+        /* finally, write the modified mode back to the file */
+        if (fchmod(fd, st.st_mode) < 0)
+        {
+            /*
+             * These particular errnos generally indicate that the
+             * underlying filesystem does not support chmod()
+             *
+             * This is often the case for FAT / DOSFS filesystems
+             * which do not have UNIX-style permissions, or (in the
+             * case of EROFS) if the filesystem is mounted read-only.
+             */
+            if (errno == ENOTSUP || errno == ENOSYS || errno == EROFS)
+            {
+                status = OS_ERR_NOT_IMPLEMENTED;
+            }
+            else
+            {
+                OS_DEBUG("fchmod(%s): %s (%d)\n", local_path, strerror(errno), errno);
+                status = OS_ERROR;
+            }
+        }
+        else
+        {
+            status = OS_SUCCESS;
+        }
     }
 
     close(fd);
 
-    return OS_SUCCESS;
+    return status;
 
 } /* end OS_FileChmod_Impl */
 

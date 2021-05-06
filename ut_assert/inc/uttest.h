@@ -18,8 +18,8 @@
  *  limitations under the License.
  */
 
-/*
- * File: uttest.h
+/**
+ * \file
  *
  * Purpose: This file contains functions to implement a standard way to execute unit tests.
  *
@@ -29,8 +29,8 @@
  *    test output define the macro UT_VERBOSE.
  */
 
-#ifndef _uttest_
-#define _uttest_
+#ifndef UTTEST_H
+#define UTTEST_H
 
 #include <stdbool.h>
 
@@ -42,6 +42,11 @@
  * \brief Adds a new unit test to the test database.
  *
  * Called by the user to register a new test case with the library.
+ *
+ * Note: Nested addition of tests is not supported.  Calling
+ *       UtTest_Add from within a test function added using UtTest_Add
+ *       will not cause the nested test to execute, and will be
+ *       silently ignored.
  *
  * \param Test     Main test function to call.
  * \param Setup    Setup function, called before the test function
@@ -95,4 +100,4 @@ void UtTest_Run(void);
  */
 void UtTest_Setup(void);
 
-#endif
+#endif /* UTTEST_H */

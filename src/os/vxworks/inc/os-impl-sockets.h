@@ -19,14 +19,14 @@
  */
 
 /**
- * \file     os-impl-sockets.h
+ * \file
+ *
  * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_SOCKETS_H_
-#define INCLUDE_OS_IMPL_SOCKETS_H_
+#ifndef OS_IMPL_SOCKETS_H
+#define OS_IMPL_SOCKETS_H
 
 #include "os-impl-io.h"
 
@@ -46,4 +46,4 @@
 /* The "in.h" header file supplied in VxWorks 6.9 is missing the "in_port_t" typedef */
 typedef u_short in_port_t;
 
-#endif /* INCLUDE_OS_IMPL_SOCKETS_H_ */
+#endif /* OS_IMPL_SOCKETS_H */

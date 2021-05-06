@@ -28,6 +28,7 @@
  *   2005/07/26  A. Cudmore      | Initial version for linux
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -69,7 +70,7 @@ void OS_BSP_Initialize(void)
         {
             if (fgets(buffer, sizeof(buffer), fp) != NULL)
             {
-                OS_BSP_Global.MaxQueueDepth = strtoul(buffer, NULL, 10);
+                OS_BSP_Global.MaxQueueDepth = OSAL_BLOCKCOUNT_C(strtoul(buffer, NULL, 10));
                 BSP_DEBUG("Maximum user msg queue depth = %u\n", (unsigned int)OS_BSP_Global.MaxQueueDepth);
             }
             fclose(fp);

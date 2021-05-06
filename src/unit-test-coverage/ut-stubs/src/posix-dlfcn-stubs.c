@@ -19,8 +19,8 @@
  */
 
 /* OSAL coverage stub replacement for dlfcn.h */
-#ifndef _OSAL_STUB_DLFCN_H_
-#define _OSAL_STUB_DLFCN_H_
+#ifndef OCS_DLFCN_H
+#define OCS_DLFCN_H
 
 /* ----------------------------------------- */
 /* constants normally defined in dlfcn.h */
@@ -39,4 +39,4 @@ extern char *OCS_dlerror(void);
 extern void *OCS_dlopen(const char *file, int mode);
 extern void *OCS_dlsym(void *handle, const char *name);
 
-#endif /* _OSAL_STUB_DLFCN_H_ */
+#endif /*  OCS_DLFCN_H */

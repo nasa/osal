@@ -14,7 +14,7 @@ set(VXWORKS_BASE_SRCLIST
     src/os-impl-console.c
     src/os-impl-countsem.c
     src/os-impl-errors.c
-    src/os-impl-dirs.c
+    src/os-impl-dirs-globals.c
     src/os-impl-files.c
     src/os-impl-filesys.c
     src/os-impl-heap.c
@@ -33,6 +33,7 @@ set(VXWORKS_IMPL_SRCLIST
     ../portable/os-impl-bsd-select.c
     ../portable/os-impl-posix-io.c
     ../portable/os-impl-posix-files.c
+    ../portable/os-impl-posix-dirs.c
 )
 
 if (OSAL_CONFIG_INCLUDE_SHELL)
@@ -77,3 +78,8 @@ add_library(osal_vxworks_impl OBJECT
     ${VXWORKS_BASE_SRCLIST}
     ${VXWORKS_IMPL_SRCLIST}
 )
+
+if (CMAKE_SYSTEM_VERSION VERSION_LESS 7.0)
+    target_compile_definitions(osal_vxworks_impl PRIVATE OSAL_VXWORKS6_COMPATIBILITY)
+endif ()
+

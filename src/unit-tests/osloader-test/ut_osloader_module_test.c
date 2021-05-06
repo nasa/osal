@@ -79,7 +79,7 @@ void UT_os_module_load_test()
     /*-----------------------------------------------------*/
     testDesc = "API Not implemented";
 
-    res = OS_ModuleLoad(0, "TestModule", UT_OS_GENERIC_MODULE_NAME1);
+    res = OS_ModuleLoad(0, "TestModule", UT_OS_GENERIC_MODULE_NAME1, OS_MODULE_FLAG_LOCAL_SYMBOLS);
     if (res == OS_ERR_NOT_IMPLEMENTED)
     {
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
@@ -89,7 +89,7 @@ void UT_os_module_load_test()
     /*-----------------------------------------------------*/
     testDesc = "#1 Null-pointer-arg-1";
 
-    res = OS_ModuleLoad(0, "TestModule", UT_OS_GENERIC_MODULE_NAME1);
+    res = OS_ModuleLoad(0, "TestModule", UT_OS_GENERIC_MODULE_NAME1, OS_MODULE_FLAG_LOCAL_SYMBOLS);
     if (res == OS_INVALID_POINTER)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -98,7 +98,7 @@ void UT_os_module_load_test()
     /*-----------------------------------------------------*/
     testDesc = "#2 Null-pointer-arg-2";
 
-    res = OS_ModuleLoad(&module_id, 0, UT_OS_GENERIC_MODULE_NAME1);
+    res = OS_ModuleLoad(&module_id, 0, UT_OS_GENERIC_MODULE_NAME1, OS_MODULE_FLAG_LOCAL_SYMBOLS);
     if (res == OS_INVALID_POINTER)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -107,7 +107,7 @@ void UT_os_module_load_test()
     /*-----------------------------------------------------*/
     testDesc = "#3 Null-pointer-arg-3";
 
-    res = OS_ModuleLoad(&module_id, "TestModule", 0);
+    res = OS_ModuleLoad(&module_id, "TestModule", 0, OS_MODULE_FLAG_LOCAL_SYMBOLS);
     if (res == OS_INVALID_POINTER)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -121,7 +121,7 @@ void UT_os_module_load_test()
     {
         snprintf(module_name, sizeof(module_name), UT_OS_GENERIC_MODULE_NAME_TEMPLATE, i);
         snprintf(module_file_name, sizeof(module_file_name), UT_OS_GENERIC_MODULE_FILE_TEMPLATE, i);
-        res = OS_ModuleLoad(&module_id, module_name, module_file_name);
+        res = OS_ModuleLoad(&module_id, module_name, module_file_name, OS_MODULE_FLAG_LOCAL_SYMBOLS);
         if (res != OS_SUCCESS)
         {
             testDesc = "#4 No-free-IDs - Module Load failed";
@@ -133,7 +133,7 @@ void UT_os_module_load_test()
 
     if (test_setup_invalid == 0)
     {
-        res = OS_ModuleLoad(&module_id, "OneTooMany", UT_OS_GENERIC_MODULE_NAME2);
+        res = OS_ModuleLoad(&module_id, "OneTooMany", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
         if (res == OS_ERR_NO_FREE_IDS)
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -146,7 +146,7 @@ void UT_os_module_load_test()
     testDesc = "#5 Duplicate-name";
 
     /* Setup */
-    res = OS_ModuleLoad(&module_id2, "DUPLICATE", UT_OS_GENERIC_MODULE_NAME2);
+    res = OS_ModuleLoad(&module_id2, "DUPLICATE", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
     if (res != OS_SUCCESS)
     {
         testDesc = "#5 Duplicate-name - Module Load failed";
@@ -154,7 +154,7 @@ void UT_os_module_load_test()
     }
     else
     {
-        res = OS_ModuleLoad(&module_id, "DUPLICATE", UT_OS_GENERIC_MODULE_NAME2);
+        res = OS_ModuleLoad(&module_id, "DUPLICATE", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
         if (res == OS_ERR_NAME_TAKEN)
             UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
         else
@@ -172,7 +172,7 @@ void UT_os_module_load_test()
     /*-----------------------------------------------------*/
     testDesc = "#7 Nominal";
 
-    res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2);
+    res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
     if (res == OS_SUCCESS)
         UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
     else
@@ -227,7 +227,7 @@ void UT_os_module_unload_test()
     testDesc = "#3 Nominal";
 
     /* Setup */
-    res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2);
+    res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
     if (res != OS_SUCCESS)
     {
         testDesc = "#3 Nominal - Module Load failed";
@@ -293,7 +293,7 @@ void UT_os_module_info_test()
     testDesc = "#3 Nominal";
 
     /* Setup */
-    res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2);
+    res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
     if (res != OS_SUCCESS)
     {
         testDesc = "#3 Nominal - Module Load failed";

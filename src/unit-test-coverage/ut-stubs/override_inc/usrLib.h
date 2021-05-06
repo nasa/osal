@@ -18,15 +18,21 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for usrLib.h */
-#ifndef _OSAL_OVERRIDE_USRLIB_H_
-#define _OSAL_OVERRIDE_USRLIB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for usrLib.h
+ */
 
-#include <OCS_usrLib.h>
+#ifndef OVERRIDE_USRLIB_H
+#define OVERRIDE_USRLIB_H
+
+#include "OCS_usrLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */
 /* mappings for declarations in usrLib.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_USRLIB_H_ */
+#endif /* OVERRIDE_USRLIB_H */

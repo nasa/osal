@@ -47,6 +47,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 /*
  * User defined include files
@@ -54,6 +55,16 @@
 #include "os-shared-common.h"
 #include "os-shared-idmap.h"
 #include "os-shared-printf.h"
+
+/*
+ * The choice of whether to run a separate utility task
+ * comes from osal compile-time config
+ */
+#ifdef OSAL_CONFIG_CONSOLE_ASYNC
+#define OS_CONSOLE_IS_ASYNC true
+#else
+#define OS_CONSOLE_IS_ASYNC false
+#endif
 
 /* reserve buffer memory for the printf console device */
 static char OS_printf_buffer_mem[(sizeof(OS_PRINTF_CONSOLE_NAME) + OS_BUFFER_SIZE) * OS_BUFFER_MSG_DEPTH];
@@ -78,33 +89,32 @@ int32 OS_ConsoleAPI_Init(void)
 {
     OS_console_internal_record_t *console;
     int32                         return_code;
-    uint32                        local_id;
-    OS_common_record_t *          record;
+    OS_object_token_t             token;
 
     memset(&OS_console_table, 0, sizeof(OS_console_table));
 
     /*
      * Configure a console device to be used for OS_printf() calls.
      */
-    return_code = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_CONSOLE, OS_PRINTF_CONSOLE_NAME, &local_id, &record);
+    return_code = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_CONSOLE, OS_PRINTF_CONSOLE_NAME, &token);
     if (return_code == OS_SUCCESS)
     {
-        console = &OS_console_table[local_id];
+        console = OS_OBJECT_TABLE_GET(OS_console_table, token);
 
-        record->name_entry = console->device_name;
-        strncpy(console->device_name, OS_PRINTF_CONSOLE_NAME, sizeof(console->device_name) - 1);
-        console->device_name[sizeof(console->device_name) - 1] = 0;
+        /* Reset the table entry and save the name */
+        OS_OBJECT_INIT(token, console, device_name, OS_PRINTF_CONSOLE_NAME);
 
         /*
          * Initialize the ring buffer pointers
          */
         console->BufBase = OS_printf_buffer_mem;
         console->BufSize = sizeof(OS_printf_buffer_mem);
+        console->IsAsync = OS_CONSOLE_IS_ASYNC;
 
-        return_code = OS_ConsoleCreate_Impl(local_id);
+        return_code = OS_ConsoleCreate_Impl(&token);
 
         /* Check result, finalize record, and unlock global table. */
-        return_code = OS_ObjectIdFinalizeNew(return_code, record, &OS_SharedGlobalVars.PrintfConsoleId);
+        return_code = OS_ObjectIdFinalizeNew(return_code, &token, &OS_SharedGlobalVars.PrintfConsoleId);
 
         /*
          * Printf can be enabled by default now that the buffer is configured.
@@ -112,7 +122,7 @@ int32 OS_ConsoleAPI_Init(void)
         OS_SharedGlobalVars.PrintfEnabled = true;
     }
 
-    return OS_SUCCESS;
+    return return_code;
 } /* end OS_ConsoleAPI_Init */
 
 /*
@@ -137,10 +147,10 @@ int32 OS_ConsoleAPI_Init(void)
  *    Either the entire string should be written, or none of it.
  *
  *-----------------------------------------------------------------*/
-static int32 OS_Console_CopyOut(OS_console_internal_record_t *console, const char *Str, uint32 *NextWritePos)
+static int32 OS_Console_CopyOut(OS_console_internal_record_t *console, const char *Str, size_t *NextWritePos)
 {
     const char *pmsg;
-    uint32      WriteOffset;
+    size_t      WriteOffset;
     int32       return_code;
 
     return_code = OS_ERROR;
@@ -192,15 +202,14 @@ static int32 OS_Console_CopyOut(OS_console_internal_record_t *console, const cha
 int32 OS_ConsoleWrite(osal_id_t console_id, const char *Str)
 {
     int32                         return_code;
-    OS_common_record_t *          record;
-    uint32                        local_id;
+    OS_object_token_t             token;
     OS_console_internal_record_t *console;
-    uint32                        PendingWritePos;
+    size_t                        PendingWritePos;
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_CONSOLE, console_id, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_CONSOLE, console_id, &token);
     if (return_code == OS_SUCCESS)
     {
-        console = &OS_console_table[local_id];
+        console = OS_OBJECT_TABLE_GET(OS_console_table, token);
 
         /*
          * The entire string should be put to the ring buffer,
@@ -236,9 +245,18 @@ int32 OS_ConsoleWrite(osal_id_t console_id, const char *Str)
          * This is done while still locked, so it can support
          * either a synchronous or asynchronous implementation.
          */
-        OS_ConsoleWakeup_Impl(local_id);
+        if (console->IsAsync)
+        {
+            /* post the sem for the utility task to run */
+            OS_ConsoleWakeup_Impl(&token);
+        }
+        else
+        {
+            /* output directly */
+            OS_ConsoleOutput_Impl(&token);
+        }
 
-        OS_Unlock_Global(OS_OBJECT_TYPE_OS_CONSOLE);
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
@@ -258,7 +276,9 @@ void OS_printf(const char *String, ...)
     char    msg_buffer[OS_BUFFER_SIZE];
     int     actualsz;
 
-    if (!OS_SharedGlobalVars.Initialized)
+    BUGCHECK((String) != NULL, )
+
+    if (OS_SharedGlobalVars.GlobalState != OS_INIT_MAGIC_NUMBER)
     {
         /*
          * Catch some historical mis-use of the OS_printf() call.
@@ -277,14 +297,11 @@ void OS_printf(const char *String, ...)
          * If debugging is not enabled, then this message will be silently
          * discarded.
          */
-        OS_DEBUG("BUG: OS_printf() called before init: %s", String);
+        OS_DEBUG("BUG: OS_printf() called when OSAL not initialized: %s", String);
     }
     else if (OS_SharedGlobalVars.PrintfEnabled)
     {
-        /*
-         * Call vsnprintf() to determine the actual size of the
-         * string we are going to write to the buffer after formatting.
-         */
+        /* Format and determine the size of string to write */
         va_start(va, String);
         actualsz = vsnprintf(msg_buffer, sizeof(msg_buffer), String, va);
         va_end(va);

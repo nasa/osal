@@ -60,18 +60,18 @@
  *-----------------------------------------------------------------*/
 int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
 {
-    int32               return_code;
-    uint32              local_id;
-    OS_common_record_t *record;
+    int32             return_code;
+    OS_object_token_t token;
 
-    if (StateFlags == NULL)
-        return OS_INVALID_POINTER;
+    /* check parameters */
+    OS_CHECK_POINTER(StateFlags);
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, objid, &local_id, &record);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, objid, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_SelectSingle_Impl(local_id, StateFlags, msecs);
-        OS_ObjectIdRefcountDecr(record);
+        return_code = OS_SelectSingle_Impl(&token, StateFlags, msecs);
+
+        OS_ObjectIdRelease(&token);
     }
 
     return return_code;
@@ -88,6 +88,12 @@ int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
 int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
 {
     int32 return_code;
+
+    /*
+     * Check parameters
+     *
+     * Note "ReadSet" and "WriteSet" are not checked, because in certain configurations they can be validly null.
+     */
 
     /*
      * This does not currently increment any refcounts.
@@ -109,8 +115,8 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
  *-----------------------------------------------------------------*/
 int32 OS_SelectFdZero(OS_FdSet *Set)
 {
-    if (Set == NULL)
-        return OS_INVALID_POINTER;
+    /* check parameters */
+    OS_CHECK_POINTER(Set);
 
     memset(Set, 0, sizeof(OS_FdSet));
     return OS_SUCCESS;
@@ -126,15 +132,20 @@ int32 OS_SelectFdZero(OS_FdSet *Set)
  *-----------------------------------------------------------------*/
 int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid)
 {
-    int32  return_code;
-    uint32 local_id;
+    int32        return_code;
+    osal_index_t local_id;
 
-    if (Set == NULL)
-        return OS_INVALID_POINTER;
+    /* check parameters */
+    OS_CHECK_POINTER(Set);
 
     return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
     if (return_code == OS_SUCCESS)
     {
+        /*
+         * Sets the bit in the uint8 object_ids array that corresponds
+         * to the local_id where local_id >> 3 determines the array element,
+         * and the mask/shift sets the bit within that element.
+         */
         Set->object_ids[local_id >> 3] |= 1 << (local_id & 0x7);
     }
 
@@ -151,15 +162,20 @@ int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid)
  *-----------------------------------------------------------------*/
 int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid)
 {
-    int32  return_code;
-    uint32 local_id;
+    int32        return_code;
+    osal_index_t local_id;
 
-    if (Set == NULL)
-        return OS_INVALID_POINTER;
+    /* check parameters */
+    OS_CHECK_POINTER(Set);
 
     return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
     if (return_code == OS_SUCCESS)
     {
+        /*
+         * Clears the bit in the uint8 object_ids array that corresponds
+         * to the local_id where local_id >> 3 determines the array element,
+         * and the mask/shift clears the bit within that element.
+         */
         Set->object_ids[local_id >> 3] &= ~(1 << (local_id & 0x7));
     }
 
@@ -176,11 +192,11 @@ int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid)
  *-----------------------------------------------------------------*/
 bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid)
 {
-    int32  return_code;
-    uint32 local_id;
+    int32        return_code;
+    osal_index_t local_id;
 
-    if (Set == NULL)
-        return false;
+    /* check parameters */
+    BUGCHECK(Set != NULL, false);
 
     return_code = OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_STREAM, objid, &local_id);
     if (return_code != OS_SUCCESS)
@@ -188,5 +204,10 @@ bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid)
         return false;
     }
 
+    /*
+     * Returns boolean for if the bit in the uint8 object_ids array that corresponds
+     * to the local_id is set where local_id >> 3 determines the array element,
+     * and the mask/shift checks the bit within that element.
+     */
     return ((Set->object_ids[local_id >> 3] >> (local_id & 0x7)) & 0x1);
 } /* end OS_SelectFdIsSet */

@@ -29,7 +29,7 @@
 #include "os-shared-task.h"
 #include "os-shared-timebase.h"
 
-#include <OCS_stdlib.h>
+#include "OCS_stdlib.h"
 
 /*
 ** OS_CleanUpObject() is an internal helper function.
@@ -57,9 +57,9 @@ static int32 TimeBaseInitGlobal(void *UserObj, int32 StubRetcode, uint32 CallCou
 
 static int32 ObjectDeleteCountHook(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context)
 {
-    uint32 *counter = (uint32 *)Context->ArgPtr[1];
+    uint32 *counter = UT_Hook_GetArgValueByName(Context, "callback_arg", uint32 *);
 
-    if (CallCount == 0)
+    if (CallCount < 2)
     {
         *counter = 1;
     }
@@ -77,6 +77,11 @@ static int32 SetShutdownFlagHook(void *UserObj, int32 StubRetcode, uint32 CallCo
     return StubRetcode;
 }
 
+static int32 TestEventHandlerHook(OS_Event_t event, osal_id_t object_id, void *data)
+{
+    return UT_DEFAULT_IMPL(TestEventHandlerHook);
+}
+
 /*
 **********************************************************************************
 **          PUBLIC API FUNCTIONS
@@ -90,37 +95,52 @@ void Test_OS_API_Init(void)
     /* Execute Test */
     Test_MicroSecPerTick            = 0;
     Test_TicksPerSecond             = 0;
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.GlobalState = 0;
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_ERROR);
+    UtAssert_UINT32_EQ(OS_SharedGlobalVars.GlobalState, OS_SHUTDOWN_MAGIC_NUMBER);
 
     Test_MicroSecPerTick            = 1000;
     Test_TicksPerSecond             = 1000;
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.GlobalState = 0;
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_SUCCESS);
 
     Test_MicroSecPerTick            = 1000;
     Test_TicksPerSecond             = 1001;
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.GlobalState = 0;
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_SUCCESS);
+    UtAssert_UINT32_EQ(OS_SharedGlobalVars.GlobalState, OS_INIT_MAGIC_NUMBER);
 
-    /* Second call should return ERROR */
-    OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_ERROR);
+    /* Second call should return SUCCESS (but is a no-op) */
+    OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_SUCCESS);
+    UtAssert_UINT32_EQ(OS_SharedGlobalVars.GlobalState, OS_INIT_MAGIC_NUMBER);
 
     /* other error paths */
-    OS_SharedGlobalVars.Initialized = false;
-    UT_SetForceFail(UT_KEY(OS_ObjectIdInit), -222);
+    OS_SharedGlobalVars.GlobalState = 0;
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdInit), -222);
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), -222);
     UT_ResetState(UT_KEY(OS_ObjectIdInit));
 
-    OS_SharedGlobalVars.Initialized = false;
-    UT_SetForceFail(UT_KEY(OS_API_Impl_Init), -333);
+    OS_SharedGlobalVars.GlobalState = 0;
+    UT_SetDefaultReturnValue(UT_KEY(OS_API_Impl_Init), -333);
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), -333);
     UT_ResetState(UT_KEY(OS_API_Impl_Init));
 
-    OS_SharedGlobalVars.Initialized = false;
-    UT_SetForceFail(UT_KEY(OS_TaskAPI_Init), -444);
+    OS_SharedGlobalVars.GlobalState = 0;
+    UT_SetDefaultReturnValue(UT_KEY(OS_TaskAPI_Init), -444);
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), -444);
     UT_ResetState(UT_KEY(OS_TaskAPI_Init));
+}
+
+void Test_OS_API_Teardown(void)
+{
+    /*
+     * Test Case For:
+     * void OS_API_Teardown(void);
+     */
+
+    /* Just need to call the API for coverage; there are no conditionals
+     * and the internal functions are each tested separately */
+    OS_API_Teardown();
 }
 
 void Test_OS_ApplicationExit(void)
@@ -151,7 +171,7 @@ void Test_OS_CleanUpObject(void)
     while (objtype < OS_OBJECT_TYPE_USER)
     {
         UT_ResetState(0);
-        UT_SetForceFail(UT_KEY(OS_IdentifyObject), objtype);
+        UT_SetDefaultReturnValue(UT_KEY(OS_IdentifyObject), objtype);
 
         switch (objtype)
         {
@@ -195,7 +215,7 @@ void Test_OS_CleanUpObject(void)
             /* note the return code here is ignored -
              * the goal is simply to defeat the default
              * check that the objid was valid (it isn't) */
-            UT_SetForceFail(delhandler, OS_ERROR);
+            UT_SetDefaultReturnValue(delhandler, OS_ERROR);
             OS_CleanUpObject(OS_OBJECT_ID_UNDEFINED, &ActualObjs);
 
             CallCount = UT_GetStubCount(delhandler);
@@ -250,12 +270,45 @@ void Test_OS_IdleLoopAndShutdown(void)
      */
     uint32 CallCount = 0;
 
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
+
     UT_SetHookFunction(UT_KEY(OS_IdleLoop_Impl), SetShutdownFlagHook, NULL);
     OS_IdleLoop();
 
     CallCount = UT_GetStubCount(UT_KEY(OS_ApplicationShutdown_Impl));
 
     UtAssert_True(CallCount == 1, "OS_ApplicationShutdown_Impl() call count (%lu) == 1", (unsigned long)CallCount);
+}
+
+void Test_OS_NotifyEvent(void)
+{
+    /*
+     * Test cases for:
+     * int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data)
+     * int32 OS_RegisterEventHandler(OS_EventHandler_t handler)
+     */
+
+    OS_SharedGlobalVars.EventHandler = NULL;
+
+    /* With no hook function registered OS_NotifyEvent() should return success */
+    OSAPI_TEST_FUNCTION_RC(OS_NotifyEvent(OS_EVENT_RESERVED, OS_OBJECT_ID_UNDEFINED, NULL), OS_SUCCESS);
+
+    /* Registering a NULL hook function should fail */
+    OSAPI_TEST_FUNCTION_RC(OS_RegisterEventHandler(NULL), OS_INVALID_POINTER);
+
+    /* Now Register the locally-defined hook function */
+    OSAPI_TEST_FUNCTION_RC(OS_RegisterEventHandler(TestEventHandlerHook), OS_SUCCESS);
+
+    /* Now this should invoke the test hook */
+    OSAPI_TEST_FUNCTION_RC(OS_NotifyEvent(OS_EVENT_RESERVED, OS_OBJECT_ID_UNDEFINED, NULL), OS_SUCCESS);
+    UtAssert_STUB_COUNT(TestEventHandlerHook, 1);
+
+    /* Should also return whatever the hook returned */
+    UT_SetDefaultReturnValue(UT_KEY(TestEventHandlerHook), -12345);
+    OSAPI_TEST_FUNCTION_RC(OS_NotifyEvent(OS_EVENT_RESERVED, OS_OBJECT_ID_UNDEFINED, NULL), -12345);
+    UtAssert_STUB_COUNT(TestEventHandlerHook, 2);
+
+    OS_SharedGlobalVars.EventHandler = NULL;
 }
 
 /* ------------------- End of test cases --------------------------------------*/
@@ -288,4 +341,6 @@ void UtTest_Setup(void)
     ADD_TEST(OS_CleanUpObject);
     ADD_TEST(OS_IdleLoopAndShutdown);
     ADD_TEST(OS_ApplicationExit);
+    ADD_TEST(OS_NotifyEvent);
+    ADD_TEST(OS_API_Teardown);
 }

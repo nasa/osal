@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for semLib.h */
-#ifndef _OSAL_STUB_SEMLIB_H_
-#define _OSAL_STUB_SEMLIB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for semLib.h
+ */
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#ifndef OCS_SEMLIB_H
+#define OCS_SEMLIB_H
+
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in semLib.h */
@@ -70,4 +76,4 @@ extern OCS_STATUS OCS_semFlush(OCS_SEM_ID semId);
 extern OCS_STATUS OCS_semTake(OCS_SEM_ID semId, int timeout);
 extern OCS_STATUS OCS_semGive(OCS_SEM_ID semId);
 
-#endif /* _OSAL_STUB_SEMLIB_H_ */
+#endif /* OCS_SEMLIB_H */

@@ -35,10 +35,13 @@
 #include <string.h>
 #include <errno.h>
 
+#include "osapi-printf.h"
+
 #include "bsp-impl.h"
 
 #include "os-impl-console.h"
 #include "os-shared-printf.h"
+#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                 CONSOLE OUTPUT
@@ -52,14 +55,14 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_ConsoleOutput_Impl(uint32 local_id)
+void OS_ConsoleOutput_Impl(const OS_object_token_t *token)
 {
-    uint32                        StartPos;
-    uint32                        EndPos;
-    long                          WriteSize;
+    size_t                        StartPos;
+    size_t                        EndPos;
+    size_t                        WriteSize;
     OS_console_internal_record_t *console;
 
-    console  = &OS_console_table[local_id];
+    console  = OS_OBJECT_TABLE_GET(OS_console_table, *token);
     StartPos = console->ReadPos;
     EndPos   = console->WritePos;
     while (StartPos != EndPos)

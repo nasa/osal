@@ -67,6 +67,9 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     /*
      * This test needs to load the modules from the filesystem, so
      * there must be a virtual path corresponding to the path where
@@ -82,6 +85,7 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_module_unload_test, NULL, NULL, "OS_ModuleUnload");
     UtTest_Add(UT_os_module_info_test, NULL, NULL, "OS_ModuleInfo");
 
+    UtTest_Add(UT_os_module_symbol_lookup_test, NULL, NULL, "OS_ModuleSymbolLookup");
     UtTest_Add(UT_os_symbol_lookup_test, NULL, NULL, "OS_SymbolLookup");
     UtTest_Add(UT_os_symbol_table_dump_test, NULL, NULL, "OS_SymbolTableDump");
 }

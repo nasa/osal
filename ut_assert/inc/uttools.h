@@ -18,14 +18,14 @@
  *  limitations under the License.
  */
 
-/*
- * File: uttools.h
+/**
+ * \file
  *
  * Purpose: This file contains functions to implement a set of tools for use in unit testing.
  */
 
-#ifndef _uttools_
-#define _uttools_
+#ifndef UTTOOLS_H
+#define UTTOOLS_H
 
 /*
  * Includes
@@ -74,4 +74,4 @@ bool UtMem2BinFileCmp(const void *Memory, const char *Filename);
 #define UtPrintf(...) UtAssert_Message(UTASSERT_CASETYPE_INFO, __FILE__, __LINE__, __VA_ARGS__)
 #define UtDebug(...)  UtAssert_Message(UTASSERT_CASETYPE_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
 
-#endif
+#endif /* UTTOOLS_H */

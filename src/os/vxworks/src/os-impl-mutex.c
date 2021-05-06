@@ -32,6 +32,7 @@
 
 #include "os-impl-mutex.h"
 #include "os-shared-mutex.h"
+#include "os-shared-idmap.h"
 
 #include <errnoLib.h>
 
@@ -67,13 +68,16 @@ int32 OS_VxWorks_MutexAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options)
+int32 OS_MutSemCreate_Impl(const OS_object_token_t *token, uint32 options)
 {
-    SEM_ID tmp_sem_id;
+    SEM_ID                            tmp_sem_id;
+    OS_impl_mutsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
 
     /* Initialize VxWorks Semaphore.
      * The memory for this sem is statically allocated. */
-    tmp_sem_id = semMInitialize(OS_impl_mutex_table[sem_id].mmem, SEM_Q_PRIORITY | SEM_INVERSION_SAFE);
+    tmp_sem_id = semMInitialize(impl->mmem, SEM_Q_PRIORITY | SEM_INVERSION_SAFE);
 
     if (tmp_sem_id == (SEM_ID)0)
     {
@@ -81,7 +85,7 @@ int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options)
         return OS_SEM_FAILURE;
     }
 
-    OS_impl_mutex_table[sem_id].vxid = tmp_sem_id;
+    impl->vxid = tmp_sem_id;
     return OS_SUCCESS;
 } /* end OS_MutSemCreate_Impl */
 
@@ -93,12 +97,16 @@ int32 OS_MutSemCreate_Impl(uint32 sem_id, uint32 options)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemDelete_Impl(uint32 sem_id)
+int32 OS_MutSemDelete_Impl(const OS_object_token_t *token)
 {
+    OS_impl_mutsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
+
     /*
      * As the memory for the sem is statically allocated, delete is a no-op.
      */
-    OS_impl_mutex_table[sem_id].vxid = 0;
+    impl->vxid = 0;
     return OS_SUCCESS;
 
 } /* end OS_MutSemDelete_Impl */
@@ -111,10 +119,14 @@ int32 OS_MutSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGive_Impl(uint32 sem_id)
+int32 OS_MutSemGive_Impl(const OS_object_token_t *token)
 {
+    OS_impl_mutsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
+
     /* Give VxWorks Semaphore */
-    return OS_VxWorks_GenericSemGive(OS_impl_mutex_table[sem_id].vxid);
+    return OS_VxWorks_GenericSemGive(impl->vxid);
 } /* end OS_MutSemGive_Impl */
 
 /*----------------------------------------------------------------
@@ -125,10 +137,14 @@ int32 OS_MutSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemTake_Impl(uint32 sem_id)
+int32 OS_MutSemTake_Impl(const OS_object_token_t *token)
 {
+    OS_impl_mutsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
+
     /* Take VxWorks Semaphore */
-    return OS_VxWorks_GenericSemTake(OS_impl_mutex_table[sem_id].vxid, WAIT_FOREVER);
+    return OS_VxWorks_GenericSemTake(impl->vxid, WAIT_FOREVER);
 } /* end OS_MutSemTake_Impl */
 
 /*----------------------------------------------------------------
@@ -139,7 +155,7 @@ int32 OS_MutSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_MutSemGetInfo_Impl(uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
+int32 OS_MutSemGetInfo_Impl(const OS_object_token_t *token, OS_mut_sem_prop_t *mut_prop)
 {
     /* VxWorks provides no additional info */
     return OS_SUCCESS;

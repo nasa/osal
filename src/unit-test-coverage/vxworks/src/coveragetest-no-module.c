@@ -27,13 +27,13 @@
 #include "os-vxworks-coveragetest.h"
 #include "ut-adaptor-no-module.h"
 
-#include <OCS_string.h>
-#include <OCS_fcntl.h>
-#include <OCS_unistd.h>
-#include <OCS_errnoLib.h>
-#include <OCS_moduleLib.h>
-#include <OCS_loadLib.h>
-#include <OCS_unldLib.h>
+#include "OCS_string.h"
+#include "OCS_fcntl.h"
+#include "OCS_unistd.h"
+#include "OCS_errnoLib.h"
+#include "OCS_moduleLib.h"
+#include "OCS_loadLib.h"
+#include "OCS_unldLib.h"
 
 void Test_OS_VxWorks_ModuleAPI_Impl_Init(void)
 {
@@ -49,12 +49,12 @@ void Test_OS_ModuleLoad_Impl(void)
      * int32 OS_ModuleLoad_Impl ( uint32 module_id, char *translated_path )
      */
     OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(0, "local"), OS_SUCCESS);
-    UT_SetForceFail(UT_KEY(OCS_open), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
     OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(0, "local"), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_open));
-    UT_SetForceFail(UT_KEY(OCS_loadModule), OCS_ERROR);
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_open));
+    UT_SetDefaultReturnValue(UT_KEY(OCS_loadModule), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad_Impl(0, "local"), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_loadModule));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_loadModule));
 }
 
 void Test_OS_ModuleUnload_Impl(void)
@@ -63,9 +63,9 @@ void Test_OS_ModuleUnload_Impl(void)
      * int32 OS_ModuleUnload_Impl ( uint32 module_id )
      */
     OSAPI_TEST_FUNCTION_RC(OS_ModuleUnload_Impl(0), OS_SUCCESS);
-    UT_SetForceFail(UT_KEY(OCS_unldByModuleId), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_unldByModuleId), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ModuleUnload_Impl(0), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_unldByModuleId));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_unldByModuleId));
 }
 
 void Test_OS_ModuleGetInfo_Impl(void)
@@ -84,9 +84,9 @@ void Test_OS_ModuleGetInfo_Impl(void)
      * but the boolean in the output struct should be false.
      */
     memset(&module_prop, 0, sizeof(module_prop));
-    UT_SetForceFail(UT_KEY(OCS_moduleInfoGet), OCS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_moduleInfoGet), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ModuleGetInfo_Impl(0, &module_prop), OS_SUCCESS);
-    UT_ClearForceFail(UT_KEY(OCS_moduleInfoGet));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_moduleInfoGet));
     UtAssert_True(!module_prop.addr.valid, "addresses in output not valid");
 }
 

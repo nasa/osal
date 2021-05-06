@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_unistd.h>
+#include "OCS_unistd.h"
 
 #define OCS_MAX_RDWR_SIZE 0x01000000 /* 16MB */
 
@@ -99,7 +99,7 @@ OCS_off_t OCS_lseek(int fd, OCS_off_t offset, int whence)
 OCS_ssize_t OCS_read(int fd, void *buf, size_t n)
 {
     int32  Status;
-    uint32 CopySize;
+    size_t CopySize;
 
     Status = UT_DEFAULT_IMPL_RC(OCS_read, OCS_MAX_RDWR_SIZE);
 
@@ -159,7 +159,7 @@ long int OCS_sysconf(int name)
 OCS_ssize_t OCS_write(int fd, const void *buf, size_t n)
 {
     int32  Status;
-    uint32 CopySize;
+    size_t CopySize;
 
     Status = UT_DEFAULT_IMPL_RC(OCS_write, OCS_MAX_RDWR_SIZE);
 

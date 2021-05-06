@@ -27,7 +27,7 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-binsem.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /*
 **********************************************************************************
@@ -62,7 +62,7 @@ void Test_OS_BinSemCreate(void)
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
     OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(NULL, NULL, 0, 0), OS_INVALID_POINTER);
-    UT_SetForceFail(UT_KEY(OCS_strlen), 10 + OS_MAX_API_NAME);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(&objid, "UT", 0, 0), OS_ERR_NAME_TOO_LONG);
 }
 
@@ -146,11 +146,11 @@ void Test_OS_BinSemGetIdByName(void)
     int32     actual   = ~OS_SUCCESS;
     osal_id_t objid;
 
-    UT_SetForceFail(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_BinSemGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_BinSemGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
     actual   = OS_BinSemGetIdByName(&objid, "NF");
@@ -165,18 +165,12 @@ void Test_OS_BinSemGetInfo(void)
      * Test Case For:
      * int32 OS_BinSemGetInfo (uint32 sem_id, OS_bin_sem_prop_t *bin_prop)
      */
-    int32               expected = OS_SUCCESS;
-    int32               actual   = ~OS_SUCCESS;
-    OS_bin_sem_prop_t   prop;
-    uint32              local_index = 1;
-    OS_common_record_t  utrec;
-    OS_common_record_t *rptr = &utrec;
+    int32             expected = OS_SUCCESS;
+    int32             actual   = ~OS_SUCCESS;
+    OS_bin_sem_prop_t prop;
 
-    memset(&utrec, 0, sizeof(utrec));
-    utrec.creator    = UT_OBJID_OTHER;
-    utrec.name_entry = "ABC";
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
+    OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_BINSEM, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
+
     actual = OS_BinSemGetInfo(UT_OBJID_1, &prop);
 
     UtAssert_True(actual == expected, "OS_BinSemGetInfo() (%ld) == OS_SUCCESS", (long)actual);

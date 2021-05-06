@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sched.h */
-#ifndef _OSAL_OVERRIDE_SCHED_H_
-#define _OSAL_OVERRIDE_SCHED_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sched.h
+ */
 
-#include <OCS_sched.h>
+#ifndef OVERRIDE_SCHED_H
+#define OVERRIDE_SCHED_H
+
+#include "OCS_sched.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sched.h */
@@ -36,4 +42,4 @@
 #define sched_get_priority_max OCS_sched_get_priority_max
 #define sched_get_priority_min OCS_sched_get_priority_min
 
-#endif /* _OSAL_OVERRIDE_SCHED_H_ */
+#endif /* OVERRIDE_SCHED_H */

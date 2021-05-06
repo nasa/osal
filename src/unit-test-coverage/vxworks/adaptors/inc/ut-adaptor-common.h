@@ -19,18 +19,18 @@
  */
 
 /**
- * \file     ut-adaptor-common.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-common
  */
 
-#ifndef INCLUDE_UT_ADAPTOR_COMMON_H_
-#define INCLUDE_UT_ADAPTOR_COMMON_H_
+#ifndef UT_ADAPTOR_COMMON_H
+#define UT_ADAPTOR_COMMON_H
 
-#include <common_types.h>
-#include <utstubs.h>
-#include <OCS_semLib.h>
+#include "common_types.h"
+#include "utstubs.h"
+#include "OCS_semLib.h"
 
 /*****************************************************
  *
@@ -55,4 +55,4 @@ extern int32 OS_VxWorks_GenericSemGive(OCS_SEM_ID vxid);
  */
 extern const UT_EntryKey_t UT_StubKey_OS_VxWorks_TableMutex_Init;
 
-#endif /* INCLUDE_UT_ADAPTOR_COMMON_H_ */
+#endif /* UT_ADAPTOR_COMMON_H */

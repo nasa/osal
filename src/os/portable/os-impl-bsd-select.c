@@ -42,9 +42,9 @@
 #include <errno.h>
 #include <time.h>
 
-#include <osapi.h>
 #include "os-impl-select.h"
 #include "os-shared-select.h"
+#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -72,32 +72,40 @@
  *
  * returns: Highest numbered file descriptor in the output fd_set
  *-----------------------------------------------------------------*/
-static int OS_FdSet_ConvertIn_Impl(fd_set *os_set, OS_FdSet *OSAL_set)
+static int32 OS_FdSet_ConvertIn_Impl(int *os_maxfd, fd_set *os_set, const OS_FdSet *OSAL_set)
 {
-    uint32 offset;
-    uint32 bit;
-    uint32 id;
-    uint8  objids;
-    int    osfd;
-    int    maxfd;
+    size_t       offset;
+    size_t       bit;
+    osal_index_t id;
+    uint8        objids;
+    int          osfd;
+    int32        status;
 
-    maxfd = -1;
+    status = OS_SUCCESS;
     for (offset = 0; offset < sizeof(OSAL_set->object_ids); ++offset)
     {
         objids = OSAL_set->object_ids[offset];
         bit    = 0;
         while (objids != 0)
         {
-            if (objids & 0x01)
+            id = OSAL_INDEX_C((offset * 8) + bit);
+            if ((objids & 0x01) != 0 && id < OS_MAX_NUM_OPEN_FILES)
             {
-                id   = (offset * 8) + bit;
                 osfd = OS_impl_filehandle_table[id].fd;
-                if (osfd >= 0 && OS_impl_filehandle_table[id].selectable)
+                if (osfd >= 0)
                 {
-                    FD_SET(osfd, os_set);
-                    if (osfd > maxfd)
+                    if (osfd >= FD_SETSIZE || !OS_impl_filehandle_table[id].selectable)
                     {
-                        maxfd = osfd;
+                        /* out of range of select() implementation */
+                        status = OS_ERR_OPERATION_NOT_SUPPORTED;
+                    }
+                    else
+                    {
+                        FD_SET(osfd, os_set);
+                        if (osfd > *os_maxfd)
+                        {
+                            *os_maxfd = osfd;
+                        }
                     }
                 }
             }
@@ -106,41 +114,42 @@ static int OS_FdSet_ConvertIn_Impl(fd_set *os_set, OS_FdSet *OSAL_set)
         }
     }
 
-    return maxfd;
+    return status;
 } /* end OS_FdSet_ConvertIn_Impl */
 
-/*----------------------------------------------------------------
- * Function: OS_FdSet_ConvertOut_Impl
+/*----------------------------------------------------------------*/
+/**
+ * \brief Convert a POSIX fd_set structure into an OSAL OS_FdSet
+ *        which can then be returned back to the application.
  *
- *  Purpose: Local helper routine, not part of OSAL API.
+ * Local helper routine, not part of OSAL API.
  *
- *          Convert a POSIX fd_set structure into an OSAL OS_FdSet
- *          which can then be returned back to the application.
+ * This un-sets bits in OSAL_set that are set in the OS_set
  *
- *          This actually un-sets any bits in the "Input" parameter
- *          which are also set in the "output" parameter.
+ * \param[in]      OS_set   The fd_set from select
+ * \param[in, out] OSAL_set The OS_FdSet updated by this helper
  *-----------------------------------------------------------------*/
-static void OS_FdSet_ConvertOut_Impl(fd_set *output, OS_FdSet *Input)
+static void OS_FdSet_ConvertOut_Impl(fd_set *OS_set, OS_FdSet *OSAL_set)
 {
-    uint32 offset;
-    uint32 bit;
-    uint32 id;
-    uint8  objids;
-    int    osfd;
+    size_t       offset;
+    size_t       bit;
+    osal_index_t id;
+    uint8        objids;
+    int          osfd;
 
-    for (offset = 0; offset < sizeof(Input->object_ids); ++offset)
+    for (offset = 0; offset < sizeof(OSAL_set->object_ids); ++offset)
     {
-        objids = Input->object_ids[offset];
+        objids = OSAL_set->object_ids[offset];
         bit    = 0;
         while (objids != 0)
         {
-            if (objids & 0x01)
+            id = OSAL_INDEX_C((offset * 8) + bit);
+            if ((objids & 0x01) != 0 && id < OS_MAX_NUM_OPEN_FILES)
             {
-                id   = (offset * 8) + bit;
                 osfd = OS_impl_filehandle_table[id].fd;
-                if (osfd < 0 || !FD_ISSET(osfd, output))
+                if (osfd < 0 || !FD_ISSET(osfd, OS_set))
                 {
-                    Input->object_ids[offset] &= ~(1 << bit);
+                    OSAL_set->object_ids[offset] &= ~(1 << bit);
                 }
             }
             ++bit;
@@ -179,7 +188,7 @@ static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, int32 msecs)
     }
     else
     {
-        /* eliminates a false warning about possibly uninitialized use */
+        /* Zero for consistency and to avoid possible confusion if not cleared */
         memset(&ts_end, 0, sizeof(ts_end));
     }
 
@@ -214,12 +223,12 @@ static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, int32 msecs)
             if (tv.tv_usec < 0)
             {
                 tv.tv_usec += 1000000;
-                ++tv.tv_sec;
+                --tv.tv_sec;
             }
         }
 
         os_status = select(maxfd + 1, rd_set, wr_set, NULL, tvptr);
-    } while (os_status < 0 && errno == EINTR);
+    } while (os_status < 0 && (errno == EINTR || errno == EAGAIN));
 
     if (os_status < 0)
     {
@@ -249,18 +258,27 @@ static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, int32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SelectSingle_Impl(uint32 stream_id, uint32 *SelectFlags, int32 msecs)
+int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, int32 msecs)
 {
-    int32  return_code;
-    fd_set wr_set;
-    fd_set rd_set;
+    int32                           return_code;
+    fd_set                          wr_set;
+    fd_set                          rd_set;
+    OS_impl_file_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
 
     /*
      * If called on a stream_id which does not support this
      * operation, return immediately and do not invoke the system call
      */
-    if (!OS_impl_filehandle_table[stream_id].selectable)
+    if (!impl->selectable)
     {
+        return OS_ERR_OPERATION_NOT_SUPPORTED;
+    }
+
+    if (impl->fd >= FD_SETSIZE)
+    {
+        /* out of range of select() implementation */
         return OS_ERR_OPERATION_NOT_SUPPORTED;
     }
 
@@ -270,22 +288,22 @@ int32 OS_SelectSingle_Impl(uint32 stream_id, uint32 *SelectFlags, int32 msecs)
         FD_ZERO(&rd_set);
         if (*SelectFlags & OS_STREAM_STATE_READABLE)
         {
-            FD_SET(OS_impl_filehandle_table[stream_id].fd, &rd_set);
+            FD_SET(impl->fd, &rd_set);
         }
         if (*SelectFlags & OS_STREAM_STATE_WRITABLE)
         {
-            FD_SET(OS_impl_filehandle_table[stream_id].fd, &wr_set);
+            FD_SET(impl->fd, &wr_set);
         }
 
-        return_code = OS_DoSelect(OS_impl_filehandle_table[stream_id].fd, &rd_set, &wr_set, msecs);
+        return_code = OS_DoSelect(impl->fd, &rd_set, &wr_set, msecs);
 
         if (return_code == OS_SUCCESS)
         {
-            if (!FD_ISSET(OS_impl_filehandle_table[stream_id].fd, &rd_set))
+            if (!FD_ISSET(impl->fd, &rd_set))
             {
                 *SelectFlags &= ~OS_STREAM_STATE_READABLE;
             }
-            if (!FD_ISSET(OS_impl_filehandle_table[stream_id].fd, &wr_set))
+            if (!FD_ISSET(impl->fd, &wr_set))
             {
                 *SelectFlags &= ~OS_STREAM_STATE_WRITABLE;
             }
@@ -316,40 +334,40 @@ int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
 {
     fd_set wr_set;
     fd_set rd_set;
-    int    osfd;
     int    maxfd;
     int32  return_code;
 
-    /*
-     * This return code will be used if the set(s) do not
-     * contain any file handles capable of select().  It
-     * will be overwritten with the real result of the
-     * select call, if selectable file handles were specified.
-     */
-    return_code = OS_ERR_OPERATION_NOT_SUPPORTED;
     FD_ZERO(&rd_set);
     FD_ZERO(&wr_set);
     maxfd = -1;
     if (ReadSet != NULL)
     {
-        osfd = OS_FdSet_ConvertIn_Impl(&rd_set, ReadSet);
-        if (osfd > maxfd)
+        return_code = OS_FdSet_ConvertIn_Impl(&maxfd, &rd_set, ReadSet);
+        if (return_code != OS_SUCCESS)
         {
-            maxfd = osfd;
+            return return_code;
         }
     }
     if (WriteSet != NULL)
     {
-        osfd = OS_FdSet_ConvertIn_Impl(&wr_set, WriteSet);
-        if (osfd > maxfd)
+        return_code = OS_FdSet_ConvertIn_Impl(&maxfd, &wr_set, WriteSet);
+        if (return_code != OS_SUCCESS)
         {
-            maxfd = osfd;
+            return return_code;
         }
     }
 
     if (maxfd >= 0)
     {
         return_code = OS_DoSelect(maxfd, &rd_set, &wr_set, msecs);
+    }
+    else
+    {
+        /*
+         * This return code will be used if the set(s) were
+         * both empty/NULL or otherwise did not contain valid filehandles.
+         */
+        return_code = OS_ERR_INVALID_ID;
     }
 
     if (return_code == OS_SUCCESS)

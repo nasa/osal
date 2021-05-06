@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for taskVarLib.h */
-#ifndef _OSAL_OVERRIDE_TASKVARLIB_H_
-#define _OSAL_OVERRIDE_TASKVARLIB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for taskVarLib.h
+ */
 
-#include <OCS_taskVarLib.h>
+#ifndef OVERRIDE_TASKVARLIB_H
+#define OVERRIDE_TASKVARLIB_H
+
+#include "OCS_taskVarLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */
@@ -31,4 +37,4 @@
 
 #define taskVarAdd OCS_taskVarAdd
 
-#endif /* _OSAL_OVERRIDE_TASKVARLIB_H_ */
+#endif /* OVERRIDE_TASKVARLIB_H */

@@ -28,7 +28,7 @@
 #include "os-shared-file.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /*
 **********************************************************************************
@@ -52,7 +52,7 @@ void Test_OS_OpenCreate(void)
 {
     /*
      * Test Case For:
-     * int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access)
+     * int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access_mode)
      */
     int32     expected;
     int32     actual;
@@ -78,11 +78,11 @@ void Test_OS_OpenCreate(void)
     UtAssert_True(actual == expected, "OS_OpenCreate() (%ld) == OS_ERROR (bad flags)", (long)actual);
 
     /* Test failure to convert path */
-    UT_SetForceFail(UT_KEY(OS_TranslatePath), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
     expected = OS_ERROR;
     actual   = OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, OS_READ_WRITE);
     UtAssert_True(actual == OS_ERROR, "OS_OpenCreate() (%ld) == OS_ERROR (bad path)", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TranslatePath));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TranslatePath));
 }
 
 void Test_OS_close(void)
@@ -179,7 +179,7 @@ void Test_OS_chmod(void)
 {
     /*
      * Test Case For:
-     * int32 OS_chmod  (const char *path, uint32 access)
+     * int32 OS_chmod  (const char *path, uint32 access_mode)
      */
     int32 expected = OS_SUCCESS;
     int32 actual   = OS_chmod("/cf/file", 0);
@@ -237,7 +237,7 @@ void Test_OS_rename(void)
     int32 expected = OS_SUCCESS;
     int32 actual   = ~OS_SUCCESS;
 
-    OS_global_stream_table[1].active_id = UT_OBJID_1;
+    OS_UT_SetupIterator(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, 1);
     strncpy(OS_stream_table[1].stream_name, "/cf/file1", sizeof(OS_stream_table[1].stream_name));
     actual = OS_rename("/cf/file1", "/cf/file2");
 
@@ -267,23 +267,23 @@ void Test_OS_cp(void)
 
     UtAssert_True(actual == expected, "OS_cp() (%ld) == OS_SUCCESS", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OS_GenericRead_Impl), -444);
+    UT_SetDefaultReturnValue(UT_KEY(OS_GenericRead_Impl), -444);
     expected = -444;
     actual   = OS_cp("/cf/file1", "/cf/file2");
     UtAssert_True(actual == expected, "OS_cp() (%ld) == -444", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_GenericRead_Impl));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_GenericRead_Impl));
 
     UT_SetDataBuffer(UT_KEY(OS_GenericRead_Impl), ReadBuf, sizeof(ReadBuf), false);
-    UT_SetForceFail(UT_KEY(OS_GenericWrite_Impl), -555);
+    UT_SetDefaultReturnValue(UT_KEY(OS_GenericWrite_Impl), -555);
     expected = -555;
     actual   = OS_cp("/cf/file1", "/cf/file2");
     UtAssert_True(actual == expected, "OS_cp() (%ld) == -555", (long)actual);
 
-    UT_SetForceFail(UT_KEY(OS_TranslatePath), OS_INVALID_POINTER);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_INVALID_POINTER);
     expected = OS_INVALID_POINTER;
     actual   = OS_cp("/cf/file1", "/cf/file2");
     UtAssert_True(actual == expected, "OS_cp() (%ld) == OS_INVALID_POINTER", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TranslatePath));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TranslatePath));
 }
 
 void Test_OS_mv(void)
@@ -299,7 +299,7 @@ void Test_OS_mv(void)
 
     /* In the default case, the implementation tries to rename first.
      * Force rename to fail so it does a full copy and remove */
-    UT_SetForceFail(UT_KEY(OS_FileRename_Impl), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_FileRename_Impl), OS_ERROR);
     actual = OS_mv("/cf/file1", "/cf/file2");
     UtAssert_True(actual == expected, "OS_mv() (%ld) == OS_SUCCESS", (long)actual);
 }
@@ -310,18 +310,12 @@ void Test_OS_FDGetInfo(void)
      * Test Case For:
      * int32 OS_FDGetInfo (uint32 filedes, OS_file_prop_t *fd_prop)
      */
-    int32               expected = OS_SUCCESS;
-    int32               actual   = ~OS_SUCCESS;
-    OS_file_prop_t      file_prop;
-    uint32              local_index = 1;
-    OS_common_record_t  utrec;
-    OS_common_record_t *rptr = &utrec;
+    int32          expected = OS_SUCCESS;
+    int32          actual   = ~OS_SUCCESS;
+    OS_file_prop_t file_prop;
 
-    memset(&utrec, 0, sizeof(utrec));
-    utrec.creator    = UT_OBJID_OTHER;
-    utrec.name_entry = "ABC";
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &local_index, sizeof(local_index), false);
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdGetById), &rptr, sizeof(rptr), false);
+    OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
+
     actual = OS_FDGetInfo(UT_OBJID_1, &file_prop);
 
     UtAssert_True(actual == expected, "OS_FDGetInfo() (%ld) == OS_SUCCESS", (long)actual);
@@ -343,8 +337,8 @@ void Test_OS_FileOpenCheck(void)
 
     UtAssert_True(actual == expected, "OS_FileOpenCheck() (%ld) == OS_ERROR", (long)actual);
 
-    OS_global_stream_table[0].active_id = UT_OBJID_1;
-    UT_SetForceFail(UT_KEY(OCS_strcmp), 0);
+    OS_UT_SetupIterator(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, 1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_strcmp), 0);
     expected = OS_SUCCESS;
     actual   = OS_FileOpenCheck("/cf/file");
 
@@ -367,9 +361,9 @@ void Test_OS_CloseFileByName(void)
     UtAssert_True(actual == expected, "OS_CloseFileByName() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
 
     /* setup for success */
-    expected                            = OS_SUCCESS;
-    OS_global_stream_table[0].active_id = UT_OBJID_1;
-    UT_SetForceFail(UT_KEY(OCS_strcmp), 0);
+    OS_UT_SetupIterator(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, 1);
+    expected = OS_SUCCESS;
+    UT_SetDefaultReturnValue(UT_KEY(OCS_strcmp), 0);
     actual = OS_CloseFileByName("/cf/file");
     UtAssert_True(actual == expected, "OS_CloseFileByName() (%ld) == OS_SUCCESS", (long)actual);
 
@@ -387,12 +381,18 @@ void Test_OS_CloseAllFiles(void)
     int32 expected = -222;
     int32 actual;
 
-    OS_global_stream_table[0].active_id = UT_OBJID_1;
-    OS_global_stream_table[1].active_id = UT_OBJID_2;
-    UT_SetDeferredRetcode(UT_KEY(OS_GenericClose_Impl), 1, expected);
+    OS_UT_SetupIterator(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, 2);
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdIteratorProcessEntry), 1, expected);
     actual = OS_CloseAllFiles();
 
     UtAssert_True(actual == expected, "OS_CloseAllFiles() (%ld) == -222", (long)actual);
+
+    /* This uses a helper function OS_FileIteratorClose() with the iterator,
+     * which needs to be called for coverage - it just invokes OS_close() */
+    expected = OS_SUCCESS;
+    actual   = OS_FileIteratorClose(UT_OBJID_1, NULL);
+
+    UtAssert_True(actual == expected, "OS_FileIteratorClose() (%ld) == OS_SUCCESS", (long)actual);
 }
 
 /* Osapi_Test_Setup

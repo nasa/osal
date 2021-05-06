@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for pthread.h */
-#ifndef _OSAL_OVERRIDE_PTHREAD_H_
-#define _OSAL_OVERRIDE_PTHREAD_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for pthread.h
+ */
 
-#include <OCS_pthread.h>
+#ifndef OVERRIDE_PTHREAD_H
+#define OVERRIDE_PTHREAD_H
+
+#include "OCS_pthread.h"
 #include <sched.h>
 
 /* ----------------------------------------- */
@@ -76,4 +82,4 @@
 #define pthread_setspecific           OCS_pthread_setspecific
 #define pthread_sigmask               OCS_pthread_sigmask
 
-#endif /* _OSAL_OVERRIDE_PTHREAD_H_ */
+#endif /* OVERRIDE_PTHREAD_H */

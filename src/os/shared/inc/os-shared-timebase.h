@@ -19,16 +19,17 @@
  */
 
 /**
- * \file     os-shared-timebase.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_TIMEBASE_H_
-#define INCLUDE_OS_SHARED_TIMEBASE_H_
+#ifndef OS_SHARED_TIMEBASE_H
+#define OS_SHARED_TIMEBASE_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-timebase.h"
+#include "os-shared-globaldefs.h"
 
 typedef struct
 {
@@ -73,7 +74,7 @@ int32 OS_TimeBaseAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_TimeBaseCreate_Impl(uint32 timebase_id);
+int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_TimeBaseSet_Impl
@@ -82,7 +83,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timebase_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_TimeBaseSet_Impl(uint32 timebase_id, int32 start_time, int32 interval_time);
+int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uint32 interval_time);
 
 /*----------------------------------------------------------------
    Function: OS_TimeBaseDelete_Impl
@@ -91,7 +92,7 @@ int32 OS_TimeBaseSet_Impl(uint32 timebase_id, int32 start_time, int32 interval_t
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_TimeBaseDelete_Impl(uint32 timebase_id);
+int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token);
 
 /****************************************************************************************
                                 INTERNAL FUNCTIONS
@@ -103,7 +104,7 @@ int32 OS_TimeBaseDelete_Impl(uint32 timebase_id);
     Purpose: Get exclusive access to the given timebase
              Add/remove of application callbacks is prevented
  ------------------------------------------------------------------*/
-void OS_TimeBaseLock_Impl(uint32 timebase_id);
+void OS_TimeBaseLock_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_TimeBaseLock_Impl
@@ -111,7 +112,7 @@ void OS_TimeBaseLock_Impl(uint32 timebase_id);
     Purpose: Release exclusive access to the given timebase
              Add/remove of application callbacks is allowed
  ------------------------------------------------------------------*/
-void OS_TimeBaseUnlock_Impl(uint32 timebase_id);
+void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_TimeBaseGetInfo_Impl
@@ -120,7 +121,7 @@ void OS_TimeBaseUnlock_Impl(uint32 timebase_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_TimeBaseGetInfo_Impl(uint32 timer_id, OS_timebase_prop_t *timer_prop);
+int32 OS_TimeBaseGetInfo_Impl(const OS_object_token_t *token, OS_timebase_prop_t *timer_prop);
 
 /*----------------------------------------------------------------
    Function: OS_TimeBase_CallbackThread
@@ -137,4 +138,4 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id);
  ------------------------------------------------------------------*/
 int32 OS_Milli2Ticks(uint32 milli_seconds, int *ticks);
 
-#endif /* INCLUDE_OS_SHARED_TIMEBASE_H_ */
+#endif /* OS_SHARED_TIMEBASE_H */

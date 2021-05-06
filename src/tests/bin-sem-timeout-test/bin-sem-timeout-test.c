@@ -64,7 +64,7 @@ int counter = 0;
  *
  * On RTEMS even a call to BinSemGetInfo has very ill effects.
  */
-void TimerFunction(osal_id_t timer_id)
+void TimerFunction(osal_id_t local_timer_id)
 {
     int32 status;
 
@@ -100,8 +100,6 @@ void task_1(void)
     OS_bin_sem_prop_t bin_sem_prop;
 
     OS_printf("Starting task 1\n");
-
-    OS_TaskRegister();
 
     OS_printf("Delay for 1 second before starting\n");
     OS_TaskDelay(1000);
@@ -183,6 +181,9 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     /*
      * Register the test setup and check routines in UT assert
      */
@@ -220,7 +221,8 @@ void BinSemTimeoutSetup(void)
     /*
     ** Create the "consumer" task.
     */
-    status = OS_TaskCreate(&task_1_id, "Task 1", task_1, task_1_stack, TASK_1_STACK_SIZE, TASK_1_PRIORITY, 0);
+    status = OS_TaskCreate(&task_1_id, "Task 1", task_1, OSAL_STACKPTR_C(task_1_stack), sizeof(task_1_stack),
+                           OSAL_PRIORITY_C(TASK_1_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_1_id), (int)status);
 
     /*

@@ -48,6 +48,7 @@
 
 #include "os-impl-loader.h"
 #include "os-shared-module.h"
+#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                     Module Loader API
@@ -61,13 +62,47 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleLoad_Impl(uint32 module_id, const char *translated_path)
+int32 OS_ModuleLoad_Impl(const OS_object_token_t *token, const char *translated_path)
 {
-    int32 status = OS_ERROR;
+    int32                             status = OS_ERROR;
+    int                               dl_mode;
+    OS_impl_module_internal_record_t *impl;
+    OS_module_internal_record_t *     module;
+
+    impl   = OS_OBJECT_TABLE_GET(OS_impl_module_table, *token);
+    module = OS_OBJECT_TABLE_GET(OS_module_table, *token);
+
+    /*
+     * RTLD_NOW should instruct dlopen() to resolve all the symbols in the
+     * module immediately, as opposed to waiting until they are used.
+     * The latter (lazy mode) is non-deterministic - a resolution error on
+     * a rarely-used symbol could cause a random failure far in the future.
+     */
+    dl_mode = RTLD_NOW;
+
+    if ((module->flags & OS_MODULE_FLAG_LOCAL_SYMBOLS) != 0)
+    {
+        /*
+         * Do not add the symbols in this module to the global symbol table.
+         * This mode helps prevent any unanticipated references into this
+         * module, which can in turn prevent unloading via dlclose().
+         */
+        dl_mode |= RTLD_LOCAL;
+    }
+    else
+    {
+        /*
+         * Default mode - add symbols to the global symbol table, so they
+         * will be available to resolve symbols in future module loads.
+         * However, any such references will prevent unloading of this
+         * module via dlclose().
+         */
+        dl_mode |= RTLD_GLOBAL;
+    }
 
     dlerror();
-    OS_impl_module_table[module_id].dl_handle = dlopen(translated_path, RTLD_NOW | RTLD_GLOBAL);
-    if (OS_impl_module_table[module_id].dl_handle != NULL)
+    impl->dl_handle = dlopen(translated_path, dl_mode);
+    if (impl->dl_handle != NULL)
     {
         status = OS_SUCCESS;
     }
@@ -88,18 +123,21 @@ int32 OS_ModuleLoad_Impl(uint32 module_id, const char *translated_path)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleUnload_Impl(uint32 module_id)
+int32 OS_ModuleUnload_Impl(const OS_object_token_t *token)
 {
-    int32 status = OS_ERROR;
+    int32                             status = OS_ERROR;
+    OS_impl_module_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_module_table, *token);
 
     /*
     ** Attempt to close/unload the module
     */
     dlerror();
-    if (dlclose(OS_impl_module_table[module_id].dl_handle) == 0)
+    if (dlclose(impl->dl_handle) == 0)
     {
-        OS_impl_module_table[module_id].dl_handle = NULL;
-        status                                    = OS_SUCCESS;
+        impl->dl_handle = NULL;
+        status          = OS_SUCCESS;
     }
     else
     {
@@ -118,7 +156,7 @@ int32 OS_ModuleUnload_Impl(uint32 module_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_ModuleGetInfo_Impl(uint32 module_id, OS_module_prop_t *module_prop)
+int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *module_prop)
 {
     /*
      * Limiting strictly to POSIX-defined API means there is no defined

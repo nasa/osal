@@ -28,7 +28,7 @@
 #include "os-shared-printf.h"
 #include "os-shared-common.h"
 
-#include <OCS_stdio.h>
+#include "OCS_stdio.h"
 
 char TestConsoleBuffer[16];
 
@@ -38,10 +38,16 @@ void Test_OS_ConsoleAPI_Init(void)
      * Test Case For:
      * int32 OS_ConsoleAPI_Init(void)
      */
-    uint32 CallCount = 0;
-    uint32 local_id  = 0;
+    uint32            CallCount = 0;
+    OS_object_token_t token;
 
-    UT_SetDataBuffer(UT_KEY(OS_ObjectIdAllocateNew), &local_id, sizeof(local_id), false);
+    /* make a custom token to force use of array index 0 */
+    token.lock_mode = OS_LOCK_MODE_NONE;
+    token.obj_type  = OS_OBJECT_TYPE_OS_CONSOLE;
+    token.obj_idx   = UT_INDEX_0;
+    token.obj_id    = UT_OBJID_1;
+
+    UT_SetDataBuffer(UT_KEY(OS_ObjectIdAllocateNew), &token, sizeof(token), false);
 
     /* call for coverage */
     OS_ConsoleAPI_Init();
@@ -58,33 +64,44 @@ void Test_OS_printf(void)
      * void OS_printf_disable(void);
      * void OS_printf_enable(void);
      */
-    uint32 CallCount = 0;
 
     /* catch case where OS_printf called before init */
     OS_SharedGlobalVars.PrintfConsoleId = OS_OBJECT_ID_UNDEFINED;
-    OS_SharedGlobalVars.Initialized     = false;
+    OS_SharedGlobalVars.GlobalState     = 0;
     OS_printf("UnitTest1");
     UtAssert_True(OS_console_table[0].WritePos == 0, "WritePos (%lu) >= 0",
                   (unsigned long)OS_console_table[0].WritePos);
 
     /* because printf is disabled, the call count should _not_ increase here */
-    OS_SharedGlobalVars.Initialized = true;
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
     OS_printf_disable();
     OS_printf("UnitTest2");
     UtAssert_True(OS_console_table[0].WritePos == 0, "WritePos (%lu) >= 0",
                   (unsigned long)OS_console_table[0].WritePos);
 
-    /* normal case */
+    /* normal case - sync mode */
+    OS_console_table[0].IsAsync = false;
     OS_printf_enable();
-    OS_printf("UnitTest3");
-    CallCount = UT_GetStubCount(UT_KEY(OS_ConsoleWakeup_Impl));
-    UtAssert_True(CallCount == 1, "OS_ConsoleWakeup_Impl() call count (%lu) == 1", (unsigned long)CallCount);
-    UtAssert_True(OS_console_table[0].WritePos >= 9, "WritePos (%lu) >= 9",
+    OS_printf("UnitTest3s");
+    UtAssert_STUB_COUNT(OS_ConsoleWakeup_Impl, 0);
+    UtAssert_STUB_COUNT(OS_ConsoleOutput_Impl, 1);
+    UtAssert_True(OS_console_table[0].WritePos >= 10, "WritePos (%lu) >= 10",
+                  (unsigned long)OS_console_table[0].WritePos);
+
+    /* normal case - async mode */
+    OS_console_table[0].IsAsync  = true;
+    OS_console_table[0].WritePos = 0;
+    OS_printf("UnitTest3a");
+    UtAssert_STUB_COUNT(OS_ConsoleWakeup_Impl, 1);
+    UtAssert_STUB_COUNT(OS_ConsoleOutput_Impl, 1);
+    UtAssert_True(OS_console_table[0].WritePos >= 10, "WritePos (%lu) >= 10",
                   (unsigned long)OS_console_table[0].WritePos);
 
     /* print a long string that does not fit in the 16-char buffer */
     OS_printf_enable();
     OS_printf("UnitTest4BufferLengthExceeded");
+    UtAssert_True(OS_console_table[0].OverflowEvents == 1, "OverflowEvents (%lu) == 1",
+                  (unsigned long)OS_console_table[0].OverflowEvents);
 
     /* test writing with a non-empty console name */
     strncpy(OS_console_table[0].device_name, "ut", sizeof(OS_console_table[0].device_name) - 1);
@@ -93,10 +110,10 @@ void Test_OS_printf(void)
     /*
      * For coverage, exercise different paths depending on the return value
      */
-    UT_SetForceFail(UT_KEY(OCS_vsnprintf), -1);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_vsnprintf), -1);
     OS_printf("UnitTest6");
 
-    UT_SetForceFail(UT_KEY(OCS_vsnprintf), OS_BUFFER_SIZE + 10);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_vsnprintf), OS_BUFFER_SIZE + 10);
     OS_printf("UnitTest7");
 }
 

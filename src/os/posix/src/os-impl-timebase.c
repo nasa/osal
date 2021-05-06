@@ -36,6 +36,7 @@
 
 #include "os-posix.h"
 #include "os-impl-timebase.h"
+#include "os-impl-tasks.h"
 
 #include "os-shared-timebase.h"
 #include "os-shared-idmap.h"
@@ -108,9 +109,13 @@ static void OS_UsecToTimespec(uint32 usecs, struct timespec *time_spec)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_TimeBaseLock_Impl(uint32 local_id)
+void OS_TimeBaseLock_Impl(const OS_object_token_t *token)
 {
-    pthread_mutex_lock(&OS_impl_timebase_table[local_id].handler_mutex);
+    OS_impl_timebase_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+
+    pthread_mutex_lock(&impl->handler_mutex);
 } /* end OS_TimeBaseLock_Impl */
 
 /*----------------------------------------------------------------
@@ -121,9 +126,13 @@ void OS_TimeBaseLock_Impl(uint32 local_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_TimeBaseUnlock_Impl(uint32 local_id)
+void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token)
 {
-    pthread_mutex_unlock(&OS_impl_timebase_table[local_id].handler_mutex);
+    OS_impl_timebase_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+
+    pthread_mutex_unlock(&impl->handler_mutex);
 } /* end OS_TimeBaseUnlock_Impl */
 
 /*----------------------------------------------------------------
@@ -133,42 +142,49 @@ void OS_TimeBaseUnlock_Impl(uint32 local_id)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-static uint32 OS_TimeBase_SigWaitImpl(uint32 timer_id)
+static uint32 OS_TimeBase_SigWaitImpl(osal_id_t obj_id)
 {
     int                                 ret;
-    OS_impl_timebase_internal_record_t *local;
+    OS_object_token_t                   token;
+    OS_impl_timebase_internal_record_t *impl;
+    OS_timebase_internal_record_t *     timebase;
     uint32                              interval_time;
     int                                 sig;
 
-    local = &OS_impl_timebase_table[timer_id];
+    interval_time = 0;
 
-    ret = sigwait(&local->sigset, &sig);
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMEBASE, obj_id, &token) == OS_SUCCESS)
+    {
+        impl     = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, token);
+        timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, token);
 
-    if (ret != 0)
-    {
-        /*
-         * the sigwait call failed.
-         * returning 0 will cause the process to repeat.
-         */
-        interval_time = 0;
-    }
-    else if (local->reset_flag == 0)
-    {
-        /*
-         * Normal steady-state behavior.
-         * interval_time reflects the configured interval time.
-         */
-        interval_time = OS_timebase_table[timer_id].nominal_interval_time;
-    }
-    else
-    {
-        /*
-         * Reset/First interval behavior.
-         * timer_set() was invoked since the previous interval occurred (if any).
-         * interval_time reflects the configured start time.
-         */
-        interval_time     = OS_timebase_table[timer_id].nominal_start_time;
-        local->reset_flag = 0;
+        ret = sigwait(&impl->sigset, &sig);
+
+        if (ret != 0)
+        {
+            /*
+             * the sigwait call failed.
+             * returning 0 will cause the process to repeat.
+             */
+        }
+        else if (impl->reset_flag == 0)
+        {
+            /*
+             * Normal steady-state behavior.
+             * interval_time reflects the configured interval time.
+             */
+            interval_time = timebase->nominal_interval_time;
+        }
+        else
+        {
+            /*
+             * Reset/First interval behavior.
+             * timer_set() was invoked since the previous interval occurred (if any).
+             * interval_time reflects the configured start time.
+             */
+            interval_time    = timebase->nominal_start_time;
+            impl->reset_flag = 0;
+        }
     }
 
     return interval_time;
@@ -190,7 +206,7 @@ static uint32 OS_TimeBase_SigWaitImpl(uint32 timer_id)
 int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
 {
     int                 status;
-    int                 i;
+    osal_index_t        idx;
     pthread_mutexattr_t mutex_attr;
     struct timespec     clock_resolution;
     int32               return_code;
@@ -210,7 +226,7 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
         status = clock_getres(OS_PREFERRED_CLOCK, &clock_resolution);
         if (status != 0)
         {
-            OS_DEBUG("failed in clock_getres: %s\n", strerror(status));
+            OS_DEBUG("failed in clock_getres: %s\n", strerror(errno));
             return_code = OS_ERROR;
             break;
         }
@@ -253,14 +269,14 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
             break;
         }
 
-        for (i = 0; i < OS_MAX_TIMEBASES; ++i)
+        for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
         {
             /*
             ** create the timebase sync mutex
             ** This gives a mechanism to synchronize updates to the timer chain with the
             ** expiration of the timer and processing the chain.
             */
-            status = pthread_mutex_init(&OS_impl_timebase_table[i].handler_mutex, &mutex_attr);
+            status = pthread_mutex_init(&OS_impl_timebase_table[idx].handler_mutex, &mutex_attr);
             if (status != 0)
             {
                 OS_DEBUG("Error: Mutex could not be created: %s\n", strerror(status));
@@ -299,7 +315,7 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
 
 static void *OS_TimeBasePthreadEntry(void *arg)
 {
-    OS_U32ValueWrapper_t local_arg;
+    OS_VoidPtrValueWrapper_t local_arg;
 
     local_arg.opaque_arg = arg;
     OS_TimeBase_CallbackThread(local_arg.id);
@@ -314,19 +330,20 @@ static void *OS_TimeBasePthreadEntry(void *arg)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
+int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
 {
     int32                               return_code;
     int                                 status;
     int                                 i;
+    osal_index_t                        idx;
     struct sigevent                     evp;
     struct timespec                     ts;
     OS_impl_timebase_internal_record_t *local;
-    OS_common_record_t *                global;
-    OS_U32ValueWrapper_t                arg;
+    OS_timebase_internal_record_t *     timebase;
+    OS_VoidPtrValueWrapper_t            arg;
 
-    local  = &OS_impl_timebase_table[timer_id];
-    global = &OS_global_timebase_table[timer_id];
+    local    = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+    timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, *token);
 
     /*
      * Spawn a dedicated time base handler thread
@@ -339,9 +356,9 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
      * the global table lock.
      */
     arg.opaque_arg = NULL;
-    arg.id         = global->active_id;
-    return_code =
-        OS_Posix_InternalTaskCreate_Impl(&local->handler_thread, 0, 0, OS_TimeBasePthreadEntry, arg.opaque_arg);
+    arg.id         = OS_ObjectIdFromToken(token);
+    return_code    = OS_Posix_InternalTaskCreate_Impl(&local->handler_thread, OSAL_PRIORITY_C(0), 0,
+                                                   OS_TimeBasePthreadEntry, arg.opaque_arg);
     if (return_code != OS_SUCCESS)
     {
         return return_code;
@@ -359,7 +376,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
      * If no external sync function is provided then this will set up a POSIX
      * timer to locally simulate the timer tick using the CPU clock.
      */
-    if (OS_timebase_table[timer_id].external_sync == NULL)
+    if (timebase->external_sync == NULL)
     {
         sigemptyset(&local->sigset);
 
@@ -368,12 +385,12 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
          * This is all done while the global lock is held so no chance of the
          * underlying tables changing
          */
-        for (i = 0; i < OS_MAX_TIMEBASES; ++i)
+        for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
         {
-            if (i != timer_id && OS_ObjectIdDefined(OS_global_timebase_table[i].active_id) &&
-                OS_impl_timebase_table[i].assigned_signal != 0)
+            if (OS_ObjectIdIsValid(OS_global_timebase_table[idx].active_id) &&
+                OS_impl_timebase_table[idx].assigned_signal != 0)
             {
-                sigaddset(&local->sigset, OS_impl_timebase_table[i].assigned_signal);
+                sigaddset(&local->sigset, OS_impl_timebase_table[idx].assigned_signal);
             }
         }
 
@@ -438,7 +455,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
              *  and doing it this way should still work on a system where sizeof(sival_int) < sizeof(uint32)
              *  (as long as sizeof(sival_int) >= number of bits in OS_OBJECT_INDEX_MASK)
              */
-            evp.sigev_value.sival_int = (int)OS_ObjectIdToSerialNumber_Impl(global->active_id);
+            evp.sigev_value.sival_int = (int)OS_ObjectIdToSerialNumber_Impl(OS_ObjectIdFromToken(token));
 
             /*
             ** Create the timer
@@ -452,7 +469,7 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
                 break;
             }
 
-            OS_timebase_table[timer_id].external_sync = OS_TimeBase_SigWaitImpl;
+            timebase->external_sync = OS_TimeBase_SigWaitImpl;
         } while (0);
     }
 
@@ -479,14 +496,16 @@ int32 OS_TimeBaseCreate_Impl(uint32 timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time)
+int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uint32 interval_time)
 {
     OS_impl_timebase_internal_record_t *local;
     struct itimerspec                   timeout;
     int32                               return_code;
     int                                 status;
+    OS_timebase_internal_record_t *     timebase;
 
-    local       = &OS_impl_timebase_table[timer_id];
+    local       = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+    timebase    = OS_OBJECT_TABLE_GET(OS_timebase_table, *token);
     return_code = OS_SUCCESS;
 
     /* There is only something to do here if we are generating a simulated tick */
@@ -513,11 +532,11 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
         }
         else if (interval_time > 0)
         {
-            OS_timebase_table[timer_id].accuracy_usec = (uint32)((timeout.it_interval.tv_nsec + 999) / 1000);
+            timebase->accuracy_usec = (uint32)((timeout.it_interval.tv_nsec + 999) / 1000);
         }
         else
         {
-            OS_timebase_table[timer_id].accuracy_usec = (uint32)((timeout.it_value.tv_nsec + 999) / 1000);
+            timebase->accuracy_usec = (uint32)((timeout.it_value.tv_nsec + 999) / 1000);
         }
     }
 
@@ -533,12 +552,12 @@ int32 OS_TimeBaseSet_Impl(uint32 timer_id, int32 start_time, int32 interval_time
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
+int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token)
 {
     OS_impl_timebase_internal_record_t *local;
     int                                 status;
 
-    local = &OS_impl_timebase_table[timer_id];
+    local = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
 
     pthread_cancel(local->handler_thread);
 
@@ -547,7 +566,7 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
     */
     if (local->assigned_signal != 0)
     {
-        status = timer_delete(OS_impl_timebase_table[timer_id].host_timerid);
+        status = timer_delete(local->host_timerid);
         if (status < 0)
         {
             OS_DEBUG("Error deleting timer: %s\n", strerror(errno));
@@ -568,7 +587,7 @@ int32 OS_TimeBaseDelete_Impl(uint32 timer_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseGetInfo_Impl(uint32 timer_id, OS_timebase_prop_t *timer_prop)
+int32 OS_TimeBaseGetInfo_Impl(const OS_object_token_t *token, OS_timebase_prop_t *timer_prop)
 {
     return OS_SUCCESS;
 

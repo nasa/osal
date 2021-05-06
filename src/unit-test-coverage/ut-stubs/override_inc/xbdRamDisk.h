@@ -18,15 +18,21 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for xbdRamDisk.h */
-#ifndef _OSAL_OVERRIDE_XBDRAMDISK_H_
-#define _OSAL_OVERRIDE_XBDRAMDISK_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for xbdRamDisk.h
+ */
 
-#include <OCS_xbdRamDisk.h>
+#ifndef OVERRIDE_XBDRAMDISK_H
+#define OVERRIDE_XBDRAMDISK_H
+
+#include "OCS_xbdRamDisk.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */
 /* mappings for declarations in xbdRamDisk.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_XBDRAMDISK_H_ */
+#endif /* OVERRIDE_XBDRAMDISK_H */

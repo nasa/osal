@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for ramDiskCbio.h */
-#ifndef _OSAL_STUB_RAMDISKCBIO_H_
-#define _OSAL_STUB_RAMDISKCBIO_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for ramDiskCbio.h
+ */
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#ifndef OCS_RAMDISKCBIO_H
+#define OCS_RAMDISKCBIO_H
+
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in ramDiskCbio.h */
@@ -37,4 +43,4 @@
 /* prototypes normally declared in ramDiskCbio.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_RAMDISKCBIO_H_ */
+#endif /* OCS_RAMDISKCBIO_H */

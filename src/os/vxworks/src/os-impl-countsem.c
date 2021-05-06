@@ -32,6 +32,7 @@
 #include "os-impl-countsem.h"
 #include "os-shared-countsem.h"
 #include "os-shared-timebase.h"
+#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -69,13 +70,16 @@ int32 OS_VxWorks_CountSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options)
+int32 OS_CountSemCreate_Impl(const OS_object_token_t *token, uint32 sem_initial_value, uint32 options)
 {
-    SEM_ID tmp_sem_id;
+    SEM_ID                              tmp_sem_id;
+    OS_impl_countsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
 
     /* Initialize VxWorks Semaphore.
      * The memory for this sem is statically allocated. */
-    tmp_sem_id = semCInitialize(OS_impl_count_sem_table[sem_id].cmem, SEM_Q_PRIORITY, sem_initial_value);
+    tmp_sem_id = semCInitialize(impl->cmem, SEM_Q_PRIORITY, sem_initial_value);
 
     /* check if semCInitialize failed */
     if (tmp_sem_id == (SEM_ID)0)
@@ -84,7 +88,7 @@ int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 opt
         return OS_SEM_FAILURE;
     }
 
-    OS_impl_count_sem_table[sem_id].vxid = tmp_sem_id;
+    impl->vxid = tmp_sem_id;
     return OS_SUCCESS;
 
 } /* end OS_CountSemCreate_Impl */
@@ -97,12 +101,16 @@ int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 opt
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemDelete_Impl(uint32 sem_id)
+int32 OS_CountSemDelete_Impl(const OS_object_token_t *token)
 {
+    OS_impl_countsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
+
     /*
      * As the memory for the sem is statically allocated, delete is a no-op.
      */
-    OS_impl_count_sem_table[sem_id].vxid = 0;
+    impl->vxid = 0;
     return OS_SUCCESS;
 
 } /* end OS_CountSemDelete_Impl */
@@ -115,10 +123,14 @@ int32 OS_CountSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGive_Impl(uint32 sem_id)
+int32 OS_CountSemGive_Impl(const OS_object_token_t *token)
 {
+    OS_impl_countsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
+
     /* Give VxWorks Semaphore */
-    return OS_VxWorks_GenericSemGive(OS_impl_count_sem_table[sem_id].vxid);
+    return OS_VxWorks_GenericSemGive(impl->vxid);
 } /* end OS_CountSemGive_Impl */
 
 /*----------------------------------------------------------------
@@ -129,9 +141,13 @@ int32 OS_CountSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTake_Impl(uint32 sem_id)
+int32 OS_CountSemTake_Impl(const OS_object_token_t *token)
 {
-    return OS_VxWorks_GenericSemTake(OS_impl_count_sem_table[sem_id].vxid, WAIT_FOREVER);
+    OS_impl_countsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
+
+    return OS_VxWorks_GenericSemTake(impl->vxid, WAIT_FOREVER);
 } /* end OS_CountSemTake_Impl */
 
 /*----------------------------------------------------------------
@@ -142,16 +158,19 @@ int32 OS_CountSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
+int32 OS_CountSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
 {
-    int   ticks;
-    int32 status;
+    int                                 ticks;
+    int32                               status;
+    OS_impl_countsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
 
     status = OS_Milli2Ticks(msecs, &ticks);
 
     if (status == OS_SUCCESS)
     {
-        status = OS_VxWorks_GenericSemTake(OS_impl_count_sem_table[sem_id].vxid, ticks);
+        status = OS_VxWorks_GenericSemTake(impl->vxid, ticks);
     }
 
     return status;
@@ -165,7 +184,7 @@ int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGetInfo_Impl(uint32 sem_id, OS_count_sem_prop_t *count_prop)
+int32 OS_CountSemGetInfo_Impl(const OS_object_token_t *token, OS_count_sem_prop_t *count_prop)
 {
     /* VxWorks does not provide an API to get the value */
     return OS_SUCCESS;

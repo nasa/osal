@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for moduleLib.h */
-#ifndef _OSAL_OVERRIDE_MODULELIB_H_
-#define _OSAL_OVERRIDE_MODULELIB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for moduleLib.h
+ */
 
-#include <OCS_moduleLib.h>
+#ifndef OVERRIDE_MODULELIB_H
+#define OVERRIDE_MODULELIB_H
+
+#include "OCS_moduleLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */
@@ -34,4 +40,4 @@
 
 #define moduleInfoGet OCS_moduleInfoGet
 
-#endif /* _OSAL_OVERRIDE_MODULELIB_H_ */
+#endif /* OVERRIDE_MODULELIB_H */

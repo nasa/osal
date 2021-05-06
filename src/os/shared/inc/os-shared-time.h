@@ -19,31 +19,34 @@
  */
 
 /**
- * \file     os-shared-time.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_TIME_H_
-#define INCLUDE_OS_SHARED_TIME_H_
+#ifndef OS_SHARED_TIME_H
+#define OS_SHARED_TIME_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-timer.h"
+
+#include "os-shared-globaldefs.h"
+#include "os-shared-idmap.h"
 
 #define TIMECB_FLAG_DEDICATED_TIMEBASE 0x1
 
 typedef struct
 {
-    char             timer_name[OS_MAX_API_NAME];
-    uint32           flags;
-    uint32           timebase_ref;
-    uint32           prev_ref;
-    uint32           next_ref;
-    uint32           backlog_resets;
-    int32            wait_time;
-    int32            interval_time;
-    OS_ArgCallback_t callback_ptr;
-    void *           callback_arg;
+    char              timer_name[OS_MAX_API_NAME];
+    uint32            flags;
+    OS_object_token_t timebase_token;
+    osal_id_t         prev_cb;
+    osal_id_t         next_cb;
+    uint32            backlog_resets;
+    int32             wait_time;
+    int32             interval_time;
+    OS_ArgCallback_t  callback_ptr;
+    void *            callback_arg;
 } OS_timecb_internal_record_t;
 
 /*
@@ -61,4 +64,4 @@ extern OS_timecb_internal_record_t OS_timecb_table[OS_MAX_TIMERS];
 ---------------------------------------------------------------------------------------*/
 int32 OS_TimerCbAPI_Init(void);
 
-#endif /* INCLUDE_OS_SHARED_TIME_H_ */
+#endif /* OS_SHARED_TIME_H */

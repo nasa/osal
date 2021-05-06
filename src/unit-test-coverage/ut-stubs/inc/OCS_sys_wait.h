@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/wait.h */
-#ifndef _OSAL_STUB_SYS_WAIT_H_
-#define _OSAL_STUB_SYS_WAIT_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/wait.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_SYS_WAIT_H
+#define OCS_SYS_WAIT_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/wait.h */
@@ -36,4 +42,4 @@
 /* prototypes normally declared in sys/wait.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_SYS_WAIT_H_ */
+#endif /* OCS_SYS_WAIT_H */

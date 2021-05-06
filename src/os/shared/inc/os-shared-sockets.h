@@ -19,16 +19,17 @@
  */
 
 /**
- * \file     os-shared-sockets.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_SOCKETS_H_
-#define INCLUDE_OS_SHARED_SOCKETS_H_
+#ifndef OS_SHARED_SOCKETS_H
+#define OS_SHARED_SOCKETS_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-sockets.h"
+#include "os-shared-globaldefs.h"
 
 /*
  * Sockets API abstraction layer
@@ -50,7 +51,7 @@ int32 OS_SocketAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SocketOpen_Impl(uint32 sock_id);
+int32 OS_SocketOpen_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_SocketBind_Impl
@@ -59,7 +60,7 @@ int32 OS_SocketOpen_Impl(uint32 sock_id);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SocketBind_Impl(uint32 sock_id, const OS_SockAddr_t *Addr);
+int32 OS_SocketBind_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr);
 
 /*----------------------------------------------------------------
    Function: OS_SocketAccept_Impl
@@ -70,7 +71,8 @@ int32 OS_SocketBind_Impl(uint32 sock_id, const OS_SockAddr_t *Addr);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SocketAccept_Impl(uint32 sock_id, uint32 connsock_id, OS_SockAddr_t *Addr, int32 timeout);
+int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_token_t *conn_token,
+                           OS_SockAddr_t *Addr, int32 timeout);
 
 /*----------------------------------------------------------------
    Function: OS_SocketConnect_Impl
@@ -80,7 +82,16 @@ int32 OS_SocketAccept_Impl(uint32 sock_id, uint32 connsock_id, OS_SockAddr_t *Ad
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SocketConnect_Impl(uint32 sock_id, const OS_SockAddr_t *Addr, int32 timeout);
+int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr, int32 timeout);
+
+/*----------------------------------------------------------------
+   Function: OS_SocketShutdown_Impl
+
+    Purpose: Graceful shutdown of a stream socket
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_SocketShutdown_Impl(const OS_object_token_t *token, OS_SocketShutdownMode_t Mode);
 
 /*----------------------------------------------------------------
    Function: OS_SocketRecvFrom_Impl
@@ -93,7 +104,8 @@ int32 OS_SocketConnect_Impl(uint32 sock_id, const OS_SockAddr_t *Addr, int32 tim
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SocketRecvFrom_Impl(uint32 sock_id, void *buffer, uint32 buflen, OS_SockAddr_t *RemoteAddr, int32 timeout);
+int32 OS_SocketRecvFrom_Impl(const OS_object_token_t *token, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr,
+                             int32 timeout);
 
 /*----------------------------------------------------------------
    Function: OS_SocketSendTo_Impl
@@ -104,7 +116,8 @@ int32 OS_SocketRecvFrom_Impl(uint32 sock_id, void *buffer, uint32 buflen, OS_Soc
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SocketSendTo_Impl(uint32 sock_id, const void *buffer, uint32 buflen, const OS_SockAddr_t *RemoteAddr);
+int32 OS_SocketSendTo_Impl(const OS_object_token_t *token, const void *buffer, size_t buflen,
+                           const OS_SockAddr_t *RemoteAddr);
 
 /*----------------------------------------------------------------
 
@@ -114,7 +127,7 @@ int32 OS_SocketSendTo_Impl(uint32 sock_id, const void *buffer, uint32 buflen, co
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SocketGetInfo_Impl(uint32 sock_id, OS_socket_prop_t *sock_prop);
+int32 OS_SocketGetInfo_Impl(const OS_object_token_t *token, OS_socket_prop_t *sock_prop);
 
 /*----------------------------------------------------------------
 
@@ -134,7 +147,7 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SocketAddrToString_Impl(char *buffer, uint32 buflen, const OS_SockAddr_t *Addr);
+int32 OS_SocketAddrToString_Impl(char *buffer, size_t buflen, const OS_SockAddr_t *Addr);
 
 /*----------------------------------------------------------------
    Function: OS_SocketAddrFromString_Impl
@@ -174,6 +187,6 @@ int32 OS_SocketAddrSetPort_Impl(OS_SockAddr_t *Addr, uint16 PortNum);
  * Internal helper functions
  * Not normally called outside the local unit, except during unit test
  */
-void OS_CreateSocketName(uint32 local_id, const OS_SockAddr_t *Addr, const char *parent_name);
+void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Addr, const char *parent_name);
 
-#endif /* INCLUDE_OS_SHARED_SOCKETS_H_ */
+#endif /* OS_SHARED_SOCKETS_H */

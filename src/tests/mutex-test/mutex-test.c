@@ -60,7 +60,6 @@ void task_1(void)
     uint32 status;
 
     OS_printf("Starting task 1\n");
-    OS_TaskRegister();
 
     while (1)
     {
@@ -112,7 +111,6 @@ void task_2(void)
     uint32 status;
 
     OS_printf("Starting task 2\n");
-    OS_TaskRegister();
 
     while (1)
     {
@@ -165,7 +163,6 @@ void task_3(void)
     uint32 status;
 
     OS_printf("Starting task 3\n");
-    OS_TaskRegister();
 
     while (1)
     {
@@ -220,6 +217,9 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     /*
      * Register the test setup and check routines in UT assert
      */
@@ -259,13 +259,16 @@ void MutexSetup(void)
     /*
     ** Create the tasks
     */
-    status = OS_TaskCreate(&task_1_id, "Task 1", task_1, task_1_stack, TASK_STACK_SIZE, TASK_1_PRIORITY, 0);
+    status = OS_TaskCreate(&task_1_id, "Task 1", task_1, OSAL_STACKPTR_C(task_1_stack), sizeof(task_1_stack),
+                           OSAL_PRIORITY_C(TASK_1_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_1_id), (int)status);
 
-    status = OS_TaskCreate(&task_2_id, "Task 2", task_2, task_2_stack, TASK_STACK_SIZE, TASK_2_PRIORITY, 0);
+    status = OS_TaskCreate(&task_2_id, "Task 2", task_2, OSAL_STACKPTR_C(task_2_stack), sizeof(task_2_stack),
+                           OSAL_PRIORITY_C(TASK_2_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "Task 2 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_2_id), (int)status);
 
-    status = OS_TaskCreate(&task_3_id, "Task 3", task_3, task_3_stack, TASK_STACK_SIZE, TASK_3_PRIORITY, 0);
+    status = OS_TaskCreate(&task_3_id, "Task 3", task_3, OSAL_STACKPTR_C(task_3_stack), sizeof(task_3_stack),
+                           OSAL_PRIORITY_C(TASK_3_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "Task 3 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_3_id), (int)status);
 
     /*

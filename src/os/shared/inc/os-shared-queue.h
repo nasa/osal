@@ -19,22 +19,23 @@
  */
 
 /**
- * \file     os-shared-queue.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_QUEUE_H_
-#define INCLUDE_OS_SHARED_QUEUE_H_
+#ifndef OS_SHARED_QUEUE_H
+#define OS_SHARED_QUEUE_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-queue.h"
+#include "os-shared-globaldefs.h"
 
 typedef struct
 {
-    char   queue_name[OS_MAX_API_NAME];
-    uint32 max_size;
-    uint32 max_depth;
+    char              queue_name[OS_MAX_API_NAME];
+    size_t            max_size;
+    osal_blockcount_t max_depth;
 } OS_queue_internal_record_t;
 
 /*
@@ -63,7 +64,7 @@ int32 OS_QueueAPI_Init(void);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_QueueCreate_Impl(uint32 queue_id, uint32 flags);
+int32 OS_QueueCreate_Impl(const OS_object_token_t *token, uint32 flags);
 
 /*----------------------------------------------------------------
    Function: OS_QueueDelete_Impl
@@ -72,7 +73,7 @@ int32 OS_QueueCreate_Impl(uint32 queue_id, uint32 flags);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_QueueDelete_Impl(uint32 queue_id);
+int32 OS_QueueDelete_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_QueueGet_Impl
@@ -85,7 +86,7 @@ int32 OS_QueueDelete_Impl(uint32 queue_id);
              OS_QUEUE_EMPTY must be returned if the queue is empty when polled (OS_CHECK)
              OS_QUEUE_INVALID_SIZE must be returned if the supplied buffer is too small
  ------------------------------------------------------------------*/
-int32 OS_QueueGet_Impl(uint32 queue_id, void *data, uint32 size, uint32 *size_copied, int32 timeout);
+int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, size_t *size_copied, int32 timeout);
 
 /*----------------------------------------------------------------
    Function: OS_QueuePut_Impl
@@ -95,7 +96,7 @@ int32 OS_QueueGet_Impl(uint32 queue_id, void *data, uint32 size, uint32 *size_co
     Returns: OS_SUCCESS on success, or relevant error code
              OS_QUEUE_FULL must be returned if the queue is full.
  ------------------------------------------------------------------*/
-int32 OS_QueuePut_Impl(uint32 queue_id, const void *data, uint32 size, uint32 flags);
+int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, size_t size, uint32 flags);
 
 /*----------------------------------------------------------------
    Function: OS_QueueGetInfo_Impl
@@ -104,6 +105,6 @@ int32 OS_QueuePut_Impl(uint32 queue_id, const void *data, uint32 size, uint32 fl
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_QueueGetInfo_Impl(uint32 queue_id, OS_queue_prop_t *queue_prop);
+int32 OS_QueueGetInfo_Impl(const OS_object_token_t *token, OS_queue_prop_t *queue_prop);
 
-#endif /* INCLUDE_OS_SHARED_QUEUE_H_ */
+#endif /* OS_SHARED_QUEUE_H */

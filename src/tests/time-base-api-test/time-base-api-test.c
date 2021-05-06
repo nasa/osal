@@ -35,7 +35,7 @@
 #include "uttest.h"
 #include "utbsp.h"
 
-static uint32 UT_TimerSync(uint32 timer_id)
+static uint32 UT_TimerSync(osal_id_t timer_id)
 {
     OS_TaskDelay(1);
     return 1;
@@ -263,6 +263,9 @@ void UtTest_Setup(void)
     {
         UtAssert_Abort("OS_API_Init() failed");
     }
+
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     /*
      * Register the test setup and check routines in UT assert

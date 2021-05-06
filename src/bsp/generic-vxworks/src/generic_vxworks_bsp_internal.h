@@ -18,20 +18,19 @@
  *  limitations under the License.
  */
 
-/*
- * File:  generic_vxworks_bsp_internal.h
+/**
+ * \file
  *
  * Purpose:
  *   Header file for internal data to the VxWorks BSP
  */
 
-#ifndef GENERIC_VXWORKS_BSP_INTERNAL_H_
-#define GENERIC_VXWORKS_BSP_INTERNAL_H_
+#ifndef GENERIC_VXWORKS_BSP_INTERNAL_H
+#define GENERIC_VXWORKS_BSP_INTERNAL_H
 
 /*
 ** OSAL includes
 */
-#include "osapi.h"
 #include "bsp-impl.h"
 
-#endif /* GENERIC_VXWORKS_BSP_INTERNAL_H_ */
+#endif /* GENERIC_VXWORKS_BSP_INTERNAL_H */

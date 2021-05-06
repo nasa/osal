@@ -25,6 +25,8 @@
  *   OSAL BSP debug console abstraction
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -72,7 +74,7 @@ static void OS_BSP_ExecTput(const char *cap, const char *param)
    OS_BSP_ConsoleOutput_Impl
    See full description in header
  ------------------------------------------------------------------*/
-void OS_BSP_ConsoleOutput_Impl(const char *Str, uint32 DataLen)
+void OS_BSP_ConsoleOutput_Impl(const char *Str, size_t DataLen)
 {
     ssize_t WriteLen;
 

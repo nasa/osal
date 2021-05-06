@@ -15,6 +15,53 @@
 #
 ##########################################################################
 
+##############################################################
+# Argument/Bug-checking options
+##############################################################
+
+# OSAL_CONFIG_BUGCHECK_DISABLE
+# ----------------------------------
+#
+# Disable/compile-out the "bugcheck" macro
+#
+# The bugcheck macro is used to validate the inputs to functions and/or
+# assert on other conditions that should _always_ be true.  If any of these
+# conditions ever evaluate as false, it indicates a bug in the code -
+# either in the OSAL or the application which invoked OSAL.
+#
+# If set FALSE (default), then the OSAL bugcheck macro will evaluate its
+# boolean conditional and generate an action if that conditional evaulates
+# false.  (The specific action to take is configured via a different
+# directive -- see OSAL_CONFIG_BUGCHECK_STRICT).
+#
+# These extra bug checks do consume a slight bit of code+data space as
+# well as some runtime CPU cycles on every call, depending on the conditions
+# being tested.
+#
+# Once the application has reached a sufficient level of stability and
+# confidence is obtained that these bug checks are not possible to be
+# triggered, this directive may be set TRUE which disables the bug checks
+# completely - rendering these statements as no-ops.
+#
+set(OSAL_CONFIG_BUGCHECK_DISABLE                FALSE)
+
+
+# OSAL_CONFIG_BUGCHECK_STRICT
+# ----------------------------------
+#
+# Select a strict implementation for the "bugcheck" macro
+#
+# If set FALSE (default), then the OSAL bugcheck macro will generate a
+# debug message and return an error code if the conditional evaluates
+# as false.  This is a soft error - the application will get the
+# error code and keep running.
+#
+# If set to TRUE, then any failure of any bugcheck macro is considered
+# fatal and will trigger an abort().  On many platforms this will
+# generate an abnormal application exit with a core file for debugging.
+#
+set(OSAL_CONFIG_BUGCHECK_STRICT                  FALSE)
+
 
 ##############################################################
 # Code/Feature Selection Options for the OSAL implementation
@@ -133,6 +180,31 @@ set(OSAL_CONFIG_DEBUG_PRINTF                    FALSE
     CACHE BOOL "Controls inclusion of OS_DEBUG statements in the code"
 )
 
+#
+# OS_CONFIG_CONSOLE_ASYNC
+# ----------------------------------
+#
+# Controls whether the console device writes (OS_printf) will be deferred
+# to a separate utility task or handled directly by the calling task.
+#
+# If set FALSE, the utility task WILL NOT be spawned, and all OS_printf()
+# calls will be synchronously written to the console device.
+#
+# If set TRUE, an extra utility task WILL be spawned, and the data from
+# all OS_printf() calls will be written to an output queue which is then
+# transferred to the console device by the utility task.
+#
+# When this is TRUE (default), it may improve real time performance by not
+# requiring the caller to delay on a potentially slow console device output.
+#
+# However decoupling in this manner requires creation of an extra task and
+# stack to handle the output, and a side effect is that the OS_printf() output
+# can become decoupled from the event/task where it actually occurred, or
+# messages might appear in a different order than they originally occurred.
+#
+set(OSAL_CONFIG_CONSOLE_ASYNC                   TRUE
+    CACHE BOOL "Controls spawning of a separate utility task for OS_printf"
+)
 
 #############################################
 # Resource Limits for the OS API

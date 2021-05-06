@@ -32,6 +32,7 @@
 #include "os-vxworks.h"
 
 #include "os-impl-filesys.h"
+#include "os-impl-dirs.h"
 #include "os-shared-filesys.h"
 #include "os-shared-idmap.h"
 
@@ -76,11 +77,14 @@ OS_impl_filesys_internal_record_t OS_impl_filesys_table[OS_MAX_FILE_SYSTEMS];
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStartVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *     local = &OS_filesys_table[filesys_id];
-    OS_impl_filesys_internal_record_t *impl  = &OS_impl_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *     local;
+    OS_impl_filesys_internal_record_t *impl;
     int32                              return_code;
+
+    impl  = OS_OBJECT_TABLE_GET(OS_impl_filesys_table, *token);
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     memset(impl, 0, sizeof(*impl));
     return_code = OS_ERR_NOT_IMPLEMENTED;
@@ -192,10 +196,13 @@ int32 OS_FileSysStartVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStopVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysStopVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *     local = &OS_filesys_table[filesys_id];
-    OS_impl_filesys_internal_record_t *impl  = &OS_impl_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *     local;
+    OS_impl_filesys_internal_record_t *impl;
+
+    impl  = OS_OBJECT_TABLE_GET(OS_impl_filesys_table, *token);
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     switch (local->fstype)
     {
@@ -231,11 +238,13 @@ int32 OS_FileSysStopVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysFormatVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *local       = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     int32                         return_code = OS_ERR_NOT_IMPLEMENTED;
     int                           status;
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     switch (local->fstype)
     {
@@ -282,25 +291,67 @@ int32 OS_FileSysFormatVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysMountVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysMountVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     int32                         status;
     int                           fd;
+    struct stat                   stat_buf;
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     /*
-     * Calling open() on the physical device path
-     * mounts the device.
+     * For FS-based mounts, these are just a map to a some other
+     * directory in the filesystem.
+     *
+     * If it does exist then make sure it is actually a directory.
+     * If it does not exist then attempt to create it.
      */
-    fd = open(local->system_mountpt, O_RDONLY, 0644);
-    if (fd < 0)
+    if (local->fstype == OS_FILESYS_TYPE_FS_BASED)
     {
-        status = OS_ERROR;
+        if (stat(local->system_mountpt, &stat_buf) == 0)
+        {
+            if (S_ISDIR(stat_buf.st_mode))
+            {
+                /* mount point exists */
+                status = OS_SUCCESS;
+            }
+            else
+            {
+                OS_DEBUG("%s is not a directory\n", local->system_mountpt);
+                status = OS_FS_ERR_PATH_INVALID;
+            }
+        }
+        else
+        {
+            if (mkdir(local->system_mountpt, 0775) == 0)
+            {
+                /* directory created OK */
+                status = OS_SUCCESS;
+            }
+            else
+            {
+                OS_DEBUG("mkdir(%s): errno=%d\n", local->system_mountpt, errnoGet());
+                status = OS_FS_ERR_DRIVE_NOT_CREATED;
+            }
+        }
     }
     else
     {
-        status = OS_SUCCESS;
-        close(fd);
+        /*
+         * For all other (non-FS_BASED) filesystem types,
+         * Calling open() on the physical device path mounts the device.
+         */
+        fd = open(local->system_mountpt, O_RDONLY, 0644);
+        if (fd < 0)
+        {
+            status = OS_ERROR;
+        }
+        else
+        {
+            status = OS_SUCCESS;
+            close(fd);
+        }
     }
 
     return status;
@@ -315,32 +366,42 @@ int32 OS_FileSysMountVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id)
+int32 OS_FileSysUnmountVolume_Impl(const OS_object_token_t *token)
 {
-    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     int32                         status;
     int                           fd;
 
-    /*
-    ** vxWorks uses an ioctl to unmount
-    */
-    fd = open(local->system_mountpt, O_RDONLY, 0644);
-    if (fd < 0)
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
+
+    if (local->fstype == OS_FILESYS_TYPE_FS_BASED)
     {
-        status = OS_ERROR;
+        /* unmount is a no-op on FS-based mounts - it is just a directory map */
+        status = OS_SUCCESS;
     }
     else
     {
-        if (ioctl(fd, FIOUNMOUNT, 0) < 0)
+        /*
+        ** vxWorks uses an ioctl to unmount
+        */
+        fd = open(local->system_mountpt, O_RDONLY, 0644);
+        if (fd < 0)
         {
             status = OS_ERROR;
         }
         else
         {
-            status = OS_SUCCESS;
-        }
+            if (ioctl(fd, FIOUNMOUNT, 0) < 0)
+            {
+                status = OS_ERROR;
+            }
+            else
+            {
+                status = OS_SUCCESS;
+            }
 
-        close(fd);
+            close(fd);
+        }
     }
 
     return status;
@@ -355,11 +416,13 @@ int32 OS_FileSysUnmountVolume_Impl(uint32 filesys_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result)
+int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *result)
 {
-    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     struct statfs                 stat_buf;
     int                           return_code;
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     if (statfs(local->system_mountpt, &stat_buf) != 0)
     {
@@ -368,9 +431,9 @@ int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result)
     }
     else
     {
-        result->block_size   = stat_buf.f_bsize;
-        result->blocks_free  = stat_buf.f_bfree;
-        result->total_blocks = stat_buf.f_blocks;
+        result->block_size   = OSAL_SIZE_C(stat_buf.f_bsize);
+        result->blocks_free  = OSAL_BLOCKCOUNT_C(stat_buf.f_bfree);
+        result->total_blocks = OSAL_BLOCKCOUNT_C(stat_buf.f_blocks);
         return_code          = OS_SUCCESS;
     }
 
@@ -386,12 +449,14 @@ int32 OS_FileSysStatVolume_Impl(uint32 filesys_id, OS_statvfs_t *result)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileSysCheckVolume_Impl(uint32 filesys_id, bool repair)
+int32 OS_FileSysCheckVolume_Impl(const OS_object_token_t *token, bool repair)
 {
-    OS_filesys_internal_record_t *local = &OS_filesys_table[filesys_id];
+    OS_filesys_internal_record_t *local;
     STATUS                        chk_status;
     int                           flags;
     int                           fd;
+
+    local = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     fd = open(local->system_mountpt, O_RDONLY, 0);
     if (fd < 0)

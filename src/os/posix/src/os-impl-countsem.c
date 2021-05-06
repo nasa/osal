@@ -32,6 +32,7 @@
 #include "os-posix.h"
 #include "os-impl-countsem.h"
 #include "os-shared-countsem.h"
+#include "os-shared-idmap.h"
 
 /*
  * Added SEM_VALUE_MAX Define
@@ -74,14 +75,18 @@ int32 OS_Posix_CountSemAPI_Impl_Init(void)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 options)
+int32 OS_CountSemCreate_Impl(const OS_object_token_t *token, uint32 sem_initial_value, uint32 options)
 {
+    OS_impl_countsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
+
     if (sem_initial_value > SEM_VALUE_MAX)
     {
         return OS_INVALID_SEM_VALUE;
     }
 
-    if (sem_init(&OS_impl_count_sem_table[sem_id].id, 0, sem_initial_value) < 0)
+    if (sem_init(&impl->id, 0, sem_initial_value) < 0)
     {
         return OS_SEM_FAILURE;
     }
@@ -98,9 +103,13 @@ int32 OS_CountSemCreate_Impl(uint32 sem_id, uint32 sem_initial_value, uint32 opt
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemDelete_Impl(uint32 sem_id)
+int32 OS_CountSemDelete_Impl(const OS_object_token_t *token)
 {
-    if (sem_destroy(&OS_impl_count_sem_table[sem_id].id) < 0)
+    OS_impl_countsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
+
+    if (sem_destroy(&impl->id) < 0)
     {
         return OS_SEM_FAILURE;
     }
@@ -117,9 +126,13 @@ int32 OS_CountSemDelete_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGive_Impl(uint32 sem_id)
+int32 OS_CountSemGive_Impl(const OS_object_token_t *token)
 {
-    if (sem_post(&OS_impl_count_sem_table[sem_id].id) < 0)
+    OS_impl_countsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
+
+    if (sem_post(&impl->id) < 0)
     {
         return OS_SEM_FAILURE;
     }
@@ -136,9 +149,13 @@ int32 OS_CountSemGive_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTake_Impl(uint32 sem_id)
+int32 OS_CountSemTake_Impl(const OS_object_token_t *token)
 {
-    if (sem_wait(&OS_impl_count_sem_table[sem_id].id) < 0)
+    OS_impl_countsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
+
+    if (sem_wait(&impl->id) < 0)
     {
         return OS_SEM_FAILURE;
     }
@@ -154,17 +171,20 @@ int32 OS_CountSemTake_Impl(uint32 sem_id)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
+int32 OS_CountSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
 {
-    struct timespec ts;
-    int             result;
+    struct timespec                     ts;
+    int                                 result;
+    OS_impl_countsem_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
 
     /*
      ** Compute an absolute time for the delay
      */
     OS_Posix_CompAbsDelayTime(msecs, &ts);
 
-    if (sem_timedwait(&OS_impl_count_sem_table[sem_id].id, &ts) == 0)
+    if (sem_timedwait(&impl->id, &ts) == 0)
     {
         result = OS_SUCCESS;
     }
@@ -189,11 +209,14 @@ int32 OS_CountSemTimedWait_Impl(uint32 sem_id, uint32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_CountSemGetInfo_Impl(uint32 sem_id, OS_count_sem_prop_t *count_prop)
+int32 OS_CountSemGetInfo_Impl(const OS_object_token_t *token, OS_count_sem_prop_t *count_prop)
 {
-    int sval;
+    int                                 sval;
+    OS_impl_countsem_internal_record_t *impl;
 
-    if (sem_getvalue(&OS_impl_count_sem_table[sem_id].id, &sval) < 0)
+    impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
+
+    if (sem_getvalue(&impl->id, &sval) < 0)
     {
         return OS_SEM_FAILURE;
     }

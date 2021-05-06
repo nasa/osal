@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/ioctl.h */
-#ifndef _OSAL_STUB_SYS_IOCTL_H_
-#define _OSAL_STUB_SYS_IOCTL_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/ioctl.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_SYS_IOCTL_H
+#define OCS_SYS_IOCTL_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/ioctl.h */
@@ -38,4 +44,4 @@
 
 extern int OCS_ioctl(int fd, unsigned long request, ...);
 
-#endif /* _OSAL_STUB_SYS_IOCTL_H_ */
+#endif /* OCS_SYS_IOCTL_H */

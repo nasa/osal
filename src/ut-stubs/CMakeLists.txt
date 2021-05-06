@@ -9,32 +9,91 @@
 # provide "stub" versions of all calls in the OSAL public API.
 #
 
+set(OSAL_PUBLIC_API_HEADERS
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-binsem.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-bsp.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-clock.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-common.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-constants.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-countsem.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-dir.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-error.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-file.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-filesys.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-heap.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-idmap.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-macros.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-module.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-mutex.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-network.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-printf.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-queue.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-select.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-shell.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-sockets.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-task.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-timebase.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-timer.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-version.h
+)
+
+# The following target rule contains the specific commands required
+# to auto-generate the stub implementations from the headers
+add_custom_target(generate_osapi_stubs
+    COMMAND ${UT_ASSERT_SOURCE_DIR}/scripts/generate_stubs.pl
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${OSAL_PUBLIC_API_HEADERS}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    VERBATIM
+)
+
+
 # NOTE: There is no separate public include directory for the stubs.
 # By definition, the stubs must implement the same public API that the
 # normal OSAL library implements.  Therefore, only the standard OSAL
 # header files are used.
 add_library(ut_osapi_stubs STATIC
     utstub-helpers.c
-    osapi-utstub-binsem.c
-    osapi-utstub-clock.c
-    osapi-utstub-common.c
-    osapi-utstub-countsem.c
-    osapi-utstub-dir.c
-    osapi-utstub-errors.c
-    osapi-utstub-file.c
-    osapi-utstub-filesys.c
-    osapi-utstub-heap.c
-    osapi-utstub-idmap.c
-    osapi-utstub-module.c
-    osapi-utstub-mutex.c
-    osapi-utstub-network.c
-    osapi-utstub-printf.c
-    osapi-utstub-queue.c
-    osapi-utstub-select.c
-    osapi-utstub-sockets.c
-    osapi-utstub-task.c
-    osapi-utstub-time.c
-    osapi-utstub-timebase.c
+    osapi-binsem-stubs.c
+    osapi-binsem-hooks.c
+    osapi-clock-stubs.c
+    osapi-clock-hooks.c
+    osapi-common-stubs.c
+    osapi-countsem-stubs.c
+    osapi-countsem-hooks.c
+    osapi-dir-stubs.c
+    osapi-dir-hooks.c
+    osapi-error-stubs.c
+    osapi-error-hooks.c
+    osapi-file-stubs.c
+    osapi-file-hooks.c
+    osapi-filesys-stubs.c
+    osapi-filesys-hooks.c
+    osapi-heap-stubs.c
+    osapi-heap-hooks.c
+    osapi-idmap-stubs.c
+    osapi-idmap-hooks.c
+    osapi-module-stubs.c
+    osapi-module-hooks.c
+    osapi-mutex-stubs.c
+    osapi-mutex-hooks.c
+    osapi-network-stubs.c
+    osapi-network-hooks.c
+    osapi-printf-stubs.c
+    osapi-printf-hooks.c
+    osapi-queue-stubs.c
+    osapi-queue-hooks.c
+    osapi-select-stubs.c
+    osapi-sockets-stubs.c
+    osapi-sockets-hooks.c
+    osapi-task-stubs.c
+    osapi-task-hooks.c
+    osapi-timer-stubs.c
+    osapi-timer-hooks.c
+    osapi-timebase-stubs.c
+    osapi-timebase-hooks.c
+    osapi-version-stubs.c
+    osapi-version-hooks.c
 )
 
 # Some of the internal API definitions in stubs are based on

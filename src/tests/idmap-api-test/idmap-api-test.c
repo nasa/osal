@@ -109,9 +109,10 @@ void TestIdMapApi_Setup(void)
     /*
      * Create all allowed objects
      */
-    status = OS_TaskCreate(&task_id, "Task", Test_Void_Fn, NULL, 4096, 50, 0);
+    status = OS_TaskCreate(&task_id, "Task", Test_Void_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(4096),
+                           OSAL_PRIORITY_C(50), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
-    status = OS_QueueCreate(&queue_id, "Queue", 5, 5, 0);
+    status = OS_QueueCreate(&queue_id, "Queue", OSAL_BLOCKCOUNT_C(5), OSAL_SIZE_C(5), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_QueueCreate() (%ld) == OS_SUCCESS", (long)status);
     status = OS_CountSemCreate(&count_sem_id, "CountSem", 1, 0);
     UtAssert_True(status == OS_SUCCESS, "OS_CountSemCreate() (%ld) == OS_SUCCESS", (long)status);
@@ -141,9 +142,9 @@ void TestIdMapApi(void)
 {
     int32                  expected;
     int32                  actual;
-    uint32                 TestArrayIndex;
-    uint32                 TestMutex1Index;
-    uint32                 TestMutex2Index;
+    osal_index_t           TestArrayIndex;
+    osal_index_t           TestMutex1Index;
+    osal_index_t           TestMutex2Index;
     osal_id_t              badid;
     Test_OS_ObjTypeCount_t Count;
 
@@ -346,6 +347,9 @@ void UtTest_Setup(void)
     {
         UtAssert_Abort("OS_API_Init() failed");
     }
+
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     /*
      * Register the test setup and check routines in UT assert

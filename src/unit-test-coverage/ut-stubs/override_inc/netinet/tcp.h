@@ -18,14 +18,20 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for netinet/tcp.h */
-#ifndef _OSAL_OVERRIDE_NETINET_TCP_H_
-#define _OSAL_OVERRIDE_NETINET_TCP_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for netinet/tcp.h
+ */
 
-#include <OCS_netinet_tcp.h>
+#ifndef OVERRIDE_NETINET_TCP_H
+#define OVERRIDE_NETINET_TCP_H
+
+#include "OCS_netinet_tcp.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in netinet/tcp.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_NETINET_TCP_H_ */
+#endif /* OVERRIDE_NETINET_TCP_H */

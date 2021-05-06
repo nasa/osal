@@ -78,7 +78,7 @@ void UT_os_timercallback(osal_id_t timerId)
     static int32     loopCnt = 0, res = 0;
     static uint32    prevIntervalTime = 0;
     static uint32    currIntervalTime = 0;
-    static OS_time_t currTime = {0, 0}, endTime = {0, 0};
+    static OS_time_t currTime = {0}, endTime = {0};
 
     if (OS_ObjectIdEqual(timerId, g_timerId))
     {
@@ -94,7 +94,7 @@ void UT_os_timercallback(osal_id_t timerId)
 
         OS_GetLocalTime(&endTime);
 
-        currIntervalTime = 1000000 * (endTime.seconds - currTime.seconds) + endTime.microsecs - currTime.microsecs;
+        currIntervalTime = OS_TimeGetTotalMicroseconds(OS_TimeSubtract(endTime, currTime));
 
         if (currIntervalTime >= prevIntervalTime)
             deltaTime = currIntervalTime - prevIntervalTime;
@@ -192,6 +192,9 @@ void UtTest_Setup(void)
     {
         UtAssert_Abort("OS_API_Init() failed");
     }
+
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     UT_os_init_timer_misc();
 

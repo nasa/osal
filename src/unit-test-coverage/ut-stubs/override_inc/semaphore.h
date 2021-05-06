@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for semaphore.h */
-#ifndef _OSAL_OVERRIDE_SEMAPHORE_H_
-#define _OSAL_OVERRIDE_SEMAPHORE_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for semaphore.h
+ */
 
-#include <OCS_semaphore.h>
+#ifndef OVERRIDE_SEMAPHORE_H
+#define OVERRIDE_SEMAPHORE_H
+
+#include "OCS_semaphore.h"
 #include <time.h>
 
 /* ----------------------------------------- */
@@ -36,4 +42,4 @@
 #define sem_timedwait OCS_sem_timedwait
 #define sem_wait      OCS_sem_wait
 
-#endif /* _OSAL_OVERRIDE_SEMAPHORE_H_ */
+#endif /* OVERRIDE_SEMAPHORE_H */

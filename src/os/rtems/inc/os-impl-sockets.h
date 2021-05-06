@@ -19,14 +19,14 @@
  */
 
 /**
- * \file     os-impl-sockets.h
+ * \file
+ *
  * \ingroup  rtems
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_SOCKETS_H_
-#define INCLUDE_OS_IMPL_SOCKETS_H_
+#ifndef OS_IMPL_SOCKETS_H
+#define OS_IMPL_SOCKETS_H
 
 #include "os-impl-io.h"
 
@@ -43,4 +43,4 @@
  */
 #define OS_IMPL_SOCKET_FLAGS O_NONBLOCK
 
-#endif /* INCLUDE_OS_IMPL_SOCKETS_H_ */
+#endif /* OS_IMPL_SOCKETS_H */

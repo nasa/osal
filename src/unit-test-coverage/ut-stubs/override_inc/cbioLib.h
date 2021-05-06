@@ -18,14 +18,20 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for cbioLib.h */
-#ifndef _OSAL_OVERRIDE_CBIOLIB_H_
-#define _OSAL_OVERRIDE_CBIOLIB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for cbioLib.h
+ */
 
-#include <OCS_cbioLib.h>
+#ifndef OVERRIDE_CBIOLIB_H
+#define OVERRIDE_CBIOLIB_H
+
+#include "OCS_cbioLib.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in cbioLib.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_CBIOLIB_H_ */
+#endif /* OVERRIDE_CBIOLIB_H */
