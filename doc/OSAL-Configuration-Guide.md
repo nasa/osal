@@ -120,15 +120,16 @@ machine. The source distribution has the following directories:
 
 | **Directory** |  **Description**  |
 |---|---|
-| osal  |  The top level OSAL source distribution directory. OSAL version 2.10  is being used as an example. |
-| osal/src  |  The src directory contains the OSAL source, and make rules. |
-| osal/src/examples  | The sample directory contains the sample applications for the osal.  |
-| osal/src/tests  | The tests directory contains a small number of OSAL tests that can run  on the targets.  |
-| osal/src/unit-tests  |The unit-tests directory contains a suite of OSAL unit tests.   |
-| osal/src/bsp  | The bsp directory contains the platform specific code for the OSAL as well  as code to make the OSAL run on a particular platform. Everything in  this directory is used to adapt the OSAL and Applications to a particular  hardware platform. This directory also contains the startup code for the  example programs. The included platforms are generic enough that they may be  easy to port to other platforms and processor architectures. For example:  The bsp/mcf5235-rtems board support package was ported to an ARM processor  running RTEMS with minimal effort.  |
-| osal/src/os   | The os directory is the heart of the OSAL, containing the implementation of  the OSAL for each supported operating system. There is a sub-directory for  each supported operating system in this directory. The OSAL include files  are also contained in this directory (src/os/inc).  |
-| osal/src/inc  | The inc directory contains system wide include files that are used by the  OSAL on all platforms.  |
-| osal/doc  |   The doc directory contains the documentation and release notes for the OSAL. |
+| `osal`                        | The top level OSAL source distribution directory.  |
+| `osal/src`                    | The src directory contains the OSAL source, and make rules. |
+| `osal/src/examples`           | The sample directory contains the sample applications for the osal.  |
+| `osal/src/tests`              | Contains a suite of tests intended to validate the general functionality of OSAL services  |
+| `osal/src/unit-tests`         | Contains a suite of OSAL unit tests intended to validate the OSAL API, checking inputs, return codes, and outputs for each function.  |
+| `osal/src/unit-test-coverage` | Contains a suite of tests intended to execute every possible branch/error handling path in the OSAL implementation.   |
+| `osal/src/bsp`                | The bsp directory contains the platform specific code for the OSAL as well  as code to make the OSAL run on a particular platform. Everything in  this directory is used to adapt the OSAL and Applications to a particular  hardware platform. This directory also contains the startup code for the  example programs. The included platforms are generic enough that they may be  easy to port to other platforms and processor architectures. For example:  The bsp/mcf5235-rtems board support package was ported to an ARM processor  running RTEMS with minimal effort.  |
+| `osal/src/os`                 | The os directory is the heart of the OSAL, containing the implementation of  the OSAL for each supported operating system. There is a sub-directory for  each supported operating system in this directory. The OSAL include files  are also contained in this directory (src/os/inc).  |
+| `osal/src/inc`                | The inc directory contains system wide include files that are used by the  OSAL on all platforms.  |
+| `osal/doc`                    | The doc directory contains the documentation and release notes for the OSAL. |
 
 
 The osal directory can go just about anywhere on a host development
@@ -181,6 +182,7 @@ version of OSAL, refer to the `default_config.cmake` file in the top level direc
 | `OSAL_CONFIG_MAX_MODULES` | Used for defining the maximum number of loadable modules that OSAL can have loaded simultaneously. |
 | `OSAL_CONFIG_MAX_SYM_LEN` | Used for setting the maximum length of a symbol name in the symbol API.|
 | `OSAL_CONFIG_MAX_TIMERS` | Used for defining the maximum number of timers in the OSAL.|
+| `OSAL_CONFIG_DEBUG_PERMISSIVE_MODE` | For debugging as a normal/non-root user, causes OSAL to ignore/bypass certain errors related to lack of permission. |
 
 All configurable CMake parameters are translated to a generated configuration header file
 called `osconfig.h`, which replaces the directly-managed header file that was found in previous
@@ -248,7 +250,7 @@ set in the development shell. The generated makefiles do not require the
 user to set any environment variables, as all necessary context information
 is automatically stored in the cache when the build is first provisioned.
 
-### Setting up a standalone OSAL build
+### Setting up a standalone OSAL build manually
 
 The OSAL may be built standalone in order to evaluate the library for a
 particular target and/or execute the included unit tests.
@@ -281,6 +283,43 @@ directory.
 Note that the OSAL is not typically built as a standalone library; although a standalone
 build can be done for testing and development purposes, it is expected that the OSAL will
 be utilized as a component in a larger application.
+
+### Setting up a standalone OSAL build using the Makefile wrapper
+
+To simplify the process of invoking the cmake tool for typical standalone test/debug builds,
+a sample Makefile wrapper script `Makefile.sample` is provided in the OSAL root directory.
+This is similar to the sample script provided with CFE.  It provides several simple targets
+which in turn invoke CMake with a set of typically-used options.
+
+All makefile operations operate on an output directory referred to by the `O` variable, which
+is set to `build` by default.
+
+| **Makefile Target** | **Task Description** |
+|---------------------|----------------------|
+| `prep`              | Invokes the `cmake` command to set up a new build, or regenerate existing makefiles in the $(O) directory |
+| `all`               | Calls `make all` in the $(O) directory |
+| `install`           | Calls `make install` in the $(O) directory |
+| `clean`             | Calls `make clean` in the $(O) directory |
+| `test`              | Calls `make test` in the $(O) directory |
+| `lcov`              | Invokes the `lcov` and `genhtml` tools to generate a coverage report |
+| `distclean`         | Entirely removes the $(O) directory, bringing back to a fully clean slate |
+
+Variables recognized/used by `Makefile.sample`:
+
+| **Variable**        | **Default Value** | **Description**      |
+|---------------------|-------------------|----------------------|
+| `O`                 | `build`           | Name of the build directory to operate on |
+| `BSPTYPE`           | `generic-linux`   | The name of the target board (BSP) to build OSAL for, also implies OS type |
+| `BUILDTYPE`         | `debug`           | Translated to the `CMAKE_BUILD_TYPE` variable (set to `release` to build with optimization) |
+| `INSTALLPREFIX`     | `build`           | Translated to the `CMAKE_INSTALL_PREFIX` variable |
+| `DESTDIR`           | `$(O)`            | Local destination directory for `install` |
+| `ENABLE_UNIT_TESTS` | false/off         | If set to "true" then all tests will be built in addition to the basic OSAL libraries |
+| `PERMISSIVE_MODE`   | false/off         | Translated to the `OSAL_CONFIG_DEBUG_PERMISSIVE_MODE` variable (see above) |
+
+For more information on the `BUILDTYPE` and `INSTALLPREFIX`, see the CMake documentation:
+
+https://cmake.org/cmake/help/latest/manual/cmake-variables.7.html
+
 
 ### Integrating OSAL into a larger build
 
@@ -678,35 +717,55 @@ the OS-specific coverage test can execute on any platform, it is not limited
 to running on the platform that it is abstracting.  As a result, the VxWorks
 coverage test is typically executed on a Linux host.
 
-## How to Run the OSAL Unit Tests on the PC / Linux Platform
+## How to Run the OSAL Tests on the PC / Linux Platform
 
-To build and run the OSAL unit tests, run the following commands from
-the "build" directory:
+To build and run the OSAL unit tests, first make sure OSAL was initially configured
+with the `ENABLE_UNIT_TESTS` option enabled.  Test programs are simply separate application
+executables that can then be executed as normal.  The test programs are built along with
+the OSAL library as part of a normal `make all` or `make install` command.  During `install`,
+the test programs will be copied to the output location/staging area.
 
-#### Build Commands
+### Option 1: Execute single test directly from a build tree
+
+The tests can be executed directly in-place in the build directory.  This method often useful
+when debugging, as the exectuable can also be run in a debugger (i.e. gdb) this way.
+
+The following example executes the task subsystem coverage test for the shared layer, but any
+other test can be run in a similar fashion.
 
 |  **Shell command**      |    **Description**|
 |---|---|
-|  `$ cd build/unit-test-coverage` | Change to the build directory containing coverage tests |
-| `$ make` | Build the OSAL Core, and all tests |
-| `$ make test` | Execute all of the tests programs |
+| `$ cd build/unit-test-coverage/shared` | Change to the build directory containing coverage tests |
+| `$ make` | Build the test program(s) if not already done |
+| `$ ./coverage-shared-task-testrunner` | Execute the shared task coverage test application |
+
+
+### Option 2: Execute tests in batch mode using ctest and/or makefile wrapper target
+
+The Makefiles include a "test" wrapper target which in turn invokes the "ctest" program
+that will execute all test programs in a batch mode.
 
 Note that the "ctest" program shows a quiet output by default, indicating only the test name
 and a pass/fail status.  To see a complete log of tests executed, the test program may be run
-directly from the command line.
+directly from the command line (see above).
 
-#### OSAL Unit Test Directories
+For example:
 
- | **Directory**|**Description**|
- |---|---|
- | `build` | The top level OSAL build directory. |
- | `build/unit-tests` | The top level unit test build directory. |
- | `build/unit-tests/oscore-test` | Contains the test binary, log, and gcov files for the OSAL core tests |
- | `build/unit-tests/osfile-test` | Contains the test binary, log, and gcov files for the OSAL file API tests |
- | `build/unit-tests/osfilesys-test` | Contains the test binary, log, and gcov files for the OSAL file system tests |
- | `build/unit-tests/osloader-test` | Contains the test binary, log, and gcov files for the OSAL loader tests |
- | `build/unit-tests/osnetwork-test` | Contains the test binary, log, and gcov files for the OSAL network tests |
- | `build/unit-tests/ostimer-test` | Contains the test binary, log, and gcov files for the OSAL timer tests |
+`make test`
+
+**Note**: The "test" target may also be invoked in a build subdirectory, to invoke only the tests
+defined/built in (or below) that subdirectory.
+
+### Code Coverage analysis
+
+The top level sample Makefile also include an "lcov" wrapper target which in turn invokes the "lcov" and
+"genhtml" programs to collect branch/path coverage information into an HTML report.
+
+For example:
+
+`make lcov`
+
+**Note**: The "test" target should be executed before running the "lcov" target.
 
 # Revision History
 
