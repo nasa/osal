@@ -108,8 +108,6 @@ void Test_OS_SocketOpen_Impl(void)
     UT_SetDeferredRetcode(UT_KEY(OCS_fcntl), 1, -1);
     OSAPI_TEST_FUNCTION_RC(OS_SocketOpen_Impl, (&token), OS_SUCCESS);
     UtAssert_STUB_COUNT(OCS_fcntl, 1);
-    UtAssert_True(!UT_PortablePosixIOTest_Get_Selectable(token.obj_idx),
-                  "Socket not selectable without O_NONBLOCK flag");
 
     /* Failure in fcntl() SETFL */
     UT_PortablePosixIOTest_ResetImpl(token.obj_idx);
@@ -117,8 +115,6 @@ void Test_OS_SocketOpen_Impl(void)
     UT_SetDeferredRetcode(UT_KEY(OCS_fcntl), 2, -1);
     OSAPI_TEST_FUNCTION_RC(OS_SocketOpen_Impl, (&token), OS_SUCCESS);
     UtAssert_STUB_COUNT(OCS_fcntl, 2);
-    UtAssert_True(!UT_PortablePosixIOTest_Get_Selectable(token.obj_idx),
-                  "Socket not selectable without O_NONBLOCK flag");
 }
 
 void Test_OS_SocketBind_Impl(void)
@@ -266,8 +262,6 @@ void Test_OS_SocketAccept_Impl(void)
     UT_SetDeferredRetcode(UT_KEY(OCS_fcntl), 1, -1);
     OSAPI_TEST_FUNCTION_RC(OS_SocketAccept_Impl, (&sock_token, &conn_token, &addr, 0), OS_SUCCESS);
     UtAssert_STUB_COUNT(OCS_fcntl, 1);
-    UtAssert_True(!UT_PortablePosixIOTest_Get_Selectable(conn_token.obj_idx),
-                  "Socket not selectable without O_NONBLOCK flag");
 
     /* Failure in fcntl() SETFL */
     UT_PortablePosixIOTest_ResetImpl(conn_token.obj_idx);
@@ -275,8 +269,6 @@ void Test_OS_SocketAccept_Impl(void)
     UT_SetDeferredRetcode(UT_KEY(OCS_fcntl), 2, -1);
     OSAPI_TEST_FUNCTION_RC(OS_SocketAccept_Impl, (&sock_token, &conn_token, &addr, 0), OS_SUCCESS);
     UtAssert_STUB_COUNT(OCS_fcntl, 2);
-    UtAssert_True(!UT_PortablePosixIOTest_Get_Selectable(conn_token.obj_idx),
-                  "Socket not selectable without O_NONBLOCK flag");
 }
 
 void Test_OS_SocketRecvFrom_Impl(void)

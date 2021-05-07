@@ -155,6 +155,10 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
      * Set the standard options on the filehandle by default --
      * this may set it to non-blocking mode if the implementation supports it.
      * any blocking would be done explicitly via the select() wrappers
+     *
+     * NOTE: The implementation still generally works without this flag set, but
+     * nonblock mode does improve robustness in the event that multiple tasks
+     * attempt to accept new connections from the same server socket at the same time.
      */
     os_flags = fcntl(impl->fd, F_GETFL);
     if (os_flags == -1)
@@ -170,11 +174,9 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
             /* No recourse if F_SETFL fails - just report the error and move on. */
             OS_DEBUG("fcntl(F_SETFL): %s\n", strerror(errno));
         }
-        else
-        {
-            impl->selectable = ((os_flags & O_NONBLOCK) != 0);
-        }
     }
+
+    impl->selectable = OS_IMPL_SOCKET_SELECTABLE;
 
     return OS_SUCCESS;
 } /* end OS_SocketOpen_Impl */
@@ -434,6 +436,10 @@ int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_
                  * Set the standard options on the filehandle by default --
                  * this may set it to non-blocking mode if the implementation supports it.
                  * any blocking would be done explicitly via the select() wrappers
+                 *
+                 * NOTE: The implementation still generally works without this flag set, but
+                 * nonblock mode does improve robustness in the event that multiple tasks
+                 * attempt to read from the same socket at the same time.
                  */
                 os_flags = fcntl(conn_impl->fd, F_GETFL);
                 if (os_flags == -1)
@@ -449,11 +455,9 @@ int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_
                         /* No recourse if F_SETFL fails - just report the error and move on. */
                         OS_DEBUG("fcntl(F_SETFL): %s\n", strerror(errno));
                     }
-                    else
-                    {
-                        conn_impl->selectable = ((os_flags & O_NONBLOCK) != 0);
-                    }
                 }
+
+                conn_impl->selectable = OS_IMPL_SOCKET_SELECTABLE;
             }
         }
     }
