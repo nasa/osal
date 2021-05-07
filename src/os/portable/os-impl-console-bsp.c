@@ -65,6 +65,9 @@ void OS_ConsoleOutput_Impl(const OS_object_token_t *token)
     console  = OS_OBJECT_TABLE_GET(OS_console_table, *token);
     StartPos = console->ReadPos;
     EndPos   = console->WritePos;
+
+    OS_BSP_Lock_Impl();
+
     while (StartPos != EndPos)
     {
         if (StartPos > EndPos)
@@ -86,6 +89,8 @@ void OS_ConsoleOutput_Impl(const OS_object_token_t *token)
             StartPos = 0;
         }
     }
+
+    OS_BSP_Unlock_Impl();
 
     /* Update the global with the new read location */
     console->ReadPos = StartPos;

@@ -170,6 +170,17 @@ void OS_BSP_Setup(void)
     }
 
     /*
+     * Initialize the low level access sem
+     */
+    status = rtems_semaphore_create(rtems_build_name('B', 'S', 'P', '\0'), 1,
+                                    RTEMS_PRIORITY | RTEMS_BINARY_SEMAPHORE | RTEMS_INHERIT_PRIORITY, 0,
+                                    &OS_BSP_PcRtemsGlobal.AccessMutex);
+    if (status != RTEMS_SUCCESSFUL)
+    {
+        BSP_DEBUG("rtems_semaphore_create: %s\n", rtems_status_text(status));
+    }
+
+    /*
     ** Create the RTEMS Root file system
     */
     status = rtems_create_root_fs();
@@ -246,6 +257,34 @@ void OS_BSP_Setup(void)
     }
 
     printf("\n\n");
+}
+
+/*----------------------------------------------------------------
+   OS_BSP_Lock_Impl
+   See full description in header
+ ------------------------------------------------------------------*/
+void OS_BSP_Lock_Impl(void)
+{
+    rtems_status_code status;
+    status = rtems_semaphore_obtain(OS_BSP_PcRtemsGlobal.AccessMutex, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+    if (status != RTEMS_SUCCESSFUL)
+    {
+        BSP_DEBUG("rtems_semaphore_obtain: %s\n", rtems_status_text(status));
+    }
+}
+
+/*----------------------------------------------------------------
+   OS_BSP_Unlock_Impl
+   See full description in header
+ ------------------------------------------------------------------*/
+void OS_BSP_Unlock_Impl(void)
+{
+    rtems_status_code status;
+    status = rtems_semaphore_release(OS_BSP_PcRtemsGlobal.AccessMutex);
+    if (status != RTEMS_SUCCESSFUL)
+    {
+        BSP_DEBUG("rtems_semaphore_release: %s\n", rtems_status_text(status));
+    }
 }
 
 /* ---------------------------------------------------------

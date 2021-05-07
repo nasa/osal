@@ -113,6 +113,8 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage)
 
     if (MsgEnabled & 1)
     {
+        OS_BSP_Lock_Impl();
+
         switch (MessageType)
         {
             case UTASSERT_CASETYPE_ABORT:
@@ -182,6 +184,8 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage)
         OS_BSP_ConsoleOutput_Impl(" ", 1);
         OS_BSP_ConsoleOutput_Impl(OutputMessage, strlen(OutputMessage));
         OS_BSP_ConsoleOutput_Impl("\n", 1);
+
+        OS_BSP_Unlock_Impl();
     }
 
     /*
@@ -209,7 +213,10 @@ void UT_BSP_EndTest(const UtAssert_TestCounter_t *TestCounters)
 
     snprintf(Message, sizeof(Message), "COMPLETE: %u tests Segment(s) executed\n\n",
              (unsigned int)TestCounters->TestSegmentCount);
+
+    OS_BSP_Lock_Impl();
     OS_BSP_ConsoleOutput_Impl(Message, strlen(Message));
+    OS_BSP_Unlock_Impl();
 
     if ((TestCounters->CaseCount[UTASSERT_CASETYPE_FAILURE] > 0) ||
         (TestCounters->CaseCount[UTASSERT_CASETYPE_TSF] > 0) || (TestCounters->CaseCount[UTASSERT_CASETYPE_TTF] > 0))

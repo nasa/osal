@@ -31,6 +31,22 @@
 #include "OCS_bsp-impl.h"
 
 /*----------------------------------------------------------------
+   Stub for OS_BSP_Lock_Impl
+ ------------------------------------------------------------------*/
+void OCS_OS_BSP_Lock_Impl(void)
+{
+    UT_DEFAULT_IMPL(OCS_OS_BSP_Lock_Impl);
+}
+
+/*----------------------------------------------------------------
+   Stub for OS_BSP_Unlock_Impl
+ ------------------------------------------------------------------*/
+void OCS_OS_BSP_Unlock_Impl(void)
+{
+    UT_DEFAULT_IMPL(OCS_OS_BSP_Unlock_Impl);
+}
+
+/*----------------------------------------------------------------
    Function: OS_BSP_ConsoleOutput_Impl
 
     Purpose: Low level raw console data output.  Writes a sequence of

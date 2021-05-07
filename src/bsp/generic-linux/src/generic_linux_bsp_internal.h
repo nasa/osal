@@ -33,12 +33,15 @@
 #include "osapi-error.h"
 #include "bsp-impl.h"
 
+#include <pthread.h>
+
 /*
 ** BSP types
 */
 typedef struct
 {
-    bool EnableTermControl; /**< Will be set "true" when invoked from a TTY device, false otherwise */
+    bool            EnableTermControl; /**< Will be set "true" when invoked from a TTY device, false otherwise */
+    pthread_mutex_t AccessMutex;
 } OS_BSP_GenericLinuxGlobalData_t;
 
 /*
