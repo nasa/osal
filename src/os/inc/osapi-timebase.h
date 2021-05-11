@@ -78,6 +78,9 @@ typedef struct
  * @param[in]   external_sync   A synchronization function for BSP hardware-based timer ticks
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
+ * @retval #OS_ERR_NAME_TOO_LONG if the timebase_name is too long
+ * @retval #OS_INVALID_POINTER if a pointer argument is NULL
  */
 int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_TimerSync_t external_sync);
 
@@ -100,6 +103,8 @@ int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_Ti
  * @param[in]   interval_time   The amount of delay between ticks, in microseconds.
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
+ * @retval #OS_TIMER_ERR_INVALID_ARGS if start_time or interval_time are out of range
  */
 int32 OS_TimeBaseSet(osal_id_t timebase_id, uint32 start_time, uint32 interval_time);
 
@@ -113,6 +118,7 @@ int32 OS_TimeBaseSet(osal_id_t timebase_id, uint32 start_time, uint32 interval_t
  * @param[in]   timebase_id     The timebase resource to delete
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
  */
 int32 OS_TimeBaseDelete(osal_id_t timebase_id);
 
@@ -130,6 +136,7 @@ int32 OS_TimeBaseDelete(osal_id_t timebase_id);
  * @retval #OS_INVALID_POINTER if timebase_id or timebase_name are NULL pointers
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_NOT_FOUND if the name was not found in the table
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
  */
 int32 OS_TimeBaseGetIdByName(osal_id_t *timebase_id, const char *timebase_name);
 
@@ -150,6 +157,7 @@ int32 OS_TimeBaseGetIdByName(osal_id_t *timebase_id, const char *timebase_name);
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid timebase
  * @retval #OS_INVALID_POINTER if the timebase_prop pointer is null
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
  */
 int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_prop);
 
@@ -182,6 +190,7 @@ int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_pro
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid timebase
+ * @retval #OS_INVALID_POINTER if pointer argument is NULL
  */
 int32 OS_TimeBaseGetFreeRun(osal_id_t timebase_id, uint32 *freerun_val);
 

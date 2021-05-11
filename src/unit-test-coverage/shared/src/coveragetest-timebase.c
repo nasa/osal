@@ -168,9 +168,11 @@ void Test_OS_TimeBaseGetIdByName(void)
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
     UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
-    expected = OS_ERR_NAME_NOT_FOUND;
-    actual   = OS_TimeBaseGetIdByName(&objid, "NF");
-    UtAssert_True(actual == expected, "OS_TimeBaseGetIdByName() (%ld) == %ld", (long)actual, (long)expected);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseGetIdByName(&objid, "NF"), OS_ERR_NAME_NOT_FOUND);
+
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), -1);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseGetIdByName(&objid, "TL"), OS_ERR_NAME_TOO_LONG);
+    UT_ResetState(UT_KEY(OCS_memchr));
 
     /* test error paths */
     expected = OS_INVALID_POINTER;

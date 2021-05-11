@@ -117,6 +117,9 @@ typedef char os_err_name_t[OS_ERROR_NAME_LENGTH];
  * @param[out] err_name Buffer to store error string
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS if successfully converted to a string
+ * @retval #OS_INVALID_POINTER if err_name is NULL
+ * @retval #OS_ERROR if error could not be converted
  */
 int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name);
 /**@}*/

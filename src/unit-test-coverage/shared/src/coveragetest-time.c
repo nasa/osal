@@ -281,18 +281,11 @@ void Test_OS_TimerGetIdByName(void)
     UtAssert_True(actual == expected, "OS_TimerGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
-    expected = OS_ERR_NAME_NOT_FOUND;
-    actual   = OS_TimerGetIdByName(&objid, "NF");
-    UtAssert_True(actual == expected, "OS_TimerGetIdByName() (%ld) == %ld", (long)actual, (long)expected);
-
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimerGetIdByName(NULL, "NF");
-    UtAssert_True(actual == expected, "OS_TimerGetIdByName() (%ld) == %ld", (long)actual, (long)expected);
+    OSAPI_TEST_FUNCTION_RC(OS_TimerGetIdByName(&objid, "NF"), OS_ERR_NAME_NOT_FOUND);
+    OSAPI_TEST_FUNCTION_RC(OS_TimerGetIdByName(NULL, "NF"), OS_INVALID_POINTER);
 
     UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), 1 | (OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT));
-    expected = OS_ERR_INCORRECT_OBJ_STATE;
-    actual   = OS_TimerGetIdByName(&objid, "NF");
-    UtAssert_True(actual == expected, "OS_TimerGetIdByName() (%ld) == %ld", (long)actual, (long)expected);
+    OSAPI_TEST_FUNCTION_RC(OS_TimerGetIdByName(&objid, "NF"), OS_ERR_INCORRECT_OBJ_STATE);
     UT_ClearDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl));
 }
 

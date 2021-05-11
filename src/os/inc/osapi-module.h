@@ -174,6 +174,7 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS             @copybrief OS_SUCCESS
  * @retval #OS_ERR_NOT_IMPLEMENTED @copybrief OS_ERR_NOT_IMPLEMENTED
+ * @retval #OS_INVALID_POINTER if the filename argument is NULL
  * @retval #OS_ERROR if the symbol table could not be read or dumped
  */
 int32 OS_SymbolTableDump(const char *filename, size_t size_limit);
@@ -199,6 +200,7 @@ int32 OS_SymbolTableDump(const char *filename, size_t size_limit);
  * @retval #OS_INVALID_POINTER if one of the parameters is NULL
  * @retval #OS_ERR_NO_FREE_IDS if the module table is full
  * @retval #OS_ERR_NAME_TAKEN if the name is in use
+ * @retval #OS_ERR_NAME_TOO_LONG if the module_name is too long
  */
 int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *filename, uint32 flags);
 

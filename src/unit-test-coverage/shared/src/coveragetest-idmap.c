@@ -79,10 +79,7 @@ void Test_OS_ObjectIdInit(void)
      * Test Case For:
      * int32 OS_ObjectIdInit(void)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_ObjectIdInit();
-
-    UtAssert_True(actual == expected, "OS_ObjectIdInit() (%ld) == %ld", (long)actual, (long)expected);
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdInit(), OS_SUCCESS);
 }
 
 void Test_OS_LockUnlockGlobal(void)
@@ -155,6 +152,10 @@ void Test_OS_ObjectIdConvertToken(void)
     OS_object_token_t   token;
     OS_common_record_t *record;
     osal_id_t           objid;
+
+    /* confirm that calling w/invalid token returns OS_ERR_INCORRECT_OBJ_STATE */
+    memset(&token, 0, sizeof(token));
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdConvertToken(&token), OS_ERR_INCORRECT_OBJ_STATE);
 
     /* get a valid (fake) OSAL ID to start with */
     OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "ut", &token);
@@ -660,6 +661,28 @@ void Test_OS_ObjectIdFindNextFree(void)
 
     /* verify that the wrap occurred */
     UtAssert_True(i < (OS_OBJECT_INDEX_MASK + 2), "OS_ObjectIdFindNextFree() wrap around occurred");
+
+    /* Now fill the task table */
+    memset(&token2, 0, sizeof(token2));
+    token2.obj_type = OS_OBJECT_TYPE_OS_TASK;
+    for (i = 0; i < OS_MAX_TASKS; ++i)
+    {
+        token2.obj_idx = i;
+
+        rec2 = OS_OBJECT_TABLE_GET(OS_global_task_table, token2);
+        OS_ObjectIdCompose_Impl(OS_OBJECT_TYPE_OS_TASK, i, &rec2->active_id);
+    }
+
+    /* Attempt to allocate another task, should result in OS_ERR_NO_FREE_IDS */
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdFindNextFree(&token2), OS_ERR_NO_FREE_IDS);
+
+    /* Clear the task table */
+    memset(OS_global_task_table, 0, sizeof(OS_common_record_t) * OS_MAX_TASKS);
+
+    /* Try to allocate an instance of an objtype which is not implemented */
+    memset(&token2, 0, sizeof(token2));
+    token2.obj_type = 22;
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdFindNextFree(&token2), OS_ERR_NOT_IMPLEMENTED);
 }
 
 void Test_OS_ObjectIdAllocateNew(void)
