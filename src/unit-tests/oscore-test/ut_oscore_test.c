@@ -228,9 +228,9 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_queue_get_id_by_name_test, NULL, NULL, "OS_QueueGetIdByName");
     UtTest_Add(UT_os_queue_get_info_test, NULL, NULL, "OS_QueueGetInfo");
 
-    UtTest_Add(UT_os_select_fd_test, NULL, NULL, "OS_SelectFd");
-    UtTest_Add(UT_os_select_single_test, NULL, NULL, "OS_SelectSingle");
-    UtTest_Add(UT_os_select_multi_test, NULL, NULL, "OS_SelectMultiple");
+    UtTest_Add(UT_os_select_fd_test, UT_os_select_setup_file, UT_os_select_teardown_file, "OS_SelectFd");
+    UtTest_Add(UT_os_select_single_test, UT_os_select_setup_file, UT_os_select_teardown_file, "OS_SelectSingle");
+    UtTest_Add(UT_os_select_multi_test, UT_os_select_setup_file, UT_os_select_teardown_file, "OS_SelectMultiple");
 
     UtTest_Add(NULL, UT_os_init_task_misc, NULL, "UT_os_init_task_misc");
     UtTest_Add(UT_os_task_create_test, UT_os_init_task_create_test, NULL, "OS_TaskCreate");

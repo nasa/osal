@@ -55,7 +55,7 @@ extern char *g_mntName;
 **--------------------------------------------------------------------------------*/
 
 char g_dirName[UT_OS_PATH_BUFF_SIZE];
-char g_fileName[UT_OS_FILE_BUFF_SIZE];
+char g_fileName[UT_OS_PATH_BUFF_SIZE];
 
 char        g_subdirNames[UT_OS_FILE_MAX_DIRS][UT_OS_PATH_BUFF_SIZE];
 const char *g_tgtSubdirs[UT_OS_FILE_MAX_DIRS] = {"subdir1", "subdir2"};
@@ -120,75 +120,39 @@ void UT_os_read_n_sort_dirs(osal_id_t);
 **--------------------------------------------------------------------------------*/
 void UT_os_makedir_test()
 {
-    int32       status;
-    osal_id_t   fileDesc;
-    const char *testDesc;
+    osal_id_t fileDesc;
 
     /*-----------------------------------------------------*/
-    testDesc = "API not implemented";
+    /* #1 Null-pointer-arg */
 
-    if (OS_mkdir(NULL, 755) == OS_ERR_NOT_IMPLEMENTED)
-    {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_makedir_test_exit_tag;
-    }
+    UT_RETVAL(OS_mkdir(NULL, 755), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 Null-pointer-arg";
+    /* #2 Path-too-long-arg */
 
-    if (OS_mkdir(NULL, 755) == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_mkdir(g_longPathName, 755), OS_FS_ERR_PATH_TOO_LONG);
 
     /*-----------------------------------------------------*/
-    testDesc = "#2 Path-too-long-arg";
+    /* #3 Invalid-path-arg */
 
-    if (OS_mkdir(g_longPathName, 755) == OS_FS_ERR_PATH_TOO_LONG)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_mkdir("tmpDir", 755), OS_FS_ERR_PATH_INVALID);
 
     /*-----------------------------------------------------*/
-    testDesc = "#3 Invalid-path-arg";
-
-    if (OS_mkdir("tmpDir", 755) == OS_FS_ERR_PATH_INVALID)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#4 OS-call-failure";
-
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#5 Nominal";
+    /* #5 Nominal */
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/mkdir_Nominal", g_mntName);
-    if (OS_mkdir(g_dirName, 755) != OS_SUCCESS)
+    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
     {
-        testDesc = "#5 Nominal - File-system-create failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-        goto UT_os_makedir_test_exit_tag;
+        memset(g_fileName, '\0', sizeof(g_fileName));
+        UT_os_sprintf(g_fileName, "%s/mkdir_File.txt", g_dirName);
+        UT_NOMINAL(OS_OpenCreate(&fileDesc, g_fileName, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE));
+
+        /* Reset test environment */
+        UT_TEARDOWN(OS_close(fileDesc));
+        UT_TEARDOWN(OS_remove(g_fileName));
+        UT_TEARDOWN(OS_rmdir(g_dirName));
     }
-
-    memset(g_fileName, '\0', sizeof(g_fileName));
-    UT_os_sprintf(g_fileName, "%s/mkdir_File.txt", g_dirName);
-    status = OS_OpenCreate(&fileDesc, g_fileName, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
-    if (status >= 0)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /* Reset test environment */
-    OS_close(fileDesc);
-    OS_remove(g_fileName);
-    OS_rmdir(g_dirName);
-
-UT_os_makedir_test_exit_tag:
-    return;
 }
 
 /*--------------------------------------------------------------------------------*
@@ -238,70 +202,36 @@ UT_os_makedir_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_opendir_test()
 {
-    osal_id_t   dirh;
-    const char *testDesc;
+    osal_id_t dirh;
 
     /*-----------------------------------------------------*/
-    testDesc = "API not implemented";
+    /* #1 Null-pointer-arg */
 
-    if (OS_DirectoryOpen(&dirh, NULL) == OS_ERR_NOT_IMPLEMENTED)
-    {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_opendir_test_exit_tag;
-    }
+    UT_RETVAL(OS_DirectoryOpen(&dirh, NULL), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 Null-pointer-arg";
+    /* #2 Path-too-long-arg */
 
-    if (OS_DirectoryOpen(&dirh, NULL) == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_DirectoryOpen(&dirh, g_longPathName), OS_FS_ERR_PATH_TOO_LONG);
 
     /*-----------------------------------------------------*/
-    testDesc = "#2 Path-too-long-arg";
+    /* #3 Invalid-path-arg */
 
-    if (OS_DirectoryOpen(&dirh, g_longPathName) == OS_FS_ERR_PATH_TOO_LONG)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_DirectoryOpen(&dirh, "/drive0/tmpDir"), OS_FS_ERR_PATH_INVALID);
 
     /*-----------------------------------------------------*/
-    testDesc = "#3 Invalid-path-arg";
-
-    if (OS_DirectoryOpen(&dirh, "/drive0/tmpDir") != OS_SUCCESS)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#4 OS-call-failure";
-
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#5 Nominal";
+    /* #5 Nominal */
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/opendir_Nominal", g_mntName);
-    if (OS_mkdir(g_dirName, 755) != OS_SUCCESS)
+    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
     {
-        testDesc = "#5 Nominal - Dir-create failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-        goto UT_os_opendir_test_exit_tag;
+        UT_NOMINAL(OS_DirectoryOpen(&dirh, g_dirName));
+
+        /* Reset test environment */
+        UT_TEARDOWN(OS_DirectoryClose(dirh));
+        UT_TEARDOWN(OS_rmdir(g_dirName));
     }
-
-    if (OS_DirectoryOpen(&dirh, g_dirName) == OS_SUCCESS)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /* Reset test environment */
-    OS_DirectoryClose(dirh);
-    OS_rmdir(g_dirName);
-
-UT_os_opendir_test_exit_tag:
-    return;
 }
 
 /*--------------------------------------------------------------------------------*
@@ -339,59 +269,25 @@ UT_os_opendir_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_closedir_test()
 {
-    osal_id_t    dirh;
-    os_dirent_t *dirEntry = NULL;
-    const char * testDesc;
+    osal_id_t   dirh;
+    os_dirent_t dirEntry;
 
     /*-----------------------------------------------------*/
-    testDesc = "API not implemented";
-
-    if (OS_DirectoryClose(OS_OBJECT_ID_UNDEFINED) == OS_ERR_NOT_IMPLEMENTED)
-    {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_closedir_test_exit_tag;
-    }
-
-    /*-----------------------------------------------------*/
-    testDesc = "#1 OS-call-failure";
-
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#2 Nominal";
+    /* #2 Nominal */
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/closeDir3", g_mntName);
-    if (OS_mkdir(g_dirName, 755) != OS_SUCCESS)
+    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
     {
-        testDesc = "#2 Nominal - Dir-create failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-        goto UT_os_closedir_test_exit_tag;
+        if (UT_SETUP(OS_DirectoryOpen(&dirh, g_dirName)))
+        {
+            UT_NOMINAL(OS_DirectoryClose(dirh));
+            UT_RETVAL(OS_DirectoryRead(dirh, &dirEntry), OS_ERR_INVALID_ID);
+        }
+
+        /* Reset test environment */
+        UT_TEARDOWN(OS_rmdir(g_dirName));
     }
-
-    if (OS_DirectoryOpen(&dirh, g_dirName) != OS_SUCCESS)
-    {
-        testDesc = "#2 Nominal - Dir-open failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-        goto UT_os_closedir_test_exit_tag;
-    }
-
-    if (OS_DirectoryClose(dirh) != OS_SUCCESS)
-    {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-        goto UT_os_closedir_test_exit_tag;
-    }
-
-    if (OS_DirectoryRead(dirh, dirEntry) != OS_SUCCESS)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /* Reset test environment */
-    OS_rmdir(g_dirName);
-
-UT_os_closedir_test_exit_tag:
-    return;
 }
 
 /*--------------------------------------------------------------------------------*
@@ -439,89 +335,50 @@ UT_os_closedir_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_readdir_test()
 {
-    osal_id_t   dirh = OS_OBJECT_ID_UNDEFINED;
-    const char *testDesc;
+    osal_id_t dirh = OS_OBJECT_ID_UNDEFINED;
 
     strcpy(g_subdirNames[0], " ");
     strcpy(g_subdirNames[1], " ");
 
     /*-----------------------------------------------------*/
-    testDesc = "API not implemented";
+    /* #1 Null-pointer-arg */
 
-    if (OS_DirectoryRead(OS_OBJECT_ID_UNDEFINED, NULL) == OS_ERR_NOT_IMPLEMENTED)
-    {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_readdir_test_exit_tag;
-    }
+    UT_RETVAL(OS_DirectoryRead(OS_OBJECT_ID_UNDEFINED, NULL), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 Null-pointer-arg";
-
-    if (OS_DirectoryRead(OS_OBJECT_ID_UNDEFINED, NULL) == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#2 OS-call-failure";
-
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#3 Nominal";
+    /* #3 Nominal */
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/readdir_Nominal", g_mntName);
-    if (OS_mkdir(g_dirName, 755) != OS_SUCCESS)
+    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
     {
-        testDesc = "#3 Nominal - Dir-create failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-        goto UT_os_readdir_test_exit_tag;
+        memset(g_subdirNames[0], '\0', sizeof(g_subdirNames[0]));
+        UT_os_sprintf(g_subdirNames[0], "%s/%s", g_dirName, g_tgtSubdirs[0]);
+        if (UT_SETUP(OS_mkdir(g_subdirNames[0], 755)))
+        {
+            memset(g_subdirNames[1], '\0', sizeof(g_subdirNames[1]));
+            UT_os_sprintf(g_subdirNames[1], "%s/%s", g_dirName, g_tgtSubdirs[1]);
+            if (UT_SETUP(OS_mkdir(g_subdirNames[1], 755)))
+            {
+                if (UT_SETUP(OS_DirectoryOpen(&dirh, g_dirName)))
+                {
+                    UT_os_read_n_sort_dirs(dirh);
+
+                    UtAssert_StrCmp(g_dirItems[2], g_tgtSubdirs[0], "%s == %s", g_dirItems[2], g_tgtSubdirs[0]);
+                    UtAssert_StrCmp(g_dirItems[3], g_tgtSubdirs[1], "%s == %s", g_dirItems[3], g_tgtSubdirs[1]);
+
+                    /* Reset test environment */
+                    UT_TEARDOWN(OS_DirectoryClose(dirh));
+                }
+
+                UT_TEARDOWN(OS_rmdir(g_subdirNames[1]));
+            }
+
+            UT_TEARDOWN(OS_rmdir(g_subdirNames[0]));
+        }
+
+        UT_TEARDOWN(OS_rmdir(g_dirName));
     }
-
-    memset(g_subdirNames[0], '\0', sizeof(g_subdirNames[0]));
-    UT_os_sprintf(g_subdirNames[0], "%s/%s", g_dirName, g_tgtSubdirs[0]);
-    if (OS_mkdir(g_subdirNames[0], 755) != OS_SUCCESS)
-    {
-        testDesc = "#3 Nominal - Dir-create(subdir1) failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-
-        goto UT_os_readdir_test_exit_tag;
-    }
-
-    memset(g_subdirNames[1], '\0', sizeof(g_subdirNames[1]));
-    UT_os_sprintf(g_subdirNames[1], "%s/%s", g_dirName, g_tgtSubdirs[1]);
-    if (OS_mkdir(g_subdirNames[1], 755) != OS_SUCCESS)
-    {
-        testDesc = "#3 Nominal - Dir-create(subdir2) failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-
-        goto UT_os_readdir_test_exit_tag;
-    }
-
-    if (OS_DirectoryOpen(&dirh, g_dirName) != OS_SUCCESS)
-    {
-        testDesc = "#3 Nominal - Dir-open failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-
-        goto UT_os_readdir_test_exit_tag;
-    }
-
-    UT_os_read_n_sort_dirs(dirh);
-
-    if ((strcmp(g_dirItems[2], g_tgtSubdirs[0]) == 0) && (strcmp(g_dirItems[3], g_tgtSubdirs[1]) == 0))
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-UT_os_readdir_test_exit_tag:
-    /* Reset test environment */
-    OS_DirectoryClose(dirh);
-    OS_rmdir(g_subdirNames[0]);
-    OS_rmdir(g_subdirNames[1]);
-    OS_rmdir(g_dirName);
-
-    return;
 }
 
 /*--------------------------------------------------------------------------------*
@@ -566,94 +423,50 @@ UT_os_readdir_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_rewinddir_test()
 {
-    osal_id_t   dirh = OS_OBJECT_ID_UNDEFINED;
-    const char *testDesc;
+    osal_id_t dirh = OS_OBJECT_ID_UNDEFINED;
 
     strcpy(g_subdirNames[0], " ");
     strcpy(g_subdirNames[1], " ");
 
     /*-----------------------------------------------------*/
-    testDesc = "API Not implemented";
-
-    if (OS_DirectoryRewind(OS_OBJECT_ID_UNDEFINED) == OS_ERR_NOT_IMPLEMENTED)
-    {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_rewinddir_test_exit_tag;
-    }
-
-    /*-----------------------------------------------------*/
-    testDesc = "#1 OS-call-failure";
-
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#2 Nominal";
+    /* #2 Nominal */
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/rewinddir_Nominal", g_mntName);
-    if (OS_mkdir(g_dirName, 755) != OS_SUCCESS)
+    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
     {
-        testDesc = "#2 Nominal - Dir-create failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
+        memset(g_subdirNames[0], '\0', sizeof(g_subdirNames[0]));
+        UT_os_sprintf(g_subdirNames[0], "%s/%s", g_dirName, g_tgtSubdirs[0]);
+        if (UT_SETUP(OS_mkdir(g_subdirNames[0], 755)))
+        {
+            memset(g_subdirNames[1], '\0', sizeof(g_subdirNames[1]));
+            UT_os_sprintf(g_subdirNames[1], "%s/%s", g_dirName, g_tgtSubdirs[1]);
+            if (UT_SETUP(OS_mkdir(g_subdirNames[1], 755)))
+            {
+                if (UT_SETUP(OS_DirectoryOpen(&dirh, g_dirName)))
+                {
+                    UT_os_read_n_sort_dirs(dirh);
+                    UtAssert_StrCmp(g_dirItems[2], g_tgtSubdirs[0], "%s == %s", g_dirItems[2], g_tgtSubdirs[0]);
+                    UtAssert_StrCmp(g_dirItems[3], g_tgtSubdirs[1], "%s == %s", g_dirItems[3], g_tgtSubdirs[1]);
 
-        goto UT_os_rewinddir_test_exit_tag;
+                    UT_NOMINAL(OS_DirectoryRewind(dirh));
+
+                    UT_os_read_n_sort_dirs(dirh);
+                    UtAssert_StrCmp(g_dirItems[2], g_tgtSubdirs[0], "%s == %s", g_dirItems[2], g_tgtSubdirs[0]);
+                    UtAssert_StrCmp(g_dirItems[3], g_tgtSubdirs[1], "%s == %s", g_dirItems[3], g_tgtSubdirs[1]);
+
+                    /* Reset test environment */
+                    UT_TEARDOWN(OS_DirectoryClose(dirh));
+                }
+
+                UT_TEARDOWN(OS_rmdir(g_subdirNames[1]));
+            }
+
+            UT_TEARDOWN(OS_rmdir(g_subdirNames[0]));
+        }
+
+        UT_TEARDOWN(OS_rmdir(g_dirName));
     }
-
-    memset(g_subdirNames[0], '\0', sizeof(g_subdirNames[0]));
-    UT_os_sprintf(g_subdirNames[0], "%s/%s", g_dirName, g_tgtSubdirs[0]);
-    if (OS_mkdir(g_subdirNames[0], 755) != OS_SUCCESS)
-    {
-        testDesc = "#2 Nominal - Dir-create(subdir1) failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-
-        goto UT_os_rewinddir_test_exit_tag;
-    }
-
-    memset(g_subdirNames[1], '\0', sizeof(g_subdirNames[1]));
-    UT_os_sprintf(g_subdirNames[1], "%s/%s", g_dirName, g_tgtSubdirs[1]);
-    if (OS_mkdir(g_subdirNames[1], 755) != OS_SUCCESS)
-    {
-        testDesc = "#2 Nominal - Dir-create(subdir2) failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-
-        goto UT_os_rewinddir_test_exit_tag;
-    }
-
-    if (OS_DirectoryOpen(&dirh, g_dirName) != OS_SUCCESS)
-    {
-        testDesc = "#2 Nominal - Dir-open failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-
-        goto UT_os_rewinddir_test_exit_tag;
-    }
-
-    UT_os_read_n_sort_dirs(dirh);
-
-    if ((strcmp(g_dirItems[2], g_tgtSubdirs[0]) != 0) || (strcmp(g_dirItems[3], g_tgtSubdirs[1]) != 0))
-    {
-        testDesc = "#2 Nominal - Dir-read failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-
-        goto UT_os_rewinddir_test_exit_tag;
-    }
-
-    OS_DirectoryRewind(dirh);
-
-    UT_os_read_n_sort_dirs(dirh);
-
-    if ((strcmp(g_dirItems[2], g_tgtSubdirs[0]) != 0) || (strcmp(g_dirItems[3], g_tgtSubdirs[1]) != 0))
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-
-UT_os_rewinddir_test_exit_tag:
-    /* Reset test environment */
-    OS_DirectoryClose(dirh);
-    OS_rmdir(g_subdirNames[0]);
-    OS_rmdir(g_subdirNames[1]);
-    OS_rmdir(g_dirName);
-
-    return;
 }
 
 /*--------------------------------------------------------------------------------*
@@ -711,94 +524,53 @@ UT_os_rewinddir_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_removedir_test()
 {
-    int32       status;
-    osal_id_t   fileDesc;
-    const char *testDesc;
+    osal_id_t fileDesc;
 
     /*-----------------------------------------------------*/
-    testDesc = "API not implemented";
+    /* #1 Null-pointer-arg */
 
-    if (OS_rmdir(NULL) == OS_ERR_NOT_IMPLEMENTED)
-    {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_removedir_test_exit_tag;
-    }
+    UT_RETVAL(OS_rmdir(NULL), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 Null-pointer-arg";
+    /* #2 Path-too-long-arg */
 
-    if (OS_rmdir(NULL) == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_rmdir(g_longPathName), OS_FS_ERR_PATH_TOO_LONG);
 
     /*-----------------------------------------------------*/
-    testDesc = "#2 Path-too-long-arg";
+    /* #3 Invalid-path-arg */
 
-    if (OS_rmdir(g_longPathName) == OS_FS_ERR_PATH_TOO_LONG)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_rmdir("tmpDir"), OS_FS_ERR_PATH_INVALID);
 
     /*-----------------------------------------------------*/
-    testDesc = "#3 Invalid-path-arg";
-
-    if (OS_rmdir("tmpDir") == OS_FS_ERR_PATH_INVALID)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#4 OS-call-failure";
-
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#5 Nominal";
+    /* #5 Nominal */
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/rmdir_Nominal", g_mntName);
-    if (OS_mkdir(g_dirName, 755) != OS_SUCCESS)
+    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
     {
-        testDesc = "#5 Nominal - Dir-create failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-        goto UT_os_removedir_test_exit_tag;
+        memset(g_fileName, '\0', sizeof(g_fileName));
+        UT_os_sprintf(g_fileName, "%s/rmdir_File1.txt", g_dirName);
+        if (UT_SETUP(OS_OpenCreate(&fileDesc, g_fileName, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE)))
+        {
+            UT_RETVAL(OS_rmdir(g_dirName), OS_ERROR);
+
+            /* Must close and remove all files before the directory can be removed */
+            UT_TEARDOWN(OS_close(fileDesc));
+            UT_TEARDOWN(OS_remove(g_fileName));
+
+            UT_NOMINAL(OS_rmdir(g_dirName));
+
+            memset(g_fileName, '\0', sizeof(g_fileName));
+            UT_os_sprintf(g_fileName, "%s/rmdir_File2.txt", g_dirName);
+            UT_RETVAL(OS_OpenCreate(&fileDesc, g_fileName, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE),
+                      OS_ERROR);
+        }
     }
-
-    memset(g_fileName, '\0', sizeof(g_fileName));
-    UT_os_sprintf(g_fileName, "%s/rmdir_File1.txt", g_dirName);
-    status = OS_OpenCreate(&fileDesc, g_fileName, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
-    if (status < 0)
-    {
-        testDesc = "#5 Nominal - File-create failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-    }
-
-    /* Must close and remove all files before the directory can be removed */
-    OS_close(fileDesc);
-    OS_remove(g_fileName);
-
-    if (OS_rmdir(g_dirName) != OS_SUCCESS)
-    {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-        goto UT_os_removedir_test_exit_tag;
-    }
-
-    memset(g_fileName, '\0', sizeof(g_fileName));
-    UT_os_sprintf(g_fileName, "%s/rmdir_File2.txt", g_dirName);
-    status = OS_OpenCreate(&fileDesc, g_fileName, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
-    if (status < 0)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-UT_os_removedir_test_exit_tag:
-    return;
 }
 
-/*--------------------------------------------------------------------------------*
+/*--------------------------------------------------------------------------------
  * Internal helper function
- **--------------------------------------------------------------------------------*/
+ *--------------------------------------------------------------------------------*/
 void UT_os_read_n_sort_dirs(osal_id_t dirh)
 {
     int         i = 0;
