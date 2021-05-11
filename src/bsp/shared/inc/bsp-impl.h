@@ -109,6 +109,28 @@ extern OS_BSP_GlobalData_t OS_BSP_Global;
 /********************************************************************/
 
 /*----------------------------------------------------------------
+   Function: OS_BSP_Lock_Impl
+
+    Purpose: Get exclusive access to a BSP-provided service or object
+
+             Useful in conjuction with console output functions to avoid strings
+             from multiple tasks getting mixed together in the final output.
+
+ ------------------------------------------------------------------*/
+void OS_BSP_Lock_Impl(void);
+
+/*----------------------------------------------------------------
+   Function: OS_BSP_Unlock_Impl
+
+    Purpose: Release exclusive access to a BSP-provided service or object
+
+             This must be called after a call to OS_BSP_Lock_Impl() once
+             access is complete, to allow other tasks to use the resource.
+
+ ------------------------------------------------------------------*/
+void OS_BSP_Unlock_Impl(void);
+
+/*----------------------------------------------------------------
    Function: OS_BSP_ConsoleOutput_Impl
 
     Purpose: Low level raw console data output.  Writes a sequence of

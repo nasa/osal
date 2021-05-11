@@ -36,8 +36,10 @@
 #define OS_BSP_CONSOLEMODE_BLUE      OCS_OS_BSP_CONSOLEMODE_BLUE
 #define OS_BSP_CONSOLEMODE_HIGHLIGHT OCS_OS_BSP_CONSOLEMODE_HIGHLIGHT
 
+#define OS_BSP_Lock_Impl           OCS_OS_BSP_Lock_Impl
 #define OS_BSP_ConsoleOutput_Impl  OCS_OS_BSP_ConsoleOutput_Impl
 #define OS_BSP_ConsoleSetMode_Impl OCS_OS_BSP_ConsoleSetMode_Impl
+#define OS_BSP_Unlock_Impl         OCS_OS_BSP_Unlock_Impl
 
 /*********************
    END bsp-impl.h

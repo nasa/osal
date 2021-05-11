@@ -55,6 +55,12 @@
 /* INTERNAL BSP IMPLEMENTATION FUNCTIONS                            */
 /********************************************************************/
 
+/*
+ * Lock and unlock stubs
+ */
+void OCS_OS_BSP_Lock_Impl(void);
+void OCS_OS_BSP_Unlock_Impl(void);
+
 /*----------------------------------------------------------------
    Function: OS_BSP_ConsoleOutput_Impl
 
