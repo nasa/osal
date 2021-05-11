@@ -35,6 +35,16 @@
 #define UT_EXIT_LOOP_MAX 100
 
 /*
+ * Timeouts for various socket ops in the test cases
+ *
+ * Note that the act of calling any "assert" routine causes console output, which
+ * can easily take tens or even hundreds of milliseconds to execute on platforms
+ * where the console is on a slow serial port.  Therefore this timeout must
+ * not be too short.
+ */
+#define UT_TIMEOUT 1000
+
+/*
  * Variations of client->server connections to create.
  * This tests that the server socket can accept multiple connections,
  * and the various combinations of socket shutdown/closure work as expected.
@@ -248,7 +258,7 @@ void TestDatagramNetworkApi(void)
 
         /* Recieve data from peer1 to peer2 */
         expected = sizeof(Buf2);
-        actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, sizeof(Buf2), &l_addr, 100);
+        actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT);
         UtAssert_True(actual == expected, "OS_SocketRecvFrom() Passed. sizeof(Buf2) (%ld) == 1", (long)actual);
         UtAssert_True(Buf1 == Buf2, "Buf1 (%ld) == Buf2 (%ld)", (long)Buf1, (long)Buf2);
 
@@ -275,7 +285,7 @@ void TestDatagramNetworkApi(void)
 
         /* Recieve data from peer2 to peer1 */
         expected = sizeof(Buf4);
-        actual   = OS_SocketRecvFrom(p1_socket_id, &Buf4, sizeof(Buf4), &l_addr, 100);
+        actual   = OS_SocketRecvFrom(p1_socket_id, &Buf4, sizeof(Buf4), &l_addr, UT_TIMEOUT);
         UtAssert_True(actual == expected, "OS_SocketRecvFrom() Passed. sizeof(Buf3) (%ld) == 1", (long)actual);
         UtAssert_True(Buf3 == Buf4, "Buf3 (%ld) == Buf4 (%ld)", (long)Buf3, (long)Buf4);
 
@@ -328,7 +338,7 @@ void TestDatagramNetworkApi(void)
 
         /* OS_SocketRecvFrom */
         expected = OS_INVALID_POINTER;
-        actual   = OS_SocketRecvFrom(p2_socket_id, NULL, OSAL_SIZE_C(1), NULL, 100);
+        actual   = OS_SocketRecvFrom(p2_socket_id, NULL, OSAL_SIZE_C(1), NULL, UT_TIMEOUT);
         UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_INVALID_POINTER", (long)actual);
 
         expected = OS_INVALID_POINTER;
@@ -337,15 +347,15 @@ void TestDatagramNetworkApi(void)
 
         expected = OS_ERR_INVALID_ID;
         objid    = OS_ObjectIdFromInteger(0xFFFFFFFF);
-        actual   = OS_SocketRecvFrom(objid, &Buf2, sizeof(Buf2), &l_addr, 100);
+        actual   = OS_SocketRecvFrom(objid, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT);
         UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
         expected = OS_ERR_INVALID_SIZE;
-        actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, OSAL_SIZE_C(0), &l_addr, 100);
+        actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, OSAL_SIZE_C(0), &l_addr, UT_TIMEOUT);
         UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
 
         expected = OS_ERR_INVALID_SIZE;
-        actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, OSAL_SIZE_C(0), NULL, 100);
+        actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, OSAL_SIZE_C(0), NULL, UT_TIMEOUT);
         UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
 
         /* OS_SocketAddrToString */
@@ -433,6 +443,8 @@ void Server_Fn(void)
 
     for (iter = UT_STREAM_CONNECTION_INITIAL; iter < UT_STREAM_CONNECTION_MAX; ++iter)
     {
+        UtPrintf("SERVER: accepting connection %u", (unsigned int)iter);
+
         /* Accept incoming connections */
         Status = OS_SocketAccept(s_socket_id, &connsock_id, &addr, OS_PEND);
         if (Status != OS_SUCCESS)
@@ -441,6 +453,8 @@ void Server_Fn(void)
                      (unsigned int)iter, (int)Status);
             break;
         }
+
+        UtPrintf("SERVER: handling connection %u", (unsigned int)iter);
 
         /* Recieve incoming data from client -
          * should be exactly 4 bytes on most cycles, but 0 bytes on the cycle
@@ -453,7 +467,7 @@ void Server_Fn(void)
         {
             ExpectedStatus = 4;
         }
-        Status = OS_TimedRead(connsock_id, Buf_trans, sizeof(Buf_trans), 10);
+        Status = OS_TimedRead(connsock_id, Buf_trans, sizeof(Buf_trans), UT_TIMEOUT);
         if (Status != ExpectedStatus)
         {
             snprintf(ServerFn_ErrorString, sizeof(ServerFn_ErrorString), "OS_TimedRead() iter=%u, return code=%d/%d",
@@ -472,7 +486,7 @@ void Server_Fn(void)
              *   2. Original value recieved above (4 bytes)
              *   3. String of all possible 8-bit chars [0-255]  (256 bytes)
              */
-            Status = OS_TimedWrite(connsock_id, &iter, sizeof(iter), 10);
+            Status = OS_TimedWrite(connsock_id, &iter, sizeof(iter), UT_TIMEOUT);
             if (Status != sizeof(iter))
             {
                 snprintf(ServerFn_ErrorString, sizeof(ServerFn_ErrorString),
@@ -480,7 +494,7 @@ void Server_Fn(void)
                 break;
             }
 
-            Status = OS_TimedWrite(connsock_id, Buf_trans, 4, 10);
+            Status = OS_TimedWrite(connsock_id, Buf_trans, 4, UT_TIMEOUT);
             if (Status != 4)
             {
                 snprintf(ServerFn_ErrorString, sizeof(ServerFn_ErrorString),
@@ -488,7 +502,7 @@ void Server_Fn(void)
                 break;
             }
 
-            Status = OS_TimedWrite(connsock_id, Buf_each_char_s, sizeof(Buf_each_char_s), 10);
+            Status = OS_TimedWrite(connsock_id, Buf_each_char_s, sizeof(Buf_each_char_s), UT_TIMEOUT);
             if (Status != sizeof(Buf_each_char_s))
             {
                 snprintf(ServerFn_ErrorString, sizeof(ServerFn_ErrorString),
@@ -593,6 +607,10 @@ void TestStreamNetworkApi(void)
          */
         for (iter = UT_STREAM_CONNECTION_INITIAL; iter < UT_STREAM_CONNECTION_MAX; ++iter)
         {
+            /* An extra delay here to increases the chance that the server task has reached the "accept" call */
+            OS_TaskDelay(UT_TIMEOUT);
+            UtPrintf("CLIENT: initiating connection %u", (unsigned int)iter);
+
             /* Open a client socket */
             expected    = OS_SUCCESS;
             c_socket_id = OS_OBJECT_ID_UNDEFINED;
@@ -601,7 +619,7 @@ void TestStreamNetworkApi(void)
             UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_SUCCESS", (long)actual);
             UtAssert_True(OS_ObjectIdDefined(c_socket_id), "c_socket_id (%lu) != 0", OS_ObjectIdToInteger(c_socket_id));
 
-            actual = OS_SocketConnect(c_socket_id, &s_addr, 10);
+            actual = OS_SocketConnect(c_socket_id, &s_addr, UT_TIMEOUT);
             UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
 
             /*
@@ -614,11 +632,11 @@ void TestStreamNetworkApi(void)
                 /* OS_TimedRead */
                 expected = OS_ERR_INVALID_ID;
                 temp_id  = OS_ObjectIdFromInteger(0xFFFFFFFF);
-                actual   = OS_TimedRead(temp_id, Buf_rcv_c, sizeof(Buf_rcv_c), 10);
+                actual   = OS_TimedRead(temp_id, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
 
                 expected = OS_INVALID_POINTER;
-                actual   = OS_TimedRead(c_socket_id, NULL, sizeof(Buf_rcv_c), 10);
+                actual   = OS_TimedRead(c_socket_id, NULL, sizeof(Buf_rcv_c), UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
 
                 expected = OS_ERROR_TIMEOUT;
@@ -628,11 +646,11 @@ void TestStreamNetworkApi(void)
                 /* OS_TimedWrite */
                 expected = OS_ERR_INVALID_ID;
                 temp_id  = OS_ObjectIdFromInteger(0xFFFFFFFF);
-                actual   = OS_TimedWrite(temp_id, Buf_rcv_c, sizeof(Buf_rcv_c), 10);
+                actual   = OS_TimedWrite(temp_id, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
 
                 expected = OS_INVALID_POINTER;
-                actual   = OS_TimedWrite(c_socket_id, NULL, sizeof(Buf_rcv_c), 10);
+                actual   = OS_TimedWrite(c_socket_id, NULL, sizeof(Buf_rcv_c), UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
 
                 /* OS_SocketAccept */
@@ -641,16 +659,16 @@ void TestStreamNetworkApi(void)
                 UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
 
                 expected = OS_INVALID_POINTER;
-                actual   = OS_SocketAccept(s_socket_id, NULL, &temp_addr, 10);
+                actual   = OS_SocketAccept(s_socket_id, NULL, &temp_addr, UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
 
                 expected = OS_INVALID_POINTER;
-                actual   = OS_SocketAccept(s_socket_id, &temp_id, NULL, 10);
+                actual   = OS_SocketAccept(s_socket_id, &temp_id, NULL, UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
 
                 /* OS_SocketConnect */
                 expected = OS_INVALID_POINTER;
-                actual   = OS_SocketConnect(c_socket_id, NULL, 10);
+                actual   = OS_SocketConnect(c_socket_id, NULL, UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_INVALID_POINTER", (long)actual);
 
                 expected = OS_ERR_INCORRECT_OBJ_STATE;
@@ -660,7 +678,7 @@ void TestStreamNetworkApi(void)
 
                 expected = OS_ERR_INVALID_ID;
                 temp_id  = OS_ObjectIdFromInteger(0xFFFFFFFF);
-                actual   = OS_SocketConnect(temp_id, &s_addr, 10);
+                actual   = OS_SocketConnect(temp_id, &s_addr, UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_ERR_INVALID_ID", (long)actual);
             }
 
@@ -694,7 +712,7 @@ void TestStreamNetworkApi(void)
                 /* Attempt to read data, would block/timeout normally, but
                  * due to read shutdown it should immediately return instead. */
                 expected = 0;
-                actual   = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), 10);
+                actual   = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_TimedRead() after read shutdown (%ld) == %ld", (long)actual,
                               (long)expected);
             }
@@ -703,7 +721,7 @@ void TestStreamNetworkApi(void)
             {
                 /* Send data to server - this should still work after read shutdown, but not after write shutdown */
                 expected = sizeof(Buf_send_c);
-                actual   = OS_TimedWrite(c_socket_id, Buf_send_c, sizeof(Buf_send_c), 10);
+                actual   = OS_TimedWrite(c_socket_id, Buf_send_c, sizeof(Buf_send_c), UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
             }
 
@@ -720,7 +738,7 @@ void TestStreamNetworkApi(void)
             {
                 /* If write shutdown worked as expected, write should return an error */
                 expected = OS_ERROR;
-                actual   = OS_TimedWrite(c_socket_id, Buf_send_c, sizeof(Buf_send_c), 10);
+                actual   = OS_TimedWrite(c_socket_id, Buf_send_c, sizeof(Buf_send_c), UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_TimedWrite() after SHUT_WRITE (%ld) == %ld", (long)actual,
                               (long)expected);
             }
@@ -731,26 +749,26 @@ void TestStreamNetworkApi(void)
             {
                 /* Recieve back data from server, first is loop count */
                 expected = sizeof(loopcnt);
-                actual   = OS_TimedRead(c_socket_id, &loopcnt, sizeof(loopcnt), 10);
+                actual   = OS_TimedRead(c_socket_id, &loopcnt, sizeof(loopcnt), UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
                 UtAssert_UINT32_EQ(iter, loopcnt);
 
                 /* Recieve back data from server, next is original string */
                 expected = sizeof(Buf_rcv_c);
-                actual   = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), 10);
+                actual   = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
                 UtAssert_True(strcmp(Buf_send_c, Buf_rcv_c) == 0, "Buf_rcv_c (%s) == Buf_send_c (%s)", Buf_rcv_c,
                               Buf_send_c);
 
                 /* Recieve back data from server, next is 8-bit charset */
                 expected = sizeof(Buf_each_char_rcv);
-                actual   = OS_TimedRead(c_socket_id, Buf_each_char_rcv, sizeof(Buf_each_char_rcv), 10);
+                actual   = OS_TimedRead(c_socket_id, Buf_each_char_rcv, sizeof(Buf_each_char_rcv), UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
                 UtAssert_MemCmpCount(Buf_each_char_rcv, sizeof(Buf_each_char_rcv), "Verify byte count pattern");
 
                 /* Server should close the socket, reads will return 0 indicating EOF */
                 expected = 0;
-                actual   = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), 10);
+                actual   = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT);
                 UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
             }
 
@@ -767,7 +785,7 @@ void TestStreamNetworkApi(void)
         loopcnt = 0;
         while ((OS_TaskGetInfo(s_task_id, &taskprop) == OS_SUCCESS) && (loopcnt < UT_EXIT_LOOP_MAX))
         {
-            OS_TaskDelay(10);
+            OS_TaskDelay(UT_TIMEOUT);
             loopcnt++;
         }
         UtAssert_True(loopcnt < UT_EXIT_LOOP_MAX, "Task exited after %ld iterations", (long)loopcnt);
