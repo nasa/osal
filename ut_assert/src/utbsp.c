@@ -108,6 +108,7 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage)
 {
     const char *Prefix;
     char        Buffer[16];
+    size_t      MsgLen;
     uint32      TermModeBits = OS_BSP_CONSOLEMODE_NORMAL;
     uint32      MsgEnabled   = BSP_UT_Global.CurrVerbosity >> MessageType;
 
@@ -182,8 +183,12 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage)
         }
 
         OS_BSP_ConsoleOutput_Impl(" ", 1);
-        OS_BSP_ConsoleOutput_Impl(OutputMessage, strlen(OutputMessage));
-        OS_BSP_ConsoleOutput_Impl("\n", 1);
+        MsgLen = strlen(OutputMessage);
+        OS_BSP_ConsoleOutput_Impl(OutputMessage, MsgLen);
+        if (MsgLen == 0 || OutputMessage[MsgLen - 1] != '\n')
+        {
+            OS_BSP_ConsoleOutput_Impl("\n", 1);
+        }
 
         OS_BSP_Unlock_Impl();
     }
