@@ -295,7 +295,7 @@ void UT_os_setlocaltime_test()
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */
 
-    UT_RETVAL(OS_GetLocalTime(NULL), OS_INVALID_POINTER);
+    UT_RETVAL(OS_SetLocalTime(NULL), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
