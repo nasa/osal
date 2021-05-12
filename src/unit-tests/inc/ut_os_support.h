@@ -73,6 +73,13 @@ static inline bool UtOsalRetVal(int32 Fn, int32 Exp, bool NotImplAllowed, UtAsse
     return UtAssertEx(Fn == Exp, casetype, File, Line, "%s (%d) == %s (%d)", FnTxt, (int)Fn, ExpTxt, (int)Exp);
 }
 
+static inline bool UtOsalNotSuccess(int32 Fn, UtAssert_CaseType_t casetype, const char *File, uint32 Line,
+                                    const char *FnTxt)
+{
+    /* Check result is negative to support APIs that return nonzero on success (e.g. read/write) */
+    return UtAssertEx(Fn < 0, casetype, File, Line, "%s (%d) not successful", FnTxt, (int)Fn);
+}
+
 static inline bool UtManualInspectionWithStatus(int32 Fn, const char *File, uint32 Line, const char *FnTxt)
 {
     UtAssertEx(false, UTASSERT_CASETYPE_MIR, File, Line, "%s value=%d", FnTxt, (int)Fn);
@@ -107,6 +114,7 @@ static inline bool UtOsalImplemented(int32 Fn, const char *File, uint32 Line)
     UtOsalRetVal(Fn, OS_SUCCESS, false, UTASSERT_CASETYPE_FAILURE, __FILE__, __LINE__, #Fn, "OS_SUCCESS")
 #define UT_NOMINAL_OR_NOTIMPL(Fn) \
     UtOsalRetVal(Fn, OS_SUCCESS, true, UTASSERT_CASETYPE_FAILURE, __FILE__, __LINE__, #Fn, "OS_SUCCESS")
+#define UT_NOT_SUCCESS(Fn) UtOsalNotSuccess(Fn, UTASSERT_CASETYPE_FAILURE, __FILE__, __LINE__, #Fn)
 
 #define UT_MIR_STATUS(Fn) UtManualInspectionWithStatus(Fn, __FILE__, __LINE__, #Fn)
 #define UT_MIR_VOID(Fn)   Fn, UtAssertEx(false, UTASSERT_CASETYPE_MIR, __FILE__, __LINE__, "%s", #Fn)
