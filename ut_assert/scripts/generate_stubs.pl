@@ -47,7 +47,7 @@
 #
 # By default the stubs are written to a file with the same basename and a "-stubs" suffix.
 #
-# This script will check corresponding hook file (via the hook-suffix option) for the presence
+# This script will check corresponding handler file (via the handler-suffix option) for the presence
 # of a handler.  A reference to the handler will only be generated in the stub if it exists.
 # This is a convenience option to avoid rendering references to handlers that do not exist,
 # while still allowing the set to grow over time.
@@ -60,7 +60,7 @@
 #             (note the result will fail to link unless handler is actually implemented)
 #   --filter: a perl regex expression to apply on function names (e.g. /_Impl$/)
 #   --stub-suffix: a suffix to use for the generated file names ("stubs" by default)
-#   --hook-suffix: a suffix to use for the generated file names ("hooks" by default)
+#   --handler-suffix: a suffix to use for the generated file names ("handlers" by default)
 #
 
 use strict;
@@ -78,7 +78,7 @@ my $ignorelist = {
 
 my %options = (
         "stub-suffix" => 'stubs',
-        "hook-suffix" => 'hooks'
+        "handler-suffix" => 'handlers'
 );
 
 my @hdrlist = grep(/\S/, map {
@@ -272,7 +272,7 @@ foreach my $basename (sort keys %{$publicapi}) {
         $refname .= '_';
     }
     my $stubfile = $refname . $options{"stub-suffix"} . '.c';
-    my $hookfile = $refname . $options{"hook-suffix"} . '.c';
+    my $handlerfile = $refname . $options{"handler-suffix"} . '.c';
 
     my $handler_func = {};
     my $handler_prefix = "UT_DefaultHandler_";
@@ -282,13 +282,13 @@ foreach my $basename (sort keys %{$publicapi}) {
             $handler_func->{$funcname} = $handler_prefix.$funcname;
         }
     } elsif (!$options{"no-handler"}) {
-        if (open(HOOK, $hookfile)) {
-            while (<HOOK>) {
+        if (open(HANDLER, $handlerfile)) {
+            while (<HANDLER>) {
                 if (/void\s+$handler_prefix(\S+)\s*\(/) {
                     $handler_func->{$1} = $handler_prefix.$1;
                 }
             }
-            close(HOOK);
+            close(HANDLER);
         }
     }
 
