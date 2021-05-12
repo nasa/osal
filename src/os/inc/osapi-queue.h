@@ -62,6 +62,7 @@ typedef struct
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NO_FREE_IDS if there are already the max queues created
  * @retval #OS_ERR_NAME_TAKEN if the name is already being used on another queue
+ * @retval #OS_ERR_INVALID_SIZE if data_size is 0
  * @retval #OS_QUEUE_INVALID_SIZE if the queue depth exceeds the limit
  * @retval #OS_ERROR if the OS create call fails
  */

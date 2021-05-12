@@ -33,6 +33,8 @@
 */
 #include "bsp-impl.h"
 
+#include <rtems.h>
+
 /*
  * BSP compile-time tuning
  */
@@ -64,8 +66,9 @@
 */
 typedef struct
 {
-    char UserArgBuffer[RTEMS_MAX_CMDLINE];
-    bool BatchMode;
+    char     UserArgBuffer[RTEMS_MAX_CMDLINE];
+    bool     BatchMode;
+    rtems_id AccessMutex;
 } OS_BSP_PcRtemsGlobalData_t;
 
 /*

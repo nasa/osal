@@ -116,6 +116,7 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
  * the OS_TimedRead/OS_TimedWrite calls.
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs);
 
@@ -126,6 +127,7 @@ int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs);
  * After this call the set will contain no OSAL IDs
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SelectFdZero(OS_FdSet *Set);
 
@@ -136,6 +138,7 @@ int32 OS_SelectFdZero(OS_FdSet *Set);
  * After this call the set will contain the given OSAL ID
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid);
 
@@ -146,6 +149,7 @@ int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid);
  * After this call the set will no longer contain the given OSAL ID
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid);
 

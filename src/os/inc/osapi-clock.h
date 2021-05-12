@@ -83,6 +83,7 @@ enum
  * @param[out]  time_struct An OS_time_t that will be set to the current time
  *
  * @return Get local time status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if time_struct is null
  */
 int32 OS_GetLocalTime(OS_time_t *time_struct);
 
@@ -97,6 +98,7 @@ int32 OS_GetLocalTime(OS_time_t *time_struct);
  * @param[in]  time_struct An OS_time_t containing the current time
  *
  * @return Set local time status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if time_struct is null
  */
 int32 OS_SetLocalTime(const OS_time_t *time_struct);
 

@@ -57,6 +57,7 @@ typedef struct
  * @param[in]  path      The directory to open
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if dir_id or path is NULL
  */
 int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path);
 
@@ -94,6 +95,7 @@ int32 OS_DirectoryRewind(osal_id_t dir_id);
  * @param[out] dirent    Buffer to store directory entry information
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if dirent argument is NULL
  */
 int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent);
 

@@ -84,6 +84,9 @@ typedef struct
  * @param[in]   virt_path   The virtual mount point of this filesystem
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_FS_ERR_PATH_TOO_LONG if the overall phys_path is too long
+ * @retval #OS_ERR_NAME_TOO_LONG if the phys_path basename (filesystem name) is too long
+ * @retval #OS_INVALID_POINTER if any argument is NULL
  */
 int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const char *virt_path);
 
@@ -113,6 +116,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
  * @retval #OS_SUCCESS on creating the disk
  */
 int32 OS_mkfs(char *address, const char *devname, const char *volname, size_t blocksize, osal_blockcount_t numblocks);
+
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Mounts a file system
@@ -123,6 +127,9 @@ int32 OS_mkfs(char *address, const char *devname, const char *volname, size_t bl
  * @param[in]   mountpoint The name to call this disk from now on
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_ERR_NAME_NOT_FOUND if the device name does not exist in OSAL
+ * @retval #OS_FS_ERR_PATH_TOO_LONG if the mount point string is too long
+ * @retval #OS_INVALID_POINTER if any argument is NULL
  */
 int32 OS_mount(const char *devname, const char *mountpoint);
 
@@ -165,6 +172,8 @@ int32 OS_initfs(char *address, const char *devname, const char *volname, size_t 
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if devname is NULL
+ * @retval #OS_FS_ERR_PATH_TOO_LONG if the devname is too long
+ * @retval #OS_ERR_NAME_NOT_FOUND if the devname does not exist in OSAL
  * @retval #OS_ERROR is the drive specified cannot be located
  */
 int32 OS_rmfs(const char *devname);
@@ -185,6 +194,7 @@ int32 OS_rmfs(const char *devname);
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if name is NULL
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the absolute path given is too long
+ * @retval #OS_ERR_NAME_NOT_FOUND if the mountpoint is not mounted in OSAL
  * @retval #OS_ERROR if the OS calls failed
  */
 int32 OS_unmount(const char *mountpoint);
@@ -209,6 +219,7 @@ int32 OS_unmount(const char *mountpoint);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if name or statbuf is NULL
+ * @retval #OS_FS_ERR_PATH_TOO_LONG if the name is too long
  * @retval #OS_ERROR if the OS call failed
  */
 int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf);
@@ -228,6 +239,7 @@ int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf);
  * @retval #OS_SUCCESS             @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER     Name is NULL
  * @retval #OS_ERR_NOT_IMPLEMENTED @copybrief OS_ERR_NOT_IMPLEMENTED
+ * @retval #OS_FS_ERR_PATH_TOO_LONG if the name is too long
  * @retval #OS_ERROR               @copybrief OS_ERROR
  */
 int32 OS_chkfs(const char *name, bool repair);
@@ -245,6 +257,8 @@ int32 OS_chkfs(const char *name, bool repair);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if either parameter is NULL
+ * @retval #OS_ERR_NAME_NOT_FOUND if the MountPoint is not mounted in OSAL
+ * @retval #OS_FS_ERR_PATH_TOO_LONG if the MountPoint is too long
  * @retval #OS_ERROR if the mountpoint could not be found
  */
 int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint);
@@ -261,6 +275,9 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if either parameter is NULL
+ * @retval #OS_FS_ERR_NAME_TOO_LONG if the filename component is too long
+ * @retval #OS_FS_ERR_PATH_INVALID if either parameter cannot be interpreted as a path
+ * @retval #OS_FS_ERR_PATH_TOO_LONG if either input or output pathnames are too long
  */
 int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath);
 

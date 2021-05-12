@@ -135,6 +135,7 @@ typedef enum
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERROR if the command was not executed properly
+ * @retval #OS_INVALID_POINTER if pointer argument was NULL
  */
 int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access_mode);
 
@@ -236,6 +237,8 @@ int32 OS_write(osal_id_t filedes, const void *buffer, size_t nbytes);
  * @returns Byte count on success or appropriate error code, see @ref OSReturnCodes
  * @retval #OS_ERROR_TIMEOUT if no data became available during timeout period
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval #OS_ERR_INVALID_SIZE if the passed-in size is not valid
+ * @retval #OS_INVALID_POINTER if the passed-in buffer is not valid
  * @retval 0 if at end of file/stream data
  */
 int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout);
@@ -269,6 +272,8 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout
  * @return A non-negative byte count or appropriate error code, see @ref OSReturnCodes
  * @retval #OS_ERROR_TIMEOUT if no data became available during timeout period
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval #OS_ERR_INVALID_SIZE if the passed-in size is not valid
+ * @retval #OS_INVALID_POINTER if the passed-in buffer is not valid
  * @retval 0 if file/stream cannot accept any more data
  */
 int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 timeout);
@@ -432,6 +437,7 @@ int32 OS_mv(const char *src, const char *dest);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval #OS_INVALID_POINTER if the fd_prop argument is NULL
  */
 int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop);
 
@@ -446,6 +452,7 @@ int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop);
  *
  * @return OS_SUCCESS if the file is open, or appropriate error code
  * @retval #OS_ERROR if the file is not open
+ * @retval #OS_INVALID_POINTER if the filename argument is NULL
  */
 int32 OS_FileOpenCheck(const char *Filename);
 
@@ -475,6 +482,7 @@ int32 OS_CloseAllFiles(void);
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_FS_ERR_PATH_INVALID if the file is not found
  * @retval #OS_ERROR   if the file close returned an error
+ * @retval #OS_INVALID_POINTER if the filename argument is NULL
  */
 int32 OS_CloseFileByName(const char *Filename);
 /**@}*/

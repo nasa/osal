@@ -301,6 +301,14 @@ void Test_OS_FileSysStatVolume(void)
     expected = OS_ERR_OPERATION_NOT_SUPPORTED;
     actual   = OS_FileSysStatVolume("/cf", &statbuf);
     UtAssert_True(actual == expected, "OS_FileSysStatVolume() (%ld) == OS_ERR_OPERATION_NOT_SUPPORTED", (long)actual);
+    UT_ResetState(UT_KEY(OS_FileSysStatVolume_Impl));
+
+    /* Verify OS_FS_ERR_PATH_TOO_LONG */
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), -1);
+    expected = OS_FS_ERR_PATH_TOO_LONG;
+    actual   = OS_FileSysStatVolume("/cf", &statbuf);
+    UtAssert_True(actual == expected, "OS_FileSysStatVolume() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
+    UT_ResetState(UT_KEY(OCS_memchr));
 }
 
 void Test_OS_chkfs(void)
