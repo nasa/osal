@@ -18,11 +18,12 @@
  *  limitations under the License.
  */
 
-/*================================================================================*
-** File:  ut_osloader_test_platforms.h
-** Owner: Tam Ngo
-** Date:  November 2014
-**================================================================================*/
+/**
+ * \file
+ *
+ * Owner: Tam Ngo
+ * Date:  November 2014
+ */
 
 #ifndef UT_OSLOADER_TEST_PLATFORMS_H
 #define UT_OSLOADER_TEST_PLATFORMS_H
@@ -63,8 +64,4 @@
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSLOADER_TEST_PLATFORMS_H */
-
-/*================================================================================*
-** End of File: ut_osloader_test_platforms.h
-**================================================================================*/
+#endif /* UT_OSLOADER_TEST_PLATFORMS_H */

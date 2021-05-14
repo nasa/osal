@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-impl-sockets.h
+ * \file
+ *
  * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -39,11 +39,23 @@
 #include <hostLib.h>
 
 /*
+ * Socket descriptors should be usable with the select() API
+ */
+#define OS_IMPL_SOCKET_SELECTABLE true
+
+/*
  * Use the O_NONBLOCK flag on sockets
+ *
+ * NOTE: the fcntl() F_GETFL/F_SETFL opcodes that set descriptor flags may not
+ * work correctly on some version of VxWorks.
+ *
+ * This flag is not strictly required, things still mostly work without it,
+ * but lack of this mode does introduce some potential race conditions if more
+ * than one task attempts to use the same descriptor handle at the same time.
  */
 #define OS_IMPL_SOCKET_FLAGS O_NONBLOCK
 
 /* The "in.h" header file supplied in VxWorks 6.9 is missing the "in_port_t" typedef */
 typedef u_short in_port_t;
 
-#endif  /* OS_IMPL_SOCKETS_H  */
+#endif /* OS_IMPL_SOCKETS_H */

@@ -19,18 +19,18 @@
  */
 
 /**
- * \file     os-vxworks-coveragetest.h
- * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup vxworks
  *
+ * Declarations and prototypes for os-vxworks-coveragetest
  */
 
 #ifndef OS_VXWORKS_COVERAGETEST_H
 #define OS_VXWORKS_COVERAGETEST_H
 
-#include <utassert.h>
-#include <uttest.h>
-#include <utstubs.h>
+#include "utassert.h"
+#include "uttest.h"
+#include "utstubs.h"
 
 #include "os-shared-idmap.h"
 
@@ -71,4 +71,4 @@
 void Osapi_Test_Setup(void);
 void Osapi_Test_Teardown(void);
 
-#endif  /* OS_VXWORKS_COVERAGETEST_H  */
+#endif /* OS_VXWORKS_COVERAGETEST_H */

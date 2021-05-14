@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-file.h
+ * \file
+ *
+ * Declarations and prototypes for file objects
  */
 
 #ifndef OSAPI_FILE_H
@@ -28,7 +30,6 @@
 #include "osconfig.h"
 #include "common_types.h"
 #include "osapi-clock.h"
-
 
 /** @defgroup OSFileAccess OSAL File Access Option Defines
  * @{
@@ -118,65 +119,6 @@ typedef enum
  * @{
  */
 
-#ifndef OSAL_OMIT_DEPRECATED
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Creates a file specified by path
- *
- * Creates a file specified by const char *path, with read/write
- * permissions by access. The file is also automatically opened by the
- * create call.
- *
- * @param[in] path File name to create
- * @param[in] access Intended access mode - see @ref OSFileAccess
- *
- * @note Valid handle IDs are never negative.  Failure of this
- * call can be checked by testing if the result is less than 0.
- *
- * @return A file handle ID or appropriate error code, see @ref OSReturnCodes
- * @retval #OS_INVALID_POINTER if path is NULL
- * @retval #OS_FS_ERR_PATH_TOO_LONG if path exceeds the maximum number of chars
- * @retval #OS_FS_ERR_PATH_INVALID if path cannot be parsed
- * @retval #OS_FS_ERR_NAME_TOO_LONG if the name of the file is too long
- * @retval #OS_ERROR if permissions are unknown or OS call fails
- * @retval #OS_ERR_NO_FREE_IDS if there are no free file descriptors left
- *
- * @deprecated Replaced by OS_OpenCreate() with flags set to
- *             OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE.
- */
-int32 OS_creat(const char *path, int32 access);
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Opens a file
- *
- * Opens a file.
- *
- * @param[in] path   File name to create
- * @param[in] access Intended access mode - see @ref OSFileAccess
- * @param[in] mode   The file permissions. This parameter is passed through to the
- *		     native open call, but will be ignored. The file mode (or permissions)
- *                   are ignored by the POSIX open call when the O_CREAT access flag is not passed in.
- *
- * @note Valid handle IDs are never negative.  Failure of this
- * call can be checked by testing if the result is less than 0.
- *
- * @return A file handle ID or appropriate error code, see @ref OSReturnCodes
- * @retval #OS_INVALID_POINTER if path is NULL
- * @retval #OS_FS_ERR_PATH_TOO_LONG if path exceeds the maximum number of chars
- * @retval #OS_FS_ERR_PATH_INVALID if path cannot be parsed
- * @retval #OS_FS_ERR_NAME_TOO_LONG if the name of the file is too long
- * @retval #OS_ERROR if permissions are unknown or OS call fails
- * @retval #OS_ERR_NO_FREE_IDS if there are no free file descriptors left
- *
- * @deprecated Replaced by OS_OpenCreate() with flags set to
- *             OS_FILE_FLAG_NONE.
- */
-int32 OS_open(const char *path, int32 access, uint32 mode);
-
-#endif
-
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Open or create a file
@@ -185,16 +127,17 @@ int32 OS_open(const char *path, int32 access, uint32 mode);
  * of outputting the ID/descriptor separately from the return value, rather
  * than relying on the user to convert it back.
  *
- * @param[out] filedes  The handle ID
- * @param[in] path      File name to create or open
- * @param[in] flags     The file permissions - see @ref OS_file_flag_t
- * @param[in] access    Intended access mode - see @ref OSFileAccess
+ * @param[out] filedes     The handle ID (OS_OBJECT_ID_UNDEFINED on failure)
+ * @param[in]  path        File name to create or open
+ * @param[in]  flags       The file permissions - see @ref OS_file_flag_t
+ * @param[in]  access_mode Intended access mode - see @ref OSFileAccess
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERROR if the command was not executed properly
+ * @retval #OS_INVALID_POINTER if pointer argument was NULL
  */
-int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access);
+int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access_mode);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -218,6 +161,9 @@ int32 OS_close(osal_id_t filedes);
  *
  * Reads up to nbytes from a file, and puts them into buffer.
  *
+ * If the file position is at the end of file (or beyond, if the OS allows) then this
+ * function will return 0.
+ *
  * @param[in]  filedes  The handle ID to operate on
  * @param[out] buffer   Storage location for file data
  * @param[in]  nbytes   Maximum number of bytes to read
@@ -229,6 +175,7 @@ int32 OS_close(osal_id_t filedes);
  * @retval #OS_INVALID_POINTER if buffer is a null pointer
  * @retval #OS_ERROR if OS call failed
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval 0 if at end of file/stream data
  */
 int32 OS_read(osal_id_t filedes, void *buffer, size_t nbytes);
 
@@ -250,6 +197,7 @@ int32 OS_read(osal_id_t filedes, void *buffer, size_t nbytes);
  * @retval #OS_INVALID_POINTER if buffer is NULL
  * @retval #OS_ERROR if OS call failed
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval 0 if file/stream cannot accept any more data
  */
 int32 OS_write(osal_id_t filedes, const void *buffer, size_t nbytes);
 
@@ -259,28 +207,39 @@ int32 OS_write(osal_id_t filedes, const void *buffer, size_t nbytes);
  *
  * This implements a time-limited read and is primarily intended for use with
  * sockets but may also work with any other stream-like resource that the underlying
- * OS supports.
+ * OS supports, such as pipes or special devices.
  *
  * If data is immediately available on the file/socket, this will return that data
  * along with the actual number of bytes that were immediately available.  It will
  * not block.
  *
- * If no data is immediately available, this will wait up to the given timeout for
+ * If the file position is at the end of file or end of stream data (e.g. if the remote
+ * end has closed the connection), then this function will immediately return 0 without
+ * blocking for the timeout period.
+ *
+ * If no data is immediately available, but the underlying resource/stream is still
+ * connected to a peer, this will wait up to the given timeout for additional
  * data to appear.  If no data appears within the timeout period, then this returns
- * an error code (not zero).
+ * the #OS_ERROR_TIMEOUT status code.  This allows the caller to differentiate
+ * an open (but idle) socket connection from a connection which has been closed
+ * by the remote peer.
  *
  * In all cases this will return successfully as soon as at least 1 byte of actual
  * data is available.  It will not attempt to read the entire input buffer.
  *
  * If an EOF condition occurs prior to timeout, this function returns zero.
  *
- * @param[in] filedes   The handle ID to operate on
- * @param[in] buffer    Source location for file data
- * @param[in] nbytes    Maximum number of bytes to read
- * @param[in] timeout   Maximum time to wait, in milliseconds (OS_PEND = forever)
+ * @param[in]  filedes   The handle ID to operate on
+ * @param[out] buffer    Storage location for file data
+ * @param[in]  nbytes    Maximum number of bytes to read
+ * @param[in]  timeout   Maximum time to wait, in milliseconds (OS_PEND = forever)
  *
- * @return Byte count on success, zero for timeout, or appropriate error code,
- *         see @ref OSReturnCodes
+ * @returns Byte count on success or appropriate error code, see @ref OSReturnCodes
+ * @retval #OS_ERROR_TIMEOUT if no data became available during timeout period
+ * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval #OS_ERR_INVALID_SIZE if the passed-in size is not valid
+ * @retval #OS_INVALID_POINTER if the passed-in buffer is not valid
+ * @retval 0 if at end of file/stream data
  */
 int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout);
 
@@ -310,8 +269,12 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout
  * @param[in] nbytes    Maximum number of bytes to read
  * @param[in] timeout   Maximum time to wait, in milliseconds (OS_PEND = forever)
  *
- * @return Byte count on success, zero for timeout, or appropriate error code,
- *         see @ref OSReturnCodes
+ * @return A non-negative byte count or appropriate error code, see @ref OSReturnCodes
+ * @retval #OS_ERROR_TIMEOUT if no data became available during timeout period
+ * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval #OS_ERR_INVALID_SIZE if the passed-in size is not valid
+ * @retval #OS_INVALID_POINTER if the passed-in buffer is not valid
+ * @retval 0 if file/stream cannot accept any more data
  */
 int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 timeout);
 
@@ -319,14 +282,14 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
 /**
  * @brief Changes the permissions of a file
  *
- * @param[in] path   File to change
- * @param[in] access Desired access mode - see @ref OSFileAccess
+ * @param[in] path        File to change
+ * @param[in] access_mode Desired access mode - see @ref OSFileAccess
  *
  * @note Some file systems do not implement permissions
  *
  * @return Execution status, see @ref OSReturnCodes
  */
-int32 OS_chmod(const char *path, uint32 access);
+int32 OS_chmod(const char *path, uint32 access_mode);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -474,6 +437,7 @@ int32 OS_mv(const char *src, const char *dest);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval #OS_INVALID_POINTER if the fd_prop argument is NULL
  */
 int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop);
 
@@ -488,6 +452,7 @@ int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop);
  *
  * @return OS_SUCCESS if the file is open, or appropriate error code
  * @retval #OS_ERROR if the file is not open
+ * @retval #OS_INVALID_POINTER if the filename argument is NULL
  */
 int32 OS_FileOpenCheck(const char *Filename);
 
@@ -517,8 +482,9 @@ int32 OS_CloseAllFiles(void);
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_FS_ERR_PATH_INVALID if the file is not found
  * @retval #OS_ERROR   if the file close returned an error
+ * @retval #OS_INVALID_POINTER if the filename argument is NULL
  */
 int32 OS_CloseFileByName(const char *Filename);
 /**@}*/
 
-#endif
+#endif /* OSAPI_FILE_H */

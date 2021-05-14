@@ -32,10 +32,10 @@
 #include "os-shared-idmap.h"
 #include "os-shared-select.h"
 
-#include <OCS_stdlib.h>
-#include <OCS_unistd.h>
-#include <OCS_fcntl.h>
-#include <OCS_errno.h>
+#include "OCS_stdlib.h"
+#include "OCS_unistd.h"
+#include "OCS_fcntl.h"
+#include "OCS_errno.h"
 
 void Test_OS_GenericClose_Impl(void)
 {
@@ -84,7 +84,7 @@ void Test_OS_GenericSeek_Impl(void)
 
     /* The seek implementation also checks for this specific pipe errno */
     OCS_errno = OCS_ESPIPE;
-    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (&token, 0, OS_SEEK_END), OS_ERR_NOT_IMPLEMENTED);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericSeek_Impl, (&token, 0, OS_SEEK_END), OS_ERR_OPERATION_NOT_SUPPORTED);
 }
 
 void Test_OS_GenericRead_Impl(void)

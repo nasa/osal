@@ -18,11 +18,12 @@
  *  limitations under the License.
  */
 
-/*================================================================================*
-** File:  ut_oscore_misc_test.h
-** Owner: Tam Ngo
-** Date:  April 2013
-**================================================================================*/
+/**
+ * \file
+ *
+ * Owner: Tam Ngo
+ * Date:  April 2013
+ */
 
 #ifndef UT_OSCORE_MISC_TEST_H
 #define UT_OSCORE_MISC_TEST_H
@@ -68,8 +69,4 @@ void UT_os_heapgetinfo_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSCORE_MISC_TEST_H */
-
-/*================================================================================*
-** End of File: ut_oscore_misc_test.h
-**================================================================================*/
+#endif /* UT_OSCORE_MISC_TEST_H */

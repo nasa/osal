@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for objLib.h */
-#ifndef OSAL_OVERRIDE_OBJLIB_H
-#define OSAL_OVERRIDE_OBJLIB_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for objLib.h
+ */
 
-#include <OCS_objLib.h>
+#ifndef OVERRIDE_OBJLIB_H
+#define OVERRIDE_OBJLIB_H
+
+#include "OCS_objLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */
@@ -36,4 +42,4 @@
 #define S_objLib_OBJ_TIMEOUT     OCS_S_objLib_OBJ_TIMEOUT
 #define S_objLib_OBJ_NO_METHOD   OCS_S_objLib_OBJ_NO_METHOD
 
-#endif  /* OSAL_OVERRIDE_OBJLIB_H */
+#endif /* OVERRIDE_OBJLIB_H */

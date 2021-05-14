@@ -19,17 +19,17 @@
  */
 
 /**
- * \file     ut-adaptor-queues.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-queues
  */
 
 #ifndef UT_ADAPTOR_QUEUES_H
 #define UT_ADAPTOR_QUEUES_H
 
 #include "common_types.h"
-#include <OCS_msgQLib.h>
+#include "OCS_msgQLib.h"
 
 extern void *const  UT_Ref_OS_impl_queue_table;
 extern size_t const UT_Ref_OS_impl_queue_table_SIZE;
@@ -45,4 +45,4 @@ extern size_t const UT_Ref_OS_impl_queue_table_SIZE;
 
 int32 UT_Call_OS_VxWorks_QueueAPI_Impl_Init(void);
 
-#endif  /* UT_ADAPTOR_QUEUES_H  */
+#endif /* UT_ADAPTOR_QUEUES_H */

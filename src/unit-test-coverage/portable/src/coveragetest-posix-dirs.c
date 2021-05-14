@@ -29,10 +29,12 @@
 #include "os-shared-dir.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_stdlib.h>
-#include <OCS_dirent.h>
-#include <OCS_unistd.h>
-#include <OCS_stat.h>
+#include "OCS_stdlib.h"
+#include "OCS_dirent.h"
+#include "OCS_unistd.h"
+#include "OCS_fcntl.h"
+#include "OCS_stat.h"
+#include "OCS_errno.h"
 
 void Test_OS_DirCreate_Impl(void)
 {
@@ -40,10 +42,22 @@ void Test_OS_DirCreate_Impl(void)
      * Test Case For:
      * int32 OS_DirCreate_Impl(const char *local_path, uint32 access)
      */
+    struct OCS_stat statbuf;
+
     OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl, ("dir", 0), OS_SUCCESS);
 
+    /* With errno other than EEXIST it should return OS_ERROR */
+    OCS_errno = OCS_EROFS;
     UT_SetDefaultReturnValue(UT_KEY(OCS_mkdir), -1);
     OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl, ("dir", 0), OS_ERROR);
+
+    /* If the errno is EEXIST it should return success */
+    OCS_errno = OCS_EEXIST;
+    memset(&statbuf, 0, sizeof(statbuf));
+    statbuf.st_mode = OCS_S_IFDIR;
+    UT_SetDataBuffer(UT_KEY(OCS_stat), &statbuf, sizeof(statbuf), false);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_mkdir), -1);
+    OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl, ("dir", 0), OS_SUCCESS);
 }
 
 void Test_OS_DirOpen_Impl(void)

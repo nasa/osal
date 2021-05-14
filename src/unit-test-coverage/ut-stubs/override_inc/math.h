@@ -18,14 +18,20 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for math.h */
-#ifndef OSAL_OVERRIDE_MATH_H
-#define OSAL_OVERRIDE_MATH_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for math.h
+ */
 
-#include <OCS_math.h>
+#ifndef OVERRIDE_MATH_H
+#define OVERRIDE_MATH_H
+
+#include "OCS_math.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in math.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_MATH_H */
+#endif /* OVERRIDE_MATH_H */

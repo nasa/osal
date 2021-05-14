@@ -67,7 +67,7 @@
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, int32 flags, int32 access)
+int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, int32 flags, int32 access_mode)
 {
     int                             os_perm;
     int                             os_mode;
@@ -79,7 +79,7 @@ int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, i
     ** Check for a valid access mode
     ** For creating a file, OS_READ_ONLY does not make sense
     */
-    switch (access)
+    switch (access_mode)
     {
         case OS_WRITE_ONLY:
             os_perm = O_WRONLY;
@@ -223,7 +223,7 @@ int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
+int32 OS_FileChmod_Impl(const char *local_path, uint32 access_mode)
 {
     mode_t      readbits;
     mode_t      writebits;
@@ -282,7 +282,7 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
             writebits |= S_IWGRP;
         }
 
-        if (access == OS_WRITE_ONLY || access == OS_READ_WRITE)
+        if (access_mode == OS_WRITE_ONLY || access_mode == OS_READ_WRITE)
         {
             /* set all "write" mode bits */
             st.st_mode |= writebits;
@@ -293,7 +293,7 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
             st.st_mode &= ~writebits;
         }
 
-        if (access == OS_READ_ONLY || access == OS_READ_WRITE)
+        if (access_mode == OS_READ_ONLY || access_mode == OS_READ_WRITE)
         {
             /* set all "read" mode bits */
             st.st_mode |= readbits;

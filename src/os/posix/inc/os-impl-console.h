@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-impl-console.h
+ * \file
+ *
  * \ingroup  posix
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -36,10 +36,9 @@
 /* Console device */
 typedef struct
 {
-    bool  is_async;
     sem_t data_sem;
 } OS_impl_console_internal_record_t;
 
 extern OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
 
-#endif  /* OS_IMPL_CONSOLE_H  */
+#endif /* OS_IMPL_CONSOLE_H */

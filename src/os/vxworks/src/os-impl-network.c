@@ -85,7 +85,6 @@ int32 OS_NetworkGetID_Impl(int32 *IdBuf)
         else
         {
             *IdBuf = (int32)host_id;
-            status = OS_SUCCESS;
         }
     }
 

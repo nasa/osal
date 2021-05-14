@@ -87,7 +87,8 @@ int32 OS_QueueAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcount_t queue_depth, size_t data_size, uint32 flags)
+int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcount_t queue_depth, size_t data_size,
+                     uint32 flags)
 {
     int32                       return_code;
     OS_object_token_t           token;
@@ -272,7 +273,7 @@ int32 OS_QueueGetInfo(osal_id_t queue_id, OS_queue_prop_t *queue_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_queue_table, token);
 
-        strncpy(queue_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(queue_prop->name, record->name_entry, sizeof(queue_prop->name) - 1);
         queue_prop->creator = record->creator;
 
         /*

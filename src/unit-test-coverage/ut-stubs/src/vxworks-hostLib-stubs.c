@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_hostLib.h>
+#include "OCS_hostLib.h"
 
 int OCS_hostGetByName(char *name)
 {

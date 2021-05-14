@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for taskLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for taskLib.h
+ */
+
 #ifndef OCS_TASKLIB_H
 #define OCS_TASKLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in taskLib.h */
@@ -79,4 +85,4 @@ OCS_STATUS OCS_taskInit(OCS_WIND_TCB *pTcb, char *name, int priority, int option
 
 OCS_WIND_TCB *OCS_taskTcb(OCS_TASK_ID tid);
 
-#endif  /*  OCS_TASKLIB_H */
+#endif /* OCS_TASKLIB_H */

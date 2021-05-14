@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/mman.h */
-#ifndef OSAL_OVERRIDE_SYS_MMAN_H
-#define OSAL_OVERRIDE_SYS_MMAN_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/mman.h
+ */
 
-#include <OCS_sys_mman.h>
+#ifndef OVERRIDE_SYS_MMAN_H
+#define OVERRIDE_SYS_MMAN_H
+
+#include "OCS_sys_mman.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/mman.h */
@@ -38,4 +44,4 @@
 #define mmap        OCS_mmap
 #define munmap      OCS_munmap
 
-#endif  /* OSAL_OVERRIDE_SYS_MMAN_H */
+#endif /* OVERRIDE_SYS_MMAN_H */

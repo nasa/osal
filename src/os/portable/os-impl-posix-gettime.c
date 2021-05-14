@@ -28,6 +28,12 @@
  * The OS-specific code must \#include the correct headers that define the
  * prototypes for these functions before including this implementation file.
  *
+ * NOTE: The OS-specific header must also define which POSIX clock ID to use -
+ * this specifies the clockid_t parameter to use with clock_gettime().  In
+ * most cases this should be CLOCK_REALTIME to allow the clock to be set, and
+ * so the application will also see any manual/administrative clock changes.
+ *
+ * The clock ID is selected by defining the #OSAL_GETTIME_SOURCE_CLOCK macro.
  */
 
 /****************************************************************************************
@@ -67,13 +73,13 @@ int32 OS_GetLocalTime_Impl(OS_time_t *time_struct)
 {
     int             Status;
     int32           ReturnCode;
-    struct timespec time;
+    struct timespec TimeSp;
 
-    Status = clock_gettime(OSAL_GETTIME_SOURCE_CLOCK, &time);
+    Status = clock_gettime(OSAL_GETTIME_SOURCE_CLOCK, &TimeSp);
 
     if (Status == 0)
     {
-        *time_struct = OS_TimeAssembleFromNanoseconds(time.tv_sec, time.tv_nsec);
+        *time_struct = OS_TimeAssembleFromNanoseconds(TimeSp.tv_sec, TimeSp.tv_nsec);
         ReturnCode   = OS_SUCCESS;
     }
     else
@@ -97,12 +103,12 @@ int32 OS_SetLocalTime_Impl(const OS_time_t *time_struct)
 {
     int             Status;
     int32           ReturnCode;
-    struct timespec time;
+    struct timespec TimeSp;
 
-    time.tv_sec  = OS_TimeGetTotalSeconds(*time_struct);
-    time.tv_nsec = OS_TimeGetNanosecondsPart(*time_struct);
+    TimeSp.tv_sec  = OS_TimeGetTotalSeconds(*time_struct);
+    TimeSp.tv_nsec = OS_TimeGetNanosecondsPart(*time_struct);
 
-    Status = clock_settime(OSAL_GETTIME_SOURCE_CLOCK, &time);
+    Status = clock_settime(OSAL_GETTIME_SOURCE_CLOCK, &TimeSp);
 
     if (Status == 0)
     {

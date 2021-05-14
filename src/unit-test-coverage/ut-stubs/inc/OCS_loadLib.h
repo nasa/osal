@@ -18,13 +18,19 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for loadLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for loadLib.h
+ */
+
 #ifndef OCS_LOADLIB_H
 #define OCS_LOADLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_moduleLib.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_moduleLib.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in loadLib.h */
@@ -40,4 +46,4 @@
 
 extern OCS_MODULE_ID OCS_loadModule(int fd, unsigned int symFlag);
 
-#endif  /*  OCS_LOADLIB_H */
+#endif /* OCS_LOADLIB_H */

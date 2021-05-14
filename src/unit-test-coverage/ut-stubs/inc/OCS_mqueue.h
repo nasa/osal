@@ -18,13 +18,19 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for mqueue.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for mqueue.h
+ */
+
 #ifndef OCS_MQUEUE_H
 #define OCS_MQUEUE_H
 
-#include <OCS_basetypes.h>
-#include <OCS_sys_types.h>
-#include <OCS_time.h>
+#include "OCS_basetypes.h"
+#include "OCS_sys_types.h"
+#include "OCS_time.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in mqueue.h */
@@ -55,4 +61,4 @@ extern int         OCS_mq_timedsend(OCS_mqd_t mqdes, const char *msg_ptr, size_t
                                     const struct OCS_timespec *abs_timeout);
 extern int         OCS_mq_unlink(const char *name);
 
-#endif  /*  OCS_MQUEUE_H */
+#endif /* OCS_MQUEUE_H */

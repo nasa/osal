@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for drv/hdisk/ataDrv.h */
-#ifndef OSAL_OVERRIDE_DRV_HDISK_ATADRV_H
-#define OSAL_OVERRIDE_DRV_HDISK_ATADRV_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for drv/hdisk/ataDrv.h
+ */
 
-#include <OCS_drv_hdisk_ataDrv.h>
+#ifndef OVERRIDE_DRV_HDISK_ATADRV_H
+#define OVERRIDE_DRV_HDISK_ATADRV_H
+
+#include "OCS_drv_hdisk_ataDrv.h"
 #include <vxWorks.h>
 #include <blkIo.h>
 
@@ -31,4 +37,4 @@
 /* ----------------------------------------- */
 #define ataDevCreate OCS_ataDevCreate
 
-#endif  /* OSAL_OVERRIDE_DRV_HDISK_ATADRV_H */
+#endif /* OVERRIDE_DRV_HDISK_ATADRV_H */

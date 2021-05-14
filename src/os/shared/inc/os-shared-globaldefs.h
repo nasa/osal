@@ -19,17 +19,17 @@
  */
 
 /**
- * \file     os-shared-globaldefs.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  * Internal type/macro definitions used across the "shared" OSAPI layer.
  * These definitions are internal to OSAL but shared/referenced across all subsystems
  * so they are put into a common header file.
  */
 
-#ifndef OSAPI_SHARED_GLOBALDEFS_H_
-#define OSAPI_SHARED_GLOBALDEFS_H_
+#ifndef OS_SHARED_GLOBALDEFS_H
+#define OS_SHARED_GLOBALDEFS_H
 
 /* All subsystems reference the same config, common types, and other constants */
 #include "osconfig.h"
@@ -65,15 +65,25 @@ typedef struct OS_object_token OS_object_token_t;
  * Wrapper for encoding of other types into a generic void* type required as argument
  * to callbacks and pthread entry/return values, etc.
  *
+ * This is used where OSAL needs to pass non-pointer/integer values through an interface
+ * that accepts a void* opaque pass-through argument.
+ *
  * Note this can only encode types with sizes <= sizeof(void*)
  */
 typedef union
 {
-    void *             opaque_arg;
-    OS_ArgCallback_t   arg_callback_func;
-    osal_id_t          id;
-    osal_index_t       idx;
-} OS_U32ValueWrapper_t;
+    void *           opaque_arg;
+    OS_ArgCallback_t arg_callback_func;
+    osal_id_t        id;
+    osal_index_t     idx;
+} OS_VoidPtrValueWrapper_t;
+
+/*
+ * The wrapper structure size should be equal to void* - if not this means
+ * one or more of the other members are bigger than void*, and therefore cannot
+ * be passed directly through the intended interface
+ */
+CompileTimeAssert(sizeof(OS_VoidPtrValueWrapper_t) == sizeof(void *), VoidValueWrapperSize);
 
 /*
  * The "OS_DEBUG" is a no-op unless OSAL_CONFIG_DEBUG_PRINTF is enabled.
@@ -109,7 +119,7 @@ extern void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const ch
  * (e.g. read/write) return a size as an int32 type, and therefore the
  * operation cannot exceed the bounds of this type.
  */
-#define OS_CHECK_SIZE(val) ARGCHECK((val) > 0 && (val) < (UINT32_MAX/2), OS_ERR_INVALID_SIZE)
+#define OS_CHECK_SIZE(val) ARGCHECK((val) > 0 && (val) < (UINT32_MAX / 2), OS_ERR_INVALID_SIZE)
 
 /*
  * An OSAL-specific check macro for arbitrary string argument validation.
@@ -138,4 +148,4 @@ extern void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const ch
  */
 #define OS_CHECK_PATHNAME(str) OS_CHECK_STRING(str, OS_MAX_PATH_LEN, OS_FS_ERR_PATH_TOO_LONG)
 
-#endif /* OS_SHARED_GLOBALDEFS_H  */
+#endif /* OS_SHARED_GLOBALDEFS_H */

@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for intLib.h */
-#ifndef OSAL_OVERRIDE_INTLIB_H
-#define OSAL_OVERRIDE_INTLIB_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for intLib.h
+ */
 
-#include <OCS_intLib.h>
+#ifndef OVERRIDE_INTLIB_H
+#define OVERRIDE_INTLIB_H
+
+#include "OCS_intLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */
@@ -36,4 +42,4 @@
 #define intUnlock    OCS_intUnlock
 #define INUM_TO_IVEC OCS_INUM_TO_IVEC
 
-#endif  /* OSAL_OVERRIDE_INTLIB_H */
+#endif /* OVERRIDE_INTLIB_H */

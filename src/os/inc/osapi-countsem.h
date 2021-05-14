@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-countsem.h
+ * \file
+ *
+ * Declarations and prototypes for counting semaphores
  */
 
 #ifndef OSAPI_COUNTSEM_H
@@ -175,4 +177,4 @@ int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_COUNTSEM_H */

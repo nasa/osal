@@ -29,11 +29,11 @@
 #include "ut-adaptor-console.h"
 #include "os-shared-printf.h"
 
-#include <OCS_unistd.h>
-#include <OCS_semLib.h>
-#include <OCS_taskLib.h>
-#include <OCS_errnoLib.h>
-#include <OCS_stdio.h>
+#include "OCS_unistd.h"
+#include "OCS_semLib.h"
+#include "OCS_taskLib.h"
+#include "OCS_errnoLib.h"
+#include "OCS_stdio.h"
 
 void Test_OS_ConsoleWakeup_Impl(void)
 {
@@ -43,18 +43,13 @@ void Test_OS_ConsoleWakeup_Impl(void)
      */
     OS_object_token_t token = UT_TOKEN_0;
 
-    /* no return code - check for coverage */
-    UT_ConsoleTest_SetConsoleAsync(0, true);
+    /* this just gives the sem, only called in async mode */
     OS_ConsoleWakeup_Impl(&token);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semGive)) == 1, "semGive() called in async mode");
 
+    /* Failure only causes a debug message to be generated, no error handling here */
     UT_SetDefaultReturnValue(UT_KEY(OCS_semGive), -1);
     OS_ConsoleWakeup_Impl(&token);
-
-    UT_ConsoleTest_SetConsoleAsync(0, false);
-    OS_console_table[0].WritePos = 1;
-    OS_ConsoleWakeup_Impl(&token);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OS_ConsoleOutput_Impl)) == 1, "OS_ConsoleOutput_Impl() called in sync mode");
 }
 
 void Test_OS_ConsoleCreate_Impl(void)
@@ -63,8 +58,15 @@ void Test_OS_ConsoleCreate_Impl(void)
 
     memset(&token, 0, sizeof(token));
 
+    /* Verify coverage when configured for sync mode */
+    OS_console_table[0].IsAsync = false;
     OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskSpawn)) == 1, "taskSpawn() called");
+    UtAssert_STUB_COUNT(OCS_taskSpawn, 0); /* Task _was not_ spawned */
+
+    /* Verify coverage when configured for async mode */
+    OS_console_table[0].IsAsync = true;
+    OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OCS_taskSpawn, 1); /* Task _was_ spawned */
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_semCInitialize), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_SEM_FAILURE);

@@ -19,17 +19,17 @@
  */
 
 /**
- * \file     ut-adaptor-tasks.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-tasks
  */
 
 #ifndef UT_ADAPTOR_TASKS_H
 #define UT_ADAPTOR_TASKS_H
 
 #include "common_types.h"
-#include <OCS_taskLib.h>
+#include "OCS_taskLib.h"
 
 extern void *const  UT_Ref_OS_impl_task_table;
 extern size_t const UT_Ref_OS_impl_task_table_SIZE;
@@ -48,4 +48,4 @@ void          UT_TaskTest_SetImplTaskId(osal_index_t local_id, OCS_TASK_ID TaskI
 int           UT_TaskTest_CallEntryPoint(osal_id_t arg);
 OCS_WIND_TCB *UT_TaskTest_GetTaskTcb(osal_index_t local_id);
 
-#endif  /* UT_ADAPTOR_TASKS_H  */
+#endif /* UT_ADAPTOR_TASKS_H */

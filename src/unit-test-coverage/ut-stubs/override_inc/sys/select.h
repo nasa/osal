@@ -19,16 +19,16 @@
  */
 
 /**
- * \file     select.h
- * \ingroup  override_inc
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
  *
+ * Declarations and prototypes for select
  */
 
-#ifndef SELECT_H
-#define SELECT_H
+#ifndef OVERRIDE_SYS_SELECT_H
+#define OVERRIDE_SYS_SELECT_H
 
-#include <OCS_sys_select.h>
+#include "OCS_sys_select.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/select.h */
@@ -50,4 +50,6 @@
 #define FD_CLR   OCS_FD_CLR
 #define FD_ZERO  OCS_FD_ZERO
 
-#endif  /* SELECT_H  */
+#define FD_SETSIZE OCS_FD_SETSIZE
+
+#endif /* OVERRIDE_SYS_SELECT_H */

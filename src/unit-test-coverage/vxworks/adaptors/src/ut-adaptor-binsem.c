@@ -29,8 +29,8 @@
 #include "osconfig.h"
 #include "ut-adaptor-binsem.h"
 
-#include <os-vxworks.h>
-#include <os-impl-binsem.h>
+#include "os-vxworks.h"
+#include "os-impl-binsem.h"
 
 void *const  UT_Ref_OS_impl_bin_sem_table      = OS_impl_bin_sem_table;
 size_t const UT_Ref_OS_impl_bin_sem_table_SIZE = sizeof(OS_impl_bin_sem_table);

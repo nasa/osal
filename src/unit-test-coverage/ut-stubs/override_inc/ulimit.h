@@ -18,15 +18,21 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for ulimit.h */
-#ifndef OSAL_OVERRIDE_ULIMIT_H
-#define OSAL_OVERRIDE_ULIMIT_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for ulimit.h
+ */
 
-#include <OCS_ulimit.h>
+#ifndef OVERRIDE_ULIMIT_H
+#define OVERRIDE_ULIMIT_H
+
+#include "OCS_ulimit.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in ulimit.h */
 /* ----------------------------------------- */
 #define ulimit OCS_ulimit
 
-#endif  /* OSAL_OVERRIDE_ULIMIT_H */
+#endif /* OVERRIDE_ULIMIT_H */

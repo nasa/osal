@@ -68,13 +68,13 @@ osal_id_t msgq_2;
 osal_id_t msgq_3;
 
 osal_id_t bin_0;
-osal_id_t bin_1; 
+osal_id_t bin_1;
 osal_id_t bin_2;
 osal_id_t bin_3;
 
 osal_id_t mut_0;
-osal_id_t mut_1; 
-osal_id_t mut_2; 
+osal_id_t mut_1;
+osal_id_t mut_2;
 osal_id_t mut_3;
 
 /* helper function for "OS_ForEachObject" test cases */
@@ -96,6 +96,9 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     UtTest_Add(TestTasks, NULL, NULL, "TASK");
     UtTest_Add(TestQueues, NULL, NULL, "MSGQ");
     UtTest_Add(TestBinaries, NULL, NULL, "BSEM");
@@ -109,8 +112,6 @@ void UtTest_Setup(void)
 
 void task_generic_no_exit(void)
 {
-    OS_TaskRegister();
-
     while (1)
     {
         OS_TaskDelay(100);
@@ -141,8 +142,6 @@ void TestTasks(void)
     static TestTaskData TaskData[OS_MAX_TASKS + 1];
     OS_task_prop_t      taskprop;
     int                 loopcnt;
-
-    /* OS_TaskRegister(); */
 
     /* Testing Creating up to OS_MAX_TASKS, plus one more */
     memset(TaskData, 0xFF, sizeof(TaskData));
@@ -221,41 +220,34 @@ void TestTasks(void)
 
     InitializeTaskIds();
     /* Create Task 0 again */
-    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
-                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
-    /*UtDebug("Create Status = %d, Id = %d\n",status,task_0_id); */
+    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack),
+                           sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate, recreate 0");
 
     /* Try and create another "Task 0", should fail as we already have one named "Task 0" */
-    status = OS_TaskCreate(&task_1_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
-                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
+    status = OS_TaskCreate(&task_1_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack),
+                           sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status != OS_SUCCESS, "OS_TaskCreate, dupe name 0");
 
-    status = OS_TaskCreate(&task_2_id, "Task 2", task_generic_no_exit, OSAL_STACKPTR_C(task_2_stack), sizeof(task_2_stack),
-                           OSAL_PRIORITY_C(TASK_2_PRIORITY), 0);
-    /*  UtDebug("Create Status = %d, Id = %d\n",status,task_2_id); */
+    status = OS_TaskCreate(&task_2_id, "Task 2", task_generic_no_exit, OSAL_STACKPTR_C(task_2_stack),
+                           sizeof(task_2_stack), OSAL_PRIORITY_C(TASK_2_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate, recreate 2");
 
-    status = OS_TaskCreate(&task_3_id, "Task 3", task_generic_no_exit, OSAL_STACKPTR_C(task_3_stack), sizeof(task_3_stack),
-                           OSAL_PRIORITY_C(TASK_3_PRIORITY), 0);
-    /*  UtDebug("Create Status = %d, Id = %d\n",status,task_3_id); */
+    status = OS_TaskCreate(&task_3_id, "Task 3", task_generic_no_exit, OSAL_STACKPTR_C(task_3_stack),
+                           sizeof(task_3_stack), OSAL_PRIORITY_C(TASK_3_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate, recreate 3");
 
     status = OS_TaskGetIdByName(&task_0_id, "Task 0");
-    /* UtDebug("Satus after Getting the id of \"Task 0\":%d,%d \n\n",status,task_0_id); */
     /*first newly created task should have id == 0*/
     UtAssert_True(status == OS_SUCCESS, "OS_TaskGetIdByName, Task 0");
 
     status = OS_TaskGetIdByName(&task_1_id, "Task 1");
-    /*UtDebug("Satus after Getting the id of \"Task 1\":%d,%d \n\n",status,task_1_id);*/
     UtAssert_True(status != OS_SUCCESS, "OS_TaskGetIdByName, Task 1");
 
     status = OS_TaskGetIdByName(&task_2_id, "Task 2");
-    /* UtDebug("Satus after Getting the id of \"Task 2\":%d,%d \n\n",status,task_2_id);*/
     UtAssert_True(status == OS_SUCCESS, "OS_TaskGetIdByName, Task 2");
 
     status = OS_TaskGetIdByName(&task_3_id, "Task 3");
-    /* UtDebug("Satus after Getting the id of \"Task 3\":%d,%d \n\n",status,task_3_id); */
     UtAssert_True(status == OS_SUCCESS, "OS_TaskGetIdByName, Task 3");
 
     /*
@@ -308,20 +300,16 @@ void TestQueues(void)
 
     InitializeQIds();
     status = OS_QueueCreate(&msgq_0, "q 0", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
-    /* UtDebug("Status after Creating q 0: %d,%d\n",status,msgq_0);*/
     UtAssert_True(status == OS_SUCCESS, "OS_QueueCreate, recreate 0");
 
     /* This one should fail */
     status = OS_QueueCreate(&msgq_1, "q 0", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
-    /* UtDebug("Status after Creating q 0 again: %d,%d\n",status,msgq_1); */
     UtAssert_True(status != OS_SUCCESS, "OS_QueueCreate, dupe name 0");
 
     status = OS_QueueCreate(&msgq_2, "q 2", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
-    /* UtDebug("Status after Creating q 2: %d,%d\n",status,msgq_2); */
     UtAssert_True(status == OS_SUCCESS, "OS_QueueCreate, recreate 2");
 
     status = OS_QueueCreate(&msgq_3, "q 3", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
-    /* UtDebug("Status after Creating q 3: %d,%d\n",status,msgq_3); */
     UtAssert_True(status == OS_SUCCESS, "OS_QueueCreate, recreate 3");
 
     /*
@@ -349,19 +337,15 @@ void TestQueues(void)
     /* Time to Delete the Queues we just created */
 
     status = OS_QueueDelete(msgq_0);
-    /* UtDebug("Status after Deleting q 0 : %d\n",status); */
     UtAssert_True(status == OS_SUCCESS, "OS_QueueDelete, q 0");
 
     status = OS_QueueDelete(msgq_1);
-    /* UtDebug("Status after Deleting q 1: %d\n",status); */
     UtAssert_True(status != OS_SUCCESS, "OS_QueueDelete, q 1");
 
     status = OS_QueueDelete(msgq_2);
-    /* UtDebug("Status after Deleting q 2: %d\n",status); */
     UtAssert_True(status == OS_SUCCESS, "OS_QueueDelete, q 2");
 
     status = OS_QueueDelete(msgq_3);
-    /* UtDebug("Status after Deleting q 3: %d\n",status); */
     UtAssert_True(status == OS_SUCCESS, "OS_QueueDelete, q 3");
 
 } /* end TestQueues */
@@ -404,35 +388,27 @@ void TestBinaries(void)
      */
     InitializeBinIds();
     status = OS_BinSemCreate(&bin_0, "Bin 0", OS_SEM_FULL, 0);
-    /* UtDebug("Status after creating: %d,%d\n",status,bin_0); */
     UtAssert_True(status == OS_SUCCESS, "OS_BinSemCreate, recreate 0");
 
     status = OS_BinSemCreate(&bin_1, "Bin 0", OS_SEM_FULL, 0);
-    /* UtDebug("Status after creating: %d,%d\n",status,bin_1); */
     UtAssert_True(status != OS_SUCCESS, "OS_BinSemCreate, dupe name 0");
 
     status = OS_BinSemCreate(&bin_2, "Bin 2", OS_SEM_EMPTY, 0);
-    /* UtDebug("Status after creating: %d,%d\n",status,bin_2);  */
     UtAssert_True(status == OS_SUCCESS, "OS_BinSemCreate, recreate 2");
 
     status = OS_BinSemCreate(&bin_3, "Bin 3", OS_SEM_EMPTY, 0);
-    /* UtDebug("Status after creating: %d,%d\n",status,bin_3); */
     UtAssert_True(status == OS_SUCCESS, "OS_BinSemCreate, recreate 3");
 
     status = OS_BinSemGetIdByName(&bin_0, "Bin 0");
-    /* UtDebug("Status after GETID: %d,%d\n",status,bin_0); */
     UtAssert_True(status == OS_SUCCESS, "OS_BinSemGetIdByName, Bin 0");
 
     status = OS_BinSemGetIdByName(&bin_1, "Bin 1");
-    /* UtDebug("Status after GETID: %d,%d\n",status,bin_1); */
     UtAssert_True(status != OS_SUCCESS, "OS_BinSemGetIdByName, Bin 1");
 
     status = OS_BinSemGetIdByName(&bin_2, "Bin 2");
-    /* UtDebug("Status after GETID: %d,%d\n",status,bin_2); */
     UtAssert_True(status == OS_SUCCESS, "OS_BinSemGetIdByName, Bin 2");
 
     status = OS_BinSemGetIdByName(&bin_3, "Bin 3");
-    /* UtDebug("Status after GETID: %d,%d\n",status,bin_3); */
     UtAssert_True(status == OS_SUCCESS, "OS_BinSemGetIdByName, Bin 3");
 
     /*
@@ -442,12 +418,10 @@ void TestBinaries(void)
     UtAssert_True(status != OS_SUCCESS, "OS_BinSemDelete, Old ID");
 
     status = OS_BinSemDelete(bin_0);
-    /* UtDebug("Status after deleteing:%d\n",status); */
     UtAssert_True(status == OS_SUCCESS, "OS_BinSemDelete, Bin 0");
 
     /* this one was never created */
     status = OS_BinSemDelete(bin_1);
-    /* UtDebug("Status after deleteing:%d\n",status); */
     UtAssert_True(status != OS_SUCCESS, "OS_BinSemDelete, Bin 1");
 
     status = OS_BinSemDelete(bin_2);
@@ -496,19 +470,15 @@ void TestMutexes(void)
      */
     InitializeMutIds();
     status = OS_MutSemCreate(&mut_0, "Mut 0", 0);
-    /*  UtDebug("Status after creating Mut 0: %d,%d\n",status,mut_0);  */
     UtAssert_True(status == OS_SUCCESS, "OS_MutSemCreate, recreate 0");
 
     status = OS_MutSemCreate(&mut_1, "Mut 0", 0);
-    /*  UtDebug("Status after creating Mut 0 again: %d,%d\n",status,mut_1); */
     UtAssert_True(status != OS_SUCCESS, "OS_MutSemCreate, dupe name 0");
 
     status = OS_MutSemCreate(&mut_2, "Mut 2", 0);
-    /*  UtDebug("Status after creating Mut 2: %d,%d\n",status,mut_2); */
     UtAssert_True(status == OS_SUCCESS, "OS_MutSemCreate, recreate 2");
 
     status = OS_MutSemCreate(&mut_3, "Mut 3", 0);
-    /*  UtDebug("Status after creating Mut 3: %d,%d\n",status,mut_3); */
     UtAssert_True(status == OS_SUCCESS, "OS_MutSemCreate, recreate 3");
 
     status = OS_MutSemGetIdByName(&mut_0, "Mut 0");
@@ -530,20 +500,16 @@ void TestMutexes(void)
     UtAssert_True(status != OS_SUCCESS, "OS_MutSemDelete, Old ID");
 
     status = OS_MutSemDelete(mut_0);
-    /*  UtDebug("Status after deleteing Mut 0:%d\n",status);  */
     UtAssert_True(status == OS_SUCCESS, "OS_MutSemDelete, Mut 0");
 
     /* this one was never created*/
     status = OS_MutSemDelete(mut_1);
-    /*  UtDebug("Status after deleteing Mut 1:%d\n",status);  */
     UtAssert_True(status != OS_SUCCESS, "OS_MutSemDelete, Mut 1");
 
     status = OS_MutSemDelete(mut_2);
-    /*  UtDebug("Status after deleteing Mut 2:%d\n",status);  */
     UtAssert_True(status == OS_SUCCESS, "OS_MutSemDelete, Mut 2");
 
     status = OS_MutSemDelete(mut_3);
-    /*  UtDebug("Status after deleteing Mut 3:%d\n",status); */
     UtAssert_True(status == OS_SUCCESS, "OS_MutSemDelete, Mut 3");
 
 } /* end TestMutexes */
@@ -556,40 +522,40 @@ void TestMutexes(void)
 /* ************************************************************************** */
 void InitializeTaskIds(void)
 {
-    task_0_id  = OS_OBJECT_ID_UNDEFINED;
-    task_1_id  = OS_OBJECT_ID_UNDEFINED;
-    task_2_id  = OS_OBJECT_ID_UNDEFINED;
-    task_3_id  = OS_OBJECT_ID_UNDEFINED;
+    task_0_id = OS_OBJECT_ID_UNDEFINED;
+    task_1_id = OS_OBJECT_ID_UNDEFINED;
+    task_2_id = OS_OBJECT_ID_UNDEFINED;
+    task_3_id = OS_OBJECT_ID_UNDEFINED;
     return;
 } /* end InitializeTaskIds */
 
 /* **************************************************************************** */
 void InitializeQIds(void)
 {
-    msgq_0  = OS_OBJECT_ID_UNDEFINED;
-    msgq_1  = OS_OBJECT_ID_UNDEFINED;
-    msgq_2  = OS_OBJECT_ID_UNDEFINED;
-    msgq_3  = OS_OBJECT_ID_UNDEFINED;
+    msgq_0 = OS_OBJECT_ID_UNDEFINED;
+    msgq_1 = OS_OBJECT_ID_UNDEFINED;
+    msgq_2 = OS_OBJECT_ID_UNDEFINED;
+    msgq_3 = OS_OBJECT_ID_UNDEFINED;
     return;
 } /* end InitializeQIds */
 
 /* ***************************************************************************** */
 void InitializeBinIds(void)
 {
-    bin_0  = OS_OBJECT_ID_UNDEFINED;
-    bin_1  = OS_OBJECT_ID_UNDEFINED;
-    bin_2  = OS_OBJECT_ID_UNDEFINED;
-    bin_3  = OS_OBJECT_ID_UNDEFINED;
+    bin_0 = OS_OBJECT_ID_UNDEFINED;
+    bin_1 = OS_OBJECT_ID_UNDEFINED;
+    bin_2 = OS_OBJECT_ID_UNDEFINED;
+    bin_3 = OS_OBJECT_ID_UNDEFINED;
     return;
 } /* end InitializeBinIds */
 
 /* ***************************************************************************** */
 void InitializeMutIds(void)
 {
-    mut_0  = OS_OBJECT_ID_UNDEFINED;
-    mut_1  = OS_OBJECT_ID_UNDEFINED;
-    mut_2  = OS_OBJECT_ID_UNDEFINED;
-    mut_3  = OS_OBJECT_ID_UNDEFINED;
+    mut_0 = OS_OBJECT_ID_UNDEFINED;
+    mut_1 = OS_OBJECT_ID_UNDEFINED;
+    mut_2 = OS_OBJECT_ID_UNDEFINED;
+    mut_3 = OS_OBJECT_ID_UNDEFINED;
     return;
 } /* end InitializeMutIds */
 
@@ -604,20 +570,17 @@ void TestGetInfos(void)
 
     /* first step is to create an object to to get the properties of */
 
-    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
-                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
+    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack),
+                           sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate");
 
     status = OS_QueueCreate(&msgq_0, "q 0", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
-    /* UtDebug("Status after Creating q 0: %d,%d\n",status,msgq_0); */
     UtAssert_True(status == OS_SUCCESS, "OS_QueueCreate");
 
     status = OS_BinSemCreate(&bin_0, "Bin 0", 1, 0);
-    /* UtDebug("Status after creating: %d,%d\n",status,bin_0); */
     UtAssert_True(status == OS_SUCCESS, "OS_BinSemCreate");
 
     status = OS_MutSemCreate(&mut_0, "Mut 0", 0);
-    /* UtDebug("Status after creating: %d,%d\n",status,mut_0); */
     UtAssert_True(status == OS_SUCCESS, "OS_MutSemCreate");
 
     /* Next Step is to get the properties of the objects */
@@ -639,14 +602,11 @@ void TestGetInfos(void)
 
     status = OS_QueueDelete(msgq_0);
     UtAssert_True(status == OS_SUCCESS, "OS_QueueDelete");
-    /* UtDebug("Status after Deleting q 0: %d\n",status); */
 
     status = OS_BinSemDelete(bin_0);
-    /* UtDebug("Status after deleteing:%d\n",status); */
     UtAssert_True(status == OS_SUCCESS, "OS_BinSemDelete");
 
     status = OS_MutSemDelete(mut_0);
-    /* UtDebug("Status after deleteing:%d\n",status); */
     UtAssert_True(status == OS_SUCCESS, "OS_MutSemDelete");
 }
 
@@ -660,8 +620,8 @@ void TestGenericQueries(void)
     TestCallbackState_t State;
     char                ResourceName[OS_MAX_API_NAME];
 
-    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack), sizeof(task_0_stack),
-                           OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
+    status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack),
+                           sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate (%ld) == OS_SUCCESS", (long)status);
 
     status = OS_QueueCreate(&msgq_0, "q 0", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);

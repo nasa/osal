@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for dirent.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for dirent.h
+ */
+
 #ifndef OCS_DIRENT_H
 #define OCS_DIRENT_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in dirent.h */
@@ -48,4 +54,4 @@ extern OCS_DIR *          OCS_opendir(const char *name);
 extern struct OCS_dirent *OCS_readdir(OCS_DIR *dirp);
 extern void               OCS_rewinddir(OCS_DIR *dirp);
 
-#endif  /*  OCS_DIRENT_H */
+#endif /* OCS_DIRENT_H */

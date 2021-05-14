@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-shared-time.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -30,8 +30,8 @@
 
 #include "osapi-timer.h"
 
-#include <os-shared-globaldefs.h>
-#include <os-shared-idmap.h>
+#include "os-shared-globaldefs.h"
+#include "os-shared-idmap.h"
 
 #define TIMECB_FLAG_DEDICATED_TIMEBASE 0x1
 
@@ -64,4 +64,4 @@ extern OS_timecb_internal_record_t OS_timecb_table[OS_MAX_TIMERS];
 ---------------------------------------------------------------------------------------*/
 int32 OS_TimerCbAPI_Init(void);
 
-#endif  /* OS_SHARED_TIME_H  */
+#endif /* OS_SHARED_TIME_H */

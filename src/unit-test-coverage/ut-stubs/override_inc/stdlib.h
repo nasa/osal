@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for stdlib.h */
-#ifndef OSAL_OVERRIDE_STDLIB_H
-#define OSAL_OVERRIDE_STDLIB_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for stdlib.h
+ */
 
-#include <OCS_stdlib.h>
+#ifndef OVERRIDE_STDLIB_H
+#define OVERRIDE_STDLIB_H
+
+#include "OCS_stdlib.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in stdlib.h */
@@ -37,4 +43,4 @@
 #define malloc       OCS_malloc
 #define free         OCS_free
 
-#endif  /* OSAL_OVERRIDE_STDLIB_H */
+#endif /* OVERRIDE_STDLIB_H */

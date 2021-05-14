@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for objLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for objLib.h
+ */
+
 #ifndef OCS_OBJLIB_H
 #define OCS_OBJLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in objLib.h */
@@ -44,4 +50,4 @@
 /* prototypes normally declared in objLib.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_OBJLIB_H */
+#endif /* OCS_OBJLIB_H */

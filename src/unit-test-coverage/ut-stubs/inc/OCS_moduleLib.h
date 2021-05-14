@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for moduleLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for moduleLib.h
+ */
+
 #ifndef OCS_MODULELIB_H
 #define OCS_MODULELIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in moduleLib.h */
@@ -58,4 +64,4 @@ typedef struct OCS_MODULE_INFO
 
 extern OCS_STATUS OCS_moduleInfoGet(OCS_MODULE_ID moduleId, OCS_MODULE_INFO *pModuleInfo);
 
-#endif  /*  OCS_MODULELIB_H */
+#endif /* OCS_MODULELIB_H */

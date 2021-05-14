@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for time.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for time.h
+ */
+
 #ifndef OCS_TIME_H
 #define OCS_TIME_H
 
-#include <OCS_basetypes.h>
-#include <OCS_signal.h>
+#include "OCS_basetypes.h"
+#include "OCS_signal.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in time.h */
@@ -79,4 +85,4 @@ extern int OCS_timer_settime(OCS_timer_t timerid, int flags, const struct OCS_it
 
 extern int OCS_timer_connect(OCS_timer_t timerid, OCS_TIMER_CONNECT_FUNC func, int arg);
 
-#endif  /*  OCS_TIME_H */
+#endif /* OCS_TIME_H */

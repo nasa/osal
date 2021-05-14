@@ -28,6 +28,6 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <os-shared-file.h>
+#include "os-shared-file.h"
 
 UT_DEFAULT_STUB(OS_VxWorks_StreamAPI_Impl_Init, (void))

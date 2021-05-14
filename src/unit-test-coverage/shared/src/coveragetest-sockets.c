@@ -29,7 +29,7 @@
 #include "os-shared-idmap.h"
 #include "os-shared-file.h"
 
-#include <OCS_stdio.h>
+#include "OCS_stdio.h"
 
 void Test_OS_SocketAPI_Init(void)
 {
@@ -259,6 +259,90 @@ void Test_OS_SocketConnect(void)
 
 /*****************************************************************************
  *
+ * Test case for OS_SocketShutdown()
+ *
+ *****************************************************************************/
+void Test_OS_SocketShutdown(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_SocketShutdown(osal_id_t sock_id, OS_SocketShutdownMode_t Mode)
+     */
+    int32        expected = OS_SUCCESS;
+    int32        actual   = ~OS_SUCCESS;
+    osal_index_t idbuf;
+
+    idbuf = UT_INDEX_1;
+    OS_UT_SetupTestTargetIndex(OS_OBJECT_TYPE_OS_STREAM, idbuf);
+    OS_stream_table[idbuf].socket_domain = OS_SocketDomain_INET;
+    OS_stream_table[idbuf].socket_type   = OS_SocketType_STREAM;
+    OS_stream_table[idbuf].stream_state =
+        OS_STREAM_STATE_CONNECTED | OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
+
+    /* nominal */
+    actual = OS_SocketShutdown(UT_OBJID_1, OS_SocketShutdownMode_SHUT_READ);
+    UtAssert_True(actual == expected, "OS_SocketShutdown() (%ld) == OS_SUCCESS", (long)actual);
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_READABLE) == 0, "Stream bits cleared");
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_WRITABLE) != 0, "Stream bits unchanged");
+
+    OS_stream_table[idbuf].stream_state =
+        OS_STREAM_STATE_CONNECTED | OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
+    actual = OS_SocketShutdown(UT_OBJID_1, OS_SocketShutdownMode_SHUT_WRITE);
+    UtAssert_True(actual == expected, "OS_SocketShutdown() (%ld) == OS_SUCCESS", (long)actual);
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_READABLE) != 0, "Stream bits unchanged");
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_WRITABLE) == 0, "Stream bits cleared");
+
+    OS_stream_table[idbuf].stream_state =
+        OS_STREAM_STATE_CONNECTED | OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
+    actual = OS_SocketShutdown(UT_OBJID_1, OS_SocketShutdownMode_SHUT_READWRITE);
+    UtAssert_True(actual == expected, "OS_SocketShutdown() (%ld) == OS_SUCCESS", (long)actual);
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_READABLE) == 0, "Stream bits cleared");
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_WRITABLE) == 0, "Stream bits unchanged");
+
+    /* Invalid Argument */
+    expected = OS_ERR_INVALID_ARGUMENT;
+    OS_stream_table[idbuf].stream_state =
+        OS_STREAM_STATE_CONNECTED | OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
+    actual = OS_SocketShutdown(UT_OBJID_1, OS_SocketShutdownMode_NONE);
+    UtAssert_True(actual == expected, "OS_SocketShutdown() (%ld) == OS_ERR_INVALID_ARGUMENT", (long)actual);
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_READABLE) != 0, "Stream bits unchanged");
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_WRITABLE) != 0, "Stream bits unchanged");
+
+    /* Implementation failure */
+    expected = -1234;
+    UT_SetDefaultReturnValue(UT_KEY(OS_SocketShutdown_Impl), expected);
+    actual = OS_SocketShutdown(UT_OBJID_1, OS_SocketShutdownMode_SHUT_READWRITE);
+    UtAssert_True(actual == expected, "OS_SocketShutdown() impl failure (%ld) == %ld", (long)actual, (long)expected);
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_READABLE) != 0, "Stream bits unchanged");
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_WRITABLE) != 0, "Stream bits unchanged");
+    UT_ResetState(UT_KEY(OS_SocketShutdown_Impl));
+
+    /* Invalid ID */
+    expected = OS_ERR_INVALID_ID;
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), expected);
+    actual = OS_SocketShutdown(UT_OBJID_1, OS_SocketShutdownMode_SHUT_READWRITE);
+    UtAssert_True(actual == expected, "OS_SocketShutdown() invalid ID (%ld) == OS_ERR_INVALID_ID", (long)actual);
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_READABLE) != 0, "Stream bits unchanged");
+    UtAssert_True((OS_stream_table[idbuf].stream_state & OS_STREAM_STATE_WRITABLE) != 0, "Stream bits unchanged");
+    UT_ResetState(UT_KEY(OS_ObjectIdGetById));
+
+    /* Unconnected socket */
+    expected                            = OS_ERR_INCORRECT_OBJ_STATE;
+    OS_stream_table[idbuf].stream_state = 0;
+    actual                              = OS_SocketShutdown(UT_OBJID_1, OS_SocketShutdownMode_SHUT_READWRITE);
+    UtAssert_True(actual == expected, "OS_SocketShutdown() unconnected (%ld) == OS_ERR_INCORRECT_OBJ_STATE",
+                  (long)actual);
+
+    /* Invalid socket type */
+    expected                             = OS_ERR_INCORRECT_OBJ_TYPE;
+    OS_stream_table[idbuf].socket_domain = OS_SocketDomain_INVALID;
+    actual                               = OS_SocketShutdown(UT_OBJID_1, OS_SocketShutdownMode_SHUT_READWRITE);
+    UtAssert_True(actual == expected, "OS_SocketShutdown() unconnected (%ld) == OS_ERR_INCORRECT_OBJ_TYPE",
+                  (long)actual);
+}
+
+/*****************************************************************************
+ *
  * Test case for OS_SocketRecvFrom()
  *
  *****************************************************************************/
@@ -306,6 +390,9 @@ void Test_OS_SocketRecvFrom(void)
     actual                          = OS_SocketRecvFrom(UT_OBJID_1, &Buf, sizeof(Buf), &Addr, 0);
     UtAssert_True(actual == expected, "OS_SocketRecvFrom() non-bound (%ld) == OS_ERR_INCORRECT_OBJ_STATE",
                   (long)actual);
+
+    /* Fail w/OS_ERR_INVALID_SIZE */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketRecvFrom(UT_OBJID_1, &Buf, 0, &Addr, 0), OS_ERR_INVALID_SIZE);
 }
 
 /*****************************************************************************
@@ -496,6 +583,7 @@ void UtTest_Setup(void)
     ADD_TEST(OS_SocketConnect);
     ADD_TEST(OS_SocketRecvFrom);
     ADD_TEST(OS_SocketSendTo);
+    ADD_TEST(OS_SocketShutdown);
     ADD_TEST(OS_SocketGetIdByName);
     ADD_TEST(OS_SocketGetInfo);
     ADD_TEST(OS_CreateSocketName);

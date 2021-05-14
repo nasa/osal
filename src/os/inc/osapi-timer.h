@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-timer.h
+ * \file
+ *
+ * Declarations and prototypes for timer abstraction (app callbacks)
  */
 
 #ifndef OSAPI_TIMER_H
@@ -149,6 +151,8 @@ int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebas
  * @retval #OS_ERR_INVALID_ID if the timer_id is not valid.
  * @retval #OS_TIMER_ERR_INTERNAL if there was an error programming the OS timer.
  * @retval #OS_ERROR if both start time and interval time are zero.
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
+ * @retval #OS_TIMER_ERR_INVALID_ARGS if the start_time or interval_time is out of range
  */
 int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time);
 
@@ -165,6 +169,7 @@ int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time);
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the timer_id is invalid.
  * @retval #OS_TIMER_ERR_INTERNAL if there was a problem deleting the timer in the host OS.
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
  */
 int32 OS_TimerDelete(osal_id_t timer_id);
 
@@ -182,6 +187,7 @@ int32 OS_TimerDelete(osal_id_t timer_id);
  * @retval #OS_INVALID_POINTER if timer_id or timer_name are NULL pointers
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_NOT_FOUND if the name was not found in the table
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
  */
 int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name);
 
@@ -204,8 +210,9 @@ int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name);
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid timer
  * @retval #OS_INVALID_POINTER if the timer_prop pointer is null
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
  */
 int32 OS_TimerGetInfo(osal_id_t timer_id, OS_timer_prop_t *timer_prop);
 /**@}*/
 
-#endif
+#endif /* OSAPI_TIMER_H */

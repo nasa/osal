@@ -42,12 +42,12 @@
 #include "os-shared-idmap.h"
 #include "os-shared-file.h"
 #include "os-shared-sockets.h"
+#include "os-shared-common.h"
 
 /*
  * Other OSAL public APIs used by this module
  */
 #include "osapi-select.h"
-
 
 /*
  * Global data for the API
@@ -98,23 +98,21 @@ void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Ad
 
     sock = OS_OBJECT_TABLE_GET(OS_stream_table, *token);
 
-    if (OS_SocketAddrToString_Impl(sock->stream_name, OS_MAX_API_NAME, Addr) != OS_SUCCESS)
+    if (OS_SocketAddrToString_Impl(sock->stream_name, sizeof(sock->stream_name), Addr) != OS_SUCCESS)
     {
         sock->stream_name[0] = 0;
     }
     if (OS_SocketAddrGetPort_Impl(&port, Addr) == OS_SUCCESS)
     {
-        len = strlen(sock->stream_name);
-        snprintf(&sock->stream_name[len], OS_MAX_API_NAME - len, ":%u", (unsigned int)port);
+        len = OS_strnlen(sock->stream_name, sizeof(sock->stream_name));
+        snprintf(&sock->stream_name[len], sizeof(sock->stream_name) - len, ":%u", (unsigned int)port);
     }
-    sock->stream_name[OS_MAX_API_NAME - 1] = 0;
 
     if (parent_name)
     {
         /* Append the name from the parent socket. */
-        len = strlen(sock->stream_name);
+        len = OS_strnlen(sock->stream_name, sizeof(sock->stream_name));
         snprintf(&sock->stream_name[len], sizeof(sock->stream_name) - len, "-%s", parent_name);
-        sock->stream_name[sizeof(sock->stream_name) - 1] = 0;
     }
 } /* end OS_CreateSocketName */
 
@@ -268,7 +266,7 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
             if (return_code == OS_SUCCESS)
             {
                 conn_record = OS_OBJECT_TABLE_GET(OS_global_stream_table, conn_token);
-                conn        = OS_OBJECT_TABLE_GET(OS_stream_table, sock_token);
+                conn        = OS_OBJECT_TABLE_GET(OS_stream_table, conn_token);
 
                 /* Incr the refcount to record the fact that an operation is pending on this */
                 memset(conn, 0, sizeof(OS_stream_internal_record_t));
@@ -347,6 +345,62 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeo
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_SocketShutdown
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketShutdown(osal_id_t sock_id, OS_SocketShutdownMode_t Mode)
+{
+    OS_stream_internal_record_t *stream;
+    OS_object_token_t            token;
+    int32                        return_code;
+
+    /* Confirm that "Mode" is one of the 3 acceptable values */
+    BUGCHECK(Mode == OS_SocketShutdownMode_SHUT_READ || Mode == OS_SocketShutdownMode_SHUT_WRITE ||
+                 Mode == OS_SocketShutdownMode_SHUT_READWRITE,
+             OS_ERR_INVALID_ARGUMENT);
+
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sock_id, &token);
+    if (return_code == OS_SUCCESS)
+    {
+        stream = OS_OBJECT_TABLE_GET(OS_stream_table, token);
+
+        if (stream->socket_domain == OS_SocketDomain_INVALID)
+        {
+            return_code = OS_ERR_INCORRECT_OBJ_TYPE;
+        }
+        else if (stream->socket_type == OS_SocketType_STREAM && (stream->stream_state & OS_STREAM_STATE_CONNECTED) == 0)
+        {
+            /* Stream socket must not be connected */
+            return_code = OS_ERR_INCORRECT_OBJ_STATE;
+        }
+        else
+        {
+            return_code = OS_SocketShutdown_Impl(&token, Mode);
+
+            if (return_code == OS_SUCCESS)
+            {
+                if (Mode & OS_SocketShutdownMode_SHUT_READ)
+                {
+                    stream->stream_state &= ~OS_STREAM_STATE_READABLE;
+                }
+                if (Mode & OS_SocketShutdownMode_SHUT_WRITE)
+                {
+                    stream->stream_state &= ~OS_STREAM_STATE_WRITABLE;
+                }
+            }
+        }
+
+        OS_ObjectIdRelease(&token);
+    }
+
+    return return_code;
+} /* end OS_SocketShutdown */
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_SocketRecvFrom
  *
  *  Purpose: Implemented per public OSAL API
@@ -359,7 +413,11 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockA
     OS_object_token_t            token;
     int32                        return_code;
 
-    /* Check Parameters */
+    /*
+     * Check parameters
+     *
+     * Note "RemoteAddr" is not checked, because in certain configurations it can be validly null.
+     */
     OS_CHECK_POINTER(buffer);
     OS_CHECK_SIZE(buflen);
 
@@ -473,7 +531,7 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_stream_table, token);
 
-        strncpy(sock_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(sock_prop->name, record->name_entry, sizeof(sock_prop->name) - 1);
         sock_prop->creator = record->creator;
         return_code        = OS_SocketGetInfo_Impl(&token, sock_prop);
 
@@ -493,6 +551,7 @@ int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
 {
+    /* Check parameters */
     OS_CHECK_POINTER(Addr);
 
     return OS_SocketAddrInit_Impl(Addr, Domain);
@@ -508,6 +567,7 @@ int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Addr)
 {
+    /* Check parameters */
     OS_CHECK_POINTER(Addr);
     OS_CHECK_POINTER(buffer);
     OS_CHECK_SIZE(buflen);
@@ -525,6 +585,7 @@ int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Ad
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string)
 {
+    /* Check parameters */
     OS_CHECK_POINTER(Addr);
     OS_CHECK_POINTER(string);
 
@@ -541,6 +602,7 @@ int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr)
 {
+    /* Check parameters */
     OS_CHECK_POINTER(Addr);
     OS_CHECK_POINTER(PortNum);
 
@@ -557,6 +619,7 @@ int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr)
  *-----------------------------------------------------------------*/
 int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum)
 {
+    /* Check parameters */
     OS_CHECK_POINTER(Addr);
 
     return OS_SocketAddrSetPort_Impl(Addr, PortNum);

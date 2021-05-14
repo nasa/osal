@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-bsp.h
+ * \file
+ *
+ * Declarations and prototypes for OSAL BSP
  */
 
 #ifndef OSAPI_BSP_H
@@ -27,7 +29,6 @@
 
 #include "osconfig.h"
 #include "common_types.h"
-
 
 /****************************************************************************************
                     BSP LOW-LEVEL IMPLEMENTATION FUNCTIONS
@@ -93,4 +94,4 @@ void OS_BSP_SetExitCode(int32 code);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_BSP_H */

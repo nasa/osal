@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-error.h
+ * \file
+ *
+ * OSAL error code definitions
  */
 
 #ifndef OSAPI_ERROR_H
@@ -82,8 +84,10 @@ typedef char os_err_name_t[OS_ERROR_NAME_LENGTH];
 #define OS_ERR_INCORRECT_OBJ_STATE     (-35) /**< @brief Incorrect object state */
 #define OS_ERR_INCORRECT_OBJ_TYPE      (-36) /**< @brief Incorrect object type */
 #define OS_ERR_STREAM_DISCONNECTED     (-37) /**< @brief Stream disconnected */
-#define OS_ERR_OPERATION_NOT_SUPPORTED (-38) /**< @brief Requested operation is not support on the supplied object(s) */
+#define OS_ERR_OPERATION_NOT_SUPPORTED (-38) /**< @brief Requested operation not support on supplied object(s) */
 #define OS_ERR_INVALID_SIZE            (-40) /**< @brief Invalid Size */
+#define OS_ERR_OUTPUT_TOO_LARGE        (-41) /**< @brief Size of output exceeds limit  */
+#define OS_ERR_INVALID_ARGUMENT        (-42) /**< @brief Invalid argument value (other than ID or size) */
 
 /*
 ** Defines for File System Calls
@@ -99,9 +103,7 @@ typedef char os_err_name_t[OS_ERROR_NAME_LENGTH];
 #define OS_FS_ERR_DEVICE_NOT_FREE   (-107) /**< @brief FS device not free */
 #define OS_FS_ERR_PATH_INVALID      (-108) /**< @brief FS path invalid */
 
-
 /**@}*/
-
 
 /** @defgroup OSAPIError OSAL Error Info APIs
  * @{
@@ -115,9 +117,11 @@ typedef char os_err_name_t[OS_ERROR_NAME_LENGTH];
  * @param[out] err_name Buffer to store error string
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS if successfully converted to a string
+ * @retval #OS_INVALID_POINTER if err_name is NULL
+ * @retval #OS_ERROR if error could not be converted
  */
 int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name);
 /**@}*/
 
-
-#endif
+#endif /* OSAPI_ERROR_H */

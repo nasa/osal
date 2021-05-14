@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-select.h
+ * \file
+ *
+ * Declarations and prototypes for select abstraction
  */
 
 #ifndef OSAPI_SELECT_H
@@ -33,6 +35,10 @@
  *
  * This is part of the select API and is manipulated using the
  * related API calls.  It should not be modified directly by applications.
+ *
+ * Note: Math is to determine uint8 array size needed to represent
+ *       single bit OS_MAX_NUM_OPEN_FILES objects, + 7 rounds up
+ *       and 8 is the size of uint8.
  *
  * @sa OS_SelectFdZero(), OS_SelectFdAdd(), OS_SelectFdClear(), OS_SelectFdIsSet()
  */
@@ -110,6 +116,7 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
  * the OS_TimedRead/OS_TimedWrite calls.
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs);
 
@@ -120,6 +127,7 @@ int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs);
  * After this call the set will contain no OSAL IDs
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SelectFdZero(OS_FdSet *Set);
 
@@ -130,6 +138,7 @@ int32 OS_SelectFdZero(OS_FdSet *Set);
  * After this call the set will contain the given OSAL ID
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid);
 
@@ -140,6 +149,7 @@ int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid);
  * After this call the set will no longer contain the given OSAL ID
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid);
 
@@ -154,4 +164,4 @@ int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid);
 bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid);
 /**@}*/
 
-#endif
+#endif /* OSAPI_SELECT_H */

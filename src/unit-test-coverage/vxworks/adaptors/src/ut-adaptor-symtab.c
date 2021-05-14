@@ -29,8 +29,8 @@
 #include "osconfig.h"
 #include "ut-adaptor-loader.h"
 
-#include <os-vxworks.h>
-#include <os-impl-symtab.h>
+#include "os-vxworks.h"
+#include "os-impl-symtab.h"
 
 /*
  * A UT-specific wrapper function to invoke the Symbol Table Iterator.
@@ -46,4 +46,12 @@ int32 UT_SymTabTest_CallIteratorFunc(const char *name, void *val, size_t TestSiz
      * modify this argument.
      */
     return OS_SymTableIterator_Impl((char *)name, (OCS_SYM_VALUE)val, 0, 0, 0);
+}
+
+/*
+ * Gets the current status of the iterator function
+ */
+int32 UT_SymTabTest_GetIteratorStatus(void)
+{
+    return OS_VxWorks_SymbolDumpState.StatusCode;
 }

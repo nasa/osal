@@ -116,7 +116,7 @@ static void OS_NoopSigHandler(int signal) {} /* end OS_NoopSigHandler */
 ---------------------------------------------------------------------------------------*/
 static void *OS_PthreadTaskEntry(void *arg)
 {
-    OS_U32ValueWrapper_t local_arg;
+    OS_VoidPtrValueWrapper_t local_arg;
 
     local_arg.opaque_arg = arg;
     OS_TaskEntryPoint(local_arg.id); /* Never returns */
@@ -421,8 +421,8 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
     ret_long = sysconf(_SC_PAGESIZE);
     if (ret_long < 0)
     {
-       OS_DEBUG("Could not get page size via sysconf: %s\n", strerror(errno));
-       return OS_ERROR;
+        OS_DEBUG("Could not get page size via sysconf: %s\n", strerror(errno));
+        return OS_ERROR;
     }
     POSIX_GlobalVars.PageSize = ret_long;
 
@@ -577,7 +577,7 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
  *-----------------------------------------------------------------*/
 int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
 {
-    OS_U32ValueWrapper_t            arg;
+    OS_VoidPtrValueWrapper_t        arg;
     int32                           return_code;
     OS_impl_task_internal_record_t *impl;
     OS_task_internal_record_t *     task;
@@ -797,10 +797,10 @@ int32 OS_TaskSetPriority_Impl(const OS_object_token_t *token, osal_priority_t ne
  *-----------------------------------------------------------------*/
 int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
 {
-    int32                return_code;
-    OS_U32ValueWrapper_t arg;
-    int                  old_state;
-    int                  old_type;
+    int32                    return_code;
+    OS_VoidPtrValueWrapper_t arg;
+    int                      old_state;
+    int                      old_type;
 
     /*
      * Set cancel state=ENABLED, type=DEFERRED
@@ -838,7 +838,7 @@ int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
  *-----------------------------------------------------------------*/
 osal_id_t OS_TaskGetId_Impl(void)
 {
-    OS_U32ValueWrapper_t self_record;
+    OS_VoidPtrValueWrapper_t self_record;
 
     self_record.opaque_arg = pthread_getspecific(POSIX_GlobalVars.ThreadKey);
 

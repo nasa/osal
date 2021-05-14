@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for strings.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for strings.h
+ */
+
 #ifndef OCS_STRINGS_H
 #define OCS_STRINGS_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in strings.h */
@@ -36,4 +42,4 @@
 /* prototypes normally declared in strings.h */
 /* ----------------------------------------- */
 
-#endif  /*  OCS_STRINGS_H */
+#endif /* OCS_STRINGS_H */

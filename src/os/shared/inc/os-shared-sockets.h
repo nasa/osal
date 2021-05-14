@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-shared-sockets.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -29,7 +29,7 @@
 #define OS_SHARED_SOCKETS_H
 
 #include "osapi-sockets.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /*
  * Sockets API abstraction layer
@@ -83,6 +83,15 @@ int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
 int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr, int32 timeout);
+
+/*----------------------------------------------------------------
+   Function: OS_SocketShutdown_Impl
+
+    Purpose: Graceful shutdown of a stream socket
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_SocketShutdown_Impl(const OS_object_token_t *token, OS_SocketShutdownMode_t Mode);
 
 /*----------------------------------------------------------------
    Function: OS_SocketRecvFrom_Impl
@@ -180,4 +189,4 @@ int32 OS_SocketAddrSetPort_Impl(OS_SockAddr_t *Addr, uint16 PortNum);
  */
 void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Addr, const char *parent_name);
 
-#endif  /* OS_SHARED_SOCKETS_H  */
+#endif /* OS_SHARED_SOCKETS_H */

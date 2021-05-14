@@ -18,8 +18,10 @@
  *  limitations under the License.
  */
 
-/*
- * File: osapi-binsem.h
+/**
+ * \file
+ *
+ * Declarations and prototypes for binary semaphores
  */
 
 #ifndef OSAPI_BINSEM_H
@@ -28,14 +30,12 @@
 #include "osconfig.h"
 #include "common_types.h"
 
-
 /** @defgroup OSSemaphoreStates OSAL Semaphore State Defines
  * @{
  */
 #define OS_SEM_FULL  1 /**< @brief Semaphore full state */
 #define OS_SEM_EMPTY 0 /**< @brief Semaphore empty state */
 /**@}*/
-
 
 /** @brief OSAL binary semaphore properties */
 typedef struct
@@ -202,4 +202,4 @@ int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_BINSEM_H */

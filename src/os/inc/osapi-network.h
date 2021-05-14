@@ -18,8 +18,10 @@
  *  limitations under the License.
  */
 
-/*
- * @file osapi-network.h
+/**
+ * \file
+ *
+ * Declarations and prototypes for network subsystem
  */
 
 #ifndef OSAPI_NETWORK_H
@@ -63,9 +65,11 @@ int32 OS_NetworkGetID(void);
  * @param[in]   name_len     Maximum length of host name buffer
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_ERR_INVALID_SIZE if the name_len is zero
+ * @retval #OS_INVALID_POINTER if the host_name is NULL
  */
 int32 OS_NetworkGetHostName(char *host_name, size_t name_len);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_NETWORK_H */

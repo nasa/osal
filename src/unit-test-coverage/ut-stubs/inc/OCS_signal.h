@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for signal.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for signal.h
+ */
+
 #ifndef OCS_SIGNAL_H
 #define OCS_SIGNAL_H
 
-#include <OCS_basetypes.h>
-#include <OCS_sys_types.h>
+#include "OCS_basetypes.h"
+#include "OCS_sys_types.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in signal.h */
@@ -74,4 +80,4 @@ extern int              OCS_sigprocmask(int how, const OCS_sigset_t *set, OCS_si
 extern int              OCS_sigsuspend(const OCS_sigset_t *set);
 extern int              OCS_sigwait(const OCS_sigset_t *set, int *sig);
 
-#endif  /*  OCS_SIGNAL_H */
+#endif /* OCS_SIGNAL_H */

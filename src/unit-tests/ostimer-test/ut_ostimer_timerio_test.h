@@ -18,11 +18,12 @@
  *  limitations under the License.
  */
 
-/*================================================================================*
-** File:  ut_ostimer_timerio_test.h
-** Owner: Tam Ngo
-** Date:  April 2013
-**================================================================================*/
+/**
+ * \file
+ *
+ * Owner: Tam Ngo
+ * Date:  April 2013
+ */
 
 #ifndef UT_OSTIMER_TIMERIO_TEST_H
 #define UT_OSTIMER_TIMERIO_TEST_H
@@ -64,8 +65,4 @@ void UT_os_timergetinfo_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSTIMER_TIMERIO_TEST_H */
-
-/*================================================================================*
-** End of File: ut_ostimer_timerio_test.h
-**================================================================================*/
+#endif /* UT_OSTIMER_TIMERIO_TEST_H */

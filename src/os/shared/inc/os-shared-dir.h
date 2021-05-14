@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-shared-dir.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -29,7 +29,7 @@
 #define OS_SHARED_DIR_H
 
 #include "osapi-dir.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /* directory objects */
 typedef struct
@@ -111,4 +111,4 @@ int32 OS_DirRewind_Impl(const OS_object_token_t *token);
  ------------------------------------------------------------------*/
 int32 OS_DirRemove_Impl(const char *local_path);
 
-#endif  /* OS_SHARED_DIR_H  */
+#endif /* OS_SHARED_DIR_H */

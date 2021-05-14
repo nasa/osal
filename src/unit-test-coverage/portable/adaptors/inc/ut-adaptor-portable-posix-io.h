@@ -19,10 +19,10 @@
  */
 
 /**
- * \file     ut-adaptor-portable-posix-io.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-portable-posix-io
  */
 
 #ifndef UT_ADAPTOR_PORTABLE_POSIX_IO_H
@@ -39,5 +39,8 @@
  *
  *****************************************************/
 void UT_PortablePosixIOTest_Set_Selectable(osal_index_t local_id, bool is_selectable);
+void UT_PortablePosixIOTest_Set_FD(osal_index_t local_id, int fd);
+bool UT_PortablePosixIOTest_Get_Selectable(osal_index_t local_id);
+void UT_PortablePosixIOTest_ResetImpl(osal_index_t local_id);
 
-#endif  /* UT_ADAPTOR_PORTABLE_POSIX_IO_H  */
+#endif /* UT_ADAPTOR_PORTABLE_POSIX_IO_H */

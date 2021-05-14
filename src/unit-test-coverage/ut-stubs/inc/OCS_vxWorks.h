@@ -19,16 +19,16 @@
  */
 
 /**
- * \file     OCS_vxWorks.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
+ *
  * OSAL coverage stub replacement for vxWorks.h
  */
 
 #ifndef OCS_VXWORKS_H
 #define OCS_VXWORKS_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in vxWorks.h */
@@ -76,4 +76,4 @@ typedef void (*OCS_VOIDFUNCPTR)(void);
 /* prototypes normally declared in vxWorks.h */
 /* ----------------------------------------- */
 
-#endif  /* OCS_VXWORKS_H  */
+#endif /* OCS_VXWORKS_H */

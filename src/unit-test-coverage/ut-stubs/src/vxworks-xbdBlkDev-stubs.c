@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_xbdBlkDev.h>
+#include "OCS_xbdBlkDev.h"
 
 OCS_device_t OCS_xbdBlkDevCreateSync(OCS_BLK_DEV *bd, const char *name)
 {

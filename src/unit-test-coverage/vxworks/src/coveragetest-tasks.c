@@ -31,7 +31,7 @@
 #include "os-shared-idmap.h"
 #include "os-shared-timebase.h"
 
-#include <OCS_stdlib.h>
+#include "OCS_stdlib.h"
 
 /*
  * A chunk of memory usable as a heap for malloc() emulation
@@ -130,6 +130,18 @@ void Test_OS_TaskDelete_Impl(void)
     /* failure mode */
     UT_SetDefaultReturnValue(UT_KEY(OCS_taskDelete), -1);
     OSAPI_TEST_FUNCTION_RC(OS_TaskDelete_Impl(&token), OS_ERROR);
+}
+
+void Test_OS_TaskDetach_Impl(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
+     */
+    OS_object_token_t token;
+
+    /* no-op on VxWorks - always returns sucess */
+    OSAPI_TEST_FUNCTION_RC(OS_TaskDetach_Impl(&token), OS_SUCCESS);
 }
 
 void Test_OS_TaskExit_Impl(void)
@@ -280,6 +292,7 @@ void UtTest_Setup(void)
     ADD_TEST(OS_VxWorksEntry);
     ADD_TEST(OS_TaskMatch_Impl);
     ADD_TEST(OS_TaskDelete_Impl);
+    ADD_TEST(OS_TaskDetach_Impl);
     ADD_TEST(OS_TaskExit_Impl);
     ADD_TEST(OS_TaskDelay_Impl);
     ADD_TEST(OS_TaskSetPriority_Impl);

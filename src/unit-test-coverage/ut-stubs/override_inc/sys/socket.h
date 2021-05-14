@@ -18,25 +18,51 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/socket.h */
-#ifndef OSAL_OVERRIDE_SYS_SOCKET_H
-#define OSAL_OVERRIDE_SYS_SOCKET_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/socket.h
+ */
 
-#include <OCS_sys_socket.h>
+#ifndef OVERRIDE_SYS_SOCKET_H
+#define OVERRIDE_SYS_SOCKET_H
+
+#include "OCS_sys_socket.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/socket.h */
 /* ----------------------------------------- */
-#define socklen_t  OCS_socklen_t
-#define sockaddr   OCS_sockaddr
-#define accept     OCS_accept
-#define bind       OCS_bind
-#define connect    OCS_connect
-#define getsockopt OCS_getsockopt
-#define listen     OCS_listen
-#define recvfrom   OCS_recvfrom
-#define sendto     OCS_sendto
-#define setsockopt OCS_setsockopt
-#define socket     OCS_socket
+#define socklen_t    OCS_socklen_t
+#define sockaddr     OCS_sockaddr
+#define sockaddr_in  OCS_sockaddr_in
+#define sockaddr_in6 OCS_sockaddr_in6
+#define sa_family_t  OCS_sa_family_t
+#define accept       OCS_accept
+#define bind         OCS_bind
+#define connect      OCS_connect
+#define getsockopt   OCS_getsockopt
+#define listen       OCS_listen
+#define recvfrom     OCS_recvfrom
+#define sendto       OCS_sendto
+#define setsockopt   OCS_setsockopt
+#define shutdown     OCS_shutdown
+#define socket       OCS_socket
 
-#endif  /* OSAL_OVERRIDE_SYS_SOCKET_H */
+#define EINPROGRESS  OCS_EINPROGRESS
+#define EWOULDBLOCK  OCS_EWOULDBLOCK
+#define AF_INET      OCS_AF_INET
+#define AF_INET6     OCS_AF_INET6
+#define SOCK_DGRAM   OCS_SOCK_DGRAM
+#define SOCK_STREAM  OCS_SOCK_STREAM
+#define IPPROTO_UDP  OCS_IPPROTO_UDP
+#define IPPROTO_TCP  OCS_IPPROTO_TCP
+#define SOL_SOCKET   OCS_SOL_SOCKET
+#define SO_REUSEADDR OCS_SO_REUSEADDR
+#define SO_ERROR     OCS_SO_ERROR
+#define MSG_DONTWAIT OCS_MSG_DONTWAIT
+#define SHUT_WR      OCS_SHUT_WR
+#define SHUT_RD      OCS_SHUT_RD
+#define SHUT_RDWR    OCS_SHUT_RDWR
+
+#endif /* OVERRIDE_SYS_SOCKET_H */

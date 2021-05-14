@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for unistd.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for unistd.h
+ */
+
 #ifndef OCS_UNISTD_H
 #define OCS_UNISTD_H
 
-#include <OCS_basetypes.h>
-#include <OCS_sys_types.h>
+#include "OCS_basetypes.h"
+#include "OCS_sys_types.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in unistd.h */
@@ -56,4 +62,4 @@ extern int         OCS_rmdir(const char *path);
 extern long int    OCS_sysconf(int name);
 extern OCS_ssize_t OCS_write(int fd, const void *buf, size_t n);
 
-#endif  /*  OCS_UNISTD_H */
+#endif /* OCS_UNISTD_H */

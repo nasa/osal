@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for ctype.h */
-#ifndef OSAL_OVERRIDE_CTYPE_H
-#define OSAL_OVERRIDE_CTYPE_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for ctype.h
+ */
 
-#include <OCS_ctype.h>
+#ifndef OVERRIDE_CTYPE_H
+#define OVERRIDE_CTYPE_H
+
+#include "OCS_ctype.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in ctype.h */
@@ -30,4 +36,4 @@
 
 #define isgraph OCS_isgraph
 
-#endif  /* OSAL_OVERRIDE_CTYPE_H */
+#endif /* OVERRIDE_CTYPE_H */

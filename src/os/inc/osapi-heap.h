@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-heap.h
+ * \file
+ *
+ * Declarations and prototypes for heap functions
  */
 
 #ifndef OSAPI_HEAP_H
@@ -51,8 +53,9 @@ typedef struct
  * @param[out] heap_prop Storage buffer for heap info
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if the heap_prop argument is NULL
  */
 int32 OS_HeapGetInfo(OS_heap_prop_t *heap_prop);
 /**@}*/
 
-#endif
+#endif /* OSAPI_HEAP_H */

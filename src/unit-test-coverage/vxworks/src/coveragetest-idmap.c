@@ -30,8 +30,8 @@
 
 #include "os-shared-idmap.h"
 
-#include <OCS_errno.h>
-#include <OCS_objLib.h>
+#include "OCS_errno.h"
+#include "OCS_objLib.h"
 
 OCS_SEM TestGlobalSem;
 
@@ -62,7 +62,7 @@ void Test_OS_Unlock_Global_Impl(void)
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semGive)) == 1, "semTake() called");
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_semGive), -1);
-    OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK); /* for coverage of error path */
+    OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK); /* for coverage of error path */
 }
 
 void Test_OS_API_Impl_Init(void)
@@ -76,6 +76,22 @@ void Test_OS_API_Impl_Init(void)
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
     UT_ClearDefaultReturnValue(UT_KEY(OCS_semMInitialize));
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
+}
+
+void Test_OS_WaitForStateChange_Impl(void)
+{
+    /*
+     * Test Case For:
+     * void OS_WaitForStateChange_Impl(osal_objtype_t idtype, uint32 attempts)
+     */
+
+    /*
+     * This has no return value/error results - just needs to be called for coverage.
+     * Call it once with a low number and once with a high number of attempts -
+     * which should cause it to hit its limit for wait time.
+     */
+    OS_WaitForStateChange_Impl(OS_OBJECT_TYPE_OS_TASK, 1);
+    OS_WaitForStateChange_Impl(OS_OBJECT_TYPE_OS_TASK, 1000);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
@@ -108,4 +124,5 @@ void UtTest_Setup(void)
     ADD_TEST(OS_Lock_Global_Impl);
     ADD_TEST(OS_Unlock_Global_Impl);
     ADD_TEST(OS_API_Impl_Init);
+    ADD_TEST(OS_WaitForStateChange_Impl);
 }

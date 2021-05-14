@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for dlfcn.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for dlfcn.h
+ */
+
 #ifndef OCS_DLFCN_H
 #define OCS_DLFCN_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in dlfcn.h */
@@ -41,4 +47,4 @@ extern char *OCS_dlerror(void);
 extern void *OCS_dlopen(const char *file, int flags);
 extern void *OCS_dlsym(void *handle, const char *name);
 
-#endif  /*  OCS_DLFCN_H */
+#endif /* OCS_DLFCN_H */

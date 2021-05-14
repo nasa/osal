@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-shell.h
+ * \file
+ *
+ * Declarations and prototypes for shell abstraction
  */
 
 #ifndef OSAPI_SHELL_H
@@ -45,10 +47,11 @@
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERROR if the command was not executed properly
+ * @retval #OS_INVALID_POINTER if Cmd argument is NULL
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  */
 int32 OS_ShellOutputToFile(const char *Cmd, osal_id_t filedes);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_SHELL_H */

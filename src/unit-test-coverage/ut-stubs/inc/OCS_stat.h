@@ -18,13 +18,19 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for stat.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for stat.h
+ */
+
 #ifndef OCS_STAT_H
 #define OCS_STAT_H
 
-#include <OCS_basetypes.h>
-#include <OCS_sys_types.h>
-#include <OCS_time.h>
+#include "OCS_basetypes.h"
+#include "OCS_sys_types.h"
+#include "OCS_time.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/stat.h */
@@ -74,4 +80,4 @@ extern int OCS_fstat(int fd, struct OCS_stat *buf);
 
 extern int OCS_statvfs(const char *file, struct OCS_statvfs *buf);
 
-#endif  /*  OCS_STAT_H */
+#endif /* OCS_STAT_H */

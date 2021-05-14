@@ -19,10 +19,10 @@
  */
 
 /**
- * \file     ut-adaptor-files.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-files
  */
 
 #ifndef UT_ADAPTOR_FILES_H
@@ -55,4 +55,4 @@ unsigned int UT_FileTest_GetSelfEGID(void);
 
 void UT_FileTest_Set_Selectable(osal_index_t local_id, bool is_selectable);
 
-#endif  /* UT_ADAPTOR_FILES_H  */
+#endif /* UT_ADAPTOR_FILES_H */

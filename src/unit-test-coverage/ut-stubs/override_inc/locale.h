@@ -18,14 +18,20 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for locale.h */
-#ifndef OSAL_OVERRIDE_LOCALE_H
-#define OSAL_OVERRIDE_LOCALE_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for locale.h
+ */
 
-#include <OCS_locale.h>
+#ifndef OVERRIDE_LOCALE_H
+#define OVERRIDE_LOCALE_H
+
+#include "OCS_locale.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in locale.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_LOCALE_H */
+#endif /* OVERRIDE_LOCALE_H */

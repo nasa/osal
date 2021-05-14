@@ -79,8 +79,6 @@ void generic_test_task(void)
     osal_id_t      task_id;
     OS_task_prop_t task_prop;
 
-    OS_TaskRegister();
-
     task_id = OS_TaskGetId();
     OS_TaskGetInfo(task_id, &task_prop);
 
@@ -332,8 +330,6 @@ void delete_handler_test_task(void)
     osal_id_t      task_id;
     OS_task_prop_t task_prop;
 
-    OS_TaskRegister();
-
     task_id = OS_TaskGetId();
     OS_TaskGetInfo(task_id, &task_prop);
 
@@ -437,8 +433,6 @@ void exit_test_task(void)
 {
     osal_id_t      task_id;
     OS_task_prop_t task_prop;
-
-    OS_TaskRegister();
 
     task_id = OS_TaskGetId();
     OS_TaskGetInfo(task_id, &task_prop);
@@ -657,120 +651,12 @@ UT_os_task_set_priority_test_exit_tag:
     return;
 }
 
-/*--------------------------------------------------------------------------------*
-** Syntax: OS_TaskRegister
-** Purpose: Registers the task, performs application- and OS-specific inits
-** Parameters: To-be-filled-in
-** Returns: OS_ERR_INVALID_ID if the id passed in is not a valid task id
-**          OS_ERROR if the OS call failed
-**          OS_SUCCESS if succeeded
-**--------------------------------------------------------------------------------*/
-void register_test_task(void)
-{
-    osal_id_t      task_id;
-    OS_task_prop_t task_prop;
-
-    g_task_result = OS_TaskRegister();
-
-    task_id = OS_TaskGetId();
-    OS_TaskGetInfo(task_id, &task_prop);
-
-    UtPrintf("Starting RegisterTest Task: %s\n", task_prop.name);
-    ;
-
-    /*
-    ** Release the semaphore so the main function can record the results of the test
-    ** and clean up
-    */
-    OS_BinSemGive(g_task_sync_sem);
-
-    for (;;)
-    {
-        OS_TaskDelay(1000);
-    }
-}
-
-/*--------------------------------------------------------------------------------*/
-
-void UT_os_task_register_test(void)
-{
-    int32       res = 0;
-    const char *testDesc;
-
-    /*-----------------------------------------------------*/
-    testDesc = "API not implemented";
-
-    res = OS_TaskRegister();
-    if (res == OS_ERR_NOT_IMPLEMENTED)
-    {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_task_register_test_exit_tag;
-    }
-
-    /*-----------------------------------------------------*/
-    testDesc = "#1 Invalid-ID-arg";
-
-    res = OS_TaskRegister();
-    if (res == OS_ERR_INVALID_ID)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#2 OS-call-failure";
-
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#3 Nominal";
-
-    /* Setup */
-    res = OS_BinSemCreate(&g_task_sync_sem, "TaskSync", 1, 0);
-    if (res != OS_SUCCESS)
-    {
-        testDesc = "#3 Nominal - Bin-Sem-Create failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-    }
-    else
-    {
-        OS_BinSemTake(g_task_sync_sem);
-
-        res = OS_TaskCreate(&g_task_ids[3], g_task_names[3], register_test_task, OSAL_STACKPTR_C(&g_task_stacks[3]),
-                            sizeof(g_task_stacks[3]), OSAL_PRIORITY_C(UT_TASK_PRIORITY), 0);
-        if (res != OS_SUCCESS)
-        {
-            testDesc = "#3 Nominal - Task-Create failed";
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-        }
-        else
-        {
-            /* Wait for the task to finish the test */
-            OS_BinSemTake(g_task_sync_sem);
-            /* Delay to let child task run */
-            OS_TaskDelay(500);
-
-            OS_TaskDelete(g_task_ids[3]);
-            res = OS_BinSemDelete(g_task_sync_sem);
-
-            if (g_task_result == OS_SUCCESS)
-                UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-            else
-                UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-        }
-    }
-
-UT_os_task_register_test_exit_tag:
-    return;
-}
-
 /*--------------------------------------------------------------------------------*/
 
 void getid_test_task(void)
 {
     osal_id_t      task_id;
     OS_task_prop_t task_prop;
-
-    OS_TaskRegister();
 
     task_id = OS_TaskGetId();
     OS_TaskGetInfo(task_id, &task_prop);
@@ -815,7 +701,7 @@ void UT_os_task_get_id_test()
         OS_TaskDelay(500);
 
         UtPrintf("OS_TaskGetId() - #1 Nominal [This is the expected task Id=%lx]\n",
-                  OS_ObjectIdToInteger(g_task_ids[1]));
+                 OS_ObjectIdToInteger(g_task_ids[1]));
 
         res = OS_TaskDelete(g_task_ids[1]); /* Won't hurt if its already deleted */
 

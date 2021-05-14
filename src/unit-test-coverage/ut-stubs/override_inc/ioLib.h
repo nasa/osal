@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for ioLib.h */
-#ifndef OSAL_OVERRIDE_IOLIB_H
-#define OSAL_OVERRIDE_IOLIB_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for ioLib.h
+ */
 
-#include <OCS_ioLib.h>
+#ifndef OVERRIDE_IOLIB_H
+#define OVERRIDE_IOLIB_H
+
+#include "OCS_ioLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */
@@ -33,4 +39,4 @@
 #define FIOUNMOUNT OCS_FIOUNMOUNT
 #define ioctl      OCS_ioctl
 
-#endif  /* OSAL_OVERRIDE_IOLIB_H */
+#endif /* OVERRIDE_IOLIB_H */

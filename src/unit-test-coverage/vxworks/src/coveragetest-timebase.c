@@ -29,11 +29,11 @@
 #include "ut-adaptor-timebase.h"
 #include "os-shared-timebase.h"
 
-#include <OCS_taskLib.h>
-#include <OCS_signal.h>
-#include <OCS_time.h>
-#include <OCS_sysLib.h>
-#include <OCS_semLib.h>
+#include "OCS_taskLib.h"
+#include "OCS_signal.h"
+#include "OCS_time.h"
+#include "OCS_sysLib.h"
+#include "OCS_semLib.h"
 
 void Test_OS_VxWorks_TimeBaseAPI_Impl_Init(void)
 {
@@ -110,9 +110,15 @@ void Test_OS_TimeBaseCreate_Impl(void)
      * This should be done first as it will assign the "external_sync"
      * and therefore cause future calls to skip this block.
      */
-    memset(&id, 0x01, sizeof(id));
+    id = OS_ObjectIdFromInteger(OS_OBJECT_TYPE_OS_TIMEBASE << OS_OBJECT_TYPE_SHIFT);
+
+    OS_global_timebase_table[0].active_id = id;
+    UT_TimeBaseTest_Setup(UT_INDEX_0, OCS_SIGRTMIN, false);
+
+    id = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(id) + 1);
+
     OS_global_timebase_table[1].active_id = id;
-    UT_TimeBaseTest_Setup(UT_INDEX_1, OCS_SIGRTMIN, false);
+    UT_TimeBaseTest_Setup(UT_INDEX_1, 1 + OCS_SIGRTMIN, false);
     UT_SetDefaultReturnValue(UT_KEY(OCS_sigismember), true);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseCreate_Impl(&token), OS_TIMER_ERR_UNAVAILABLE);
     UT_ResetState(UT_KEY(OCS_sigismember));
@@ -158,6 +164,11 @@ void Test_OS_TimeBaseCreate_Impl(void)
     UT_SetDefaultReturnValue(UT_KEY(OCS_timer_create), -1);
     UT_TimeBaseTest_CallRegisterTimer(OS_OBJECT_ID_UNDEFINED);
     UtAssert_True(UT_TimeBaseTest_CheckTimeBaseErrorState(UT_INDEX_0), "timer registration failure state");
+
+    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_1);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    UT_TimeBaseTest_CallRegisterTimer(OS_OBJECT_ID_UNDEFINED);
+    UtAssert_True(!UT_TimeBaseTest_CheckTimeBaseRegisteredState(UT_INDEX_0), "timer registration bad ID");
 }
 
 void Test_OS_VxWorks_SigWait(void)
@@ -180,7 +191,12 @@ void Test_OS_VxWorks_SigWait(void)
     UT_SetDataBuffer(UT_KEY(OCS_timer_settime), &config_value, sizeof(config_value), false);
     UT_SetDataBuffer(UT_KEY(OCS_timer_gettime), &config_value, sizeof(config_value), false);
     UT_TimeBaseTest_Setup(UT_INDEX_0, signo, true);
-    OS_TimeBaseSet_Impl(&token, 1111111, 2222222);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1111111, 2222222), OS_SUCCESS);
+
+    UT_SetDataBuffer(UT_KEY(OCS_timer_settime), &config_value, sizeof(config_value), false);
+    UT_SetDeferredRetcode(UT_KEY(OCS_timer_gettime), 1, OCS_ERROR);
+    UT_TimeBaseTest_Setup(UT_INDEX_0, signo, true);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1111111, 2222222), OS_ERROR);
 
     UT_SetDataBuffer(UT_KEY(OCS_sigwait), &signo, sizeof(signo), false);
     OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 1111111);

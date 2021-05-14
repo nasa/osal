@@ -12,6 +12,7 @@ jobs:
   static-analysis:
     name: Run cppcheck
     runs-on: ubuntu-18.04
+    timeout-minutes: 15
 
     strategy:
       fail-fast: false
@@ -31,7 +32,7 @@ jobs:
 
       - name: Run bundle cppcheck
         if: ${{matrix.cppcheck =='all'}}
-        run: cppcheck --force --inline-suppr --quiet . 2> ${{matrix.cppcheck}}_cppcheck_err.txt
+        run: cppcheck --force --inline-suppr . 2> ${{matrix.cppcheck}}_cppcheck_err.txt
 
         # Run strict static analysis for embedded portions of osal
       - name: osal strict cppcheck

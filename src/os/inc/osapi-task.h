@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-task.h
+ * \file
+ *
+ * Declarations and prototypes for task abstraction
  */
 
 #ifndef OSAPI_TASK_H
@@ -79,18 +81,29 @@ typedef osal_task((*osal_task_entry)(void)); /**< @brief For task entry point */
  * Creates a task and passes back the id of the task created. Task names must be unique;
  * if the name already exists this function fails. Names cannot be NULL.
  *
+ * Portable applications should always specify the actual stack size in the
+ * stack_size parameter, not 0.  This size value is not enforced/checked by OSAL,
+ * but is simply passed through to the RTOS for stack creation. Some RTOS
+ * implementations may assume 0 means a default stack size while others
+ * may actually create a task with no stack.
+ *
+ * Unlike stack_size, the stack_pointer is optional and can be specified as NULL.
+ * In that case, a stack of the requested size will be dynamically allocated from
+ * the system heap.
+ *
  * @param[out]  task_id will be set to the non-zero ID of the newly-created resource
  * @param[in]   task_name the name of the new resource to create
  * @param[in]   function_pointer the entry point of the new task
  * @param[in]   stack_pointer pointer to the stack for the task, or NULL
  *              to allocate a stack from the system memory heap
- * @param[in]   stack_size the size of the stack, or 0 to use a default stack size.
+ * @param[in]   stack_size the size of the stack
  * @param[in]   priority initial priority of the new task
  * @param[in]   flags initial options for the new task
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if any of the necessary pointers are NULL
+ * @retval #OS_ERR_INVALID_SIZE if the stack_size argument is zero
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_INVALID_PRIORITY if the priority is bad
  * @retval #OS_ERR_NO_FREE_IDS if there can be no more tasks created
@@ -144,6 +157,7 @@ int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer);
  * @brief Delay a task for specified amount of milliseconds
  *
  * Causes the current thread to be suspended from execution for the period of millisecond.
+ * This is a scheduled wait (clock_nanosleep/rtems_task_wake_after/taskDelay), not a "busy" wait.
  *
  * @param[in]   millisecond    Amount of time to delay
  *
@@ -168,18 +182,6 @@ int32 OS_TaskDelay(uint32 millisecond);
  * @retval #OS_ERROR if the OS call to change the priority fails
  */
 int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority);
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Obsolete
- * @deprecated Explicit registration call no longer needed
- *
- * Obsolete function retained for compatibility purposes.
- * Does Nothing in the current implementation.
- *
- * @return #OS_SUCCESS (always), see @ref OSReturnCodes
- */
-int32 OS_TaskRegister(void);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -243,9 +245,10 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop);
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_INVALID_POINTER if a pointer argument is NULL
  */
 int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t sysdata_size);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_TASK_H */

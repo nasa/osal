@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-shared-idmap.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -29,7 +29,7 @@
 #define OS_SHARED_IDMAP_H
 
 #include "osapi-idmap.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 #define OS_OBJECT_ID_RESERVED ((osal_id_t) {0xFFFFFFFF})
 
@@ -52,7 +52,8 @@ typedef enum
     OS_LOCK_MODE_NONE,      /**< Quick ID validity check, does not lock global table at all (use with caution) */
     OS_LOCK_MODE_GLOBAL,    /**< Confirm ID match, and if successful, leave global table locked */
     OS_LOCK_MODE_REFCOUNT,  /**< Confirm ID match, increment refcount, and unlock global table.  ID is not changed. */
-    OS_LOCK_MODE_EXCLUSIVE, /**< Confirm ID match AND refcount equal zero, then change ID to RESERVED value and unlock global. */
+    OS_LOCK_MODE_EXCLUSIVE, /**< Confirm ID match AND refcount equal zero, then change ID to RESERVED value and unlock
+                               global. */
     OS_LOCK_MODE_RESERVED   /**< Confirm ID is already set to RESERVED, otherwise like OS_LOCK_MODE_GLOBAL. */
 } OS_lock_mode_t;
 
@@ -101,6 +102,13 @@ struct OS_object_token
  * Returns true if the id/obj matches the reference, false otherwise.
  */
 typedef bool (*OS_ObjectMatchFunc_t)(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
+
+/*
+ * A function to serve as callback with object ID iterators
+ *
+ * This is the prototype of callback functions for use with OS_ObjectIdIteratorProcessEntry()
+ */
+typedef int32 (*OS_ObjectIdIteratorProcessFunc_t)(osal_id_t, void *);
 
 /*
  * State object associated with an object iterator
@@ -213,7 +221,6 @@ void OS_WaitForStateChange(OS_object_token_t *token, uint32 attempts);
 
  ------------------------------------------------------------------*/
 void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts);
-
 
 /*
    Function prototypes for routines implemented in common layers but private to OSAL
@@ -364,7 +371,7 @@ void OS_ObjectIdTransactionCancel(OS_object_token_t *token);
 
     Returns: None
  ------------------------------------------------------------------*/
-void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id);
+void OS_ObjectIdTransactionFinish(OS_object_token_t *token, const osal_id_t *final_id);
 
 /*----------------------------------------------------------------
    Function: OS_ObjectIdConvertToken
@@ -533,7 +540,7 @@ static inline const OS_object_token_t *OS_ObjectIdIteratorRef(OS_object_iter_t *
 
     Returns: None
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t,void*));
+int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, OS_ObjectIdIteratorProcessFunc_t func);
 
 /*
  * Internal helper functions
@@ -545,4 +552,4 @@ bool  OS_ObjectNameMatch(void *ref, const OS_object_token_t *token, const OS_com
 int32 OS_ObjectIdFindNextMatch(OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_object_token_t *token);
 int32 OS_ObjectIdFindNextFree(OS_object_token_t *token);
 
-#endif  /* OS_SHARED_IDMAP_H  */
+#endif /* OS_SHARED_IDMAP_H */

@@ -29,7 +29,7 @@
 #include "os-shared-common.h"
 #include "os-shared-task.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 typedef struct
 {
@@ -79,10 +79,7 @@ void Test_OS_ObjectIdInit(void)
      * Test Case For:
      * int32 OS_ObjectIdInit(void)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_ObjectIdInit();
-
-    UtAssert_True(actual == expected, "OS_ObjectIdInit() (%ld) == %ld", (long)actual, (long)expected);
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdInit(), OS_SUCCESS);
 }
 
 void Test_OS_LockUnlockGlobal(void)
@@ -96,7 +93,7 @@ void Test_OS_LockUnlockGlobal(void)
 
     memset(&token, 0, sizeof(token));
 
-    token.obj_type = OS_OBJECT_TYPE_OS_COUNTSEM;
+    token.obj_type  = OS_OBJECT_TYPE_OS_COUNTSEM;
     token.lock_mode = OS_LOCK_MODE_GLOBAL;
 
     /*
@@ -155,6 +152,10 @@ void Test_OS_ObjectIdConvertToken(void)
     OS_object_token_t   token;
     OS_common_record_t *record;
     osal_id_t           objid;
+
+    /* confirm that calling w/invalid token returns OS_ERR_INCORRECT_OBJ_STATE */
+    memset(&token, 0, sizeof(token));
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdConvertToken(&token), OS_ERR_INCORRECT_OBJ_STATE);
 
     /* get a valid (fake) OSAL ID to start with */
     OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "ut", &token);
@@ -236,8 +237,8 @@ void Test_OS_ObjectIdConvertToken(void)
     token.obj_id    = objid;
     actual          = OS_ObjectIdConvertToken(&token);
     expected        = OS_ERR_INVALID_ID;
-    UtAssert_True(actual == expected, "OS_ObjectIdConvertLock(RESERVED) (%ld) == OS_ERR_INVALID_ID (%ld)",
-                  (long)actual, (long)expected);
+    UtAssert_True(actual == expected, "OS_ObjectIdConvertLock(RESERVED) (%ld) == OS_ERR_INVALID_ID (%ld)", (long)actual,
+                  (long)expected);
 
     /* Global should not be released */
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 2);
@@ -284,8 +285,8 @@ void Test_OS_ObjectIdConvertToken(void)
     token.obj_id    = objid;
     actual          = OS_ObjectIdConvertToken(&token);
     expected        = OS_SUCCESS;
-    UtAssert_True(actual == expected, "OS_ObjectIdConvertLock(RESERVED) (%ld) == OS_SUCCESS (%ld)",
-                  (long)actual, (long)expected);
+    UtAssert_True(actual == expected, "OS_ObjectIdConvertLock(RESERVED) (%ld) == OS_SUCCESS (%ld)", (long)actual,
+                  (long)expected);
 
     /* Global should not be released */
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 3);
@@ -429,8 +430,7 @@ void Test_OS_ObjectIdFindByName(void)
     char      TaskName[] = "UT_find";
     osal_id_t objid;
     int32     expected = OS_ERR_NAME_NOT_FOUND;
-    int32     actual   = OS_ObjectIdFindByName(OS_OBJECT_TYPE_UNDEFINED, NULL, NULL);
-
+    int32     actual   = OS_ObjectIdFindByName(OS_OBJECT_TYPE_UNDEFINED, NULL, &objid);
     UtAssert_True(actual == expected, "OS_ObjectFindIdByName(%s) (%ld) == OS_ERR_NAME_NOT_FOUND", "NULL", (long)actual);
 
     /*
@@ -483,13 +483,13 @@ void Test_OS_ObjectIdGetById(void)
     OS_object_token_t   token2;
 
     /* verify that the call returns ERROR when not initialized */
-    OS_SharedGlobalVars.Initialized = false;
+    OS_SharedGlobalVars.GlobalState = 0;
     actual                          = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, 0, OS_OBJECT_ID_UNDEFINED, &token1);
     expected                        = OS_ERROR;
     UtAssert_True(actual == expected, "OS_ObjectIdGetById(uninitialized) (%ld) == OS_ERROR", (long)actual);
 
     /* set "true" for the remainder of tests */
-    OS_SharedGlobalVars.Initialized = true;
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
 
     OS_ObjectIdCompose_Impl(OS_OBJECT_TYPE_OS_TASK, 1000, &refobjid);
     OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TASK, refobjid, &local_idx);
@@ -517,17 +517,16 @@ void Test_OS_ObjectIdGetById(void)
     UtAssert_True(rptr->refcount == 0, "refcount (%u) == 0", (unsigned int)rptr->refcount);
 
     /* attempt to get non-exclusive lock during shutdown should fail */
-    OS_SharedGlobalVars.ShutdownFlag = OS_SHUTDOWN_MAGIC_NUMBER;
-    expected                         = OS_ERR_INCORRECT_OBJ_STATE;
-    actual                           = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TASK, refobjid, &token1);
+    OS_SharedGlobalVars.GlobalState = OS_SHUTDOWN_MAGIC_NUMBER;
+    expected                        = OS_ERR_INCORRECT_OBJ_STATE;
+    actual                          = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TASK, refobjid, &token1);
     UtAssert_True(actual == expected, "OS_ObjectIdGetById() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
-    OS_SharedGlobalVars.ShutdownFlag = 0;
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
 
     /* attempt to get lock for invalid type object should fail */
     expected = OS_ERR_INCORRECT_OBJ_TYPE;
     actual   = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, 0xFFFF, refobjid, &token1);
     UtAssert_True(actual == expected, "OS_ObjectIdGetById() (%ld) == OS_ERR_INCORRECT_OBJ_TYPE", (long)actual);
-    OS_SharedGlobalVars.ShutdownFlag = 0;
 
     /* clear out state entry */
     memset(&OS_global_task_table[local_idx], 0, sizeof(OS_global_task_table[local_idx]));
@@ -662,6 +661,28 @@ void Test_OS_ObjectIdFindNextFree(void)
 
     /* verify that the wrap occurred */
     UtAssert_True(i < (OS_OBJECT_INDEX_MASK + 2), "OS_ObjectIdFindNextFree() wrap around occurred");
+
+    /* Now fill the task table */
+    memset(&token2, 0, sizeof(token2));
+    token2.obj_type = OS_OBJECT_TYPE_OS_TASK;
+    for (i = 0; i < OS_MAX_TASKS; ++i)
+    {
+        token2.obj_idx = i;
+
+        rec2 = OS_OBJECT_TABLE_GET(OS_global_task_table, token2);
+        OS_ObjectIdCompose_Impl(OS_OBJECT_TYPE_OS_TASK, i, &rec2->active_id);
+    }
+
+    /* Attempt to allocate another task, should result in OS_ERR_NO_FREE_IDS */
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdFindNextFree(&token2), OS_ERR_NO_FREE_IDS);
+
+    /* Clear the task table */
+    memset(OS_global_task_table, 0, sizeof(OS_common_record_t) * OS_MAX_TASKS);
+
+    /* Try to allocate an instance of an objtype which is not implemented */
+    memset(&token2, 0, sizeof(token2));
+    token2.obj_type = 22;
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdFindNextFree(&token2), OS_ERR_NOT_IMPLEMENTED);
 }
 
 void Test_OS_ObjectIdAllocateNew(void)
@@ -703,10 +724,10 @@ void Test_OS_ObjectIdAllocateNew(void)
     actual   = OS_ObjectIdGetByName(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &token);
     UtAssert_True(actual == expected, "OS_ObjectIdGetByName() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
 
-    OS_SharedGlobalVars.ShutdownFlag = OS_SHUTDOWN_MAGIC_NUMBER;
-    expected                         = OS_ERR_INCORRECT_OBJ_STATE;
-    actual                           = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &token);
-    OS_SharedGlobalVars.ShutdownFlag = 0;
+    OS_SharedGlobalVars.GlobalState = OS_SHUTDOWN_MAGIC_NUMBER;
+    expected                        = OS_ERR_INCORRECT_OBJ_STATE;
+    actual                          = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc", &token);
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
     UtAssert_True(actual == expected, "OS_ObjectIdAllocate() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
 
     expected = OS_ERR_INCORRECT_OBJ_TYPE;
@@ -721,9 +742,8 @@ void Test_OS_ObjectIdAllocateNew(void)
      */
     UT_SetDefaultReturnValue(UT_KEY(OS_NotifyEvent), OS_ERR_INVALID_SIZE);
     expected = OS_ERR_INVALID_SIZE;
-    actual = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc2", &token);
+    actual   = OS_ObjectIdAllocateNew(OS_OBJECT_TYPE_OS_TASK, "UT_alloc2", &token);
     UtAssert_True(actual == expected, "OS_ObjectIdAllocateNew() (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
-
 }
 
 void Test_OS_ConvertToArrayIndex(void)
@@ -735,7 +755,7 @@ void Test_OS_ConvertToArrayIndex(void)
      *
      */
     int32        expected = OS_SUCCESS;
-    int32        actual   = ~OS_SUCCESS; // OS_ConvertToArrayIndex();
+    int32        actual;
     osal_id_t    refobjid;
     osal_index_t local_idx;
 
@@ -775,15 +795,16 @@ void Test_OS_ObjectIdTransaction(void)
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 0);
 
     /* shutdown will prevent transactions */
-    OS_SharedGlobalVars.Initialized = true;
-    OS_SharedGlobalVars.ShutdownFlag = OS_SHUTDOWN_MAGIC_NUMBER;
-    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_BINSEM, &token), OS_ERR_INCORRECT_OBJ_STATE);
+    OS_SharedGlobalVars.GlobalState = OS_SHUTDOWN_MAGIC_NUMBER;
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_BINSEM, &token),
+                           OS_ERR_INCORRECT_OBJ_STATE);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_NONE);
     UtAssert_UINT32_EQ(token.obj_type, OS_OBJECT_TYPE_UNDEFINED);
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 0);
 
     /* except for exclusive (delete) transactions, which should succeed */
-    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_EXCLUSIVE, OS_OBJECT_TYPE_OS_BINSEM, &token), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_EXCLUSIVE, OS_OBJECT_TYPE_OS_BINSEM, &token),
+                           OS_SUCCESS);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_EXCLUSIVE);
     UtAssert_UINT32_EQ(token.obj_idx, -1);
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 1);
@@ -793,25 +814,27 @@ void Test_OS_ObjectIdTransaction(void)
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 1);
 
     /* other cases for normal operating mode */
-    OS_SharedGlobalVars.ShutdownFlag = 0;
-    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_COUNTSEM, &token), OS_SUCCESS);
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_COUNTSEM, &token),
+                           OS_SUCCESS);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_GLOBAL);
     UtAssert_UINT32_EQ(token.obj_type, OS_OBJECT_TYPE_OS_COUNTSEM);
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 2);
 
     /* bad object type */
-    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_UNDEFINED, &token), OS_ERR_INCORRECT_OBJ_TYPE);
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_UNDEFINED, &token),
+                           OS_ERR_INCORRECT_OBJ_TYPE);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_NONE);
     UtAssert_UINT32_EQ(token.obj_type, OS_OBJECT_TYPE_UNDEFINED);
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 2);
 
     /* normal finish (sets ID from passed in value) */
-    objid = UT_OBJID_1;
-    token.obj_id = UT_OBJID_2;
-    token.obj_idx = UT_INDEX_2;
-    token.obj_type = OS_OBJECT_TYPE_OS_TASK;
-    token.lock_mode = OS_LOCK_MODE_GLOBAL;
-    record = OS_ObjectIdGlobalFromToken(&token);
+    objid            = UT_OBJID_1;
+    token.obj_id     = UT_OBJID_2;
+    token.obj_idx    = UT_INDEX_2;
+    token.obj_type   = OS_OBJECT_TYPE_OS_TASK;
+    token.lock_mode  = OS_LOCK_MODE_GLOBAL;
+    record           = OS_ObjectIdGlobalFromToken(&token);
     record->refcount = 1;
 
     OS_ObjectIdTransactionFinish(&token, &objid);
@@ -821,9 +844,9 @@ void Test_OS_ObjectIdTransaction(void)
     UtAssert_UINT32_EQ(record->refcount, 0);
 
     /* exclusive lock finish (restores ID from token) */
-    record->refcount = 1;
+    record->refcount  = 1;
     record->active_id = OS_OBJECT_ID_RESERVED;
-    token.lock_mode = OS_LOCK_MODE_EXCLUSIVE;
+    token.lock_mode   = OS_LOCK_MODE_EXCLUSIVE;
     OS_ObjectIdTransactionFinish(&token, NULL);
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 3);
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 3);
@@ -831,8 +854,8 @@ void Test_OS_ObjectIdTransaction(void)
     UtAssert_UINT32_EQ(record->refcount, 0);
 
     /* refcount finish (no change to ID) */
-    token.lock_mode = OS_LOCK_MODE_REFCOUNT;
-    record->refcount = 1;
+    token.lock_mode   = OS_LOCK_MODE_REFCOUNT;
+    record->refcount  = 1;
     record->active_id = UT_OBJID_1;
     OS_ObjectIdTransactionFinish(&token, NULL);
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 4);
@@ -850,9 +873,9 @@ void Test_OS_ObjectIdTransaction(void)
 
     /* test transferring a refcount token */
     memset(&token2, 0xBB, sizeof(token2));
-    token.obj_id = UT_OBJID_2;
-    token.obj_idx = UT_INDEX_2;
-    token.obj_type = OS_OBJECT_TYPE_OS_TASK;
+    token.obj_id    = UT_OBJID_2;
+    token.obj_idx   = UT_INDEX_2;
+    token.obj_type  = OS_OBJECT_TYPE_OS_TASK;
     token.lock_mode = OS_LOCK_MODE_GLOBAL;
 
     OS_ObjectIdTransferToken(&token, &token2);
@@ -874,66 +897,71 @@ void Test_OS_ObjectIdFinalize(void)
      * int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_object_token_t *token, osal_id_t *outid);
      * int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_object_token_t *token);
      */
-    int32             expected;
-    int32             actual;
-    OS_object_token_t token;
-    osal_id_t         objid;
+    int32               expected;
+    int32               actual;
+    OS_object_token_t   token;
+    osal_id_t           objid;
     OS_common_record_t *record;
 
     memset(&token, 0, sizeof(token));
 
-    objid = UT_OBJID_1;
-    token.obj_id = UT_OBJID_2;
-    token.obj_idx = UT_INDEX_2;
-    token.obj_type = OS_OBJECT_TYPE_OS_TASK;
+    objid           = UT_OBJID_1;
+    token.obj_id    = UT_OBJID_2;
+    token.obj_idx   = UT_INDEX_2;
+    token.obj_type  = OS_OBJECT_TYPE_OS_TASK;
     token.lock_mode = OS_LOCK_MODE_EXCLUSIVE;
 
     record = OS_ObjectIdGlobalFromToken(&token);
 
     /* if creation fails, RC should be passed through and ID set to UNDEFINED */
-    token.lock_mode = OS_LOCK_MODE_EXCLUSIVE;
+    token.lock_mode   = OS_LOCK_MODE_EXCLUSIVE;
     record->active_id = OS_OBJECT_ID_RESERVED;
-    expected = OS_ERR_INVALID_ID;
-    actual = OS_ObjectIdFinalizeNew(OS_ERR_INVALID_ID, &token, &objid);
-    UtAssert_True(actual == expected, "OS_ObjectIdFinalizeNew() rc passthru (%ld) == OS_ERR_INVALID_ID (%ld)", (long)actual, (long)expected);
+    expected          = OS_ERR_INVALID_ID;
+    actual            = OS_ObjectIdFinalizeNew(OS_ERR_INVALID_ID, &token, &objid);
+    UtAssert_True(actual == expected, "OS_ObjectIdFinalizeNew() rc passthru (%ld) == OS_ERR_INVALID_ID (%ld)",
+                  (long)actual, (long)expected);
     OSAPI_TEST_OBJID(objid, ==, OS_OBJECT_ID_UNDEFINED);
     OSAPI_TEST_OBJID(record->active_id, ==, OS_OBJECT_ID_UNDEFINED);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_NONE);
 
     /* if creation succeeds, RC should be passed through and ID set to token value */
-    token.lock_mode = OS_LOCK_MODE_EXCLUSIVE;
+    token.lock_mode   = OS_LOCK_MODE_EXCLUSIVE;
     record->active_id = OS_OBJECT_ID_RESERVED;
-    expected = OS_SUCCESS;
-    actual = OS_ObjectIdFinalizeNew(OS_SUCCESS, &token, &objid);
-    UtAssert_True(actual == expected, "OS_ObjectIdFinalizeNew() rc passthru (%ld) == OS_SUCCESS (%ld)", (long)actual, (long)expected);
+    expected          = OS_SUCCESS;
+    actual            = OS_ObjectIdFinalizeNew(OS_SUCCESS, &token, &objid);
+    UtAssert_True(actual == expected, "OS_ObjectIdFinalizeNew() rc passthru (%ld) == OS_SUCCESS (%ld)", (long)actual,
+                  (long)expected);
     OSAPI_TEST_OBJID(objid, ==, token.obj_id);
     OSAPI_TEST_OBJID(record->active_id, ==, token.obj_id);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_NONE);
 
     /* verify passing NULL for out ID for path coverage */
-    token.lock_mode = OS_LOCK_MODE_EXCLUSIVE;
+    token.lock_mode   = OS_LOCK_MODE_EXCLUSIVE;
     record->active_id = OS_OBJECT_ID_RESERVED;
-    expected = OS_SUCCESS;
-    actual = OS_ObjectIdFinalizeNew(OS_SUCCESS, &token, NULL);
-    UtAssert_True(actual == expected, "OS_ObjectIdFinalizeNew() rc passthru (%ld) == OS_SUCCESS (%ld)", (long)actual, (long)expected);
+    expected          = OS_SUCCESS;
+    actual            = OS_ObjectIdFinalizeNew(OS_SUCCESS, &token, NULL);
+    UtAssert_True(actual == expected, "OS_ObjectIdFinalizeNew() rc passthru (%ld) == OS_SUCCESS (%ld)", (long)actual,
+                  (long)expected);
     OSAPI_TEST_OBJID(record->active_id, ==, token.obj_id);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_NONE);
 
     /* if delete succeeds, RC should be passed through and ID set to UNDEFINED */
-    token.lock_mode = OS_LOCK_MODE_EXCLUSIVE;
+    token.lock_mode   = OS_LOCK_MODE_EXCLUSIVE;
     record->active_id = OS_OBJECT_ID_RESERVED;
-    expected = OS_SUCCESS;
-    actual = OS_ObjectIdFinalizeDelete(OS_SUCCESS, &token);
-    UtAssert_True(actual == expected, "OS_ObjectIdFinalizeDelete() rc passthru (%ld) == OS_SUCCESS (%ld)", (long)actual, (long)expected);
+    expected          = OS_SUCCESS;
+    actual            = OS_ObjectIdFinalizeDelete(OS_SUCCESS, &token);
+    UtAssert_True(actual == expected, "OS_ObjectIdFinalizeDelete() rc passthru (%ld) == OS_SUCCESS (%ld)", (long)actual,
+                  (long)expected);
     OSAPI_TEST_OBJID(record->active_id, ==, OS_OBJECT_ID_UNDEFINED);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_NONE);
 
     /* if delete fails, RC should be passed through and ID set to the token value */
-    token.lock_mode = OS_LOCK_MODE_EXCLUSIVE;
+    token.lock_mode   = OS_LOCK_MODE_EXCLUSIVE;
     record->active_id = OS_OBJECT_ID_RESERVED;
-    expected = OS_ERR_INVALID_ID;
-    actual = OS_ObjectIdFinalizeDelete(OS_ERR_INVALID_ID, &token);
-    UtAssert_True(actual == expected, "OS_ObjectIdFinalizeDelete() rc passthru (%ld) == OS_ERR_INVALID_ID (%ld)", (long)actual, (long)expected);
+    expected          = OS_ERR_INVALID_ID;
+    actual            = OS_ObjectIdFinalizeDelete(OS_ERR_INVALID_ID, &token);
+    UtAssert_True(actual == expected, "OS_ObjectIdFinalizeDelete() rc passthru (%ld) == OS_ERR_INVALID_ID (%ld)",
+                  (long)actual, (long)expected);
     OSAPI_TEST_OBJID(record->active_id, ==, token.obj_id);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_NONE);
 }
@@ -1029,19 +1057,15 @@ void Test_OS_ObjectIdIterator(void)
 {
     /*
      * Test Case For:
-     * int32 OS_ObjectIdIteratorInit(OS_ObjectMatchFunc_t matchfunc, void *matcharg, osal_objtype_t objtype,
-                              OS_object_iter_t *iter);
-     * bool OS_ObjectFilterActive(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
-     * int32 OS_ObjectIdIterateActive(osal_objtype_t objtype, OS_object_iter_t *iter);
-     * bool OS_ObjectIdIteratorGetNext(OS_object_iter_t *iter);
-     * void OS_ObjectIdIteratorDestroy(OS_object_iter_t *iter);
-     * int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t, void *));
+     * OS_ObjectIdIteratorInit, OS_ObjectFilterActive, OS_ObjectIdIterateActive
+     * OS_ObjectIdIteratorGetNext, OS_ObjectIdIteratorDestroy, OS_ObjectIdIteratorProcessEntry
      */
-    OS_object_iter_t iter;
+    OS_object_iter_t   iter;
     OS_common_record_t rec;
-    uint32 testarg;
+    uint32             testarg;
 
-    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdIteratorInit(NULL, NULL, OS_OBJECT_TYPE_UNDEFINED, &iter), OS_ERR_INCORRECT_OBJ_TYPE);
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdIteratorInit(NULL, NULL, OS_OBJECT_TYPE_UNDEFINED, &iter),
+                           OS_ERR_INCORRECT_OBJ_TYPE);
     OSAPI_TEST_FUNCTION_RC(OS_ObjectIdIterateActive(OS_OBJECT_TYPE_OS_TASK, &iter), OS_SUCCESS);
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 1);
 
@@ -1052,18 +1076,16 @@ void Test_OS_ObjectIdIterator(void)
     UtAssert_True(OS_ObjectFilterActive(NULL, NULL, &rec), "OS_ObjectFilterActive() non-empty record");
 
     /* OS_ObjectIdIteratorProcessEntry unlocks and re-locks */
-    testarg = 4;
+    testarg  = 4;
     iter.arg = &testarg;
     OS_ObjectIdIteratorProcessEntry(&iter, TestIterator);
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 1);
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 2);
 
-
     /* OS_ObjectIdIteratorDestroy is just a passthrough to OS_ObjectIdTransactionCancel,
      * but need to call for coverage */
     OS_ObjectIdIteratorDestroy(&iter);
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 2);
-
 }
 
 /* Osapi_Test_Setup
@@ -1080,10 +1102,10 @@ void Osapi_Test_Setup(void)
 
     /*
      * The OS_SharedGlobalVars is also used here, but set the
-     * "Initialized" field to true by default, as this is needed by most tests.
+     * "GlobalState" field to init by default, as this is needed by most tests.
      */
     memset(&OS_SharedGlobalVars, 0, sizeof(OS_SharedGlobalVars));
-    OS_SharedGlobalVars.Initialized = true;
+    OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
 }
 
 /*

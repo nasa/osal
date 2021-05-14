@@ -18,14 +18,20 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/wait.h */
-#ifndef OSAL_OVERRIDE_SYS_WAIT_H
-#define OSAL_OVERRIDE_SYS_WAIT_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/wait.h
+ */
 
-#include <OCS_sys_wait.h>
+#ifndef OVERRIDE_SYS_WAIT_H
+#define OVERRIDE_SYS_WAIT_H
+
+#include "OCS_sys_wait.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/wait.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_SYS_WAIT_H */
+#endif /* OVERRIDE_SYS_WAIT_H */

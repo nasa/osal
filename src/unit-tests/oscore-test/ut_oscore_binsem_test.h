@@ -18,11 +18,12 @@
  *  limitations under the License.
  */
 
-/*================================================================================*
-** File:  ut_oscore_binsem_test.h
-** Owner: Alan Cudmore
-** Date:  April 2013
-**================================================================================*/
+/**
+ * \file
+ *
+ * Owner: Alan Cudmore
+ * Date:  April 2013
+ */
 
 #ifndef UT_OSCORE_BINSEM_TEST_H
 #define UT_OSCORE_BINSEM_TEST_H
@@ -64,8 +65,4 @@ void UT_os_bin_sem_get_info_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif  /* UT_OSCORE_BINSEM_TEST_H */
-
-/*================================================================================*
-** End of File: ut_oscore_binsem_test.h
-**================================================================================*/
+#endif /* UT_OSCORE_BINSEM_TEST_H */

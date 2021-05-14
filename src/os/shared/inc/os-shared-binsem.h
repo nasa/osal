@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-shared-binsem.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -29,7 +29,7 @@
 #define OS_SHARED_BINSEM_H
 
 #include "osapi-binsem.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /* other objects that have only an API name and no other data */
 typedef struct
@@ -122,4 +122,4 @@ int32 OS_BinSemDelete_Impl(const OS_object_token_t *token);
  ------------------------------------------------------------------*/
 int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop);
 
-#endif  /* OS_SHARED_BINSEM_H  */
+#endif /* OS_SHARED_BINSEM_H */

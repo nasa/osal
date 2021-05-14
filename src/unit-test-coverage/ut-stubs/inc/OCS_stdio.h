@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for stdio.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for stdio.h
+ */
+
 #ifndef OCS_STDIO_H
 #define OCS_STDIO_H
 
-#include <OCS_basetypes.h>
-#include <OCS_stdarg.h>
+#include "OCS_basetypes.h"
+#include "OCS_stdarg.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in stdio.h */
@@ -54,4 +60,4 @@ extern OCS_FILE *OCS_stdin;
 extern OCS_FILE *OCS_stdout;
 extern OCS_FILE *OCS_stderr;
 
-#endif  /*  OCS_STDIO_H */
+#endif /* OCS_STDIO_H */

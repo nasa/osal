@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for memPartLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for memPartLib.h
+ */
+
 #ifndef OCS_MEMPARTLIB_H
 #define OCS_MEMPARTLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in memPartLib.h */
@@ -54,4 +60,4 @@ extern OCS_STATUS OCS_memPartInfoGet(OCS_PART_ID         partId, /* partition ID
 
 extern OCS_PART_ID OCS_memSysPartId;
 
-#endif  /*  OCS_MEMPARTLIB_H */
+#endif /* OCS_MEMPARTLIB_H */

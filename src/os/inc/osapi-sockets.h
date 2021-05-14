@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-sockets.h
+ * \file
+ *
+ * Declarations and prototypes for sockets abstraction
  */
 
 #ifndef OSAPI_SOCKETS_H
@@ -73,6 +75,16 @@ typedef enum
     OS_SocketType_STREAM,   /**< @brief A stream-oriented socket with the concept of a connection */
     OS_SocketType_MAX       /**< @brief Maximum */
 } OS_SocketType_t;
+
+/* NOTE: The shutdown mode enums are also a bitmask, so the specific values are important here */
+/** @brief Shutdown Mode */
+typedef enum
+{
+    OS_SocketShutdownMode_NONE           = 0, /**< @brief Reserved value, no effect */
+    OS_SocketShutdownMode_SHUT_READ      = 1, /**< @brief Disable future reading */
+    OS_SocketShutdownMode_SHUT_WRITE     = 2, /**< @brief Disable future writing */
+    OS_SocketShutdownMode_SHUT_READWRITE = 3  /**< @brief Disable future reading or writing */
+} OS_SocketShutdownMode_t;
 
 /**
  * @brief Storage buffer for generic network address
@@ -137,6 +149,7 @@ typedef struct
  * @param[in]   Domain       The address family
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if Addr argument is NULL
  */
 int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain);
 
@@ -157,6 +170,8 @@ int32 OS_SocketAddrInit(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain);
  * @param[in]   Addr         The network address buffer to convert
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_SIZE if passed-in buflen is not valid
  */
 int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Addr);
 
@@ -179,6 +194,7 @@ int32 OS_SocketAddrToString(char *buffer, size_t buflen, const OS_SockAddr_t *Ad
  * @param[in]   string       The string to initialize the address from.
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string);
 
@@ -194,6 +210,7 @@ int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string);
  * @param[in]   Addr         The network address buffer
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr);
 
@@ -209,6 +226,7 @@ int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr);
  * @param[out]  Addr         The network address buffer
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum);
 /**@}*/
@@ -240,6 +258,7 @@ int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum);
  * @param[in]   Type     The type of the socket (STREAM or DATAGRAM)
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t Type);
 
@@ -258,6 +277,7 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
  * @param[in]   Addr     The local address to bind to
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr);
 
@@ -274,8 +294,23 @@ int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr);
  * @param[in]   timeout  The maximum amount of time to wait, or OS_PEND to wait forever
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if Addr argument is NULL
  */
 int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 timeout);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Implement graceful shutdown of a stream socket
+ *
+ * This can be utilized to indicate the end of data stream without immediately closing
+ * the socket, giving the remote side an indication that the data transfer is complete.
+ *
+ * @param[in]   sock_id  The socket ID
+ * @param[in]   Mode     Whether to shutdown reading, writing, or both.
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ */
+int32 OS_SocketShutdown(osal_id_t sock_id, OS_SocketShutdownMode_t Mode);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -295,6 +330,7 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 timeo
  * @param[in]   timeout      The maximum amount of time to wait, or OS_PEND to wait forever
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *Addr, int32 timeout);
 
@@ -312,6 +348,8 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
  * @param[in]   timeout      The maximum amount of time to wait, or OS_PEND to wait forever
  *
  * @return Count of actual bytes received or error status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_SIZE if passed-in buflen is not valid
  */
 int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr, int32 timeout);
 
@@ -329,6 +367,8 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockA
  * @param[in]   RemoteAddr   Buffer containing the remote network address to send to
  *
  * @return Count of actual bytes sent or error status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_SIZE if passed-in buflen is not valid
  */
 int32 OS_SocketSendTo(osal_id_t sock_id, const void *buffer, size_t buflen, const OS_SockAddr_t *RemoteAddr);
 
@@ -368,35 +408,6 @@ int32 OS_SocketGetIdByName(osal_id_t *sock_id, const char *sock_name);
  */
 int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop);
 
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief  Gets the network ID of the local machine
- *
- * The ID is an implementation-defined value and may not be consistent
- * in meaning across different platform types.
- *
- * @note This API may be removed in a future version of OSAL due to
- *       inconsistencies between platforms.
- *
- * @return The ID or fixed value of -1 if the host id could not be found.
- *         Note it is not possible to differentiate between error codes and valid
- *         network IDs here. It is assumed, however, that -1 is never a valid ID.
- */
-int32 OS_NetworkGetID(void);
-
-/*-------------------------------------------------------------------------------------*/
-/**
- * @brief Gets the local machine network host name
- *
- * If configured in the underlying network stack,
- * this function retrieves the local hostname of the system.
- *
- * @param[out]  host_name    Buffer to hold name information
- * @param[in]   name_len     Maximum length of host name buffer
- *
- * @return Execution status, see @ref OSReturnCodes
- */
-int32 OS_NetworkGetHostName(char *host_name, size_t name_len);
 /**@}*/
 
-#endif
+#endif /* OSAPI_SOCKETS_H */

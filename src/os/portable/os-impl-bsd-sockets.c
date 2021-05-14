@@ -66,12 +66,21 @@
 typedef union
 {
     char               data[OS_SOCKADDR_MAX_LEN];
-    struct sockaddr    sockaddr;
-    struct sockaddr_in sockaddr_in;
+    struct sockaddr    sa;
+    struct sockaddr_in sa_in;
 #ifdef OS_NETWORK_SUPPORTS_IPV6
-    struct sockaddr_in6 sockaddr_in6;
+    struct sockaddr_in6 sa_in6;
 #endif
 } OS_SockAddr_Accessor_t;
+
+/*
+ * Confirm that the abstract socket address buffer size (OS_SOCKADDR_MAX_LEN) is
+ * large enough to store any of the enabled address types.  If this is true, the
+ * size of the above union will match OS_SOCKADDR_MAX_LEN.  However, if any
+ * implemention-provided struct types are larger than this, the union will be
+ * larger, and this indicates a configuration error.
+ */
+CompileTimeAssert(sizeof(OS_SockAddr_Accessor_t) == OS_SOCKADDR_MAX_LEN, SockAddrSize);
 
 /****************************************************************************************
                                     Sockets API
@@ -102,10 +111,13 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
     switch (stream->socket_type)
     {
         case OS_SocketType_DATAGRAM:
-            os_type = SOCK_DGRAM;
+            os_type  = SOCK_DGRAM;
+            os_proto = IPPROTO_UDP;
             break;
+
         case OS_SocketType_STREAM:
-            os_type = SOCK_STREAM;
+            os_type  = SOCK_STREAM;
+            os_proto = IPPROTO_TCP;
             break;
 
         default:
@@ -126,26 +138,6 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
             return OS_ERR_NOT_IMPLEMENTED;
     }
 
-    switch (stream->socket_domain)
-    {
-        case OS_SocketDomain_INET:
-        case OS_SocketDomain_INET6:
-            switch (stream->socket_type)
-            {
-                case OS_SocketType_DATAGRAM:
-                    os_proto = IPPROTO_UDP;
-                    break;
-                case OS_SocketType_STREAM:
-                    os_proto = IPPROTO_TCP;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-
     impl->fd = socket(os_domain, os_type, os_proto);
     if (impl->fd < 0)
     {
@@ -163,12 +155,28 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
      * Set the standard options on the filehandle by default --
      * this may set it to non-blocking mode if the implementation supports it.
      * any blocking would be done explicitly via the select() wrappers
+     *
+     * NOTE: The implementation still generally works without this flag set, but
+     * nonblock mode does improve robustness in the event that multiple tasks
+     * attempt to accept new connections from the same server socket at the same time.
      */
     os_flags = fcntl(impl->fd, F_GETFL);
-    os_flags |= OS_IMPL_SOCKET_FLAGS;
-    fcntl(impl->fd, F_SETFL, os_flags);
+    if (os_flags == -1)
+    {
+        /* No recourse if F_GETFL fails - just report the error and move on. */
+        OS_DEBUG("fcntl(F_GETFL): %s\n", strerror(errno));
+    }
+    else
+    {
+        os_flags |= OS_IMPL_SOCKET_FLAGS;
+        if (fcntl(impl->fd, F_SETFL, os_flags) == -1)
+        {
+            /* No recourse if F_SETFL fails - just report the error and move on. */
+            OS_DEBUG("fcntl(F_SETFL): %s\n", strerror(errno));
+        }
+    }
 
-    impl->selectable = ((os_flags & O_NONBLOCK) != 0);
+    impl->selectable = OS_IMPL_SOCKET_SELECTABLE;
 
     return OS_SUCCESS;
 } /* end OS_SocketOpen_Impl */
@@ -209,7 +217,7 @@ int32 OS_SocketBind_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Ad
             break;
     }
 
-    if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN)
+    if (addrlen == 0)
     {
         return OS_ERR_BAD_ADDRESS;
     }
@@ -282,10 +290,24 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
         {
             if (errno != EINPROGRESS)
             {
+                OS_DEBUG("connect: %s\n", strerror(errno));
                 return_code = OS_ERROR;
             }
             else
             {
+                /*
+                 * If the socket was created in nonblocking mode (O_NONBLOCK flag) then the connect
+                 * runs in the background and connect() returns EINPROGRESS.  In this case we still
+                 * want to provide the "normal" (blocking) semantics to the calling app, such that
+                 * when OS_SocketConnect() returns, the socket is ready for use.
+                 *
+                 * To provide consistent behavior to calling apps, this does a select() to wait
+                 * for the socket to become writable, meaning that the remote side is connected.
+                 *
+                 * An important point here is that the calling app can control the timeout.  If the
+                 * normal/blocking connect() was used, the OS/IP stack controls the timeout, and it
+                 * can be quite long.
+                 */
                 operation = OS_STREAM_STATE_WRITABLE;
                 if (impl->selectable)
                 {
@@ -299,6 +321,10 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
                     }
                     else
                     {
+                        /*
+                         * The SO_ERROR socket flag should also read back zero.
+                         * If not zero, something went wrong during connect
+                         */
                         sockopt   = 0;
                         slen      = sizeof(sockopt);
                         os_status = getsockopt(impl->fd, SOL_SOCKET, SO_ERROR, &sockopt, &slen);
@@ -313,6 +339,49 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
     }
     return return_code;
 } /* end OS_SocketConnect_Impl */
+
+/*----------------------------------------------------------------
+   Function: OS_SocketShutdown_Impl
+
+    Purpose: Connects the socket to a remote address.
+             Socket must be of the STREAM variety.
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_SocketShutdown_Impl(const OS_object_token_t *token, OS_SocketShutdownMode_t Mode)
+{
+    OS_impl_file_internal_record_t *conn_impl;
+    int32                           return_code;
+    int                             how;
+
+    conn_impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
+
+    /* Note that when called via the shared layer,
+     * the "Mode" arg has already been checked/validated. */
+    if (Mode == OS_SocketShutdownMode_SHUT_READ)
+    {
+        how = SHUT_RD;
+    }
+    else if (Mode == OS_SocketShutdownMode_SHUT_WRITE)
+    {
+        how = SHUT_WR;
+    }
+    else
+    {
+        how = SHUT_RDWR;
+    }
+
+    if (shutdown(conn_impl->fd, how) == 0)
+    {
+        return_code = OS_SUCCESS;
+    }
+    else
+    {
+        return_code = OS_ERROR;
+    }
+
+    return return_code;
+} /* end OS_SocketShutdown_Impl */
 
 /*----------------------------------------------------------------
  *
@@ -367,12 +436,28 @@ int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_
                  * Set the standard options on the filehandle by default --
                  * this may set it to non-blocking mode if the implementation supports it.
                  * any blocking would be done explicitly via the select() wrappers
+                 *
+                 * NOTE: The implementation still generally works without this flag set, but
+                 * nonblock mode does improve robustness in the event that multiple tasks
+                 * attempt to read from the same socket at the same time.
                  */
                 os_flags = fcntl(conn_impl->fd, F_GETFL);
-                os_flags |= OS_IMPL_SOCKET_FLAGS;
-                fcntl(conn_impl->fd, F_SETFL, os_flags);
+                if (os_flags == -1)
+                {
+                    /* No recourse if F_GETFL fails - just report the error and move on. */
+                    OS_DEBUG("fcntl(F_GETFL): %s\n", strerror(errno));
+                }
+                else
+                {
+                    os_flags |= OS_IMPL_SOCKET_FLAGS;
+                    if (fcntl(conn_impl->fd, F_SETFL, os_flags) == -1)
+                    {
+                        /* No recourse if F_SETFL fails - just report the error and move on. */
+                        OS_DEBUG("fcntl(F_SETFL): %s\n", strerror(errno));
+                    }
+                }
 
-                conn_impl->selectable = ((os_flags & O_NONBLOCK) != 0);
+                conn_impl->selectable = OS_IMPL_SOCKET_SELECTABLE;
             }
         }
     }
@@ -569,13 +654,13 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
             break;
     }
 
-    if (addrlen == 0 || addrlen > OS_SOCKADDR_MAX_LEN)
+    if (addrlen == 0)
     {
         return OS_ERR_NOT_IMPLEMENTED;
     }
 
-    Addr->ActualLength           = OSAL_SIZE_C(addrlen);
-    Accessor->sockaddr.sa_family = sa_family;
+    Addr->ActualLength     = OSAL_SIZE_C(addrlen);
+    Accessor->sa.sa_family = sa_family;
 
     return OS_SUCCESS;
 } /* end OS_SocketAddrInit_Impl */
@@ -595,14 +680,14 @@ int32 OS_SocketAddrToString_Impl(char *buffer, size_t buflen, const OS_SockAddr_
 
     Accessor = (const OS_SockAddr_Accessor_t *)&Addr->AddrData;
 
-    switch (Accessor->sockaddr.sa_family)
+    switch (Accessor->sa.sa_family)
     {
         case AF_INET:
-            addrbuffer = &Accessor->sockaddr_in.sin_addr;
+            addrbuffer = &Accessor->sa_in.sin_addr;
             break;
 #ifdef OS_NETWORK_SUPPORTS_IPV6
         case AF_INET6:
-            addrbuffer = &Accessor->sockaddr_in6.sin6_addr;
+            addrbuffer = &Accessor->sa_in6.sin6_addr;
             break;
 #endif
         default:
@@ -610,7 +695,7 @@ int32 OS_SocketAddrToString_Impl(char *buffer, size_t buflen, const OS_SockAddr_
             break;
     }
 
-    if (inet_ntop(Accessor->sockaddr.sa_family, addrbuffer, buffer, buflen) == NULL)
+    if (inet_ntop(Accessor->sa.sa_family, addrbuffer, buffer, buflen) == NULL)
     {
         return OS_ERROR;
     }
@@ -633,14 +718,14 @@ int32 OS_SocketAddrFromString_Impl(OS_SockAddr_t *Addr, const char *string)
 
     Accessor = (OS_SockAddr_Accessor_t *)&Addr->AddrData;
 
-    switch (Accessor->sockaddr.sa_family)
+    switch (Accessor->sa.sa_family)
     {
         case AF_INET:
-            addrbuffer = &Accessor->sockaddr_in.sin_addr;
+            addrbuffer = &Accessor->sa_in.sin_addr;
             break;
 #ifdef OS_NETWORK_SUPPORTS_IPV6
         case AF_INET6:
-            addrbuffer = &Accessor->sockaddr_in6.sin6_addr;
+            addrbuffer = &Accessor->sa_in6.sin6_addr;
             break;
 #endif
         default:
@@ -648,7 +733,7 @@ int32 OS_SocketAddrFromString_Impl(OS_SockAddr_t *Addr, const char *string)
             break;
     }
 
-    if (inet_pton(Accessor->sockaddr.sa_family, string, addrbuffer) < 0)
+    if (inet_pton(Accessor->sa.sa_family, string, addrbuffer) < 0)
     {
         return OS_ERROR;
     }
@@ -671,14 +756,14 @@ int32 OS_SocketAddrGetPort_Impl(uint16 *PortNum, const OS_SockAddr_t *Addr)
 
     Accessor = (const OS_SockAddr_Accessor_t *)&Addr->AddrData;
 
-    switch (Accessor->sockaddr.sa_family)
+    switch (Accessor->sa.sa_family)
     {
         case AF_INET:
-            sa_port = Accessor->sockaddr_in.sin_port;
+            sa_port = Accessor->sa_in.sin_port;
             break;
 #ifdef OS_NETWORK_SUPPORTS_IPV6
         case AF_INET6:
-            sa_port = Accessor->sockaddr_in6.sin6_port;
+            sa_port = Accessor->sa_in6.sin6_port;
             break;
 #endif
         default:
@@ -707,14 +792,14 @@ int32 OS_SocketAddrSetPort_Impl(OS_SockAddr_t *Addr, uint16 PortNum)
     sa_port  = htons(PortNum);
     Accessor = (OS_SockAddr_Accessor_t *)&Addr->AddrData;
 
-    switch (Accessor->sockaddr.sa_family)
+    switch (Accessor->sa.sa_family)
     {
         case AF_INET:
-            Accessor->sockaddr_in.sin_port = sa_port;
+            Accessor->sa_in.sin_port = sa_port;
             break;
 #ifdef OS_NETWORK_SUPPORTS_IPV6
         case AF_INET6:
-            Accessor->sockaddr_in6.sin6_port = sa_port;
+            Accessor->sa_in6.sin6_port = sa_port;
             break;
 #endif
         default:

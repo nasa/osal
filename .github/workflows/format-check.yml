@@ -1,0 +1,53 @@
+name: Format Check
+
+# Run on main push and pull requests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+
+  static-analysis:
+    name: Run format check
+    runs-on: ubuntu-18.04
+    timeout-minutes: 15
+
+    steps:
+
+      - name: Install format checker
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository 'deb http://apt.llvm.org/bionic/   llvm-toolchain-bionic-10 main'
+          sudo apt-get update && sudo apt-get install clang-format-10
+
+      - name: Checkout bundle
+        uses: actions/checkout@v2
+        with:
+          repository: nasa/cFS
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: repo
+
+      - name: Generate format differences
+        run: |
+          cd repo
+          find . -name "*.[ch]" -exec clang-format-10 -i -style=file {} +
+          git diff > $GITHUB_WORKSPACE/style_differences.txt
+
+      - name: Archive Static Analysis Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: style_differences
+          path: style_differences.txt
+
+      - name: Error on differences
+        run: |
+          if [[ -s style_differences.txt ]];
+          then
+            cat style_differences.txt
+            exit -1
+          fi

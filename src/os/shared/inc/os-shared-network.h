@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-shared-network.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -29,7 +29,7 @@
 #define OS_SHARED_NETWORK_H
 
 #include "osapi-network.h"
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /****************************************************************************************
               NETWORK / SOCKET API LOW-LEVEL IMPLEMENTATION FUNCTIONS
@@ -63,4 +63,4 @@ int32 OS_NetworkGetHostName_Impl(char *host_name, size_t name_len);
  ------------------------------------------------------------------*/
 int32 OS_NetworkGetID_Impl(int32 *IdBuf);
 
-#endif  /* OS_SHARED_NETWORK_H  */
+#endif /* OS_SHARED_NETWORK_H */

@@ -19,10 +19,10 @@
  */
 
 /**
- * \file     os-portable-coveragetest.h
- * \ingroup  portable
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup portable
  *
+ * Declarations and prototypes for os-portable-coveragetest
  */
 
 #ifndef OS_PORTABLE_COVERAGETEST_H
@@ -32,9 +32,9 @@
  * Includes
  */
 
-#include <utassert.h>
-#include <uttest.h>
-#include <utstubs.h>
+#include "utassert.h"
+#include "uttest.h"
+#include "utstubs.h"
 
 #include "os-shared-globaldefs.h"
 
@@ -66,4 +66,4 @@
 void Osapi_Test_Setup(void);
 void Osapi_Test_Teardown(void);
 
-#endif  /* OS_PORTABLE_COVERAGETEST_H  */
+#endif /* OS_PORTABLE_COVERAGETEST_H */

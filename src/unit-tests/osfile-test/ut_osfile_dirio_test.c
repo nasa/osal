@@ -439,7 +439,7 @@ UT_os_closedir_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_readdir_test()
 {
-    osal_id_t   dirh;
+    osal_id_t   dirh = OS_OBJECT_ID_UNDEFINED;
     const char *testDesc;
 
     strcpy(g_subdirNames[0], " ");
@@ -566,7 +566,7 @@ UT_os_readdir_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_rewinddir_test()
 {
-    osal_id_t   dirh;
+    osal_id_t   dirh = OS_OBJECT_ID_UNDEFINED;
     const char *testDesc;
 
     strcpy(g_subdirNames[0], " ");

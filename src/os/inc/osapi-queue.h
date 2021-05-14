@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-queue.h
+ * \file
+ *
+ * Declarations and prototypes for queue subsystem
  */
 
 #ifndef OSAPI_QUEUE_H
@@ -35,7 +37,6 @@ typedef struct
     osal_id_t creator;
 } OS_queue_prop_t;
 
-
 /** @defgroup OSAPIMsgQueue OSAL Message Queue APIs
  * @{
  */
@@ -49,7 +50,6 @@ typedef struct
  * the queue. Queue names must be unique; if the name already exists this
  * function fails. Names cannot be NULL.
  *
- *
  * @param[out]  queue_id will be set to the non-zero ID of the newly-created resource
  * @param[in]   queue_name the name of the new resource to create
  * @param[in]   queue_depth the maximum depth of the queue
@@ -62,6 +62,7 @@ typedef struct
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NO_FREE_IDS if there are already the max queues created
  * @retval #OS_ERR_NAME_TAKEN if the name is already being used on another queue
+ * @retval #OS_ERR_INVALID_SIZE if data_size is 0
  * @retval #OS_QUEUE_INVALID_SIZE if the queue depth exceeds the limit
  * @retval #OS_ERROR if the OS create call fails
  */
@@ -164,4 +165,4 @@ int32 OS_QueueGetIdByName(osal_id_t *queue_id, const char *queue_name);
 int32 OS_QueueGetInfo(osal_id_t queue_id, OS_queue_prop_t *queue_prop);
 /**@}*/
 
-#endif
+#endif /* OSAPI_QUEUE_H */

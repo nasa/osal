@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for semLib.h */
-#ifndef OSAL_OVERRIDE_SEMLIB_H
-#define OSAL_OVERRIDE_SEMLIB_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for semLib.h
+ */
 
-#include <OCS_semLib.h>
+#ifndef OVERRIDE_SEMLIB_H
+#define OVERRIDE_SEMLIB_H
+
+#include "OCS_semLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */
@@ -54,4 +60,4 @@
 #define semTake        OCS_semTake
 #define semGive        OCS_semGive
 
-#endif  /* OSAL_OVERRIDE_SEMLIB_H */
+#endif /* OVERRIDE_SEMLIB_H */

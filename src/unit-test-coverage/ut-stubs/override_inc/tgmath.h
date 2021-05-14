@@ -18,14 +18,20 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for tgmath.h */
-#ifndef OSAL_OVERRIDE_TGMATH_H
-#define OSAL_OVERRIDE_TGMATH_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for tgmath.h
+ */
 
-#include <OCS_tgmath.h>
+#ifndef OVERRIDE_TGMATH_H
+#define OVERRIDE_TGMATH_H
+
+#include "OCS_tgmath.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in tgmath.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_TGMATH_H */
+#endif /* OVERRIDE_TGMATH_H */

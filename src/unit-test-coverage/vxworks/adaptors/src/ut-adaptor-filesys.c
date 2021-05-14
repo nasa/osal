@@ -28,8 +28,8 @@
 #include "osconfig.h"
 #include "ut-adaptor-filesys.h"
 
-#include <os-vxworks.h>
-#include <os-impl-filesys.h>
+#include "os-vxworks.h"
+#include "os-impl-filesys.h"
 
 void *const  UT_Ref_OS_impl_filesys_table      = OS_impl_filesys_table;
 size_t const UT_Ref_OS_impl_filesys_table_SIZE = sizeof(OS_impl_filesys_table);

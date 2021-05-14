@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for intLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for intLib.h
+ */
+
 #ifndef OCS_INTLIB_H
 #define OCS_INTLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in intLib.h */
@@ -44,4 +50,4 @@ extern int              OCS_intLock(void);
 extern int              OCS_intUnlock(int lockKey);
 extern OCS_VOIDFUNCPTR *OCS_INUM_TO_IVEC(unsigned int ui);
 
-#endif  /*  OCS_INTLIB_H */
+#endif /* OCS_INTLIB_H */

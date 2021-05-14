@@ -28,8 +28,8 @@
 #include "ut-adaptor-filetable-stub.h"
 #include "os-shared-file.h"
 
-#include <OCS_shellLib.h>
-#include <OCS_taskLib.h>
+#include "OCS_shellLib.h"
+#include "OCS_taskLib.h"
 
 void Test_OS_ShellOutputToFile_Impl(void)
 {

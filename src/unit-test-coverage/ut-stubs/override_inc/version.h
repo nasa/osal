@@ -18,14 +18,20 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for version.h */
-#ifndef OSAL_OVERRIDE_VERSION_H
-#define OSAL_OVERRIDE_VERSION_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for version.h
+ */
 
-#include <OCS_version.h>
+#ifndef OVERRIDE_VERSION_H
+#define OVERRIDE_VERSION_H
+
+#include "OCS_version.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in version.h */
 /* ----------------------------------------- */
 
-#endif  /* OSAL_OVERRIDE_VERSION_H */
+#endif /* OVERRIDE_VERSION_H */

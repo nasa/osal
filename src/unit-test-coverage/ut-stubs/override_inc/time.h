@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for time.h */
-#ifndef OSAL_OVERRIDE_TIME_H
-#define OSAL_OVERRIDE_TIME_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for time.h
+ */
 
-#include <OCS_time.h>
+#ifndef OVERRIDE_TIME_H
+#define OVERRIDE_TIME_H
+
+#include "OCS_time.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in time.h */
@@ -51,4 +57,4 @@
 #define timer_settime   OCS_timer_settime
 #define timer_connect   OCS_timer_connect
 
-#endif  /* OSAL_OVERRIDE_TIME_H */
+#endif /* OVERRIDE_TIME_H */

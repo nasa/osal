@@ -19,7 +19,9 @@
  */
 
 /**
- * @file osapi-dir.h
+ * \file
+ *
+ * Declarations and prototypes for directories
  */
 
 #ifndef OSAPI_DIR_H
@@ -27,8 +29,6 @@
 
 #include "osconfig.h"
 #include "common_types.h"
-
-
 
 /** @brief Directory entry */
 typedef struct
@@ -57,6 +57,7 @@ typedef struct
  * @param[in]  path      The directory to open
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if dir_id or path is NULL
  */
 int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path);
 
@@ -94,6 +95,7 @@ int32 OS_DirectoryRewind(osal_id_t dir_id);
  * @param[out] dirent    Buffer to store directory entry information
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if dirent argument is NULL
  */
 int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent);
 
@@ -123,7 +125,7 @@ int32 OS_mkdir(const char *path, uint32 access);
 /**
  * @brief Removes a directory from the file system.
  *
- * Removes a directory from  the structure.
+ * Removes a directory from the structure.
  * The directory must be empty prior to this operation.
  *
  * @param[in]  path      The directory to remove
@@ -138,4 +140,4 @@ int32 OS_mkdir(const char *path, uint32 access);
 int32 OS_rmdir(const char *path);
 /**@}*/
 
-#endif
+#endif /* OSAPI_DIR_H */

@@ -18,8 +18,8 @@
  *  limitations under the License.
  */
 
-/*
- * File: utlist.h
+/**
+ * \file
  *
  * Purpose: This file contains functions to implement a generic linked list data structure.
  */
@@ -111,4 +111,4 @@ void *UtList_GetObject(UtListNode_t *ListNode);
 /* Check if the current node marks the end of the list */
 bool UtList_IsEnd(UtListNode_t *TagHead, UtListNode_t *ListNode);
 
-#endif
+#endif /* UTLIST_H */

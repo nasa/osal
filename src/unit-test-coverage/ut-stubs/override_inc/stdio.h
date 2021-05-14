@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for stdio.h */
-#ifndef OSAL_OVERRIDE_STDIO_H
-#define OSAL_OVERRIDE_STDIO_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for stdio.h
+ */
 
-#include <OCS_stdio.h>
+#ifndef OVERRIDE_STDIO_H
+#define OVERRIDE_STDIO_H
+
+#include "OCS_stdio.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in stdio.h */
@@ -45,4 +51,4 @@
 #define stdout OCS_stdout
 #define stderr OCS_stderr
 
-#endif  /* OSAL_OVERRIDE_STDIO_H */
+#endif /* OVERRIDE_STDIO_H */

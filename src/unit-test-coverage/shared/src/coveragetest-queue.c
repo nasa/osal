@@ -27,7 +27,7 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-queue.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /*
 **********************************************************************************
@@ -130,14 +130,20 @@ void Test_OS_QueuePut(void)
     int32      actual   = ~OS_SUCCESS;
     const char Data[4]  = "xyz";
 
-    actual = OS_QueuePut(UT_OBJID_1, Data, sizeof(Data), 0);
+    OS_queue_table[1].max_depth = 10;
+    OS_queue_table[1].max_size  = sizeof(Data);
 
+    actual = OS_QueuePut(UT_OBJID_1, Data, sizeof(Data), 0);
     UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_SUCCESS", (long)actual);
 
     /* test error cases */
     expected = OS_INVALID_POINTER;
     actual   = OS_QueuePut(UT_OBJID_1, NULL, sizeof(Data), 0);
     UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    expected = OS_QUEUE_INVALID_SIZE;
+    actual   = OS_QueuePut(UT_OBJID_1, Data, 1 + sizeof(Data), 0);
+    UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_QUEUE_INVALID_SIZE", (long)actual);
 }
 
 void Test_OS_QueueGetIdByName(void)

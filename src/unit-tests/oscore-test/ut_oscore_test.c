@@ -188,6 +188,9 @@ void UT_os_init_task_get_info_test()
 
 void UtTest_Setup(void)
 {
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     UtTest_Add(UT_os_apiinit_test, NULL, NULL, "OS_API_Init");
 
     UtTest_Add(UT_os_printf_test, NULL, NULL, "OS_printf");
@@ -237,7 +240,6 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_task_exit_test, UT_os_init_task_exit_test, NULL, "OS_TaskExit");
     UtTest_Add(UT_os_task_delay_test, UT_os_init_task_delay_test, NULL, "OS_TaskDelay");
     UtTest_Add(UT_os_task_set_priority_test, UT_os_init_task_set_priority_test, NULL, "OS_TaskSetPriority");
-    UtTest_Add(UT_os_task_register_test, UT_os_init_task_register_test, NULL, "OS_TaskRegister");
     UtTest_Add(UT_os_task_get_id_test, UT_os_init_task_get_id_test, NULL, "OS_TaskGetId");
     UtTest_Add(UT_os_task_get_id_by_name_test, UT_os_init_task_get_id_by_name_test, NULL, "OS_TaskGetIdByName");
     UtTest_Add(UT_os_task_get_info_test, UT_os_init_task_get_info_test, NULL, "OS_TaskGetInfo");

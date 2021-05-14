@@ -18,8 +18,10 @@
  *  limitations under the License.
  */
 
-/*
- * @file osapi-common.h
+/**
+ * \file
+ *
+ * Declarations and prototypes for general OSAL functions that are not part of a subsystem
  */
 
 #ifndef OSAPI_COMMON_H
@@ -27,7 +29,6 @@
 
 #include "osconfig.h"
 #include "common_types.h"
-
 
 /**
  * @brief A set of events that can be used with BSP event callback routines
@@ -98,7 +99,6 @@ typedef enum
  */
 typedef int32 (*OS_EventHandler_t)(OS_Event_t event, osal_id_t object_id, void *data);
 
-
 /** @defgroup OSAPICore OSAL Core Operation APIs
  *
  * These are for OSAL core operations for startup/initialization, running, and shutdown.
@@ -139,6 +139,31 @@ void OS_Application_Run(void);
  * @retval #OS_ERROR   @copybrief OS_ERROR
  */
 int32 OS_API_Init(void);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Teardown/de-initialization of OSAL API
+ *
+ * This is the inverse of OS_API_Init().  It will release all OS resources and
+ * return the system to a state similar to what it was prior to invoking
+ * OS_API_Init() initially.
+ *
+ * Normally for embedded applications, the OSAL is initialized after boot and will remain
+ * initialized in memory until the processor is rebooted.  However for testing and
+ * developement purposes, it is potentially useful to reset back to initial conditions.
+ *
+ * For testing purposes, this API is designed/intended to be compatible with the
+ * UtTest_AddTeardown() routine provided by the UT-Assert subsystem.
+ *
+ * @note This is a "best-effort" routine and it may not always be possible/guaranteed
+ * to recover all resources, particularly in the case of off-nominal conditions, or if
+ * a resource is used outside of OSAL.
+ *
+ * For example, while this will attempt to unload all dynamically-loaded modules, doing
+ * so may not be possible and/or may induce undefined behavior if resources are in use by
+ * tasks/functions outside of OSAL.
+ */
+void OS_API_Teardown(void);
 
 /*-------------------------------------------------------------------------------------*/
 /**
@@ -207,9 +232,10 @@ void OS_ApplicationExit(int32 Status);
  * @return Execution status, see @ref OSReturnCodes.
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERROR   @copybrief OS_ERROR
+ * @retval #OS_INVALID_POINTER if handler is NULL
  */
 int32 OS_RegisterEventHandler(OS_EventHandler_t handler);
 
 /**@}*/
 
-#endif
+#endif /* OSAPI_COMMON_H */

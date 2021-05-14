@@ -41,8 +41,10 @@
  */
 #include "os-shared-globaldefs.h"
 #include "os-shared-common.h"
+#include "bsp-impl.h"
 
 #define OS_DEBUG_OUTPUT_STREAM stdout
+#define OS_DEBUG_MAX_LINE_LEN  132
 
 /*----------------------------------------------------------------
  *
@@ -53,14 +55,27 @@
  *-----------------------------------------------------------------*/
 void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const char *Format, ...)
 {
+    char    buffer[OS_DEBUG_MAX_LINE_LEN];
     va_list va;
 
     if (OS_SharedGlobalVars.DebugLevel >= Level)
     {
+        /*
+         * Lock the console so this appears coherently,
+         * not mixed with other chars from other tasks
+         */
+        OS_BSP_Lock_Impl();
+
+        snprintf(buffer, sizeof(buffer), "%s():%lu:", Func, (unsigned long)Line);
+        OS_BSP_ConsoleOutput_Impl(buffer, strlen(buffer));
+
         va_start(va, Format);
-        fprintf(OS_DEBUG_OUTPUT_STREAM, "%s():%lu:", Func, (unsigned long)Line);
-        vfprintf(OS_DEBUG_OUTPUT_STREAM, Format, va);
+        vsnprintf(buffer, sizeof(buffer), Format, va);
         va_end(va);
+
+        OS_BSP_ConsoleOutput_Impl(buffer, strlen(buffer));
+
+        OS_BSP_Unlock_Impl();
     }
 
 } /* end OS_DebugPrintf */

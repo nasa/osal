@@ -18,13 +18,19 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for unldLib.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for unldLib.h
+ */
+
 #ifndef OCS_UNLDLIB_H
 #define OCS_UNLDLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
-#include <OCS_moduleLib.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
+#include "OCS_moduleLib.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in unldLib.h */
@@ -39,4 +45,4 @@
 /* ----------------------------------------- */
 extern OCS_STATUS OCS_unldByModuleId(OCS_MODULE_ID moduleId, int options);
 
-#endif  /*  OCS_UNLDLIB_H */
+#endif /* OCS_UNLDLIB_H */

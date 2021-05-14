@@ -29,8 +29,8 @@
 #include "osconfig.h"
 #include "ut-adaptor-mutex.h"
 
-#include <os-vxworks.h>
-#include <os-impl-mutex.h>
+#include "os-vxworks.h"
+#include "os-impl-mutex.h"
 
 void *const  UT_Ref_OS_impl_mutex_table      = OS_impl_mutex_table;
 size_t const UT_Ref_OS_impl_mutex_table_SIZE = sizeof(OS_impl_mutex_table);

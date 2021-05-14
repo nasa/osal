@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/types.h */
-#ifndef OSAL_OVERRIDE_SYS_TYPES_H
-#define OSAL_OVERRIDE_SYS_TYPES_H
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/types.h
+ */
 
-#include <OCS_sys_types.h>
+#ifndef OVERRIDE_SYS_TYPES_H
+#define OVERRIDE_SYS_TYPES_H
+
+#include "OCS_sys_types.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/types.h */
@@ -33,5 +39,6 @@
 #define pid_t   OCS_pid_t
 #define gid_t   OCS_gid_t
 #define uid_t   OCS_uid_t
+#define u_short OCS_u_short
 
-#endif  /* OSAL_OVERRIDE_SYS_TYPES_H */
+#endif /* OVERRIDE_SYS_TYPES_H */

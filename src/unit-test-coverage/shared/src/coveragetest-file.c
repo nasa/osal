@@ -28,7 +28,7 @@
 #include "os-shared-file.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /*
 **********************************************************************************
@@ -52,7 +52,7 @@ void Test_OS_OpenCreate(void)
 {
     /*
      * Test Case For:
-     * int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access)
+     * int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access_mode)
      */
     int32     expected;
     int32     actual;
@@ -113,9 +113,8 @@ void Test_OS_TimedRead(void)
     UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
     UtAssert_True(memcmp(Buf, SrcBuf, actual) == 0, "buffer content match");
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimedRead(UT_OBJID_1, NULL, sizeof(Buf), 10);
-    UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, NULL, sizeof(Buf), 10), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, Buf, 0, 10), OS_ERR_INVALID_SIZE);
 }
 
 void Test_OS_TimedWrite(void)
@@ -135,9 +134,8 @@ void Test_OS_TimedWrite(void)
     UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
     UtAssert_True(memcmp(Buf, DstBuf, actual) == 0, "buffer content match");
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimedWrite(UT_OBJID_1, NULL, sizeof(Buf), 10);
-    UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, NULL, sizeof(Buf), 10), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, Buf, 0, 10), OS_ERR_INVALID_SIZE);
 }
 
 void Test_OS_read(void)
@@ -179,7 +177,7 @@ void Test_OS_chmod(void)
 {
     /*
      * Test Case For:
-     * int32 OS_chmod  (const char *path, uint32 access)
+     * int32 OS_chmod  (const char *path, uint32 access_mode)
      */
     int32 expected = OS_SUCCESS;
     int32 actual   = OS_chmod("/cf/file", 0);
@@ -386,6 +384,13 @@ void Test_OS_CloseAllFiles(void)
     actual = OS_CloseAllFiles();
 
     UtAssert_True(actual == expected, "OS_CloseAllFiles() (%ld) == -222", (long)actual);
+
+    /* This uses a helper function OS_FileIteratorClose() with the iterator,
+     * which needs to be called for coverage - it just invokes OS_close() */
+    expected = OS_SUCCESS;
+    actual   = OS_FileIteratorClose(UT_OBJID_1, NULL);
+
+    UtAssert_True(actual == expected, "OS_FileIteratorClose() (%ld) == OS_SUCCESS", (long)actual);
 }
 
 /* Osapi_Test_Setup

@@ -18,8 +18,8 @@
  *  limitations under the License.
  */
 
-/*
- * File:  pcrtems_bsp_internal.h
+/**
+ * \file
  *
  * Purpose:
  *   Header file for internal data to the PC-RTEMS BSP
@@ -33,6 +33,8 @@
 */
 #include "bsp-impl.h"
 
+#include <rtems.h>
+
 /*
  * BSP compile-time tuning
  */
@@ -43,9 +45,9 @@
  * Handle the differences between RTEMS 5 and 4.11 copyright notice
  */
 #ifdef _RTEMS_5_
-    #define OSAL_BSP_COPYRIGHT_NOTICE           rtems_get_copyright_notice()
+#define OSAL_BSP_COPYRIGHT_NOTICE rtems_get_copyright_notice()
 #else
-    #define OSAL_BSP_COPYRIGHT_NOTICE           _Copyright_Notice
+#define OSAL_BSP_COPYRIGHT_NOTICE _Copyright_Notice
 #endif
 
 /*
@@ -64,8 +66,9 @@
 */
 typedef struct
 {
-    char UserArgBuffer[RTEMS_MAX_CMDLINE];
-    bool BatchMode;
+    char     UserArgBuffer[RTEMS_MAX_CMDLINE];
+    bool     BatchMode;
+    rtems_id AccessMutex;
 } OS_BSP_PcRtemsGlobalData_t;
 
 /*
@@ -73,4 +76,4 @@ typedef struct
  */
 extern OS_BSP_PcRtemsGlobalData_t OS_BSP_PcRtemsGlobal;
 
-#endif  /* PCRTEMS_BSP_INTERNAL_H */
+#endif /* PCRTEMS_BSP_INTERNAL_H */

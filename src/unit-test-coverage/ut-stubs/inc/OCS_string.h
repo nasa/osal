@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for string.h */
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for string.h
+ */
+
 #ifndef OCS_STRING_H
 #define OCS_STRING_H
 
-#include <OCS_basetypes.h>
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in string.h */
@@ -50,4 +56,4 @@ extern char * OCS_strcat(char *dest, const char *src);
 extern char * OCS_strncat(char *dest, const char *src, size_t n);
 extern char * OCS_strerror(int errnum);
 
-#endif  /*  OCS_STRING_H */
+#endif /* OCS_STRING_H */

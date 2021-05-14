@@ -37,6 +37,7 @@
 #include "os-posix.h"
 #include "os-impl-io.h"
 
+#include "os-shared-file.h"
 #include "os-shared-shell.h"
 #include "os-shared-idmap.h"
 
@@ -60,7 +61,7 @@
 int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
 {
     pid_t                           cpid;
-    uint32                          local_id;
+    osal_index_t                    local_id;
     int                             wstat;
     const char *                    shell = getenv("SHELL");
     OS_impl_file_internal_record_t *impl;
@@ -88,7 +89,7 @@ int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
         /* close all _other_ filehandles */
         for (local_id = 0; local_id < OS_MAX_NUM_OPEN_FILES; ++local_id)
         {
-            if (OS_global_stream_table[local_id].active_id != 0)
+            if (OS_ObjectIdIsValid(OS_global_stream_table[local_id].active_id))
             {
                 close(OS_impl_filehandle_table[local_id].fd);
             }

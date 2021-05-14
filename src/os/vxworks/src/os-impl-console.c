@@ -74,19 +74,12 @@ void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
 
     local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
 
-    if (local->is_async)
+    /* post the sem for the utility task to run */
+    if (semGive(local->datasem) == ERROR)
     {
-        /* post the sem for the utility task to run */
-        if (semGive(local->datasem) == ERROR)
-        {
-            OS_DEBUG("semGive() - vxWorks errno %d\n", errno);
-        }
+        OS_DEBUG("semGive() - vxWorks errno %d\n", errno);
     }
-    else
-    {
-        /* output directly */
-        OS_ConsoleOutput_Impl(token);
-    }
+
 } /* end OS_ConsoleWakeup_Impl */
 
 /*----------------------------------------------------------------
@@ -107,7 +100,7 @@ int OS_VxWorks_ConsoleTask_Entry(int arg)
         local = OS_OBJECT_TABLE_GET(OS_impl_console_table, token);
 
         /* Loop forever (unless shutdown is set) */
-        while (OS_SharedGlobalVars.ShutdownFlag != OS_SHUTDOWN_MAGIC_NUMBER)
+        while (OS_SharedGlobalVars.GlobalState != OS_SHUTDOWN_MAGIC_NUMBER)
         {
             OS_ConsoleOutput_Impl(&token);
             if (semTake(local->datasem, WAIT_FOREVER) == ERROR)
@@ -119,6 +112,7 @@ int OS_VxWorks_ConsoleTask_Entry(int arg)
         OS_ObjectIdRelease(&token);
     }
 
+    /* Return OK since called from taskSpawn, error is reported in debug message */
     return OK;
 } /* end OS_ConsoleTask_Entry */
 
@@ -141,10 +135,9 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 
     if (OS_ObjectIndexFromToken(token) == 0)
     {
-        return_code     = OS_SUCCESS;
-        local->is_async = OS_CONSOLE_ASYNC;
+        return_code = OS_SUCCESS;
 
-        if (local->is_async)
+        if (console->IsAsync)
         {
             OS_DEBUG("%s(): Starting Async Console Handler\n", __func__);
 

@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_shellLib.h>
+#include "OCS_shellLib.h"
 
 OCS_STATUS OCS_shellGenericInit(const char *config, int stackSize, const char *shellName, char **pShellName,
                                 OCS_BOOL interactive, OCS_BOOL loginAccess, int fdin, int fdout, int fderr)

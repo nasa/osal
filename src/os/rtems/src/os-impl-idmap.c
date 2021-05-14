@@ -58,8 +58,7 @@ static OS_impl_objtype_lock_t OS_module_table_lock;
 static OS_impl_objtype_lock_t OS_filesys_table_lock;
 static OS_impl_objtype_lock_t OS_console_lock;
 
-OS_impl_objtype_lock_t *const OS_impl_objtype_lock_table[OS_OBJECT_TYPE_USER] =
-{
+OS_impl_objtype_lock_t *const OS_impl_objtype_lock_table[OS_OBJECT_TYPE_USER] = {
     [OS_OBJECT_TYPE_UNDEFINED]   = NULL,
     [OS_OBJECT_TYPE_OS_TASK]     = &OS_task_table_lock,
     [OS_OBJECT_TYPE_OS_QUEUE]    = &OS_queue_table_lock,
@@ -86,7 +85,7 @@ OS_impl_objtype_lock_t *const OS_impl_objtype_lock_table[OS_OBJECT_TYPE_USER] =
 void OS_Lock_Global_Impl(osal_objtype_t idtype)
 {
     OS_impl_objtype_lock_t *impl;
-    rtems_status_code rtems_sc;
+    rtems_status_code       rtems_sc;
 
     impl = OS_impl_objtype_lock_table[idtype];
 
@@ -109,7 +108,7 @@ void OS_Lock_Global_Impl(osal_objtype_t idtype)
 void OS_Unlock_Global_Impl(osal_objtype_t idtype)
 {
     OS_impl_objtype_lock_t *impl;
-    rtems_status_code rtems_sc;
+    rtems_status_code       rtems_sc;
 
     impl = OS_impl_objtype_lock_table[idtype];
 
@@ -162,7 +161,7 @@ void OS_WaitForStateChange_Impl(osal_objtype_t idtype, uint32 attempts)
 int32 OS_Rtems_TableMutex_Init(osal_objtype_t idtype)
 {
     OS_impl_objtype_lock_t *impl;
-    rtems_status_code rtems_sc;
+    rtems_status_code       rtems_sc;
 
     impl = OS_impl_objtype_lock_table[idtype];
     if (impl == NULL)

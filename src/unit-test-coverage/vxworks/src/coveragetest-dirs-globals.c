@@ -30,11 +30,11 @@
 
 #include "os-shared-dir.h"
 
-#include <OCS_stdlib.h>
-#include <OCS_taskLib.h>
-#include <OCS_dirent.h>
-#include <OCS_unistd.h>
-#include <OCS_stat.h>
+#include "OCS_stdlib.h"
+#include "OCS_taskLib.h"
+#include "OCS_dirent.h"
+#include "OCS_unistd.h"
+#include "OCS_stat.h"
 
 void Test_OS_VxWorks_DirAPI_Impl_Init(void)
 {

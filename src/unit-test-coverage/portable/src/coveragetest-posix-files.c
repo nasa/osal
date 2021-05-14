@@ -30,18 +30,18 @@
 #include "os-shared-file.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_stdio.h>
-#include <OCS_stdlib.h>
-#include <OCS_unistd.h>
-#include <OCS_fcntl.h>
-#include <OCS_stat.h>
-#include <OCS_errno.h>
+#include "OCS_stdio.h"
+#include "OCS_stdlib.h"
+#include "OCS_unistd.h"
+#include "OCS_fcntl.h"
+#include "OCS_stat.h"
+#include "OCS_errno.h"
 
 void Test_OS_FileOpen_Impl(void)
 {
     /*
      * Test Case For:
-     * int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access)
+     * int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access_mode)
      */
     OS_object_token_t token;
 
@@ -101,7 +101,7 @@ void Test_OS_FileChmod_Impl(void)
 {
     /*
      * Test Case For:
-     * int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
+     * int32 OS_FileChmod_Impl(const char *local_path, uint32 access_mode)
      */
     struct OCS_stat RefStat;
 

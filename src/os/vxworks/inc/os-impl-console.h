@@ -19,9 +19,9 @@
  */
 
 /**
- * \file     os-impl-console.h
+ * \file
+ *
  * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
@@ -37,11 +37,10 @@
 typedef struct
 {
     VX_COUNTING_SEMAPHORE(cmem);
-    bool    is_async;
     SEM_ID  datasem;
     TASK_ID taskid;
 } OS_impl_console_internal_record_t;
 
 extern OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
 
-#endif  /* OS_IMPL_CONSOLE_H  */
+#endif /* OS_IMPL_CONSOLE_H */

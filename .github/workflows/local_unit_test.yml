@@ -1,0 +1,41 @@
+name: "Local Unit Test"
+
+on:
+  push:
+  pull_request:
+
+jobs:
+
+  Local-Unit-Test:
+    runs-on: ubuntu-18.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Install coverage tools
+        run: sudo apt-get install lcov -y
+
+      - name: Checkout submodule
+        uses: actions/checkout@v2
+
+      - name: Set up for build
+        run: |
+          cp Makefile.sample Makefile
+          make ENABLE_UNIT_TESTS=true PERMISSIVE_MODE=true prep
+
+      - name: Build the code
+        run: make -j
+
+      # Baseline lcov and run all tests
+      - name: Test
+        run: make test
+
+      - name: Calculate coverage 
+        run: make lcov | tee lcov_out.txt
+
+      - name: Confirm 100% line coverage
+        run: |
+          if [[ `grep -A 3 "Overall coverage rate" lcov_out.txt | grep lines` != *"100.0%"* ]]; then
+            grep -A 3 "Overall coverage rate" lcov_out.txt
+            echo "Lacks 100.0% line unit test coverage"
+            exit -1
+          fi

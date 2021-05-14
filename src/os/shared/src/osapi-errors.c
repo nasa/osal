@@ -98,9 +98,10 @@ static const OS_ErrorTable_Entry_t OS_GLOBAL_ERROR_NAME_TABLE[] = {
  *-----------------------------------------------------------------*/
 int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name)
 {
-    uint32                       return_code;
+    int32                        return_code;
     const OS_ErrorTable_Entry_t *Error;
 
+    /* Check parameters */
     OS_CHECK_POINTER(err_name);
 
     Error = OS_GLOBAL_ERROR_NAME_TABLE;
@@ -120,8 +121,9 @@ int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name)
 
     if (Error->Number == error_num && Error->Name != NULL)
     {
-        strncpy(*err_name, Error->Name, OS_ERROR_NAME_LENGTH - 1);
-        return_code = OS_SUCCESS;
+        strncpy(*err_name, Error->Name, sizeof(*err_name) - 1);
+        *err_name[sizeof(*err_name) - 1] = 0;
+        return_code                      = OS_SUCCESS;
     }
     else
     {

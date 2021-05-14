@@ -18,10 +18,8 @@
  *  limitations under the License.
  */
 
-/*
- * File: osapi.h
- *
- * Author:  Alan Cudmore - Code 582
+/**
+ * \file
  *
  * Purpose: Contains functions prototype definitions and variables declarations
  *          for the OS Abstraction Layer, Core OS module
@@ -98,9 +96,8 @@ extern "C"
 
 #include "osapi-bsp.h"
 
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* OSAPI_H */
