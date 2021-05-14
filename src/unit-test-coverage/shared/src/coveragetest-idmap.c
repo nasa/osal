@@ -1112,10 +1112,10 @@ void Test_OS_ObjectIDInteger(void)
                 UtAssert_True(OS_ObjectIdEqual(typesI[i], typesJ[j]), "%lu equals %lu", OS_ObjectIdToInteger(typesI[i]),
                               OS_ObjectIdToInteger(typesJ[j]));
             }
-            else
+            else if (OS_ObjectIdEqual(typesI[i], typesJ[j]))
             {
-                UtAssert_True(!OS_ObjectIdEqual(typesI[i], typesJ[j]), "%lu does not equal %lu",
-                              OS_ObjectIdToInteger(typesI[i]), OS_ObjectIdToInteger(typesJ[j]));
+                UtAssert_Failed("%lu does not equal %lu", OS_ObjectIdToInteger(typesI[i]),
+                                OS_ObjectIdToInteger(typesJ[j]));
             }
         }
     }
