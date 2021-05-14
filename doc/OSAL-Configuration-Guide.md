@@ -56,7 +56,6 @@ These terms are identified as proper nouns and are capitalized.
 | MMU   |  Memory Management Unit. A piece of hardware that manages virtual memory systems.  It automatically translates addresses into physical addresses so that an application can  be linked with one set of addresses but actually reside in a different part of memory. |
 | Network | A connection between subsystems used for communication purposes.  |
 | Platform  | See "Hardware Platform" above.   |
-<<<<<<< HEAD
 | User  | Anyone who interacts with the Software Application or system in its operational state.  A user can be a developer, a tester, an operator, or a maintainer. 
 
 # How to Configure, Build, and Run the OSAL
@@ -314,14 +313,9 @@ build system can be directly used as a component within a larger
 "mission" build, as long as the same variables are supplied via the
 parent cmake script:
 
-<<<<<<< HEAD
 ```cmake
 SET(OSAL_SYSTEM_OSTYPE "posix")
 SET(OSAL_SYSTEM_BSPTYPE "generic-linux")
-=======
-```
-SET(OSAL_SYSTEM_BSPTYPE “pc-linux”)
->>>>>>> origin/main
 ADD_SUBDIRECTORY(path/to/osal)
 ```
 
