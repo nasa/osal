@@ -125,24 +125,24 @@ void UT_os_makedir_test()
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */
 
-    UT_RETVAL(OS_mkdir(NULL, 755), OS_INVALID_POINTER);
+    UT_RETVAL(OS_mkdir(NULL, OS_READ_WRITE), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
     /* #2 Path-too-long-arg */
 
-    UT_RETVAL(OS_mkdir(g_longPathName, 755), OS_FS_ERR_PATH_TOO_LONG);
+    UT_RETVAL(OS_mkdir(g_longPathName, OS_READ_WRITE), OS_FS_ERR_PATH_TOO_LONG);
 
     /*-----------------------------------------------------*/
     /* #3 Invalid-path-arg */
 
-    UT_RETVAL(OS_mkdir("tmpDir", 755), OS_FS_ERR_PATH_INVALID);
+    UT_RETVAL(OS_mkdir("tmpDir", OS_READ_WRITE), OS_FS_ERR_PATH_INVALID);
 
     /*-----------------------------------------------------*/
     /* #5 Nominal */
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/mkdir_Nominal", g_mntName);
-    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
+    if (UT_SETUP(OS_mkdir(g_dirName, OS_READ_WRITE)))
     {
         memset(g_fileName, '\0', sizeof(g_fileName));
         UT_os_sprintf(g_fileName, "%s/mkdir_File.txt", g_dirName);
@@ -224,7 +224,7 @@ void UT_os_opendir_test()
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/opendir_Nominal", g_mntName);
-    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
+    if (UT_SETUP(OS_mkdir(g_dirName, OS_READ_WRITE)))
     {
         UT_NOMINAL(OS_DirectoryOpen(&dirh, g_dirName));
 
@@ -277,7 +277,7 @@ void UT_os_closedir_test()
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/closeDir3", g_mntName);
-    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
+    if (UT_SETUP(OS_mkdir(g_dirName, OS_READ_WRITE)))
     {
         if (UT_SETUP(OS_DirectoryOpen(&dirh, g_dirName)))
         {
@@ -350,15 +350,15 @@ void UT_os_readdir_test()
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/readdir_Nominal", g_mntName);
-    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
+    if (UT_SETUP(OS_mkdir(g_dirName, OS_READ_WRITE)))
     {
         memset(g_subdirNames[0], '\0', sizeof(g_subdirNames[0]));
         UT_os_sprintf(g_subdirNames[0], "%s/%s", g_dirName, g_tgtSubdirs[0]);
-        if (UT_SETUP(OS_mkdir(g_subdirNames[0], 755)))
+        if (UT_SETUP(OS_mkdir(g_subdirNames[0], OS_READ_WRITE)))
         {
             memset(g_subdirNames[1], '\0', sizeof(g_subdirNames[1]));
             UT_os_sprintf(g_subdirNames[1], "%s/%s", g_dirName, g_tgtSubdirs[1]);
-            if (UT_SETUP(OS_mkdir(g_subdirNames[1], 755)))
+            if (UT_SETUP(OS_mkdir(g_subdirNames[1], OS_READ_WRITE)))
             {
                 if (UT_SETUP(OS_DirectoryOpen(&dirh, g_dirName)))
                 {
@@ -433,15 +433,15 @@ void UT_os_rewinddir_test()
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/rewinddir_Nominal", g_mntName);
-    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
+    if (UT_SETUP(OS_mkdir(g_dirName, OS_READ_WRITE)))
     {
         memset(g_subdirNames[0], '\0', sizeof(g_subdirNames[0]));
         UT_os_sprintf(g_subdirNames[0], "%s/%s", g_dirName, g_tgtSubdirs[0]);
-        if (UT_SETUP(OS_mkdir(g_subdirNames[0], 755)))
+        if (UT_SETUP(OS_mkdir(g_subdirNames[0], OS_READ_WRITE)))
         {
             memset(g_subdirNames[1], '\0', sizeof(g_subdirNames[1]));
             UT_os_sprintf(g_subdirNames[1], "%s/%s", g_dirName, g_tgtSubdirs[1]);
-            if (UT_SETUP(OS_mkdir(g_subdirNames[1], 755)))
+            if (UT_SETUP(OS_mkdir(g_subdirNames[1], OS_READ_WRITE)))
             {
                 if (UT_SETUP(OS_DirectoryOpen(&dirh, g_dirName)))
                 {
@@ -546,7 +546,7 @@ void UT_os_removedir_test()
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/rmdir_Nominal", g_mntName);
-    if (UT_SETUP(OS_mkdir(g_dirName, 755)))
+    if (UT_SETUP(OS_mkdir(g_dirName, OS_READ_WRITE)))
     {
         memset(g_fileName, '\0', sizeof(g_fileName));
         UT_os_sprintf(g_fileName, "%s/rmdir_File1.txt", g_dirName);

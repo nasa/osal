@@ -471,10 +471,10 @@ void TestMkRmDirFreeBytes(void)
                   "Checking Free Blocks: status=%d blocks=%lu", (int)status, (unsigned long)statbuf.blocks_free);
 
     /* make the two directories */
-    status = OS_mkdir(dir1, 0);
+    status = OS_mkdir(dir1, OS_READ_WRITE);
     UtAssert_True(status == OS_SUCCESS, "status after mkdir 1 = %d", (int)status);
 
-    status = OS_mkdir(dir2, 0);
+    status = OS_mkdir(dir2, OS_READ_WRITE);
     UtAssert_True(status == OS_SUCCESS, "status after mkdir 2 = %d", (int)status);
 
     /* now create two files in the two directories (1 file per directory) */
@@ -580,10 +580,10 @@ void TestOpenReadCloseDir(void)
 
     /* make the two directories */
 
-    status = OS_mkdir(dir1, 0);
+    status = OS_mkdir(dir1, OS_READ_WRITE);
     UtAssert_True(status == OS_SUCCESS, "status after mkdir 1 = %d", (int)status);
 
-    status = OS_mkdir(dir2, 0);
+    status = OS_mkdir(dir2, OS_READ_WRITE);
     UtAssert_True(status == OS_SUCCESS, "status after mkdir 2 = %d", (int)status);
 
     /* now create two files in the two directories (1 file per directory) */
@@ -788,7 +788,7 @@ void TestRename(void)
 
     /* make the directory */
 
-    status = OS_mkdir(dir1, 0);
+    status = OS_mkdir(dir1, OS_READ_WRITE);
     UtAssert_True(status == OS_SUCCESS, "status after mkdir 1 = %d", (int)status);
 
     /* now create a file in the directory */
@@ -866,7 +866,7 @@ void TestStat(void)
     strcpy(buffer1, "111111111111");
 
     /* make the directory */
-    status = OS_mkdir(dir1, 0);
+    status = OS_mkdir(dir1, OS_READ_WRITE);
     UtAssert_True(status == OS_SUCCESS, "status after mkdir 1 = %d", (int)status);
 
     /* now create a file  */
