@@ -56,22 +56,7 @@ These terms are identified as proper nouns and are capitalized.
 | MMU   |  Memory Management Unit. A piece of hardware that manages virtual memory systems.  It automatically translates addresses into physical addresses so that an application can  be linked with one set of addresses but actually reside in a different part of memory. |
 | Network | A connection between subsystems used for communication purposes.  |
 | Platform  | See "Hardware Platform" above.   |
-| User  | Anyone who interacts with the Software Application or system in its operational state.  A user can be a developer, a tester, an operator, or a maintainer.
-| Application  (APP)   |  A generic term for a computer program in a desktop or embedded system.  An Application is generally not part of the operating system.  |
-|  Application  Programmer's  Interface (API) | A set of routines, protocols, and tools for building software applications |
-| Board Support  Package (BSP)  | A collection of user-provided facilities that interface an OS and the cFE  with a specific hardware platform. The BSP is responsible for hardware initialization.  |
-| Core Flight  Executive (cFE)  |  A runtime environment and a set of services for hosting FSW Applications  |
-|  Cyclic  Redundancy  Check | A polynomial based method for checking that a data set has remained unchanged from one time period to another.    |
-|  Developer  | Anyone who is coding a software Application. |
-|  Hardware  Platform  | The target hardware that hosts the Operating System and Application. |
-| Interface  Control  Document |  A document that describes the software interface, in detail, to another piece  of software or  hardware.  |
-|  I/O Data     | Any data being written to and read from an I/O port. No structure is placed  on the data and no distinction as to the type of I/O device. I/O data is defined separately  from memory data because it has a separate API and it's an optional interface of the cFE.  |
-| Log   |   A collection of data that an application stores that provides information to diagnose  and debug FSW problems.  |
-|  Memory Data |  Any data being written to and read from memory. No structure is placed  on the data and no distinction as to the type of memory is made.  |
-| MMU   |  Memory Management Unit. A piece of hardware that manages virtual memory systems.  It automatically translates addresses into physical addresses so that an application can  be linked with one set of addresses but actually reside in a different part of memory. |
-| Network | A connection between subsystems used for communication purposes.  |
-| Platform  | See "Hardware Platform" above.   |
-| User  | Anyone who interacts with the Software Application or system in its operational state.  A user can be a developer, a tester, an operator, or a maintainer.|
+| User  | Anyone who interacts with the Software Application or system in its operational state.  A user can be a developer, a tester, an operator, or a maintainer. 
 
 # How to Configure, Build, and Run the OSAL
 
@@ -265,7 +250,7 @@ makefiles, supplying values for the required variables.
 The following example will generate a build tree that allows testing
 of the OSAL library on a standard Linux workstation:
 
-```
+```bash
 $ mkdir build
 $ cd build
 $ cmake \
@@ -328,8 +313,9 @@ build system can be directly used as a component within a larger
 "mission" build, as long as the same variables are supplied via the
 parent cmake script:
 
-```
-SET(OSAL_SYSTEM_BSPTYPE “pc-linux”)
+```cmake
+SET(OSAL_SYSTEM_OSTYPE "posix")
+SET(OSAL_SYSTEM_BSPTYPE "generic-linux")
 ADD_SUBDIRECTORY(path/to/osal)
 ```
 
@@ -355,6 +341,12 @@ and "installed" to a designated directory where the application can use the libr
 this type of setup, the developer must manually propagate the include directories (i.e.
 the path to the `src/os/inc` subdirectory) and any necessary compile definitions to the
 parent application.
+
+#### Linking OSAL into another target
+```cmake
+add_executable(my_executable main.c)
+target_link_libraries(my_executable osal)
+```
 
 ### Cross compiling with Cmake
 
