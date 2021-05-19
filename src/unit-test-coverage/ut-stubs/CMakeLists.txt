@@ -130,13 +130,13 @@ add_custom_target(generate_osal_coverage_stubs
     COMMAND ${UT_ASSERT_SOURCE_DIR}/scripts/generate_stubs.pl
         --filter=/_Impl$/
         --stub-suffix=impl-stubs
-        --hook-suffix=impl-hooks
+        --handler-suffix=impl-handlers
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${OSAL_SHARED_IMPL_HEADERS}
     COMMAND ${UT_ASSERT_SOURCE_DIR}/scripts/generate_stubs.pl
         --filter=/_Init$/
         --stub-suffix=init-stubs
-        --hook-suffix=init-hooks
+        --handler-suffix=init-handlers
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${OSAL_SHARED_IMPL_HEADERS}
     COMMAND ${UT_ASSERT_SOURCE_DIR}/scripts/generate_stubs.pl
@@ -158,15 +158,15 @@ add_library(ut_osapi_impl_stubs STATIC EXCLUDE_FROM_ALL
     src/os-shared-console-impl-stubs.c
     src/os-shared-countsem-impl-stubs.c
     src/os-shared-dir-impl-stubs.c
-    src/os-shared-file-impl-hooks.c
+    src/os-shared-file-impl-handlers.c
     src/os-shared-file-impl-stubs.c
-    src/os-shared-filesys-impl-hooks.c
+    src/os-shared-filesys-impl-handlers.c
     src/os-shared-filesys-impl-stubs.c
     src/os-shared-heap-impl-stubs.c
     src/os-shared-idmap-impl-stubs.c
     src/os-shared-module-impl-stubs.c
     src/os-shared-mutex-impl-stubs.c
-    src/os-shared-network-impl-hooks.c
+    src/os-shared-network-impl-handlers.c
     src/os-shared-network-impl-stubs.c
     src/os-shared-printf-impl-stubs.c
     src/os-shared-queue-impl-stubs.c
@@ -210,7 +210,7 @@ add_library(ut_osapi_shared_stubs STATIC EXCLUDE_FROM_ALL
     src/os-shared-file-stubs.c
     src/os-shared-filesys-stubs.c
     src/os-shared-globaldefs-stubs.c
-    src/os-shared-idmap-hooks.c
+    src/os-shared-idmap-handlers.c
     src/os-shared-idmap-stubs.c
     src/os-shared-module-stubs.c
     src/os-shared-sockets-stubs.c

@@ -73,20 +73,15 @@ void UT_os_bin_sem_create_test()
     osal_id_t sem_ids[OS_MAX_BIN_SEMAPHORES + 1];
 
     /*-----------------------------------------------------*/
-    if (!UT_IMPL(OS_BinSemCreate(&sem_ids[0], "Good", 1, 0)))
-        return;
-    UT_TEARDOWN(OS_BinSemDelete(sem_ids[0]));
+    UT_RETVAL(OS_BinSemCreate(NULL, "BinSem1", 1, 0), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemCreate(NULL, "BinSem1", 1, 0), OS_INVALID_POINTER, "null pointer arg 1");
-
-    /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemCreate(&sem_ids[0], NULL, 1, 0), OS_INVALID_POINTER, "null pointer arg 2");
+    UT_RETVAL(OS_BinSemCreate(&sem_ids[0], NULL, 1, 0), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
     memset(long_sem_name, 'X', sizeof(long_sem_name));
     long_sem_name[sizeof(long_sem_name) - 1] = '\0';
-    UT_RETVAL(OS_BinSemCreate(&sem_ids[0], long_sem_name, 1, 0), OS_ERR_NAME_TOO_LONG, "name too long");
+    UT_RETVAL(OS_BinSemCreate(&sem_ids[0], long_sem_name, 1, 0), OS_ERR_NAME_TOO_LONG);
 
     /*-----------------------------------------------------*/
     /* Setup */
@@ -103,8 +98,7 @@ void UT_os_bin_sem_create_test()
 
     if (i == OS_MAX_BIN_SEMAPHORES) /* setup was successful */
     {
-        UT_RETVAL(OS_BinSemCreate(&sem_ids[OS_MAX_BIN_SEMAPHORES], "OneTooMany", 1, 0), OS_ERR_NO_FREE_IDS,
-                  "no free ids");
+        UT_RETVAL(OS_BinSemCreate(&sem_ids[OS_MAX_BIN_SEMAPHORES], "OneTooMany", 1, 0), OS_ERR_NO_FREE_IDS);
     }
 
     /* Reset test environment */
@@ -113,7 +107,7 @@ void UT_os_bin_sem_create_test()
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&sem_ids[0], "DUPLICATE", 1, 0)))
     {
-        UT_RETVAL(OS_BinSemCreate(&sem_ids[0], "DUPLICATE", 1, 0), OS_ERR_NAME_TAKEN, "duplicate name");
+        UT_RETVAL(OS_BinSemCreate(&sem_ids[0], "DUPLICATE", 1, 0), OS_ERR_NAME_TAKEN);
 
         /* Reset test environment */
         UT_TEARDOWN(OS_BinSemDelete(sem_ids[0]));
@@ -139,11 +133,7 @@ void UT_os_bin_sem_delete_test()
     osal_id_t bin_sem_id;
 
     /*-----------------------------------------------------*/
-    if (!UT_IMPL(OS_BinSemDelete(OS_OBJECT_ID_UNDEFINED)))
-        return;
-
-    /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemDelete(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID, "invalid id arg");
+    UT_RETVAL(OS_BinSemDelete(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "DeleteTest", 1, 0)))
@@ -166,11 +156,7 @@ void UT_os_bin_sem_flush_test()
     osal_id_t bin_sem_id;
 
     /*-----------------------------------------------------*/
-    if (!UT_IMPL(OS_BinSemFlush(OS_OBJECT_ID_UNDEFINED)))
-        return;
-
-    /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemFlush(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID, "invalid id arg");
+    UT_RETVAL(OS_BinSemFlush(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
 
     /*----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "FlushTest", 1, 0)))
@@ -194,11 +180,7 @@ void UT_os_bin_sem_give_test()
     osal_id_t bin_sem_id;
 
     /*-----------------------------------------------------*/
-    if (!UT_IMPL(OS_BinSemGive(OS_OBJECT_ID_UNDEFINED)))
-        return;
-
-    /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemGive(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID, "invalid id arg");
+    UT_RETVAL(OS_BinSemGive(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "GiveTest", 1, 0)))
@@ -223,11 +205,7 @@ void UT_os_bin_sem_take_test()
     osal_id_t bin_sem_id;
 
     /*-----------------------------------------------------*/
-    if (!UT_IMPL(OS_BinSemTake(OS_OBJECT_ID_UNDEFINED)))
-        return;
-
-    /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemTake(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID, "invalid id arg");
+    UT_RETVAL(OS_BinSemTake(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "TakeTest", 1, 0)))
@@ -251,16 +229,12 @@ void UT_os_bin_sem_timed_wait_test()
     osal_id_t bin_sem_id;
 
     /*-----------------------------------------------------*/
-    if (!UT_IMPL(OS_BinSemTimedWait(OS_OBJECT_ID_UNDEFINED, 1000)))
-        return;
-
-    /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemTimedWait(UT_OBJID_INCORRECT, 1000), OS_ERR_INVALID_ID, "invalid id arg");
+    UT_RETVAL(OS_BinSemTimedWait(UT_OBJID_INCORRECT, 1000), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "TimedWait", 1, 0)) && UT_SETUP(OS_BinSemTake(bin_sem_id)))
     {
-        UT_RETVAL(OS_BinSemTimedWait(bin_sem_id, 1000), OS_SEM_TIMEOUT, "semtake timed out");
+        UT_RETVAL(OS_BinSemTimedWait(bin_sem_id, 1000), OS_SEM_TIMEOUT);
         UT_TEARDOWN(OS_BinSemDelete(bin_sem_id));
     }
 
@@ -288,22 +262,18 @@ void UT_os_bin_sem_get_id_by_name_test()
     char      long_sem_name[UT_OS_NAME_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
-    if (!UT_IMPL(OS_BinSemGetIdByName(NULL, "InvalidName")))
-        return;
+    UT_RETVAL(OS_BinSemGetIdByName(NULL, "InvalidName"), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemGetIdByName(NULL, "InvalidName"), OS_INVALID_POINTER, "invalid ptr arg 1");
-
-    /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemGetIdByName(&bin_sem_id, NULL), OS_INVALID_POINTER, "invalid ptr arg 2");
+    UT_RETVAL(OS_BinSemGetIdByName(&bin_sem_id, NULL), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
     memset(long_sem_name, 'Y', sizeof(long_sem_name));
     long_sem_name[sizeof(long_sem_name) - 1] = '\0';
-    UT_RETVAL(OS_BinSemGetIdByName(&bin_sem_id, long_sem_name), OS_ERR_NAME_TOO_LONG, "name too long");
+    UT_RETVAL(OS_BinSemGetIdByName(&bin_sem_id, long_sem_name), OS_ERR_NAME_TOO_LONG);
 
     /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemGetIdByName(&bin_sem_id, "NameNotFound"), OS_ERR_NAME_NOT_FOUND, "name not found");
+    UT_RETVAL(OS_BinSemGetIdByName(&bin_sem_id, "NameNotFound"), OS_ERR_NAME_NOT_FOUND);
 
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "GetIDByName", 1, 0)))
@@ -328,16 +298,12 @@ void UT_os_bin_sem_get_info_test()
     OS_bin_sem_prop_t bin_sem_prop;
 
     /*-----------------------------------------------------*/
-    if (!UT_IMPL(OS_BinSemGetInfo(OS_OBJECT_ID_UNDEFINED, &bin_sem_prop)))
-        return;
-
-    /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemGetInfo(UT_OBJID_INCORRECT, &bin_sem_prop), OS_ERR_INVALID_ID, "invalid id");
+    UT_RETVAL(OS_BinSemGetInfo(UT_OBJID_INCORRECT, &bin_sem_prop), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "GetInfo", 1, 0)))
     {
-        UT_RETVAL(OS_BinSemGetInfo(bin_sem_id, NULL), OS_INVALID_POINTER, "invalid ptr");
+        UT_RETVAL(OS_BinSemGetInfo(bin_sem_id, NULL), OS_INVALID_POINTER);
         UT_TEARDOWN(OS_BinSemDelete(bin_sem_id));
     }
 

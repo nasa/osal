@@ -52,7 +52,7 @@ void Test_OS_mkdir(void)
      * int32 OS_mkdir (const char *path, uint32 access)
      */
     int32 expected = OS_SUCCESS;
-    int32 actual   = OS_mkdir("Dir", 0);
+    int32 actual   = OS_mkdir("Dir", OS_READ_WRITE);
 
     UtAssert_True(actual == expected, "OS_mkdir() (%ld) == OS_SUCCESS", (long)actual);
 }

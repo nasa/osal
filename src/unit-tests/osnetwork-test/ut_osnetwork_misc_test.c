@@ -80,36 +80,23 @@
 **--------------------------------------------------------------------------------*/
 void UT_os_networkgetid_test()
 {
-    int32       res = 0;
-    const char *testDesc;
-
     /*-----------------------------------------------------*/
-    testDesc = "API Not implemented";
+    /* API Not implemented */
 
-    res = OS_NetworkGetID();
-    if (res == OS_ERR_NOT_IMPLEMENTED)
+    if (!UT_IMPL(OS_NetworkGetID()))
     {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_networkgetid_test_exit_tag;
+        return;
     }
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 OS-call-failure";
-
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
+    /* #1 OS-call-failure */
 
     /*-----------------------------------------------------*/
-    testDesc = "#2 Nominal";
-
-    res = OS_NetworkGetID();
+    /* #2 Nominal */
 
     /* NOTE: This API does not return error codes.
      * Any return value could be valid */
-    UtPrintf("OS_NetworkGetID() return value=%ld", (long)res);
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_MIR);
-
-UT_os_networkgetid_test_exit_tag:
-    return;
+    UT_MIR_STATUS(OS_NetworkGetID());
 }
 
 /*--------------------------------------------------------------------------------*
@@ -150,54 +137,33 @@ UT_os_networkgetid_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_networkgethostname_test()
 {
-    int32       res = 0;
-    const char *testDesc;
-    char        buffer[UT_OS_IO_BUFF_SIZE];
+    char buffer[UT_OS_IO_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
-    testDesc = "API Not implemented";
+    /* API Not implemented */
 
-    res = OS_NetworkGetHostName(buffer, sizeof(buffer));
-    if (res == OS_ERR_NOT_IMPLEMENTED)
+    if (!UT_IMPL(OS_NetworkGetHostName(buffer, sizeof(buffer))))
     {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_networkgethostname_test_exit_tag;
+        return;
     }
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 Null-pointer-arg";
+    /* #1 Null-pointer-arg */
 
-    res = OS_NetworkGetHostName(NULL, 0);
-    if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_NetworkGetHostName(NULL, 0), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    testDesc = "#2 Zero-name-length-arg";
+    /* #2 Zero-name-length-arg */
 
-    res = OS_NetworkGetHostName(buffer, 0);
-    if (res == OS_ERR_INVALID_SIZE)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_NetworkGetHostName(buffer, 0), OS_ERR_INVALID_SIZE);
 
     /*-----------------------------------------------------*/
-    testDesc = "#3 OS-call-failure";
-
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
+    /* #3 OS-call-failure */
 
     /*-----------------------------------------------------*/
-    testDesc = "#4 Nominal";
+    /* #4 Nominal */
 
-    res = OS_NetworkGetHostName(buffer, sizeof(buffer));
-    if (res == OS_SUCCESS)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-UT_os_networkgethostname_test_exit_tag:
-    return;
+    UT_NOMINAL(OS_NetworkGetHostName(buffer, sizeof(buffer)));
 }
 
 /*================================================================================*

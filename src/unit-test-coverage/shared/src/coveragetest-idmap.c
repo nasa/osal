@@ -1088,6 +1088,76 @@ void Test_OS_ObjectIdIterator(void)
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 2);
 }
 
+void Test_OS_ObjectIDInteger(void)
+{
+    /*
+     * Test Case For:
+     * OS_ObjectIdToInteger, OS_ObjectIdFromInteger, OS_ObjectIdEqual, OS_ObjectIdDefined
+     */
+    int32             actual;
+    OS_object_token_t token;
+    osal_id_t         typesI[OS_MAX_TOTAL_RECORDS];
+    osal_id_t         typesJ[OS_MAX_TOTAL_RECORDS];
+    uint32            intID;
+    int32             recordscount = 0;
+    osal_objtype_t    idtype;
+    char              str[OS_MAX_API_NAME];
+
+    for (idtype = 0; idtype < OS_OBJECT_TYPE_USER; ++idtype)
+    {
+        actual = OS_SUCCESS;
+        while (actual == OS_SUCCESS && recordscount < OS_MAX_TOTAL_RECORDS)
+        {
+            snprintf(str, sizeof(str), "%d", (int)recordscount);
+            actual = OS_ObjectIdAllocateNew(idtype, str, &token);
+
+            if (actual == OS_SUCCESS)
+            {
+                typesI[recordscount] = token.obj_id;
+                intID                = OS_ObjectIdToInteger(typesI[recordscount]);
+                typesJ[recordscount] = OS_ObjectIdFromInteger(intID);
+
+                recordscount++;
+            }
+        }
+    }
+
+    UtAssert_True(recordscount < OS_MAX_TOTAL_RECORDS, "All Id types checked");
+
+    for (int i = 0; i < recordscount; i++)
+    {
+        UtAssert_True(OS_ObjectIdDefined(typesI[i]), "%lu Is defined", OS_ObjectIdToInteger(typesI[i]));
+
+        for (int j = 0; j < recordscount; j++)
+        {
+            if (i == j)
+            {
+                UtAssert_True(OS_ObjectIdEqual(typesI[i], typesJ[j]), "%lu equals %lu", OS_ObjectIdToInteger(typesI[i]),
+                              OS_ObjectIdToInteger(typesJ[j]));
+            }
+            else if (OS_ObjectIdEqual(typesI[i], typesJ[j]))
+            {
+                UtAssert_Failed("%lu does not equal %lu", OS_ObjectIdToInteger(typesI[i]),
+                                OS_ObjectIdToInteger(typesJ[j]));
+            }
+        }
+    }
+}
+
+void Test_OS_ObjectIDUndefined(void)
+{
+    osal_id_t id;
+    uint32    intID;
+
+    UtAssert_True(!OS_ObjectIdDefined(OS_OBJECT_ID_UNDEFINED), "%lu Is undefined",
+                  OS_ObjectIdToInteger(OS_OBJECT_ID_UNDEFINED));
+
+    intID = OS_ObjectIdToInteger(OS_OBJECT_ID_UNDEFINED);
+    id    = OS_ObjectIdFromInteger(intID);
+
+    UtAssert_True(!OS_ObjectIdDefined(id), "%lu Is undefined", OS_ObjectIdToInteger(id));
+}
+
 /* Osapi_Test_Setup
  *
  * Purpose:
@@ -1138,4 +1208,6 @@ void UtTest_Setup(void)
     ADD_TEST(OS_GetBaseForObjectType);
     ADD_TEST(OS_GetResourceName);
     ADD_TEST(OS_ObjectIdIterator);
+    ADD_TEST(OS_ObjectIDInteger);
+    ADD_TEST(OS_ObjectIDUndefined);
 }

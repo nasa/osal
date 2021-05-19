@@ -248,7 +248,7 @@ int32 OS_rmdir(const char *path)
     return_code = OS_TranslatePath(path, local_path);
     if (return_code == OS_SUCCESS)
     {
-        OS_DirRemove_Impl(local_path);
+        return_code = OS_DirRemove_Impl(local_path);
     }
 
     return return_code;

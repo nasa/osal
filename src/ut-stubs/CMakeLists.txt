@@ -55,45 +55,45 @@ add_custom_target(generate_osapi_stubs
 add_library(ut_osapi_stubs STATIC
     utstub-helpers.c
     osapi-binsem-stubs.c
-    osapi-binsem-hooks.c
+    osapi-binsem-handlers.c
     osapi-clock-stubs.c
-    osapi-clock-hooks.c
+    osapi-clock-handlers.c
     osapi-common-stubs.c
     osapi-countsem-stubs.c
-    osapi-countsem-hooks.c
+    osapi-countsem-handlers.c
     osapi-dir-stubs.c
-    osapi-dir-hooks.c
+    osapi-dir-handlers.c
     osapi-error-stubs.c
-    osapi-error-hooks.c
+    osapi-error-handlers.c
     osapi-file-stubs.c
-    osapi-file-hooks.c
+    osapi-file-handlers.c
     osapi-filesys-stubs.c
-    osapi-filesys-hooks.c
+    osapi-filesys-handlers.c
     osapi-heap-stubs.c
-    osapi-heap-hooks.c
+    osapi-heap-handlers.c
     osapi-idmap-stubs.c
-    osapi-idmap-hooks.c
+    osapi-idmap-handlers.c
     osapi-module-stubs.c
-    osapi-module-hooks.c
+    osapi-module-handlers.c
     osapi-mutex-stubs.c
-    osapi-mutex-hooks.c
+    osapi-mutex-handlers.c
     osapi-network-stubs.c
-    osapi-network-hooks.c
+    osapi-network-handlers.c
     osapi-printf-stubs.c
-    osapi-printf-hooks.c
+    osapi-printf-handlers.c
     osapi-queue-stubs.c
-    osapi-queue-hooks.c
+    osapi-queue-handlers.c
     osapi-select-stubs.c
     osapi-sockets-stubs.c
-    osapi-sockets-hooks.c
+    osapi-sockets-handlers.c
     osapi-task-stubs.c
-    osapi-task-hooks.c
+    osapi-task-handlers.c
     osapi-timer-stubs.c
-    osapi-timer-hooks.c
+    osapi-timer-handlers.c
     osapi-timebase-stubs.c
-    osapi-timebase-hooks.c
+    osapi-timebase-handlers.c
     osapi-version-stubs.c
-    osapi-version-hooks.c
+    osapi-version-handlers.c
 )
 
 # Some of the internal API definitions in stubs are based on
