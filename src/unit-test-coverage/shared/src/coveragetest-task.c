@@ -197,10 +197,6 @@ void Test_OS_TaskGetId(void)
     UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), idbuf.val);
     objid = OS_TaskGetId();
     OSAPI_TEST_OBJID(objid, ==, idbuf.id);
-
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
-    objid = OS_TaskGetId();
-    OSAPI_TEST_OBJID(objid, ==, OS_OBJECT_ID_UNDEFINED);
 }
 
 void Test_OS_TaskGetIdByName(void)

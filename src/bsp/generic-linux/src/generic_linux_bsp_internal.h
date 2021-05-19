@@ -42,6 +42,7 @@ typedef struct
 {
     bool            EnableTermControl; /**< Will be set "true" when invoked from a TTY device, false otherwise */
     pthread_mutex_t AccessMutex;
+    int             AccessCancelState;
 } OS_BSP_GenericLinuxGlobalData_t;
 
 /*

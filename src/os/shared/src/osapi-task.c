@@ -339,17 +339,9 @@ int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority)
  *-----------------------------------------------------------------*/
 osal_id_t OS_TaskGetId(void)
 {
-    OS_object_token_t token;
-    osal_id_t         task_id;
+    osal_id_t task_id;
 
     task_id = OS_TaskGetId_Impl();
-
-    /* Confirm the task master table entry matches the expected.
-     * If not it means we have some stale/leftover value */
-    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, task_id, &token) != OS_SUCCESS)
-    {
-        task_id = OS_OBJECT_ID_UNDEFINED;
-    }
 
     return (task_id);
 } /* end OS_TaskGetId */
