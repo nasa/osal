@@ -53,6 +53,7 @@ extern char  g_long_task_name[UT_OS_NAME_BUFF_SIZE];
 **--------------------------------------------------------------------------------*/
 
 uint32    g_task_result = 0;
+bool      g_task_handler_called;
 osal_id_t g_task_sync_sem;
 osal_id_t g_task_ids[UT_OS_TASK_LIST_LEN];
 osal_id_t g_task_get_id_result;
@@ -130,6 +131,13 @@ void UT_os_task_create_test()
               OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
+    /* Bad stack size */
+
+    UT_RETVAL(OS_TaskCreate(&g_task_ids[3], g_task_names[3], generic_test_task, OSAL_STACKPTR_C(&g_task_stacks[3]), 0,
+                            OSAL_PRIORITY_C(UT_TASK_PRIORITY), 0),
+              OS_ERR_INVALID_SIZE);
+
+    /*-----------------------------------------------------*/
     /* #4 Name-too-long */
 
     UT_RETVAL(OS_TaskCreate(&g_task_ids[4], g_long_task_name, generic_test_task, OSAL_STACKPTR_C(&g_task_stacks[4]),
@@ -184,15 +192,22 @@ void UT_os_task_create_test()
     }
 
     /*-----------------------------------------------------*/
-    /* #9 Nominal */
+    /* Nominal, fixed stack */
 
     UT_NOMINAL(OS_TaskCreate(&g_task_ids[9], g_task_names[9], generic_test_task, OSAL_STACKPTR_C(&g_task_stacks[9]),
                              sizeof(g_task_stacks[9]), OSAL_PRIORITY_C(UT_TASK_PRIORITY), 0));
+
+    /*-----------------------------------------------------*/
+    /* Nominal, dynamic stack */
+
+    UT_NOMINAL(OS_TaskCreate(&g_task_ids[8], g_task_names[8], generic_test_task, NULL, sizeof(g_task_stacks[8]),
+                             OSAL_PRIORITY_C(UT_TASK_PRIORITY), 0));
 
     /* Delay to let child task run */
     OS_TaskDelay(200);
 
     /* Reset test environment */
+    UT_TEARDOWN(OS_TaskDelete(g_task_ids[8]));
     UT_TEARDOWN(OS_TaskDelete(g_task_ids[9]));
 }
 
@@ -235,6 +250,7 @@ void UT_os_task_delete_test()
 void delete_handler_callback(void)
 {
     UtPrintf("Task delete callback...\n");
+    g_task_handler_called = true;
 }
 
 /*--------------------------------------------------------------------------------*/
@@ -283,6 +299,8 @@ void UT_os_task_install_delete_handler_test(void)
     {
         OS_BinSemTake(g_task_sync_sem);
 
+        g_task_handler_called = false;
+
         if (UT_SETUP(OS_TaskCreate(&g_task_ids[2], g_task_names[2], delete_handler_test_task,
                                    OSAL_STACKPTR_C(&g_task_stacks[2]), sizeof(g_task_stacks[2]),
                                    OSAL_PRIORITY_C(UT_TASK_PRIORITY), 0)))
@@ -297,6 +315,7 @@ void UT_os_task_install_delete_handler_test(void)
 
             UtAssert_True(g_task_result == OS_SUCCESS, "OS_TaskInstallDeleteHandler() (%d) == OS_SUCCESS",
                           (int)g_task_result);
+            UtAssert_True(g_task_handler_called, "OS_TaskInstallDeleteHandler() callback invoked");
         }
 
         UT_TEARDOWN(OS_BinSemDelete(g_task_sync_sem));
@@ -374,10 +393,27 @@ void UT_os_task_exit_test(void)
 **--------------------------------------------------------------------------------*/
 void UT_os_task_delay_test()
 {
-    /*-----------------------------------------------------*/
-    /* #2 Nominal */
+    OS_time_t before_time;
+    OS_time_t after_time;
+    int64     elapsed;
 
+    /*-----------------------------------------------------*/
+    /* Nominal, 100ms delay */
+    UT_SETUP(OS_GetLocalTime(&before_time));
     UT_NOMINAL(OS_TaskDelay(100));
+    UT_SETUP(OS_GetLocalTime(&after_time));
+
+    elapsed = OS_TimeGetTotalMilliseconds(OS_TimeSubtract(after_time, before_time));
+    UtAssert_True(elapsed >= 100, "Elapsed time %ld msec, expected 100", (long)elapsed);
+
+    /*-----------------------------------------------------*/
+    /* Nominal, 250ms delay */
+    UT_SETUP(OS_GetLocalTime(&before_time));
+    UT_NOMINAL(OS_TaskDelay(250));
+    UT_SETUP(OS_GetLocalTime(&after_time));
+
+    elapsed = OS_TimeGetTotalMilliseconds(OS_TimeSubtract(after_time, before_time));
+    UtAssert_True(elapsed >= 250, "Elapsed time %ld msec, expected 250", (long)elapsed);
 }
 
 /*--------------------------------------------------------------------------------*
@@ -552,6 +588,28 @@ void UT_os_task_get_info_test()
         /* Reset test environment */
         UT_TEARDOWN(OS_TaskDelete(g_task_ids[3]));
     }
+}
+
+/*--------------------------------------------------------------------------------*
+** Syntax: OS_TaskFindIdBySystemData
+** Purpose: Finds the abstract OSAL task ID from the system ID data
+**--------------------------------------------------------------------------------*/
+void UT_os_task_getid_by_sysdata_test()
+{
+    uint8     sysdata;
+    osal_id_t task_id;
+
+    /*
+     * NOTE: OSAL does not provide a means to get the low level system ID data directly.
+     * This API is intended to aid in exception processing in a PSP/BSP, where the
+     * low level task information is obtained outside of OSAL in a platform-specific
+     * manner.
+     *
+     * As a result this cannot check for nominal conditions, only validate the error checking.
+     */
+    UT_RETVAL(OS_TaskFindIdBySystemData(NULL, &sysdata, sizeof(sysdata)), OS_INVALID_POINTER);
+    UT_RETVAL(OS_TaskFindIdBySystemData(&task_id, NULL, sizeof(sysdata)), OS_INVALID_POINTER);
+    UT_RETVAL(OS_TaskFindIdBySystemData(&task_id, &sysdata, 0), OS_INVALID_POINTER);
 }
 
 /*================================================================================*

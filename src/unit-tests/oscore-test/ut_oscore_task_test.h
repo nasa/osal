@@ -67,6 +67,7 @@ void UT_os_task_get_id_by_name_test(void);
 void UT_os_task_get_info_test(void);
 void UT_os_task_delay_test(void);
 void UT_os_task_get_id_test(void);
+void UT_os_task_getid_by_sysdata_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
