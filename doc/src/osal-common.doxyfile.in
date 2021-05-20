@@ -1,0 +1,76 @@
+#---------------------------------------------------------------------------
+# Project related configuration options, shared for all cFE doxygen outputs
+#---------------------------------------------------------------------------
+@INCLUDE_PATH          = @OSAL_NATIVE_INCLUDE_DIRS@
+OUTPUT_DIRECTORY       = .
+ABBREVIATE_BRIEF       = "The $name class " \
+                         "The $name widget " \
+                         "The $name file " \
+                         is \
+                         provides \
+                         specifies \
+                         contains \
+                         represents \
+                         a \
+                         an \
+                         the
+TAB_SIZE               = 4
+OPTIMIZE_OUTPUT_FOR_C  = YES
+ALIASES               +=  nonnull="(must not be null)"
+ALIASES               +=  nonzero="(must not be zero)"
+ALIASES               +=  covtest="(return value only verified in coverage test)"
+
+PREDEFINED            += @OSALDOC_PREDEFINED@
+
+#---------------------------------------------------------------------------
+# Build related configuration options
+#---------------------------------------------------------------------------
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+CASE_SENSE_NAMES       = NO
+GENERATE_TODOLIST      = NO
+#---------------------------------------------------------------------------
+# configuration options related to warning and progress messages
+#---------------------------------------------------------------------------
+WARN_NO_PARAMDOC       = YES
+#---------------------------------------------------------------------------
+# configuration options related to the input files
+#---------------------------------------------------------------------------
+STRIP_FROM_PATH        = @OSAL_SOURCE_NATIVE_DIR@
+FILE_PATTERNS          = *.c *.cpp *.cc *.C *.h *.hh *.hpp *.H *.dox *.md
+RECURSIVE              = YES
+EXAMPLE_PATTERNS       = *
+#---------------------------------------------------------------------------
+# configuration options related to source browsing
+#---------------------------------------------------------------------------
+SOURCE_BROWSER         = YES
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+#---------------------------------------------------------------------------
+# configuration options related to the LaTeX output
+#---------------------------------------------------------------------------
+GENERATE_LATEX         = NO
+LATEX_CMD_NAME         = latex
+COMPACT_LATEX          = YES
+PAPER_TYPE             = letter
+#---------------------------------------------------------------------------
+# configuration options related to the RTF output
+#---------------------------------------------------------------------------
+COMPACT_RTF            = YES
+#---------------------------------------------------------------------------
+# Configuration options related to the dot tool
+#---------------------------------------------------------------------------
+CLASS_DIAGRAMS         = NO
+HAVE_DOT               = YES
+CLASS_GRAPH            = NO
+COLLABORATION_GRAPH    = NO
+INCLUDE_GRAPH          = NO
+INCLUDED_BY_GRAPH      = NO
+CALL_GRAPH             = YES
+GRAPHICAL_HIERARCHY    = NO
+MAX_DOT_GRAPH_DEPTH    = 1000
+#---------------------------------------------------------------------------
+# Configuration::additions related to the search engine
+#---------------------------------------------------------------------------
+SEARCHENGINE           = NO
