@@ -192,6 +192,7 @@ void UtTest_Setup(void)
     UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     UtTest_Add(UT_os_apiinit_test, NULL, NULL, "OS_API_Init");
+    UtTest_Add(UT_os_registereventhandler_test, NULL, NULL, "OS_RegisterEventHandler");
 
     UtTest_Add(UT_os_printf_test, NULL, NULL, "OS_printf");
     UtTest_Add(UT_os_printfenable_test, NULL, NULL, "OS_printf_enable");

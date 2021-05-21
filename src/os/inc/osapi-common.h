@@ -136,7 +136,7 @@ void OS_Application_Run(void);
  *         means the OSAL can not be initialized.  Typical platform specific response
  *         is to abort since additional OSAL calls will have undefined behavior.
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERROR   @copybrief OS_ERROR
+ * @retval #OS_ERROR   @copybrief OS_ERROR @covtest
  */
 int32 OS_API_Init(void);
 
@@ -228,10 +228,9 @@ void OS_ApplicationExit(int32 Status);
  * application-defined handlers for these events should not block or attempt
  * to access other OSAL resources.
  *
- * @param[in] handler The application-provided event handler
+ * @param[in] handler The application-provided event handler @nonnull
  * @return Execution status, see @ref OSReturnCodes.
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERROR   @copybrief OS_ERROR
  * @retval #OS_INVALID_POINTER if handler is NULL
  */
 int32 OS_RegisterEventHandler(OS_EventHandler_t handler);
