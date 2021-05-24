@@ -155,20 +155,20 @@ foreach my $hdr (@hdrlist)
 
     # Now Find function prototypes
     foreach (@lines) {
-        next if (/typedef/);        # ignore typedefs
-        next if (/static inline/);  # ignore
+        next if (/\btypedef\b/);        # ignore typedefs
+        next if (/\bstatic inline\b/);  # ignore
 
 
         # discard "extern" qualifier
         # (but other qualifiers like "const" are OK and should be preserved, as
         # it is part of return type).
-        s/extern//;
+        s/\bextern\b//;
 
         # The following macros are defined in OSAL common_types.h as function attributes
         # They may appear on other function declarations, and should be ignored here.
-        s/_EXTENSION_//;
-        s/OS_USED//;
-        s/OS_PRINTF\(.*?\)//;
+        s/\b_EXTENSION_\b//;
+        s/\bOS_USED\b//;
+        s/\bOS_PRINTF\(.*?\)//;
 
         # scrub whitespace for consistency - multiple spaces become single space
         # and trim leading/trailing spaces again

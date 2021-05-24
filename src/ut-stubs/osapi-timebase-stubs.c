@@ -38,13 +38,13 @@ extern void UT_DefaultHandler_OS_TimeBaseGetInfo(void *, UT_EntryKey_t, const UT
  * Generated stub function for OS_TimeBaseCreate()
  * ----------------------------------------------------
  */
-int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_TimerSync_t al_sync)
+int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_TimerSync_t external_sync)
 {
     UT_GenStub_SetupReturnBuffer(OS_TimeBaseCreate, int32);
 
     UT_GenStub_AddParam(OS_TimeBaseCreate, osal_id_t *, timebase_id);
     UT_GenStub_AddParam(OS_TimeBaseCreate, const char *, timebase_name);
-    UT_GenStub_AddParam(OS_TimeBaseCreate, OS_TimerSync_t, al_sync);
+    UT_GenStub_AddParam(OS_TimeBaseCreate, OS_TimerSync_t, external_sync);
 
     UT_GenStub_Execute(OS_TimeBaseCreate, Basic, UT_DefaultHandler_OS_TimeBaseCreate);
 
