@@ -129,6 +129,12 @@ foreach my $hdr (@hdrlist)
     }
     close(HDR);
 
+    foreach (@lines)
+    {
+        # Truncate each line at C++-style comment
+        s/\/\/.*$//;
+    }
+
     # combine all content into a single string
     # this eases processing of multi-line constructs
     $file = join('', @lines);
