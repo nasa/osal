@@ -315,7 +315,7 @@ int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time)
 
     ARGCHECK(start_time < (UINT32_MAX / 2), OS_TIMER_ERR_INVALID_ARGS);
     ARGCHECK(interval_time < (UINT32_MAX / 2), OS_TIMER_ERR_INVALID_ARGS);
-    ARGCHECK(start_time != 0 || interval_time != 0, OS_ERROR);
+    ARGCHECK(start_time != 0 || interval_time != 0, OS_TIMER_ERR_INVALID_ARGS);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.

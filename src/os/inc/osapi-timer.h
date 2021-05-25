@@ -61,22 +61,20 @@ typedef struct
  * which is created and deleted with the timer object itself.  The internal time base
  * is configured for an OS simulated timer tick at the same interval as the timer.
  *
+ * The callback function should be declared according to the OS_TimerCallback_t
+ * function pointer type.  The timer_id value is passed to the callback function.
+ *
  * @note clock_accuracy comes from the underlying OS tick value.  The nearest integer
  *       microsecond value is returned, so may not be exact.
  *
- * @warning Depending on the OS, the callback_ptr function may be similar to an
- *          interrupt service routine. Calls that cause the code to block or require
- *          an application context (like sending events) are generally not supported.
+ * @sa OS_TimerCallback_t
  *
- * @param[out]  timer_id        The non-zero resource ID of the timer object
- * @param[in]   timer_name      Name of the timer object
+ * @param[out]  timer_id        Will be set to the non-zero resource ID of the timer object @nonnull
+ * @param[in]   timer_name      Name of the timer object @nonnull
  * @param[out]  clock_accuracy  Expected precision of the timer, in microseconds. This
  *                              is the underlying tick value rounded to the nearest
- *                              microsecond integer.
- * @param[in]   callback_ptr    The function pointer of the timer callback or ISR that
- *                              will be called by the timer. The user’s function is
- *                              declared as follows: <tt> void timer_callback(uint32 timer_id) </tt>
- *                              Where the timer_id is passed in to the function by the OSAL
+ *                              microsecond integer. @nonnull
+ * @param[in]   callback_ptr    The function pointer of the timer callback @nonnull.
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -84,8 +82,8 @@ typedef struct
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NAME_TAKEN if the name is already in use by another timer.
  * @retval #OS_ERR_NO_FREE_IDS if all of the timers are already allocated.
- * @retval #OS_TIMER_ERR_INVALID_ARGS if the callback pointer is zero.
- * @retval #OS_TIMER_ERR_UNAVAILABLE if the timer cannot be created.
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if invoked from a timer context
+ * @retval #OS_TIMER_ERR_INTERNAL if there was an error programming the OS timer @covtest
  */
 int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *clock_accuracy,
                      OS_TimerCallback_t callback_ptr);
@@ -106,17 +104,28 @@ int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *clock_
  * allowing a single opaque argument to be passed to the callback routine.
  * The OSAL implementation does not use this parameter, and may be set NULL.
  *
- * @warning Depending on the OS, the callback_ptr function may be similar to an
- *          interrupt service routine. Calls that cause the code to block or require
- *          an application context (like sending events) are generally not supported.
+ * The callback function for this method should be declared according to the
+ * OS_ArgCallback_t function pointer type.  The timer_id is passed in to the
+ * function by the OSAL, and the arg parameter is passed through from the
+ * callback_arg argument on this call.
  *
- * @param[out]  timer_id        The non-zero resource ID of the timer object
- * @param[in]   timer_name      Name of the timer object
+ * @sa OS_ArgCallback_t
+ *
+ * @param[out]  timer_id        Will be set to the non-zero resource ID of the timer object @nonnull
+ * @param[in]   timer_name      Name of the timer object @nonnull
  * @param[in]   timebase_id     The time base resource to use as a reference
- * @param[in]   callback_ptr    Application-provided function to invoke
- * @param[in]   callback_arg    Opaque argument to pass to callback function
+ * @param[in]   callback_ptr    Application-provided function to invoke @nonnull
+ * @param[in]   callback_arg    Opaque argument to pass to callback function, may be NULL
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_INVALID_POINTER if any parameters are NULL
+ * @retval #OS_ERR_INVALID_ID if the timebase_id parameter is not valid
+ * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
+ * @retval #OS_ERR_NAME_TAKEN if the name is already in use by another timer.
+ * @retval #OS_ERR_NO_FREE_IDS if all of the timers are already allocated.
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if invoked from a timer context
+ * @retval #OS_TIMER_ERR_INTERNAL if there was an error programming the OS timer @covtest
  */
 int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebase_id, OS_ArgCallback_t callback_ptr,
                   void *callback_arg);
@@ -149,10 +158,9 @@ int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebas
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the timer_id is not valid.
- * @retval #OS_TIMER_ERR_INTERNAL if there was an error programming the OS timer.
- * @retval #OS_ERROR if both start time and interval time are zero.
+ * @retval #OS_TIMER_ERR_INTERNAL if there was an error programming the OS timer @covtest
  * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
- * @retval #OS_TIMER_ERR_INVALID_ARGS if the start_time or interval_time is out of range
+ * @retval #OS_TIMER_ERR_INVALID_ARGS if the start_time or interval_time is out of range, or both 0
  */
 int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time);
 
@@ -168,7 +176,7 @@ int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the timer_id is invalid.
- * @retval #OS_TIMER_ERR_INTERNAL if there was a problem deleting the timer in the host OS.
+ * @retval #OS_TIMER_ERR_INTERNAL if there was a problem deleting the timer in the host OS @covtest
  * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
  */
 int32 OS_TimerDelete(osal_id_t timer_id);
@@ -179,8 +187,8 @@ int32 OS_TimerDelete(osal_id_t timer_id);
  *
  * Outputs the ID associated with the given timer, if it exists.
  *
- * @param[out] timer_id      The timer ID corresponding to the name
- * @param[in]  timer_name    The timer name to find
+ * @param[out] timer_id      Will be set to the timer ID corresponding to the name @nonnull
+ * @param[in]  timer_name    The timer name to find @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -199,7 +207,7 @@ int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name);
  * information known about that timer into a structure pointer to by timer_prop.
  *
  * @param[in]  timer_id      The timer ID to operate on
- * @param[out] timer_prop    Buffer containing timer properties
+ * @param[out] timer_prop    Buffer containing timer properties @nonnull
  *                           - creator: the OS task ID of the task that created this timer
  *                           - name: the string name of the timer
  *                           - start_time: the start time in microseconds, if any
