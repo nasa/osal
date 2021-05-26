@@ -110,6 +110,15 @@ void OS_BSP_Lock_Impl(void)
     {
         BSP_DEBUG("pthread_mutex_lock: %s\n", strerror(status));
     }
+    else
+    {
+        /*
+         * Temporarily Disable/Defer thread cancellation.
+         * Note that OS_BSP_ConsoleOutput_Impl() calls write() which is a cancellation point.
+         * So if this calling task is canceled, it risks leaving the BSP locked.
+         */
+        pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &OS_BSP_GenericLinuxGlobal.AccessCancelState);
+    }
 }
 
 /*----------------------------------------------------------------
@@ -124,6 +133,11 @@ void OS_BSP_Unlock_Impl(void)
     if (status < 0)
     {
         BSP_DEBUG("pthread_mutex_unlock: %s\n", strerror(status));
+    }
+    else
+    {
+        /* Restore previous cancelability state */
+        pthread_setcancelstate(OS_BSP_GenericLinuxGlobal.AccessCancelState, NULL);
     }
 }
 
