@@ -665,7 +665,7 @@ void TestGenericQueries(void)
 
     /* Test the OS_GetResourceName() API function */
     status = OS_GetResourceName(mut_0, ResourceName, OSAL_SIZE_C(0));
-    UtAssert_True(status == OS_INVALID_POINTER, "OS_GetResourceName (%lx,%ld) == OS_INVALID_POINTER",
+    UtAssert_True(status == OS_ERR_INVALID_SIZE, "OS_GetResourceName (%lx,%ld) == OS_ERR_INVALID_SIZE",
                   OS_ObjectIdToInteger(mut_0), (long)status);
 
     status = OS_GetResourceName(msgq_0, ResourceName, sizeof(ResourceName));
@@ -674,7 +674,7 @@ void TestGenericQueries(void)
     UtAssert_StrCmp(ResourceName, "q 0", "Output value correct");
 
     status = OS_GetResourceName(OS_OBJECT_ID_UNDEFINED, ResourceName, sizeof(ResourceName));
-    UtAssert_True(status == OS_ERR_INCORRECT_OBJ_TYPE, "OS_GetResourceName (%lx,%ld) == OS_ERR_INCORRECT_OBJ_TYPE",
+    UtAssert_True(status == OS_ERR_INVALID_ID, "OS_GetResourceName (%lx,%ld) == OS_ERR_INVALID_ID",
                   OS_ObjectIdToInteger(OS_OBJECT_ID_UNDEFINED), (long)status);
 
     status = OS_GetResourceName(bin_0, ResourceName, OSAL_SIZE_C(1));

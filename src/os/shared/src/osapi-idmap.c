@@ -331,7 +331,7 @@ int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype
      */
     if (OS_GetMaxForObjectType(idtype) == 0)
     {
-        return OS_ERR_INCORRECT_OBJ_TYPE;
+        return OS_ERR_INVALID_ID;
     }
 
     token->lock_mode = lock_mode;
@@ -1473,10 +1473,8 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size)
     OS_object_token_t   token;
 
     /* sanity check the passed-in buffer and size */
-    if (buffer == NULL || buffer_size == 0)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(buffer);
+    OS_CHECK_SIZE(buffer_size);
 
     /*
      * Initially set the output string to empty.
