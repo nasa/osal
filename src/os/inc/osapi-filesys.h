@@ -80,10 +80,11 @@ typedef struct
  *      OS_FileSysAddFixedMap(&fs_id, "/", "/root");
  *
  * @param[out]  filesys_id  A non-zero OSAL ID reflecting the file system
- * @param[in]   phys_path   The native system directory (an existing mount point)
- * @param[in]   virt_path   The virtual mount point of this filesystem
+ * @param[in]   phys_path   The native system directory (an existing mount point) @nonnull
+ * @param[in]   virt_path   The virtual mount point of this filesystem @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the overall phys_path is too long
  * @retval #OS_ERR_NAME_TOO_LONG if the phys_path basename (filesystem name) is too long
  * @retval #OS_INVALID_POINTER if any argument is NULL
@@ -104,16 +105,17 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
  *
  * @param[in]   address   The address at which to start the new disk.  If address == 0
  *                        space will be allocated by the OS.
- * @param[in]   devname   The underlying kernel device to use, if applicable.
- * @param[in]   volname   The name of the volume (see note)
+ * @param[in]   devname   The underlying kernel device to use, if applicable. @nonnull
+ * @param[in]   volname   The name of the volume (see note) @nonnull
  * @param[in]   blocksize The size of a single block on the drive
  * @param[in]   numblocks The number of blocks to allocate for the drive
  *
  * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_INVALID_POINTER if devname is NULL
- * @retval #OS_FS_ERR_DRIVE_NOT_CREATED if the OS calls to create the the drive failed
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_INVALID_POINTER if devname or volname is NULL
+ * @retval #OS_FS_ERR_PATH_TOO_LONG if the overall devname or volname is too long
  * @retval #OS_FS_ERR_DEVICE_NOT_FREE if the volume table is full
- * @retval #OS_SUCCESS on creating the disk
+ * @retval #OS_FS_ERR_DRIVE_NOT_CREATED if an unexpected/unhandled OS error occurs @covtest
  */
 int32 OS_mkfs(char *address, const char *devname, const char *volname, size_t blocksize, osal_blockcount_t numblocks);
 
@@ -123,13 +125,15 @@ int32 OS_mkfs(char *address, const char *devname, const char *volname, size_t bl
  *
  * Mounts a file system / block device at the given mount point.
  *
- * @param[in]   devname    The name of the drive to mount. devname is the same from #OS_mkfs
- * @param[in]   mountpoint The name to call this disk from now on
+ * @param[in]   devname    The name of the drive to mount. devname is the same from #OS_mkfs @nonnull
+ * @param[in]   mountpoint The name to call this disk from now on @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_NAME_NOT_FOUND if the device name does not exist in OSAL
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the mount point string is too long
  * @retval #OS_INVALID_POINTER if any argument is NULL
+ * @retval #OS_ERROR if an unexpected/unhandled OS error occurs @covtest
  */
 int32 OS_mount(const char *devname, const char *mountpoint);
 
@@ -146,8 +150,8 @@ int32 OS_mount(const char *devname, const char *mountpoint);
  *
  * @param[in]   address   The address at which to start the new disk.  If address == 0,
  *                        then space will be allocated by the OS
- * @param[in]   devname   The underlying kernel device to use, if applicable.
- * @param[in]   volname   The name of the volume (see note)
+ * @param[in]   devname   The underlying kernel device to use, if applicable. @nonnull
+ * @param[in]   volname   The name of the volume (see note) @nonnull
  * @param[in]   blocksize The size of a single block on the drive
  * @param[in]   numblocks The number of blocks to allocate for the drive
  *
@@ -156,7 +160,7 @@ int32 OS_mount(const char *devname, const char *mountpoint);
  * @retval #OS_INVALID_POINTER if devname or volname are  NULL
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the name is too long
  * @retval #OS_FS_ERR_DEVICE_NOT_FREE if the volume table is full
- * @retval #OS_FS_ERR_DRIVE_NOT_CREATED on error
+ * @retval #OS_FS_ERR_DRIVE_NOT_CREATED if an unexpected/unhandled OS error occurs @covtest
  */
 int32 OS_initfs(char *address, const char *devname, const char *volname, size_t blocksize, osal_blockcount_t numblocks);
 
@@ -167,14 +171,14 @@ int32 OS_initfs(char *address, const char *devname, const char *volname, size_t 
  * This function will remove or un-map the target file system. Note that this is not
  * the same as un-mounting the file system.
  *
- * @param[in]   devname   The name of the "generic" drive
+ * @param[in]   devname   The name of the "generic" drive @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if devname is NULL
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the devname is too long
  * @retval #OS_ERR_NAME_NOT_FOUND if the devname does not exist in OSAL
- * @retval #OS_ERROR is the drive specified cannot be located
+ * @retval #OS_ERROR if an unexpected/unhandled OS error occurs @covtest
  */
 int32 OS_rmfs(const char *devname);
 
@@ -188,14 +192,14 @@ int32 OS_rmfs(const char *devname);
  * @note Any open file descriptors referencing this file system should
  * be closed prior to unmounting a drive
  *
- * @param[in]   mountpoint The mount point to remove from #OS_mount
+ * @param[in]   mountpoint The mount point to remove from #OS_mount @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if name is NULL
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the absolute path given is too long
  * @retval #OS_ERR_NAME_NOT_FOUND if the mountpoint is not mounted in OSAL
- * @retval #OS_ERROR if the OS calls failed
+ * @retval #OS_ERROR if an unexpected/unhandled OS error occurs @covtest
  */
 int32 OS_unmount(const char *mountpoint);
 
@@ -213,14 +217,14 @@ int32 OS_unmount(const char *mountpoint);
  * OS_fsBytesFree() is determined by multiplying blocks_free
  *      by the block_size member
  *
- * @param[in]  name       The device/path to operate on
- * @param[out] statbuf    Output structure to populate
+ * @param[in]  name       The device/path to operate on @nonnull
+ * @param[out] statbuf    Output structure to populate @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if name or statbuf is NULL
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the name is too long
- * @retval #OS_ERROR if the OS call failed
+ * @retval #OS_ERROR if an unexpected/unhandled OS error occurs @covtest
  */
 int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf);
 
@@ -230,17 +234,19 @@ int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf);
  *
  * Checks the drives for inconsistencies and optionally also repairs it
  *
- * @note not all operating systems implement this function
+ * @note not all operating systems implement this function.  If the underlying
+ *       OS does not provide a facility to check the volume, then OS_ERR_NOT_IMPLEMENTED
+ *       will be returned.
  *
- * @param[in]  name     The device/path to operate on
+ * @param[in]  name     The device/path to operate on @nonnull
  * @param[in]  repair   Whether to also repair inconsistencies
  *
  * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS             @copybrief OS_SUCCESS
+ * @retval #OS_SUCCESS             @copybrief OS_SUCCESS @covtest
  * @retval #OS_INVALID_POINTER     Name is NULL
  * @retval #OS_ERR_NOT_IMPLEMENTED @copybrief OS_ERR_NOT_IMPLEMENTED
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the name is too long
- * @retval #OS_ERROR               @copybrief OS_ERROR
+ * @retval #OS_ERROR               @copybrief OS_ERROR @covtest
  */
 int32 OS_chkfs(const char *name, bool repair);
 
@@ -251,15 +257,14 @@ int32 OS_chkfs(const char *name, bool repair);
  * Returns the name of the physical volume associated with the drive,
  * when given the OSAL mount point of the drive
  *
- * @param[out] PhysDriveName    Buffer to store physical drive name
- * @param[in]  MountPoint       OSAL mount point
+ * @param[out] PhysDriveName    Buffer to store physical drive name @nonnull
+ * @param[in]  MountPoint       OSAL mount point @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if either parameter is NULL
  * @retval #OS_ERR_NAME_NOT_FOUND if the MountPoint is not mounted in OSAL
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the MountPoint is too long
- * @retval #OS_ERROR if the mountpoint could not be found
  */
 int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint);
 
@@ -269,8 +274,11 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint);
  *
  * Translates a virtual path to an actual system path name
  *
- * @param[in]  VirtualPath      OSAL virtual path name
- * @param[out] LocalPath        Buffer to store native/translated path name
+ * @note The buffer provided in the LocalPath argument is required to be at
+ *       least OS_MAX_PATH_LEN characters in length.
+ *
+ * @param[in]  VirtualPath      OSAL virtual path name @nonnull
+ * @param[out] LocalPath        Buffer to store native/translated path name @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -288,7 +296,7 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath);
  * Returns information about the file system in an os_fsinfo_t.
  * This includes the number of open files and file systems
  *
- * @param[out] filesys_info     Buffer to store filesystem information
+ * @param[out] filesys_info     Buffer to store filesystem information @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
