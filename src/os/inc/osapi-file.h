@@ -127,8 +127,8 @@ typedef enum
  * of outputting the ID/descriptor separately from the return value, rather
  * than relying on the user to convert it back.
  *
- * @param[out] filedes     The handle ID (OS_OBJECT_ID_UNDEFINED on failure)
- * @param[in]  path        File name to create or open
+ * @param[out] filedes     The handle ID (OS_OBJECT_ID_UNDEFINED on failure) @nonnull
+ * @param[in]  path        File name to create or open @nonnull
  * @param[in]  flags       The file permissions - see @ref OS_file_flag_t
  * @param[in]  access_mode Intended access mode - see @ref OSFileAccess
  *
@@ -136,6 +136,11 @@ typedef enum
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERROR if the command was not executed properly
  * @retval #OS_INVALID_POINTER if pointer argument was NULL
+ * @retval #OS_ERR_NO_FREE_IDS if all available file handles are in use
+ * @retval #OS_FS_ERR_NAME_TOO_LONG if the filename portion of the path exceeds OS_MAX_FILE_NAME
+ * @retval #OS_FS_ERR_PATH_INVALID if the path argument is not valid
+ * @retval #OS_FS_ERR_PATH_TOO_LONG if the path argument exceeds OS_MAX_PATH_LEN
+
  */
 int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access_mode);
 
@@ -150,8 +155,8 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERROR if file descriptor could not be closed
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
+ * @retval #OS_ERROR if an unexpected/unhandled error occurs @covtest
  */
 int32 OS_close(osal_id_t filedes);
 
@@ -165,15 +170,16 @@ int32 OS_close(osal_id_t filedes);
  * function will return 0.
  *
  * @param[in]  filedes  The handle ID to operate on
- * @param[out] buffer   Storage location for file data
- * @param[in]  nbytes   Maximum number of bytes to read
+ * @param[out] buffer   Storage location for file data @nonnull
+ * @param[in]  nbytes   Maximum number of bytes to read @nonzero
  *
  * @note All OSAL error codes are negative int32 values.  Failure of this
  * call can be checked by testing if the result is less than 0.
  *
  * @return A non-negative byte count or appropriate error code, see @ref OSReturnCodes
  * @retval #OS_INVALID_POINTER if buffer is a null pointer
- * @retval #OS_ERROR if OS call failed
+ * @retval #OS_ERR_INVALID_SIZE if the passed-in size is not valid
+ * @retval #OS_ERROR if OS call failed @covtest
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  * @retval 0 if at end of file/stream data
  */
@@ -187,15 +193,16 @@ int32 OS_read(osal_id_t filedes, void *buffer, size_t nbytes);
  * described in filedes
  *
  * @param[in] filedes   The handle ID to operate on
- * @param[in] buffer    Source location for file data
- * @param[in] nbytes    Maximum number of bytes to read
+ * @param[in] buffer    Source location for file data @nonnull
+ * @param[in] nbytes    Maximum number of bytes to read @nonzero
  *
  * @note All OSAL error codes are negative int32 values.  Failure of this
  * call can be checked by testing if the result is less than 0.
  *
  * @return A non-negative byte count or appropriate error code, see @ref OSReturnCodes
  * @retval #OS_INVALID_POINTER if buffer is NULL
- * @retval #OS_ERROR if OS call failed
+ * @retval #OS_ERR_INVALID_SIZE if the passed-in size is not valid
+ * @retval #OS_ERROR if OS call failed @covtest
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  * @retval 0 if file/stream cannot accept any more data
  */
@@ -230,8 +237,8 @@ int32 OS_write(osal_id_t filedes, const void *buffer, size_t nbytes);
  * If an EOF condition occurs prior to timeout, this function returns zero.
  *
  * @param[in]  filedes   The handle ID to operate on
- * @param[out] buffer    Storage location for file data
- * @param[in]  nbytes    Maximum number of bytes to read
+ * @param[out] buffer    Storage location for file data @nonnull
+ * @param[in]  nbytes    Maximum number of bytes to read @nonzero
  * @param[in]  timeout   Maximum time to wait, in milliseconds (OS_PEND = forever)
  *
  * @returns Byte count on success or appropriate error code, see @ref OSReturnCodes
@@ -265,8 +272,8 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout
  * If an EOF condition occurs prior to timeout, this function returns zero.
  *
  * @param[in] filedes   The handle ID to operate on
- * @param[in] buffer    Source location for file data
- * @param[in] nbytes    Maximum number of bytes to read
+ * @param[in] buffer    Source location for file data @nonnull
+ * @param[in] nbytes    Maximum number of bytes to read @nonzero
  * @param[in] timeout   Maximum time to wait, in milliseconds (OS_PEND = forever)
  *
  * @return A non-negative byte count or appropriate error code, see @ref OSReturnCodes
@@ -282,12 +289,16 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
 /**
  * @brief Changes the permissions of a file
  *
- * @param[in] path        File to change
+ * @param[in] path        File to change @nonnull
  * @param[in] access_mode Desired access mode - see @ref OSFileAccess
  *
- * @note Some file systems do not implement permissions
+ * @note Some file systems do not implement permissions.  If the underlying OS
+ *       does not support this operation, then #OS_ERR_NOT_IMPLEMENTED is returned.
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS @covtest
+ * @retval #OS_ERR_NOT_IMPLEMENTED if the filesystem does not support this call
+ * @retval #OS_INVALID_POINTER if the path argument is NULL
  */
 int32 OS_chmod(const char *path, uint32 access_mode);
 
@@ -297,8 +308,8 @@ int32 OS_chmod(const char *path, uint32 access_mode);
  *
  * Returns information about a file or directory in a os_fstat_t structure
  *
- * @param[in]  path      The file to operate on
- * @param[out] filestats Buffer to store file information
+ * @param[in]  path      The file to operate on @nonnull
+ * @param[out] filestats Buffer to store file information @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -323,7 +334,7 @@ int32 OS_stat(const char *path, os_fstat_t *filestats);
  * @return Byte offset from the beginning of the file or appropriate error code,
            see @ref OSReturnCodes
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
- * @retval #OS_ERROR if OS call failed
+ * @retval #OS_ERROR if OS call failed @covtest
  */
 int32 OS_lseek(osal_id_t filedes, int32 offset, uint32 whence);
 
@@ -338,7 +349,7 @@ int32 OS_lseek(osal_id_t filedes, int32 offset, uint32 whence);
  * operation based on a varienty of potential configurations.  For portability,
  * it is recommended that applications ensure the file is closed prior to removal.
  *
- * @param[in]  path      The file to operate on
+ * @param[in]  path      The file to operate on @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -362,8 +373,8 @@ int32 OS_remove(const char *path);
  * operation based on a varienty of potential configurations.  For portability,
  * it is recommended that applications ensure the file is closed prior to removal.
  *
- * @param[in]  old_filename      The original filename
- * @param[in]  new_filename      The desired filename
+ * @param[in]  old_filename      The original filename @nonnull
+ * @param[in]  new_filename      The desired filename @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -384,8 +395,8 @@ int32 OS_rename(const char *old_filename, const char *new_filename);
  * operation based on a varienty of potential configurations.  For portability,
  * it is recommended that applications ensure the file is closed prior to removal.
  *
- * @param[in]  src       The source file to operate on
- * @param[in]  dest      The destination file
+ * @param[in]  src       The source file to operate on @nonnull
+ * @param[in]  dest      The destination file @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -412,8 +423,8 @@ int32 OS_cp(const char *src, const char *dest);
  * operation based on a varienty of potential configurations.  For portability,
  * it is recommended that applications ensure the file is closed prior to removal.
  *
- * @param[in]  src       The source file to operate on
- * @param[in]  dest      The destination file
+ * @param[in]  src       The source file to operate on @nonnull
+ * @param[in]  dest      The destination file @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -432,7 +443,7 @@ int32 OS_mv(const char *src, const char *dest);
  * Copies the information of the given file descriptor into a structure passed in
  *
  * @param[in]  filedes  The handle ID to operate on
- * @param[out] fd_prop  Storage buffer for file information
+ * @param[out] fd_prop  Storage buffer for file information @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -448,9 +459,10 @@ int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop);
  * This function takes a filename and determines if the file is open. The function
  * will return success if the file is open.
  *
- * @param[in]  Filename      The file to operate on
+ * @param[in]  Filename      The file to operate on @nonnull
  *
- * @return OS_SUCCESS if the file is open, or appropriate error code
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS if the file is open
  * @retval #OS_ERROR if the file is not open
  * @retval #OS_INVALID_POINTER if the filename argument is NULL
  */
@@ -464,7 +476,7 @@ int32 OS_FileOpenCheck(const char *Filename);
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERROR   if one or more file close returned an error
+ * @retval #OS_ERROR   if one or more file close returned an error @covtest
  */
 int32 OS_CloseAllFiles(void);
 
@@ -476,12 +488,12 @@ int32 OS_CloseAllFiles(void);
  * This will only work if the name passed in is the same name used to open
  * the file.
  *
- * @param[in]  Filename      The file to close
+ * @param[in]  Filename      The file to close @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_FS_ERR_PATH_INVALID if the file is not found
- * @retval #OS_ERROR   if the file close returned an error
+ * @retval #OS_ERROR   if the file close returned an error @covtest
  * @retval #OS_INVALID_POINTER if the filename argument is NULL
  */
 int32 OS_CloseFileByName(const char *Filename);

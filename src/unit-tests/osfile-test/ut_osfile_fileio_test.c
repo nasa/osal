@@ -539,6 +539,7 @@ void UT_os_readfile_test()
         /*-----------------------------------------------------*/
         /* #1 Null-pointer-arg */
         UT_RETVAL(OS_read(g_fDescs[0], NULL, sizeof(g_readBuff)), OS_INVALID_POINTER);
+        UT_RETVAL(OS_read(g_fDescs[0], g_readBuff, 0), OS_ERR_INVALID_SIZE);
 
         /* Reset test environment */
         UT_TEARDOWN(OS_close(g_fDescs[0]));
@@ -569,6 +570,9 @@ void UT_os_readfile_test()
             memset(g_readBuff, '\0', sizeof(g_readBuff));
             UT_RETVAL(OS_read(g_fDescs[0], g_readBuff, sizeof(g_readBuff)), expected_len);
             UtAssert_StrCmp(g_readBuff, g_writeBuff, "%s == %s", g_readBuff, g_writeBuff);
+
+            /* confirm that read returns 0 at end of file */
+            UT_RETVAL(OS_read(g_fDescs[0], g_readBuff, sizeof(g_readBuff)), 0);
 
             UT_TEARDOWN(OS_close(g_fDescs[0]));
         }
@@ -642,6 +646,7 @@ void UT_os_writefile_test()
     if (UT_SETUP(OS_OpenCreate(&g_fDescs[0], g_fNames[0], OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE)))
     {
         UT_RETVAL(OS_write(g_fDescs[0], NULL, sizeof(g_writeBuff)), OS_INVALID_POINTER);
+        UT_RETVAL(OS_write(g_fDescs[0], g_writeBuff, 0), OS_ERR_INVALID_SIZE);
 
         /* Reset test environment */
         UT_TEARDOWN(OS_close(g_fDescs[0]));
@@ -672,6 +677,9 @@ void UT_os_writefile_test()
             memset(g_readBuff, '\0', sizeof(g_readBuff));
             UT_RETVAL(OS_read(g_fDescs[0], g_readBuff, sizeof(g_readBuff)), expected_len);
             UtAssert_StrCmp(g_readBuff, g_writeBuff, "%s == %s", g_readBuff, g_writeBuff);
+
+            /* confirm that read returns 0 at end of file */
+            UT_RETVAL(OS_read(g_fDescs[0], g_readBuff, sizeof(g_readBuff)), 0);
 
             /* Reset test environment */
             UT_TEARDOWN(OS_close(g_fDescs[0]));
@@ -789,11 +797,24 @@ void UT_os_lseekfile_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_chmodfile_test()
 {
+    UT_RETVAL(OS_chmod(NULL, OS_READ_WRITE), OS_INVALID_POINTER);
+
     /*-----------------------------------------------------*/
-    /* API not implemented */
-    if (!UT_IMPL(OS_chmod(NULL, 0644)))
+    /* allow API not implemented */
+    UT_os_sprintf(g_fNames[0], "%s/chmod.txt", g_mntName);
+    if (UT_SETUP(OS_OpenCreate(&g_fDescs[0], g_fNames[0], OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE)))
     {
-        return;
+        UT_SETUP(OS_close(g_fDescs[0]));
+
+        /* change to read-only permission, this is allowed to return OS_ERR_NOT_IMPLEMENTED */
+        if (UT_NOMINAL_OR_NOTIMPL(OS_chmod(g_fNames[0], OS_READ_ONLY)))
+        {
+            /* change it back */
+            UT_NOMINAL(OS_chmod(g_fNames[0], OS_READ_WRITE));
+        }
+
+        /* Reset test environment */
+        UT_TEARDOWN(OS_remove(g_fNames[0]));
     }
 }
 
@@ -859,14 +880,6 @@ void UT_os_statfile_test()
     size_t     expected_len;
 
     /*-----------------------------------------------------*/
-    /* API not implemented */
-
-    if (!UT_IMPL(OS_stat(NULL, NULL)))
-    {
-        return;
-    }
-
-    /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */
     UT_RETVAL(OS_stat(NULL, &fstats1), OS_INVALID_POINTER);
     UT_RETVAL(OS_stat(g_fNames[0], NULL), OS_INVALID_POINTER);
@@ -880,6 +893,7 @@ void UT_os_statfile_test()
     /* #3 Path-too-long-arg */
 
     UT_RETVAL(OS_stat(g_longPathName, &fstats1), OS_FS_ERR_PATH_TOO_LONG);
+    UT_RETVAL(OS_stat(g_longFileName, &fstats1), OS_FS_ERR_NAME_TOO_LONG);
 
     /*-----------------------------------------------------*/
     /* #5 Nominal */
@@ -998,6 +1012,9 @@ void UT_os_removefile_test()
     }
 
     UT_RETVAL(OS_stat(g_fNames[0], &fstats), OS_ERROR);
+
+    /* removing again (nonexistent file) should return OS_ERROR */
+    UT_RETVAL(OS_remove(g_fNames[0]), OS_ERROR);
 }
 
 /*--------------------------------------------------------------------------------*
@@ -1099,6 +1116,9 @@ void UT_os_renamefile_test()
 
         UT_RETVAL(OS_stat(g_fNames[0], &fstats), OS_ERROR);
         UT_RETVAL(OS_stat(g_fNames[1], &fstats), OS_SUCCESS);
+
+        /* test with nonexistent source file */
+        UT_RETVAL(OS_rename(g_fNames[0], g_fNames[1]), OS_ERROR);
 
         /* Reset test environment */
         UT_TEARDOWN(OS_remove(g_fNames[1]));
@@ -1218,6 +1238,10 @@ void UT_os_copyfile_test()
 
         /* Reset test environment */
         UT_TEARDOWN(OS_remove(g_fNames[0]));
+
+        /* Test with nonexistent source file */
+        UT_RETVAL(OS_cp(g_fNames[0], g_fNames[1]), OS_ERROR);
+
         UT_TEARDOWN(OS_remove(g_fNames[1]));
     }
 }
@@ -1335,6 +1359,9 @@ void UT_os_movefile_test()
 
         UT_RETVAL(OS_stat(g_fNames[0], &fstats), OS_ERROR);
         UT_RETVAL(OS_stat(g_fNames[1], &fstats), OS_SUCCESS);
+
+        /* test with nonexistent source file */
+        UT_RETVAL(OS_mv(g_fNames[0], g_fNames[1]), OS_ERROR);
 
         /* Reset test environment */
         UT_TEARDOWN(OS_remove(g_fNames[1]));
