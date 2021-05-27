@@ -1,0 +1,16 @@
+#---------------------------------------------------------------------------
+# Doxygen Configuration options to generate the "OSAL API Guide"
+#---------------------------------------------------------------------------
+
+# Complete list of input files
+INPUT += @OSAL_NATIVE_APIGUIDE_SOURCEFILES@
+
+
+# Common definitions, some of which are extended or overridden here.
+@INCLUDE               = @OSAL_NATIVE_COMMON_CFGFILE@
+PROJECT_NAME           = "OSAL User's Guide"
+OUTPUT_DIRECTORY       = apiguide
+GENERATE_LATEX         = YES
+
+# output the warnings to a separate file
+WARN_LOGFILE           = @OSAL_NATIVE_LOGFILE@

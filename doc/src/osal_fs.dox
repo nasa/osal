@@ -1,0 +1,94 @@
+/**
+\page osalfsovr File System Overview
+
+ The File System API is a thin wrapper around a selection of POSIX file APIs.
+ In addition the File System API presents a common directory structure and
+ volume view regardless of the underlying system type. For example, vxWorks
+ uses MS-DOS style volume names and directories where a vxWorks RAM disk might
+ have the volume “RAM:0”. With this File System API, volumes are represented
+ as Unix-style paths where each volume is mounted on the root file system:
+
+ <UL>
+    <LI>RAM:0/file1.dat becomes /mnt/ram/file1.dat
+    <LI>FL:0/file2.dat becomes /mnt/fl/file2.dat
+ </UL>
+
+ This abstraction allows the applications to use the same paths regardless of
+ the implementation and it also allows file systems to be simulated on a desktop
+ system for testing. On a desktop Linux system, the file system abstraction can
+ be set up to map virtual devices to a regular directory. This is accomplished
+ through the OS_mkfs call, OS_mount call, and a BSP specific volume table that
+ maps the virtual devices to real devices or underlying file systems.
+
+ In order to make this file system volume abstraction work, a “Volume Table”
+ needs to be provided in the Board Support Package of the application. The table
+ has the following fields:
+
+ <UL>
+   <LI> Device Name: This is the name of the virtual device that the Application
+        uses. Common names are “ramdisk1”, “flash1”, or “volatile1” etc. But the
+        name can be any unique string.
+   <LI> Physical Device Name: This is an implementation specific field. For
+        vxWorks it is not needed and can be left blank. For a File system based
+        implementation, it is the “mount point” on the root file system where all
+        of the volume will be mounted. A common place for this on Linux could
+        be a user’s home directory, “/tmp”, or even the current working
+        directory “.”. In the example of “/tmp” all of the directories created
+        for the volumes would be under “/tmp” on the Linux file system. For a real
+        disk device in Linux, such as a RAM disk, this field is the device
+        name “/dev/ram0”.
+   <LI> Volume Type: This field defines the type of volume. The types are:
+        FS_BASED which uses the existing file system, RAM_DISK which uses a
+        RAM_DISK device in vxWorks, RTEMS, or Linux, FLASH_DISK_FORMAT which uses
+        a flash disk that is to be formatted before use, FLASH_DISK_INIT which
+        uses a flash disk with an existing format that is just to be initialized
+        before it’s use, EEPROM which is for an EEPROM or PROM based system.
+   <LI> Volatile Flag: This flag indicates that the volume or disk is a volatile
+        disk (RAM disk ) or a non-volatile disk, that retains its contents when
+        the system is rebooted. This should be set to TRUE or FALSE.
+   <LI> Free Flag: This is an internal flag that should be set to FALSE or zero.
+   <LI> Is Mounted Flag: This is an internal flag that should be set to FALSE
+        or zero. Note that a “pre-mounted” FS_BASED path can be set up by setting
+        this flag to one.
+   <LI> Volume Name: This is an internal field and should be set to a space
+        character “ “.
+   <LI> Mount Point Field: This is an internal field and should be set to a space
+        character “ “.
+   <LI> Block Size Field: This is used to record the block size of the device and
+        does not need to be set by the user.
+ </UL>
+**/
+
+/**
+\page osalfsfd File Descriptors In Osal
+
+ The OSAL uses abstracted file descriptors. This means that the file descriptors
+ passed back from the OS_open and OS_creat calls will only work with other OSAL OS_*
+ calls. The reasoning for this is as follows:
+
+ Because the OSAL now keeps track of all file descriptors, OSAL specific information
+ can be associated with a specific file descriptor in an OS independent way. For
+instance, the path of the file that the file descriptor points to can be easily
+  retrieved. Also, the OSAL task ID of the task that opened the file can also be
+ retrieved easily.  Both of these pieces of information are very useful when trying
+ to determine statistics for a task, or the entire system. This information can all
+ be retrieved with a single API, OS_FDGetInfo.
+
+ All of possible file system calls are not implemented.  "Special" files requiring OS
+ specific control/operations are by nature not portable.  Abstraction in this case is
+ is not possible, so the raw OS calls should be used (including open/close/etc).  Mixing
+ with OSAL calls is not supported for such cases.  #OS_TranslatePath is available to
+ support using open directly by an app and maintain abstraction on the file system.
+
+ There are some small drawbacks with the OSAL file descriptors. Because the related
+ information is kept in a table, there is a define called OS_MAX_NUM_OPEN_FILES that
+ defines the maximum number of file descriptors available. This is a configuration
+parameter, and can be changed to fit your needs.
+
+ Also, if you open or create a file not using the OSAL calls (OS_open or OS_creat)
+ then none of the other OS_* calls that accept a file descriptor as a parameter will
+work (the results of doing so are undefined). Therefore, if you open a file with
+ the underlying OS's open call, you must continue to use the OS's calls until you
+ close the file descriptor. Be aware that by doing this your software may no longer
+ be OS agnostic.
+**/
