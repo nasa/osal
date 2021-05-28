@@ -108,10 +108,18 @@ const UtAssert_TestCounter_t *UtAssert_GetCounters(void)
 
 void UtAssert_BeginTest(const char *SegmentName)
 {
+    uint32 TestSegmentCount;
+
+    UT_BSP_Lock();
+
     memset(&UT_SegmentCounters, 0, sizeof(UT_SegmentCounters));
     strncpy(CurrentSegment, SegmentName, sizeof(CurrentSegment) - 1);
     CurrentSegment[sizeof(CurrentSegment) - 1] = 0;
-    UT_BSP_StartTestSegment(1 + UT_TotalCounters.TestSegmentCount, SegmentName);
+    TestSegmentCount                           = 1 + UT_TotalCounters.TestSegmentCount;
+
+    UT_BSP_Unlock();
+
+    UT_BSP_StartTestSegment(TestSegmentCount, SegmentName);
 }
 
 const char *UtAssert_GetSegmentName(void)
@@ -121,9 +129,15 @@ const char *UtAssert_GetSegmentName(void)
 
 void UtAssert_EndTest(void)
 {
-    uint32 Ct;
+    uint32                 Ct;
+    bool                   SegmentValid;
+    UtAssert_TestCounter_t Local_SegmentCounters;
+    char                   Local_SegmentName[sizeof(CurrentSegment)];
 
-    if (UT_SegmentCounters.TotalTestCases > 0)
+    UT_BSP_Lock();
+
+    SegmentValid = (UT_SegmentCounters.TotalTestCases > 0);
+    if (SegmentValid)
     {
         ++UT_TotalCounters.TestSegmentCount;
         UT_SegmentCounters.TestSegmentCount = UT_TotalCounters.TestSegmentCount;
@@ -132,14 +146,27 @@ void UtAssert_EndTest(void)
         {
             UT_TotalCounters.CaseCount[Ct] += UT_SegmentCounters.CaseCount[Ct];
         }
-        UtAssert_DoTestSegmentReport(CurrentSegment, &UT_SegmentCounters);
+        memcpy(&Local_SegmentCounters, &UT_SegmentCounters, sizeof(Local_SegmentCounters));
+
+        /*
+         * note, strcpy is OK because both are fixed size buffers of the same size,
+         * and the null termination on CurrentSegment was locally enforced already
+         */
+        strcpy(Local_SegmentName, CurrentSegment);
+    }
+
+    memset(&UT_SegmentCounters, 0, sizeof(UT_SegmentCounters));
+
+    UT_BSP_Unlock();
+
+    if (SegmentValid)
+    {
+        UtAssert_DoTestSegmentReport(Local_SegmentName, &Local_SegmentCounters);
     }
     else
     {
         UT_BSP_DoText(UTASSERT_CASETYPE_END, "No test cases\n");
     }
-
-    memset(&UT_SegmentCounters, 0, sizeof(UT_SegmentCounters));
 }
 
 void UtAssert_SetContext(UtAssert_CaseType_t Context)
@@ -162,6 +189,10 @@ bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File,
 {
     va_list va;
     char    FinalMessage[256];
+    uint32  TestSegmentCount;
+    uint32  TotalTestCases;
+
+    UT_BSP_Lock();
 
     ++UT_SegmentCounters.TotalTestCases;
 
@@ -175,12 +206,16 @@ bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File,
         ++UT_SegmentCounters.CaseCount[(uint32)CaseType];
     }
 
+    TestSegmentCount = 1 + UT_TotalCounters.TestSegmentCount;
+    TotalTestCases   = UT_SegmentCounters.TotalTestCases;
+
+    UT_BSP_Unlock();
+
     va_start(va, MessageFormat);
     vsnprintf(FinalMessage, sizeof(FinalMessage), MessageFormat, va);
     va_end(va);
 
-    UtAssert_DoReport(File, Line, 1 + UT_TotalCounters.TestSegmentCount, UT_SegmentCounters.TotalTestCases, CaseType,
-                      CurrentSegment, FinalMessage);
+    UtAssert_DoReport(File, Line, TestSegmentCount, TotalTestCases, CaseType, CurrentSegment, FinalMessage);
 
     return Expression;
 }

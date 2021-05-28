@@ -97,4 +97,18 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage);
  */
 void UT_BSP_EndTest(const UtAssert_TestCounter_t *TestCounters);
 
+/**
+ * UT mutex lock for multi-threaded test support
+ *
+ * Lock that should be acquired before modifying any global test state variables
+ */
+void UT_BSP_Lock(void);
+
+/**
+ * UT mutex unlock for multi-threaded test support
+ *
+ * Must be called after UT_BSP_Lock to allow other threads access to the global
+ */
+void UT_BSP_Unlock(void);
+
 #endif /* UTBSP_H */

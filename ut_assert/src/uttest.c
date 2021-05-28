@@ -62,7 +62,9 @@ void UtTest_AddCommon(void (*Test)(void), void (*Setup)(void), void (*Teardown)(
         strncpy(UtTestDataBaseEntry.TestName, TestName, sizeof(UtTestDataBaseEntry.TestName) - 1);
     }
 
+    UT_BSP_Lock();
     UtList_Add(UtAssert_Global.DataBasePtr, &UtTestDataBaseEntry, sizeof(UtTestDataBaseEntry_t), EntryType);
+    UT_BSP_Unlock();
 }
 
 void UtTest_Add(void (*Test)(void), void (*Setup)(void), void (*Teardown)(void), const char *SequenceName)
@@ -86,6 +88,8 @@ void UtTest_Run(void)
     UtListNode_t *         UtListNode;
     UtTestDataBaseEntry_t *UtTestDataBaseEntry;
 
+    UT_BSP_Lock();
+
     /*
      * The overall test sequence goes SETUP->TEST->TEARDOWN
      *
@@ -98,6 +102,8 @@ void UtTest_Run(void)
     UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr, UTASSERT_GROUP_SETUP));
     UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr, UTASSERT_GROUP_TEST));
     UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr, UTASSERT_GROUP_TEARDOWN));
+
+    UT_BSP_Unlock();
 
     /*
      * Run through the merged list in order
@@ -132,7 +138,9 @@ void UtTest_Run(void)
         }
     }
 
+    UT_BSP_Lock();
     UtList_Destroy(UtAssert_Global.DataBasePtr);
+    UT_BSP_Unlock();
 
     UT_BSP_EndTest(UtAssert_GetCounters());
 }
