@@ -161,7 +161,7 @@ int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid);
  * @retval true  FdSet structure contains ID
  * @retval false FDSet structure does not contain ID
  */
-bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid);
+bool OS_SelectFdIsSet(const OS_FdSet *Set, osal_id_t objid);
 /**@}*/
 
 #endif /* OSAPI_SELECT_H */
