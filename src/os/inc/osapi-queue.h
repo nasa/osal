@@ -50,10 +50,10 @@ typedef struct
  * the queue. Queue names must be unique; if the name already exists this
  * function fails. Names cannot be NULL.
  *
- * @param[out]  queue_id will be set to the non-zero ID of the newly-created resource
- * @param[in]   queue_name the name of the new resource to create
+ * @param[out]  queue_id will be set to the non-zero ID of the newly-created resource @nonnull
+ * @param[in]   queue_name the name of the new resource to create @nonnull
  * @param[in]   queue_depth the maximum depth of the queue
- * @param[in]   data_size the size of each entry in the queue
+ * @param[in]   data_size the size of each entry in the queue @nonzero
  * @param[in]   flags options for the queue (reserved for future use, pass as 0)
  *
  * @return Execution status, see @ref OSReturnCodes
@@ -84,7 +84,7 @@ int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcoun
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the id passed in does not exist
- * @retval #OS_ERROR if the OS call to delete the queue fails
+ * @retval #OS_ERROR if the OS call returns an unexpected error @covtest
  */
 int32 OS_QueueDelete(osal_id_t queue_id);
 
@@ -96,9 +96,9 @@ int32 OS_QueueDelete(osal_id_t queue_id);
  * will block until a message arrives or the timeout expires.
  *
  * @param[in]   queue_id The object ID to operate on
- * @param[out]  data The buffer to store the received message
- * @param[in]   size The size of the data buffer
- * @param[out]  size_copied Set to the actual size of the message
+ * @param[out]  data The buffer to store the received message @nonnull
+ * @param[in]   size The size of the data buffer @nonzero
+ * @param[out]  size_copied Set to the actual size of the message @nonnull
  * @param[in]   timeout The maximum amount of time to block, or OS_PEND to wait forever
  *
  * @return Execution status, see @ref OSReturnCodes
@@ -108,6 +108,7 @@ int32 OS_QueueDelete(osal_id_t queue_id);
  * @retval #OS_QUEUE_EMPTY if the Queue has no messages on it to be recieved
  * @retval #OS_QUEUE_TIMEOUT if the timeout was OS_PEND and the time expired
  * @retval #OS_QUEUE_INVALID_SIZE if the size copied from the queue was not correct
+ * @retval #OS_ERROR if the OS call returns an unexpected error @covtest
  */
 int32 OS_QueueGet(osal_id_t queue_id, void *data, size_t size, size_t *size_copied, int32 timeout);
 
@@ -116,16 +117,17 @@ int32 OS_QueueGet(osal_id_t queue_id, void *data, size_t size, size_t *size_copi
  * @brief Put a message on a message queue.
  *
  * @param[in]  queue_id The object ID to operate on
- * @param[in]  data The buffer containing the message to put
- * @param[in]  size The size of the data buffer
+ * @param[in]  data The buffer containing the message to put @nonnull
+ * @param[in]  size The size of the data buffer @nonzero
  * @param[in]  flags Currently reserved/unused, should be passed as 0
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the queue id passed in is not a valid queue
  * @retval #OS_INVALID_POINTER if the data pointer is NULL
+ * @retval #OS_QUEUE_INVALID_SIZE if the data message is too large for the queue
  * @retval #OS_QUEUE_FULL if the queue cannot accept another message
- * @retval #OS_ERROR if the OS call returns an error
+ * @retval #OS_ERROR if the OS call returns an unexpected error @covtest
  */
 int32 OS_QueuePut(osal_id_t queue_id, const void *data, size_t size, uint32 flags);
 
@@ -137,7 +139,7 @@ int32 OS_QueuePut(osal_id_t queue_id, const void *data, size_t size, uint32 flag
  * id of the queue is passed back in queue_id.
  *
  * @param[out]  queue_id will be set to the ID of the existing resource
- * @param[in]   queue_name the name of the existing resource to find
+ * @param[in]   queue_name the name of the existing resource to find @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -155,7 +157,7 @@ int32 OS_QueueGetIdByName(osal_id_t *queue_id, const char *queue_name);
  * all of the relevant info (name and creator) about the specified queue.
  *
  * @param[in]   queue_id The object ID to operate on
- * @param[out]  queue_prop The property object buffer to fill
+ * @param[out]  queue_prop The property object buffer to fill @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS

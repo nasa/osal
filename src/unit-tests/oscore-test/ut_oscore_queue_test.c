@@ -88,6 +88,14 @@ void UT_os_queue_create_test()
     UT_RETVAL(OS_QueueCreate(&queue_id, NULL, OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
+
+    /* Invalid item size */
+    UT_RETVAL(OS_QueueCreate(&queue_id, "Queue1", OSAL_BLOCKCOUNT_C(10), 0, 0), OS_ERR_INVALID_SIZE);
+    /* Invalid depth */
+    UT_RETVAL(OS_QueueCreate(&queue_id, "Queue1", OSAL_BLOCKCOUNT_C(OS_QUEUE_MAX_DEPTH + 1), sizeof(uint32), 0),
+              OS_QUEUE_INVALID_SIZE);
+
+    /*-----------------------------------------------------*/
     /* #3 Name-too-long */
 
     memset(long_queue_name, 'X', sizeof(long_queue_name));
@@ -304,6 +312,7 @@ void UT_os_queue_put_test()
     if (UT_SETUP(OS_QueueCreate(&queue_id, "QueuePut", OSAL_BLOCKCOUNT_C(10), sizeof(uint32), 0)))
     {
         UT_RETVAL(OS_QueuePut(queue_id, NULL, sizeof(uint32), 0), OS_INVALID_POINTER);
+        UT_RETVAL(OS_QueuePut(queue_id, &queue_data_out, sizeof(uint32) + 1, 0), OS_QUEUE_INVALID_SIZE);
         UT_TEARDOWN(OS_QueueDelete(queue_id));
     }
 
