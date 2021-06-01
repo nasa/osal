@@ -55,6 +55,7 @@
 **--------------------------------------------------------------------------------*/
 
 void UT_os_apiinit_test(void);
+void UT_os_registereventhandler_test(void);
 
 void UT_os_printf_test(void);
 void UT_os_printfenable_test(void);

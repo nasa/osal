@@ -121,6 +121,26 @@ void UT_os_apiinit_test()
 }
 
 /*--------------------------------------------------------------------------------*
+** Syntax: int32 OS_RegisterEventHandler(OS_EventHandler_t handler)
+** See header file for list of return values
+**--------------------------------------------------------------------------------*/
+int32 UT_os_eventhandler(OS_Event_t event, osal_id_t object_id, void *data)
+{
+    return OS_SUCCESS;
+}
+
+void UT_os_registereventhandler_test()
+{
+    /*-----------------------------------------------------*/
+    /* #1 Null-pointer-arg */
+    UT_RETVAL(OS_RegisterEventHandler(NULL), OS_INVALID_POINTER);
+
+    /*-----------------------------------------------------*/
+    /* #2 Nominal */
+    UT_NOMINAL(OS_RegisterEventHandler(UT_os_eventhandler));
+}
+
+/*--------------------------------------------------------------------------------*
 ** Syntax: void OS_printf(const char String, ...)
 ** Purpose: Provides a printing utility similar to printf
 ** Parameters: String - text portion of the print
