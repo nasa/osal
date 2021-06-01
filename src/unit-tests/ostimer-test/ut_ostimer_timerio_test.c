@@ -28,7 +28,7 @@
 ** Includes
 **--------------------------------------------------------------------------------*/
 
-#include "ut_ostimer_timerio_test.h"
+#include "ut_ostimer_test.h"
 
 /*--------------------------------------------------------------------------------*
 ** Macros
@@ -42,20 +42,9 @@
 ** External global variables
 **--------------------------------------------------------------------------------*/
 
-extern char *g_timerNames[UT_OS_TIMER_LIST_LEN];
-extern char  g_longTimerName[UT_OS_NAME_BUFF_SIZE];
-
-extern uint32    g_cbLoopCntMax;
-extern uint32    g_toleranceVal;
-extern uint32    g_timerFirst;
-extern int32     g_status;
-extern osal_id_t g_timerId;
-
 /*--------------------------------------------------------------------------------*
 ** External function prototypes
 **--------------------------------------------------------------------------------*/
-
-extern void UT_os_timercallback(osal_id_t timerId);
 
 /*--------------------------------------------------------------------------------*
 ** Global variables
@@ -64,6 +53,21 @@ extern void UT_os_timercallback(osal_id_t timerId);
 uint32    g_clkAccuracy = 0;
 osal_id_t g_timerIds[UT_OS_TIMER_LIST_LEN];
 
+typedef struct
+{
+    bool IsValid;
+
+    int32 CreateRc;
+    int32 AddRc;
+    int32 DeleteRc;
+    int32 SetRc;
+    int32 GetByNameRc;
+    int32 GetInfoRc;
+
+    OS_timer_prop_t Prop;
+
+} UT_reconf_status_t;
+
 /*--------------------------------------------------------------------------------*
 ** Local function prototypes
 **--------------------------------------------------------------------------------*/
@@ -71,54 +75,31 @@ osal_id_t g_timerIds[UT_OS_TIMER_LIST_LEN];
 /*--------------------------------------------------------------------------------*
 ** Local function definitions
 **--------------------------------------------------------------------------------*/
+void UT_os_othertimercallback1(osal_id_t timerId) {}
+void UT_os_othertimercallback2(osal_id_t timerId, void *arg) {}
 
-/*--------------------------------------------------------------------------------*
-** Syntax: int32 OS_TimerAPIInit(void)
-** Purpose: Initializes the tables that the OS timer uses to keep track of information
-**          about objects
-** Parameters: None
-** Returns: OS_ERROR on an unsuccessful inits
-**          OS_SUCCESS on a successful inits
-**          OS_ERR_NOT_IMPLEMENTED if not implemented
-** -----------------------------------------------------
-** Test #0: Not-implemented condition
-**   1) Call this routine
-**   2) If the returned value is OS_ERR_NOT_IMPLEMENTED, then exit test
-**   3) Otherwise, continue
-** -----------------------------------------------------
-** Test #1: Init-not-call-first condition
-**   1) Don't call this routine first
-**   2) Call TBD routine(s)
-**   3) Expect the returned value from those routines to be
-**       (a) __not__ OS_SUCCESS
-*** -----------------------------------------------------
-** Test #2: Nominal condition
-**   1) Call this routine
-**   2) Expect the returned value to be
-**       (a) OS_SUCCESS (although results are not directly observable)
-**   3) Call TBD routine(s)
-**   4) Expect the returned value from those routines to be
-**       (a) OS_SUCCESS
-*--------------------------------------------------------------------------------*/
-void UT_os_timerinit_test()
+void UT_os_reconftimercallback(osal_id_t timerId, void *arg)
 {
-    /*-----------------------------------------------------*/
-    /* #1 Init-not-call-first */
+    UT_reconf_status_t *reconf = arg;
 
-    UT_RETVAL(OS_TimerCreate(&g_timerIds[0], "Timer #0", &g_clkAccuracy, &UT_os_timercallback), OS_ERROR);
-
-    if (!UT_SETUP(OS_API_Init()))
+    if (!reconf->IsValid)
     {
-        return;
+        /*
+         * Calls to timer configuration from the context of a timer function
+         * should be rejected with OS_ERR_INCORRECT_OBJ_STATE.  However because
+         * UtAssert is not fully thread-safe, this does not assert here, it just
+         * calls the various functions on the first time through and stores the
+         * result, which is checked/asserted in the main task.
+         */
+        reconf->CreateRc    = OS_TimerCreate(&timerId, "reconf", &g_clkAccuracy, UT_os_othertimercallback1);
+        reconf->AddRc       = OS_TimerAdd(&timerId, "reconf", g_timerIds[1], UT_os_othertimercallback2, NULL);
+        reconf->DeleteRc    = OS_TimerDelete(timerId);
+        reconf->SetRc       = OS_TimerSet(timerId, 100, 100);
+        reconf->GetByNameRc = OS_TimerGetIdByName(&timerId, g_timerNames[7]);
+        reconf->GetInfoRc   = OS_TimerGetInfo(timerId, &reconf->Prop);
+
+        reconf->IsValid = true;
     }
-
-    /*-----------------------------------------------------*/
-    /* #2 Nominal */
-
-    UT_NOMINAL(OS_TimerCreate(&g_timerIds[0], "Timer #0", &g_clkAccuracy, &UT_os_timercallback));
-
-    /* Reset test environment */
-    UT_TEARDOWN(OS_TimerDelete(g_timerIds[0]));
 }
 
 /*--------------------------------------------------------------------------------*
@@ -270,6 +251,62 @@ void UT_os_timercreate_test()
     /* #8 Nominal */
 
     UT_NOMINAL(OS_TimerCreate(&g_timerIds[7], g_timerNames[7], &g_clkAccuracy, &UT_os_timercallback));
+
+    /* Reset test environment */
+    UT_TEARDOWN(OS_TimerDelete(g_timerIds[7]));
+}
+
+/*--------------------------------------------------------------------------------*
+** Test case to confirm that attempts to (re-)configure a timer from the context
+** of a callback function should fail with OS_ERR_INCORRECT_OBJ_STATE
+**--------------------------------------------------------------------------------*/
+void UT_os_timerreconf_test()
+{
+    UT_reconf_status_t reconf;
+
+    memset(&reconf, 0, sizeof(reconf));
+
+    if (UT_SETUP(OS_TimeBaseCreate(&g_timerIds[1], "reconf", NULL)))
+    {
+        if (UT_SETUP(OS_TimeBaseSet(g_timerIds[1], 50, 50)))
+        {
+            if (UT_SETUP(OS_TimerAdd(&g_timerIds[2], "reconf", g_timerIds[1], UT_os_reconftimercallback, &reconf)))
+            {
+                if (UT_SETUP(OS_TimerSet(g_timerIds[2], 50, 50)))
+                {
+                    while (!reconf.IsValid)
+                    {
+                        OS_TaskDelay(1);
+                    }
+                }
+
+                /* Reset test environment */
+                UT_TEARDOWN(OS_TimerDelete(g_timerIds[2]));
+            }
+        }
+
+        /* Reset test environment */
+        UT_TEARDOWN(OS_TimeBaseDelete(g_timerIds[1]));
+    }
+
+    /* Check that those configuration attempts all returned OS_ERR_INCORRECT_OBJ_STATE */
+    UtAssert_True(reconf.CreateRc == OS_ERR_INCORRECT_OBJ_STATE,
+                  "OS_TimerCreate(&timerId, \"reconf\", &g_clkAccuracy, UT_os_othertimercallback1) (%d) == "
+                  "OS_ERR_INCORRECT_OBJ_STATE",
+                  (int)reconf.CreateRc);
+    UtAssert_True(reconf.AddRc == OS_ERR_INCORRECT_OBJ_STATE,
+                  "OS_TimerAdd(&timerId, \"reconf\", g_timerIds[1], UT_os_othertimercallback2, NULL) (%d) == "
+                  "OS_ERR_INCORRECT_OBJ_STATE",
+                  (int)reconf.AddRc);
+    UtAssert_True(reconf.DeleteRc == OS_ERR_INCORRECT_OBJ_STATE,
+                  "OS_TimerDelete(timerId) (%d) == OS_ERR_INCORRECT_OBJ_STATE", (int)reconf.DeleteRc);
+    UtAssert_True(reconf.SetRc == OS_ERR_INCORRECT_OBJ_STATE,
+                  "OS_TimerSet(timerId, 100, 100) (%d) == OS_ERR_INCORRECT_OBJ_STATE", (int)reconf.SetRc);
+    UtAssert_True(reconf.GetByNameRc == OS_ERR_INCORRECT_OBJ_STATE,
+                  "OS_TimerGetIdByName(&timerId, g_timerNames[7]) (%d) == OS_ERR_INCORRECT_OBJ_STATE",
+                  (int)reconf.GetByNameRc);
+    UtAssert_True(reconf.GetInfoRc == OS_ERR_INCORRECT_OBJ_STATE,
+                  "OS_TimerGetInfo(timerId, &TimerProp) (%d) == OS_ERR_INCORRECT_OBJ_STATE", (int)reconf.GetInfoRc);
 }
 
 /*--------------------------------------------------------------------------------*
@@ -406,6 +443,8 @@ void UT_os_timerset_test()
 
     if (UT_SETUP(OS_TimerCreate(&g_timerIds[3], g_timerNames[3], &g_clkAccuracy, &UT_os_timercallback)))
     {
+        UT_RETVAL(OS_TimerSet(g_timerIds[3], 0, 0), OS_TIMER_ERR_INVALID_ARGS);
+
         g_status       = 0;
         g_timerId      = g_timerIds[3];
         g_timerFirst   = 1;
