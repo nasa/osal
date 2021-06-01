@@ -47,8 +47,8 @@ typedef struct
  *
  * Mutex semaphores are always created in the unlocked (full) state.
  *
- * @param[out]  sem_id will be set to the non-zero ID of the newly-created resource
- * @param[in]   sem_name the name of the new resource to create
+ * @param[out]  sem_id will be set to the non-zero ID of the newly-created resource @nonnull
+ * @param[in]   sem_name the name of the new resource to create @nonnull
  * @param[in]   options reserved for future use.  Should be passed as 0.
  *
  * @return Execution status, see @ref OSReturnCodes
@@ -57,7 +57,7 @@ typedef struct
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NO_FREE_IDS if there are no more free mutex Ids
  * @retval #OS_ERR_NAME_TAKEN if there is already a mutex with the same name
- * @retval #OS_SEM_FAILURE if the OS call failed
+ * @retval #OS_SEM_FAILURE if the OS call failed @covtest
  */
 int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options);
 
@@ -75,7 +75,7 @@ int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid mutex
- * @retval #OS_SEM_FAILURE if an unspecified error occurs
+ * @retval #OS_SEM_FAILURE if an unspecified error occurs @covtest
  */
 int32 OS_MutSemGive(osal_id_t sem_id);
 
@@ -92,9 +92,8 @@ int32 OS_MutSemGive(osal_id_t sem_id);
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_SEM_FAILURE if the semaphore was not previously initialized or is
- * not in the array of semaphores defined by the system
  * @retval #OS_ERR_INVALID_ID the id passed in is not a valid mutex
+ * @retval #OS_SEM_FAILURE if an unspecified error occurs @covtest
  */
 int32 OS_MutSemTake(osal_id_t sem_id);
 
@@ -110,7 +109,7 @@ int32 OS_MutSemTake(osal_id_t sem_id);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid mutex
- * @retval #OS_SEM_FAILURE if the OS call failed
+ * @retval #OS_SEM_FAILURE if an unspecified error occurs @covtest
  */
 int32 OS_MutSemDelete(osal_id_t sem_id);
 
@@ -122,7 +121,7 @@ int32 OS_MutSemDelete(osal_id_t sem_id);
  * The id is returned through sem_id
  *
  * @param[out] sem_id will be set to the ID of the existing resource
- * @param[in]   sem_name the name of the existing resource to find
+ * @param[in]  sem_name the name of the existing resource to find @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -140,8 +139,8 @@ int32 OS_MutSemGetIdByName(osal_id_t *sem_id, const char *sem_name);
  * all of the relevant info( name and creator) about the specified mutex
  * semaphore.
  *
- * @param[in] sem_id The object ID to operate on
- * @param[out]  mut_prop The property object buffer to fill
+ * @param[in]  sem_id The object ID to operate on
+ * @param[out] mut_prop The property object buffer to fill @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
