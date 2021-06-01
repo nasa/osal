@@ -133,8 +133,8 @@ typedef const struct
  * The static table is intended to support embedded targets that do
  * not have module loading capability or have it disabled.
  *
- * @param[out] symbol_address Set to the address of the symbol
- * @param[in]  symbol_name    Name of the symbol to look up
+ * @param[out] symbol_address Set to the address of the symbol @nonnull
+ * @param[in]  symbol_name    Name of the symbol to look up @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -152,8 +152,8 @@ int32 OS_SymbolLookup(cpuaddr *symbol_address, const char *symbol_name);
  * loaded with the #OS_MODULE_FLAG_LOCAL_SYMBOLS flag.
  *
  * @param[in]  module_id      Module ID that should contain the symbol
- * @param[out] symbol_address Set to the address of the symbol
- * @param[in]  symbol_name    Name of the symbol to look up
+ * @param[out] symbol_address Set to the address of the symbol @nonnull
+ * @param[in]  symbol_name    Name of the symbol to look up @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -168,14 +168,21 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
  *
  * Dumps the system symbol table to the specified filename
  *
- * @param[in] filename  File to write to
+ * @note Not all RTOS implementations support this API.  If the underlying
+ * module subsystem does not provide a facility to iterate through the
+ * symbol table, then the #OS_ERR_NOT_IMPLEMENTED status code is returned.
+ *
+ * @param[in] filename  File to write to @nonnull
  * @param[in] size_limit Maximum number of bytes to write
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS             @copybrief OS_SUCCESS
  * @retval #OS_ERR_NOT_IMPLEMENTED @copybrief OS_ERR_NOT_IMPLEMENTED
  * @retval #OS_INVALID_POINTER if the filename argument is NULL
- * @retval #OS_ERROR if the symbol table could not be read or dumped
+ * @retval #OS_FS_ERR_PATH_INVALID if the filename argument is not valid
+ * @retval #OS_ERR_NAME_TOO_LONG if any of the symbol names are too long @covtest
+ * @retval #OS_ERR_OUTPUT_TOO_LARGE if the size_limit was reached before completing all symbols @covtest
+ * @retval #OS_ERROR if an other/unspecified error occurs @covtest
  */
 int32 OS_SymbolTableDump(const char *filename, size_t size_limit);
 
@@ -190,17 +197,18 @@ int32 OS_SymbolTableDump(const char *filename, size_t size_limit);
  * and #OS_MODULE_FLAG_GLOBAL_SYMBOLS for descriptions.
  *
  * @param[out] module_id    Non-zero OSAL ID corresponding to the loaded module
- * @param[in]  module_name  Name of module
- * @param[in]  filename     File containing the object code to load
+ * @param[in]  module_name  Name of module @nonnull
+ * @param[in]  filename     File containing the object code to load @nonnull
  * @param[in]  flags        Options for the loaded module
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERROR if the module cannot be loaded
  * @retval #OS_INVALID_POINTER if one of the parameters is NULL
  * @retval #OS_ERR_NO_FREE_IDS if the module table is full
  * @retval #OS_ERR_NAME_TAKEN if the name is in use
  * @retval #OS_ERR_NAME_TOO_LONG if the module_name is too long
+ * @retval #OS_FS_ERR_PATH_INVALID if the filename argument is not valid
+ * @retval #OS_ERROR if an other/unspecified error occurs @covtest
  */
 int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *filename, uint32 flags);
 
@@ -214,7 +222,8 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERROR if the module is invalid or cannot be unloaded
+ * @retval #OS_ERR_INVALID_ID if the module id invalid
+ * @retval #OS_ERROR if an other/unspecified error occurs @covtest
  */
 int32 OS_ModuleUnload(osal_id_t module_id);
 
@@ -225,12 +234,13 @@ int32 OS_ModuleUnload(osal_id_t module_id);
  * Returns information about the loadable module
  *
  * @param[in]  module_id    OSAL ID of the previously the loaded module
- * @param[out] module_info  Buffer to store module information
+ * @param[out] module_info  Buffer to store module information @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the module id invalid
  * @retval #OS_INVALID_POINTER if the pointer to the ModuleInfo structure is invalid
+ * @retval #OS_ERROR if an other/unspecified error occurs @covtest
  */
 int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_info);
 /**@}*/

@@ -187,7 +187,10 @@ void UT_os_symbol_table_dump_test()
     /*-----------------------------------------------------*/
     /* #3 Nominal */
 
-    UT_NOMINAL_OR_NOTIMPL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolFile.dat", 32000));
+    if (UT_NOMINAL_OR_NOTIMPL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolFile.dat", 32000)))
+    {
+        UT_RETVAL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolFile.dat", 0), OS_ERR_OUTPUT_TOO_LARGE);
+    }
 }
 
 /*================================================================================*
