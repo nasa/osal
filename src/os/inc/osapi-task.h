@@ -92,11 +92,11 @@ typedef osal_task((*osal_task_entry)(void)); /**< @brief For task entry point */
  * the system heap.
  *
  * @param[out]  task_id will be set to the non-zero ID of the newly-created resource
- * @param[in]   task_name the name of the new resource to create
- * @param[in]   function_pointer the entry point of the new task
+ * @param[in]   task_name the name of the new resource to create @nonnull
+ * @param[in]   function_pointer the entry point of the new task @nonnull
  * @param[in]   stack_pointer pointer to the stack for the task, or NULL
  *              to allocate a stack from the system memory heap
- * @param[in]   stack_size the size of the stack
+ * @param[in]   stack_size the size of the stack @nonzero
  * @param[in]   priority initial priority of the new task
  * @param[in]   flags initial options for the new task
  *
@@ -105,10 +105,10 @@ typedef osal_task((*osal_task_entry)(void)); /**< @brief For task entry point */
  * @retval #OS_INVALID_POINTER if any of the necessary pointers are NULL
  * @retval #OS_ERR_INVALID_SIZE if the stack_size argument is zero
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
- * @retval #OS_ERR_INVALID_PRIORITY if the priority is bad
+ * @retval #OS_ERR_INVALID_PRIORITY if the priority is bad @covtest
  * @retval #OS_ERR_NO_FREE_IDS if there can be no more tasks created
  * @retval #OS_ERR_NAME_TAKEN if the name specified is already used by a task
- * @retval #OS_ERROR if an unspecified/other error occurs
+ * @retval #OS_ERROR if an unspecified/other error occurs @covtest
  */
 int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry function_pointer,
                     osal_stackptr_t stack_pointer, size_t stack_size, osal_priority_t priority, uint32 flags);
@@ -125,7 +125,7 @@ int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry f
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the ID given to it is invalid
- * @retval #OS_ERROR if the OS delete call fails
+ * @retval #OS_ERROR if the OS delete call fails @covtest
  */
 int32 OS_TaskDelete(osal_id_t task_id);
 
@@ -149,6 +149,7 @@ void OS_TaskExit(void);
  * @param[in]   function_pointer function to be called when task exits
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_ERR_INVALID_ID if the calling context is not an OSAL task
  */
 int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer);
 
@@ -163,7 +164,7 @@ int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer);
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERROR if sleep fails or millisecond = 0
+ * @retval #OS_ERROR if an unspecified/other error occurs @covtest
  */
 int32 OS_TaskDelay(uint32 millisecond);
 
@@ -172,14 +173,13 @@ int32 OS_TaskDelay(uint32 millisecond);
  * @brief Sets the given task to a new priority
  *
  * @param[in] task_id        The object ID to operate on
- *
  * @param[in] new_priority   Set the new priority
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the ID passed to it is invalid
- * @retval #OS_ERR_INVALID_PRIORITY if the priority is greater than the max allowed
- * @retval #OS_ERROR if the OS call to change the priority fails
+ * @retval #OS_ERR_INVALID_PRIORITY if the priority is greater than the max allowed @covtest
+ * @retval #OS_ERROR if an unspecified/other error occurs @covtest
  */
 int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority);
 
@@ -200,7 +200,7 @@ osal_id_t OS_TaskGetId(void);
  * This function tries to find a task Id given the name of a task
  *
  * @param[out]  task_id will be set to the ID of the existing resource
- * @param[in]   task_name the name of the existing resource to find
+ * @param[in]   task_name the name of the existing resource to find @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -219,7 +219,7 @@ int32 OS_TaskGetIdByName(osal_id_t *task_id, const char *task_name);
  * specified task.
  *
  * @param[in]   task_id The object ID to operate on
- * @param[out]  task_prop The property object buffer to fill
+ * @param[out]  task_prop The property object buffer to fill @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -239,12 +239,12 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop);
  * but in some circumstances, such as exception handling, the OS may provide this information
  * directly to a BSP handler outside of the normal OSAL API.
  *
- * @param[out]  task_id         The buffer where the task id output is stored
+ * @param[out]  task_id         The buffer where the task id output is stored @nonnull
  * @param[in]   sysdata         Pointer to the system-provided identification data
  * @param[in]   sysdata_size    Size of the system-provided identification data
  *
  * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS @covtest
  * @retval #OS_INVALID_POINTER if a pointer argument is NULL
  */
 int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t sysdata_size);
