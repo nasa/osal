@@ -1395,11 +1395,6 @@ void UT_os_movefile_test()
 void UT_os_outputtofile_test()
 {
     /*-----------------------------------------------------*/
-    /* #1 Null-pointer-arg */
-
-    UT_RETVAL(OS_ShellOutputToFile(NULL, OS_OBJECT_ID_UNDEFINED), OS_INVALID_POINTER);
-
-    /*-----------------------------------------------------*/
     /* #2 Invalid-file-desc-arg */
 
     UT_RETVAL(OS_ShellOutputToFile("ls", UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
@@ -1411,7 +1406,12 @@ void UT_os_outputtofile_test()
     UT_os_sprintf(g_fNames[0], "%s/Output_Nominal.txt", g_mntName);
     if (UT_SETUP(OS_OpenCreate(&g_fDescs[0], g_fNames[0], OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE)))
     {
-        /* #4 Nominal - File-create failed */
+        /*-----------------------------------------------------*/
+        /* Null-pointer-arg */
+
+        UT_RETVAL(OS_ShellOutputToFile(NULL, g_fDescs[0]), OS_INVALID_POINTER);
+
+        /* Nominal */
         if (UT_NOMINAL_OR_NOTIMPL(OS_ShellOutputToFile("echo \"UT_os_outputtofile_test\"", g_fDescs[0])))
         {
             UT_RETVAL(OS_lseek(g_fDescs[0], 0, OS_SEEK_SET), 0);
@@ -1421,6 +1421,13 @@ void UT_os_outputtofile_test()
                 UtAssert_True(strstr(g_readBuff, "UT_os_outputtofile_test") != NULL,
                               "Output file contains UT_os_outputtofile_test");
             }
+
+            /*
+             * Executing a command name "false" should fail, either because it is not a known
+             * command, or if it is valid (e.g. a UNIX-like environment has /bin/false) the
+             * command always fails.
+             */
+            UT_RETVAL(OS_ShellOutputToFile("false", g_fDescs[0]), OS_ERROR);
         }
 
         /* Reset test environment */

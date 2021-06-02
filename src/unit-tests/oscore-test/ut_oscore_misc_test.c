@@ -98,10 +98,17 @@ void UT_os_apiinit_test()
     /*-----------------------------------------------------*/
     /* #1 Init-not-call-first */
 
-    UT_RETVAL(OS_QueueCreate(&qId, "Queue A", qDepth, qSize, qFlags), OS_ERROR);
-    UT_RETVAL(OS_BinSemCreate(&semIds[0], "BinSem 1", semInitValue, semOptions), OS_ERROR);
-    UT_RETVAL(OS_CountSemCreate(&semIds[1], "CountSem 1", semInitValue, semOptions), OS_ERROR);
-    UT_RETVAL(OS_MutSemCreate(&semIds[2], "MutexSem 1", semOptions), OS_ERROR);
+    /*
+     * Note that OS_API_Init() is supposed to be the first function invoked,
+     * calling any other OSAL API before this is technically undefined behavior.
+     * There is code to check for errors in this regard so this just tests that
+     * the result is _not_ success.  The specific status code if called before
+     * OS_API_Init is not documented.
+     */
+    UT_NOT_SUCCESS(OS_QueueCreate(&qId, "Queue A", qDepth, qSize, qFlags));
+    UT_NOT_SUCCESS(OS_BinSemCreate(&semIds[0], "BinSem 1", semInitValue, semOptions));
+    UT_NOT_SUCCESS(OS_CountSemCreate(&semIds[1], "CountSem 1", semInitValue, semOptions));
+    UT_NOT_SUCCESS(OS_MutSemCreate(&semIds[2], "MutexSem 1", semOptions));
 
     /*-----------------------------------------------------*/
     /* #2 Nominal */
@@ -439,22 +446,14 @@ void UT_os_heapgetinfo_test(void)
     OS_heap_prop_t heapProp;
 
     /*-----------------------------------------------------*/
-    /* API not implemented */
-
-    if (!UT_IMPL(OS_HeapGetInfo(&heapProp)))
-    {
-        return;
-    }
-
-    /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */
 
     UT_RETVAL(OS_HeapGetInfo(NULL), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    /* #3 Nominal */
+    /* #3 Nominal (allows for not implemented) */
 
-    UT_NOMINAL(OS_HeapGetInfo(&heapProp));
+    UT_NOMINAL_OR_NOTIMPL(OS_HeapGetInfo(&heapProp));
 }
 
 /*================================================================================*

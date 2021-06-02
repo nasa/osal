@@ -53,6 +53,7 @@ typedef struct
  * @param[out] heap_prop Storage buffer for heap info
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if the heap_prop argument is NULL
  */
 int32 OS_HeapGetInfo(OS_heap_prop_t *heap_prop);
