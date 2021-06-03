@@ -60,7 +60,8 @@ void Test_OS_MutSemCreate(void)
     UtAssert_True(actual == expected, "OS_MutSemCreate() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
-    OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate(NULL, NULL, 0), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate(NULL, "UT", 0), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate(&objid, NULL, 0), OS_INVALID_POINTER);
     UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate(&objid, "UT", 0), OS_ERR_NAME_TOO_LONG);
 }

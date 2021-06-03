@@ -149,6 +149,7 @@ void UT_os_mut_sem_delete_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_MutSemDelete(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_MutSemDelete(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
@@ -176,6 +177,7 @@ void UT_os_mut_sem_give_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_MutSemGive(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_MutSemGive(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
@@ -208,6 +210,7 @@ void UT_os_mut_sem_take_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_MutSemTake(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_MutSemTake(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
@@ -284,6 +287,7 @@ void UT_os_mut_sem_get_info_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_MutSemGetInfo(UT_OBJID_INCORRECT, &mut_sem_prop), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_MutSemGetInfo(OS_OBJECT_ID_UNDEFINED, &mut_sem_prop), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Invalid-pointer-arg */
