@@ -118,6 +118,8 @@ void Test_OS_QueueGet(void)
     expected                   = OS_QUEUE_INVALID_SIZE;
     actual                     = OS_QueueGet(UT_OBJID_1, Buf, sizeof(Buf), &actual_size, 0);
     UtAssert_True(actual == expected, "OS_QueueGet() (%ld) == OS_QUEUE_INVALID_SIZE", (long)actual);
+
+    OSAPI_TEST_FUNCTION_RC(OS_QueueGet(UT_OBJID_1, Buf, 0, &actual_size, 0), OS_ERR_INVALID_SIZE);
 }
 
 void Test_OS_QueuePut(void)
@@ -144,6 +146,8 @@ void Test_OS_QueuePut(void)
     expected = OS_QUEUE_INVALID_SIZE;
     actual   = OS_QueuePut(UT_OBJID_1, Data, 1 + sizeof(Data), 0);
     UtAssert_True(actual == expected, "OS_QueuePut() (%ld) == OS_QUEUE_INVALID_SIZE", (long)actual);
+
+    OSAPI_TEST_FUNCTION_RC(OS_QueuePut(UT_OBJID_1, Data, 0, 0), OS_ERR_INVALID_SIZE);
 }
 
 void Test_OS_QueueGetIdByName(void)
