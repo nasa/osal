@@ -150,7 +150,7 @@ void UT_os_networkgethostname_test()
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */
 
-    UT_RETVAL(OS_NetworkGetHostName(NULL, 0), OS_INVALID_POINTER);
+    UT_RETVAL(OS_NetworkGetHostName(NULL, sizeof(buffer)), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
     /* #2 Zero-name-length-arg */
