@@ -596,12 +596,16 @@ void TestStreamNetworkApi(void)
                 /* OS_TimedRead */
                 UtAssert_INT32_EQ(OS_TimedRead(invalid_fd, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT),
                                   OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_TimedRead(OS_OBJECT_ID_UNDEFINED, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT),
+                                  OS_ERR_INVALID_ID);
                 UtAssert_INT32_EQ(OS_TimedRead(c_socket_id, NULL, sizeof(Buf_rcv_c), UT_TIMEOUT), OS_INVALID_POINTER);
                 UtAssert_INT32_EQ(OS_TimedRead(c_socket_id, Buf_rcv_c, 0, UT_TIMEOUT), OS_ERR_INVALID_SIZE);
                 UtAssert_INT32_EQ(OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), 0), OS_ERROR_TIMEOUT);
 
                 /* OS_TimedWrite */
                 UtAssert_INT32_EQ(OS_TimedWrite(invalid_fd, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT),
+                                  OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_TimedWrite(OS_OBJECT_ID_UNDEFINED, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT),
                                   OS_ERR_INVALID_ID);
                 UtAssert_INT32_EQ(OS_TimedWrite(c_socket_id, NULL, sizeof(Buf_rcv_c), UT_TIMEOUT), OS_INVALID_POINTER);
                 UtAssert_INT32_EQ(OS_TimedWrite(c_socket_id, Buf_rcv_c, 0, UT_TIMEOUT), OS_ERR_INVALID_SIZE);

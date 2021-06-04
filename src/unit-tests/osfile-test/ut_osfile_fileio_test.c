@@ -455,6 +455,7 @@ void UT_os_closefile_test()
     /* #1 Invalid-file-desc-arg */
 
     UT_RETVAL(OS_close(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_close(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
@@ -549,6 +550,7 @@ void UT_os_readfile_test()
     /*-----------------------------------------------------*/
     /* #2 Invalid-file-desc-arg */
     UT_RETVAL(OS_read(UT_OBJID_INCORRECT, g_readBuff, sizeof(g_readBuff)), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_read(OS_OBJECT_ID_UNDEFINED, g_readBuff, sizeof(g_readBuff)), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #4 Nominal */
@@ -657,6 +659,7 @@ void UT_os_writefile_test()
     /* #2 Invalid-file-desc-arg */
 
     UT_RETVAL(OS_write(UT_OBJID_INCORRECT, g_writeBuff, sizeof(g_writeBuff)), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_write(OS_OBJECT_ID_UNDEFINED, g_writeBuff, sizeof(g_writeBuff)), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #4 Nominal */
@@ -744,6 +747,7 @@ void UT_os_lseekfile_test()
     int32  pos1 = 0, pos2 = 0, pos3 = 0;
 
     UT_RETVAL(OS_lseek(UT_OBJID_INCORRECT, 0, OS_SEEK_SET), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_lseek(OS_OBJECT_ID_UNDEFINED, 0, OS_SEEK_SET), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Invalid-whence-arg */
@@ -1535,6 +1539,7 @@ void UT_os_getfdinfo_test()
     /* #2 Invalid-file-desc-arg */
 
     UT_RETVAL(OS_FDGetInfo(UT_OBJID_INCORRECT, &fdProps), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_FDGetInfo(OS_OBJECT_ID_UNDEFINED, &fdProps), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #4 Nominal */
