@@ -117,6 +117,7 @@ void TestNetworkApiBadArgs(void)
     /* OS_SocketAddrToString */
     UtAssert_INT32_EQ(OS_SocketAddrToString(addr_string, 0, &addr), OS_ERR_INVALID_SIZE);
     UtAssert_INT32_EQ(OS_SocketAddrToString(NULL, sizeof(addr_string), &addr), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_SocketAddrToString(addr_string, sizeof(addr_string), NULL), OS_INVALID_POINTER);
     UtAssert_INT32_EQ(OS_SocketAddrToString(addr_string, 1, &addr), OS_ERROR);
 }
 
@@ -234,6 +235,7 @@ void TestDatagramNetworkApi(void)
     uint32           Buf3 = 222;
     uint32           Buf4 = 000;
     osal_id_t        objid;
+    osal_id_t        invalid_fd;
     uint16           PortNum;
     OS_socket_prop_t prop;
     OS_SockAddr_t    l_addr;
@@ -250,11 +252,11 @@ void TestDatagramNetworkApi(void)
      */
 
     /* make a bad object ID by flipping the bits of a good object ID */
-    objid = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(p2_socket_id) ^ 0xFFFFFFFF);
+    invalid_fd = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(p2_socket_id) ^ 0xFFFFFFFF);
 
     /* OS_SocketBind */
     UtAssert_INT32_EQ(OS_SocketBind(OS_OBJECT_ID_UNDEFINED, &p2_addr), OS_ERR_INVALID_ID);
-    UtAssert_INT32_EQ(OS_SocketBind(objid, &p2_addr), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketBind(invalid_fd, &p2_addr), OS_ERR_INVALID_ID);
     UtAssert_INT32_EQ(OS_SocketBind(regular_file_id, &p2_addr), OS_ERR_INCORRECT_OBJ_TYPE);
     UtAssert_INT32_EQ(OS_SocketBind(p2_socket_id, &p2_addr), OS_ERR_INCORRECT_OBJ_STATE);
     UtAssert_INT32_EQ(OS_SocketBind(p2_socket_id, NULL), OS_INVALID_POINTER);
@@ -262,7 +264,7 @@ void TestDatagramNetworkApi(void)
     /* OS_SocketRecvFrom */
     UtAssert_INT32_EQ(OS_SocketRecvFrom(OS_OBJECT_ID_UNDEFINED, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT),
                       OS_ERR_INVALID_ID);
-    UtAssert_INT32_EQ(OS_SocketRecvFrom(objid, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketRecvFrom(invalid_fd, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT), OS_ERR_INVALID_ID);
     UtAssert_INT32_EQ(OS_SocketRecvFrom(regular_file_id, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT),
                       OS_ERR_INCORRECT_OBJ_TYPE);
     UtAssert_INT32_EQ(OS_SocketRecvFrom(p2_socket_id, NULL, sizeof(Buf2), &l_addr, UT_TIMEOUT), OS_INVALID_POINTER);
@@ -270,7 +272,7 @@ void TestDatagramNetworkApi(void)
 
     /* OS_SocketSendTo */
     UtAssert_INT32_EQ(OS_SocketSendTo(OS_OBJECT_ID_UNDEFINED, &Buf2, sizeof(Buf2), &l_addr), OS_ERR_INVALID_ID);
-    UtAssert_INT32_EQ(OS_SocketSendTo(objid, &Buf2, sizeof(Buf2), &l_addr), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketSendTo(invalid_fd, &Buf2, sizeof(Buf2), &l_addr), OS_ERR_INVALID_ID);
     UtAssert_INT32_EQ(OS_SocketSendTo(regular_file_id, &Buf2, sizeof(Buf2), &l_addr), OS_ERR_INCORRECT_OBJ_TYPE);
     UtAssert_INT32_EQ(OS_SocketSendTo(p2_socket_id, NULL, sizeof(Buf2), &l_addr), OS_INVALID_POINTER);
     UtAssert_INT32_EQ(OS_SocketSendTo(p2_socket_id, &Buf2, 0, &l_addr), OS_ERR_INVALID_SIZE);
@@ -278,7 +280,7 @@ void TestDatagramNetworkApi(void)
 
     /* OS_SocketGetInfo */
     UtAssert_INT32_EQ(OS_SocketGetInfo(OS_OBJECT_ID_UNDEFINED, &prop), OS_ERR_INVALID_ID);
-    UtAssert_INT32_EQ(OS_SocketGetInfo(objid, &prop), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketGetInfo(invalid_fd, &prop), OS_ERR_INVALID_ID);
     UtAssert_INT32_EQ(OS_SocketGetInfo(p2_socket_id, NULL), OS_INVALID_POINTER);
 
     /* OS_SocketGetIdByName */
@@ -455,6 +457,7 @@ void TestStreamNetworkApi(void)
     uint32         iter;
     uint32         loopcnt;
     osal_id_t      temp_id;
+    osal_id_t      invalid_fd;
     OS_SockAddr_t  temp_addr;
     OS_task_prop_t taskprop;
     char           Buf_rcv_c[4]           = {0};
@@ -497,8 +500,9 @@ void TestStreamNetworkApi(void)
 
         /* OS_SocketAccept error conditions - check before binding */
         /* create a bad ID by flipping the bits of a good ID */
-        temp_id = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(s_socket_id) ^ 0xFFFFFFFF);
-        UtAssert_INT32_EQ(OS_SocketAccept(temp_id, &temp_id, &temp_addr, 0), OS_ERR_INVALID_ID);
+        invalid_fd = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(s_socket_id) ^ 0xFFFFFFFF);
+        UtAssert_INT32_EQ(OS_SocketAccept(invalid_fd, &temp_id, &temp_addr, 0), OS_ERR_INVALID_ID);
+        UtAssert_INT32_EQ(OS_SocketAccept(OS_OBJECT_ID_UNDEFINED, &temp_id, &temp_addr, 0), OS_ERR_INVALID_ID);
         UtAssert_INT32_EQ(OS_SocketAccept(s_socket_id, NULL, &temp_addr, UT_TIMEOUT), OS_INVALID_POINTER);
         UtAssert_INT32_EQ(OS_SocketAccept(s_socket_id, &temp_id, NULL, UT_TIMEOUT), OS_INVALID_POINTER);
         UtAssert_INT32_EQ(OS_SocketAccept(s_socket_id, &temp_id, &temp_addr, UT_TIMEOUT), OS_ERR_INCORRECT_OBJ_STATE);
@@ -561,10 +565,12 @@ void TestStreamNetworkApi(void)
             if (iter == UT_STREAM_CONNECTION_INITIAL)
             {
                 /* create a bad ID by flipping the bits of a good ID */
-                temp_id = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(c_socket_id) ^ 0xFFFFFFFF);
+                invalid_fd = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(c_socket_id) ^ 0xFFFFFFFF);
 
                 /* OS_SocketShutdown */
-                UtAssert_INT32_EQ(OS_SocketShutdown(temp_id, OS_SocketShutdownMode_SHUT_READ), OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_SocketShutdown(invalid_fd, OS_SocketShutdownMode_SHUT_READ), OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_SocketShutdown(OS_OBJECT_ID_UNDEFINED, OS_SocketShutdownMode_SHUT_READ),
+                                  OS_ERR_INVALID_ID);
                 UtAssert_INT32_EQ(OS_SocketShutdown(regular_file_id, OS_SocketShutdownMode_SHUT_READ),
                                   OS_ERR_INCORRECT_OBJ_TYPE);
                 UtAssert_INT32_EQ(OS_SocketShutdown(c_socket_id, OS_SocketShutdownMode_SHUT_READ),
@@ -582,26 +588,29 @@ void TestStreamNetworkApi(void)
             if (iter == UT_STREAM_CONNECTION_INITIAL)
             {
                 /* create a bad ID by flipping the bits of a good ID */
-                temp_id = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(c_socket_id) ^ 0xFFFFFFFF);
+                invalid_fd = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(c_socket_id) ^ 0xFFFFFFFF);
 
                 /* OS_SocketShutdown */
                 UtAssert_INT32_EQ(OS_SocketShutdown(c_socket_id, OS_SocketShutdownMode_NONE), OS_ERR_INVALID_ARGUMENT);
 
                 /* OS_TimedRead */
-                UtAssert_INT32_EQ(OS_TimedRead(temp_id, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT), OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_TimedRead(invalid_fd, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT),
+                                  OS_ERR_INVALID_ID);
                 UtAssert_INT32_EQ(OS_TimedRead(c_socket_id, NULL, sizeof(Buf_rcv_c), UT_TIMEOUT), OS_INVALID_POINTER);
                 UtAssert_INT32_EQ(OS_TimedRead(c_socket_id, Buf_rcv_c, 0, UT_TIMEOUT), OS_ERR_INVALID_SIZE);
                 UtAssert_INT32_EQ(OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), 0), OS_ERROR_TIMEOUT);
 
                 /* OS_TimedWrite */
-                UtAssert_INT32_EQ(OS_TimedWrite(temp_id, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT), OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_TimedWrite(invalid_fd, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT),
+                                  OS_ERR_INVALID_ID);
                 UtAssert_INT32_EQ(OS_TimedWrite(c_socket_id, NULL, sizeof(Buf_rcv_c), UT_TIMEOUT), OS_INVALID_POINTER);
                 UtAssert_INT32_EQ(OS_TimedWrite(c_socket_id, Buf_rcv_c, 0, UT_TIMEOUT), OS_ERR_INVALID_SIZE);
 
                 /* OS_SocketConnect */
-                UtAssert_INT32_EQ(OS_SocketConnect(c_socket_id, NULL, UT_TIMEOUT), OS_INVALID_POINTER);
-                UtAssert_INT32_EQ(OS_SocketConnect(temp_id, &s_addr, UT_TIMEOUT), OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_SocketConnect(invalid_fd, &s_addr, UT_TIMEOUT), OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_SocketConnect(OS_OBJECT_ID_UNDEFINED, &s_addr, UT_TIMEOUT), OS_ERR_INVALID_ID);
                 UtAssert_INT32_EQ(OS_SocketConnect(regular_file_id, &s_addr, UT_TIMEOUT), OS_ERR_INCORRECT_OBJ_TYPE);
+                UtAssert_INT32_EQ(OS_SocketConnect(c_socket_id, NULL, UT_TIMEOUT), OS_INVALID_POINTER);
                 UtAssert_INT32_EQ(OS_SocketConnect(c_socket_id, &s_addr, 0), OS_ERR_INCORRECT_OBJ_STATE);
             }
 
