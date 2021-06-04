@@ -1425,6 +1425,7 @@ void UT_os_outputtofile_test()
     /* #2 Invalid-file-desc-arg */
 
     UT_RETVAL(OS_ShellOutputToFile("ls", UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_ShellOutputToFile("ls", OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #4 Nominal */
