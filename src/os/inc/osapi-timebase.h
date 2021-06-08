@@ -73,11 +73,14 @@ typedef struct
  * be configured to support at least (OS_MAX_TASKS + OS_MAX_TIMEBASES) threads,
  * to account for the helper threads associated with time base objects.
  *
- * @param[out]  timebase_id     A non-zero ID corresponding to the timebase resource
- * @param[in]   timebase_name   The name of the time base
+ * @param[out]  timebase_id     will be set to the non-zero ID of the newly-created resource @nonnull
+ * @param[in]   timebase_name   The name of the time base @nonnull
  * @param[in]   external_sync   A synchronization function for BSP hardware-based timer ticks
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_ERR_NAME_TAKEN if the name specified is already used
+ * @retval #OS_ERR_NO_FREE_IDS if there can be no more timebase resources created
  * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
  * @retval #OS_ERR_NAME_TOO_LONG if the timebase_name is too long
  * @retval #OS_INVALID_POINTER if a pointer argument is NULL
@@ -103,6 +106,8 @@ int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_Ti
  * @param[in]   interval_time   The amount of delay between ticks, in microseconds.
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid timebase
  * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
  * @retval #OS_TIMER_ERR_INVALID_ARGS if start_time or interval_time are out of range
  */
@@ -118,6 +123,8 @@ int32 OS_TimeBaseSet(osal_id_t timebase_id, uint32 start_time, uint32 interval_t
  * @param[in]   timebase_id     The timebase resource to delete
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid timebase
  * @retval #OS_ERR_INCORRECT_OBJ_STATE if called from timer/timebase context
  */
 int32 OS_TimeBaseDelete(osal_id_t timebase_id);
@@ -128,8 +135,8 @@ int32 OS_TimeBaseDelete(osal_id_t timebase_id);
  *
  * Given a time base name, find and output the ID associated with it.
  *
- * @param[out]  timebase_id     The timebase resource ID
- * @param[in]   timebase_name   The name of the timebase resource to find
+ * @param[out]  timebase_id     will be set to the non-zero ID of the matching resource @nonnull
+ * @param[in]   timebase_name   The name of the timebase resource to find @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -151,7 +158,7 @@ int32 OS_TimeBaseGetIdByName(osal_id_t *timebase_id, const char *timebase_name);
  *             all of the relevant info( name and creator) about the specified timebase.
  *
  * @param[in]   timebase_id     The timebase resource ID
- * @param[out]  timebase_prop   Buffer to store timebase properties
+ * @param[out]  timebase_prop   Buffer to store timebase properties @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -185,7 +192,7 @@ int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_pro
  * and calculate the difference between the consecutive samples.
  *
  * @param[in]   timebase_id The timebase to operate on
- * @param[out]  freerun_val Buffer to store the free run counter
+ * @param[out]  freerun_val Buffer to store the free run counter @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS

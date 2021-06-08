@@ -23,9 +23,8 @@
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *
- * This file contains utility functions to interpret OSAL IDs
- * in a generic/common manner.  They are used internally within
- * OSAL by all the various modules.
+ * This file contains utility functions to manipulate/interpret OSAL IDs
+ * in a generic/common manner.
  *
  * In order to add additional verification capabilities, each class of fundamental
  * objects will use its own ID space within the 32-bit integer ID value.  This way
@@ -35,11 +34,8 @@
  * These functions provide a consistent way to validate a 32-bit OSAL ID as
  * well as determine its internal type and index.
  *
- * The map/unmap functions are not part of the public API -- applications
- * should be treating OSAL IDs as opaque objects.
- *
- * NOTE: The only exception is OS_ConvertToArrayIndex() as this is necessary to
- * assist applications when storing OSAL IDs in a table.
+ * NOTE: This file includes local helpers, OSAL scope, and public API implementations
+ * as documented in the function headers
  */
 
 /****************************************************************************************
@@ -1393,7 +1389,7 @@ int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal
  *-----------------------------------------------------------------*/
 int32 OS_ConvertToArrayIndex(osal_id_t object_id, osal_index_t *ArrayIndex)
 {
-    /* just pass to the generic internal conversion routine */
+    /* pass to conversion routine with undefined type */
     return OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_UNDEFINED, object_id, ArrayIndex);
 } /* end OS_ConvertToArrayIndex */
 
@@ -1513,15 +1509,8 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size)
  *
  * Function: OS_ObjectIdToArrayIndex
  *
- *  Purpose: Convert an object ID (which must be of the given type) to a number suitable
- *           for use as an array index.  The array index will be in the range of:
- *            0 <= ArrayIndex < OS_MAX_<OBJTYPE>
- *
- *            If the passed-in ID type is OS_OBJECT_TYPE_UNDEFINED, then any type
- *            is allowed.
- *
- *  returns: If the passed-in ID is not of the proper type, OS_ERROR is returned
- *           Otherwise OS_SUCCESS is returned.
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t object_id, osal_index_t *ArrayIndex)

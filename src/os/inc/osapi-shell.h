@@ -41,7 +41,7 @@
  * Takes a shell command in and writes the output of that command to the specified file
  * The output file must be opened previously with write access (OS_WRITE_ONLY or OS_READ_WRITE).
  *
- * @param[in] Cmd     Command to pass to shell
+ * @param[in] Cmd     Command to pass to shell @nonnull
  * @param[in] filedes File to send output to.
  *
  * @return Execution status, see @ref OSReturnCodes

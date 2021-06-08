@@ -48,10 +48,18 @@ typedef struct
  *
  * Creates a counting semaphore with initial value specified by
  * sem_initial_value and name specified by sem_name. sem_id will be
- * returned to the caller
+ * returned to the caller.
  *
- * @param[out]  sem_id will be set to the non-zero ID of the newly-created resource
- * @param[in]   sem_name the name of the new resource to create
+ * @note Underlying RTOS implementations may or may not impose a specific upper limit
+ * to the value of a counting semaphore.  If the OS has a specific limit and the
+ * sem_initial_value exceeds this limit, then #OS_INVALID_SEM_VALUE is returned.  On
+ * other implementations, any 32-bit integer value may be acceptable.  For maximum
+ * portability, it is recommended to keep counting semaphore values within the
+ * range of a "short int" (i.e. between 0 and 32767).  Many platforms do accept
+ * larger values, but may not be guaranteed.
+ *
+ * @param[out]  sem_id will be set to the non-zero ID of the newly-created resource @nonnull
+ * @param[in]   sem_name the name of the new resource to create @nonnull
  * @param[in]   sem_initial_value the initial value of the counting semaphore
  * @param[in]   options Reserved for future use, should be passed as 0.
  *
@@ -61,8 +69,8 @@ typedef struct
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NO_FREE_IDS if all of the semaphore ids are taken
  * @retval #OS_ERR_NAME_TAKEN if this is already the name of a counting semaphore
- * @retval #OS_SEM_FAILURE if the OS call failed
- * @retval #OS_INVALID_SEM_VALUE if the semaphore value is too high
+ * @retval #OS_INVALID_SEM_VALUE if the semaphore value is too high @covtest
+ * @retval #OS_SEM_FAILURE if an unspecified implementation error occurs @covtest
  */
 int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_initial_value, uint32 options);
 
@@ -80,9 +88,8 @@ int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_init
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_SEM_FAILURE the semaphore was not previously  initialized or is not
- * in the array of semaphores defined by the system
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a counting semaphore
+ * @retval #OS_SEM_FAILURE if an unspecified implementation error occurs @covtest
  */
 int32 OS_CountSemGive(osal_id_t sem_id);
 
@@ -101,7 +108,7 @@ int32 OS_CountSemGive(osal_id_t sem_id);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID the Id passed in is not a valid counting semaphore
- * @retval #OS_SEM_FAILURE if the OS call failed
+ * @retval #OS_SEM_FAILURE if an unspecified implementation error occurs @covtest
  */
 int32 OS_CountSemTake(osal_id_t sem_id);
 
@@ -120,9 +127,8 @@ int32 OS_CountSemTake(osal_id_t sem_id);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_SEM_TIMEOUT if semaphore was not relinquished in time
- * @retval #OS_SEM_FAILURE the semaphore was not previously initialized or is not
- * in the array of semaphores defined by the system
  * @retval #OS_ERR_INVALID_ID if the ID passed in is not a valid semaphore ID
+ * @retval #OS_SEM_FAILURE if an unspecified implementation error occurs @covtest
  */
 int32 OS_CountSemTimedWait(osal_id_t sem_id, uint32 msecs);
 
@@ -135,7 +141,7 @@ int32 OS_CountSemTimedWait(osal_id_t sem_id, uint32 msecs);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid counting semaphore
- * @retval #OS_SEM_FAILURE the OS call failed
+ * @retval #OS_SEM_FAILURE if an unspecified implementation error occurs @covtest
  */
 int32 OS_CountSemDelete(osal_id_t sem_id);
 
@@ -147,7 +153,7 @@ int32 OS_CountSemDelete(osal_id_t sem_id);
  * The id is returned through sem_id
  *
  * @param[out] sem_id will be set to the ID of the existing resource
- * @param[in]   sem_name the name of the existing resource to find
+ * @param[in]  sem_name the name of the existing resource to find @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -165,8 +171,8 @@ int32 OS_CountSemGetIdByName(osal_id_t *sem_id, const char *sem_name);
  * all of the relevant info( name and creator) about the specified counting
  * semaphore.
  *
- * @param[in] sem_id The object ID to operate on
- * @param[out]  count_prop The property object buffer to fill
+ * @param[in]  sem_id The object ID to operate on
+ * @param[out] count_prop The property object buffer to fill @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS

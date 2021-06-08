@@ -65,6 +65,7 @@ int32 OS_NetworkGetID(void);
  * @param[in]   name_len     Maximum length of host name buffer
  *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_SIZE if the name_len is zero
  * @retval #OS_INVALID_POINTER if the host_name is NULL
  */

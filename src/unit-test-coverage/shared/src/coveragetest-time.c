@@ -170,9 +170,9 @@ void Test_OS_TimerSet(void)
      * Test Case For:
      * int32 OS_TimerSet(uint32 timer_id, uint32 start_time, uint32 interval_time)
      */
-    int32 expected = OS_ERROR;
+    int32 expected = OS_TIMER_ERR_INVALID_ARGS;
     int32 actual   = OS_TimerSet(UT_OBJID_1, 0, 0);
-    UtAssert_True(actual == expected, "OS_TimerSet() (%ld) == OS_ERROR", (long)actual);
+    UtAssert_True(actual == expected, "OS_TimerSet() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
 
     expected = OS_SUCCESS;
     actual   = OS_TimerSet(UT_OBJID_1, 0, 1);

@@ -48,10 +48,10 @@ project(OSAL C)
 # part of the open source release.
 # CAUTION: The API between the OSAL and the low level implementation and/or BSP
 # is not stabilized, and may change with every OSAL release.  No attempt is made
-# to provide backward compatibility with to external sources. 
-set(OSAL_EXT_SOURCE_DIR "$ENV{OSAL_EXT_SOURCE_DIR}" 
+# to provide backward compatibility with to external sources.
+set(OSAL_EXT_SOURCE_DIR "$ENV{OSAL_EXT_SOURCE_DIR}"
     CACHE PATH "External source directory to check for additional OS/BSP implementations")
-    
+
 # Read the default compile-time configuration, and update with
 # any mission/project specific options in the OSAL_CONFIGURATION_FILE
 include("${OSAL_SOURCE_DIR}/default_config.cmake")
@@ -170,7 +170,7 @@ if (OSAL_BSP_INCLUDE_DIRECTORIES)
     include_directories(${OSAL_BSP_INCLUDE_DIRECTORIES})
 endif (OSAL_BSP_INCLUDE_DIRECTORIES)
 
-set(BSP_SRCLIST 
+set(BSP_SRCLIST
     src/bsp/shared/src/osapi-bsp.c
     src/bsp/shared/src/bsp_default_app_run.c
     src/bsp/shared/src/bsp_default_app_startup.c
@@ -351,6 +351,10 @@ if (HAS_PARENT)
     # when building code intended for coverage analysis.
     set(UT_COVERAGE_COMPILE_FLAGS "${UT_COVERAGE_COMPILE_FLAGS}" PARENT_SCOPE)
     set(UT_COVERAGE_LINK_FLAGS "${UT_COVERAGE_LINK_FLAGS}" PARENT_SCOPE)
+else(HAS_PARENT)
+    # In a standalone build, also add the documentation target(s)
+    # Note that in a CFE/integrated build, it is expected this will be built separately.
+    add_subdirectory(doc/src doc)
 endif(HAS_PARENT)
 
 

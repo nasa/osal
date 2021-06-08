@@ -80,9 +80,10 @@ enum
  *
  * @note Mission time management typically uses the cFE Time Service
  *
- * @param[out]  time_struct An OS_time_t that will be set to the current time
+ * @param[out]  time_struct An OS_time_t that will be set to the current time @nonnull
  *
  * @return Get local time status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if time_struct is null
  */
 int32 OS_GetLocalTime(OS_time_t *time_struct);
@@ -95,9 +96,10 @@ int32 OS_GetLocalTime(OS_time_t *time_struct);
  *
  * @note Mission time management typically uses the cFE Time Services
  *
- * @param[in]  time_struct An OS_time_t containing the current time
+ * @param[in]  time_struct An OS_time_t containing the current time @nonnull
  *
  * @return Set local time status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if time_struct is null
  */
 int32 OS_SetLocalTime(const OS_time_t *time_struct);

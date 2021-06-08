@@ -35,8 +35,34 @@
 #include "uttest.h"
 #include "utbsp.h"
 
+static int32 SyncTimeBaseCreateRc    = 0;
+static int32 SyncTimeBaseDeleteRc    = 0;
+static int32 SyncTimeBaseSetRc       = 0;
+static int32 SyncTimeBaseGetByNameRc = 0;
+static int32 SyncTimeBaseGetInfoRc   = 0;
+
+static OS_timebase_prop_t SyncTimeBaseProp;
+
+static uint32 NumSyncs = 0;
+
 static uint32 UT_TimerSync(osal_id_t timer_id)
 {
+    /*
+     * Calls to time base configuration from the context of a sync function
+     * should be rejected with OS_ERR_INCORRECT_OBJ_STATE.  However because
+     * UtAssert is not fully thread-safe, this does not assert here, it just
+     * calls the various functions on the first time through and stores the
+     * result, which is checked/asserted in the main task.
+     */
+    if (NumSyncs == 0)
+    {
+        SyncTimeBaseCreateRc    = OS_TimeBaseCreate(&timer_id, "sync", 0);
+        SyncTimeBaseDeleteRc    = OS_TimeBaseDelete(timer_id);
+        SyncTimeBaseSetRc       = OS_TimeBaseSet(timer_id, 100, 100);
+        SyncTimeBaseGetByNameRc = OS_TimeBaseGetIdByName(&timer_id, "TimeBaseC");
+        SyncTimeBaseGetInfoRc   = OS_TimeBaseGetInfo(timer_id, &SyncTimeBaseProp);
+    }
+    ++NumSyncs;
     OS_TaskDelay(1);
     return 1;
 }
@@ -47,48 +73,18 @@ void TestTimeBaseApi(void)
 {
     int32              expected;
     int32              actual;
-    int32              TimeBaseNum;
-    int32              tbc_results[OS_MAX_TIMEBASES];
     uint32             freerun;
     osal_id_t          objid;
     osal_id_t          time_base_id;
     osal_id_t          time_base_id2;
     osal_id_t          tb_id[OS_MAX_TIMEBASES];
-    char               overMaxTimeBase[12];
-    char               TimeBaseIter[OS_MAX_TIMEBASES][12];
+    char               timebase_name[OS_MAX_API_NAME + 5];
     OS_timebase_prop_t timebase_prop;
 
     /*
      * Test Case For:
      * int32 OS_TimeBaseCreate(uint32 *timer_id, const char *timebase_name, OS_TimerSync_t external_sync)
      */
-
-    /* Test for nominal inputs */
-    expected = OS_SUCCESS;
-
-    actual = OS_TimeBaseCreate(&time_base_id, "TimeBaseA", 0);
-    UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)actual);
-
-    actual = OS_TimeBaseCreate(&time_base_id2, "TimeBaseB", NULL);
-    UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)actual);
-
-    actual = OS_TimeBaseCreate(&time_base_id, "TimeBaseC", UT_TimerSync);
-    UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)actual);
-
-    /* Test for nominal, max/min cases */
-    objid  = OS_OBJECT_ID_UNDEFINED;
-    actual = OS_TimeBaseCreate(&objid, "TimeBaseD", 0);
-    UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)actual);
-
-    /* Checking for OS_MAX_TIMEBASES */
-    for (int i = 0; i < OS_MAX_TIMEBASES; i++)
-    {
-        snprintf(TimeBaseIter[i], 12, "TimeBase%d", i);
-        tbc_results[i] = OS_TimeBaseCreate(&tb_id[i], TimeBaseIter[i], 0);
-        UtAssert_True(tbc_results[i] == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)actual);
-
-        OS_TimeBaseDelete(tb_id[i]);
-    }
 
     /* Test for invalid inputs */
     expected = OS_INVALID_POINTER;
@@ -103,21 +99,64 @@ void TestTimeBaseApi(void)
     actual   = OS_TimeBaseCreate(&time_base_id, NULL, 0);
     UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    expected = OS_ERR_NAME_TAKEN;
-    actual   = OS_TimeBaseCreate(&time_base_id, "TimeBaseA", 0);
-    UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_ERR_NAME_TAKEN", (long)actual);
+    memset(timebase_name, 'x', sizeof(timebase_name));
+    timebase_name[sizeof(timebase_name) - 1] = 0;
+    UtAssert_INT32_EQ(OS_TimeBaseCreate(&time_base_id, timebase_name, 0), OS_ERR_NAME_TOO_LONG);
 
-    /* Checking OS_MAX_TIMEBASES + 1 */
+    /* Checking for OS_MAX_TIMEBASES */
     for (int i = 0; i < OS_MAX_TIMEBASES; i++)
     {
-        snprintf(TimeBaseIter[i], sizeof(TimeBaseIter[i]), "TimeBase%d", i);
-        tbc_results[i] = OS_TimeBaseCreate(&tb_id[i], TimeBaseIter[i], 0);
+        /* On the final setup pass, while there is still one free slot,
+         * check attempting to create a duplicate name (index 0) - this
+         * should be rejected and _not_ consume the last empty slot */
+        if (i == (OS_MAX_TIMEBASES - 1))
+        {
+            UtAssert_INT32_EQ(OS_TimeBaseCreate(&time_base_id, "TimeBase0", 0), OS_ERR_NAME_TAKEN);
+        }
+
+        snprintf(timebase_name, sizeof(timebase_name), "TimeBase%d", i);
+        UtAssert_INT32_EQ(OS_TimeBaseCreate(&tb_id[i], timebase_name, 0), OS_SUCCESS);
     }
-    TimeBaseNum = OS_MAX_TIMEBASES + 1;
-    snprintf(overMaxTimeBase, sizeof(overMaxTimeBase), "TimeBase%d", (int)TimeBaseNum);
-    expected = OS_ERR_NO_FREE_IDS;
-    actual   = OS_TimeBaseCreate(&time_base_id, "overMaxTimeBase", 0);
-    UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_ERR_NO_FREE_IDS", (long)actual);
+
+    /* Checking OS_MAX_TIMEBASES + 1 */
+    UtAssert_INT32_EQ(OS_TimeBaseCreate(&time_base_id, "overMaxTimeBase", 0), OS_ERR_NO_FREE_IDS);
+
+    /* reset test environment */
+    OS_DeleteAllObjects();
+
+    /* Test for nominal inputs - these resources are used for the remainder of test */
+    expected = OS_SUCCESS;
+
+    actual = OS_TimeBaseCreate(&time_base_id, "TimeBaseA", 0);
+    UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)actual);
+
+    actual = OS_TimeBaseCreate(&time_base_id2, "TimeBaseB", NULL);
+    UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)actual);
+
+    actual = OS_TimeBaseCreate(&time_base_id, "TimeBaseC", UT_TimerSync);
+    UtAssert_True(actual == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)actual);
+
+    /* Let the TimeBaseC accumulate at least one sync, so it will
+     * attempt to call timebase APIs from its own context. */
+    while (NumSyncs == 0)
+    {
+        OS_TaskDelay(1);
+    }
+
+    /* Check that those configuration attempts all returned OS_ERR_INCORRECT_OBJ_STATE */
+    UtAssert_True(SyncTimeBaseCreateRc == OS_ERR_INCORRECT_OBJ_STATE,
+                  "OS_TimeBaseCreate(&timer_id, \"sync\", 0) (%d) == OS_ERR_INCORRECT_OBJ_STATE",
+                  (int)SyncTimeBaseCreateRc);
+    UtAssert_True(SyncTimeBaseDeleteRc == OS_ERR_INCORRECT_OBJ_STATE,
+                  "OS_TimeBaseDelete(timer_id) (%d) == OS_ERR_INCORRECT_OBJ_STATE", (int)SyncTimeBaseDeleteRc);
+    UtAssert_True(SyncTimeBaseSetRc == OS_ERR_INCORRECT_OBJ_STATE,
+                  "OS_TimeBaseSet(timer_id, 100, 100) (%d) == OS_ERR_INCORRECT_OBJ_STATE", (int)SyncTimeBaseSetRc);
+    UtAssert_True(SyncTimeBaseGetByNameRc == OS_ERR_INCORRECT_OBJ_STATE,
+                  "OS_TimeBaseGetIdByName(&timer_id, \"TimeBaseC\") (%d) == OS_ERR_INCORRECT_OBJ_STATE",
+                  (int)SyncTimeBaseGetByNameRc);
+    UtAssert_True(SyncTimeBaseGetInfoRc == OS_ERR_INCORRECT_OBJ_STATE,
+                  "OS_TimeBaseGetInfo(timer_id, &SyncTimeBaseProp) (%d) == OS_ERR_INCORRECT_OBJ_STATE",
+                  (int)SyncTimeBaseGetInfoRc);
 
     /*
      * Test Case For:
@@ -192,9 +231,13 @@ void TestTimeBaseApi(void)
     UtAssert_True(!OS_ObjectIdDefined(objid), "OS_TimeBaseGetIdByName() objid (%lu) still OS_OBJECT_ID_UNDEFINED",
                   OS_ObjectIdToInteger(objid));
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimeBaseGetIdByName(NULL, NULL);
-    UtAssert_True(actual == expected, "OS_TimeBaseGetIdByName() (%ld) == OS_INVALID_POINTER", (long)actual);
+    /* check each pointer input individually */
+    UtAssert_INT32_EQ(OS_TimeBaseGetIdByName(NULL, "NF"), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_TimeBaseGetIdByName(&objid, NULL), OS_INVALID_POINTER);
+
+    memset(timebase_name, 'x', sizeof(timebase_name));
+    timebase_name[sizeof(timebase_name) - 1] = 0;
+    UtAssert_INT32_EQ(OS_TimeBaseGetIdByName(&objid, timebase_name), OS_ERR_NAME_TOO_LONG);
 
     /*
      * Test Case For:
@@ -214,7 +257,7 @@ void TestTimeBaseApi(void)
 
     UtAssert_True(!OS_ObjectIdDefined(timebase_prop.creator), "timebase_prop.creator (%lu) undefined",
                   OS_ObjectIdToInteger(timebase_prop.creator));
-    UtAssert_True(strcmp(timebase_prop.name, "TimeBaseB") == 0, "timebase_prop.name (%s) == TimeBase2",
+    UtAssert_True(strcmp(timebase_prop.name, "TimeBaseB") == 0, "timebase_prop.name (%s) == TimeBaseB",
                   timebase_prop.name);
     UtAssert_True(timebase_prop.nominal_interval_time == 0, "timebase_prop.nominal_interval_time (%lu) == 0",
                   (unsigned long)timebase_prop.nominal_interval_time);
@@ -248,6 +291,9 @@ void TestTimeBaseApi(void)
     freerun = 0x0000000;
     actual  = OS_TimeBaseGetFreeRun(time_base_id2, &freerun);
     UtAssert_True(actual == expected, "OS_TimeBaseGetFreeRun() (%ld) == OS_SUCCESS", (long)actual);
+
+    UtAssert_INT32_EQ(OS_TimeBaseGetFreeRun(OS_OBJECT_ID_UNDEFINED, &freerun), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_TimeBaseGetFreeRun(time_base_id2, NULL), OS_INVALID_POINTER);
 
     /* Test for invalid inputs */
     expected = OS_ERR_INVALID_ID;

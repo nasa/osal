@@ -34,7 +34,8 @@
 ** Macros
 **--------------------------------------------------------------------------------*/
 
-#define UT_OS_FILE_MAX_DIRS 5
+#define UT_OS_FILE_MAX_DIRS        5
+#define UT_OS_FILE_NUM_DIR_ENTRIES 2
 
 /*--------------------------------------------------------------------------------*
 ** Data types
@@ -58,9 +59,14 @@ char g_dirName[UT_OS_PATH_BUFF_SIZE];
 char g_fileName[UT_OS_PATH_BUFF_SIZE];
 
 char        g_subdirNames[UT_OS_FILE_MAX_DIRS][UT_OS_PATH_BUFF_SIZE];
-const char *g_tgtSubdirs[UT_OS_FILE_MAX_DIRS] = {"subdir1", "subdir2"};
+const char *g_tgtSubdirs[UT_OS_FILE_NUM_DIR_ENTRIES] = {"subdir1", "subdir2"};
 
-char g_dirItems[UT_OS_FILE_MAX_DIRS][UT_OS_FILE_BUFF_SIZE];
+typedef struct
+{
+    char DirItem[UT_OS_FILE_BUFF_SIZE];
+} UT_DirEntry_t;
+
+char g_dirItems[UT_OS_FILE_NUM_DIR_ENTRIES][UT_OS_FILE_BUFF_SIZE];
 
 /*--------------------------------------------------------------------------------*
 ** Local function prototypes
@@ -142,17 +148,16 @@ void UT_os_makedir_test()
 
     memset(g_dirName, '\0', sizeof(g_dirName));
     UT_os_sprintf(g_dirName, "%s/mkdir_Nominal", g_mntName);
-    if (UT_SETUP(OS_mkdir(g_dirName, OS_READ_WRITE)))
-    {
-        memset(g_fileName, '\0', sizeof(g_fileName));
-        UT_os_sprintf(g_fileName, "%s/mkdir_File.txt", g_dirName);
-        UT_NOMINAL(OS_OpenCreate(&fileDesc, g_fileName, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE));
+    UT_NOMINAL(OS_mkdir(g_dirName, OS_READ_WRITE));
 
-        /* Reset test environment */
-        UT_TEARDOWN(OS_close(fileDesc));
-        UT_TEARDOWN(OS_remove(g_fileName));
-        UT_TEARDOWN(OS_rmdir(g_dirName));
-    }
+    memset(g_fileName, '\0', sizeof(g_fileName));
+    UT_os_sprintf(g_fileName, "%s/mkdir_File.txt", g_dirName);
+    UT_NOMINAL(OS_OpenCreate(&fileDesc, g_fileName, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE));
+
+    /* Reset test environment */
+    UT_TEARDOWN(OS_close(fileDesc));
+    UT_TEARDOWN(OS_remove(g_fileName));
+    UT_TEARDOWN(OS_rmdir(g_dirName));
 }
 
 /*--------------------------------------------------------------------------------*
@@ -208,6 +213,7 @@ void UT_os_opendir_test()
     /* #1 Null-pointer-arg */
 
     UT_RETVAL(OS_DirectoryOpen(&dirh, NULL), OS_INVALID_POINTER);
+    UT_RETVAL(OS_DirectoryOpen(NULL, "/drive0/test"), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
     /* #2 Path-too-long-arg */
@@ -223,6 +229,11 @@ void UT_os_opendir_test()
     /* #5 Nominal */
 
     memset(g_dirName, '\0', sizeof(g_dirName));
+
+    /* Non-existent directory should not succeed */
+    UT_os_sprintf(g_dirName, "%s/notexist", g_mntName);
+    UT_RETVAL(OS_DirectoryOpen(&dirh, g_dirName), OS_ERROR);
+
     UT_os_sprintf(g_dirName, "%s/opendir_Nominal", g_mntName);
     if (UT_SETUP(OS_mkdir(g_dirName, OS_READ_WRITE)))
     {
@@ -271,6 +282,8 @@ void UT_os_closedir_test()
 {
     osal_id_t   dirh;
     os_dirent_t dirEntry;
+
+    UT_RETVAL(OS_DirectoryClose(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Nominal */
@@ -335,15 +348,16 @@ void UT_os_closedir_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_readdir_test()
 {
-    osal_id_t dirh = OS_OBJECT_ID_UNDEFINED;
+    osal_id_t   dirh = OS_OBJECT_ID_UNDEFINED;
+    os_dirent_t dirent;
 
     strcpy(g_subdirNames[0], " ");
     strcpy(g_subdirNames[1], " ");
 
     /*-----------------------------------------------------*/
-    /* #1 Null-pointer-arg */
+    /* Invalid ID */
 
-    UT_RETVAL(OS_DirectoryRead(OS_OBJECT_ID_UNDEFINED, NULL), OS_INVALID_POINTER);
+    UT_RETVAL(OS_DirectoryRead(UT_OBJID_INCORRECT, &dirent), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
@@ -362,10 +376,13 @@ void UT_os_readdir_test()
             {
                 if (UT_SETUP(OS_DirectoryOpen(&dirh, g_dirName)))
                 {
-                    UT_os_read_n_sort_dirs(dirh);
+                    /*-----------------------------------------------------*/
+                    /* Null-pointer-arg */
+                    UT_RETVAL(OS_DirectoryRead(dirh, NULL), OS_INVALID_POINTER);
 
-                    UtAssert_StrCmp(g_dirItems[2], g_tgtSubdirs[0], "%s == %s", g_dirItems[2], g_tgtSubdirs[0]);
-                    UtAssert_StrCmp(g_dirItems[3], g_tgtSubdirs[1], "%s == %s", g_dirItems[3], g_tgtSubdirs[1]);
+                    /*-----------------------------------------------------*/
+                    /* Nominal (via subfunction) */
+                    UT_os_read_n_sort_dirs(dirh);
 
                     /* Reset test environment */
                     UT_TEARDOWN(OS_DirectoryClose(dirh));
@@ -429,6 +446,11 @@ void UT_os_rewinddir_test()
     strcpy(g_subdirNames[1], " ");
 
     /*-----------------------------------------------------*/
+    /* Invalid ID */
+
+    UT_RETVAL(OS_DirectoryRewind(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+
+    /*-----------------------------------------------------*/
     /* #2 Nominal */
 
     memset(g_dirName, '\0', sizeof(g_dirName));
@@ -446,14 +468,10 @@ void UT_os_rewinddir_test()
                 if (UT_SETUP(OS_DirectoryOpen(&dirh, g_dirName)))
                 {
                     UT_os_read_n_sort_dirs(dirh);
-                    UtAssert_StrCmp(g_dirItems[2], g_tgtSubdirs[0], "%s == %s", g_dirItems[2], g_tgtSubdirs[0]);
-                    UtAssert_StrCmp(g_dirItems[3], g_tgtSubdirs[1], "%s == %s", g_dirItems[3], g_tgtSubdirs[1]);
 
                     UT_NOMINAL(OS_DirectoryRewind(dirh));
 
                     UT_os_read_n_sort_dirs(dirh);
-                    UtAssert_StrCmp(g_dirItems[2], g_tgtSubdirs[0], "%s == %s", g_dirItems[2], g_tgtSubdirs[0]);
-                    UtAssert_StrCmp(g_dirItems[3], g_tgtSubdirs[1], "%s == %s", g_dirItems[3], g_tgtSubdirs[1]);
 
                     /* Reset test environment */
                     UT_TEARDOWN(OS_DirectoryClose(dirh));
@@ -573,23 +591,56 @@ void UT_os_removedir_test()
  *--------------------------------------------------------------------------------*/
 void UT_os_read_n_sort_dirs(osal_id_t dirh)
 {
-    int         i = 0;
     os_dirent_t dirEntry;
+    uint32      NumMatched;
+    uint32      NumEntries;
+    uint32      Check;
+    int32       Status;
+    const char *Name;
 
-    for (i = 0; i < UT_OS_FILE_MAX_DIRS; i++)
-        strcpy(g_dirItems[i], " ");
+    memset(g_dirItems, 0, sizeof(g_dirItems));
 
-    while (OS_DirectoryRead(dirh, &dirEntry) == OS_SUCCESS)
+    NumMatched = 0;
+    NumEntries = 0;
+
+    while (NumMatched < UT_OS_FILE_NUM_DIR_ENTRIES && NumEntries == NumMatched)
     {
-        if (strcmp(OS_DIRENTRY_NAME(dirEntry), ".") == 0)
-            strcpy(g_dirItems[0], ".");
-        else if (strcmp(OS_DIRENTRY_NAME(dirEntry), "..") == 0)
-            strcpy(g_dirItems[1], "..");
-        else if (strcmp(OS_DIRENTRY_NAME(dirEntry), g_tgtSubdirs[0]) == 0)
-            strcpy(g_dirItems[2], g_tgtSubdirs[0]);
-        else if (strcmp(OS_DIRENTRY_NAME(dirEntry), g_tgtSubdirs[1]) == 0)
-            strcpy(g_dirItems[3], g_tgtSubdirs[1]);
+        UT_NOMINAL(OS_DirectoryRead(dirh, &dirEntry));
+
+        Name = OS_DIRENTRY_NAME(dirEntry);
+
+        /* Ignore UNIX-style special entries (. and ..) */
+        if (Name[0] != '.')
+        {
+            ++NumEntries;
+            UtPrintf("OS_DirectoryRead() name=%s\n", Name);
+            for (Check = 0; Check < UT_OS_FILE_NUM_DIR_ENTRIES; ++Check)
+            {
+                if (strcmp(Name, g_tgtSubdirs[Check]) == 0)
+                {
+                    strcpy(g_dirItems[Check], Name);
+                    ++NumMatched;
+                }
+            }
+        }
     }
+
+    /* asserts that the expected number of regular entries was found */
+    UtAssert_UINT32_EQ(NumMatched, UT_OS_FILE_NUM_DIR_ENTRIES);
+
+    /*
+     * now continue to read to verify behavior at end of directory.
+     * since there is no guaranteed order in directories, also need to
+     * ignore the special entries here, in case they appear now.
+     */
+    do
+    {
+        Status = OS_DirectoryRead(dirh, &dirEntry);
+        Name   = OS_DIRENTRY_NAME(dirEntry);
+    } while (Status == OS_SUCCESS && Name[0] == '.');
+
+    /* Final return value should have been OS_ERROR, indicating end of directory */
+    UtAssert_True(Status == OS_ERROR, "OS_DirectoryRead() (%d) == OS_ERROR (at end)", (int)Status);
 }
 
 /*================================================================================*

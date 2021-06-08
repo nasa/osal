@@ -192,6 +192,7 @@ void UtTest_Setup(void)
     UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     UtTest_Add(UT_os_apiinit_test, NULL, NULL, "OS_API_Init");
+    UtTest_Add(UT_os_registereventhandler_test, NULL, NULL, "OS_RegisterEventHandler");
 
     UtTest_Add(UT_os_printf_test, NULL, NULL, "OS_printf");
     UtTest_Add(UT_os_printfenable_test, NULL, NULL, "OS_printf_enable");
@@ -243,6 +244,7 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_task_get_id_test, UT_os_init_task_get_id_test, NULL, "OS_TaskGetId");
     UtTest_Add(UT_os_task_get_id_by_name_test, UT_os_init_task_get_id_by_name_test, NULL, "OS_TaskGetIdByName");
     UtTest_Add(UT_os_task_get_info_test, UT_os_init_task_get_info_test, NULL, "OS_TaskGetInfo");
+    UtTest_Add(UT_os_task_getid_by_sysdata_test, UT_os_task_getid_by_sysdata_test, NULL, "OS_TaskFindIdBySystemData");
 
     UtTest_Add(UT_os_geterrorname_test, NULL, NULL, "OS_GetErrorName");
 

@@ -99,6 +99,22 @@ void UT_os_module_load_test()
     UT_RETVAL(OS_ModuleLoad(&module_id, "TestModule", 0, OS_MODULE_FLAG_LOCAL_SYMBOLS), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
+    /* Name too long */
+
+    memset(module_name, 'x', sizeof(module_name) - 1);
+    module_name[sizeof(module_name) - 1] = 0;
+    UT_RETVAL(OS_ModuleLoad(&module_id, module_name, UT_OS_GENERIC_MODULE_NAME1, OS_MODULE_FLAG_LOCAL_SYMBOLS),
+              OS_ERR_NAME_TOO_LONG);
+
+    /*-----------------------------------------------------*/
+    /* Path invalid */
+
+    memset(module_file_name, 'x', OS_MAX_PATH_LEN - 1);
+    module_file_name[OS_MAX_PATH_LEN - 1] = 0;
+    UT_RETVAL(OS_ModuleLoad(&module_id, "TestModule", module_file_name, OS_MODULE_FLAG_LOCAL_SYMBOLS),
+              OS_FS_ERR_PATH_INVALID);
+
+    /*-----------------------------------------------------*/
     /* #4 No-free-IDs */
 
     for (i = 0; i <= OS_MAX_MODULES; i++)
@@ -205,11 +221,6 @@ void UT_os_module_info_test()
     }
 
     /*-----------------------------------------------------*/
-    /* #1 Invalid-pointer-arg */
-
-    UT_RETVAL(OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, NULL), OS_INVALID_POINTER);
-
-    /*-----------------------------------------------------*/
     /* #2 Invalid-ID-arg */
 
     UT_RETVAL(OS_ModuleInfo(UT_OBJID_INCORRECT, &module_info), OS_ERR_INVALID_ID);
@@ -220,6 +231,10 @@ void UT_os_module_info_test()
     /* Setup */
     if (UT_SETUP(OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS)))
     {
+        /* Invalid-pointer-arg */
+        UT_RETVAL(OS_ModuleInfo(module_id, NULL), OS_INVALID_POINTER);
+
+        /* Nominal */
         UT_NOMINAL(OS_ModuleInfo(module_id, &module_info));
 
         UT_TEARDOWN(OS_ModuleUnload(module_id));

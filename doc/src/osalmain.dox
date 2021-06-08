@@ -1,0 +1,121 @@
+/**
+  \mainpage Osal API Documentation
+
+  <UL>
+    <LI> General Information and Concepts
+    <UL>
+       <LI> \subpage osalIntro
+    </UL>
+    <LI> Core
+    <UL>
+      <LI> \ref OSReturnCodes
+      <LI> \ref OSObjectTypes
+      <LI> APIs
+      <UL>
+        <LI> \ref OSAPICore
+        <LI> \ref OSAPIObjUtil
+        <LI> \ref OSAPITask
+        <LI> \ref OSAPIMsgQueue
+        <LI> \ref OSAPIHeap
+        <LI> \ref OSAPIError
+        <LI> \ref OSAPISelect
+        <LI> \ref OSAPIPrintf
+        <LI> \ref OSAPIBsp
+        <LI> \ref OSAPIClock
+        <LI> \ref OSAPIShell
+      </UL>
+      <LI> \subpage osapi-common.h "Common Reference"
+      <LI> \subpage osapi-error.h "Return Code Reference"
+      <LI> \subpage osapi-idmap.h "Id Map Reference"
+      <LI> \subpage osapi-clock.h "Clock Reference"
+      <LI> \subpage osapi-task.h "Task Reference"
+      <LI> \subpage osapi-queue.h "Message Queue Reference"
+      <LI> \subpage osapi-heap.h "Heap Reference"
+      <LI> \subpage osapi-select.h "Select Reference"
+      <LI> \subpage osapi-printf.h "Printf Reference"
+      <LI> \subpage osapi-bsp.h "BSP Reference"
+      <LI> \subpage osapi-shell.h "Shell Reference"
+    </UL>
+    <LI> File System
+    <UL>
+      <LI> \subpage osalfsovr
+      <LI> \subpage osalfsfd
+      <LI> \ref OSFileAccess
+      <LI> \ref OSFileOffset
+      <LI> APIs
+      <UL>
+        <LI> \ref OSAPIFile
+        <LI> \ref OSAPIDir
+        <LI> \ref OSAPIFileSys
+      </UL>
+      <LI> \subpage osapi-filesys.h "File System Reference"
+      <LI> \subpage osapi-file.h "File Reference"
+      <LI> \subpage osapi-dir.h "Directory Reference"
+    </UL>
+    <LI> Object File Loader
+    <UL>
+      <LI> APIs
+      <UL>
+        <LI> \ref OSAPILoader
+      </UL>
+      <LI> \subpage osapi-module.h "File Loader Reference"
+    </UL>
+    <LI> Network
+    <UL>
+      <LI> APIs
+      <UL>
+        <LI> \ref OSALAPINetwork
+        <LI> \ref OSAPISocketAddr
+        <LI> \ref OSALAPISocket
+      </UL>
+      <LI> \subpage osapi-network.h "Network Reference"
+      <LI> \subpage osapi-sockets.h "Socket Reference"
+    </UL>
+    <LI> Timer
+    <UL>
+      <LI> \subpage osaltimerover
+      <LI> APIs
+      <UL>
+        <LI> \ref OSAPITimebase
+        <LI> \ref OSAPITimer
+      </UL>
+      <LI> \subpage osapi-timer.h "Timer Reference"
+      <LI> \subpage osapi-timebase.h "Time Base Reference"
+    </UL>
+    <LI> Semaphore and Mutex
+    <UL>
+      <LI> \ref OSSemaphoreStates
+      <LI> APIs
+      <UL>
+        <LI> \ref OSAPIBinSem
+        <LI> \ref OSAPICountSem
+        <LI> \ref OSAPIMutex
+      </UL>
+      <LI> \subpage osapi-binsem.h "Binary Semaphore Reference"
+      <LI> \subpage osapi-countsem.h "Counting Semaphore Reference"
+      <LI> \subpage osapi-mutex.h "Mutex Reference"
+    </UL>
+  </UL>
+**/
+
+/**
+ \page osalIntro OSAL Introduction
+
+ The goal of this library is to promote the creation of portable and
+ reusable real time embedded system software. Given the necessary OS
+ abstraction layer implementations, the same embedded software should
+ compile and run on a number of platforms ranging from spacecraft
+ computer systems to desktop PCs.
+
+ The OS Application Program Interfaces (APIs) are broken up into core,
+ file system, loader, network, and timer APIs.  See the related document
+ sections for full descriptions.
+
+ @note The majority of these APIs should be called from a task running
+ in the context of an OSAL application and in general should not be called
+ from an ISR. There are a few exceptions, such as the ability to give a
+ binary semaphore from an ISR.
+**/
+
+
+
