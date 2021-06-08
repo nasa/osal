@@ -21,9 +21,11 @@
 /**
  * \file
  *
- * Provide version identifiers for cFS' Operating System Abstraction Layer
- *  See @ref cfsversions for version and build number and description
+ * Provide version identifiers for Operating System Abstraction Layer
  *
+ * @note OSAL follows the same version semantics as cFS, which in
+ * turn is based on the Semantic Versioning 2.0 Specification.  For
+ * more information, see the documentation provided with cFE.
  */
 
 #ifndef OSAPI_VERSION_H
@@ -60,7 +62,6 @@
 
 /*! @brief Development Build Version Number.
  * @details Baseline git tag + Number of commits since baseline. @n
- * See @ref cfsversions for format differences between development and release versions.
  */
 #define OS_VERSION OS_BUILD_BASELINE "+dev" OS_STR(OS_BUILD_NUMBER)
 
@@ -71,7 +72,7 @@
 
 /*! @brief Development Build Version String.
  * @details Reports the current development build's baseline, number, and name. Also includes a note about the latest
- * official version. @n See @ref cfsversions for format differences between development and release versions.
+ * official version.
  */
 #define OS_VERSION_STRING                                                                          \
     " OSAL Development Build\n"                                                                    \
