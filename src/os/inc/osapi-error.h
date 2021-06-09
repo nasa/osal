@@ -50,6 +50,35 @@ typedef char os_err_name_t[OS_ERROR_NAME_LENGTH];
 
 /** @defgroup OSReturnCodes OSAL Return Code Defines
  *
+ * The specific status/return code definitions listed in this section may be extended or refined
+ * in future versions of OSAL.
+ *
+ * @note Application developers should assume that any OSAL API may return any status value listed
+ * here.  While the documentation of each OSAL API function indicates the return/status values that function
+ * may directly generate, functions may also pass through other status codes from related functions,
+ * so that list should not be considered absolute/exhaustive.
+ *
+ * The `int32` data type should be used to store an OSAL status code.  Negative values will always
+ * represent errors, while non-negative values indicate success.  Most APIs specifically return
+ * #OS_SUCCESS (0) upon successful execution, but some return a nonzero value, such as data size.
+ *
+ * Ideally, in order to more easily adapt to future OSAL versions and status code extensions/refinements,
+ * applications should typically check for errors as follows:
+ *
+ * @code
+ *  int32 status;
+ *  status = OS_TaskCreate(...);  (or any other API)
+ *  if (status < OS_SUCCESS)
+ *  {
+ *      handle or report error....
+ *      may also check for specific codes here.
+ *  }
+ *  else
+ *  {
+ *      handle normal/successful status...
+ *  }
+ * @endcode
+ *
  * @{
  */
 #define OS_SUCCESS                     (0)   /**< @brief Successful execution */
