@@ -50,6 +50,16 @@ typedef struct
 
 BSP_UT_GlobalData_t BSP_UT_Global;
 
+void UT_BSP_Lock(void)
+{
+    OS_BSP_Lock_Impl();
+}
+
+void UT_BSP_Unlock(void)
+{
+    OS_BSP_Unlock_Impl();
+}
+
 void UT_BSP_Setup(void)
 {
     uint8        UserShift;
@@ -114,7 +124,7 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage)
 
     if (MsgEnabled & 1)
     {
-        OS_BSP_Lock_Impl();
+        UT_BSP_Lock();
 
         switch (MessageType)
         {
@@ -190,7 +200,7 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage)
             OS_BSP_ConsoleOutput_Impl("\n", 1);
         }
 
-        OS_BSP_Unlock_Impl();
+        UT_BSP_Unlock();
     }
 
     /*
@@ -219,9 +229,9 @@ void UT_BSP_EndTest(const UtAssert_TestCounter_t *TestCounters)
     snprintf(Message, sizeof(Message), "COMPLETE: %u tests Segment(s) executed\n\n",
              (unsigned int)TestCounters->TestSegmentCount);
 
-    OS_BSP_Lock_Impl();
+    UT_BSP_Lock();
     OS_BSP_ConsoleOutput_Impl(Message, strlen(Message));
-    OS_BSP_Unlock_Impl();
+    UT_BSP_Unlock();
 
     if ((TestCounters->CaseCount[UTASSERT_CASETYPE_FAILURE] > 0) ||
         (TestCounters->CaseCount[UTASSERT_CASETYPE_TSF] > 0) || (TestCounters->CaseCount[UTASSERT_CASETYPE_TTF] > 0))
