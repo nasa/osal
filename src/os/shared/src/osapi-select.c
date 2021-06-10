@@ -190,7 +190,7 @@ int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid)
+bool OS_SelectFdIsSet(const OS_FdSet *Set, osal_id_t objid)
 {
     int32        return_code;
     osal_index_t local_id;

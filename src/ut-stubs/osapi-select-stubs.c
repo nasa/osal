@@ -66,11 +66,11 @@ int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid)
  * Generated stub function for OS_SelectFdIsSet()
  * ----------------------------------------------------
  */
-bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid)
+bool OS_SelectFdIsSet(const OS_FdSet *Set, osal_id_t objid)
 {
     UT_GenStub_SetupReturnBuffer(OS_SelectFdIsSet, bool);
 
-    UT_GenStub_AddParam(OS_SelectFdIsSet, OS_FdSet *, Set);
+    UT_GenStub_AddParam(OS_SelectFdIsSet, const OS_FdSet *, Set);
     UT_GenStub_AddParam(OS_SelectFdIsSet, osal_id_t, objid);
 
     UT_GenStub_Execute(OS_SelectFdIsSet, Basic, NULL);
