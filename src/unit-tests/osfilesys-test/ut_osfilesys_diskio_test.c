@@ -354,13 +354,14 @@ void UT_os_removefs_test()
     /* #2 Invalid-device-arg */
 
     UT_RETVAL(OS_rmfs(g_devNames[2]), OS_ERR_NAME_NOT_FOUND);
+    UT_RETVAL(OS_rmfs(g_fsLongName), OS_FS_ERR_PATH_TOO_LONG);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
 
     UT_NOMINAL(OS_mkfs(g_fsAddrPtr, g_devNames[3], g_volNames[3], g_blkSize, g_blkCnt));
 
-    UT_TEARDOWN(OS_rmfs(g_devNames[3]));
+    UT_NOMINAL(OS_rmfs(g_devNames[3]));
 
     UT_NOMINAL(OS_mkfs(g_fsAddrPtr, g_devNames[3], g_volNames[3], g_blkSize, g_blkCnt));
 
@@ -438,6 +439,7 @@ void UT_os_mount_test()
     {
         UT_NOMINAL(OS_mount(g_devNames[3], g_mntNames[3]));
         UT_RETVAL(OS_mount(g_devNames[3], g_mntNames[3]), OS_ERR_NAME_NOT_FOUND);
+        UT_RETVAL(OS_mount(g_devNames[3], g_fsLongName), OS_FS_ERR_PATH_TOO_LONG);
 
         /* Reset test environment */
         UT_TEARDOWN(OS_unmount(g_mntNames[3]));
@@ -724,6 +726,7 @@ void UT_os_getfsinfo_test(void)
 void UT_os_translatepath_test()
 {
     char localPath[UT_OS_LOCAL_PATH_BUFF_SIZE];
+    char virtPath[OS_MAX_PATH_LEN];
 
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */
@@ -735,6 +738,12 @@ void UT_os_translatepath_test()
     /* #2 Path-too-long-arg */
 
     UT_RETVAL(OS_TranslatePath(g_fsLongName, localPath), OS_FS_ERR_PATH_TOO_LONG);
+
+    /* create a path where only the name part is too long */
+    memset(virtPath, 'z', sizeof(virtPath) - 1);
+    virtPath[sizeof(virtPath) - 1] = 0;
+    virtPath[0]                    = '/';
+    UT_RETVAL(OS_TranslatePath(virtPath, localPath), OS_FS_ERR_NAME_TOO_LONG);
 
     /*-----------------------------------------------------*/
     /* #3 Invalid-virtual-path-arg */
