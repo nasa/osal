@@ -56,7 +56,7 @@ These terms are identified as proper nouns and are capitalized.
 | MMU   |  Memory Management Unit. A piece of hardware that manages virtual memory systems.  It automatically translates addresses into physical addresses so that an application can  be linked with one set of addresses but actually reside in a different part of memory. |
 | Network | A connection between subsystems used for communication purposes.  |
 | Platform  | See "Hardware Platform" above.   |
-| User  | Anyone who interacts with the Software Application or system in its operational state.  A user can be a developer, a tester, an operator, or a maintainer. 
+| User  | Anyone who interacts with the Software Application or system in its operational state.  A user can be a developer, a tester, an operator, or a maintainer.
 
 # How to Configure, Build, and Run the OSAL
 
@@ -114,7 +114,7 @@ machine. The source distribution has the following directories:
 | `osal/src/bsp`                | The bsp directory contains the platform specific code for the OSAL as well  as code to make the OSAL run on a particular platform. Everything in  this directory is used to adapt the OSAL and Applications to a particular  hardware platform. This directory also contains the startup code for the  example programs. The included platforms are generic enough that they may be  easy to port to other platforms and processor architectures. For example:  The bsp/mcf5235-rtems board support package was ported to an ARM processor  running RTEMS with minimal effort.  |
 | `osal/src/os`                 | The os directory is the heart of the OSAL, containing the implementation of  the OSAL for each supported operating system. There is a sub-directory for  each supported operating system in this directory. The OSAL include files  are also contained in this directory (src/os/inc).  |
 | `osal/src/inc`                | The inc directory contains system wide include files that are used by the  OSAL on all platforms.  |
-| `osal/doc`                    | The doc directory contains the documentation and release notes for the OSAL. |
+| `osal/docs`                   | The docs directory contains the documentation and release notes for the OSAL. |
 
 
 The osal directory can go just about anywhere on a host development
