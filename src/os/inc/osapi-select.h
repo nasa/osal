@@ -92,6 +92,8 @@ typedef enum
  *
  * @param[in,out] ReadSet  Set of handles to check/wait to become readable
  * @param[in,out] WriteSet Set of handles to check/wait to become writable
+ * @param[in] msecs Indicates the timeout. Positive values will wait up to that many milliseconds. Zero will not wait
+ * (poll). Negative values will wait forever (pend)
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS If any handle in the ReadSet or WriteSet is readable or writable, respectively
@@ -124,6 +126,8 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
  *
  * @param[in] objid The handle ID to select on
  * @param[in,out] StateFlags State flag(s) (readable or writable) @nonnull
+ * @param[in] msecs Indicates the timeout. Positive values will wait up to that many milliseconds. Zero will not wait
+ * (poll). Negative values will wait forever (pend)
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS If the handle is readable and/or writable, as requested
