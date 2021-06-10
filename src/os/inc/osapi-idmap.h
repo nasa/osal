@@ -151,13 +151,14 @@ static inline bool OS_ObjectIdDefined(osal_id_t object_id)
  * allows application code to retrieve the name of any valid OSAL object ID.
  *
  * @param[in]  object_id The object ID to operate on
- * @param[out] buffer Buffer in which to store the name
- * @param[in]  buffer_size Size of the output storage buffer
+ * @param[out] buffer Buffer in which to store the name @nonnull
+ * @param[in]  buffer_size Size of the output storage buffer @nonzero
  *
- * @returns #OS_SUCCESS if successful
- *          #OS_ERR_INVALID_ID if the passed-in ID is not a valid OSAL ID
- *          #OS_INVALID_POINTER if the passed-in buffer is invalid
- *          #OS_ERR_NAME_TOO_LONG if the name will not fit in the buffer provided
+ * @returns Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS  @copybrief OS_SUCCESS
+ * @retval #OS_ERR_INVALID_ID if the passed-in ID is not a valid OSAL ID
+ * @retval #OS_INVALID_POINTER if the passed-in buffer is invalid
+ * @retval #OS_ERR_NAME_TOO_LONG if the name will not fit in the buffer provided
  */
 int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size);
 
@@ -192,11 +193,12 @@ osal_objtype_t OS_IdentifyObject(osal_id_t object_id);
  * @sa OS_ObjectIdToArrayIndex
  *
  * @param[in]  object_id    The object ID to operate on
- * @param[out] *ArrayIndex  The Index to return
+ * @param[out] *ArrayIndex  The Index to return @nonnull
  *
- * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS                 @copybrief OS_SUCCESS
- * @retval #OS_ERR_INCORRECT_OBJ_TYPE  @copybrief OS_ERR_INCORRECT_OBJ_TYPE
+ * @returns Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_ERR_INVALID_ID if the object_id argument is not valid
+ * @retval #OS_INVALID_POINTER if the ArrayIndex is NULL
  */
 int32 OS_ConvertToArrayIndex(osal_id_t object_id, osal_index_t *ArrayIndex);
 
@@ -223,11 +225,10 @@ int32 OS_ConvertToArrayIndex(osal_id_t object_id, osal_index_t *ArrayIndex);
  *
  * @param[in]  idtype       The object type to convert
  * @param[in]  object_id    The object ID to operate on
- * @param[out] *ArrayIndex  The Index to return
+ * @param[out] *ArrayIndex  The Index to return @nonnull
  *
- * @return Execution status, see @ref OSReturnCodes
- * @retval #OS_SUCCESS                 @copybrief OS_SUCCESS
- * @retval #OS_ERR_INCORRECT_OBJ_TYPE  @copybrief OS_ERR_INCORRECT_OBJ_TYPE
+ * @returns Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the object_id argument is not valid
  * @retval #OS_INVALID_POINTER if the ArrayIndex is NULL
  * */
@@ -243,7 +244,7 @@ int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t object_id, osal_i
  * @param[in]  creator_id   Filter objects to those created by a specific task
  *                          This may be passed as OS_OBJECT_CREATOR_ANY to return all objects
  * @param[in]  callback_ptr Function to invoke for each matching object ID
- * @param[in]  callback_arg Opaque Argument to pass to callback function
+ * @param[in]  callback_arg Opaque Argument to pass to callback function (may be NULL)
  */
 void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg);
 
@@ -258,7 +259,7 @@ void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void 
  * @param[in]  creator_id   Filter objects to those created by a specific task
  *                          This may be passed as OS_OBJECT_CREATOR_ANY to return all objects
  * @param[in]  callback_ptr Function to invoke for each matching object ID
- * @param[in]  callback_arg Opaque Argument to pass to callback function
+ * @param[in]  callback_arg Opaque Argument to pass to callback function (may be NULL)
  */
 void OS_ForEachObjectOfType(osal_objtype_t objtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr,
                             void *callback_arg);
