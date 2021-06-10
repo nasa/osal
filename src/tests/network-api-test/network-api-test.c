@@ -59,6 +59,8 @@ enum
     UT_STREAM_CONNECTION_MAX
 };
 
+osal_id_t     fs_id;
+osal_id_t     regular_file_id;
 osal_id_t     s_task_id;
 osal_id_t     p1_socket_id;
 osal_id_t     p2_socket_id;
@@ -70,7 +72,9 @@ OS_SockAddr_t s_addr;
 OS_SockAddr_t c_addr;
 bool          networkImplemented = true;
 
-char ServerFn_ErrorString[128];
+int32 ServerFn_AcceptStatus;
+char  ServerFn_ErrorString[128];
+char  LongName[OS_MAX_API_NAME + 5];
 
 /*****************************************************************************
  *
@@ -78,13 +82,78 @@ char ServerFn_ErrorString[128];
  *
  *****************************************************************************/
 
-void TestDatagramNetworkApi_Setup(void)
+void TestNetworkApiBadArgs(void)
 {
-    int32         expected;
-    int32         actual;
+    OS_SockAddr_t addr;
+    osal_id_t     socket_id;
+    uint16        port;
+    char          addr_string[20];
+
+    memset(&addr, 0, sizeof(addr));
+
+    UtAssert_INT32_EQ(OS_SocketOpen(NULL, OS_SocketDomain_INVALID, OS_SocketType_INVALID), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_SocketOpen(&socket_id, OS_SocketDomain_MAX, OS_SocketType_MAX), OS_ERR_NOT_IMPLEMENTED);
+
+    UtAssert_INT32_EQ(OS_SocketAddrInit(&addr, OS_SocketDomain_INVALID), OS_ERR_NOT_IMPLEMENTED);
+    UtAssert_INT32_EQ(OS_SocketAddrInit(NULL, OS_SocketDomain_INVALID), OS_INVALID_POINTER);
+
+    /* OS_SocketAddrSetPort */
+    UtAssert_INT32_EQ(OS_SocketAddrSetPort(&addr, 0xFFFF), OS_ERR_BAD_ADDRESS);
+    UtAssert_INT32_EQ(OS_SocketAddrSetPort(NULL, 1234), OS_INVALID_POINTER);
+
+    /* OS_SocketAddrGetPort */
+    UtAssert_INT32_EQ(OS_SocketAddrGetPort(&port, &addr), OS_ERR_BAD_ADDRESS);
+    UtAssert_INT32_EQ(OS_SocketAddrGetPort(NULL, &addr), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_SocketAddrGetPort(&port, NULL), OS_INVALID_POINTER);
+
+    /* init the addr value to be INET for to/from string tests */
+    UtAssert_INT32_EQ(OS_SocketAddrInit(&addr, OS_SocketDomain_INET), OS_SUCCESS);
+
+    /* OS_SocketAddrFromString */
+    UtAssert_INT32_EQ(OS_SocketAddrFromString(NULL, "127.0.0.1"), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_SocketAddrFromString(&addr, NULL), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_SocketAddrFromString(&addr, "invalid"), OS_ERROR);
+
+    /* OS_SocketAddrToString */
+    UtAssert_INT32_EQ(OS_SocketAddrToString(addr_string, 0, &addr), OS_ERR_INVALID_SIZE);
+    UtAssert_INT32_EQ(OS_SocketAddrToString(NULL, sizeof(addr_string), &addr), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_SocketAddrToString(addr_string, 1, &addr), OS_ERROR);
+}
+
+void TestNetworkApiInet6(void)
+{
     osal_id_t     socket_id;
     OS_SockAddr_t addr;
-    OS_SockAddr_t inv_addr;
+    int32         actual;
+
+    /*
+     * The INET6 protocol is an optional component -
+     * Check for general support of this protocol by trying to init a
+     * socket address of that type
+     */
+    actual = OS_SocketAddrInit(&addr, OS_SocketDomain_INET6);
+    if (actual == OS_ERR_NOT_IMPLEMENTED)
+    {
+        UtAssert_NA("OS_SocketAddrInit(&addr, OS_SocketDomain_INET6) - INET6 not supported");
+    }
+    else
+    {
+        UtAssert_True(actual == OS_SUCCESS, "OS_SocketAddrInit(&addr, OS_SocketDomain_INET6) (%ld) == OS_SUCCESS",
+                      (long)actual);
+
+        /* Try OS_SocketOpen - should work if INET6 is supported per above test */
+        UtAssert_INT32_EQ(OS_SocketOpen(&socket_id, OS_SocketDomain_INET6, OS_SocketType_DATAGRAM), OS_SUCCESS);
+        UtAssert_INT32_EQ(OS_close(socket_id), OS_SUCCESS);
+    }
+}
+
+void TestDatagramNetworkApi_Setup(void)
+{
+    int32 expected;
+    int32 actual;
+
+    memset(LongName, 'x', sizeof(LongName) - 1);
+    LongName[sizeof(LongName) - 1] = 0;
 
     /* Open a peer1 socket */
     expected     = OS_SUCCESS;
@@ -140,85 +209,11 @@ void TestDatagramNetworkApi_Setup(void)
         actual = OS_SocketBind(p2_socket_id, &p2_addr);
         UtAssert_True(actual == expected, "OS_SocketBind() (%ld) == OS_SUCCESS", (long)actual);
 
-        /*
-         * Test for invalid and other nominal input parameters
-         * to the network functions being called above
-         */
-
-        /* OS_SocketOpen */
-        actual = OS_SocketOpen(&socket_id, OS_SocketDomain_INET6, OS_SocketType_DATAGRAM);
-        if (actual == OS_ERR_NOT_IMPLEMENTED)
-        {
-            UtAssert_NA("INET6 not supported");
-        }
-        else
-        {
-            UtAssert_True(actual == OS_SUCCESS, "OS_SocketOpen() (%ld) Passed", (long)actual);
-        }
-        OS_close(socket_id);
-
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketOpen(NULL, OS_SocketDomain_INVALID, OS_SocketType_INVALID);
-        UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        expected = OS_ERR_NOT_IMPLEMENTED;
-        actual   = OS_SocketOpen(&socket_id, OS_SocketDomain_MAX, OS_SocketType_MAX);
-        UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_ERR_NOT_IMPLEMENTED", (long)actual);
-
-        /* OS_SocketAddrInit */
-        actual = OS_SocketAddrInit(&addr, OS_SocketDomain_INET6);
-        if (actual == OS_ERR_NOT_IMPLEMENTED)
-        {
-            UtAssert_NA("INET6 not supported");
-        }
-        else
-        {
-            UtAssert_True(actual == OS_SUCCESS, "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
-        }
-
-        actual = OS_SocketAddrInit(NULL, OS_SocketDomain_INET6);
-        if (actual == OS_ERR_NOT_IMPLEMENTED)
-        {
-            UtAssert_NA("INET6 not supported");
-        }
-        else
-        {
-            UtAssert_True(actual == OS_INVALID_POINTER, "OS_SocketAddrInit() (%ld) == OS_INVALID_POINTER",
-                          (long)actual);
-        }
-
-        expected = OS_ERR_NOT_IMPLEMENTED;
-        actual   = OS_SocketAddrInit(&addr, OS_SocketDomain_INVALID);
-        UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_ERR_NOT_IMPLEMENTED", (long)actual);
-
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketAddrInit(NULL, OS_SocketDomain_INVALID);
-        UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        /* OS_SocketAddrSetPort */
-        expected = OS_ERR_BAD_ADDRESS;
-        actual   = OS_SocketAddrSetPort(&addr, 0xFFFF);
-        UtAssert_True(actual == expected, "OS_SocketAddrSetPort() (%ld) == OS_ERR_BAD_ADDRESS", (long)actual);
-
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketAddrSetPort(NULL, 1234);
-        UtAssert_True(actual == expected, "OS_SocketAddrSetPort() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        /* OS_SocketAddrFromString */
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketAddrFromString(NULL, "127.0.0.1");
-        UtAssert_True(actual == expected, "OS_SocketAddrFromString() (%ld) == OS_SUCCESS", (long)actual);
-
-        /* OS_SocketBind */
-        expected  = OS_ERR_INVALID_ID;
-        socket_id = OS_ObjectIdFromInteger(1);
-        actual    = OS_SocketBind(socket_id, &addr);
-        UtAssert_True(actual == expected, "OS_SocketBind() (%ld) == OS_ERR_INVALID_ID", (long)actual);
-
-        expected = OS_ERR_INCORRECT_OBJ_STATE;
-        memset(&inv_addr, 0, sizeof(inv_addr));
-        actual = OS_SocketBind(p2_socket_id, &inv_addr);
-        UtAssert_True(actual == expected, "OS_SocketBind() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
+        /* Finally, open a regular file handle to test rejection if passed to a socket API call */
+        UtAssert_INT32_EQ(OS_FileSysAddFixedMap(&fs_id, "./test", "/test"), OS_SUCCESS);
+        UtAssert_INT32_EQ(OS_OpenCreate(&regular_file_id, "/test/test.txt", OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE,
+                                        OS_READ_WRITE),
+                          OS_SUCCESS);
     }
 
 } /* end TestDatagramNetworkApi_Setup */
@@ -230,183 +225,114 @@ void TestDatagramNetworkApi_Setup(void)
  *****************************************************************************/
 void TestDatagramNetworkApi(void)
 {
-    if (networkImplemented)
-    {
-        char             AddrBuffer1[32];
-        char             AddrBuffer2[32];
-        char             AddrBuffer3[32];
-        char             AddrBuffer4[32];
-        uint32           Buf1 = 111;
-        uint32           Buf2 = 000;
-        uint32           Buf3 = 222;
-        uint32           Buf4 = 000;
-        osal_id_t        objid;
-        uint16           PortNum;
-        OS_socket_prop_t prop;
-        OS_SockAddr_t    l_addr;
-        int32            expected;
-        int32            actual;
+    char             AddrBuffer1[32];
+    char             AddrBuffer2[32];
+    char             AddrBuffer3[32];
+    char             AddrBuffer4[32];
+    uint32           Buf1 = 111;
+    uint32           Buf2 = 000;
+    uint32           Buf3 = 222;
+    uint32           Buf4 = 000;
+    osal_id_t        objid;
+    uint16           PortNum;
+    OS_socket_prop_t prop;
+    OS_SockAddr_t    l_addr;
 
-        /*
-         * Send data from peer1 to peer2 and verify
-         */
-
-        /* Send data from peer1 to peer2 */
-        expected = sizeof(Buf1);
-        actual   = OS_SocketSendTo(p1_socket_id, &Buf1, sizeof(Buf1), &p2_addr);
-        UtAssert_True(actual == expected, "OS_SocketSendTo() Passed. sizeof(Buf1) (%ld) == 1", (long)actual);
-
-        /* Recieve data from peer1 to peer2 */
-        expected = sizeof(Buf2);
-        actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT);
-        UtAssert_True(actual == expected, "OS_SocketRecvFrom() Passed. sizeof(Buf2) (%ld) == 1", (long)actual);
-        UtAssert_True(Buf1 == Buf2, "Buf1 (%ld) == Buf2 (%ld)", (long)Buf1, (long)Buf2);
-
-        /* Convert addresses to string and verify data is being sent from the correct address */
-        expected = OS_SUCCESS;
-
-        actual = OS_SocketAddrToString(AddrBuffer1, sizeof(AddrBuffer1), &p1_addr);
-        UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_SUCCESS", (long)actual);
-
-        actual = OS_SocketAddrToString(AddrBuffer2, sizeof(AddrBuffer2), &l_addr);
-        UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_SUCCESS", (long)actual);
-
-        UtAssert_True(strcmp(AddrBuffer1, AddrBuffer2) == 0, "AddrBuffer1 (%s) == AddrBuffer2 (%s)", AddrBuffer1,
-                      AddrBuffer2);
-
-        /*
-         * Send data from peer2 to peer1 and verify
-         */
-
-        /* Send data from peer2 to peer1 */
-        expected = sizeof(Buf3);
-        actual   = OS_SocketSendTo(p2_socket_id, &Buf3, sizeof(Buf3), &p1_addr);
-        UtAssert_True(actual == expected, "OS_SocketSendTo() Passed. sizeof(Buf1) (%ld) == 1", (long)actual);
-
-        /* Recieve data from peer2 to peer1 */
-        expected = sizeof(Buf4);
-        actual   = OS_SocketRecvFrom(p1_socket_id, &Buf4, sizeof(Buf4), &l_addr, UT_TIMEOUT);
-        UtAssert_True(actual == expected, "OS_SocketRecvFrom() Passed. sizeof(Buf3) (%ld) == 1", (long)actual);
-        UtAssert_True(Buf3 == Buf4, "Buf3 (%ld) == Buf4 (%ld)", (long)Buf3, (long)Buf4);
-
-        /* Convert addresses to string and verify data is being sent from the correct address */
-        expected = OS_SUCCESS;
-
-        actual = OS_SocketAddrToString(AddrBuffer3, sizeof(AddrBuffer3), &p2_addr);
-        UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_SUCCESS", (long)actual);
-
-        actual = OS_SocketAddrToString(AddrBuffer4, sizeof(AddrBuffer4), &l_addr);
-        UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_SUCCESS", (long)actual);
-
-        UtAssert_True(strcmp(AddrBuffer3, AddrBuffer4) == 0, "AddrBuffer3 (%s) == AddrBuffer4 (%s)", AddrBuffer3,
-                      AddrBuffer4);
-
-        /* Get port from incoming address and verify */
-        actual = OS_SocketAddrGetPort(&PortNum, &p2_addr);
-        UtAssert_True(actual == expected, "OS_SocketAddrGetPort() (%ld) == OS_SUCCESS", (long)actual);
-        UtAssert_True(PortNum == 9998, "PortNum (%ld) == 9998", (long)actual);
-
-        /* Get socket info and verify */
-        actual = OS_SocketGetInfo(p1_socket_id, &prop);
-        UtAssert_True(actual == expected, "OS_SocketGetInfo() (%ld) == OS_SUCCESS", (long)actual);
-        UtAssert_True(!OS_ObjectIdDefined(prop.creator), "prop.creator (%lu) == 0", OS_ObjectIdToInteger(prop.creator));
-        UtAssert_True(strcmp(prop.name, "127.0.0.1:9999") == 0, "prop.name (%s) == 127.0.0.1:9999", prop.name);
-
-        actual = OS_SocketGetIdByName(&objid, "127.0.0.1:9999");
-        UtAssert_True(actual == expected, "OS_SocketGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
-        UtAssert_True(OS_ObjectIdEqual(objid, p1_socket_id), "objid (%lu) == p1_socket_id",
-                      OS_ObjectIdToInteger(objid));
-
-        /*
-         * Test for invalid input parameters
-         * to the network functions being called above
-         */
-
-        /* OS_SocketSendTo */
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketSendTo(p1_socket_id, NULL, OSAL_SIZE_C(0), NULL);
-        UtAssert_True(actual == expected, "OS_SocketSendTo(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketSendTo(p1_socket_id, NULL, OSAL_SIZE_C(1), &p2_addr);
-        UtAssert_True(actual == expected, "OS_SocketSendTo() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        expected = OS_ERR_INVALID_ID;
-        objid    = OS_ObjectIdFromInteger(0xFFFFFFFF);
-        actual   = OS_SocketSendTo(objid, &Buf1, sizeof(Buf1), &p2_addr);
-        UtAssert_True(actual == expected, "OS_SocketSendTo() (%ld) == OS_ERR_INVALID_ID", (long)actual);
-
-        /* OS_SocketRecvFrom */
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketRecvFrom(p2_socket_id, NULL, OSAL_SIZE_C(1), NULL, UT_TIMEOUT);
-        UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketRecvFrom(p2_socket_id, NULL, OSAL_SIZE_C(0), NULL, 0);
-        UtAssert_True(actual == expected, "OS_SocketRecvFrom(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        expected = OS_ERR_INVALID_ID;
-        objid    = OS_ObjectIdFromInteger(0xFFFFFFFF);
-        actual   = OS_SocketRecvFrom(objid, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT);
-        UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_ERR_INVALID_ID", (long)actual);
-
-        expected = OS_ERR_INVALID_SIZE;
-        actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, OSAL_SIZE_C(0), &l_addr, UT_TIMEOUT);
-        UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
-
-        expected = OS_ERR_INVALID_SIZE;
-        actual   = OS_SocketRecvFrom(p2_socket_id, &Buf2, OSAL_SIZE_C(0), NULL, UT_TIMEOUT);
-        UtAssert_True(actual == expected, "OS_SocketRecvFrom() (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
-
-        /* OS_SocketAddrToString */
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketAddrToString(NULL, OSAL_SIZE_C(0), NULL);
-        UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketAddrToString(AddrBuffer1, sizeof(AddrBuffer1), NULL);
-        UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketAddrToString(NULL, OSAL_SIZE_C(0), &p2_addr);
-        UtAssert_True(actual == expected, "OS_SocketAddrToString() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        /* OS_SocketAddrGetPort */
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketAddrGetPort(NULL, NULL);
-        UtAssert_True(actual == expected, "OS_SocketAddrGetPort() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketAddrGetPort(NULL, &l_addr);
-        UtAssert_True(actual == expected, "OS_SocketAddrGetPort() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketAddrGetPort(&PortNum, NULL);
-        UtAssert_True(actual == expected, "OS_SocketAddrGetPort() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        /* OS_SocketGetIdByName */
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketGetIdByName(NULL, NULL);
-        UtAssert_True(actual == expected, "OS_SocketGetIdByName() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        expected = OS_ERR_NAME_NOT_FOUND;
-        actual   = OS_SocketGetIdByName(&objid, "NF");
-        UtAssert_True(actual == expected, "OS_SocketGetIdByName() (%ld) == OS_ERR_NAME_NOT_FOUND", (long)actual);
-
-        /* OS_SocketGetInfo */
-        expected = OS_INVALID_POINTER;
-        actual   = OS_SocketGetInfo(p2_socket_id, NULL);
-        UtAssert_True(actual == expected, "OS_SocketGetInfo() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-        expected = OS_ERR_INVALID_ID;
-        objid    = OS_OBJECT_ID_UNDEFINED;
-        actual   = OS_SocketGetInfo(objid, &prop);
-        UtAssert_True(actual == expected, "OS_SocketGetInfo() (%ld) == OS_ERR_INVALID_ID", (long)actual);
-    }
-    else
+    if (!networkImplemented)
     {
         UtAssert_NA("Network API not implemented");
+        return;
     }
+
+    /*
+     * Check various error inputs
+     * This set must be done after setting up a valid ID.
+     */
+
+    /* make a bad object ID by flipping the bits of a good object ID */
+    objid = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(p2_socket_id) ^ 0xFFFFFFFF);
+
+    /* OS_SocketBind */
+    UtAssert_INT32_EQ(OS_SocketBind(OS_OBJECT_ID_UNDEFINED, &p2_addr), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketBind(objid, &p2_addr), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketBind(regular_file_id, &p2_addr), OS_ERR_INCORRECT_OBJ_TYPE);
+    UtAssert_INT32_EQ(OS_SocketBind(p2_socket_id, &p2_addr), OS_ERR_INCORRECT_OBJ_STATE);
+    UtAssert_INT32_EQ(OS_SocketBind(p2_socket_id, NULL), OS_INVALID_POINTER);
+
+    /* OS_SocketRecvFrom */
+    UtAssert_INT32_EQ(OS_SocketRecvFrom(OS_OBJECT_ID_UNDEFINED, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT),
+                      OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketRecvFrom(objid, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketRecvFrom(regular_file_id, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT),
+                      OS_ERR_INCORRECT_OBJ_TYPE);
+    UtAssert_INT32_EQ(OS_SocketRecvFrom(p2_socket_id, NULL, sizeof(Buf2), &l_addr, UT_TIMEOUT), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_SocketRecvFrom(p2_socket_id, &Buf2, 0, &l_addr, UT_TIMEOUT), OS_ERR_INVALID_SIZE);
+
+    /* OS_SocketSendTo */
+    UtAssert_INT32_EQ(OS_SocketSendTo(OS_OBJECT_ID_UNDEFINED, &Buf2, sizeof(Buf2), &l_addr), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketSendTo(objid, &Buf2, sizeof(Buf2), &l_addr), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketSendTo(regular_file_id, &Buf2, sizeof(Buf2), &l_addr), OS_ERR_INCORRECT_OBJ_TYPE);
+    UtAssert_INT32_EQ(OS_SocketSendTo(p2_socket_id, NULL, sizeof(Buf2), &l_addr), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_SocketSendTo(p2_socket_id, &Buf2, 0, &l_addr), OS_ERR_INVALID_SIZE);
+    UtAssert_INT32_EQ(OS_SocketSendTo(p2_socket_id, &Buf2, sizeof(Buf2), NULL), OS_INVALID_POINTER);
+
+    /* OS_SocketGetInfo */
+    UtAssert_INT32_EQ(OS_SocketGetInfo(OS_OBJECT_ID_UNDEFINED, &prop), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketGetInfo(objid, &prop), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_SocketGetInfo(p2_socket_id, NULL), OS_INVALID_POINTER);
+
+    /* OS_SocketGetIdByName */
+    UtAssert_INT32_EQ(OS_SocketGetIdByName(NULL, "NF"), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_SocketGetIdByName(&objid, NULL), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_SocketGetIdByName(&objid, "NF"), OS_ERR_NAME_NOT_FOUND);
+    UtAssert_INT32_EQ(OS_SocketGetIdByName(&objid, LongName), OS_ERR_NAME_TOO_LONG);
+
+    /*
+     * Send data from peer1 to peer2 and verify
+     */
+
+    /* Send data from peer1 to peer2 */
+    UtAssert_INT32_EQ(OS_SocketSendTo(p1_socket_id, &Buf1, sizeof(Buf1), &p2_addr), sizeof(Buf1));
+
+    /* Recieve data from peer1 to peer2 */
+    UtAssert_INT32_EQ(OS_SocketRecvFrom(p2_socket_id, &Buf2, sizeof(Buf2), &l_addr, UT_TIMEOUT), sizeof(Buf2));
+    UtAssert_True(Buf1 == Buf2, "Buf1 (%ld) == Buf2 (%ld)", (long)Buf1, (long)Buf2);
+
+    /* Convert addresses to string and verify data is being sent from the correct address */
+    UtAssert_INT32_EQ(OS_SocketAddrToString(AddrBuffer1, sizeof(AddrBuffer1), &p1_addr), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_SocketAddrToString(AddrBuffer2, sizeof(AddrBuffer2), &l_addr), OS_SUCCESS);
+
+    UtAssert_True(strcmp(AddrBuffer1, AddrBuffer2) == 0, "AddrBuffer1 (%s) == AddrBuffer2 (%s)", AddrBuffer1,
+                  AddrBuffer2);
+
+    /*
+     * Send data from peer2 to peer1 and verify
+     */
+
+    /* Send data from peer2 to peer1 */
+    UtAssert_INT32_EQ(OS_SocketSendTo(p2_socket_id, &Buf3, sizeof(Buf3), &p1_addr), sizeof(Buf3));
+
+    /* Recieve data from peer2 to peer1 */
+    UtAssert_INT32_EQ(OS_SocketRecvFrom(p1_socket_id, &Buf4, sizeof(Buf4), &l_addr, UT_TIMEOUT), sizeof(Buf4));
+    UtAssert_True(Buf3 == Buf4, "Buf3 (%ld) == Buf4 (%ld)", (long)Buf3, (long)Buf4);
+
+    /* Convert addresses to string and verify data is being sent from the correct address */
+    UtAssert_INT32_EQ(OS_SocketAddrToString(AddrBuffer3, sizeof(AddrBuffer3), &p2_addr), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_SocketAddrToString(AddrBuffer4, sizeof(AddrBuffer4), &l_addr), OS_SUCCESS);
+    UtAssert_True(strcmp(AddrBuffer3, AddrBuffer4) == 0, "AddrBuffer3 (%s) == AddrBuffer4 (%s)", AddrBuffer3,
+                  AddrBuffer4);
+
+    /* Get port from incoming address and verify */
+    UtAssert_INT32_EQ(OS_SocketAddrGetPort(&PortNum, &p2_addr), OS_SUCCESS);
+    UtAssert_True(PortNum == 9998, "PortNum (%u) == 9998", (unsigned int)PortNum);
+
+    /* Get socket info and verify */
+    UtAssert_INT32_EQ(OS_SocketGetInfo(p1_socket_id, &prop), OS_SUCCESS);
+    UtAssert_True(!OS_ObjectIdDefined(prop.creator), "prop.creator (%lu) == 0", OS_ObjectIdToInteger(prop.creator));
+    UtAssert_True(strcmp(prop.name, "127.0.0.1:9999") == 0, "prop.name (%s) == 127.0.0.1:9999", prop.name);
+
+    UtAssert_INT32_EQ(OS_SocketGetIdByName(&objid, "127.0.0.1:9999"), OS_SUCCESS);
+    UtAssert_True(OS_ObjectIdEqual(objid, p1_socket_id), "objid (%lu) == p1_socket_id", OS_ObjectIdToInteger(objid));
 
 } /* end TestDatagramNetworkApi */
 
@@ -446,11 +372,9 @@ void Server_Fn(void)
         UtPrintf("SERVER: accepting connection %u", (unsigned int)iter);
 
         /* Accept incoming connections */
-        Status = OS_SocketAccept(s_socket_id, &connsock_id, &addr, OS_PEND);
-        if (Status != OS_SUCCESS)
+        ServerFn_AcceptStatus = OS_SocketAccept(s_socket_id, &connsock_id, &addr, OS_PEND);
+        if (ServerFn_AcceptStatus != OS_SUCCESS)
         {
-            snprintf(ServerFn_ErrorString, sizeof(ServerFn_ErrorString), "OS_SocketAccept() iter=%u, return code=%d",
-                     (unsigned int)iter, (int)Status);
             break;
         }
 
@@ -571,6 +495,16 @@ void TestStreamNetworkApi(void)
         actual = OS_SocketAddrFromString(&s_addr, "127.0.0.1");
         UtAssert_True(actual == expected, "OS_SocketAddrFromString() (%ld) == OS_SUCCESS", (long)actual);
 
+        /* OS_SocketAccept error conditions - check before binding */
+        /* create a bad ID by flipping the bits of a good ID */
+        temp_id = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(s_socket_id) ^ 0xFFFFFFFF);
+        UtAssert_INT32_EQ(OS_SocketAccept(temp_id, &temp_id, &temp_addr, 0), OS_ERR_INVALID_ID);
+        UtAssert_INT32_EQ(OS_SocketAccept(s_socket_id, NULL, &temp_addr, UT_TIMEOUT), OS_INVALID_POINTER);
+        UtAssert_INT32_EQ(OS_SocketAccept(s_socket_id, &temp_id, NULL, UT_TIMEOUT), OS_INVALID_POINTER);
+        UtAssert_INT32_EQ(OS_SocketAccept(s_socket_id, &temp_id, &temp_addr, UT_TIMEOUT), OS_ERR_INCORRECT_OBJ_STATE);
+        UtAssert_INT32_EQ(OS_SocketAccept(regular_file_id, &temp_id, &temp_addr, UT_TIMEOUT),
+                          OS_ERR_INCORRECT_OBJ_TYPE);
+
         /* Bind server socket to server address */
         actual = OS_SocketBind(s_socket_id, &s_addr);
         UtAssert_True(actual == expected, "OS_SocketBind() (%ld) == OS_SUCCESS", (long)actual);
@@ -619,67 +553,56 @@ void TestStreamNetworkApi(void)
             UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_SUCCESS", (long)actual);
             UtAssert_True(OS_ObjectIdDefined(c_socket_id), "c_socket_id (%lu) != 0", OS_ObjectIdToInteger(c_socket_id));
 
+            /*
+             * Test for invalid input parameters - BEFORE connection
+             * This is done before valid connection when the c_socket_id is created but not connected.
+             * only needs to be done once, so only do this on the first pass.
+             */
+            if (iter == UT_STREAM_CONNECTION_INITIAL)
+            {
+                /* create a bad ID by flipping the bits of a good ID */
+                temp_id = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(c_socket_id) ^ 0xFFFFFFFF);
+
+                /* OS_SocketShutdown */
+                UtAssert_INT32_EQ(OS_SocketShutdown(temp_id, OS_SocketShutdownMode_SHUT_READ), OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_SocketShutdown(regular_file_id, OS_SocketShutdownMode_SHUT_READ),
+                                  OS_ERR_INCORRECT_OBJ_TYPE);
+                UtAssert_INT32_EQ(OS_SocketShutdown(c_socket_id, OS_SocketShutdownMode_SHUT_READ),
+                                  OS_ERR_INCORRECT_OBJ_STATE);
+            }
+
             actual = OS_SocketConnect(c_socket_id, &s_addr, UT_TIMEOUT);
             UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
 
             /*
-             * Test for invalid input parameters -
-             * This is done after valid connection when the c_socket_id is valid,
-             * but it only needs to be done once, so only do this on the first pass.
+             * Test for invalid input parameters - AFTER connection
+             * This is done after valid connection when the c_socket_id is fully connected.
+             * only needs to be done once, so only do this on the first pass.
              */
             if (iter == UT_STREAM_CONNECTION_INITIAL)
             {
+                /* create a bad ID by flipping the bits of a good ID */
+                temp_id = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(c_socket_id) ^ 0xFFFFFFFF);
+
+                /* OS_SocketShutdown */
+                UtAssert_INT32_EQ(OS_SocketShutdown(c_socket_id, OS_SocketShutdownMode_NONE), OS_ERR_INVALID_ARGUMENT);
+
                 /* OS_TimedRead */
-                expected = OS_ERR_INVALID_ID;
-                temp_id  = OS_ObjectIdFromInteger(0xFFFFFFFF);
-                actual   = OS_TimedRead(temp_id, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT);
-                UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
-
-                expected = OS_INVALID_POINTER;
-                actual   = OS_TimedRead(c_socket_id, NULL, sizeof(Buf_rcv_c), UT_TIMEOUT);
-                UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
-
-                expected = OS_ERROR_TIMEOUT;
-                actual   = OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), 0);
-                UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
+                UtAssert_INT32_EQ(OS_TimedRead(temp_id, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT), OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_TimedRead(c_socket_id, NULL, sizeof(Buf_rcv_c), UT_TIMEOUT), OS_INVALID_POINTER);
+                UtAssert_INT32_EQ(OS_TimedRead(c_socket_id, Buf_rcv_c, 0, UT_TIMEOUT), OS_ERR_INVALID_SIZE);
+                UtAssert_INT32_EQ(OS_TimedRead(c_socket_id, Buf_rcv_c, sizeof(Buf_rcv_c), 0), OS_ERROR_TIMEOUT);
 
                 /* OS_TimedWrite */
-                expected = OS_ERR_INVALID_ID;
-                temp_id  = OS_ObjectIdFromInteger(0xFFFFFFFF);
-                actual   = OS_TimedWrite(temp_id, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT);
-                UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
-
-                expected = OS_INVALID_POINTER;
-                actual   = OS_TimedWrite(c_socket_id, NULL, sizeof(Buf_rcv_c), UT_TIMEOUT);
-                UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
-
-                /* OS_SocketAccept */
-                expected = OS_INVALID_POINTER;
-                actual   = OS_SocketAccept(s_socket_id, NULL, NULL, 0);
-                UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-                expected = OS_INVALID_POINTER;
-                actual   = OS_SocketAccept(s_socket_id, NULL, &temp_addr, UT_TIMEOUT);
-                UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-                expected = OS_INVALID_POINTER;
-                actual   = OS_SocketAccept(s_socket_id, &temp_id, NULL, UT_TIMEOUT);
-                UtAssert_True(actual == expected, "OS_SocketAccept() (%ld) == OS_INVALID_POINTER", (long)actual);
+                UtAssert_INT32_EQ(OS_TimedWrite(temp_id, Buf_rcv_c, sizeof(Buf_rcv_c), UT_TIMEOUT), OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_TimedWrite(c_socket_id, NULL, sizeof(Buf_rcv_c), UT_TIMEOUT), OS_INVALID_POINTER);
+                UtAssert_INT32_EQ(OS_TimedWrite(c_socket_id, Buf_rcv_c, 0, UT_TIMEOUT), OS_ERR_INVALID_SIZE);
 
                 /* OS_SocketConnect */
-                expected = OS_INVALID_POINTER;
-                actual   = OS_SocketConnect(c_socket_id, NULL, UT_TIMEOUT);
-                UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-                expected = OS_ERR_INCORRECT_OBJ_STATE;
-                actual   = OS_SocketConnect(c_socket_id, &s_addr, 0);
-                UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_ERR_INCORRECT_OBJ_STATE",
-                              (long)actual);
-
-                expected = OS_ERR_INVALID_ID;
-                temp_id  = OS_ObjectIdFromInteger(0xFFFFFFFF);
-                actual   = OS_SocketConnect(temp_id, &s_addr, UT_TIMEOUT);
-                UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_ERR_INVALID_ID", (long)actual);
+                UtAssert_INT32_EQ(OS_SocketConnect(c_socket_id, NULL, UT_TIMEOUT), OS_INVALID_POINTER);
+                UtAssert_INT32_EQ(OS_SocketConnect(temp_id, &s_addr, UT_TIMEOUT), OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_SocketConnect(regular_file_id, &s_addr, UT_TIMEOUT), OS_ERR_INCORRECT_OBJ_TYPE);
+                UtAssert_INT32_EQ(OS_SocketConnect(c_socket_id, &s_addr, 0), OS_ERR_INCORRECT_OBJ_STATE);
             }
 
             /*
@@ -693,18 +616,12 @@ void TestStreamNetworkApi(void)
              */
             if (iter == UT_STREAM_CONNECTION_READ_SHUTDOWN)
             {
-                expected = OS_SUCCESS;
-                actual   = OS_SocketShutdown(c_socket_id, OS_SocketShutdownMode_SHUT_READ);
-                UtAssert_True(actual == expected, "OS_SocketShutdown(SHUT_READ) (%ld) == %ld", (long)actual,
-                              (long)expected);
+                UtAssert_INT32_EQ(OS_SocketShutdown(c_socket_id, OS_SocketShutdownMode_SHUT_READ), OS_SUCCESS);
             }
 
             if (iter == UT_STREAM_CONNECTION_RDWR_SHUTDOWN)
             {
-                expected = OS_SUCCESS;
-                actual   = OS_SocketShutdown(c_socket_id, OS_SocketShutdownMode_SHUT_READWRITE);
-                UtAssert_True(actual == expected, "OS_SocketShutdown(SHUT_READWRITE) (%ld) == %ld", (long)actual,
-                              (long)expected);
+                UtAssert_INT32_EQ(OS_SocketShutdown(c_socket_id, OS_SocketShutdownMode_SHUT_READWRITE), OS_SUCCESS);
             }
 
             if (iter == UT_STREAM_CONNECTION_READ_SHUTDOWN || iter == UT_STREAM_CONNECTION_RDWR_SHUTDOWN)
@@ -728,10 +645,7 @@ void TestStreamNetworkApi(void)
             /* On the designated iteration, use shutdown to indicate this is the end of the written data */
             if (iter == UT_STREAM_CONNECTION_WRITE_SHUTDOWN)
             {
-                expected = OS_SUCCESS;
-                actual   = OS_SocketShutdown(c_socket_id, OS_SocketShutdownMode_SHUT_WRITE);
-                UtAssert_True(actual == expected, "OS_SocketShutdown(SHUT_WRITE) (%ld) == %ld", (long)actual,
-                              (long)expected);
+                UtAssert_INT32_EQ(OS_SocketShutdown(c_socket_id, OS_SocketShutdownMode_SHUT_WRITE), OS_SUCCESS);
             }
 
             if (iter == UT_STREAM_CONNECTION_WRITE_SHUTDOWN || iter == UT_STREAM_CONNECTION_RDWR_SHUTDOWN)
@@ -773,6 +687,15 @@ void TestStreamNetworkApi(void)
             }
 
             OS_close(c_socket_id);
+
+            /* Check that the server function did NOT Report any errors */
+            UtAssert_True(ServerFn_AcceptStatus == OS_SUCCESS,
+                          "OS_SocketAccept(s_socket_id, &connsock_id, &addr, OS_PEND) (%d) == OS_SUCCESS",
+                          (int)ServerFn_AcceptStatus);
+            if (ServerFn_ErrorString[0] != 0)
+            {
+                UtAssert_Failed("Server_Fn(): %s", ServerFn_ErrorString);
+            }
         }
 
         /*
@@ -789,12 +712,6 @@ void TestStreamNetworkApi(void)
             loopcnt++;
         }
         UtAssert_True(loopcnt < UT_EXIT_LOOP_MAX, "Task exited after %ld iterations", (long)loopcnt);
-
-        /* Check that the server function did NOT Report any errors */
-        if (ServerFn_ErrorString[0] != 0)
-        {
-            UtAssert_Failed("Server_Fn(): %s", ServerFn_ErrorString);
-        }
     }
 
 } /* end TestStreamNetworkApi */
@@ -824,6 +741,8 @@ void UtTest_Setup(void)
     /*
      * Register the test setup and check routines in UT assert
      */
+    UtTest_Add(TestNetworkApiBadArgs, NULL, NULL, "NetworkApiBadArgs");
+    UtTest_Add(TestNetworkApiInet6, NULL, NULL, "TestNetworkApiInet6");
     UtTest_Add(TestDatagramNetworkApi, TestDatagramNetworkApi_Setup, TestDatagramNetworkApi_Teardown,
                "TestDatagramNetworkApi");
     UtTest_Add(TestStreamNetworkApi, NULL, TestStreamNetworkApi_Teardown, "TestStreamNetworkApi");

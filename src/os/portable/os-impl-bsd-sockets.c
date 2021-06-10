@@ -733,7 +733,8 @@ int32 OS_SocketAddrFromString_Impl(OS_SockAddr_t *Addr, const char *string)
             break;
     }
 
-    if (inet_pton(Accessor->sa.sa_family, string, addrbuffer) < 0)
+    /* This function is defined as returning 1 on success, not 0 */
+    if (inet_pton(Accessor->sa.sa_family, string, addrbuffer) != 1)
     {
         return OS_ERROR;
     }

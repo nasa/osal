@@ -407,8 +407,13 @@ void Test_OS_SocketAddrFromString_Impl(void)
     UT_SetDeferredRetcode(UT_KEY(OCS_inet_pton), 1, -1);
     OSAPI_TEST_FUNCTION_RC(OS_SocketAddrFromString_Impl, (&addr, buffer), OS_ERROR);
 
-    /* AF_INET, success */
+    /* AF_INET, unable to convert (note inet_pton returns 0 if it failed) */
     sa->sa_family = OCS_AF_INET;
+    UT_SetDeferredRetcode(UT_KEY(OCS_inet_pton), 1, 0);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketAddrFromString_Impl, (&addr, buffer), OS_ERROR);
+
+    /* AF_INET, success */
+    UT_SetDeferredRetcode(UT_KEY(OCS_inet_pton), 1, 1);
     OSAPI_TEST_FUNCTION_RC(OS_SocketAddrFromString_Impl, (&addr, buffer), OS_SUCCESS);
 }
 
