@@ -49,6 +49,7 @@
 **--------------------------------------------------------------------------------*/
 
 static osal_id_t selecttest_fd;
+static osal_id_t invalid_fd;
 
 /*--------------------------------------------------------------------------------*
 ** External function prototypes
@@ -69,6 +70,9 @@ void  UT_os_select_setup_file(void)
     UT_SETUP(OS_mount("/ramdev3", "/drive3"));
     UT_SETUP(OS_OpenCreate(&selecttest_fd, "/drive3/select_test.txt", OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE,
                            OS_READ_WRITE));
+
+    /* create a bad ID by flipping the bits of a good ID */
+    invalid_fd = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(selecttest_fd) ^ 0xFFFFFFFF);
 }
 
 void UT_os_select_teardown_file(void)
@@ -95,29 +99,23 @@ void UT_os_select_fd_test(void)
         return;
     }
 
-    if (!UT_NOMINAL_OR_NOTIMPL(OS_SelectFdAdd(&FdSet, selecttest_fd)))
-    {
-        return;
-    }
-
-    if (!UT_NOMINAL_OR_NOTIMPL(OS_SelectFdClear(&FdSet, selecttest_fd)))
-    {
-        return;
-    }
-
     UT_RETVAL(OS_SelectFdZero(NULL), OS_INVALID_POINTER);
     UT_RETVAL(OS_SelectFdAdd(NULL, selecttest_fd), OS_INVALID_POINTER);
     UT_RETVAL(OS_SelectFdClear(NULL, selecttest_fd), OS_INVALID_POINTER);
-    UtAssert_Simple(!OS_SelectFdIsSet(NULL, selecttest_fd));
+    UT_RETVAL(OS_SelectFdIsSet(NULL, selecttest_fd), false);
+
+    UT_RETVAL(OS_SelectFdAdd(&FdSet, invalid_fd), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_SelectFdClear(&FdSet, invalid_fd), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_SelectFdIsSet(&FdSet, invalid_fd), false);
 
     UT_NOMINAL(OS_SelectFdZero(&FdSet));
     UT_NOMINAL(OS_SelectFdAdd(&FdSet, selecttest_fd));
-    UtAssert_Simple(OS_SelectFdIsSet(&FdSet, selecttest_fd));
+    UT_RETVAL(OS_SelectFdIsSet(&FdSet, selecttest_fd), true);
 
     UT_NOMINAL(OS_SelectFdZero(&FdSet));
     UT_NOMINAL(OS_SelectFdAdd(&FdSet, selecttest_fd));
     UT_NOMINAL(OS_SelectFdClear(&FdSet, selecttest_fd));
-    UtAssert_Simple(!OS_SelectFdIsSet(&FdSet, selecttest_fd));
+    UT_RETVAL(OS_SelectFdIsSet(&FdSet, selecttest_fd), false);
 }
 
 /*--------------------------------------------------------------------------------*
@@ -147,6 +145,8 @@ void UT_os_select_single_test(void)
 
     UtAssert_True((StateFlags & OS_STREAM_STATE_READABLE) != 0, "StateFlags (0x%x) & OS_STREAM_STATE_READABLE",
                   (unsigned int)StateFlags);
+
+    UT_RETVAL(OS_SelectSingle(invalid_fd, &StateFlags, 0), OS_ERR_INVALID_ID);
 }
 
 /*--------------------------------------------------------------------------------*
@@ -174,6 +174,9 @@ void UT_os_select_multi_test(void)
     UT_NOMINAL(OS_SelectMultiple(&ReadSet, NULL, 1));
 
     UtAssert_True(OS_SelectFdIsSet(&ReadSet, selecttest_fd), "!OS_SelectFdIsSet(&ReadSet, selecttest_fd)");
+
+    /* empty set */
+    UT_RETVAL(OS_SelectMultiple(NULL, NULL, 1), OS_ERR_INVALID_ID);
 }
 
 /*================================================================================*
