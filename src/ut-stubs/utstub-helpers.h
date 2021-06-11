@@ -64,7 +64,7 @@
  * (Default value of 16 allows for up to 128 objects to be created in
  * a single test case, far more than anything I've seen yet)
  */
-#define OSAL_MAX_VALID_PER_TYPE 16
+#define OSAL_MAX_VALID_PER_TYPE 32
 
 typedef struct
 {
