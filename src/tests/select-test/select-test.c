@@ -36,227 +36,162 @@
 #include "utassert.h"
 #include "uttest.h"
 #include "utbsp.h"
+
 #define MAX_BUFFER_LOOP 1000000
 
-osal_id_t     s_task_id;
-osal_id_t     s2_task_id;
-osal_id_t     s_socket_id;
-osal_id_t     s2_socket_id;
-osal_id_t     c_socket_id;
-osal_id_t     c2_socket_id;
-OS_SockAddr_t s_addr;
-OS_SockAddr_t s2_addr;
-OS_SockAddr_t c_addr;
-OS_SockAddr_t c2_addr;
-osal_id_t     bin_sem_id;
-bool          networkImplemented = true;
+/*
+ * Timeouts for various socket ops in the test cases
+ *
+ * Note that the act of calling any "assert" routine causes console output, which
+ * can easily take tens or even hundreds of milliseconds to execute on platforms
+ * where the console is on a slow serial port.  Therefore this timeout must
+ * not be too short.
+ */
+#define UT_TIMEOUT 500
 
-#define OS_TEST_SELECT_FILENAME "/drive0/select_test.txt"
+osal_id_t s1_task_id;
+osal_id_t s2_task_id;
+osal_id_t s1_socket_id;
+osal_id_t s2_socket_id;
+osal_id_t c1_socket_id;
+osal_id_t c2_socket_id;
+osal_id_t bin_sem_id;
+bool      networkImplemented = true;
+
+char filldata[16834];
 
 /* *************************************** MAIN ************************************** */
 
-char *           fsAddrPtr = NULL;
-static osal_id_t setup_file(void)
-{
-    osal_id_t id;
-    OS_mkfs(fsAddrPtr, "/ramdev0", "RAM", 512, 20);
-    OS_mount("/ramdev0", "/drive0");
-    OS_OpenCreate(&id, OS_TEST_SELECT_FILENAME, OS_FILE_FLAG_CREATE, OS_READ_WRITE);
-    return id;
-}
-
 void BinSemSetup(void)
 {
-    uint32            status;
     OS_bin_sem_prop_t bin_sem_prop;
 
     /*
      * Create the binary semaphore
      * BinSem1 is used to control when the server can accept connections
      */
-    status = OS_BinSemCreate(&bin_sem_id, "BinSem1", 0, 0);
-    UtAssert_True(status == OS_SUCCESS, "BinSem1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(bin_sem_id), (int)status);
+    UtAssert_INT32_EQ(OS_BinSemCreate(&bin_sem_id, "BinSem1", 0, 0), OS_SUCCESS);
+    UtAssert_True(OS_ObjectIdDefined(bin_sem_id), "bin_sem_id (%lu) != UNDEFINED", OS_ObjectIdToInteger(bin_sem_id));
 
-    status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
-    UtAssert_True(status == OS_SUCCESS, "BinSem1 value=%d Rc=%d", (int)bin_sem_prop.value, (int)status);
+    UtAssert_INT32_EQ(OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop), OS_SUCCESS);
+    UtPrintf("BinSem1 value=%d", (int)bin_sem_prop.value);
 }
 
-void Setup_Server(void)
+/*
+ * Helper function to open a server socket, bind server to a port,
+ * creates a server task, and create a client socket.
+ * Then finally connects the client to the server and leave sockets open.
+ */
+void Setup_SocketPair(osal_id_t *server_sockid_ptr, osal_id_t *client_sockid_ptr, uint16 portnum, osal_id_t *taskid_ptr,
+                      const char *SrvName, void (*SrvFunc)(void))
 {
-    int32 expected;
-    int32 actual;
+    OS_SockAddr_t addr;
+    int           sock_status;
 
-    /*
-     * Set up a server
-     */
-
-    /* Open a server socket */
-    s_socket_id = OS_OBJECT_ID_UNDEFINED;
-    expected    = OS_SUCCESS;
-    actual      = OS_SocketOpen(&s_socket_id, OS_SocketDomain_INET, OS_SocketType_STREAM);
-    if (actual == OS_ERR_NOT_IMPLEMENTED)
+    /* Open a server socket, if OS_ERR_NOT_IMPLEMENTED then give up now */
+    sock_status = OS_SocketOpen(server_sockid_ptr, OS_SocketDomain_INET, OS_SocketType_STREAM);
+    if (sock_status == OS_ERR_NOT_IMPLEMENTED)
     {
         networkImplemented = false;
+        return;
     }
-    else
-    {
-        UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_SUCCESS", (long)actual);
-        UtAssert_True(OS_ObjectIdDefined(s_socket_id), "s_socket_id (%lu) != 0", OS_ObjectIdToInteger(s_socket_id));
 
-        /* Initialize server address */
-        actual = OS_SocketAddrInit(&s_addr, OS_SocketDomain_INET);
-        UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
-
-        /* Set server port */
-        actual = OS_SocketAddrSetPort(&s_addr, 9994);
-        UtAssert_True(actual == expected, "OS_SocketAddrSetPort() (%ld) == OS_SUCCESS", (long)actual);
-
-        /* Set server address */
-        actual = OS_SocketAddrFromString(&s_addr, "127.0.0.1");
-        UtAssert_True(actual == expected, "OS_SocketAddrFromString() (%ld) == OS_SUCCESS", (long)actual);
-
-        /* Bind server socket to server address */
-        actual = OS_SocketBind(s_socket_id, &s_addr);
-        UtAssert_True(actual == expected, "OS_SocketBind() (%ld) == OS_SUCCESS", (long)actual);
-    }
-}
-
-void Setup_Client(void)
-{
-    int32 expected;
-    int32 actual;
-
-    /*
-     * Set up a client
-     */
+    UtAssert_True(sock_status == OS_SUCCESS,
+                  "OS_SocketOpen(s1_socketid_ptr, OS_SocketDomain_INET, OS_SocketType_STREAM) (%d) == OS_SUCCESS",
+                  (int)sock_status);
 
     /* Open a client socket */
-    expected    = OS_SUCCESS;
-    c_socket_id = OS_OBJECT_ID_UNDEFINED;
+    UtAssert_INT32_EQ(OS_SocketOpen(client_sockid_ptr, OS_SocketDomain_INET, OS_SocketType_STREAM), OS_SUCCESS);
 
-    actual = OS_SocketOpen(&c_socket_id, OS_SocketDomain_INET, OS_SocketType_STREAM);
-    UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(OS_ObjectIdDefined(c_socket_id), "c_socket_id (%lu) != 0", OS_ObjectIdToInteger(c_socket_id));
+    /* Initialize server address */
+    UtAssert_INT32_EQ(OS_SocketAddrInit(&addr, OS_SocketDomain_INET), OS_SUCCESS);
 
-    /* Initialize client address */
-    actual = OS_SocketAddrInit(&c_addr, OS_SocketDomain_INET);
-    UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
+    /* Set server port */
+    UtAssert_INT32_EQ(OS_SocketAddrSetPort(&addr, portnum), OS_SUCCESS);
 
-    /* Set client port */
-    actual = OS_SocketAddrSetPort(&c_addr, 9993);
-    UtAssert_True(actual == expected, "OS_SocketAddrSetPort() (%ld) == OS_SUCCESS", (long)actual);
+    /* Set server address */
+    UtAssert_INT32_EQ(OS_SocketAddrFromString(&addr, "127.0.0.1"), OS_SUCCESS);
 
-    /* Set client address */
-    actual = OS_SocketAddrFromString(&c_addr, "127.0.0.1");
-    UtAssert_True(actual == expected, "OS_SocketAddrFromString() (%ld) == OS_SUCCESS", (long)actual);
+    /* Bind server socket to server address */
+    UtAssert_INT32_EQ(OS_SocketBind(*server_sockid_ptr, &addr), OS_SUCCESS);
+
+    /* Print the sockets for informational purposes - should both be valid/defined */
+    UtAssert_True(OS_ObjectIdDefined(*server_sockid_ptr), "s1_socket_id (%lu) != UNDEFINED (port %u)",
+                  OS_ObjectIdToInteger(*server_sockid_ptr), (unsigned int)portnum);
+    UtAssert_True(OS_ObjectIdDefined(*client_sockid_ptr), "c1_socket_id (%lu) != UNDEFINED",
+                  OS_ObjectIdToInteger(*client_sockid_ptr));
+
+    /*
+     * Create a server thread, and connect client from
+     * this thread to server thread
+     */
+
+    /* Create a server task/thread */
+    UtAssert_INT32_EQ(OS_TaskCreate(taskid_ptr, SrvName, SrvFunc, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
+                                    OSAL_PRIORITY_C(50), 0),
+                      OS_SUCCESS);
+
+    /* Connect to a server */
+    UtAssert_INT32_EQ(OS_SocketConnect(*client_sockid_ptr, &addr, UT_TIMEOUT), OS_SUCCESS);
+}
+
+void Delete_SocketPair(osal_id_t server_sockid, osal_id_t client_sockid, osal_id_t task_id)
+{
+    OS_task_prop_t task_prop;
+
+    while (OS_TaskGetInfo(task_id, &task_prop) == OS_SUCCESS)
+    {
+        OS_TaskDelay(10);
+    }
+
+    UtAssert_INT32_EQ(OS_close(server_sockid), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_close(client_sockid), OS_SUCCESS);
+}
+
+bool FillOutputBuffer(osal_id_t conn_id)
+{
+    uint32 count;
+
+    UtMemFill(filldata, sizeof(filldata));
+
+    for (count = 0; count < MAX_BUFFER_LOOP; ++count)
+    {
+        if (OS_TimedWrite(conn_id, filldata, sizeof(filldata), UT_TIMEOUT) == OS_ERROR_TIMEOUT)
+        {
+            break;
+        }
+    }
+
+    return (count < MAX_BUFFER_LOOP);
 }
 
 void Server_Fn(void)
 {
-    osal_id_t     connsock_id = OS_OBJECT_ID_UNDEFINED;
+    osal_id_t     connsock_id;
     OS_SockAddr_t addr;
-    uint32        status;
 
     /* Accept incoming connections */
-    OS_SocketAccept(s_socket_id, &connsock_id, &addr, OS_PEND);
+    UtAssert_INT32_EQ(OS_SocketAccept(s1_socket_id, &connsock_id, &addr, OS_PEND), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_BinSemTake(bin_sem_id), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_close(connsock_id), OS_SUCCESS);
 
-    status = OS_BinSemTake(bin_sem_id);
-    UtAssert_True(status == OS_SUCCESS, "BinSem1 Server 1 take Rc=%d", (int)status);
-
-    status = OS_close(s_socket_id);
-    UtAssert_True(status == OS_SUCCESS, "status after close s_socket_id = %d", (int)status);
-
-    status = OS_close(connsock_id);
-    UtAssert_True(status == OS_SUCCESS, "status after close connsock_id = %d", (int)status);
 } /* end Server_Fn */
-
-void Setup_Server2(void)
-{
-    int32 expected;
-    int32 actual;
-
-    /*
-     * Set up a server
-     */
-
-    /* Open a server socket */
-    s2_socket_id = OS_OBJECT_ID_UNDEFINED;
-    expected     = OS_SUCCESS;
-    actual       = OS_SocketOpen(&s2_socket_id, OS_SocketDomain_INET, OS_SocketType_STREAM);
-    UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(OS_ObjectIdDefined(s2_socket_id), "s2_socket_id (%lu) != 0", OS_ObjectIdToInteger(s2_socket_id));
-
-    /* Initialize server address */
-    actual = OS_SocketAddrInit(&s2_addr, OS_SocketDomain_INET);
-    UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
-
-    /* Set server port */
-    actual = OS_SocketAddrSetPort(&s2_addr, 9995);
-    UtAssert_True(actual == expected, "OS_SocketAddrSetPort() (%ld) == OS_SUCCESS", (long)actual);
-
-    /* Set server address */
-    actual = OS_SocketAddrFromString(&s2_addr, "127.0.0.1");
-    UtAssert_True(actual == expected, "OS_SocketAddrFromString() (%ld) == OS_SUCCESS", (long)actual);
-
-    /* Bind server socket to server address */
-    actual = OS_SocketBind(s2_socket_id, &s2_addr);
-    UtAssert_True(actual == expected, "OS_SocketBind() (%ld) == OS_SUCCESS", (long)actual);
-}
-
-void Setup_Client2(void)
-{
-    int32 expected;
-    int32 actual;
-
-    /*
-     * Set up a client
-     */
-
-    /* Open a client socket */
-    expected     = OS_SUCCESS;
-    c2_socket_id = OS_OBJECT_ID_UNDEFINED;
-
-    actual = OS_SocketOpen(&c2_socket_id, OS_SocketDomain_INET, OS_SocketType_STREAM);
-    UtAssert_True(actual == expected, "OS_SocketOpen() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(OS_ObjectIdDefined(c2_socket_id), "c2_socket_id (%lu) != 0", OS_ObjectIdToInteger(c2_socket_id));
-
-    /* Initialize client address */
-    actual = OS_SocketAddrInit(&c2_addr, OS_SocketDomain_INET);
-    UtAssert_True(actual == expected, "OS_SocketAddrInit() (%ld) == OS_SUCCESS", (long)actual);
-
-    /* Set client port */
-    actual = OS_SocketAddrSetPort(&c2_addr, 9992);
-    UtAssert_True(actual == expected, "OS_SocketAddrSetPort() (%ld) == OS_SUCCESS", (long)actual);
-
-    /* Set client address */
-    actual = OS_SocketAddrFromString(&c2_addr, "127.0.0.1");
-    UtAssert_True(actual == expected, "OS_SocketAddrFromString() (%ld) == OS_SUCCESS", (long)actual);
-}
 
 void Server_Fn2(void)
 {
-    osal_id_t     connsock_id = OS_OBJECT_ID_UNDEFINED;
+    osal_id_t     connsock_id;
     OS_SockAddr_t addr;
-    uint32        status;
 
     /* Accept incoming connections */
-    OS_SocketAccept(s2_socket_id, &connsock_id, &addr, OS_PEND);
+    UtAssert_INT32_EQ(OS_SocketAccept(s2_socket_id, &connsock_id, &addr, OS_PEND), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_close(connsock_id), OS_SUCCESS);
 
-    status = OS_close(s2_socket_id);
-    UtAssert_True(status == OS_SUCCESS, "status after close s2_socket_id = %d", (int)status);
-
-    status = OS_close(connsock_id);
-    UtAssert_True(status == OS_SUCCESS, "status after close connsock_id = %d", (int)status);
 } /* end Server_Fn */
 
 void Setup_Single(void)
 {
-    Setup_Server();
-    if (networkImplemented)
-    {
-        Setup_Client();
-        BinSemSetup();
-    }
+    BinSemSetup();
+    Setup_SocketPair(&s1_socket_id, &c1_socket_id, 9994, &s1_task_id, "Server1", Server_Fn);
 }
 
 void Setup_Multi(void)
@@ -264,8 +199,7 @@ void Setup_Multi(void)
     Setup_Single();
     if (networkImplemented)
     {
-        Setup_Server2();
-        Setup_Client2();
+        Setup_SocketPair(&s2_socket_id, &c2_socket_id, 9995, &s2_task_id, "Server2", Server_Fn2);
     }
 }
 
@@ -273,320 +207,209 @@ void Teardown_Single(void)
 {
     if (networkImplemented)
     {
-        OS_close(c_socket_id);
-        OS_BinSemDelete(bin_sem_id);
+        Delete_SocketPair(s1_socket_id, c1_socket_id, s1_task_id);
     }
+
+    UtAssert_INT32_EQ(OS_BinSemDelete(bin_sem_id), OS_SUCCESS);
 }
 
 void Teardown_Multi(void)
 {
     if (networkImplemented)
     {
-        /* Server 1 is intentionaly left waiting so we close it out here. */
-        OS_close(s_socket_id);
-        OS_TaskDelete(s_task_id);
-
-        OS_close(c2_socket_id);
-        Teardown_Single();
+        Delete_SocketPair(s2_socket_id, c2_socket_id, s2_task_id);
     }
+
+    Teardown_Single();
 }
 
 void TestSelectSingleRead(void)
 {
-    if (networkImplemented)
-    {
-        /*
-         * Test Case For:
-         * int32 OS_SelectSingle(uint32 objid, uint32 *StateFlags, int32 msecs);
-         */
-        int32 expected = OS_SUCCESS;
-        int32 actual;
+    uint32 StateFlags;
 
-        /*
-         * Create a server thread, and connect client from
-         * this thread to server thread and verify connection
-         */
-
-        /* Create a server task/thread */
-        int32 status = OS_TaskCreate(&s_task_id, "ServerSingleRead", Server_Fn, OSAL_TASK_STACK_ALLOCATE,
-                                     OSAL_SIZE_C(16384), OSAL_PRIORITY_C(50), 0);
-        UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
-
-        /* Connect to a server */
-        actual = OS_SocketConnect(c_socket_id, &s_addr, 10);
-        UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
-
-        uint32 StateFlags;
-        expected   = OS_ERROR_TIMEOUT;
-        StateFlags = OS_STREAM_STATE_READABLE;
-        actual     = OS_SelectSingle(c_socket_id, &StateFlags, 100);
-
-        /* Verify Outputs */
-        UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_ERROR_TIMEOUT", (long)actual);
-        UtAssert_True(StateFlags == 0, "OS_SelectSingle() (0x%x) == None", (unsigned int)StateFlags);
-
-        status = OS_BinSemGive(bin_sem_id);
-
-        expected   = OS_SUCCESS;
-        StateFlags = OS_STREAM_STATE_READABLE;
-        actual     = OS_SelectSingle(c_socket_id, &StateFlags, 100);
-
-        /* Verify Outputs */
-        UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-        UtAssert_True(StateFlags == OS_STREAM_STATE_READABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_READABLE",
-                      (unsigned int)StateFlags);
-    }
-    else
+    if (!networkImplemented)
     {
         UtAssert_NA("Network API not implemented");
+        return;
     }
+
+    StateFlags = OS_STREAM_STATE_READABLE;
+    UtAssert_INT32_EQ(OS_SelectSingle(c1_socket_id, &StateFlags, UT_TIMEOUT), OS_ERROR_TIMEOUT);
+
+    /* Verify Outputs */
+    UtAssert_True(StateFlags == 0, "StateFlags after OS_SelectSingle (0x%x) == None", (unsigned int)StateFlags);
+
+    UtAssert_INT32_EQ(OS_BinSemGive(bin_sem_id), OS_SUCCESS);
+    OS_TaskDelay(10); /* Give server time to run and close the socket */
+
+    StateFlags = OS_STREAM_STATE_READABLE;
+    UtAssert_INT32_EQ(OS_SelectSingle(c1_socket_id, &StateFlags, UT_TIMEOUT), OS_SUCCESS);
+
+    /* Verify Outputs */
+    UtAssert_True(StateFlags == OS_STREAM_STATE_READABLE,
+                  "StateFlags after OS_SelectSingle() (0x%x) == OS_STREAM_STATE_READABLE", (unsigned int)StateFlags);
 }
 
 void TestSelectMultipleRead(void)
 {
-    if (networkImplemented)
-    {
-        /*
-         * Test Case For:
-         * int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
-         */
-        OS_FdSet ReadSet;
-        OS_FdSet WriteSet;
-        int32    expected = OS_SUCCESS;
-        int32    actual;
-        int32    status;
+    /*
+     * Test Case For:
+     * int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
+     */
+    OS_FdSet ReadSet;
 
-        OS_SelectFdZero(&ReadSet);
-        OS_SelectFdZero(&WriteSet);
-
-        /*
-         * Create a server thread, and connect client from
-         * this thread to server thread and verify connection
-         */
-
-        /* Create a server task/thread */
-        status = OS_TaskCreate(&s_task_id, "ServerMultiRead", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
-                               OSAL_PRIORITY_C(50), 0);
-        UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
-
-        /* Connect to a server */
-        actual = OS_SocketConnect(c_socket_id, &s_addr, 10);
-        UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
-
-        status = OS_TaskCreate(&s2_task_id, "ServerMultiRead2", Server_Fn2, OSAL_TASK_STACK_ALLOCATE,
-                               OSAL_SIZE_C(16384), OSAL_PRIORITY_C(50), 0);
-        UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
-
-        /* Connect to a server */
-        actual = OS_SocketConnect(c2_socket_id, &s2_addr, 10);
-        UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
-
-        OS_SelectFdAdd(&ReadSet, c_socket_id);
-        OS_SelectFdAdd(&ReadSet, c2_socket_id);
-
-        UtAssert_True(OS_SelectFdIsSet(&ReadSet, c_socket_id), "OS_SelectFdIsSet(1) == true");
-        UtAssert_True(OS_SelectFdIsSet(&ReadSet, c2_socket_id), "OS_SelectFdIsSet(1) == true");
-
-        actual = OS_SelectMultiple(&ReadSet, &WriteSet, 100);
-        /* Verify Outputs */
-        UtAssert_True(actual == expected, "OS_SelectMultiple() (%ld) == OS_SUCCESS", (long)actual);
-
-        UtAssert_True(!OS_SelectFdIsSet(&ReadSet, c_socket_id), "OS_SelectFdIsSet(1) == false");
-        UtAssert_True(OS_SelectFdIsSet(&ReadSet, c2_socket_id), "OS_SelectFdIsSet(2) == true");
-    }
-    else
+    if (!networkImplemented)
     {
         UtAssert_NA("Network API not implemented");
+        return;
     }
+
+    OS_SelectFdZero(&ReadSet);
+    OS_SelectFdAdd(&ReadSet, c1_socket_id);
+
+    /*
+     * Check for readability on socket 1 should time out, as server1 is waiting on Sem
+     */
+    UtAssert_INT32_EQ(OS_SelectMultiple(&ReadSet, NULL, UT_TIMEOUT), OS_ERROR_TIMEOUT);
+
+    /*
+     * NOTE: NOT checking sets, because after OS_SelectMultiple fails, sets are not defined.
+     * (because it timed out, by definition it means all sets are considered empty)
+     */
+
+    OS_SelectFdZero(&ReadSet);
+    OS_SelectFdAdd(&ReadSet, c1_socket_id);
+    OS_SelectFdAdd(&ReadSet, c2_socket_id);
+
+    UtAssert_INT32_EQ(OS_SelectMultiple(&ReadSet, NULL, UT_TIMEOUT), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_SelectFdIsSet(&ReadSet, c1_socket_id), false);
+    UtAssert_INT32_EQ(OS_SelectFdIsSet(&ReadSet, c2_socket_id), true);
+
+    UtAssert_INT32_EQ(OS_BinSemGive(bin_sem_id), OS_SUCCESS);
+    OS_TaskDelay(10); /* Give server time to run and close the socket */
+
+    OS_SelectFdZero(&ReadSet);
+    OS_SelectFdAdd(&ReadSet, c1_socket_id);
+    OS_SelectFdAdd(&ReadSet, c2_socket_id);
+
+    UtAssert_INT32_EQ(OS_SelectMultiple(&ReadSet, NULL, UT_TIMEOUT), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_SelectFdIsSet(&ReadSet, c1_socket_id), true);
+    UtAssert_INT32_EQ(OS_SelectFdIsSet(&ReadSet, c2_socket_id), true);
 }
 
 void TestSelectSingleWrite(void)
 {
-    if (networkImplemented)
+    /*
+     * Test Case For:
+     * int32 OS_SelectSingle(uint32 objid, uint32 *StateFlags, int32 msecs);
+     */
+    uint32 StateFlags;
+
+    if (!networkImplemented)
     {
-        /*
-         * Test Case For:
-         * int32 OS_SelectSingle(uint32 objid, uint32 *StateFlags, int32 msecs);
-         */
+        UtAssert_NA("Network API not implemented");
+        return;
+    }
 
-        int32  actual;
-        uint32 StateFlags;
-        int32  expected          = OS_SUCCESS;
-        int    count             = 0;
-        char   Buf_send_c[16834] = {0};
+    /*
+     * In order to get the "write" to block, data must be written to the socket
+     * until the OS buffer fills.  Note the server function is waiting on a sem,
+     * and not actually reading this data, so writes here will accumulate.
+     */
 
-        /*
-         * Create a server thread, and connect client from
-         * this thread to server thread and verify connection
-         */
+    StateFlags = OS_STREAM_STATE_WRITABLE;
+    UtAssert_INT32_EQ(OS_SelectSingle(c1_socket_id, &StateFlags, UT_TIMEOUT), OS_SUCCESS);
+    UtAssert_True(StateFlags == OS_STREAM_STATE_WRITABLE,
+                  "StateFlags after OS_SelectSingle() (0x%x) == OS_STREAM_STATE_WRITABLE", (unsigned int)StateFlags);
 
-        /* Create a server task/thread */
-        int32 status = OS_TaskCreate(&s_task_id, "ServerSingleWrite", Server_Fn, OSAL_TASK_STACK_ALLOCATE,
-                                     OSAL_SIZE_C(16384), OSAL_PRIORITY_C(50), 0);
-        UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
-
-        /* Connect to a server */
-        actual = OS_SocketConnect(c_socket_id, &s_addr, 10);
-        UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
-
-        while (actual != OS_ERROR_TIMEOUT && count < MAX_BUFFER_LOOP)
-        {
-            strcpy(Buf_send_c, "16 KB buffer filler");
-            actual = OS_TimedWrite(c_socket_id, Buf_send_c, sizeof(Buf_send_c), 10);
-
-            StateFlags = OS_STREAM_STATE_WRITABLE;
-            actual     = OS_SelectSingle(c_socket_id, &StateFlags, 100);
-
-            count++;
-        }
-
-        status = OS_BinSemGive(bin_sem_id);
-
-        if (count >= MAX_BUFFER_LOOP)
-        {
-            UtAssertEx(
-                false, UTASSERT_CASETYPE_MIR, __FILE__, __LINE__, "%s",
-                "Unable to cause OS_STREAM_STATE_WRITEABLE timeout with large looped writes, skipping verification");
-        }
-        else
-        {
-            expected = OS_ERROR_TIMEOUT;
-            /* Verify Outputs */
-            UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_ERROR_TIMEOUT", (long)actual);
-            UtAssert_True(StateFlags == 0, "OS_SelectSingle() (0x%x) == None", (unsigned int)StateFlags);
-
-            expected   = OS_SUCCESS;
-            StateFlags = OS_STREAM_STATE_WRITABLE;
-            actual     = OS_SelectSingle(c_socket_id, &StateFlags, 100);
-
-            /* Verify Outputs */
-            UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-            UtAssert_True(StateFlags == OS_STREAM_STATE_WRITABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_WRITABLE",
-                          (unsigned int)StateFlags);
-        }
+    if (!FillOutputBuffer(c1_socket_id))
+    {
+        UtAssertEx(false, UTASSERT_CASETYPE_MIR, __FILE__, __LINE__, "%s",
+                   "Unable to fill buffer with large looped writes, skipping verification");
     }
     else
     {
-        UtAssert_NA("Network API not implemented");
+        UtAssert_INT32_EQ(OS_SelectSingle(c1_socket_id, &StateFlags, UT_TIMEOUT), OS_ERROR_TIMEOUT);
+        /* Verify Outputs */
+        UtAssert_True(StateFlags == 0, "StateFlags after OS_SelectSingle() (0x%x) == None", (unsigned int)StateFlags);
     }
+
+    /*
+     * Giving the sem should cause the server to close the socket,
+     * which will discard all written data.  The OS should then consider
+     * it writable again, due to EOF condition.
+     */
+    UtAssert_INT32_EQ(OS_BinSemGive(bin_sem_id), OS_SUCCESS);
+    OS_TaskDelay(10); /* Give server time to run and close the socket */
+
+    UtAssert_INT32_EQ(OS_SelectSingle(c1_socket_id, &StateFlags, UT_TIMEOUT), OS_SUCCESS);
+    /* Verify Outputs */
+    UtAssert_True(StateFlags == 0, "StateFlags after OS_SelectSingle() (0x%x) == OS_STREAM_STATE_WRITABLE",
+                  (unsigned int)StateFlags);
 }
 
 void TestSelectMultipleWrite(void)
 {
-    if (networkImplemented)
+    /*
+     * Test Case For:
+     * int32 OS_SelectSingle(uint32 objid, uint32 *StateFlags, int32 msecs);
+     */
+    OS_FdSet WriteSet;
+
+    if (!networkImplemented)
     {
-        /*
-         * Test Case For:
-         * int32 OS_SelectSingle(uint32 objid, uint32 *StateFlags, int32 msecs);
-         */
-        OS_FdSet ReadSet;
-        OS_FdSet WriteSet;
-        int32    expected = OS_SUCCESS;
-        int32    actual;
-        int32    status;
-        uint32   StateFlags;
-        int      count             = 0;
-        char     Buf_send_c[16834] = {0};
+        return;
+    }
 
-        OS_SelectFdZero(&ReadSet);
-        OS_SelectFdZero(&WriteSet);
+    /*
+     * Create a server thread, and connect client from
+     * this thread to server thread and verify connection
+     */
 
-        /*
-         * Create a server thread, and connect client from
-         * this thread to server thread and verify connection
-         */
+    OS_SelectFdZero(&WriteSet);
+    OS_SelectFdAdd(&WriteSet, c1_socket_id);
+    OS_SelectFdAdd(&WriteSet, c2_socket_id);
+    UtAssert_INT32_EQ(OS_SelectMultiple(NULL, &WriteSet, UT_TIMEOUT), OS_SUCCESS);
 
-        /* Create a server task/thread */
-        status = OS_TaskCreate(&s_task_id, "ServerMultiWrite", Server_Fn, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(16384),
-                               OSAL_PRIORITY_C(50), 0);
-        UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
+    /*
+     * Both sockets should initially be writable
+     */
+    UtAssert_INT32_EQ(OS_SelectFdIsSet(&WriteSet, c1_socket_id), true);
+    UtAssert_INT32_EQ(OS_SelectFdIsSet(&WriteSet, c2_socket_id), true);
 
-        /* Connect to a server */
-        actual = OS_SocketConnect(c_socket_id, &s_addr, 10);
-        UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
-
-        status = OS_TaskCreate(&s2_task_id, "ServerMultiWrite2", Server_Fn2, OSAL_TASK_STACK_ALLOCATE,
-                               OSAL_SIZE_C(16384), OSAL_PRIORITY_C(50), 0);
-        UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)status);
-
-        /* Connect to a server */
-        actual = OS_SocketConnect(c2_socket_id, &s2_addr, 10);
-        UtAssert_True(actual == expected, "OS_SocketConnect() (%ld) == OS_SUCCESS", (long)actual);
-
-        OS_SelectFdAdd(&WriteSet, c_socket_id);
-        OS_SelectFdAdd(&WriteSet, c2_socket_id);
-
-        UtAssert_True(OS_SelectFdIsSet(&WriteSet, c_socket_id), "OS_SelectFdIsSet(1) == true");
-        UtAssert_True(OS_SelectFdIsSet(&WriteSet, c2_socket_id), "OS_SelectFdIsSet(1) == true");
-
-        while (actual != OS_ERROR_TIMEOUT && count < MAX_BUFFER_LOOP)
-        {
-            strcpy(Buf_send_c, "16 KB buffer filler");
-            actual = OS_TimedWrite(c_socket_id, Buf_send_c, sizeof(Buf_send_c), 10);
-
-            StateFlags = OS_STREAM_STATE_WRITABLE;
-            actual     = OS_SelectSingle(c_socket_id, &StateFlags, 100);
-
-            count++;
-        }
-
-        if (count >= MAX_BUFFER_LOOP)
-        {
-            UtAssertEx(
-                false, UTASSERT_CASETYPE_MIR, __FILE__, __LINE__, "%s",
-                "Unable to cause OS_STREAM_STATE_WRITEABLE timeout with large looped writes, skipping verification");
-        }
-        else
-        {
-            actual = OS_SelectMultiple(&ReadSet, &WriteSet, 100);
-            /* Verify Outputs */
-            UtAssert_True(actual == expected, "OS_SelectMultiple() (%ld) == OS_SUCCESS", (long)actual);
-
-            UtAssert_True(!OS_SelectFdIsSet(&WriteSet, c_socket_id), "OS_SelectFdIsSet(1) == false");
-            UtAssert_True(OS_SelectFdIsSet(&WriteSet, c2_socket_id), "OS_SelectFdIsSet(2) == true");
-        }
+    if (!FillOutputBuffer(c1_socket_id))
+    {
+        UtAssertEx(false, UTASSERT_CASETYPE_MIR, __FILE__, __LINE__, "%s",
+                   "Unable to fill buffer with large looped writes, skipping verification");
     }
     else
     {
-        UtAssert_NA("Network API not implemented");
+        /* only add the first socket, to get a timeout */
+        OS_SelectFdZero(&WriteSet);
+        OS_SelectFdAdd(&WriteSet, c1_socket_id);
+        UtAssert_INT32_EQ(OS_SelectMultiple(NULL, &WriteSet, UT_TIMEOUT), OS_ERROR_TIMEOUT);
+
+        /*
+         * NOTE: NOT checking sets, because after OS_SelectMultiple fails, sets are not defined.
+         * (because it timed out, by definition it means all sets are considered empty)
+         */
     }
-}
 
-void TestSelectSingleFile(void)
-{
-    int32     expected = OS_SUCCESS;
-    int32     actual;
-    uint32    StateFlags;
-    osal_id_t fd = setup_file();
+    /*
+     * Giving the sem should cause the server to close the socket,
+     * which will discard all written data.  The OS should then consider
+     * it writable again, due to EOF condition.
+     */
+    UtAssert_INT32_EQ(OS_BinSemGive(bin_sem_id), OS_SUCCESS);
+    OS_TaskDelay(10); /* Give server time to run and close the socket */
 
-    expected   = OS_SUCCESS;
-    StateFlags = OS_STREAM_STATE_READABLE;
-    actual     = OS_SelectSingle(fd, &StateFlags, 100);
+    OS_SelectFdZero(&WriteSet);
+    OS_SelectFdAdd(&WriteSet, c1_socket_id);
+    OS_SelectFdAdd(&WriteSet, c2_socket_id);
+    UtAssert_INT32_EQ(OS_SelectMultiple(NULL, &WriteSet, UT_TIMEOUT), OS_SUCCESS);
 
-    /* Verify Outputs */
-    UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(StateFlags == OS_STREAM_STATE_READABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_READABLE",
-                  (unsigned int)StateFlags);
-
-    StateFlags = OS_STREAM_STATE_WRITABLE;
-    actual     = OS_SelectSingle(fd, &StateFlags, 100);
-
-    /* Verify Outputs */
-    UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_SUCCESS", (long)actual);
-    UtAssert_True(StateFlags == OS_STREAM_STATE_WRITABLE, "OS_SelectSingle() (%x) == OS_STREAM_STATE_WRITABLE",
-                  (unsigned int)StateFlags);
-
-    expected   = OS_ERROR_TIMEOUT;
-    StateFlags = OS_STREAM_STATE_BOUND;
-    actual     = OS_SelectSingle(fd, &StateFlags, 100);
-
-    /* Verify Outputs */
-    UtAssert_True(actual == expected, "OS_SelectSingle() (%ld) == OS_ERROR_TIMEOUT", (long)actual);
-    UtAssert_True(StateFlags == 0, "OS_SelectSingle() (0x%x) == None", (unsigned int)StateFlags);
-
-    /* Close and remove file */
-    OS_close(fd);
-    OS_remove(OS_TEST_SELECT_FILENAME);
+    UtAssert_INT32_EQ(OS_SelectFdIsSet(&WriteSet, c1_socket_id), true);
+    UtAssert_INT32_EQ(OS_SelectFdIsSet(&WriteSet, c2_socket_id), true);
 }
 
 void UtTest_Setup(void)
@@ -607,5 +430,4 @@ void UtTest_Setup(void)
     UtTest_Add(TestSelectMultipleRead, Setup_Multi, Teardown_Multi, "TestSelectMultipleRead");
     UtTest_Add(TestSelectSingleWrite, Setup_Single, Teardown_Single, "TestSelectSingleWrite");
     UtTest_Add(TestSelectMultipleWrite, Setup_Multi, Teardown_Multi, "TestSelectMultipleWrite");
-    UtTest_Add(TestSelectSingleFile, NULL, NULL, "TestSelectSingleFile");
 }

@@ -1,0 +1,7 @@
+# All of the OSAL FSW code relevant for a detail design document is under
+# src/os and src/bsp, everything else is test and examples/support
+# Note this will include ALL OS/BSP layers, it does not currently filter
+# based on which OS/BSP is actually in use.
+INPUT    += @osal_MISSION_DIR@/src/os
+INPUT    += @osal_MISSION_DIR@/src/bsp
+

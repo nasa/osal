@@ -90,7 +90,16 @@ typedef enum
  * the results are undefined.  Because of this limitation, it is recommended
  * to use OS_SelectSingle() whenever possible.
  *
+ * @param[in,out] ReadSet  Set of handles to check/wait to become readable
+ * @param[in,out] WriteSet Set of handles to check/wait to become writable
+ * @param[in] msecs Indicates the timeout. Positive values will wait up to that many milliseconds. Zero will not wait
+ * (poll). Negative values will wait forever (pend)
+ *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS If any handle in the ReadSet or WriteSet is readable or writable, respectively
+ * @retval #OS_ERROR_TIMEOUT If no handles in the ReadSet or WriteSet became readable or writable within the timeout
+ * @retval #OS_ERR_OPERATION_NOT_SUPPORTED if a specified handle does not support select
+ * @retval #OS_ERR_INVALID_ID if no valid handles were contained in the ReadSet/WriteSet
  */
 int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
 
@@ -115,8 +124,16 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
  * To mitigate this risk the application may prefer to use
  * the OS_TimedRead/OS_TimedWrite calls.
  *
+ * @param[in] objid The handle ID to select on
+ * @param[in,out] StateFlags State flag(s) (readable or writable) @nonnull
+ * @param[in] msecs Indicates the timeout. Positive values will wait up to that many milliseconds. Zero will not wait
+ * (poll). Negative values will wait forever (pend)
+ *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS If the handle is readable and/or writable, as requested
+ * @retval #OS_ERROR_TIMEOUT If the handle did not become readable or writable within the timeout
  * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_ID if the objid is not a valid handle
  */
 int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs);
 
@@ -126,7 +143,10 @@ int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs);
  *
  * After this call the set will contain no OSAL IDs
  *
+ * @param[out] Set Pointer to OS_FdSet object to clear @nonnull
+ *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief #OS_SUCCESS
  * @retval #OS_INVALID_POINTER if argument is NULL
  */
 int32 OS_SelectFdZero(OS_FdSet *Set);
@@ -137,8 +157,13 @@ int32 OS_SelectFdZero(OS_FdSet *Set);
  *
  * After this call the set will contain the given OSAL ID
  *
+ * @param[in,out] Set Pointer to OS_FdSet object to operate on @nonnull
+ * @param[in] objid The handle ID to add to the set
+ *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief #OS_SUCCESS
  * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_ID if the objid is not a valid handle
  */
 int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid);
 
@@ -148,8 +173,13 @@ int32 OS_SelectFdAdd(OS_FdSet *Set, osal_id_t objid);
  *
  * After this call the set will no longer contain the given OSAL ID
  *
+ * @param[in,out] Set Pointer to OS_FdSet object to operate on @nonnull
+ * @param[in] objid The handle ID to remove from the set
+ *
  * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief #OS_SUCCESS
  * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_ID if the objid is not a valid handle
  */
 int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid);
 
@@ -157,11 +187,14 @@ int32 OS_SelectFdClear(OS_FdSet *Set, osal_id_t objid);
 /**
  * @brief Check if an FdSet structure contains a given ID
  *
+ * @param[in] Set Pointer to OS_FdSet object to operate on @nonnull
+ * @param[in] objid The handle ID to check for in the set
+ *
  * @return Boolean set status
  * @retval true  FdSet structure contains ID
  * @retval false FDSet structure does not contain ID
  */
-bool OS_SelectFdIsSet(OS_FdSet *Set, osal_id_t objid);
+bool OS_SelectFdIsSet(const OS_FdSet *Set, osal_id_t objid);
 /**@}*/
 
 #endif /* OSAPI_SELECT_H */

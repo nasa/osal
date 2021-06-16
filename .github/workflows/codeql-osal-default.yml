@@ -26,9 +26,8 @@ jobs:
           concurrent_skipping: 'same_content'
           skip_after_successful_duplicate: 'true'
           do_not_skip: '["pull_request", "workflow_dispatch", "schedule"]'
-
-
-  CodeQL-Build:
+          
+  CodeQL-Security-Build:
     #Continue if check-for-duplicates found no duplicates. Always runs for pull-requests.
     needs: check-for-duplicates
     if: ${{ needs.check-for-duplicates.outputs.should_skip != 'true' }}
@@ -43,7 +42,35 @@ jobs:
         uses: github/codeql-action/init@v1
         with:
          languages: c
-         queries: +security-extended, security-and-quality
+         config-file: nasa/cFS/.github/codeql/codeql-security.yml@main
+
+      - name: Set up for build
+        run: |
+          cp Makefile.sample Makefile
+          make prep
+          
+      - name: Build
+        run: make -j 
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+
+  CodeQL-Coding-Standard-Build:
+    #Continue if check-for-duplicates found no duplicates. Always runs for pull-requests.
+    needs: check-for-duplicates
+    if: ${{ needs.check-for-duplicates.outputs.should_skip != 'true' }}
+    runs-on: ubuntu-18.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout submodule
+        uses: actions/checkout@v2
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+         languages: c
+         config-file: nasa/cFS/.github/codeql/codeql-coding-standard.yml@main
 
       - name: Set up for build
         run: |

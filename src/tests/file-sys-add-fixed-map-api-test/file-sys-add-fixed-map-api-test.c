@@ -41,7 +41,8 @@ void TestFileSysAddFixedMapApi(void)
     int32     expected;
     int32     actual;
     osal_id_t fs_id;
-    char      translated_path[OS_MAX_LOCAL_PATH_LEN];
+    char      translated_path[OS_MAX_LOCAL_PATH_LEN + 5];
+    char      long_path[OS_MAX_PATH_LEN + 5];
 
     /* Test for nominal inputs */
 
@@ -86,6 +87,22 @@ void TestFileSysAddFixedMapApi(void)
     expected = OS_INVALID_POINTER;
     actual   = OS_FileSysAddFixedMap(NULL, "./test", NULL);
     UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    /* Test names too long (phys_path and virt_path have different limits) */
+    memset(long_path, 'x', sizeof(long_path) - 1);
+    long_path[sizeof(long_path) - 1] = 0;
+    long_path[0]                     = '/';
+
+    memset(translated_path, 'y', sizeof(translated_path) - 1);
+    translated_path[sizeof(translated_path) - 1] = 0;
+    translated_path[0]                           = '/';
+
+    UtAssert_INT32_EQ(OS_FileSysAddFixedMap(&fs_id, "./test", long_path), OS_FS_ERR_PATH_TOO_LONG);
+    UtAssert_INT32_EQ(OS_FileSysAddFixedMap(&fs_id, translated_path, "/test"), OS_FS_ERR_PATH_TOO_LONG);
+
+    /* create a path where only the "name" part is too long, but the overall path length is within limit */
+    translated_path[OS_MAX_LOCAL_PATH_LEN - 1] = 0;
+    UtAssert_INT32_EQ(OS_FileSysAddFixedMap(&fs_id, translated_path, "/test"), OS_ERR_NAME_TOO_LONG);
 
 } /* end TestFileSysAddFixedMapApi */
 

@@ -354,7 +354,7 @@ if (HAS_PARENT)
 else(HAS_PARENT)
     # In a standalone build, also add the documentation target(s)
     # Note that in a CFE/integrated build, it is expected this will be built separately.
-    add_subdirectory(doc/src doc)
+    add_subdirectory(docs/src docs)
 endif(HAS_PARENT)
 
 

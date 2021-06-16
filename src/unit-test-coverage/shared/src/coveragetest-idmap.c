@@ -524,9 +524,9 @@ void Test_OS_ObjectIdGetById(void)
     OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
 
     /* attempt to get lock for invalid type object should fail */
-    expected = OS_ERR_INCORRECT_OBJ_TYPE;
+    expected = OS_ERR_INVALID_ID;
     actual   = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, 0xFFFF, refobjid, &token1);
-    UtAssert_True(actual == expected, "OS_ObjectIdGetById() (%ld) == OS_ERR_INCORRECT_OBJ_TYPE", (long)actual);
+    UtAssert_True(actual == expected, "OS_ObjectIdGetById() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
     /* clear out state entry */
     memset(&OS_global_task_table[local_idx], 0, sizeof(OS_global_task_table[local_idx]));
@@ -730,9 +730,9 @@ void Test_OS_ObjectIdAllocateNew(void)
     OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
     UtAssert_True(actual == expected, "OS_ObjectIdAllocate() (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
 
-    expected = OS_ERR_INCORRECT_OBJ_TYPE;
+    expected = OS_ERR_INVALID_ID;
     actual   = OS_ObjectIdAllocateNew(0xFFFF, "UT_alloc", &token);
-    UtAssert_True(actual == expected, "OS_ObjectIdAllocate() (%ld) == OS_ERR_INCORRECT_OBJ_TYPE", (long)actual);
+    UtAssert_True(actual == expected, "OS_ObjectIdAllocate() (%ld) == OS_ERR_INVALID_ID", (long)actual);
 
     /*
      * Test late-stage failure path -
@@ -823,7 +823,7 @@ void Test_OS_ObjectIdTransaction(void)
 
     /* bad object type */
     OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_UNDEFINED, &token),
-                           OS_ERR_INCORRECT_OBJ_TYPE);
+                           OS_ERR_INVALID_ID);
     UtAssert_UINT32_EQ(token.lock_mode, OS_LOCK_MODE_NONE);
     UtAssert_UINT32_EQ(token.obj_type, OS_OBJECT_TYPE_UNDEFINED);
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 2);
@@ -1049,8 +1049,12 @@ void Test_OS_GetResourceName(void)
     UtAssert_True(actual == expected, "OS_GetResourceName() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
 
     expected = OS_INVALID_POINTER;
-    actual   = OS_GetResourceName(token.obj_id, NULL, OSAL_SIZE_C(0));
+    actual   = OS_GetResourceName(token.obj_id, NULL, sizeof(NameBuffer));
     UtAssert_True(actual == expected, "OS_GetResourceName() (%ld) == OS_INVALID_POINTER", (long)actual);
+
+    expected = OS_ERR_INVALID_SIZE;
+    actual   = OS_GetResourceName(token.obj_id, NameBuffer, OSAL_SIZE_C(0));
+    UtAssert_True(actual == expected, "OS_GetResourceName() (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
 }
 
 void Test_OS_ObjectIdIterator(void)
@@ -1064,8 +1068,7 @@ void Test_OS_ObjectIdIterator(void)
     OS_common_record_t rec;
     uint32             testarg;
 
-    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdIteratorInit(NULL, NULL, OS_OBJECT_TYPE_UNDEFINED, &iter),
-                           OS_ERR_INCORRECT_OBJ_TYPE);
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdIteratorInit(NULL, NULL, OS_OBJECT_TYPE_UNDEFINED, &iter), OS_ERR_INVALID_ID);
     OSAPI_TEST_FUNCTION_RC(OS_ObjectIdIterateActive(OS_OBJECT_TYPE_OS_TASK, &iter), OS_SUCCESS);
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 1);
 
