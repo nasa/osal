@@ -1,4 +1,4 @@
-name: "Build OSAL API Guide"
+name: "Build OSAL Documentation (API Guide)"
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
 
-  #Check for duplicate actions. Skips push actions if there is a matching or duplicate pull-request action. 
+  #Check for duplicate actions. Skips push actions if there is a matching or duplicate pull-request action.
   check-for-duplicates:
     runs-on: ubuntu-latest
     # Map a step output to a job output
@@ -42,7 +42,7 @@ jobs:
       - name: Build OSAL API Guide
         run: |
           make osal-apiguide > make_osal-apiguide_stdout.txt 2> make_osal-apiguide_stderr.txt
-          mv build/doc/osal-apiguide-warnings.log osal-apiguide-warnings.log
+          mv build/docs/osal-apiguide-warnings.log osal-apiguide-warnings.log          
 
       - name: Archive Osal Guide Build Logs
         uses: actions/upload-artifact@v2
