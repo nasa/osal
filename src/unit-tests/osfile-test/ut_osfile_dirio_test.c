@@ -284,6 +284,7 @@ void UT_os_closedir_test()
     os_dirent_t dirEntry;
 
     UT_RETVAL(OS_DirectoryClose(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_DirectoryClose(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Nominal */
@@ -358,6 +359,7 @@ void UT_os_readdir_test()
     /* Invalid ID */
 
     UT_RETVAL(OS_DirectoryRead(UT_OBJID_INCORRECT, &dirent), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_DirectoryRead(OS_OBJECT_ID_UNDEFINED, &dirent), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
@@ -449,6 +451,7 @@ void UT_os_rewinddir_test()
     /* Invalid ID */
 
     UT_RETVAL(OS_DirectoryRewind(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_DirectoryRewind(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Nominal */

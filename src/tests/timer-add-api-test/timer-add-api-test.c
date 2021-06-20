@@ -65,10 +65,8 @@ void TestTimerAddApi(void)
      * callback_ptr, void *callback_arg)
      */
 
-    int32     actual;
-    int32     expected;
-    int32     tbc_ret_val;
-    int32     tbs_ret_val;
+    uint32    expected;
+    osal_id_t badid;
     osal_id_t timer_id;
     osal_id_t time_base_id;
     int       i = 0;
@@ -80,13 +78,8 @@ void TestTimerAddApi(void)
 
     /* Create and set the TimeBase obj and verify success */
 
-    tbc_ret_val = OS_TimeBaseCreate(&time_base_id, "TimeBase", 0);
-    expected    = OS_SUCCESS;
-    UtAssert_True(tbc_ret_val == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)tbc_ret_val);
-
-    tbs_ret_val = OS_TimeBaseSet(time_base_id, 10000, 10000); /* ms */
-    expected    = OS_SUCCESS;
-    UtAssert_True(tbs_ret_val == expected, "OS_TimeBaseSet() (%ld) == OS_SUCCESS", (long)tbs_ret_val);
+    UtAssert_INT32_EQ(OS_TimeBaseCreate(&time_base_id, "TimeBase", 0), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_TimeBaseSet(time_base_id, 10000, 10000), OS_SUCCESS);
 
     memset(temp_name, 'x', sizeof(temp_name) - 1);
     temp_name[sizeof(temp_name) - 1] = 0;
@@ -183,30 +176,18 @@ void TestTimerAddApi(void)
     }
 
     /* Test nominal inputs */
-    expected = OS_SUCCESS;
-    actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_SUCCESS", (long)actual);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL), OS_SUCCESS);
+
+    /* create a bad ID by flipping the bits of a good ID */
+    badid = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(time_base_id) ^ 0xFFFFFFFF);
 
     /* Test invalid inputs */
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimerAdd(NULL, "Timer", time_base_id, null_func, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    expected = OS_ERR_INVALID_ID;
-    actual   = OS_TimerAdd(&timer_id, "Timer", OS_OBJECT_ID_UNDEFINED, null_func, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_INVALID_ID", (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, NULL, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    expected = OS_ERR_NAME_TAKEN;
-    actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_NAME_TAKEN", (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimerAdd(&timer_id, 0, time_base_id, null_func, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_INVALID_POINTER", (long)actual);
+    UtAssert_INT32_EQ(OS_TimerAdd(NULL, "Timer", time_base_id, null_func, NULL), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", OS_OBJECT_ID_UNDEFINED, null_func, NULL), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", badid, null_func, NULL), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", time_base_id, NULL, NULL), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL), OS_ERR_NAME_TAKEN);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, 0, time_base_id, null_func, NULL), OS_INVALID_POINTER);
 
 } /* end TestTimerAddApi */
 

@@ -161,6 +161,7 @@ void UT_os_queue_delete_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_QueueDelete(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_QueueDelete(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
@@ -195,6 +196,8 @@ void UT_os_queue_get_test()
 
     UT_RETVAL(OS_QueueGet(UT_OBJID_INCORRECT, (void *)&queue_data_in, sizeof(uint32), &size_copied, OS_CHECK),
               OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_QueueGet(OS_OBJECT_ID_UNDEFINED, (void *)&queue_data_in, sizeof(uint32), &size_copied, OS_CHECK),
+              OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Invalid-pointer-arg-1 */
@@ -205,6 +208,7 @@ void UT_os_queue_get_test()
     {
         UT_RETVAL(OS_QueueGet(queue_id, NULL, sizeof(uint32), &size_copied, OS_CHECK), OS_INVALID_POINTER);
         UT_RETVAL(OS_QueueGet(queue_id, &queue_data_in, sizeof(uint32), NULL, OS_CHECK), OS_INVALID_POINTER);
+        UT_RETVAL(OS_QueueGet(queue_id, &queue_data_in, 0, &size_copied, OS_CHECK), OS_ERR_INVALID_SIZE);
 
         UT_TEARDOWN(OS_QueueDelete(queue_id));
     }
@@ -304,6 +308,7 @@ void UT_os_queue_put_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_QueuePut(UT_OBJID_INCORRECT, (void *)&queue_data_out, sizeof(uint32), 0), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_QueuePut(OS_OBJECT_ID_UNDEFINED, (void *)&queue_data_out, sizeof(uint32), 0), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Invalid-pointer-arg */
@@ -313,6 +318,8 @@ void UT_os_queue_put_test()
     {
         UT_RETVAL(OS_QueuePut(queue_id, NULL, sizeof(uint32), 0), OS_INVALID_POINTER);
         UT_RETVAL(OS_QueuePut(queue_id, &queue_data_out, sizeof(uint32) + 1, 0), OS_QUEUE_INVALID_SIZE);
+        UT_RETVAL(OS_QueuePut(queue_id, &queue_data_out, 0, 0), OS_ERR_INVALID_SIZE);
+
         UT_TEARDOWN(OS_QueueDelete(queue_id));
     }
 
@@ -412,6 +419,7 @@ void UT_os_queue_get_info_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_QueueGetInfo(UT_OBJID_INCORRECT, &queue_prop), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_QueueGetInfo(OS_OBJECT_ID_UNDEFINED, &queue_prop), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Invalid-pointer-arg */

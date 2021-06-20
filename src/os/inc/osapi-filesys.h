@@ -79,7 +79,7 @@ typedef struct
  *
  *      OS_FileSysAddFixedMap(&fs_id, "/", "/root");
  *
- * @param[out]  filesys_id  A non-zero OSAL ID reflecting the file system
+ * @param[out]  filesys_id  A buffer to store the ID of the file system mapping @nonnull
  * @param[in]   phys_path   The native system directory (an existing mount point) @nonnull
  * @param[in]   virt_path   The virtual mount point of this filesystem @nonnull
  *

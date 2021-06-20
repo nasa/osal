@@ -70,7 +70,11 @@ void Test_OS_DirectoryOpen(void)
     UtAssert_True(actual == expected, "OS_DirectoryOpen() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
-    OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(NULL, NULL), OS_INVALID_POINTER);
+    /*
+     * Note that the second arg (path) is validated by a separate unit (OS_TranslatePath),
+     * so it should not be passed NULL here
+     */
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(NULL, "Dir"), OS_INVALID_POINTER);
 }
 
 void Test_OS_DirectoryClose(void)

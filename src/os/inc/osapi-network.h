@@ -61,8 +61,8 @@ int32 OS_NetworkGetID(void);
  * If configured in the underlying network stack,
  * this function retrieves the local hostname of the system.
  *
- * @param[out]  host_name    Buffer to hold name information
- * @param[in]   name_len     Maximum length of host name buffer
+ * @param[out]  host_name    Buffer to hold name information @nonnull
+ * @param[in]   name_len     Maximum length of host name buffer @nonzero
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS

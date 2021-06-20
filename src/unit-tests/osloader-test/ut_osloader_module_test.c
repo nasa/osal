@@ -185,6 +185,7 @@ void UT_os_module_unload_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_ModuleUnload(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_ModuleUnload(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 OS-call-failure */
@@ -224,6 +225,7 @@ void UT_os_module_info_test()
     /* #2 Invalid-ID-arg */
 
     UT_RETVAL(OS_ModuleInfo(UT_OBJID_INCORRECT, &module_info), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, &module_info), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */

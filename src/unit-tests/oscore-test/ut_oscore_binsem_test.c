@@ -134,6 +134,7 @@ void UT_os_bin_sem_delete_test()
 
     /*-----------------------------------------------------*/
     UT_RETVAL(OS_BinSemDelete(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_BinSemDelete(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "DeleteTest", 1, 0)))
@@ -157,6 +158,7 @@ void UT_os_bin_sem_flush_test()
 
     /*-----------------------------------------------------*/
     UT_RETVAL(OS_BinSemFlush(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_BinSemFlush(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "FlushTest", 1, 0)))
@@ -181,6 +183,7 @@ void UT_os_bin_sem_give_test()
 
     /*-----------------------------------------------------*/
     UT_RETVAL(OS_BinSemGive(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_BinSemGive(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "GiveTest", 1, 0)))
@@ -206,6 +209,7 @@ void UT_os_bin_sem_take_test()
 
     /*-----------------------------------------------------*/
     UT_RETVAL(OS_BinSemTake(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_BinSemTake(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "TakeTest", 1, 0)))
@@ -230,6 +234,7 @@ void UT_os_bin_sem_timed_wait_test()
 
     /*-----------------------------------------------------*/
     UT_RETVAL(OS_BinSemTimedWait(UT_OBJID_INCORRECT, 1000), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_BinSemTimedWait(OS_OBJECT_ID_UNDEFINED, 1000), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "TimedWait", 1, 0)) && UT_SETUP(OS_BinSemTake(bin_sem_id)))
@@ -299,6 +304,7 @@ void UT_os_bin_sem_get_info_test()
 
     /*-----------------------------------------------------*/
     UT_RETVAL(OS_BinSemGetInfo(UT_OBJID_INCORRECT, &bin_sem_prop), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_BinSemGetInfo(OS_OBJECT_ID_UNDEFINED, &bin_sem_prop), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "GetInfo", 1, 0)))

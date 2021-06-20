@@ -91,7 +91,7 @@ typedef osal_task((*osal_task_entry)(void)); /**< @brief For task entry point */
  * In that case, a stack of the requested size will be dynamically allocated from
  * the system heap.
  *
- * @param[out]  task_id will be set to the non-zero ID of the newly-created resource
+ * @param[out]  task_id will be set to the non-zero ID of the newly-created resource @nonnull
  * @param[in]   task_name the name of the new resource to create @nonnull
  * @param[in]   function_pointer the entry point of the new task @nonnull
  * @param[in]   stack_pointer pointer to the stack for the task, or NULL

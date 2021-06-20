@@ -38,8 +38,6 @@
 
 void TestFileSysAddFixedMapApi(void)
 {
-    int32     expected;
-    int32     actual;
     osal_id_t fs_id;
     char      translated_path[OS_MAX_LOCAL_PATH_LEN + 5];
     char      long_path[OS_MAX_PATH_LEN + 5];
@@ -51,42 +49,14 @@ void TestFileSysAddFixedMapApi(void)
      * Just map /test to a dir of the same name, relative to current dir.
      */
 
-    expected = OS_FS_ERR_PATH_INVALID;
-    actual   = OS_TranslatePath("/test/myfile.txt", translated_path);
-    UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_SUCCESS", (long)actual);
-
-    expected = OS_SUCCESS;
-    actual   = OS_FileSysAddFixedMap(&fs_id, "./test", "/test");
-    UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_SUCCESS", (long)actual);
-
-    expected = OS_SUCCESS;
-    actual   = OS_TranslatePath("/test/myfile.txt", translated_path);
-    UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_SUCCESS", (long)actual);
+    UtAssert_INT32_EQ(OS_TranslatePath("/test/myfile.txt", translated_path), OS_FS_ERR_PATH_INVALID);
+    UtAssert_INT32_EQ(OS_FileSysAddFixedMap(&fs_id, "./test", "/test"), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_TranslatePath("/test/myfile.txt", translated_path), OS_SUCCESS);
 
     /* Test for invalid inputs */
-    expected = OS_ERR_NAME_TAKEN;
-    actual   = OS_FileSysAddFixedMap(NULL, "./test", "/test");
-    UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual   = OS_FileSysAddFixedMap(&fs_id, NULL, "/test");
-    UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual   = OS_FileSysAddFixedMap(&fs_id, "./test", NULL);
-    UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual   = OS_FileSysAddFixedMap(NULL, NULL, NULL);
-    UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual   = OS_FileSysAddFixedMap(&fs_id, NULL, NULL);
-    UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual   = OS_FileSysAddFixedMap(NULL, "./test", NULL);
-    UtAssert_True(actual == expected, "OS_FileSysAddFixedMap() (%ld) == OS_INVALID_POINTER", (long)actual);
+    UtAssert_INT32_EQ(OS_FileSysAddFixedMap(NULL, "./test", "/test"), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_FileSysAddFixedMap(&fs_id, NULL, "/test"), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_FileSysAddFixedMap(&fs_id, "./test", NULL), OS_INVALID_POINTER);
 
     /* Test names too long (phys_path and virt_path have different limits) */
     memset(long_path, 'x', sizeof(long_path) - 1);
