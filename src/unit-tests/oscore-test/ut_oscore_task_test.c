@@ -225,6 +225,7 @@ void UT_os_task_delete_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_TaskDelete(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_TaskDelete(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
@@ -431,6 +432,7 @@ void UT_os_task_set_priority_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_TaskSetPriority(UT_OBJID_INCORRECT, OSAL_PRIORITY_C(100)), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_TaskSetPriority(OS_OBJECT_ID_UNDEFINED, OSAL_PRIORITY_C(100)), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #4 Nominal */
@@ -557,6 +559,7 @@ void UT_os_task_get_info_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_TaskGetInfo(UT_OBJID_INCORRECT, &task_prop), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_TaskGetInfo(OS_OBJECT_ID_UNDEFINED, &task_prop), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Invalid-pointer-arg */

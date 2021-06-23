@@ -55,15 +55,7 @@ osal_id_t g_timerIds[UT_OS_TIMER_LIST_LEN];
 
 typedef struct
 {
-    bool IsValid;
-
-    int32 CreateRc;
-    int32 AddRc;
-    int32 DeleteRc;
-    int32 SetRc;
-    int32 GetByNameRc;
-    int32 GetInfoRc;
-
+    bool            IsTested;
     OS_timer_prop_t Prop;
 
 } UT_reconf_status_t;
@@ -82,7 +74,7 @@ void UT_os_reconftimercallback(osal_id_t timerId, void *arg)
 {
     UT_reconf_status_t *reconf = arg;
 
-    if (!reconf->IsValid)
+    if (!reconf->IsTested)
     {
         /*
          * Calls to timer configuration from the context of a timer function
@@ -91,14 +83,16 @@ void UT_os_reconftimercallback(osal_id_t timerId, void *arg)
          * calls the various functions on the first time through and stores the
          * result, which is checked/asserted in the main task.
          */
-        reconf->CreateRc    = OS_TimerCreate(&timerId, "reconf", &g_clkAccuracy, UT_os_othertimercallback1);
-        reconf->AddRc       = OS_TimerAdd(&timerId, "reconf", g_timerIds[1], UT_os_othertimercallback2, NULL);
-        reconf->DeleteRc    = OS_TimerDelete(timerId);
-        reconf->SetRc       = OS_TimerSet(timerId, 100, 100);
-        reconf->GetByNameRc = OS_TimerGetIdByName(&timerId, g_timerNames[7]);
-        reconf->GetInfoRc   = OS_TimerGetInfo(timerId, &reconf->Prop);
+        UtAssert_INT32_EQ(OS_TimerCreate(&timerId, "reconf", &g_clkAccuracy, UT_os_othertimercallback1),
+                          OS_ERR_INCORRECT_OBJ_STATE);
+        UtAssert_INT32_EQ(OS_TimerAdd(&timerId, "reconf", g_timerIds[1], UT_os_othertimercallback2, NULL),
+                          OS_ERR_INCORRECT_OBJ_STATE);
+        UtAssert_INT32_EQ(OS_TimerDelete(timerId), OS_ERR_INCORRECT_OBJ_STATE);
+        UtAssert_INT32_EQ(OS_TimerSet(timerId, 100, 100), OS_ERR_INCORRECT_OBJ_STATE);
+        UtAssert_INT32_EQ(OS_TimerGetIdByName(&timerId, g_timerNames[7]), OS_ERR_INCORRECT_OBJ_STATE);
+        UtAssert_INT32_EQ(OS_TimerGetInfo(timerId, &reconf->Prop), OS_ERR_INCORRECT_OBJ_STATE);
 
-        reconf->IsValid = true;
+        reconf->IsTested = true;
     }
 }
 
@@ -274,7 +268,7 @@ void UT_os_timerreconf_test()
             {
                 if (UT_SETUP(OS_TimerSet(g_timerIds[2], 50, 50)))
                 {
-                    while (!reconf.IsValid)
+                    while (!reconf.IsTested)
                     {
                         OS_TaskDelay(1);
                     }
@@ -288,25 +282,6 @@ void UT_os_timerreconf_test()
         /* Reset test environment */
         UT_TEARDOWN(OS_TimeBaseDelete(g_timerIds[1]));
     }
-
-    /* Check that those configuration attempts all returned OS_ERR_INCORRECT_OBJ_STATE */
-    UtAssert_True(reconf.CreateRc == OS_ERR_INCORRECT_OBJ_STATE,
-                  "OS_TimerCreate(&timerId, \"reconf\", &g_clkAccuracy, UT_os_othertimercallback1) (%d) == "
-                  "OS_ERR_INCORRECT_OBJ_STATE",
-                  (int)reconf.CreateRc);
-    UtAssert_True(reconf.AddRc == OS_ERR_INCORRECT_OBJ_STATE,
-                  "OS_TimerAdd(&timerId, \"reconf\", g_timerIds[1], UT_os_othertimercallback2, NULL) (%d) == "
-                  "OS_ERR_INCORRECT_OBJ_STATE",
-                  (int)reconf.AddRc);
-    UtAssert_True(reconf.DeleteRc == OS_ERR_INCORRECT_OBJ_STATE,
-                  "OS_TimerDelete(timerId) (%d) == OS_ERR_INCORRECT_OBJ_STATE", (int)reconf.DeleteRc);
-    UtAssert_True(reconf.SetRc == OS_ERR_INCORRECT_OBJ_STATE,
-                  "OS_TimerSet(timerId, 100, 100) (%d) == OS_ERR_INCORRECT_OBJ_STATE", (int)reconf.SetRc);
-    UtAssert_True(reconf.GetByNameRc == OS_ERR_INCORRECT_OBJ_STATE,
-                  "OS_TimerGetIdByName(&timerId, g_timerNames[7]) (%d) == OS_ERR_INCORRECT_OBJ_STATE",
-                  (int)reconf.GetByNameRc);
-    UtAssert_True(reconf.GetInfoRc == OS_ERR_INCORRECT_OBJ_STATE,
-                  "OS_TimerGetInfo(timerId, &TimerProp) (%d) == OS_ERR_INCORRECT_OBJ_STATE", (int)reconf.GetInfoRc);
 }
 
 /*--------------------------------------------------------------------------------*
@@ -357,6 +332,7 @@ void UT_os_timerdelete_test()
     /* #1 Invalid-id-arg */
 
     UT_RETVAL(OS_TimerDelete(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_TimerDelete(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Internal-error */
@@ -434,6 +410,7 @@ void UT_os_timerset_test()
     /* #1 Invalid-id-arg */
 
     UT_RETVAL(OS_TimerSet(UT_OBJID_INCORRECT, 10000, 10000), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_TimerSet(OS_OBJECT_ID_UNDEFINED, 10000, 10000), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Internal-error */
@@ -614,20 +591,21 @@ void UT_os_timergetinfo_test()
     OS_timer_prop_t timerProps;
 
     /*-----------------------------------------------------*/
-    /* #1 Null-pointer-arg */
-
-    UT_RETVAL(OS_TimerGetInfo(UT_OBJID_INCORRECT, NULL), OS_INVALID_POINTER);
-
-    /*-----------------------------------------------------*/
-    /* #2 Invalid-id-arg */
+    /* Invalid-id-arg */
 
     UT_RETVAL(OS_TimerGetInfo(UT_OBJID_INCORRECT, &timerProps), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_TimerGetInfo(OS_OBJECT_ID_UNDEFINED, &timerProps), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
 
     if (UT_SETUP(OS_TimerCreate(&g_timerIds[3], g_timerNames[3], &g_clkAccuracy, &UT_os_timercallback)))
     {
+        /*-----------------------------------------------------*/
+        /* Null-pointer-arg */
+
+        UT_RETVAL(OS_TimerGetInfo(g_timerIds[3], NULL), OS_INVALID_POINTER);
+
         memset(&timerProps, 0x00, sizeof(timerProps));
 
         UT_NOMINAL(OS_TimerGetInfo(g_timerIds[3], &timerProps));

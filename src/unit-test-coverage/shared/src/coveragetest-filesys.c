@@ -56,7 +56,8 @@ void Test_OS_FileSysAddFixedMap(void)
     osal_id_t id;
 
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_SUCCESS);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, NULL, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, NULL, "/virt"), OS_INVALID_POINTER);
 
     UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_FS_ERR_PATH_TOO_LONG);
@@ -441,9 +442,8 @@ void Test_OS_TranslatePath(void)
                   LocalBuffer);
 
     /* Check various error paths */
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TranslatePath(NULL, NULL);
-    UtAssert_True(actual == expected, "OS_TranslatePath(NULL,NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
+    UtAssert_INT32_EQ(OS_TranslatePath("/cf/test", NULL), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_TranslatePath(NULL, LocalBuffer), OS_INVALID_POINTER);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     expected = OS_FS_ERR_PATH_TOO_LONG;

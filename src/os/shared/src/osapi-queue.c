@@ -166,6 +166,7 @@ int32 OS_QueueGet(osal_id_t queue_id, void *data, size_t size, size_t *size_copi
     /* Check Parameters */
     OS_CHECK_POINTER(data);
     OS_CHECK_POINTER(size_copied);
+    OS_CHECK_SIZE(size);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, queue_id, &token);
     if (return_code == OS_SUCCESS)
@@ -205,6 +206,7 @@ int32 OS_QueuePut(osal_id_t queue_id, const void *data, size_t size, uint32 flag
 
     /* Check Parameters */
     OS_CHECK_POINTER(data);
+    OS_CHECK_SIZE(size);
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, queue_id, &token);
     if (return_code == OS_SUCCESS)

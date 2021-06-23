@@ -105,8 +105,11 @@ void UT_os_select_fd_test(void)
     UT_RETVAL(OS_SelectFdIsSet(NULL, selecttest_fd), false);
 
     UT_RETVAL(OS_SelectFdAdd(&FdSet, invalid_fd), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_SelectFdAdd(&FdSet, OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
     UT_RETVAL(OS_SelectFdClear(&FdSet, invalid_fd), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_SelectFdClear(&FdSet, OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
     UT_RETVAL(OS_SelectFdIsSet(&FdSet, invalid_fd), false);
+    UT_RETVAL(OS_SelectFdIsSet(&FdSet, OS_OBJECT_ID_UNDEFINED), false);
 
     UT_NOMINAL(OS_SelectFdZero(&FdSet));
     UT_NOMINAL(OS_SelectFdAdd(&FdSet, selecttest_fd));
@@ -147,6 +150,7 @@ void UT_os_select_single_test(void)
                   (unsigned int)StateFlags);
 
     UT_RETVAL(OS_SelectSingle(invalid_fd, &StateFlags, 0), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_SelectSingle(OS_OBJECT_ID_UNDEFINED, &StateFlags, 0), OS_ERR_INVALID_ID);
 }
 
 /*--------------------------------------------------------------------------------*

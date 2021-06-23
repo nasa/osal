@@ -262,6 +262,7 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
     /*
      * Validate inputs
      */
+    OS_CHECK_POINTER(filesys_id);
     OS_CHECK_STRING(phys_path, sizeof(filesys->system_mountpt), OS_FS_ERR_PATH_TOO_LONG);
     OS_CHECK_PATHNAME(virt_path);
 

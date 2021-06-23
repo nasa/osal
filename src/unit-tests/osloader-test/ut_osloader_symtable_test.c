@@ -129,22 +129,23 @@ void UT_os_module_symbol_lookup_test()
     }
 
     /*-----------------------------------------------------*/
-    /* #1 Invalid-pointer-arg-1 */
+    /* Invalid object ID */
 
-    UT_RETVAL(OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, 0, "Sym"), OS_INVALID_POINTER);
-
-    /*-----------------------------------------------------*/
-    /* #2 Invalid-pointer-arg-2 */
-
-    UT_RETVAL(OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symbol_addr, 0), OS_INVALID_POINTER);
+    UT_RETVAL(OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symbol_addr, "Sym"), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_ModuleSymbolLookup(UT_OBJID_INCORRECT, &symbol_addr, "Sym"), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* Setup for remainder of tests */
     if (UT_SETUP(OS_ModuleLoad(&module_id, "Mod1", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS)))
     {
         /*-----------------------------------------------------*/
-        /* #3 Symbol-not-found */
+        /* #1 Invalid-pointer-arg */
 
+        UT_RETVAL(OS_ModuleSymbolLookup(module_id, NULL, "Sym"), OS_INVALID_POINTER);
+        UT_RETVAL(OS_ModuleSymbolLookup(module_id, &symbol_addr, NULL), OS_INVALID_POINTER);
+
+        /*-----------------------------------------------------*/
+        /* #3 Symbol-not-found */
         UT_RETVAL(OS_ModuleSymbolLookup(module_id, &symbol_addr, "NotFound"), OS_ERROR);
 
         /*-----------------------------------------------------*/

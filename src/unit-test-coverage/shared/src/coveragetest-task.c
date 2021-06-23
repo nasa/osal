@@ -116,7 +116,13 @@ void Test_OS_TaskCreate(void)
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
     OSAPI_TEST_FUNCTION_RC(
-        OS_TaskCreate(NULL, NULL, NULL, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(0), OSAL_PRIORITY_C(0), 0),
+        OS_TaskCreate(NULL, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(0), OSAL_PRIORITY_C(0), 0),
+        OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(
+        OS_TaskCreate(&objid, NULL, UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(0), OSAL_PRIORITY_C(0), 0),
+        OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(
+        OS_TaskCreate(&objid, "UT", NULL, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(0), OSAL_PRIORITY_C(0), 0),
         OS_INVALID_POINTER);
     OSAPI_TEST_FUNCTION_RC(
         OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(0), OSAL_PRIORITY_C(0), 0),
@@ -248,7 +254,7 @@ void Test_OS_TaskGetInfo(void)
     OS_task_table[1].stack_size = OSAL_SIZE_C(0);
     OS_task_table[1].priority   = OSAL_PRIORITY_C(0);
 
-    OSAPI_TEST_FUNCTION_RC(OS_TaskGetInfo(OS_OBJECT_ID_UNDEFINED, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
 }
 
 void Test_OS_TaskInstallDeleteHandler(void)

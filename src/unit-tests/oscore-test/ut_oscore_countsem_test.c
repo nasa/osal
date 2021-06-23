@@ -163,6 +163,7 @@ void UT_os_count_sem_delete_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_CountSemDelete(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_CountSemDelete(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
@@ -191,6 +192,7 @@ void UT_os_count_sem_give_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_CountSemGive(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_CountSemGive(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
@@ -221,6 +223,7 @@ void UT_os_count_sem_take_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_CountSemTake(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_CountSemTake(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Nominal */
@@ -250,6 +253,7 @@ void UT_os_count_sem_timed_wait_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_CountSemTimedWait(UT_OBJID_INCORRECT, 1000), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_CountSemTimedWait(OS_OBJECT_ID_UNDEFINED, 1000), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #3 Sem-take-timed-out */
@@ -341,6 +345,7 @@ void UT_os_count_sem_get_info_test()
     /* #1 Invalid-ID-arg */
 
     UT_RETVAL(OS_CountSemGetInfo(UT_OBJID_INCORRECT, &count_sem_prop), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_CountSemGetInfo(OS_OBJECT_ID_UNDEFINED, &count_sem_prop), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* #2 Invalid-pointer-arg */

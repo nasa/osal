@@ -61,7 +61,8 @@ void Test_OS_BinSemCreate(void)
     UtAssert_True(actual == expected, "OS_BinSemCreate() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(NULL, NULL, 0, 0), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(NULL, "UT", 0, 0), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(&objid, NULL, 0, 0), OS_INVALID_POINTER);
     UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(&objid, "UT", 0, 0), OS_ERR_NAME_TOO_LONG);
 }
