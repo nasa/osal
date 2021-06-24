@@ -398,6 +398,12 @@ void UT_os_task_delay_test()
     OS_time_t after_time;
     int64     elapsed;
 
+    /*
+     * Note, if running under a VM/hypervisor, the real time clock may not
+     * be very precise, depending on its implementation.  Therefore the allowed
+     * ranges are slightly extended here.
+     */
+
     /*-----------------------------------------------------*/
     /* Nominal, 100ms delay */
     UT_SETUP(OS_GetLocalTime(&before_time));
@@ -405,7 +411,7 @@ void UT_os_task_delay_test()
     UT_SETUP(OS_GetLocalTime(&after_time));
 
     elapsed = OS_TimeGetTotalMilliseconds(OS_TimeSubtract(after_time, before_time));
-    UtAssert_True(elapsed >= 100, "Elapsed time %ld msec, expected 100", (long)elapsed);
+    UtAssert_True(elapsed >= 95, "Elapsed time %ld msec, expected 100", (long)elapsed);
 
     /*-----------------------------------------------------*/
     /* Nominal, 250ms delay */
@@ -414,7 +420,7 @@ void UT_os_task_delay_test()
     UT_SETUP(OS_GetLocalTime(&after_time));
 
     elapsed = OS_TimeGetTotalMilliseconds(OS_TimeSubtract(after_time, before_time));
-    UtAssert_True(elapsed >= 250, "Elapsed time %ld msec, expected 250", (long)elapsed);
+    UtAssert_True(elapsed >= 245, "Elapsed time %ld msec, expected 250", (long)elapsed);
 }
 
 /*--------------------------------------------------------------------------------*
