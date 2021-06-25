@@ -156,19 +156,29 @@ void Test_OS_TimeBaseCreate_Impl(void)
     /*
      * Check outputs of OS_VxWorks_RegisterTimer() function.
      */
-    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_1);
-    UT_TimeBaseTest_CallRegisterTimer(OS_OBJECT_ID_UNDEFINED);
-    UtAssert_True(UT_TimeBaseTest_CheckTimeBaseRegisteredState(UT_INDEX_0), "timer successfully registered");
+    UT_TimeBaseTest_Setup(UT_INDEX_0, 10, false);
+    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_0);
+    UT_TimeBaseTest_CallRegisterTimer(token.obj_id);
+    UtAssert_True(UT_TimeBaseTest_CheckTimeBaseRegisteredState(UT_INDEX_0),
+                  "timer successfully registered, with signal");
 
-    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_1);
+    UT_TimeBaseTest_Setup(UT_INDEX_0, 10, false);
+    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_0);
     UT_SetDefaultReturnValue(UT_KEY(OCS_timer_create), -1);
-    UT_TimeBaseTest_CallRegisterTimer(OS_OBJECT_ID_UNDEFINED);
+    UT_TimeBaseTest_CallRegisterTimer(token.obj_id);
     UtAssert_True(UT_TimeBaseTest_CheckTimeBaseErrorState(UT_INDEX_0), "timer registration failure state");
 
-    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_1);
+    UT_TimeBaseTest_Setup(UT_INDEX_0, 10, false);
+    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_0);
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
-    UT_TimeBaseTest_CallRegisterTimer(OS_OBJECT_ID_UNDEFINED);
+    UT_TimeBaseTest_CallRegisterTimer(token.obj_id);
     UtAssert_True(!UT_TimeBaseTest_CheckTimeBaseRegisteredState(UT_INDEX_0), "timer registration bad ID");
+    UT_ResetState(UT_KEY(OS_ObjectIdGetById));
+
+    UT_TimeBaseTest_Setup(UT_INDEX_0, 0, false);
+    UT_TimeBaseTest_ClearTimeBaseRegState(UT_INDEX_0);
+    UT_TimeBaseTest_CallRegisterTimer(token.obj_id);
+    UtAssert_True(UT_TimeBaseTest_CheckTimeBaseRegisteredState(UT_INDEX_0), "timer successfully registered, no signal");
 }
 
 void Test_OS_VxWorks_SigWait(void)
@@ -217,7 +227,8 @@ void Test_OS_TimeBaseSet_Impl(void)
      */
     OS_object_token_t token = UT_TOKEN_0;
 
-    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1, 1), OS_ERR_NOT_IMPLEMENTED);
+    UT_TimeBaseTest_Setup(UT_INDEX_0, 0, false);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1, 1), OS_SUCCESS);
 
     UT_TimeBaseTest_Setup(UT_INDEX_0, OCS_SIGRTMIN, false);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1, 1), OS_SUCCESS);
