@@ -35,9 +35,9 @@
 #include "uttest.h"
 #include "utbsp.h"
 
-static OS_timebase_prop_t SyncTimeBaseProp;
+OS_timebase_prop_t SyncTimeBaseProp;
 
-static uint32 NumSyncs = 0;
+uint32 NumSyncs = 0;
 
 static uint32 UT_TimerSync(osal_id_t timer_id)
 {
@@ -48,6 +48,7 @@ static uint32 UT_TimerSync(osal_id_t timer_id)
      * calls the various functions on the first time through and stores the
      * result, which is checked/asserted in the main task.
      */
+#ifdef _POSIX_OS_
     if (NumSyncs == 0)
     {
         UtAssert_INT32_EQ(OS_TimeBaseCreate(&timer_id, "sync", 0), OS_ERR_INCORRECT_OBJ_STATE);
@@ -56,6 +57,7 @@ static uint32 UT_TimerSync(osal_id_t timer_id)
         UtAssert_INT32_EQ(OS_TimeBaseGetIdByName(&timer_id, "TimeBaseC"), OS_ERR_INCORRECT_OBJ_STATE);
         UtAssert_INT32_EQ(OS_TimeBaseGetInfo(timer_id, &SyncTimeBaseProp), OS_ERR_INCORRECT_OBJ_STATE);
     }
+#endif
 
     ++NumSyncs;
     OS_TaskDelay(1);
