@@ -336,11 +336,20 @@ osal_id_t OS_TaskGetId_Impl(void)
 
     task_self = rtems_task_self();
     /* When the task was created the OSAL ID was used as the "classic name",
-     * which gives us an easy way to map it back again */
+     * which gives us an easy way to map it back again.  However, if this
+     * API is invoked from a non-OSAL task (i.e. the "root" task) then it is
+     * possible that rtems_object_get_classic_name() succeeds but the result
+     * is not actually an OSAL task ID. */
     status = rtems_object_get_classic_name(task_self, &self_name);
     if (status == RTEMS_SUCCESSFUL)
     {
         global_task_id = OS_ObjectIdFromInteger(self_name);
+
+        if (OS_ObjectIdToType_Impl(global_task_id) != OS_OBJECT_TYPE_OS_TASK)
+        {
+            /* not an OSAL task */
+            global_task_id = OS_OBJECT_ID_UNDEFINED;
+        }
     }
     else
     {
