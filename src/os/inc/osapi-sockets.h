@@ -242,7 +242,7 @@ int32 OS_SocketAddrSetPort(OS_SockAddr_t *Addr, uint16 PortNum);
 /**@}*/
 
 /**
- * @defgroup OSALAPISocket OSAL Socket Management APIs
+ * @defgroup OSAPISocket OSAL Socket Management APIs
  *
  * These functions are loosely related to the BSD Sockets API but made to be
  * more consistent with other OSAL API functions.  That is, they operate on

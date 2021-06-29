@@ -31,7 +31,7 @@
 #include "common_types.h"
 
 /**
- * @defgroup OSALAPINetwork Network ID APIs
+ * @defgroup OSAPINetwork OSAL Network ID APIs
  *
  * Provides some basic methods to query a network host name and ID
  *

@@ -64,9 +64,9 @@
     <UL>
       <LI> APIs
       <UL>
-        <LI> \ref OSALAPINetwork
+        <LI> \ref OSAPINetwork
         <LI> \ref OSAPISocketAddr
-        <LI> \ref OSALAPISocket
+        <LI> \ref OSAPISocket
       </UL>
       <LI> \subpage osapi-network.h "Network Reference"
       <LI> \subpage osapi-sockets.h "Socket Reference"
