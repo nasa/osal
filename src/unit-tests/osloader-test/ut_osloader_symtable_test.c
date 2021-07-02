@@ -35,6 +35,14 @@
 ** Macros
 **--------------------------------------------------------------------------------*/
 
+/**
+ * The size limit to pass for OS_SymbolTableDump nominal test
+ *
+ * This must be large enough to actually accomodate all of the symbols
+ * in the target system.
+ */
+#define UT_SYMTABLE_SIZE_LIMIT 1048576
+
 /*--------------------------------------------------------------------------------*
 ** Data types
 **--------------------------------------------------------------------------------*/
@@ -188,9 +196,9 @@ void UT_os_symbol_table_dump_test()
     /*-----------------------------------------------------*/
     /* #3 Nominal */
 
-    if (UT_NOMINAL_OR_NOTIMPL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolFile.dat", 32000)))
+    if (UT_NOMINAL_OR_NOTIMPL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolReal.dat", UT_SYMTABLE_SIZE_LIMIT)))
     {
-        UT_RETVAL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolFile.dat", 0), OS_ERR_OUTPUT_TOO_LARGE);
+        UT_RETVAL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolZero.dat", 0), OS_ERR_OUTPUT_TOO_LARGE);
     }
 }
 
