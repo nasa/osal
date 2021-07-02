@@ -225,22 +225,31 @@ void OS_VxWorks_RegisterTimer(osal_id_t obj_id)
     {
         local = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, token);
 
-        memset(&evp, 0, sizeof(evp));
-        evp.sigev_notify = SIGEV_SIGNAL;
-        evp.sigev_signo  = local->assigned_signal;
+        if (local->assigned_signal == 0)
+        {
+            /* nothing to register in RTOS */
+            status = 0;
+        }
+        else
+        {
+            memset(&evp, 0, sizeof(evp));
+            evp.sigev_notify = SIGEV_SIGNAL;
+            evp.sigev_signo  = local->assigned_signal;
 
-        /*
-        ** Create the timer
-        **
-        ** The result is not returned from this function, because
-        ** this is a different task context from the original creator.
-        **
-        ** The registration status is returned through the OS_impl_timebase_table entry,
-        ** which is checked by the creator before returning.
-        **
-        ** If set to ERROR, then this task will be subsequently deleted.
-        */
-        status = timer_create(OS_PREFERRED_CLOCK, &evp, &local->host_timerid);
+            /*
+            ** Create the timer
+            **
+            ** The result is not returned from this function, because
+            ** this is a different task context from the original creator.
+            **
+            ** The registration status is returned through the OS_impl_timebase_table entry,
+            ** which is checked by the creator before returning.
+            **
+            ** If set to ERROR, then this task will be subsequently deleted.
+            */
+            status = timer_create(OS_PREFERRED_CLOCK, &evp, &local->host_timerid);
+        }
+
         if (status < 0)
         {
             OS_DEBUG("timer_create() failed: errno=%d\n", errno);
@@ -529,8 +538,8 @@ int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uin
     /* There is only something to do here if we are generating a simulated tick */
     if (local->assigned_signal <= 0)
     {
-        /* An externally synced timebase does not need to be set */
-        return_code = OS_ERR_NOT_IMPLEMENTED;
+        /* An externally synced timebase does not need to be set (noop) */
+        return_code = OS_SUCCESS;
     }
     else
     {
