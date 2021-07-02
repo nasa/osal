@@ -163,10 +163,10 @@ void UT_os_task_create_test()
         {
             break;
         }
-    }
 
-    /* Delay to let child tasks run */
-    OS_TaskDelay(500);
+        /* Delay to let child task run */
+        OS_TaskDelay(200);
+    }
 
     /* Reset test environment */
     for (i = 0; i < OS_MAX_TASKS; i++)
