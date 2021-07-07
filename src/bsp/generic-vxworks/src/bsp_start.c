@@ -103,8 +103,8 @@ int OS_BSPMain(void)
     /*
      * Initialize the low level access sem
      */
-    OS_BSP_GenericVxWorksGlobal.AccessMutex =
-        semMInitialize(OS_BSP_GenericVxWorksGlobal.AccessMutexMem, SEM_Q_PRIORITY | SEM_INVERSION_SAFE);
+    OS_BSP_GenericVxWorksGlobal.AccessMutex = semMInitialize(OS_BSP_GenericVxWorksGlobal.AccessMutexMem,
+                                                             SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
 
     if (OS_BSP_GenericVxWorksGlobal.AccessMutex == (SEM_ID)0)
     {

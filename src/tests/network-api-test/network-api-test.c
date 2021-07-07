@@ -42,7 +42,7 @@
  * where the console is on a slow serial port.  Therefore this timeout must
  * not be too short.
  */
-#define UT_TIMEOUT 1000
+#define UT_TIMEOUT 4000
 
 /*
  * Variations of client->server connections to create.
