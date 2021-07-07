@@ -43,10 +43,10 @@ static uint32 UT_TimerSync(osal_id_t timer_id)
 {
     /*
      * Calls to time base configuration from the context of a sync function
-     * should be rejected with OS_ERR_INCORRECT_OBJ_STATE.  However because
-     * UtAssert is not fully thread-safe, this does not assert here, it just
-     * calls the various functions on the first time through and stores the
-     * result, which is checked/asserted in the main task.
+     * should be rejected with OS_ERR_INCORRECT_OBJ_STATE.  Note that only the
+     * POSIX provides the mechanism for this error check to actually work - On
+     * other platforms the error checking may not be possible, depending on how
+     * OS_TaskGetId_Impl() responds when called from a non-OSAL task.
      */
 #ifdef _POSIX_OS_
     if (NumSyncs == 0)
