@@ -67,6 +67,9 @@ typedef struct
  * @note clock_accuracy comes from the underlying OS tick value.  The nearest integer
  *       microsecond value is returned, so may not be exact.
  *
+ * @note This configuration API must not be used from the context of a timer callback.
+ * Timers should only be configured from the context of normal OSAL tasks.
+ *
  * @sa OS_TimerCallback_t
  *
  * @param[out]  timer_id        Will be set to the non-zero resource ID of the timer object @nonnull
@@ -109,6 +112,9 @@ int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *clock_
  * function by the OSAL, and the arg parameter is passed through from the
  * callback_arg argument on this call.
  *
+ * @note This configuration API must not be used from the context of a timer callback.
+ * Timers should only be configured from the context of normal OSAL tasks.
+ *
  * @sa OS_ArgCallback_t
  *
  * @param[out]  timer_id        Will be set to the non-zero resource ID of the timer object @nonnull
@@ -149,6 +155,9 @@ int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebas
  *       or interval_msec parameters are less than the accuracy, they will be rounded
  *       up to the accuracy of the timer.
  *
+ * @note This configuration API must not be used from the context of a timer callback.
+ * Timers should only be configured from the context of normal OSAL tasks.
+ *
  * @param[in] timer_id      The timer ID to operate on
  * @param[in] start_time    Time in microseconds to the first expiration
  * @param[in] interval_time Time in microseconds between subsequent intervals, value
@@ -171,6 +180,9 @@ int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time);
  * The application callback associated with the timer will be stopped,
  * and the resources freed for future use.
  *
+ * @note This configuration API must not be used from the context of a timer callback.
+ * Timers should only be configured from the context of normal OSAL tasks.
+ *
  * @param[in] timer_id      The timer ID to operate on
  *
  * @return Execution status, see @ref OSReturnCodes
@@ -186,6 +198,9 @@ int32 OS_TimerDelete(osal_id_t timer_id);
  * @brief Locate an existing timer resource by name
  *
  * Outputs the ID associated with the given timer, if it exists.
+ *
+ * @note This configuration API must not be used from the context of a timer callback.
+ * Timers should only be configured from the context of normal OSAL tasks.
  *
  * @param[out] timer_id      Will be set to the timer ID corresponding to the name @nonnull
  * @param[in]  timer_name    The timer name to find @nonnull
@@ -205,6 +220,9 @@ int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name);
  *
  * This function takes timer_id, and looks it up in the OS table. It puts all of the
  * information known about that timer into a structure pointer to by timer_prop.
+ *
+ * @note This configuration API must not be used from the context of a timer callback.
+ * Timers should only be configured from the context of normal OSAL tasks.
  *
  * @param[in]  timer_id      The timer ID to operate on
  * @param[out] timer_prop    Buffer containing timer properties @nonnull
