@@ -73,6 +73,9 @@ typedef struct
  * be configured to support at least (OS_MAX_TASKS + OS_MAX_TIMEBASES) threads,
  * to account for the helper threads associated with time base objects.
  *
+ * @note This configuration API must not be used from the context of a timer callback.
+ * Timers should only be configured from the context of normal OSAL tasks.
+ *
  * @param[out]  timebase_id     will be set to the non-zero ID of the newly-created resource @nonnull
  * @param[in]   timebase_name   The name of the time base @nonnull
  * @param[in]   external_sync   A synchronization function for BSP hardware-based timer ticks
@@ -101,6 +104,9 @@ int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_Ti
  * This function has no effect for time bases that are using
  * a BSP-provided external_sync function.
  *
+ * @note This configuration API must not be used from the context of a timer callback.
+ * Timers should only be configured from the context of normal OSAL tasks.
+ *
  * @param[in]   timebase_id     The timebase resource to configure
  * @param[in]   start_time      The amount of delay for the first tick, in microseconds.
  * @param[in]   interval_time   The amount of delay between ticks, in microseconds.
@@ -120,6 +126,9 @@ int32 OS_TimeBaseSet(osal_id_t timebase_id, uint32 start_time, uint32 interval_t
  * The helper task and any other resources associated with the time base
  * abstraction will be freed.
  *
+ * @note This configuration API must not be used from the context of a timer callback.
+ * Timers should only be configured from the context of normal OSAL tasks.
+ *
  * @param[in]   timebase_id     The timebase resource to delete
  *
  * @return Execution status, see @ref OSReturnCodes
@@ -134,6 +143,9 @@ int32 OS_TimeBaseDelete(osal_id_t timebase_id);
  * @brief Find the ID of an existing time base resource
  *
  * Given a time base name, find and output the ID associated with it.
+ *
+ * @note This configuration API must not be used from the context of a timer callback.
+ * Timers should only be configured from the context of normal OSAL tasks.
  *
  * @param[out]  timebase_id     will be set to the non-zero ID of the matching resource @nonnull
  * @param[in]   timebase_name   The name of the timebase resource to find @nonnull
@@ -155,7 +167,10 @@ int32 OS_TimeBaseGetIdByName(osal_id_t *timebase_id, const char *timebase_name);
  * relevant information about the time base resource.
  *
  * This function will pass back a pointer to structure that contains
- *             all of the relevant info( name and creator) about the specified timebase.
+ * all of the relevant info( name and creator) about the specified timebase.
+ *
+ * @note This configuration API must not be used from the context of a timer callback.
+ * Timers should only be configured from the context of normal OSAL tasks.
  *
  * @param[in]   timebase_id     The timebase resource ID
  * @param[out]  timebase_prop   Buffer to store timebase properties @nonnull

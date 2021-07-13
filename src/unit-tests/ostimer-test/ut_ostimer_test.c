@@ -203,7 +203,11 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_timergetidbyname_test, UT_os_setup_timergetidbyname_test, NULL, "OS_TimerGetIdByName");
     UtTest_Add(UT_os_timergetinfo_test, UT_os_setup_timergetinfo_test, NULL, "OS_TimerGetInfo");
     UtTest_Add(UT_os_timerset_test, UT_os_setup_timerset_test, NULL, "OS_TimerSet");
+
+    /* the reconfig test only works on POSIX */
+#ifdef _POSIX_OS_
     UtTest_Add(UT_os_timerreconf_test, NULL, NULL, "TimerReconfig");
+#endif
 }
 
 /*================================================================================*
