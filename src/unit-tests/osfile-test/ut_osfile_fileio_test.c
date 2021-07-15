@@ -1093,23 +1093,26 @@ void UT_os_renamefile_test()
     /*-----------------------------------------------------*/
     /* #2 Invalid-path-arg */
 
-    UT_RETVAL(OS_rename(g_invalidPath, g_invalidPath), OS_FS_ERR_PATH_INVALID);
+    UT_RETVAL(OS_rename(g_invalidPath, g_fNames[1]), OS_FS_ERR_PATH_INVALID);
+    UT_RETVAL(OS_rename(g_fNames[0], g_invalidPath), OS_FS_ERR_PATH_INVALID);
 
     /*-----------------------------------------------------*/
     /* #3 Path-too-long-arg */
 
-    UT_RETVAL(OS_rename(g_longPathName, g_longPathName), OS_FS_ERR_PATH_TOO_LONG);
+    UT_RETVAL(OS_rename(g_longPathName, g_fNames[1]), OS_FS_ERR_PATH_TOO_LONG);
+    UT_RETVAL(OS_rename(g_fNames[0], g_longPathName), OS_FS_ERR_PATH_TOO_LONG);
 
     /*-----------------------------------------------------*/
     /* #4 Name-too-long-arg */
 
-    UT_RETVAL(OS_rename(g_longFileName, g_longFileName), OS_FS_ERR_NAME_TOO_LONG);
+    UT_RETVAL(OS_rename(g_longFileName, g_fNames[1]), OS_FS_ERR_NAME_TOO_LONG);
+    UT_RETVAL(OS_rename(g_fNames[0], g_longFileName), OS_FS_ERR_NAME_TOO_LONG);
 
     /*-----------------------------------------------------*/
     /* #6 Nominal */
 
     memset(g_fNames[0], '\0', sizeof(g_fNames[0]));
-    memset(g_fNames[0], '\0', sizeof(g_fNames[1]));
+    memset(g_fNames[1], '\0', sizeof(g_fNames[1]));
     UT_os_sprintf(g_fNames[0], "%s/Rename_Nom_Old.txt", g_mntName);
     UT_os_sprintf(g_fNames[1], "%s/Rename_Nom_New.txt", g_mntName);
 
