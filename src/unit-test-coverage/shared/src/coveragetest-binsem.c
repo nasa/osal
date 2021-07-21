@@ -29,8 +29,6 @@
 
 #include "OCS_string.h"
 
-#define UT_ERR_UNIQUE 0xDEADBEEF
-
 /*
 **********************************************************************************
 **          PUBLIC API FUNCTIONS
@@ -63,8 +61,8 @@ void Test_OS_BinSemCreate(void)
     UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(&objid, "UT", 0, 0), OS_ERR_NAME_TOO_LONG);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(&objid, "UT", 0, 0), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(&objid, "UT", 0, 0), OS_ERR_NO_FREE_IDS);
 }
 
 void Test_OS_BinSemDelete(void)
@@ -75,8 +73,8 @@ void Test_OS_BinSemDelete(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_BinSemDelete(UT_OBJID_1), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemDelete(UT_OBJID_1), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemDelete(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_BinSemGive(void)
@@ -87,8 +85,8 @@ void Test_OS_BinSemGive(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_BinSemGive(UT_OBJID_1), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemGive(UT_OBJID_1), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGive(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_BinSemTake(void)
@@ -99,8 +97,8 @@ void Test_OS_BinSemTake(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_BinSemTake(UT_OBJID_1), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemTake(UT_OBJID_1), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemTake(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_BinSemFlush(void)
@@ -111,8 +109,8 @@ void Test_OS_BinSemFlush(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_BinSemFlush(UT_OBJID_1), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemFlush(UT_OBJID_1), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemFlush(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_BinSemTimedWait(void)
@@ -123,8 +121,8 @@ void Test_OS_BinSemTimedWait(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait(UT_OBJID_1, 1), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait(UT_OBJID_1, 1), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait(UT_OBJID_1, 1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_BinSemGetIdByName(void)
@@ -171,8 +169,8 @@ void Test_OS_BinSemGetInfo(void)
 
     OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo(UT_OBJID_1, &prop), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo(UT_OBJID_1, &prop), OS_ERR_INVALID_ID);
 }
 
 /* Osapi_Test_Setup

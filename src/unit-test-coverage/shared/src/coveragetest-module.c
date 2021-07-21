@@ -31,8 +31,6 @@
 
 #include "OCS_string.h"
 
-#define UT_ERR_UNIQUE 0xDEADBEEF
-
 /* A dummy function for the static symbol lookup test.  Not called */
 void Test_DummyFunc(void) {}
 
@@ -98,8 +96,8 @@ void Test_OS_ModuleLoad(void)
     UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UT", "FileBad", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_ERROR);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UT", "FileBad", OS_MODULE_FLAG_GLOBAL_SYMBOLS), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UT", "FileBad", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_ERR_NO_FREE_IDS);
 }
 
 void Test_OS_ModuleUnload(void)

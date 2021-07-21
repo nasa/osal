@@ -29,8 +29,6 @@
 
 #include "OCS_string.h"
 
-#define UT_ERR_UNIQUE 0xDEADBEEF
-
 /*
 **********************************************************************************
 **          PUBLIC API FUNCTIONS
@@ -73,12 +71,12 @@ void Test_OS_FileSysAddFixedMap(void)
     UT_ResetState(UT_KEY(OCS_memchr));
     UT_ResetState(UT_KEY(OCS_strrchr));
 
-    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdAllocateNew), 1, UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), UT_ERR_UNIQUE);
-    UT_SetDeferredRetcode(UT_KEY(OS_FileSysStartVolume_Impl), 1, UT_ERR_UNIQUE + 1);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), UT_ERR_UNIQUE + 1);
-    UT_SetDeferredRetcode(UT_KEY(OS_FileSysMountVolume_Impl), 1, UT_ERR_UNIQUE + 2);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), UT_ERR_UNIQUE + 2);
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdAllocateNew), 1, OS_ERR_NO_FREE_IDS);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_ERR_NO_FREE_IDS);
+    UT_SetDeferredRetcode(UT_KEY(OS_FileSysStartVolume_Impl), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OS_FileSysMountVolume_Impl), 1, OS_ERROR - 1);
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_ERROR - 1);
 
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_SUCCESS);

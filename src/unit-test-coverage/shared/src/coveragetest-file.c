@@ -30,8 +30,6 @@
 
 #include "OCS_string.h"
 
-#define UT_ERR_UNIQUE 0xDEADBEEF
-
 /*
 **********************************************************************************
 **          PUBLIC API FUNCTIONS
@@ -76,8 +74,8 @@ void Test_OS_OpenCreate(void)
     actual   = OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, 9999);
     UtAssert_True(actual == expected, "OS_OpenCreate() (%ld) == OS_ERROR (bad flags)", (long)actual);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, OS_READ_WRITE), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
+    OSAPI_TEST_FUNCTION_RC(OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, OS_READ_WRITE), OS_ERR_NO_FREE_IDS);
 
     /* Test failure to convert path */
     UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
@@ -95,8 +93,8 @@ void Test_OS_close(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_close(UT_OBJID_1), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_close(UT_OBJID_1), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_close(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_TimedRead(void)
@@ -115,8 +113,8 @@ void Test_OS_TimedRead(void)
     UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
     UtAssert_True(memcmp(Buf, SrcBuf, actual) == 0, "buffer content match");
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, Buf, sizeof(Buf), 10), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, Buf, sizeof(Buf), 10), OS_ERR_INVALID_ID);
 
     OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, NULL, sizeof(Buf), 10), OS_INVALID_POINTER);
     OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, Buf, OSAL_SIZE_C(0), 10), OS_ERR_INVALID_SIZE);
@@ -140,8 +138,8 @@ void Test_OS_TimedWrite(void)
     UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
     UtAssert_True(memcmp(Buf, DstBuf, actual) == 0, "buffer content match");
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, Buf, sizeof(Buf), 10), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, Buf, sizeof(Buf), 10), OS_ERR_INVALID_ID);
 
     OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, NULL, sizeof(Buf), 10), OS_INVALID_POINTER);
     OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, Buf, OSAL_SIZE_C(0), 10), OS_ERR_INVALID_SIZE);
@@ -191,8 +189,8 @@ void Test_OS_chmod(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_chmod("/cf/file", 0), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_chmod("/cf/file", 0), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_chmod("/cf/file", 0), OS_ERROR);
 }
 
 void Test_OS_stat(void)
@@ -205,8 +203,8 @@ void Test_OS_stat(void)
 
     OSAPI_TEST_FUNCTION_RC(OS_stat("/cf/file", &statbuf), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_stat("/cf/file", &statbuf), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_stat("/cf/file", &statbuf), OS_ERROR);
 
     OSAPI_TEST_FUNCTION_RC(OS_stat("/cf/file", NULL), OS_INVALID_POINTER);
 }
@@ -219,8 +217,8 @@ void Test_OS_lseek(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_lseek(UT_OBJID_1, 0, 0), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_lseek(UT_OBJID_1, 0, 0), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_lseek(UT_OBJID_1, 0, 0), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_remove(void)
@@ -231,8 +229,8 @@ void Test_OS_remove(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_remove("/cf/file"), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_remove("/cf/file"), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_remove("/cf/file"), OS_ERROR);
 }
 
 void Test_OS_rename(void)
@@ -248,10 +246,10 @@ void Test_OS_rename(void)
     UtAssert_True(strcmp(OS_stream_table[1].stream_name, "/cf/file2") == 0,
                   "OS_stream_table[1].stream_name (%s) == /cf/file2", OS_stream_table[1].stream_name);
 
-    UT_SetDeferredRetcode(UT_KEY(OS_TranslatePath), 2, UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_rename("/cf/file1", "/cf/file2"), UT_ERR_UNIQUE);
-    UT_SetDeferredRetcode(UT_KEY(OS_TranslatePath), 1, UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_rename("/cf/file1", "/cf/file2"), UT_ERR_UNIQUE);
+    UT_SetDeferredRetcode(UT_KEY(OS_TranslatePath), 2, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_rename("/cf/file1", "/cf/file2"), OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OS_TranslatePath), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_rename("/cf/file1", "/cf/file2"), OS_ERROR);
 }
 
 void Test_OS_cp(void)
@@ -296,8 +294,8 @@ void Test_OS_mv(void)
     OSAPI_TEST_FUNCTION_RC(OS_mv("/cf/file1", "/cf/file2"), OS_SUCCESS);
 
     /* Fail the OS_cp/OS_OpenCreate */
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_mv("/cf/file1", "/cf/file2"), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_mv("/cf/file1", "/cf/file2"), OS_ERROR);
 }
 
 void Test_OS_FDGetInfo(void)
@@ -314,8 +312,8 @@ void Test_OS_FDGetInfo(void)
 
     OSAPI_TEST_FUNCTION_RC(OS_FDGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_FDGetInfo(UT_OBJID_1, &file_prop), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_FDGetInfo(UT_OBJID_1, &file_prop), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_FileOpenCheck(void)
@@ -348,8 +346,8 @@ void Test_OS_CloseFileByName(void)
     strncpy(OS_stream_table[3].stream_name, "/cf/file", sizeof(OS_stream_table[3].stream_name));
     strncpy(OS_stream_table[4].stream_name, "/cf/file", sizeof(OS_stream_table[4].stream_name));
     strncpy(OS_stream_table[5].stream_name, "/cf/file", sizeof(OS_stream_table[5].stream_name));
-    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdIteratorProcessEntry), 3, UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_CloseFileByName("/cf/file"), UT_ERR_UNIQUE);
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdIteratorProcessEntry), 3, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_CloseFileByName("/cf/file"), OS_ERROR);
 
     OSAPI_TEST_FUNCTION_RC(OS_CloseFileByName(NULL), OS_INVALID_POINTER);
 }

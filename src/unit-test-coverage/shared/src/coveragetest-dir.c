@@ -27,8 +27,6 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-dir.h"
 
-#define UT_ERR_UNIQUE 0xDEADBEEF
-
 /*
 **********************************************************************************
 **          PUBLIC API FUNCTIONS
@@ -52,8 +50,8 @@ void Test_OS_mkdir(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_mkdir("Dir", OS_READ_WRITE), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_mkdir("Dir", OS_READ_WRITE), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_mkdir("Dir", OS_READ_WRITE), OS_ERROR);
 }
 
 void Test_OS_DirectoryOpen(void)
@@ -63,17 +61,16 @@ void Test_OS_DirectoryOpen(void)
      * int32 OS_DirectoryOpen(uint32 *dir_id, const char *path)
      */
     osal_id_t objid;
-    uint32    unique1 = UT_ERR_UNIQUE + 1;
 
     OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(&objid, "Dir"), OS_SUCCESS);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
     /* Branch coverage for errors */
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(&objid, "Dir"), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(&objid, "Dir"), OS_ERR_NO_FREE_IDS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), unique1);
-    OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(&objid, "Dir"), unique1);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(&objid, "Dir"), OS_ERROR);
 
     /*
      * Note that the second arg (path) is validated by a separate unit (OS_TranslatePath),
@@ -91,8 +88,8 @@ void Test_OS_DirectoryClose(void)
     OSAPI_TEST_FUNCTION_RC(OS_DirectoryClose(UT_OBJID_1), OS_SUCCESS);
 
     /* Branch coverage for errors */
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_DirectoryClose(UT_OBJID_1), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryClose(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_DirectoryRead(void)
@@ -106,8 +103,8 @@ void Test_OS_DirectoryRead(void)
     OSAPI_TEST_FUNCTION_RC(OS_DirectoryRead(UT_OBJID_1, &dirent), OS_SUCCESS);
 
     /* Branch coverage for errors */
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_DirectoryRead(UT_OBJID_1, &dirent), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryRead(UT_OBJID_1, &dirent), OS_ERR_INVALID_ID);
 
     OSAPI_TEST_FUNCTION_RC(OS_DirectoryRead(UT_OBJID_1, NULL), OS_INVALID_POINTER);
 }
@@ -121,8 +118,8 @@ void Test_OS_DirectoryRewind(void)
     OSAPI_TEST_FUNCTION_RC(OS_DirectoryRewind(UT_OBJID_1), OS_SUCCESS);
 
     /* Branch coverage for errors */
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_DirectoryRewind(UT_OBJID_1), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_DirectoryRewind(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_rmdir(void)
@@ -133,8 +130,8 @@ void Test_OS_rmdir(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_rmdir("Dir"), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), UT_ERR_UNIQUE);
-    OSAPI_TEST_FUNCTION_RC(OS_rmdir("Dir"), UT_ERR_UNIQUE);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_rmdir("Dir"), OS_ERROR);
 }
 
 /* Osapi_Test_Setup
