@@ -192,6 +192,10 @@ void Test_OS_VxWorks_SigWait(void)
     osal_id_t             id;
     OS_object_token_t     token = UT_TOKEN_0;
 
+    /* OS_ObjectIdGetById error case */
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OCS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 0);
+
     memset(&id, 0x02, sizeof(id));
     OS_global_timebase_table[0].active_id      = id;
     OS_timebase_table[0].nominal_start_time    = 8888;
@@ -215,6 +219,13 @@ void Test_OS_VxWorks_SigWait(void)
     UT_SetDataBuffer(UT_KEY(OCS_sigwait), &signo, sizeof(signo), false);
     OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 2222222);
 
+    /* sigwait interrupt cases */
+    UT_SetDeferredRetcode(UT_KEY(OCS_sigwait), 1, OCS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 0);
+    signo++;
+    UT_SetDataBuffer(UT_KEY(OCS_sigwait), &signo, sizeof(signo), false);
+    OSAPI_TEST_FUNCTION_RC(UT_TimeBaseTest_CallSigWaitFunc(OS_OBJECT_ID_UNDEFINED), 0);
+
     UT_TimeBaseTest_Setup(UT_INDEX_0, 0, false);
     OS_global_timebase_table[0].active_id      = OS_OBJECT_ID_UNDEFINED;
     OS_timebase_table[0].nominal_interval_time = 0;
@@ -235,6 +246,10 @@ void Test_OS_TimeBaseSet_Impl(void)
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_timer_settime), -1);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1, 1), OS_TIMER_ERR_INVALID_ARGS);
+
+    /* reset_flag false and return_code != OS_SUCCESS branch */
+    UT_TimeBaseTest_Setup(UT_INDEX_0, OCS_SIGRTMIN, false);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet_Impl(&token, 1, 1), OS_TIMER_ERR_INVALID_ARGS);
 }
 
 void Test_OS_TimeBaseDelete_Impl(void)
@@ -245,6 +260,9 @@ void Test_OS_TimeBaseDelete_Impl(void)
     OS_object_token_t token = UT_TOKEN_0;
 
     UT_TimeBaseTest_Setup(UT_INDEX_0, OCS_SIGRTMIN, false);
+    OSAPI_TEST_FUNCTION_RC(OS_TimeBaseDelete_Impl(&token), OS_SUCCESS);
+
+    /* Second call to cover assigned_signal == 0 */
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseDelete_Impl(&token), OS_SUCCESS);
 }
 

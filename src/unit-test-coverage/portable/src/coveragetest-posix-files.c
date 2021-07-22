@@ -95,6 +95,12 @@ void Test_OS_FileStat_Impl(void)
     UtAssert_True(OS_FILESTAT_ISDIR(FileStats), "Directory Bit set");
     UtAssert_True(OS_FILESTAT_SIZE(FileStats) == 1234, "Size match");
     UtAssert_True(OS_FILESTAT_TIME(FileStats) == 5678, "Time match (seconds)");
+
+    /* Repeat without matching uid/gid */
+    RefStat.st_uid = ~RefStat.st_uid;
+    RefStat.st_gid = ~RefStat.st_gid;
+    UT_SetDataBuffer(UT_KEY(OCS_stat), &RefStat, sizeof(RefStat), false);
+    OSAPI_TEST_FUNCTION_RC(OS_FileStat_Impl, ("local", &FileStats), OS_SUCCESS);
 }
 
 void Test_OS_FileChmod_Impl(void)
@@ -105,15 +111,18 @@ void Test_OS_FileChmod_Impl(void)
      */
     struct OCS_stat RefStat;
 
-    /* failure mode 0 (open) */
-    UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
+    /* Read only fail, write succeeds */
+    UT_SetDeferredRetcode(UT_KEY(OCS_open), 1, -1);
+    OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_SUCCESS);
+
+    /* Both opens fail */
+    UT_SetDeferredRetcode(UT_KEY(OCS_open), 1, -1);
+    UT_SetDeferredRetcode(UT_KEY(OCS_open), 1, -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
-    UT_ClearDefaultReturnValue(UT_KEY(OCS_open));
 
     /* failure mode 1 (fstat) */
-    UT_SetDefaultReturnValue(UT_KEY(OCS_fstat), -1);
+    UT_SetDeferredRetcode(UT_KEY(OCS_fstat), 1, -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
-    UT_ClearDefaultReturnValue(UT_KEY(OCS_fstat));
 
     /* failure mode 2 (fchmod) */
     UT_SetDefaultReturnValue(UT_KEY(OCS_fchmod), -1);
@@ -121,6 +130,10 @@ void Test_OS_FileChmod_Impl(void)
 
     /* non implemented error, e.g. such as DOS Filesystem with no perms  */
     OCS_errno = OCS_ENOTSUP;
+    OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERR_NOT_IMPLEMENTED);
+    OCS_errno = OCS_ENOSYS;
+    OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERR_NOT_IMPLEMENTED);
+    OCS_errno = OCS_EROFS;
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERR_NOT_IMPLEMENTED);
     UT_ClearDefaultReturnValue(UT_KEY(OCS_fchmod));
 

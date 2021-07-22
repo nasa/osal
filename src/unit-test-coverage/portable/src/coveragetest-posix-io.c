@@ -37,6 +37,22 @@
 #include "OCS_fcntl.h"
 #include "OCS_errno.h"
 
+/* OS_SelectSingle_Impl hook to clear SelectFlags */
+static int32 UT_Hook_OS_SelectSingle_Impl(void *UserObj, int32 StubRetcode, uint32 CallCount,
+                                          const UT_StubContext_t *Context)
+{
+    uint32 *SelectFlags;
+
+    SelectFlags = UT_Hook_GetArgValueByName(Context, "SelectFlags", uint32 *);
+
+    if (SelectFlags != NULL)
+    {
+        *SelectFlags = 0;
+    }
+
+    return 0;
+}
+
 void Test_OS_GenericClose_Impl(void)
 {
     /*
@@ -111,9 +127,21 @@ void Test_OS_GenericRead_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), sizeof(DestData));
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_SelectSingle_Impl)) == 1, "OS_SelectSingle() called");
 
+    /* Read 0 bytes */
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, 0, 0), OS_SUCCESS);
+
     /* read() failure */
     UT_SetDefaultReturnValue(UT_KEY(OCS_read), -1);
     OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), OS_ERROR);
+
+    /* Fail select */
+    UT_SetDeferredRetcode(UT_KEY(OS_SelectSingle_Impl), 1, OS_ERROR_TIMEOUT);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), OS_ERROR_TIMEOUT);
+
+    /* Not readable */
+    UT_SetHookFunction(UT_KEY(OS_SelectSingle_Impl), UT_Hook_OS_SelectSingle_Impl, NULL);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), OS_SUCCESS);
+    UT_SetHookFunction(UT_KEY(OS_SelectSingle_Impl), NULL, NULL);
 }
 
 void Test_OS_GenericWrite_Impl(void)
@@ -140,9 +168,21 @@ void Test_OS_GenericWrite_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), 0), sizeof(SrcData));
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_SelectSingle_Impl)) == 1, "OS_SelectSingle() called");
 
+    /* Fail select */
+    UT_SetDeferredRetcode(UT_KEY(OS_SelectSingle_Impl), 1, OS_ERROR_TIMEOUT);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), 0), OS_ERROR_TIMEOUT);
+
+    /* Write 0 bytes */
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, 0, 0), OS_SUCCESS);
+
     /* write() failure */
     UT_SetDefaultReturnValue(UT_KEY(OCS_write), -1);
     OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, DestData, sizeof(DestData), 0), OS_ERROR);
+
+    /* Not writeable */
+    UT_SetHookFunction(UT_KEY(OS_SelectSingle_Impl), UT_Hook_OS_SelectSingle_Impl, NULL);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), 0), OS_SUCCESS);
+    UT_SetHookFunction(UT_KEY(OS_SelectSingle_Impl), NULL, NULL);
 }
 
 /* ------------------- End of test cases --------------------------------------*/

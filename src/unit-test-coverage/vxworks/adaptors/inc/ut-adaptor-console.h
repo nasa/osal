@@ -37,6 +37,6 @@ extern size_t const UT_Ref_OS_impl_console_table_SIZE;
 /**
  * Invokes the console helper task entry point
  */
-extern void UT_ConsoleTest_TaskEntry(int arg);
+extern int UT_ConsoleTest_TaskEntry(int arg);
 
 #endif /* UT_ADAPTOR_CONSOLE_H */
