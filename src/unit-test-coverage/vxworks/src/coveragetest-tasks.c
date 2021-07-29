@@ -65,6 +65,7 @@ void Test_OS_TaskCreate_Impl(void)
      * int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
      */
     OS_object_token_t token = UT_TOKEN_0;
+    char              userstack[500];
 
     UT_SetDataBuffer(UT_KEY(OCS_malloc), TestHeap, sizeof(TestHeap), false);
     UT_SetDataBuffer(UT_KEY(OCS_free), TestHeap, sizeof(TestHeap), false);
@@ -97,6 +98,12 @@ void Test_OS_TaskCreate_Impl(void)
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 1, "free() called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 3, "taskInit() called");
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskActivate)) == 3, "taskActivate() called");
+
+    /* create again with nonzero userstackbase */
+    OS_task_table[0].stack_pointer = userstack;
+    OS_task_table[0].stack_size    = sizeof(userstack);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
+    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 3, "malloc() not called");
 
     /* other failure modes */
     UT_SetDefaultReturnValue(UT_KEY(OCS_taskInit), -1);
@@ -208,6 +215,19 @@ void Test_OS_TaskGetId_Impl(void)
     UT_SetDataBuffer(UT_KEY(OCS_taskTcb), &TaskTcb, sizeof(TaskTcb), false);
     id2 = OS_TaskGetId_Impl();
     UtAssert_MemCmp(&id1, &id2, sizeof(osal_id_t), "OS_TaskGetId_Impl()");
+
+    /* bad lrec */
+    TaskTcb = (OCS_WIND_TCB *)(&OS_global_task_table[0] + OS_MAX_TASKS);
+    UT_SetDataBuffer(UT_KEY(OCS_taskTcb), &TaskTcb, sizeof(TaskTcb), false);
+    id1 = OS_OBJECT_ID_UNDEFINED;
+    id2 = OS_TaskGetId_Impl();
+    UtAssert_MemCmp(&id1, &id2, sizeof(osal_id_t), "OS_TaskGetId_Impl() - invalid lrec");
+
+    /* NULL lrec */
+    UT_SetDefaultReturnValue(UT_KEY(OCS_taskTcb), -1);
+    id1 = OS_OBJECT_ID_UNDEFINED;
+    id2 = OS_TaskGetId_Impl();
+    UtAssert_MemCmp(&id1, &id2, sizeof(osal_id_t), "OS_TaskGetId_Impl() - invalid lrec");
 }
 
 void Test_OS_TaskGetInfo_Impl(void)

@@ -71,6 +71,17 @@ static int32 ObjectDeleteCountHook(void *UserObj, int32 StubRetcode, uint32 Call
     return StubRetcode;
 }
 
+/* Always returns 1 so TryCount will be exceeded */
+static int32 ObjectDeleteFailHook(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context)
+{
+
+    uint32 *counter = UT_Hook_GetArgValueByName(Context, "callback_arg", uint32 *);
+
+    *counter = 1;
+
+    return StubRetcode;
+}
+
 static int32 SetShutdownFlagHook(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context)
 {
     OS_ApplicationShutdown(true);
@@ -94,6 +105,13 @@ void Test_OS_API_Init(void)
 
     /* Execute Test */
     Test_MicroSecPerTick            = 0;
+    Test_TicksPerSecond             = 0;
+    OS_SharedGlobalVars.GlobalState = 0;
+    OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_ERROR);
+    UtAssert_UINT32_EQ(OS_SharedGlobalVars.GlobalState, OS_SHUTDOWN_MAGIC_NUMBER);
+
+    /* TicksPerSec == 0 branch */
+    Test_MicroSecPerTick            = 1;
     Test_TicksPerSecond             = 0;
     OS_SharedGlobalVars.GlobalState = 0;
     OSAPI_TEST_FUNCTION_RC(OS_API_Init(), OS_ERROR);
@@ -259,6 +277,10 @@ void Test_OS_DeleteAllObjects(void)
      * there is nothing to assert/verify for postconditions here
      */
     OS_DeleteAllObjects();
+
+    /* Exceed TryCount */
+    UT_SetHookFunction(UT_KEY(OS_ForEachObject), ObjectDeleteFailHook, NULL);
+    OS_DeleteAllObjects();
 }
 
 void Test_OS_IdleLoopAndShutdown(void)
@@ -278,6 +300,8 @@ void Test_OS_IdleLoopAndShutdown(void)
     CallCount = UT_GetStubCount(UT_KEY(OS_ApplicationShutdown_Impl));
 
     UtAssert_True(CallCount == 1, "OS_ApplicationShutdown_Impl() call count (%lu) == 1", (unsigned long)CallCount);
+
+    OS_ApplicationShutdown(false);
 }
 
 void Test_OS_NotifyEvent(void)

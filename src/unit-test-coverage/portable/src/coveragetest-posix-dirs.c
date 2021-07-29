@@ -58,6 +58,15 @@ void Test_OS_DirCreate_Impl(void)
     UT_SetDataBuffer(UT_KEY(OCS_stat), &statbuf, sizeof(statbuf), false);
     UT_SetDefaultReturnValue(UT_KEY(OCS_mkdir), -1);
     OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl, ("dir", 0), OS_SUCCESS);
+
+    /* EEXIST but not a dir */
+    statbuf.st_mode = 0;
+    UT_SetDataBuffer(UT_KEY(OCS_stat), &statbuf, sizeof(statbuf), false);
+    OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl, ("dir", 0), OS_ERROR);
+
+    /* stat failure */
+    UT_SetDefaultReturnValue(UT_KEY(OCS_stat), -1);
+    OSAPI_TEST_FUNCTION_RC(OS_DirCreate_Impl, ("dir", 0), OS_ERROR);
 }
 
 void Test_OS_DirOpen_Impl(void)

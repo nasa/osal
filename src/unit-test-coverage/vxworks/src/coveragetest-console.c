@@ -28,6 +28,7 @@
 #include "os-vxworks-coveragetest.h"
 #include "ut-adaptor-console.h"
 #include "os-shared-printf.h"
+#include "os-shared-common.h"
 
 #include "OCS_unistd.h"
 #include "OCS_semLib.h"
@@ -78,11 +79,19 @@ void Test_OS_ConsoleCreate_Impl(void)
 
     token.obj_idx = OS_MAX_CONSOLES + 1;
     OSAPI_TEST_FUNCTION_RC(OS_ConsoleCreate_Impl(&token), OS_ERR_NOT_IMPLEMENTED);
+}
 
-    /* Also call the actual console task, to get coverage on it.
-     * This task has an infinite loop, which only exits if semTake fails */
+void Test_OS_VxWorks_ConsoleTask_Entry(void)
+{
+    /* This task has an infinite loop, which only exits if semTake fails */
     UT_SetDeferredRetcode(UT_KEY(OCS_semTake), 2, OCS_ERROR);
-    UT_ConsoleTest_TaskEntry(0);
+    OSAPI_TEST_FUNCTION_RC(UT_ConsoleTest_TaskEntry(0), OCS_OK);
+
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OCS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(UT_ConsoleTest_TaskEntry(0), OCS_OK);
+
+    OS_SharedGlobalVars.GlobalState = OS_SHUTDOWN_MAGIC_NUMBER;
+    OSAPI_TEST_FUNCTION_RC(UT_ConsoleTest_TaskEntry(0), OCS_OK);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
@@ -118,4 +127,5 @@ void UtTest_Setup(void)
 {
     ADD_TEST(OS_ConsoleCreate_Impl);
     ADD_TEST(OS_ConsoleWakeup_Impl);
+    ADD_TEST(OS_VxWorks_ConsoleTask_Entry);
 }

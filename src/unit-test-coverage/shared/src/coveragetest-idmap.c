@@ -45,6 +45,15 @@ static bool TestAlwaysMatch(void *ref, const OS_object_token_t *token, const OS_
     return true;
 }
 
+/* OS_TaskGetId_Impl handler to provide a valid id */
+void UT_Handler_OS_TaskGetId_Impl(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
+{
+    osal_id_t objid;
+
+    OS_ObjectIdCompose_Impl(OS_OBJECT_TYPE_OS_TASK, 1, &objid);
+    UT_Stub_SetReturnValue(FuncKey, objid);
+}
+
 static void ObjTypeCounter(osal_id_t object_id, void *arg)
 {
     Test_OS_ObjTypeCount_t *count = arg;
@@ -94,7 +103,7 @@ void Test_OS_LockUnlockGlobal(void)
     memset(&token, 0, sizeof(token));
 
     token.obj_type  = OS_OBJECT_TYPE_OS_COUNTSEM;
-    token.lock_mode = OS_LOCK_MODE_GLOBAL;
+    token.lock_mode = OS_LOCK_MODE_NONE;
 
     /*
      * As these have no return codes, these tests
@@ -102,6 +111,16 @@ void Test_OS_LockUnlockGlobal(void)
      */
     OS_Lock_Global(&token);
     OS_Unlock_Global(&token);
+
+    token.lock_mode = OS_LOCK_MODE_GLOBAL;
+    OS_Lock_Global(&token);
+    OS_Unlock_Global(&token);
+
+    /* Register handler to provide valid self_task_id for branch coverage*/
+    UT_SetHandlerFunction(UT_KEY(OS_TaskGetId_Impl), UT_Handler_OS_TaskGetId_Impl, NULL);
+    OS_Lock_Global(&token);
+    OS_Unlock_Global(&token);
+    UT_ResetState(UT_KEY(OS_TaskGetId_Impl));
 
     token.obj_type = OS_OBJECT_TYPE_UNDEFINED;
 
@@ -182,6 +201,19 @@ void Test_OS_ObjectIdConvertToken(void)
 
     /* Global should not be released */
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 1);
+
+    /* object in use, not OS_OBJECT_ID_RESERVED */
+    token.lock_mode   = OS_LOCK_MODE_GLOBAL;
+    record->active_id = OS_OBJECT_ID_RESERVED;
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdConvertToken(&token), OS_ERR_OBJECT_IN_USE);
+    UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 1);
+    UtAssert_STUB_COUNT(OS_WaitForStateChange_Impl, 4);
+    UT_ResetState(UT_KEY(OS_WaitForStateChange_Impl));
+    record->active_id = objid;
+
+    /* Failure branch for exclusive lock where active id was overwritten (non-reserved expected_id) */
+    token.lock_mode = OS_LOCK_MODE_EXCLUSIVE;
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdConvertToken(&token), OS_ERR_INVALID_ID);
 
     /*
      * Use mode OS_LOCK_MODE_NONE with matching ID
@@ -490,6 +522,11 @@ void Test_OS_ObjectIdGetById(void)
 
     /* set "true" for the remainder of tests */
     OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
+
+    /* OS_ObjectIdToArrayIndex failure branch */
+    OSAPI_TEST_FUNCTION_RC(
+        OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TASK, OS_OBJECT_ID_UNDEFINED, &token1),
+        OS_ERR_INVALID_ID);
 
     OS_ObjectIdCompose_Impl(OS_OBJECT_TYPE_OS_TASK, 1000, &refobjid);
     OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TASK, refobjid, &local_idx);
@@ -813,6 +850,10 @@ void Test_OS_ObjectIdTransaction(void)
     OS_ObjectIdTransactionCancel(&token);
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 1);
 
+    /* Call again to cover OS_LOCK_MODE_NONE branch */
+    OS_ObjectIdTransactionCancel(&token);
+    UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 1);
+
     /* other cases for normal operating mode */
     OS_SharedGlobalVars.GlobalState = OS_INIT_MAGIC_NUMBER;
     OSAPI_TEST_FUNCTION_RC(OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_COUNTSEM, &token),
@@ -1025,8 +1066,6 @@ void Test_OS_GetResourceName(void)
     OS_object_token_t   token;
     OS_common_record_t *rptr;
     char                NameBuffer[OS_MAX_API_NAME];
-    int32               expected;
-    int32               actual;
 
     /*
      * Set up for the OS_GetResourceName function to return success
@@ -1039,22 +1078,22 @@ void Test_OS_GetResourceName(void)
     rptr->name_entry = "UTTask";
     rptr->active_id  = token.obj_id;
 
-    expected = OS_SUCCESS;
-    actual   = OS_GetResourceName(token.obj_id, NameBuffer, sizeof(NameBuffer));
-    UtAssert_True(actual == expected, "OS_GetResourceName() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_GetResourceName(token.obj_id, NameBuffer, sizeof(NameBuffer)), OS_SUCCESS);
     UtAssert_True(strcmp(NameBuffer, "UTTask") == 0, "NameBuffer (%s) == UTTask", NameBuffer);
 
-    expected = OS_ERR_NAME_TOO_LONG;
-    actual   = OS_GetResourceName(token.obj_id, NameBuffer, OSAL_SIZE_C(2));
-    UtAssert_True(actual == expected, "OS_GetResourceName() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_GetResourceName(token.obj_id, NameBuffer, OSAL_SIZE_C(2)), OS_ERR_NAME_TOO_LONG);
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_GetResourceName(token.obj_id, NULL, sizeof(NameBuffer));
-    UtAssert_True(actual == expected, "OS_GetResourceName() (%ld) == OS_INVALID_POINTER", (long)actual);
+    /* Null entry */
+    rptr->name_entry = NULL;
+    OSAPI_TEST_FUNCTION_RC(OS_GetResourceName(token.obj_id, NameBuffer, sizeof(NameBuffer)), OS_SUCCESS);
 
-    expected = OS_ERR_INVALID_SIZE;
-    actual   = OS_GetResourceName(token.obj_id, NameBuffer, OSAL_SIZE_C(0));
-    UtAssert_True(actual == expected, "OS_GetResourceName() (%ld) == OS_ERR_INVALID_SIZE", (long)actual);
+    /* Invalid token */
+    memset(&token, 0, sizeof(token));
+    OSAPI_TEST_FUNCTION_RC(OS_GetResourceName(token.obj_id, NameBuffer, sizeof(NameBuffer)), OS_ERR_INVALID_ID);
+
+    OSAPI_TEST_FUNCTION_RC(OS_GetResourceName(token.obj_id, NULL, sizeof(NameBuffer)), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_GetResourceName(token.obj_id, NameBuffer, OSAL_SIZE_C(0)), OS_ERR_INVALID_SIZE);
+    OSAPI_TEST_FUNCTION_RC(OS_GetResourceName(token.obj_id, NameBuffer, OSAL_SIZE_C(UINT32_MAX)), OS_ERR_INVALID_SIZE);
 }
 
 void Test_OS_ObjectIdIterator(void)
@@ -1069,8 +1108,15 @@ void Test_OS_ObjectIdIterator(void)
     uint32             testarg;
 
     OSAPI_TEST_FUNCTION_RC(OS_ObjectIdIteratorInit(NULL, NULL, OS_OBJECT_TYPE_UNDEFINED, &iter), OS_ERR_INVALID_ID);
-    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdIterateActive(OS_OBJECT_TYPE_OS_TASK, &iter), OS_SUCCESS);
+
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdIteratorInit(NULL, NULL, OS_OBJECT_TYPE_OS_TASK, &iter), OS_SUCCESS);
     UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 1);
+
+    /* Cover NULL match function case */
+    UtAssert_True(OS_ObjectIdIteratorGetNext(&iter), "OS_ObjectIdIteratorGetNext() with null match function");
+
+    OSAPI_TEST_FUNCTION_RC(OS_ObjectIdIterateActive(OS_OBJECT_TYPE_OS_TASK, &iter), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 2);
 
     memset(&rec, 0, sizeof(rec));
     UtAssert_True(!OS_ObjectFilterActive(NULL, NULL, &rec), "OS_ObjectFilterActive() empty record");
@@ -1083,7 +1129,7 @@ void Test_OS_ObjectIdIterator(void)
     iter.arg = &testarg;
     OS_ObjectIdIteratorProcessEntry(&iter, TestIterator);
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 1);
-    UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 2);
+    UtAssert_STUB_COUNT(OS_Lock_Global_Impl, 3);
 
     /* OS_ObjectIdIteratorDestroy is just a passthrough to OS_ObjectIdTransactionCancel,
      * but need to call for coverage */
