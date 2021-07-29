@@ -111,6 +111,11 @@ typedef struct
 #define UtAssert_NA(...) UtAssertEx(false, UTASSERT_CASETYPE_NA, __FILE__, __LINE__, __VA_ARGS__)
 
 /**
+ * \brief Assert a test MIR (Manual Inspection Required)
+ */
+#define UtAssert_MIR(...) UtAssertEx(false, UTASSERT_CASETYPE_MIR, __FILE__, __LINE__, __VA_ARGS__)
+
+/**
  * \brief Compares two integers and determines if they are equal within a specified absolute tolerance.
  */
 #define UtAssert_IntegerCmpAbs(x, y, Tolerance, ...) \
