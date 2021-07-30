@@ -82,6 +82,52 @@ void UtTest_AddTeardown(void (*Teardown)(void), const char *SequenceName)
     UtTest_AddCommon(NULL, NULL, Teardown, SequenceName, UTASSERT_GROUP_TEARDOWN);
 }
 
+void UtTest_AddSubTest(void (*Test)(void), void (*Setup)(void), void (*Teardown)(void), const char *GroupName,
+                       const char *TestName)
+{
+    char        CompleteTestName[128];
+    const char *GroupPtr;
+    const char *TestPtr;
+
+    /* Remove any common prefix between the two names.
+     * They are often function names that all start with "Test_XXX"
+     * and this repetitive information just becomes clutter.
+     */
+    GroupPtr = GroupName;
+    TestPtr  = TestName;
+    while (*GroupPtr != 0 && *GroupPtr == *TestPtr)
+    {
+        ++GroupPtr;
+        ++TestPtr;
+    }
+
+    /*
+     * Only break at an underscore(_) to avoid weird effects
+     */
+    while (TestPtr > TestName && *TestPtr != '_')
+    {
+        --TestPtr;
+    }
+    if (*TestPtr == '_')
+    {
+        ++TestPtr;
+    }
+
+    /*
+     * Remove a remaining "Test_" prefix on the group name.
+     * Again just to remove common repetitive content
+     */
+    GroupPtr = GroupName;
+    if (strncmp(GroupPtr, "Test_", 5) == 0)
+    {
+        GroupPtr += 5;
+    }
+
+    (void)snprintf(CompleteTestName, sizeof(CompleteTestName), "%s.%s", GroupPtr, TestPtr);
+
+    UtTest_AddCommon(Test, Setup, Teardown, CompleteTestName, UTASSERT_GROUP_TEST);
+}
+
 void UtTest_Run(void)
 {
     UtListNode_t *         UtListMain;
