@@ -69,6 +69,44 @@ typedef enum
 } UtAssert_CaseType_t;
 
 /**
+ * \brief Comparison types for generic value asserts
+ *
+ * These constants are used with the generic value assert functions
+ * and indicate the type of comparison to perform
+ *
+ * \sa UtAssert_GenericSignedCompare
+ * \sa UtAssert_GenericUnsignedCompare
+ */
+typedef enum
+{
+    UtAssert_Compare_NONE, /**< invalid/not used, always false */
+    UtAssert_Compare_EQ,   /**< actual equals reference value */
+    UtAssert_Compare_NEQ,  /**< actual does not non equal reference value */
+    UtAssert_Compare_LT,   /**< actual less than reference (exclusive) */
+    UtAssert_Compare_GT,   /**< actual greater than reference (exclusive)  */
+    UtAssert_Compare_LTEQ, /**< actual less than or equal to reference (inclusive) */
+    UtAssert_Compare_GTEQ, /**< actual greater than reference (inclusive) */
+    UtAssert_Compare_MAX   /**< placeholder, not used */
+} UtAssert_Compare_t;
+
+/**
+ * \brief Preferred print radix for generic value asserts
+ *
+ * These constants are used with the generic value assert functions
+ * and indicate the preferred format for printing integers in assert messages
+ *
+ * \sa UtAssert_GenericSignedCompare
+ * \sa UtAssert_GenericUnsignedCompare
+ */
+typedef enum
+{
+    UtAssert_Radix_DEFAULT = 0,  /**< no preference, use default */
+    UtAssert_Radix_OCTAL   = 8,  /**< log integers as octal, base 8 */
+    UtAssert_Radix_DECIMAL = 10, /**< log integers as decimal, base 10 */
+    UtAssert_Radix_HEX     = 16  /**< log integers as hexadecimal, base 16 */
+} UtAssert_Radix_t;
+
+/**
  * Test Counter object
  * Summarizes counters for all case types
  */
@@ -179,92 +217,256 @@ typedef struct
     UtAssertEx(Expression, UTASSERT_CASETYPE_##Type, __FILE__, __LINE__, __VA_ARGS__)
 
 /**
- * \brief Compare addresses for equality with an auto-generated description message
+ * \brief Asserts the expression/function evaluates as logically true
+ *
+ * \par Description
+ *        The core of each unit test is the execution of the function being tested.
+ *        This function and macro should be used to test for a function or value/expression
+ *        that should evaluate as logically true
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
  */
-#define UtAssert_ADDRESS_EQ(actual, expect)                                          \
-    do                                                                               \
-    {                                                                                \
-        void *exp = (void *)(expect);                                                \
-        void *act = (void *)(actual);                                                \
-        UtAssert_True(act == exp, "%s (%p) == %s (%p)", #actual, act, #expect, exp); \
-    } while (0)
+#define UtAssert_BOOL_TRUE(expr)                                                                               \
+    UtAssert_GenericUnsignedCompare((bool)(expr), UtAssert_Compare_EQ, true, UtAssert_Radix_DECIMAL, __FILE__, \
+                                    __LINE__, "", #expr, "true")
+
+/**
+ * \brief Asserts the expression/function evaluates as logically false
+ *
+ * \par Description
+ *        The core of each unit test is the execution of the function being tested.
+ *        This function and macro should be used to test for a function or value/expression
+ *        that should evaluate as logically false
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_BOOL_FALSE(expr)                                                                               \
+    UtAssert_GenericUnsignedCompare((bool)(expr), UtAssert_Compare_EQ, false, UtAssert_Radix_DECIMAL, __FILE__, \
+                                    __LINE__, "", #expr, "false")
 
 /**
  * \brief Compare two values for equality with an auto-generated description message
+ *
+ * This macro confirms that the given expression is equal to the reference value
+ * The generated log message will include the actual and reference values in decimal notation
  * Values will be compared in an "int32" type context.
  */
-#define UtAssert_INT32_EQ(actual, expect)                                                                  \
-    do                                                                                                     \
-    {                                                                                                      \
-        int32 rcexp = (int32)(expect);                                                                     \
-        int32 rcact = (int32)(actual);                                                                     \
-        UtAssert_True(rcact == rcexp, "%s (%ld) == %s (%ld)", #actual, (long)rcact, #expect, (long)rcexp); \
-    } while (0)
+#define UtAssert_INT32_EQ(actual, ref)                                                                        \
+    UtAssert_GenericSignedCompare((int32)(actual), UtAssert_Compare_EQ, (int32)(ref), UtAssert_Radix_DECIMAL, \
+                                  __FILE__, __LINE__, "", #actual, #ref)
+
+/**
+ * \brief Compare two values for inequality with an auto-generated description message
+ *
+ * This macro confirms that the given expression is _not_ equal to the reference value
+ * The generated log message will include the actual and reference values in decimal notation
+ * Values will be compared in an "int32" type context.
+ */
+#define UtAssert_INT32_NEQ(actual, ref)                                                                        \
+    UtAssert_GenericSignedCompare((int32)(actual), UtAssert_Compare_NEQ, (int32)(ref), UtAssert_Radix_DECIMAL, \
+                                  __FILE__, __LINE__, "", #actual, #ref)
+
+/**
+ * \brief Asserts the minimum value of a given function or expression
+ *
+ * This macro confirms that the given expression is at least the minimum value (inclusive)
+ * The generated log message will include the actual and reference values in decimal notation
+ * Values will be compared in an "int32" type context.
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_INT32_GTEQ(expr, ref)                                                                        \
+    UtAssert_GenericSignedCompare((int32)(expr), UtAssert_Compare_GTEQ, (int32)(ref), UtAssert_Radix_DECIMAL, \
+                                  __FILE__, __LINE__, "", #expr, #ref)
+
+/**
+ * \brief Asserts the maximum value of a given function or expression
+ *
+ * This macro confirms that the given expression is at most the maximum value (inclusive)
+ * The generated log message will include the actual and reference values in decimal notation
+ */
+#define UtAssert_INT32_LTEQ(expr, ref)                                                                        \
+    UtAssert_GenericSignedCompare((int32)(expr), UtAssert_Compare_LTEQ, (int32)(ref), UtAssert_Radix_DECIMAL, \
+                                  __FILE__, __LINE__, "", #expr, #ref)
+
+/**
+ * \brief Asserts the value of a given function or expression is less than the reference value
+ *
+ * This macro confirms that the given expression is less than the maximum value (exclusive)
+ * The generated log message will include the actual and reference values in decimal notation
+ */
+#define UtAssert_INT32_LT(expr, ref)                                                                                  \
+    UtAssert_GenericSignedCompare((int32)(expr), UtAssert_Compare_LT, (int32)(ref), UtAssert_Radix_DECIMAL, __FILE__, \
+                                  __LINE__, "", #expr, #ref)
+
+/**
+ * \brief Asserts the value of a given function or expression is greater than the reference value
+ *
+ * This macro confirms that the given expression is greater than the minimum value (exclusive)
+ * The generated log message will include the actual and reference values in decimal notation
+ */
+#define UtAssert_INT32_GT(expr, ref)                                                                                  \
+    UtAssert_GenericSignedCompare((int32)(expr), UtAssert_Compare_GT, (int32)(ref), UtAssert_Radix_DECIMAL, __FILE__, \
+                                  __LINE__, "", #expr, #ref)
 
 /**
  * \brief Compare two values for equality with an auto-generated description message
+ *
+ * This macro confirms that the given expression is equal to the reference value
+ * The generated log message will include the actual and reference values in decimal notation
  * Values will be compared in an "uint32" type context.
  */
-#define UtAssert_UINT32_EQ(actual, expect)                                                            \
-    do                                                                                                \
-    {                                                                                                 \
-        uint32 rcexp = (uint32)(expect);                                                              \
-        uint32 rcact = (uint32)(actual);                                                              \
-        UtAssert_True(rcact == rcexp, "%s (%lu) == %s (%lu)", #actual, (unsigned long)rcact, #expect, \
-                      (unsigned long)rcexp);                                                          \
-    } while (0)
+#define UtAssert_UINT32_EQ(actual, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint32)(actual), UtAssert_Compare_EQ, (uint32)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "", #actual, #ref)
+
+/**
+ * \brief Compare two values for inequality with an auto-generated description message
+ *
+ * This macro confirms that the given expression is _not_ equal to the reference value
+ * The generated log message will include the actual and reference values in decimal notation
+ * Values will be compared in an "uint32" type context.
+ */
+#define UtAssert_UINT32_NEQ(actual, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint32)(actual), UtAssert_Compare_NEQ, (uint32)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "", #actual, #ref)
+
+/**
+ * \brief Asserts the minimum value of a given function or expression
+ *
+ * \par Description
+ *        This macro confirms that the given expression is at least the minimum value (inclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT32_GTEQ(expr, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint32)(expr), UtAssert_Compare_GTEQ, (uint32)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "", #expr, #ref)
+
+/**
+ * \brief Asserts the maximum value of a given function or expression
+ *
+ * \par Description
+ *        This macro confirms that the given expression is at most the maximum value (inclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT32_LTEQ(expr, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint32)(expr), UtAssert_Compare_LTEQ, (uint32)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "", #expr, #ref)
+
+/**
+ * \brief Asserts the value of a given function or expression is less than the reference value
+ *
+ * \par Description
+ *        This macro confirms that the given expression is less than the maximum value (exclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT32_LT(expr, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint32)(expr), UtAssert_Compare_LT, (uint32)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "", #expr, #ref)
+
+/**
+ * \brief Asserts the value of a given function or expression is greater than the reference value
+ *
+ * \par Description
+ *        This macro confirms that the given expression is greater than the minimum value (exclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT32_GT(expr, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint32)(expr), UtAssert_Compare_GT, (uint32)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "", #expr, #ref)
+
+/**
+ * \brief Macro for logging calls to a "void" function
+ *
+ * \par Description
+ *        A macro that invokes a function with no return value.  This should be used when
+ *        no actual condition/result to check for/assert on, but the call should still be
+ *        logged to the output to record the fact that the function was invoked.
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_VOIDCALL(func) (func, UtAssert(true, #func, __FILE__, __LINE__))
+
+/**
+ * \brief Macro to check string buffers for equality
+ *
+ * \par Description
+ *        A macro that checks two string buffers for equality.  Both buffer maximum sizes are explicitly
+ *        specified, so that strings may reside in a fixed length buffer.  The function will never
+ *        check beyond the specified length, regardless of termination.
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        The generic #UtAssert_StrCmp macro requires both arguments to be NULL terminated.  This also
+ *        includes the actual string in the log, but filters embedded newlines to keep the log clean.
+ *
+ *        If the string arguments are guaranteed to be NULL terminated and/or the max size is
+ *        not known, then the SIZE_MAX constant may be passed for the respective string.
+ *
+ */
+#define UtAssert_STRINGBUF_EQ(str1, size1, str2, size2) \
+    UtAssert_StringBufCompare(str1, size1, str2, size2, UtAssert_Compare_EQ, __FILE__, __LINE__)
+
+/**
+ * \brief Compare addresses for equality with an auto-generated description message
+ */
+#define UtAssert_ADDRESS_EQ(actual, expect)                                                                      \
+    UtAssert_GenericUnsignedCompare((unsigned long)(void *)(actual), UtAssert_Compare_EQ,                        \
+                                    (unsigned long)(void *)(expect), UtAssert_Radix_HEX, __FILE__, __LINE__, "", \
+                                    #actual, #expect)
 
 /**
  * \brief Confirm a pointer value is not NULL
  */
-#define UtAssert_NOT_NULL(actual)                                    \
-    do                                                               \
-    {                                                                \
-        void *ptr = (void *)(actual);                                \
-        UtAssert_True(ptr != NULL, "%s (%p) != NULL", #actual, ptr); \
-    } while (0)
+#define UtAssert_NOT_NULL(actual)                                                                                 \
+    UtAssert_GenericUnsignedCompare((unsigned long)(void *)(actual), UtAssert_Compare_NEQ, 0, UtAssert_Radix_HEX, \
+                                    __FILE__, __LINE__, "", #actual, "NULL")
 
 /**
  * \brief Confirm a pointer value is NULL
  */
-#define UtAssert_NULL(actual)                                        \
-    do                                                               \
-    {                                                                \
-        void *ptr = (void *)(actual);                                \
-        UtAssert_True(ptr == NULL, "%s (%p) == NULL", #actual, ptr); \
-    } while (0)
+#define UtAssert_NULL(actual)                                                                                    \
+    UtAssert_GenericUnsignedCompare((unsigned long)(void *)(actual), UtAssert_Compare_EQ, 0, UtAssert_Radix_HEX, \
+                                    __FILE__, __LINE__, "", #actual, "NULL")
 
 /**
  * \brief Confirm an integer value is nonzero
  */
-#define UtAssert_NONZERO(actual)                                \
-    do                                                          \
-    {                                                           \
-        long val = (long)(actual);                              \
-        UtAssert_True(val != 0, "%s (%ld) != 0", #actual, val); \
-    } while (0)
+#define UtAssert_NONZERO(actual)                                                                                   \
+    UtAssert_GenericSignedCompare(actual, UtAssert_Compare_NEQ, 0, UtAssert_Radix_DECIMAL, __FILE__, __LINE__, "", \
+                                  #actual, "ZERO")
 
 /**
  * \brief Confirm an integer value is zero
  */
-#define UtAssert_ZERO(actual)                                   \
-    do                                                          \
-    {                                                           \
-        long val = (long)(actual);                              \
-        UtAssert_True(val == 0, "%s (%ld) == 0", #actual, val); \
-    } while (0)
+#define UtAssert_ZERO(actual)                                                                                     \
+    UtAssert_GenericSignedCompare(actual, UtAssert_Compare_EQ, 0, UtAssert_Radix_DECIMAL, __FILE__, __LINE__, "", \
+                                  #actual, "ZERO")
 
 /**
  * \brief Confirm that a stub function has been invoked the expected number of times
  */
-#define UtAssert_STUB_COUNT(stub, expected)                                                                      \
-    do                                                                                                           \
-    {                                                                                                            \
-        uint32 expval = (uint32)(expected);                                                                      \
-        uint32 actval = UT_GetStubCount(UT_KEY(stub));                                                           \
-        UtAssert_True(actval == expval, "%s() count (%lu) == %s (%lu)", #stub, (unsigned long)actval, #expected, \
-                      (unsigned long)expval);                                                                    \
-    } while (0)
+#define UtAssert_STUB_COUNT(stub, expected)                                                     \
+    UtAssert_GenericSignedCompare(UT_GetStubCount(UT_KEY(stub)), UtAssert_Compare_EQ, expected, \
+                                  UtAssert_Radix_DECIMAL, __FILE__, __LINE__, "CallCount", #stub "()", #expected)
 
 /*
  * Exported Functions
@@ -429,5 +631,61 @@ void UtAssert_DoReport(const char *File, uint32 LineNum, uint32 SegmentNum, uint
  * \param TestCounters  Counter object for the completed test
  */
 void UtAssert_DoTestSegmentReport(const char *SegmentName, const UtAssert_TestCounter_t *TestCounters);
+
+/**
+ * \brief Helper function for string buffer check verifications
+ *
+ * \par Description
+ *        This helper function wraps the normal UtAssert function, intended for verifying
+ *        the contents of string buffer(s).  This also includes the actual message in the log,
+ *        but scrubs it for newlines and other items that may affect the ability to parse
+ *        the log file via a script.
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ * \returns Test pass status, returns true if status was successful, false if it failed.
+ *
+ */
+bool UtAssert_StringBufCompare(const char *String1, size_t String1Max, const char *String2, size_t String2Max,
+                               UtAssert_Compare_t CompareType, const char *File, uint32 Line);
+
+/**
+ * \brief Helper function for generic unsigned integer value checks
+ *
+ * \par Description
+ *        This helper function wraps the normal UtAssertEx() function, to compare two
+ *        integer values in an unsigned context.  The comparison is performed as two
+ *        unsigned long integers and the numeric values are printed to the test log
+ *        in hexadecimal notation (base-16).
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ * \returns Test pass status, returns true if status was successful, false if it failed.
+ *
+ */
+bool UtAssert_GenericUnsignedCompare(unsigned long ActualValue, UtAssert_Compare_t CompareType,
+                                     unsigned long ReferenceValue, UtAssert_Radix_t RadixType, const char *File,
+                                     uint32 Line, const char *Desc, const char *ActualText, const char *ReferenceText);
+
+/**
+ * \brief Helper function for generic signed integer value checks
+ *
+ * \par Description
+ *        This helper function wraps the normal UtAssertEx() function, to compare two
+ *        integer values in a signed context.  The comparison is performed as two
+ *        signed long integers and the numeric values are printed to the test log
+ *        in standard decimal notation (base-10).
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ * \returns Test pass status, returns true if status was successful, false if it failed.
+ *
+ */
+bool UtAssert_GenericSignedCompare(long ActualValue, UtAssert_Compare_t CompareType, long ReferenceValue,
+                                   UtAssert_Radix_t RadixType, const char *File, uint32 Line, const char *Desc,
+                                   const char *ActualText, const char *ReferenceText);
 
 #endif /* UTASSERT_H */
