@@ -82,7 +82,7 @@ static inline bool UtOsalNotSuccess(int32 Fn, UtAssert_CaseType_t casetype, cons
 
 static inline bool UtManualInspectionWithStatus(int32 Fn, const char *File, uint32 Line, const char *FnTxt)
 {
-    UtAssertEx(false, UTASSERT_CASETYPE_MIR, File, Line, "%s value=%d", FnTxt, (int)Fn);
+    UtAssert_MIR("%s value=%d", FnTxt, (int)Fn);
     return (Fn >= 0);
 }
 
@@ -117,7 +117,7 @@ static inline bool UtOsalImplemented(int32 Fn, const char *File, uint32 Line)
 #define UT_NOT_SUCCESS(Fn) UtOsalNotSuccess(Fn, UTASSERT_CASETYPE_FAILURE, __FILE__, __LINE__, #Fn)
 
 #define UT_MIR_STATUS(Fn) UtManualInspectionWithStatus(Fn, __FILE__, __LINE__, #Fn)
-#define UT_MIR_VOID(Fn)   Fn, UtAssertEx(false, UTASSERT_CASETYPE_MIR, __FILE__, __LINE__, "%s", #Fn)
+#define UT_MIR_VOID(Fn)   Fn, UtAssert_MIR("%s", #Fn)
 
 #define UT_SETUP(Fn)    UtOsalCheck(Fn, UTASSERT_CASETYPE_TSF, __FILE__, __LINE__, #Fn)
 #define UT_TEARDOWN(Fn) UtOsalCheck(Fn, UTASSERT_CASETYPE_TTF, __FILE__, __LINE__, #Fn)
