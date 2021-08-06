@@ -78,6 +78,25 @@ void UtTest_AddSetup(void (*Setup)(void), const char *SequenceName);
 void UtTest_AddTeardown(void (*Teardown)(void), const char *SequenceName);
 
 /**
+ * \brief Add a test as a member of a subgroup.
+ *
+ * Allow tests to be grouped together
+ *
+ * This is just a wrapper around UtTest_Add() that registers
+ * a test with a "GroupName.TestName" convention.  Purely an
+ * organizational/identification helper for units which have
+ * lots of tests.
+ *
+ * \param Test     Main test function to call.
+ * \param Setup    Setup function, called before the test function
+ * \param Teardown Cleanup function, called after the test function
+ * \param GroupName Name of group for logging purposes
+ * \param TestName Name of test for logging purposes
+ */
+void UtTest_AddSubTest(void (*Test)(void), void (*Setup)(void), void (*Teardown)(void), const char *GroupName,
+                       const char *TestName);
+
+/**
  * \brief Early initialization function
  *
  * Reset the global data to a safe state for initial start-up.

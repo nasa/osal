@@ -324,8 +324,7 @@ void TestSelectSingleWrite(void)
 
     if (!FillOutputBuffer(c1_socket_id))
     {
-        UtAssertEx(false, UTASSERT_CASETYPE_MIR, __FILE__, __LINE__, "%s",
-                   "Unable to fill buffer with large looped writes, skipping verification");
+        UtAssert_MIR("%s", "Unable to fill buffer with large looped writes, skipping verification");
     }
     else
     {
@@ -379,8 +378,7 @@ void TestSelectMultipleWrite(void)
 
     if (!FillOutputBuffer(c1_socket_id))
     {
-        UtAssertEx(false, UTASSERT_CASETYPE_MIR, __FILE__, __LINE__, "%s",
-                   "Unable to fill buffer with large looped writes, skipping verification");
+        UtAssert_MIR("Unable to fill buffer with large looped writes, skipping verification");
     }
     else
     {

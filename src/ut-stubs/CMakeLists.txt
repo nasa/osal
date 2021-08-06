@@ -84,6 +84,7 @@ add_library(ut_osapi_stubs STATIC
     osapi-queue-stubs.c
     osapi-queue-handlers.c
     osapi-select-stubs.c
+    osapi-shell-stubs.c
     osapi-sockets-stubs.c
     osapi-sockets-handlers.c
     osapi-task-stubs.c
@@ -105,6 +106,3 @@ target_include_directories(ut_osapi_stubs PRIVATE
 # These stubs must always link to UT Assert.
 # This also implicitly adds the path to the UT Assert header files.
 target_link_libraries(ut_osapi_stubs ut_assert)
-
-
-
