@@ -31,11 +31,25 @@ jobs:
 
       - name: Calculate coverage 
         run: make lcov | tee lcov_out.txt
-
+ 
       - name: Confirm 100% line coverage
         run: |
           if [[ `grep -A 3 "Overall coverage rate" lcov_out.txt | grep lines` != *"100.0%"* ]]; then
             grep -A 3 "Overall coverage rate" lcov_out.txt
             echo "Lacks 100.0% line unit test coverage"
+            exit -1
+          fi
+
+      - name: Confirm absolute line coverage
+        run: |
+          # Current best possible branch coverage is all but 4, with associated issues for each missing case
+          missed_branches=4
+          coverage_nums=$(grep -A 3 "Overall coverage rate" lcov_out.txt | grep branches | grep -oP "[1-9]+[0-9]*")
+
+          diff=$(echo $coverage_nums | awk '{ print $4 - $3 }')
+          if [ $(($diff > $missed_branches)) == 1 ]
+          then 
+            grep -A 3 "Overall coverage rate" lcov_out.txt
+            echo "More than $missed_branches branches missed"
             exit -1
           fi
