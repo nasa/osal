@@ -79,14 +79,14 @@ void UtAssert_DoTestSegmentReport(const char *SegmentName, const UtAssert_TestCo
     char ReportBuffer[144];
 
     snprintf(ReportBuffer, sizeof(ReportBuffer),
-             "%02u %-20s TOTAL::%-4u  PASS::%-4u  FAIL::%-4u  MIR::%-4u  TSF::%-4u  TTF::%-4u  N/A::%-4u\n",
+             "%02u %-20s TOTAL::%-4u  PASS::%-4u  FAIL::%-4u  MIR::%-4u  TSF::%-4u  TTF::%-4u  WARN::%-4u\n",
              (unsigned int)TestCounters->TestSegmentCount, SegmentName, (unsigned int)TestCounters->TotalTestCases,
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_PASS],
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_FAILURE],
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_MIR],
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_TSF],
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_TTF],
-             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_NA]);
+             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_WARN]);
 
     UT_BSP_DoText(UTASSERT_CASETYPE_END, ReportBuffer);
 }
@@ -223,6 +223,60 @@ bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File,
 void UtAssert_Abort(const char *Message)
 {
     UT_BSP_DoText(UTASSERT_CASETYPE_ABORT, Message);
+}
+
+const char *UtAssert_GetCaseTypeAbbrev(UtAssert_CaseType_t CaseType)
+{
+    const char *AbbrevStr;
+
+    switch (CaseType)
+    {
+        case UTASSERT_CASETYPE_ABORT:
+            AbbrevStr = "ABORT";
+            break;
+        case UTASSERT_CASETYPE_FAILURE:
+            AbbrevStr = "FAIL";
+            break;
+        case UTASSERT_CASETYPE_MIR:
+            AbbrevStr = "MIR";
+            break;
+        case UTASSERT_CASETYPE_TSF:
+            AbbrevStr = "TSF";
+            break;
+        case UTASSERT_CASETYPE_TTF:
+            AbbrevStr = "TTF";
+            break;
+        case UTASSERT_CASETYPE_WARN:
+            AbbrevStr = "WARN";
+            break;
+        case UTASSERT_CASETYPE_NA:
+            AbbrevStr = "N/A";
+            break;
+        case UTASSERT_CASETYPE_BEGIN:
+            AbbrevStr = "BEGIN";
+            break;
+        case UTASSERT_CASETYPE_END:
+            AbbrevStr = "END";
+            break;
+        case UTASSERT_CASETYPE_PASS:
+            AbbrevStr = "PASS";
+            break;
+        case UTASSERT_CASETYPE_INFO:
+            AbbrevStr = "INFO";
+            break;
+        case UTASSERT_CASETYPE_FLOW:
+            AbbrevStr = "FLOW";
+            break;
+        case UTASSERT_CASETYPE_DEBUG:
+            AbbrevStr = "DEBUG";
+            break;
+        default:
+            /* do not return NULL, as the result may be directly passed to C library functions */
+            AbbrevStr = "OTHER";
+            break;
+    }
+
+    return AbbrevStr;
 }
 
 void UtAssert_Message(uint8 MessageType, const char *File, uint32 Line, const char *Spec, ...)
