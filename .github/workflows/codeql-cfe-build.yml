@@ -6,7 +6,7 @@ on:
 
 env:
   SIMULATION: native
-  ENABLE_UNIT_TESTS: true
+  ENABLE_UNIT_TESTS: false
   OMIT_DEPRECATED: true
   BUILDTYPE: release
 
