@@ -59,11 +59,13 @@ typedef enum
     UTASSERT_CASETYPE_TSF,     /**< Test Setup Failure (TSF) status messages */
     UTASSERT_CASETYPE_TTF,     /**< Test Teardown Failure (TTF) status messages */
     UTASSERT_CASETYPE_MIR,     /**< Manual Inspection Required (MIR) status messages */
+    UTASSERT_CASETYPE_WARN,    /**< Test was unable to run (WARN) status messages (e.g. initial condition wrong) */
     UTASSERT_CASETYPE_NA,      /**< Test Not Applicable (NA) status messages */
     UTASSERT_CASETYPE_BEGIN,   /**< Beginning of test status messages */
     UTASSERT_CASETYPE_END,     /**< End of test status messages */
     UTASSERT_CASETYPE_INFO,    /**< All other informational status messages */
     UTASSERT_CASETYPE_PASS,    /**< Test case passed (normal) status messages */
+    UTASSERT_CASETYPE_FLOW,    /**< Other condition checks/messages that record test flow, but are not assertions */
     UTASSERT_CASETYPE_DEBUG,   /**< Debugging messages */
     UTASSERT_CASETYPE_MAX      /**< Reserved value, No messages should be used with this */
 } UtAssert_CaseType_t;
@@ -152,6 +154,11 @@ typedef struct
  * \brief Assert a test MIR (Manual Inspection Required)
  */
 #define UtAssert_MIR(...) UtAssertEx(false, UTASSERT_CASETYPE_MIR, __FILE__, __LINE__, __VA_ARGS__)
+
+/**
+ * \brief Skip a test due to improper setup (Manual Intervention Required)
+ */
+#define UtAssert_WARN(...) UtAssertEx(false, UTASSERT_CASETYPE_WARN, __FILE__, __LINE__, __VA_ARGS__)
 
 /**
  * \brief Compares two integers and determines if they are equal within a specified absolute tolerance.
@@ -586,6 +593,22 @@ bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File,
  * \param Message a free form string describing the failure
  */
 void UtAssert_Abort(const char *Message);
+
+/**
+ * \brief Gets the short/abbreviated name for a UtAssert case type
+ *
+ * For tagging lines in the output log file, this returns a short string
+ * representing the human-readable name of the UtAssert case type.
+ *
+ * The returned string is 5 characters or less in length.
+ *
+ * \note This function does not return NULL, such that it can be
+ * used directly inside a printf()-style call.
+ *
+ * \param CaseType Message case type
+ * \returns String representation of case type
+ */
+const char *UtAssert_GetCaseTypeAbbrev(UtAssert_CaseType_t CaseType);
 
 /**
  * \brief Output an informational message to the console/log file
