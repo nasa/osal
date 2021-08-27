@@ -81,14 +81,16 @@ typedef enum
  */
 typedef enum
 {
-    UtAssert_Compare_NONE, /**< invalid/not used, always false */
-    UtAssert_Compare_EQ,   /**< actual equals reference value */
-    UtAssert_Compare_NEQ,  /**< actual does not non equal reference value */
-    UtAssert_Compare_LT,   /**< actual less than reference (exclusive) */
-    UtAssert_Compare_GT,   /**< actual greater than reference (exclusive)  */
-    UtAssert_Compare_LTEQ, /**< actual less than or equal to reference (inclusive) */
-    UtAssert_Compare_GTEQ, /**< actual greater than reference (inclusive) */
-    UtAssert_Compare_MAX   /**< placeholder, not used */
+    UtAssert_Compare_NONE,          /**< invalid/not used, always false */
+    UtAssert_Compare_EQ,            /**< actual equals reference value */
+    UtAssert_Compare_NEQ,           /**< actual does not non equal reference value */
+    UtAssert_Compare_LT,            /**< actual less than reference (exclusive) */
+    UtAssert_Compare_GT,            /**< actual greater than reference (exclusive)  */
+    UtAssert_Compare_LTEQ,          /**< actual less than or equal to reference (inclusive) */
+    UtAssert_Compare_GTEQ,          /**< actual greater than reference (inclusive) */
+    UtAssert_Compare_BITMASK_SET,   /**< actual equals reference value */
+    UtAssert_Compare_BITMASK_UNSET, /**< actual equals reference value */
+    UtAssert_Compare_MAX            /**< placeholder, not used */
 } UtAssert_Compare_t;
 
 /**
@@ -403,6 +405,24 @@ typedef struct
 #define UtAssert_UINT32_GT(expr, ref)                                                                           \
     UtAssert_GenericUnsignedCompare((uint32)(expr), UtAssert_Compare_GT, (uint32)(ref), UtAssert_Radix_DECIMAL, \
                                     __FILE__, __LINE__, "", #expr, #ref)
+
+/**
+ * \brief Macro for checking that bits in a bit field are set
+ *
+ * Test Passes if all the bits specified in "mask" are set in "rawval"
+ */
+#define UtAssert_BITMASK_SET(rawval, mask)                                                          \
+    UtAssert_GenericUnsignedCompare((uint32)(rawval), UtAssert_Compare_BITMASK_SET, (uint32)(mask), \
+                                    UtAssert_Radix_HEX, __FILE__, __LINE__, "", #rawval, #mask)
+
+/**
+ * \brief Macro for checking that bits in a bit field are unset
+ *
+ * Test Passes if none of the bits specified in "mask" are set in "rawval"
+ */
+#define UtAssert_BITMASK_UNSET(rawval, mask)                                                          \
+    UtAssert_GenericUnsignedCompare((uint32)(rawval), UtAssert_Compare_BITMASK_UNSET, (uint32)(mask), \
+                                    UtAssert_Radix_HEX, __FILE__, __LINE__, "", #rawval, #mask)
 
 /**
  * \brief Macro for logging calls to a "void" function
