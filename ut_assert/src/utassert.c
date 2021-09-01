@@ -336,6 +336,12 @@ const char *UtAssert_GetOpText(UtAssert_Compare_t CompareType)
         case UtAssert_Compare_GTEQ: /* actual greater than reference (inclusive) */
             OpText = ">=";
             break;
+        case UtAssert_Compare_BITMASK_SET: /* bit(s) in reference are set in actual */
+            OpText = "&";
+            break;
+        case UtAssert_Compare_BITMASK_UNSET: /* bit(s) in reference are not set in actual */
+            OpText = "&~";
+            break;
         default: /* should never happen */
             OpText = "??";
             break;
@@ -370,6 +376,12 @@ bool UtAssert_GenericUnsignedCompare(unsigned long ActualValue, UtAssert_Compare
             break;
         case UtAssert_Compare_GTEQ: /* actual greater than reference (inclusive) */
             Result = (ActualValue >= ReferenceValue);
+            break;
+        case UtAssert_Compare_BITMASK_SET: /* bit(s) in reference are set in actual */
+            Result = (ActualValue & ReferenceValue) == ReferenceValue;
+            break;
+        case UtAssert_Compare_BITMASK_UNSET: /* bit(s) in reference are not set in actual */
+            Result = (ActualValue & ReferenceValue) == 0;
             break;
         default: /* should never happen */
             Result = false;
