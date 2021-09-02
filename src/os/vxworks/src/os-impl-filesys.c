@@ -105,7 +105,7 @@ int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
             /*
             ** Create the ram disk device
             ** The 32 is the number of blocks per track.
-            **  Other values dont seem to work here
+            **  Other values don't seem to work here
             */
             impl->blkDev           = ramDevCreate(local->address, local->blocksize, 32, local->numblocks, 0);
             impl->xbdMaxPartitions = 1;

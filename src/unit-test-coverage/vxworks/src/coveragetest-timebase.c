@@ -105,7 +105,7 @@ void Test_OS_TimeBaseCreate_Impl(void)
     OS_object_token_t token = UT_TOKEN_0;
 
     /*
-     * Test paths though the signal number assignment.
+     * Test paths through the signal number assignment.
      *
      * This should be done first as it will assign the "external_sync"
      * and therefore cause future calls to skip this block.

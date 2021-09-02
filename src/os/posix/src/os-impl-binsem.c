@@ -37,7 +37,7 @@
 #include "os-impl-binsem.h"
 
 /*
- * This controls the maximum time the that the calling thread will wait to
+ * This controls the maximum time that the calling thread will wait to
  * acquire the condition mutex before returning an error.
  *
  * Under normal conditions, this lock is held by giving/taking threads very
@@ -495,7 +495,7 @@ int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *s
 
     sem = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
 
-    /* put the info into the stucture */
+    /* put the info into the structure */
     sem_prop->value = sem->current_value;
     return OS_SUCCESS;
 } /* end OS_BinSemGetInfo_Impl */

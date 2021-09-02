@@ -300,7 +300,7 @@ foreach my $basename (sort keys %{$publicapi}) {
 
     # Now actually write the output stub source file
     # NOTE: no need to be too fussy about whitespace and formatting here
-    # as the output file will be passed to clang-fomat at the end.
+    # as the output file will be passed to clang-format at the end.
     open(OUT, ">$stubfile") || die "Cannot open $stubfile for writing";
 
     print OUT $boilerplate . "\n";

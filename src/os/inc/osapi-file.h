@@ -306,7 +306,7 @@ int32 OS_chmod(const char *path, uint32 access_mode);
 /**
  * @brief Obtain information about a file or directory
  *
- * Returns information about a file or directory in a os_fstat_t structure
+ * Returns information about a file or directory in an os_fstat_t structure
  *
  * @param[in]  path      The file to operate on @nonnull
  * @param[out] filestats Buffer to store file information @nonnull
@@ -344,9 +344,9 @@ int32 OS_lseek(osal_id_t filedes, int32 offset, uint32 whence);
  *
  * Removes a given filename from the drive
  *
- * @note The behvior of this API on an open file is not defined at the OSAL level
+ * @note The behavior of this API on an open file is not defined at the OSAL level
  * due to dependencies on the underlying OS which may or may not allow the related
- * operation based on a varienty of potential configurations.  For portability,
+ * operation based on a variety of potential configurations.  For portability,
  * it is recommended that applications ensure the file is closed prior to removal.
  *
  * @param[in]  path      The file to operate on @nonnull
@@ -368,9 +368,9 @@ int32 OS_remove(const char *path);
  * Changes the name of a file, where the source and destination
  * reside on the same file system.
  *
- * @note The behvior of this API on an open file is not defined at the OSAL level
+ * @note The behavior of this API on an open file is not defined at the OSAL level
  * due to dependencies on the underlying OS which may or may not allow the related
- * operation based on a varienty of potential configurations.  For portability,
+ * operation based on a variety of potential configurations.  For portability,
  * it is recommended that applications ensure the file is closed prior to removal.
  *
  * @param[in]  old_filename      The original filename @nonnull
@@ -390,9 +390,9 @@ int32 OS_rename(const char *old_filename, const char *new_filename);
 /**
  * @brief Copies a single file from src to dest
  *
- * @note The behvior of this API on an open file is not defined at the OSAL level
+ * @note The behavior of this API on an open file is not defined at the OSAL level
  * due to dependencies on the underlying OS which may or may not allow the related
- * operation based on a varienty of potential configurations.  For portability,
+ * operation based on a variety of potential configurations.  For portability,
  * it is recommended that applications ensure the file is closed prior to removal.
  *
  * @param[in]  src       The source file to operate on @nonnull
@@ -418,9 +418,9 @@ int32 OS_cp(const char *src, const char *dest);
  * If this fails, it falls back to copying the file and removing
  * the original.
  *
- * @note The behvior of this API on an open file is not defined at the OSAL level
+ * @note The behavior of this API on an open file is not defined at the OSAL level
  * due to dependencies on the underlying OS which may or may not allow the related
- * operation based on a varienty of potential configurations.  For portability,
+ * operation based on a variety of potential configurations.  For portability,
  * it is recommended that applications ensure the file is closed prior to removal.
  *
  * @param[in]  src       The source file to operate on @nonnull

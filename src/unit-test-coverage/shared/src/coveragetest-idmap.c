@@ -141,7 +141,7 @@ void Test_OS_LockUnlockGlobal(void)
     UT_ResetState(UT_KEY(OS_TaskGetId));
 
     /*
-     * Execute paths where the incorrect patten is followed,
+     * Execute paths where the incorrect pattern is followed,
      * such as unlocking from a different task than the lock.
      * These trigger OS_DEBUG messages, if compiled in.
      *

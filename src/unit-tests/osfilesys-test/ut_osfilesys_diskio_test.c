@@ -706,7 +706,7 @@ void UT_os_getfsinfo_test(void)
 **        (a) OS_FS_ERR_PATH_TOO_LONG
 ** -----------------------------------------------------
 ** Test #3: Invalid-virtual-path-arg condition
-**   1) Call this routine with a incorrectly formatted virtual path name as argument
+**   1) Call this routine with an incorrectly formatted virtual path name as argument
 **   2) Expect the returned value to be
 **        (a) OS_FS_ERR_PATH_INVALID
 ** -----------------------------------------------------
@@ -857,7 +857,7 @@ void UT_os_checkfs_test()
 
 /*--------------------------------------------------------------------------------*
 ** Syntax: int32 OS_fsstatvolume(const char *name)
-** Purpose: Returns the number of blocks free in a the file system
+** Purpose: Returns the number of blocks free in the file system
 ** Parameters: *name - a pointer to the name of the drive to check for free blocks
 ** Returns: OS_INVALID_POINTER if the pointer passed in is NULL
 **          OS_FS_ERR_PATH_TOO_LONG if the path passed in is too long

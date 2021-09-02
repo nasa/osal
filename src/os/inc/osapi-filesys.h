@@ -270,7 +270,7 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint);
 
 /*-------------------------------------------------------------------------------------*/
 /**
- * @brief Translates a OSAL Virtual file system path to a host Local path
+ * @brief Translates an OSAL Virtual file system path to a host Local path
  *
  * Translates a virtual path to an actual system path name
  *

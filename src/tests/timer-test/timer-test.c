@@ -200,7 +200,7 @@ void TimerTestCheck(void)
         if (TimerInterval[i] == 0)
         {
             /*
-             * When the Timer Interval is 0, it's a one shot so expect eaxctly 1 tick
+             * When the Timer Interval is 0, it's a one shot so expect exactly 1 tick
              */
             expected = 1;
             UtAssert_True(timer_counter[i] == (expected), "Timer %d count = %d", (int)i, (int)(expected));

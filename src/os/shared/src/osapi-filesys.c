@@ -348,7 +348,7 @@ int32 OS_mkfs(char *address, const char *devname, const char *volname, size_t bl
         /*
          * This is the historic filesystem-specific error code generated when
          * attempting to mkfs()/initfs() on a filesystem that was
-         * already initialized, or of there were no free slots in the table.
+         * already initialized, or if there were no free slots in the table.
          *
          * This code preserved just in case application code was checking for it.
          */
@@ -418,7 +418,7 @@ int32 OS_initfs(char *address, const char *devname, const char *volname, size_t 
         /*
          * This is the historic filesystem-specific error code generated when
          * attempting to mkfs()/initfs() on a filesystem that was
-         * already initialized, or of there were no free slots in the table.
+         * already initialized, or if there were no free slots in the table.
          *
          * This code preserved just in case application code was checking for it.
          */

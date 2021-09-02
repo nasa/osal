@@ -134,7 +134,7 @@ typedef struct
  * is (mostly) agnostic to the actual network address type.
  *
  * Every network address should be representable as a string (i.e. dotted decimal IP, etc).
- * This can serve as a the "common denominator" to all address types.
+ * This can serve as the "common denominator" to all address types.
  *
  * @{
  */
@@ -208,7 +208,7 @@ int32 OS_SocketAddrFromString(OS_SockAddr_t *Addr, const char *string);
 /**
  * @brief Get the port number of a network address
  *
- * For network prototcols that have the concept of a port number (such
+ * For network protocols that have the concept of a port number (such
  * as TCP/IP and UDP/IP) this function gets the port number from the
  * address structure.
  *
@@ -226,7 +226,7 @@ int32 OS_SocketAddrGetPort(uint16 *PortNum, const OS_SockAddr_t *Addr);
 /**
  * @brief Set the port number of a network address
  *
- * For network prototcols that have the concept of a port number (such
+ * For network protocols that have the concept of a port number (such
  * as TCP/IP and UDP/IP) this function sets the port number from the
  * address structure.
  *

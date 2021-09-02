@@ -49,7 +49,7 @@
 /*
  * Note the worker priority must be lower than that of
  * the executive (init) task.  Otherwise, the SemRun()
- * function may may never get CPU time to stop the test.
+ * function may never get CPU time to stop the test.
  */
 #define SEMTEST_TASK_PRIORITY 150
 

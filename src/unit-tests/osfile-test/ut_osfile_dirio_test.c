@@ -438,7 +438,7 @@ void UT_os_readdir_test()
 **  10) Call OS_readdir() the 3rd time with the directory descriptor pointer returned in #3
 **  11) Expect the returned value to be
 **        (a) a directory entry pointer __and__
-**        (b) a the directory name to be "."
+**        (b) the directory name to be "."
 **--------------------------------------------------------------------------------*/
 void UT_os_rewinddir_test()
 {

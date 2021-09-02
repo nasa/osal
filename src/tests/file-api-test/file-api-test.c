@@ -195,7 +195,7 @@ void TestCreatRemove(void)
 
 /*---------------------------------------------------------------------------------------
  *  Name: TestOpenClose
- * This functions tests the basic functionality of OS_open and OS_close.
+ * This function tests the basic functionality of OS_open and OS_close.
 ---------------------------------------------------------------------------------------*/
 void TestOpenClose(void)
 {
@@ -485,7 +485,7 @@ void TestMkRmDirFreeBytes(void)
     status = OS_OpenCreate(&fd2, filename2, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat 2 = %d", (int)status);
 
-    /* write the propper buffers into each of the files */
+    /* write the proper buffers into each of the files */
     size   = strlen(buffer1);
     status = OS_write(fd1, buffer1, size);
     UtAssert_True(status == size, "status after write 1 = %d size = %lu", (int)status, (unsigned long)size);
@@ -796,7 +796,7 @@ void TestRename(void)
     status = OS_OpenCreate(&fd1, filename1, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
     UtAssert_True(status >= OS_SUCCESS, "status after creat 1 = %d", (int)status);
 
-    /* write the propper buffes into  the file */
+    /* write the proper buffers into  the file */
 
     size   = strlen(buffer1);
     status = OS_write(fd1, buffer1, size);
@@ -904,7 +904,7 @@ void TestStat(void)
 
 /*---------------------------------------------------------------------------------------
  *  Name: TestOpenFileAPI
- *  This function tests the the misc open File API:
+ *  This function tests the misc open File API:
  *    OS_FileOpenCheck(char *Filename);
  *    OS_CloseAllFiles(void);
  *    OS_CloseFileByName(char *Filename);

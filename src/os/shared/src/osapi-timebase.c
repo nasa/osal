@@ -50,7 +50,7 @@
 
 /*
  * Sanity checks on the user-supplied configuration
- * The relevent OS_MAX limit should be defined and greater than zero
+ * The relevant OS_MAX limit should be defined and greater than zero
  */
 #if !defined(OS_MAX_TIMEBASES) || (OS_MAX_TIMEBASES <= 0)
 #error "osconfig.h must define OS_MAX_TIMEBASES to a valid value"

@@ -127,7 +127,7 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
     /* check if task_create failed */
     if (status != RTEMS_SUCCESSFUL)
     {
-        /* Provide some freedback as to why this failed */
+        /* Provide some feedback as to why this failed */
         OS_printf("rtems_task_create failed: %s\n", rtems_status_text(status));
         return OS_ERROR;
     }

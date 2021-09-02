@@ -32,7 +32,7 @@
 #include <time.h>
 
 /**
- * \brief Idenfies the clock ID for OSAL clock operations on RTEMS
+ * \brief Identifies the clock ID for OSAL clock operations on RTEMS
  *
  * This is the POSIX clock ID that will be used to implement
  * OS_GetLocalTime() and OS_SetLocalTime().

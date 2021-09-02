@@ -24,9 +24,9 @@
  * Purpose: This code implements a standard set of asserts for use in unit tests.
  *
  * Design Notes:
- *    - All asserts evaluate a expression as true or false to determine if a unit test has
+ *    - All asserts evaluate an expression as true or false to determine if a unit test has
  *      passed or failed.  true means the test passed, false means the test failed.
- *    - All asserts return a boolen result to indicate the pass fail status.
+ *    - All asserts return a boolean result to indicate the pass fail status.
  *    - All asserts are implemented as macros to hide the __LINE__ and __FILE__ macros.
  *    - All asserts must call the function UtAssert.
  */
@@ -129,7 +129,7 @@ typedef struct
 #define UtAssert_Simple(Expression) UtAssert(Expression, #Expression, __FILE__, __LINE__)
 
 /**
- * \brief Evaluates a expression as either true or false.
+ * \brief Evaluates an expression as either true or false.
  *
  * true means the test passed, false means the test failed.
  */
@@ -546,7 +546,7 @@ UtAssert_CaseType_t UtAssert_GetContext(void);
  *
  * This is the name that was previously set via UtAssert_BeginTest()
  *
- * \note the appliction should not store this pointer, it may become
+ * \note the application should not store this pointer, it may become
  * invalid after the next call to UtAssert_EndTest()
  *
  * \returns pointer to current segment name
@@ -573,7 +573,7 @@ bool UtAssert(bool Expression, const char *Description, const char *File, uint32
 /**
  * \brief Assert function with specific CaseType (supports MIR, TSF, NA in addition to FAIL).
  *
- * This assert routine allows more consise description of the test case, as it supports
+ * This assert routine allows more concise description of the test case, as it supports
  * printf-style message strings to allow dynamic content in the messages.
  *
  * \param Expression    a boolean value which evaluates "true" if the test passes
@@ -650,7 +650,7 @@ void UtAssert_DoReport(const char *File, uint32 LineNum, uint32 SegmentNum, uint
 /**
  * The BSP overall test reporting function.
  *
- * Invokes the BSP-specific overall pass/fail reporting mechanism based the subsystem pass/fail counters.
+ * Invokes the BSP-specific overall pass/fail reporting mechanism based on the subsystem pass/fail counters.
  *
  * Like the UtAssert_DoReport() function, this is typically done as a message on the console/log however
  * it might be different for embedded targets.

@@ -113,7 +113,7 @@ extern OS_BSP_GlobalData_t OS_BSP_Global;
 
     Purpose: Get exclusive access to a BSP-provided service or object
 
-             Useful in conjuction with console output functions to avoid strings
+             Useful in conjunction with console output functions to avoid strings
              from multiple tasks getting mixed together in the final output.
 
  ------------------------------------------------------------------*/
