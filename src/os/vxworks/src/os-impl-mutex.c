@@ -81,7 +81,7 @@ int32 OS_MutSemCreate_Impl(const OS_object_token_t *token, uint32 options)
 
     if (tmp_sem_id == (SEM_ID)0)
     {
-        OS_DEBUG("semMInitalize() - vxWorks errno %d\n", errno);
+        OS_DEBUG("semMInitialize() - vxWorks errno %d\n", errno);
         return OS_SEM_FAILURE;
     }
 
