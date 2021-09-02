@@ -2,7 +2,7 @@
 # are otherwise not exposed.  This is generally required for any OSAL subsystem
 # which tracks an internal resource state (i.e. anything with a table).
 
-# NOTE: These source files are compile with OVERRIDES on the headers just like
+# NOTE: These source files are compiled with OVERRIDES on the headers just like
 # the FSW code is compiled.  This is how it is able to include internal headers
 # which otherwise would fail.  But that also means that adaptor code cannot call
 # any library functions, as this would also reach a stub, not the real function.

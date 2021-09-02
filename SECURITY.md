@@ -6,7 +6,7 @@ To report a vulnerability for the OSAL subsystem please [submit an issue](https:
 
 For general cFS vulnerabilities please [open a cFS framework issue](https://github.com/nasa/cfs/issues/new/choose) and see our [top-level security policy](https://github.com/nasa/cFS/security/policy) for additional information.
 
-In either case please use the "Bug Report" template and provide as much information as possible. Apply appropraite labels for each report. For security related reports, tag the issue with the "security" label.
+In either case please use the "Bug Report" template and provide as much information as possible. Apply appropriate labels for each report. For security related reports, tag the issue with the "security" label.
 
 ## Testing
 

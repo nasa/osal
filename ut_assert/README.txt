@@ -21,7 +21,7 @@ is true or false. This approach is much different than the Flight Software Branc
 historical approach to unit testing that creates a log file that requires developer 
 analysis in order to determine whether a test passed or failed. In order to use the 
 tools a developer populates the framework with their unit tests and links with the 
-ut-asssert library to create an executable.
+ut-assert library to create an executable.
 
 Project Goals
 
@@ -40,9 +40,9 @@ analysis in order to determine whether a test passed or failed.
 Functional Goals
 
 This approach allows developers to write self-verifying unit tests and the tools 
-provide a framework that allow unit tests to be bundled into a single executional 
+provide a framework that allow unit tests to be bundled into single executable 
 units. This aggregation allows comprehensive automated unit testing so as FSRL 
-components are added and/or modfiied automated regression unit testing can be 
+components are added and/or modified automated regression unit testing can be 
 performed.
 
 Evolvability Goals

@@ -74,8 +74,8 @@ instance, the path of the file that the file descriptor points to can be easily
  to determine statistics for a task, or the entire system. This information can all
  be retrieved with a single API, OS_FDGetInfo.
 
- All of possible file system calls are not implemented.  "Special" files requiring OS
- specific control/operations are by nature not portable.  Abstraction in this case is
+ All of the possible file system calls are not implemented.  "Special" files requiring
+ OS specific control/operations are by nature not portable.  Abstraction in this case
  is not possible, so the raw OS calls should be used (including open/close/etc).  Mixing
  with OSAL calls is not supported for such cases.  #OS_TranslatePath is available to
  support using open directly by an app and maintain abstraction on the file system.
