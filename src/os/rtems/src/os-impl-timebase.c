@@ -49,7 +49,7 @@ void OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks);
  ***************************************************************************************/
 
 /*
- * Prefer to use the MONOTONIC clock if available, as it will not get distrupted by setting
+ * Prefer to use the MONOTONIC clock if available, as it will not get disrupted by setting
  * the time like the REALTIME clock will.
  */
 #ifndef OS_PREFERRED_CLOCK
@@ -385,7 +385,7 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
         /* check if task_create failed */
         if (rtems_sc != RTEMS_SUCCESSFUL)
         {
-            /* Provide some freedback as to why this failed */
+            /* Provide some feedback as to why this failed */
             OS_printf("rtems_task_create failed: %s\n", rtems_status_text(rtems_sc));
             return_code = OS_TIMER_ERR_INTERNAL;
         }

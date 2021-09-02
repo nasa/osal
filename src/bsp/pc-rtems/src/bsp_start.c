@@ -101,7 +101,7 @@ void OS_BSP_Setup(void)
      * Known arguments are handled here, and unknown args are
      * saved for the UT application.
      *
-     * Batch mode is intended for non-interative execution.
+     * Batch mode is intended for non-interactive execution.
      *
      * It does two things:
      * - do not start the shell task
@@ -385,7 +385,7 @@ rtems_task Init(rtems_task_argument ignored)
 /* configuration information */
 
 /*
-** RTEMS OS Configuration defintions
+** RTEMS OS Configuration definitions
 */
 #define TASK_INTLEVEL 0
 #define CONFIGURE_INIT

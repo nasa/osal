@@ -30,7 +30,7 @@
 # either in the OSAL or the application which invoked OSAL.
 #
 # If set FALSE (default), then the OSAL bugcheck macro will evaluate its
-# boolean conditional and generate an action if that conditional evaulates
+# boolean conditional and generate an action if that conditional evaluates
 # false.  (The specific action to take is configured via a different
 # directive -- see OSAL_CONFIG_BUGCHECK_STRICT).
 #
@@ -73,7 +73,7 @@ set(OSAL_CONFIG_BUGCHECK_STRICT                  FALSE)
 #
 # Whether to include the Network API
 #
-# If set TRUE, the the socket abstraction (if applicable on the platform)
+# If set TRUE, the socket abstraction (if applicable on the platform)
 # will be included.  If set FALSE, then all calls to the network API will
 # return OS_ERR_NOT_IMPLEMENTED.
 #
@@ -276,12 +276,12 @@ set(OSAL_CONFIG_MAX_FILE_NAME           20
     CACHE STRING "Maximum Length of file names"
 )
 
-# Maximum length for an virtual path name (virtual directory + file)
+# Maximum length for a virtual path name (virtual directory + file)
 set(OSAL_CONFIG_MAX_PATH_LEN            64
     CACHE STRING "Maximum Length of path names"
 )
 
-# Maximum length allowed for a object (task,queue....) name
+# Maximum length allowed for an object (task,queue....) name
 set(OSAL_CONFIG_MAX_API_NAME            20
     CACHE STRING "Maximum Length of resource names"
 )

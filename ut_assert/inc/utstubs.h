@@ -42,7 +42,7 @@
 /**
  * Using a generic memory address as a key into table -
  * this should allow the function name (with a cast) to be used as the key,
- * but allow allows a fancier hash algorithm if needed.
+ * but allows a fancier hash algorithm if needed.
  * Note - in pedantic mode using a "void *" here triggers a warning
  * if used with a function address, but no warning is generated if using
  * an integer memory address type.

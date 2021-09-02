@@ -83,13 +83,13 @@ $(FILETGTS):
 	$(MAKE) -C $(O) $(@)
 endif
 
-# The "prep" step requires extra options that are specified via enviroment variables.
+# The "prep" step requires extra options that are specified via environment variables.
 # Certain special ones should be passed via cache (-D) options to CMake.
 # These are only needed for the "prep" target but they are computed globally anyway.
 #
-# Note this simple makefile just builds for one target, could trivally manage
+# Note this simple makefile just builds for one target, could trivially manage
 # multiple targets by changing build directory.  More complex target
-# list examples are provide by cFE..
+# list examples are provided by cFE.
 PREP_OPTS := -DOSAL_SYSTEM_BSPTYPE=$(BSPTYPE) -DINSTALL_TARGET_LIST=.
 
 ifneq ($(INSTALLPREFIX),)

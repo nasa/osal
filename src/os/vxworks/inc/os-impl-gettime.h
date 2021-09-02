@@ -32,7 +32,7 @@
 #include <time.h>
 
 /**
- * \brief Idenfies the clock ID for OSAL clock operations on VxWorks
+ * \brief Identifies the clock ID for OSAL clock operations on VxWorks
  *
  * This is the POSIX clock ID that will be used to implement
  * OS_GetLocalTime() and OS_SetLocalTime().

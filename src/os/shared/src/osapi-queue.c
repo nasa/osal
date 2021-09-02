@@ -47,7 +47,7 @@
 
 /*
  * Sanity checks on the user-supplied configuration
- * The relevent OS_MAX limit should be defined and greater than zero
+ * The relevant OS_MAX limit should be defined and greater than zero
  */
 #if !defined(OS_MAX_QUEUES) || (OS_MAX_QUEUES <= 0)
 #error "osconfig.h must define OS_MAX_QUEUES to a valid value"

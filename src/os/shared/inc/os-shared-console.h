@@ -87,7 +87,7 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token);
    This is a notification API that is invoked whenever there
    is new data available in the console output buffer.
 
-   It is only used of the console is configured for async operation,
+   It is only used if the console is configured for async operation,
    and it should wakeup the actual console servicing thread.
  ------------------------------------------------------------------*/
 void OS_ConsoleWakeup_Impl(const OS_object_token_t *token);

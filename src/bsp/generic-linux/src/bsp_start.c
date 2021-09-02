@@ -136,7 +136,7 @@ void OS_BSP_Unlock_Impl(void)
     }
     else
     {
-        /* Restore previous cancelability state */
+        /* Restore previous cancellability state */
         pthread_setcancelstate(OS_BSP_GenericLinuxGlobal.AccessCancelState, NULL);
     }
 }
@@ -212,7 +212,7 @@ int main(int argc, char *argv[])
      * Note that the first argument (0) is the command name.  The
      * first "real" argument is at position 1.
      *
-     * However this still needs to pass it through as the appliction
+     * However this still needs to pass it through as the application
      * might still want to use library "getopt" and this expects the
      * first parameter to be this way.
      */

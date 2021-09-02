@@ -168,7 +168,7 @@ void Test_OS_SocketConnect_Impl(void)
     addr.ActualLength = sizeof(struct OCS_sockaddr_in);
     OSAPI_TEST_FUNCTION_RC(OS_SocketConnect_Impl, (&token, &addr, 0), OS_ERR_BAD_ADDRESS);
 
-    /* Sucessful connect */
+    /* Successful connect */
     sa->sa_family = OCS_AF_INET;
     OSAPI_TEST_FUNCTION_RC(OS_SocketConnect_Impl, (&token, &addr, 0), OS_SUCCESS);
 
@@ -185,7 +185,7 @@ void Test_OS_SocketConnect_Impl(void)
     UT_SetDeferredRetcode(UT_KEY(OS_SelectSingle_Impl), 1, UT_ERR_UNIQUE);
     OSAPI_TEST_FUNCTION_RC(OS_SocketConnect_Impl, (&token, &addr, 0), UT_ERR_UNIQUE);
 
-    /* Timout error by clearing select flags with hook */
+    /* Timeout error by clearing select flags with hook */
     selectflags = 0;
     UT_SetHookFunction(UT_KEY(OS_SelectSingle_Impl), UT_Hook_OS_SelectSingle_Impl, &selectflags);
     OSAPI_TEST_FUNCTION_RC(OS_SocketConnect_Impl, (&token, &addr, 0), OS_ERROR_TIMEOUT);
@@ -325,7 +325,7 @@ void Test_OS_SocketSendTo_Impl(void)
     /* Set up token */
     token.obj_idx = UT_INDEX_0;
 
-    /* Bad adderss length */
+    /* Bad address length */
     sa->sa_family     = -1;
     addr.ActualLength = sizeof(struct OCS_sockaddr_in);
     OSAPI_TEST_FUNCTION_RC(OS_SocketSendTo_Impl, (&token, buffer, sizeof(buffer), &addr), OS_ERR_BAD_ADDRESS);

@@ -314,7 +314,7 @@ void TestQueues(void)
 
     /*
      * Now that the Queues are created, its time to see if we can find
-     * the propper ID by the name of the queue;
+     * the proper ID by the name of the queue;
      */
     status = OS_QueueGetIdByName(&msgq_0, "q 0");
     UtAssert_True(status == OS_SUCCESS, "OS_QueueGetIdByName, q 0");

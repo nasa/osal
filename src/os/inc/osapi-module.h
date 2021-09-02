@@ -55,8 +55,8 @@
  *
  * When supplied as the "flags" argument to OS_ModuleLoad(), this indicates
  * that the symbols in the loaded module should NOT be added to the global
- * symbol table.  This means the symbols in the loaded library will not available
- * to for use by other modules.
+ * symbol table.  This means the symbols in the loaded library will not be
+ * available for use by other modules.
  *
  * Use this option is recommended for cases where no other entities will need
  * to reference symbols within this module.  This helps ensure that the module
