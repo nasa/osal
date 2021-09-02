@@ -1,6 +1,6 @@
 Explanation:
 
-This osal-core-test.c file is a test to designed to demonstrate the functionality of the functions of osapi.c in the ../os/<OS>/ directory. The tests are separated into different modules- tasks, queues, binary semaphores, mutexes, and *GetInfo functions. 
+This osal-core-test.c file is a test designed to demonstrate the functionality of the functions of osapi.c in the ../os/<OS>/ directory. The tests are separated into different modules- tasks, queues, binary semaphores, mutexes, and *GetInfo functions. 
 
 This separation allows for the modules to be run individually or concurrently. Each module does not affect any of the others.
 
@@ -18,7 +18,7 @@ Tries to get the ID of the tasks by their names.
 
 Tries to Delete the tasks created previously.
 
-NOTE: for clairity, the tasks are declared in test1.h
+NOTE: for clarity, the tasks are declared in test1.h
 
 ************ TestQueues *************
 

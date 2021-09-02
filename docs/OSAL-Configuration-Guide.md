@@ -76,7 +76,7 @@ The following sections provide instructions on how to:
 
 -   Configure the build directory for an OSAL application
 
--   Configure a OSAL Application
+-   Configure an OSAL Application
 
 -   Build the OSAL Application
 
@@ -135,7 +135,7 @@ Most parameters set upper bounds on the number of OS objects that can be created
 the OSAL keeps track of allocated OS objects using fixed size tables.
 
 If customization is desired, one should not modify the `default_config.cmake` file directly,
-but rather provide a alternative values by one of the override methods:
+but rather provide alternative values by one of the override methods:
 
 - If configuring OSAL as a standalone build for testing, values for options can be
   specified as `-D` options on the cmake command.  This is a common method of specifying
@@ -486,13 +486,13 @@ software to remain portable.
 There are a few ways to map these host file systems to OSAL file
 systems:
 
--   **Map existing target file systems to a OSAL path**. This is one of
+-   **Map existing target file systems to an OSAL path**. This is one of
 the most common ways to map the Non-Volatile disk to the OSAL. The OSAL
 relies on the target OS to create/mount a file system and it simply is
 given a mapping to the disk to allow the OSAL to access it.
 
 -   **Create EEPROM/Flash/ATA File systems**. The OSAL has the ability
-on some targets to format or initialize a EEPROM or ATA disk device.
+on some targets to format or initialize an EEPROM or ATA disk device.
 This is less commonly used.
 
 -   **Create RAM File Systems**. The OSAL can create RAM disks on the
@@ -510,7 +510,7 @@ mappings via API calls during its startup.  This may be done any time after call
 `OS_API_Init()`.
 
 For example, for Core Flight System (cFS) configurations that require persistent
-storage to be provided under a virual directory called `/cf`, the platform-specific
+storage to be provided under a virtual directory called `/cf`, the platform-specific
 CFE PSP layer configures the mapping in an appropriate manner by calling
 the `OS_FileSysAddFixedMap()` API during its OS_Application_Startup() implementation.
 
@@ -633,14 +633,14 @@ qemu-system-i386 -m 128 -no-reboot -display none -serial stdio \
 ```
 
 Where `<image>.exe` refers to any of the test programs or applications
-that are provided with OSAL.  This command puts the virual console on
+that are provided with OSAL.  This command puts the virtual console on
 the same terminal where the QEMU emulator is started.  The program
 should run automatically after the kernel boots.  The system may be
 stopped by issuing the "shutdown" command at the shell, or by pressing
 the CTRL+A followed by CTRL+C which terminates QEMU.
 
 
-## Generc Linux Platform
+## Generic Linux Platform
 
 The OSAL can run on many Linux distributions. Testing is done with currently
 supported Ubuntu LTS versions (up through 20.04 at the time of the current
@@ -690,7 +690,7 @@ each OSAL subsystem is specially compiled with special flags to enable
 profiling (to track line and branch coverage) and linked with _stub_
 implementations of all other dependencies.  This way, test cases can
 trigger error paths from library calls that would otherwise not be possible
-in a black box test enviornment.
+in a black box test environment.
 
 These test programs are executed just as any other application program.
 
@@ -720,7 +720,7 @@ the test programs will be copied to the output location/staging area.
 ### Option 1: Execute single test directly from a build tree
 
 The tests can be executed directly in-place in the build directory.  This method often useful
-when debugging, as the exectuable can also be run in a debugger (i.e. gdb) this way.
+when debugging, as the executable can also be run in a debugger (i.e. gdb) this way.
 
 The following example executes the task subsystem coverage test for the shared layer, but any
 other test can be run in a similar fashion.
