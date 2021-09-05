@@ -42,6 +42,11 @@
 #include "os-shared-mutex.h"
 
 /*
+ * Other OSAL public APIs used by this module
+ */
+#include "osapi-task.h"
+
+/*
  * Sanity checks on the user-supplied configuration
  * The relevent OS_MAX limit should be defined and greater than zero
  */
@@ -92,16 +97,9 @@ int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options)
     OS_object_token_t           token;
     OS_mutex_internal_record_t *mutex;
 
-    /* Check for NULL pointers */
-    if (sem_id == NULL || sem_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    if (strlen(sem_name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(sem_id);
+    OS_CHECK_APINAME(sem_name);
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
     return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, sem_name, &token);
@@ -200,7 +198,6 @@ int32 OS_MutSemTake(osal_id_t sem_id)
     OS_mutex_internal_record_t *mutex;
     OS_object_token_t           token;
     int32                       return_code;
-    osal_id_t                   self_task;
 
     /* Check Parameters */
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, sem_id, &token);
@@ -211,16 +208,8 @@ int32 OS_MutSemTake(osal_id_t sem_id)
         return_code = OS_MutSemTake_Impl(&token);
         if (return_code == OS_SUCCESS)
         {
-            self_task = OS_TaskGetId();
-
-            if (OS_ObjectIdDefined(mutex->last_owner))
-            {
-                OS_DEBUG("WARNING: Task %lu taking mutex %lu while owned by task %lu\n",
-                         OS_ObjectIdToInteger(self_task), OS_ObjectIdToInteger(sem_id),
-                         OS_ObjectIdToInteger(mutex->last_owner));
-            }
-
-            mutex->last_owner = self_task;
+            /* Always set the owner if OS_MutSemTake_Impl() returned success */
+            mutex->last_owner = OS_TaskGetId();
         }
     }
 
@@ -240,10 +229,9 @@ int32 OS_MutSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
 {
     int32 return_code;
 
-    if (sem_id == NULL || sem_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(sem_id);
+    OS_CHECK_POINTER(sem_name);
 
     return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, sem_name, sem_id);
 
@@ -266,10 +254,7 @@ int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
     OS_object_token_t   token;
 
     /* Check parameters */
-    if (mut_prop == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(mut_prop);
 
     memset(mut_prop, 0, sizeof(OS_mut_sem_prop_t));
 
@@ -278,7 +263,7 @@ int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_mutex_table, token);
 
-        strncpy(mut_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(mut_prop->name, record->name_entry, sizeof(mut_prop->name) - 1);
         mut_prop->creator = record->creator;
 
         return_code = OS_MutSemGetInfo_Impl(&token, mut_prop);

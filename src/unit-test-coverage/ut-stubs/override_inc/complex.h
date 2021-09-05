@@ -18,14 +18,20 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for complex.h */
-#ifndef _OSAL_OVERRIDE_COMPLEX_H_
-#define _OSAL_OVERRIDE_COMPLEX_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for complex.h
+ */
 
-#include <OCS_complex.h>
+#ifndef OVERRIDE_COMPLEX_H
+#define OVERRIDE_COMPLEX_H
+
+#include "OCS_complex.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in complex.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_COMPLEX_H_ */
+#endif /* OVERRIDE_COMPLEX_H */

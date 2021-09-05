@@ -5,5 +5,4 @@
 ##########################################################################
 
 # this file is a placeholder for POSIX-specific compile tuning
-# currently no extra flags/definitions needed
- 
+add_definitions(-D_POSIX_OS_)

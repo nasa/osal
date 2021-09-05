@@ -19,8 +19,7 @@
  */
 
 /**
- * \file   bsp-impl.h
- * \author joseph.p.hickey@nasa.gov
+ * \file
  *
  * Purpose: Contains functions prototype definitions and variables declarations
  *          for the OSAL BSP layer
@@ -40,10 +39,14 @@
  *    BSP-provided console or debug terminal device.
  */
 
-#ifndef _osapi_bsp_impl_
-#define _osapi_bsp_impl_
+#ifndef BSP_IMPL_H
+#define BSP_IMPL_H
 
-#include "osapi.h"
+#include <stdio.h>
+
+#include "osapi-common.h"
+#include "osapi-bsp.h"
+#include "osapi-error.h"
 
 /*
  * A set of simplified console control options
@@ -106,6 +109,28 @@ extern OS_BSP_GlobalData_t OS_BSP_Global;
 /********************************************************************/
 
 /*----------------------------------------------------------------
+   Function: OS_BSP_Lock_Impl
+
+    Purpose: Get exclusive access to a BSP-provided service or object
+
+             Useful in conjuction with console output functions to avoid strings
+             from multiple tasks getting mixed together in the final output.
+
+ ------------------------------------------------------------------*/
+void OS_BSP_Lock_Impl(void);
+
+/*----------------------------------------------------------------
+   Function: OS_BSP_Unlock_Impl
+
+    Purpose: Release exclusive access to a BSP-provided service or object
+
+             This must be called after a call to OS_BSP_Lock_Impl() once
+             access is complete, to allow other tasks to use the resource.
+
+ ------------------------------------------------------------------*/
+void OS_BSP_Unlock_Impl(void);
+
+/*----------------------------------------------------------------
    Function: OS_BSP_ConsoleOutput_Impl
 
     Purpose: Low level raw console data output.  Writes a sequence of
@@ -151,4 +176,4 @@ void OS_BSP_Shutdown_Impl(void);
 /*********************
    END bsp-impl.h
  *********************/
-#endif /* _osapi_bsp_impl_ */
+#endif /* BSP_IMPL_H */

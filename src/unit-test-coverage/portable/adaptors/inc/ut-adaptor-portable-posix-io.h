@@ -19,26 +19,16 @@
  */
 
 /**
- * \file     ut-adaptor-portable-posix-io.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-portable-posix-io
  */
 
-#ifndef INCLUDE_UT_ADAPTOR_PORTABLE_POSIX_IO_H_
-#define INCLUDE_UT_ADAPTOR_PORTABLE_POSIX_IO_H_
+#ifndef UT_ADAPTOR_PORTABLE_POSIX_IO_H
+#define UT_ADAPTOR_PORTABLE_POSIX_IO_H
 
-/**
- * \file     ut-osfileapi.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
- *
- */
-
-#ifndef _UT_PPOSFILEAPI_H_
-#define _UT_PPOSFILEAPI_H_
-
-#include <common_types.h>
+#include "common_types.h"
 
 /*****************************************************
  *
@@ -49,7 +39,8 @@
  *
  *****************************************************/
 void UT_PortablePosixIOTest_Set_Selectable(osal_index_t local_id, bool is_selectable);
+void UT_PortablePosixIOTest_Set_FD(osal_index_t local_id, int fd);
+bool UT_PortablePosixIOTest_Get_Selectable(osal_index_t local_id);
+void UT_PortablePosixIOTest_ResetImpl(osal_index_t local_id);
 
-#endif /* _UT_OSFILEAPI_H_ */
-
-#endif /* INCLUDE_UT_ADAPTOR_PORTABLE_POSIX_IO_H_ */
+#endif /* UT_ADAPTOR_PORTABLE_POSIX_IO_H */

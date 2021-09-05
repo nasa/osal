@@ -19,16 +19,17 @@
  */
 
 /**
- * \file     os-shared-task.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_TASK_H_
-#define INCLUDE_OS_SHARED_TASK_H_
+#ifndef OS_SHARED_TASK_H
+#define OS_SHARED_TASK_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-task.h"
+#include "os-shared-globaldefs.h"
 
 /*tasks */
 typedef struct
@@ -95,6 +96,16 @@ int32 OS_TaskMatch_Impl(const OS_object_token_t *token);
 int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags);
 
 /*----------------------------------------------------------------
+   Function: OS_TaskDetach_Impl
+
+    Purpose: Sets the thread so that the OS resources associated with the task
+             will be released when the thread exits itself
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_TaskDetach_Impl(const OS_object_token_t *token);
+
+/*----------------------------------------------------------------
    Function: OS_TaskDelete_Impl
 
     Purpose: Free the OS resources associated with the specified task
@@ -155,7 +166,7 @@ int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_p
     Purpose: Perform registration actions after new task creation
 
         NOTE: This is invoked via the OS_TaskEntryPoint() immediately
-              after new task creation, not through OS_TaskRegister() API
+              after new task creation
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
@@ -181,4 +192,4 @@ bool OS_TaskIdMatchSystemData_Impl(void *ref, const OS_object_token_t *token, co
  ------------------------------------------------------------------*/
 int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size);
 
-#endif /* INCLUDE_OS_SHARED_TASK_H_ */
+#endif /* OS_SHARED_TASK_H */

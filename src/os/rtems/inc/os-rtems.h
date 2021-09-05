@@ -19,17 +19,17 @@
  */
 
 /**
- * \file     os-rtems.h
+ * \file
+ *
  * \ingroup  rtems
- * \author   joseph.p.hickey@nasa.gov
  *
  * Purpose: This file contains definitions that are shared across the RTEMS
  *          OSAL implementation.  This file is private to the RTEMS port and it
  *          may contain RTEMS-specific definitions.
  */
 
-#ifndef INCLUDE_OS_RTEMS_H_
-#define INCLUDE_OS_RTEMS_H_
+#ifndef OS_RTEMS_H
+#define OS_RTEMS_H
 
 /****************************************************************************************
                                     COMMON INCLUDE FILES
@@ -47,7 +47,7 @@
 #include <rtems/malloc.h>
 #include <rtems/rtems/intr.h>
 
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -56,15 +56,15 @@
  * Handle the data structure and API name changes between RTEMS 4.11 and RTEMS 5.1
  */
 #ifdef _RTEMS_5_
-    #define OSAL_HEAP_INFO_BLOCK    Heap_Information_block
-    #define OSAL_UNRESOLV_REC_TYPE  rtems_rtl_unresolv_rec
-    #define OSAL_UNRESOLVED_SYMBOL  rtems_rtl_unresolved_symbol
-    #define OSAL_UNRESOLVED_ITERATE rtems_rtl_unresolved_iterate
+#define OSAL_HEAP_INFO_BLOCK    Heap_Information_block
+#define OSAL_UNRESOLV_REC_TYPE  rtems_rtl_unresolv_rec
+#define OSAL_UNRESOLVED_SYMBOL  rtems_rtl_unresolved_symbol
+#define OSAL_UNRESOLVED_ITERATE rtems_rtl_unresolved_iterate
 #else
-    #define OSAL_HEAP_INFO_BLOCK    region_information_block
-    #define OSAL_UNRESOLV_REC_TYPE  rtems_rtl_unresolv_rec_t
-    #define OSAL_UNRESOLVED_SYMBOL  rtems_rtl_unresolved_name
-    #define OSAL_UNRESOLVED_ITERATE rtems_rtl_unresolved_interate
+#define OSAL_HEAP_INFO_BLOCK    region_information_block
+#define OSAL_UNRESOLV_REC_TYPE  rtems_rtl_unresolv_rec_t
+#define OSAL_UNRESOLVED_SYMBOL  rtems_rtl_unresolved_name
+#define OSAL_UNRESOLVED_ITERATE rtems_rtl_unresolved_interate
 #endif
 
 /****************************************************************************************
@@ -100,4 +100,4 @@ int32 OS_Rtems_FileSysAPI_Impl_Init(void);
 
 int32 OS_Rtems_TableMutex_Init(osal_objtype_t idtype);
 
-#endif /* INCLUDE_OS_RTEMS_H_ */
+#endif /* OS_RTEMS_H */

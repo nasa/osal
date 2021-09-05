@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for dlfcn.h */
-#ifndef _OSAL_OVERRIDE_DLFCN_H_
-#define _OSAL_OVERRIDE_DLFCN_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for dlfcn.h
+ */
 
-#include <OCS_dlfcn.h>
+#ifndef OVERRIDE_DLFCN_H
+#define OVERRIDE_DLFCN_H
+
+#include "OCS_dlfcn.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in dlfcn.h */
@@ -33,4 +39,4 @@
 #define dlopen  OCS_dlopen
 #define dlsym   OCS_dlsym
 
-#endif /* _OSAL_OVERRIDE_DLFCN_H_ */
+#endif /* OVERRIDE_DLFCN_H */

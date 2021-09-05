@@ -47,6 +47,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 /*
  * User defined include files
@@ -54,6 +55,16 @@
 #include "os-shared-common.h"
 #include "os-shared-idmap.h"
 #include "os-shared-printf.h"
+
+/*
+ * The choice of whether to run a separate utility task
+ * comes from osal compile-time config
+ */
+#ifdef OSAL_CONFIG_CONSOLE_ASYNC
+#define OS_CONSOLE_IS_ASYNC true
+#else
+#define OS_CONSOLE_IS_ASYNC false
+#endif
 
 /* reserve buffer memory for the printf console device */
 static char OS_printf_buffer_mem[(sizeof(OS_PRINTF_CONSOLE_NAME) + OS_BUFFER_SIZE) * OS_BUFFER_MSG_DEPTH];
@@ -98,6 +109,7 @@ int32 OS_ConsoleAPI_Init(void)
          */
         console->BufBase = OS_printf_buffer_mem;
         console->BufSize = sizeof(OS_printf_buffer_mem);
+        console->IsAsync = OS_CONSOLE_IS_ASYNC;
 
         return_code = OS_ConsoleCreate_Impl(&token);
 
@@ -110,7 +122,7 @@ int32 OS_ConsoleAPI_Init(void)
         OS_SharedGlobalVars.PrintfEnabled = true;
     }
 
-    return OS_SUCCESS;
+    return return_code;
 } /* end OS_ConsoleAPI_Init */
 
 /*
@@ -233,7 +245,16 @@ int32 OS_ConsoleWrite(osal_id_t console_id, const char *Str)
          * This is done while still locked, so it can support
          * either a synchronous or asynchronous implementation.
          */
-        OS_ConsoleWakeup_Impl(&token);
+        if (console->IsAsync)
+        {
+            /* post the sem for the utility task to run */
+            OS_ConsoleWakeup_Impl(&token);
+        }
+        else
+        {
+            /* output directly */
+            OS_ConsoleOutput_Impl(&token);
+        }
 
         OS_ObjectIdRelease(&token);
     }
@@ -255,7 +276,9 @@ void OS_printf(const char *String, ...)
     char    msg_buffer[OS_BUFFER_SIZE];
     int     actualsz;
 
-    if (!OS_SharedGlobalVars.Initialized)
+    BUGCHECK((String) != NULL, )
+
+    if (OS_SharedGlobalVars.GlobalState != OS_INIT_MAGIC_NUMBER)
     {
         /*
          * Catch some historical mis-use of the OS_printf() call.
@@ -274,14 +297,11 @@ void OS_printf(const char *String, ...)
          * If debugging is not enabled, then this message will be silently
          * discarded.
          */
-        OS_DEBUG("BUG: OS_printf() called before init: %s", String);
+        OS_DEBUG("BUG: OS_printf() called when OSAL not initialized: %s", String);
     }
     else if (OS_SharedGlobalVars.PrintfEnabled)
     {
-        /*
-         * Call vsnprintf() to determine the actual size of the
-         * string we are going to write to the buffer after formatting.
-         */
+        /* Format and determine the size of string to write */
         va_start(va, String);
         actualsz = vsnprintf(msg_buffer, sizeof(msg_buffer), String, va);
         va_end(va);

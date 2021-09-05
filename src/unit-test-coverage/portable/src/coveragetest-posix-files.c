@@ -30,17 +30,18 @@
 #include "os-shared-file.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_stdio.h>
-#include <OCS_stdlib.h>
-#include <OCS_unistd.h>
-#include <OCS_fcntl.h>
-#include <OCS_stat.h>
+#include "OCS_stdio.h"
+#include "OCS_stdlib.h"
+#include "OCS_unistd.h"
+#include "OCS_fcntl.h"
+#include "OCS_stat.h"
+#include "OCS_errno.h"
 
 void Test_OS_FileOpen_Impl(void)
 {
     /*
      * Test Case For:
-     * int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access)
+     * int32 OS_FileOpen_Impl(uint32 local_id, const char *local_path, int32 flags, int32 access_mode)
      */
     OS_object_token_t token;
 
@@ -68,7 +69,7 @@ void Test_OS_FileStat_Impl(void)
     /* failure mode */
     UT_SetDefaultReturnValue(UT_KEY(OCS_stat), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileStat_Impl, ("local", &FileStats), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_stat));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_stat));
 
     /* nominal, no permission bits */
     memset(&FileStats, 0, sizeof(FileStats));
@@ -81,6 +82,9 @@ void Test_OS_FileStat_Impl(void)
     RefStat.st_mode  = ~((OCS_mode_t)0);
     RefStat.st_size  = 1234;
     RefStat.st_mtime = 5678;
+    /* Also set the full resolution timespec */
+    RefStat.st_mtim.tv_sec  = 5678;
+    RefStat.st_mtim.tv_nsec = 3456;
     UT_SetDataBuffer(UT_KEY(OCS_stat), &RefStat, sizeof(RefStat), false);
     OSAPI_TEST_FUNCTION_RC(OS_FileStat_Impl, ("local", &FileStats), OS_SUCCESS);
 
@@ -90,31 +94,48 @@ void Test_OS_FileStat_Impl(void)
     UtAssert_True(OS_FILESTAT_READ(FileStats), "File Read Bit set");
     UtAssert_True(OS_FILESTAT_ISDIR(FileStats), "Directory Bit set");
     UtAssert_True(OS_FILESTAT_SIZE(FileStats) == 1234, "Size match");
-    UtAssert_True(OS_FILESTAT_TIME(FileStats) == 5678, "Time match");
+    UtAssert_True(OS_FILESTAT_TIME(FileStats) == 5678, "Time match (seconds)");
+
+    /* Repeat without matching uid/gid */
+    RefStat.st_uid = ~RefStat.st_uid;
+    RefStat.st_gid = ~RefStat.st_gid;
+    UT_SetDataBuffer(UT_KEY(OCS_stat), &RefStat, sizeof(RefStat), false);
+    OSAPI_TEST_FUNCTION_RC(OS_FileStat_Impl, ("local", &FileStats), OS_SUCCESS);
 }
 
 void Test_OS_FileChmod_Impl(void)
 {
     /*
      * Test Case For:
-     * int32 OS_FileChmod_Impl(const char *local_path, uint32 access)
+     * int32 OS_FileChmod_Impl(const char *local_path, uint32 access_mode)
      */
     struct OCS_stat RefStat;
 
-    /* failure mode 0 (open) */
-    UT_SetDefaultReturnValue(UT_KEY(OCS_open), -1);
+    /* Read only fail, write succeeds */
+    UT_SetDeferredRetcode(UT_KEY(OCS_open), 1, -1);
+    OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_SUCCESS);
+
+    /* Both opens fail */
+    UT_SetDeferredRetcode(UT_KEY(OCS_open), 1, -1);
+    UT_SetDeferredRetcode(UT_KEY(OCS_open), 1, -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_open));
 
     /* failure mode 1 (fstat) */
-    UT_SetDefaultReturnValue(UT_KEY(OCS_fstat), -1);
+    UT_SetDeferredRetcode(UT_KEY(OCS_fstat), 1, -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_fstat));
 
     /* failure mode 2 (fchmod) */
     UT_SetDefaultReturnValue(UT_KEY(OCS_fchmod), -1);
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_fchmod));
+
+    /* non implemented error, e.g. such as DOS Filesystem with no perms  */
+    OCS_errno = OCS_ENOTSUP;
+    OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERR_NOT_IMPLEMENTED);
+    OCS_errno = OCS_ENOSYS;
+    OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERR_NOT_IMPLEMENTED);
+    OCS_errno = OCS_EROFS;
+    OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_ERR_NOT_IMPLEMENTED);
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_fchmod));
 
     /* all permission bits with uid/gid match */
     RefStat.st_uid   = UT_PortablePosixFileTest_GetSelfEUID();
@@ -122,6 +143,9 @@ void Test_OS_FileChmod_Impl(void)
     RefStat.st_mode  = ~((OCS_mode_t)0);
     RefStat.st_size  = 1234;
     RefStat.st_mtime = 5678;
+    /* Also set the full resolution timespec */
+    RefStat.st_mtim.tv_sec  = 5678;
+    RefStat.st_mtim.tv_nsec = 3456;
     UT_SetDataBuffer(UT_KEY(OCS_fstat), &RefStat, sizeof(RefStat), false);
 
     /* nominal 1 - full permissions with file owned by own uid/gid */

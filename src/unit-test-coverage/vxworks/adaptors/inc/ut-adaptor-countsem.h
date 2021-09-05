@@ -19,18 +19,18 @@
  */
 
 /**
- * \file     ut-adaptor-countsem.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-countsem
  */
 
-#ifndef INCLUDE_UT_ADAPTOR_COUNTSEM_H_
-#define INCLUDE_UT_ADAPTOR_COUNTSEM_H_
+#ifndef UT_ADAPTOR_COUNTSEM_H
+#define UT_ADAPTOR_COUNTSEM_H
 
-#include <common_types.h>
-#include <OCS_taskLib.h>
-#include <OCS_semLib.h>
+#include "common_types.h"
+#include "OCS_taskLib.h"
+#include "OCS_semLib.h"
 
 extern void *const  UT_Ref_OS_impl_count_sem_table;
 extern size_t const UT_Ref_OS_impl_count_sem_table_SIZE;
@@ -46,4 +46,4 @@ extern size_t const UT_Ref_OS_impl_count_sem_table_SIZE;
 
 int32 UT_Call_OS_VxWorks_CountSemAPI_Impl_Init(void);
 
-#endif /* INCLUDE_UT_ADAPTOR_COUNTSEM_H_ */
+#endif /* UT_ADAPTOR_COUNTSEM_H */

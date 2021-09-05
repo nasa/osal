@@ -50,6 +50,16 @@ typedef struct
 
 BSP_UT_GlobalData_t BSP_UT_Global;
 
+void UT_BSP_Lock(void)
+{
+    OS_BSP_Lock_Impl();
+}
+
+void UT_BSP_Unlock(void)
+{
+    OS_BSP_Unlock_Impl();
+}
+
 void UT_BSP_Setup(void)
 {
     uint8        UserShift;
@@ -106,56 +116,37 @@ void UT_BSP_StartTestSegment(uint32 SegmentNumber, const char *SegmentName)
 
 void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage)
 {
-    const char *Prefix;
-    char        Buffer[16];
-    uint32      TermModeBits = OS_BSP_CONSOLEMODE_NORMAL;
-    uint32      MsgEnabled   = BSP_UT_Global.CurrVerbosity >> MessageType;
+    char   Buffer[16];
+    size_t MsgLen;
+    uint32 TermModeBits = OS_BSP_CONSOLEMODE_NORMAL;
+    uint32 MsgEnabled   = BSP_UT_Global.CurrVerbosity >> MessageType;
 
     if (MsgEnabled & 1)
     {
+        UT_BSP_Lock();
+
+        /* Determine if the message type warrants special treatment (color/highlight/etc). */
         switch (MessageType)
         {
             case UTASSERT_CASETYPE_ABORT:
-                TermModeBits = OS_BSP_CONSOLEMODE_HIGHLIGHT | OS_BSP_CONSOLEMODE_RED;
-                Prefix       = "ABORT";
-                break;
             case UTASSERT_CASETYPE_FAILURE:
                 TermModeBits = OS_BSP_CONSOLEMODE_HIGHLIGHT | OS_BSP_CONSOLEMODE_RED;
-                Prefix       = "FAIL";
                 break;
             case UTASSERT_CASETYPE_MIR:
+            case UTASSERT_CASETYPE_WARN:
                 TermModeBits = OS_BSP_CONSOLEMODE_HIGHLIGHT | OS_BSP_CONSOLEMODE_RED | OS_BSP_CONSOLEMODE_GREEN;
-                Prefix       = "MIR";
                 break;
             case UTASSERT_CASETYPE_TSF:
-                TermModeBits = OS_BSP_CONSOLEMODE_HIGHLIGHT | OS_BSP_CONSOLEMODE_RED | OS_BSP_CONSOLEMODE_BLUE;
-                Prefix       = "TSF";
-                break;
             case UTASSERT_CASETYPE_TTF:
-                Prefix = "TTF";
-                break;
-            case UTASSERT_CASETYPE_NA:
-                Prefix = "N/A";
+                TermModeBits = OS_BSP_CONSOLEMODE_HIGHLIGHT | OS_BSP_CONSOLEMODE_RED | OS_BSP_CONSOLEMODE_BLUE;
                 break;
             case UTASSERT_CASETYPE_BEGIN:
                 OS_BSP_ConsoleOutput_Impl("\n", 1); /* add a bit of extra whitespace between tests */
-                Prefix = "BEGIN";
-                break;
-            case UTASSERT_CASETYPE_END:
-                Prefix = "END";
                 break;
             case UTASSERT_CASETYPE_PASS:
                 TermModeBits = OS_BSP_CONSOLEMODE_HIGHLIGHT | OS_BSP_CONSOLEMODE_GREEN;
-                Prefix       = "PASS";
-                break;
-            case UTASSERT_CASETYPE_INFO:
-                Prefix = "INFO";
-                break;
-            case UTASSERT_CASETYPE_DEBUG:
-                Prefix = "DEBUG";
                 break;
             default:
-                Prefix = "OTHER";
                 break;
         }
 
@@ -164,7 +155,7 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage)
             TermModeBits = OS_BSP_CONSOLEMODE_NORMAL;
         }
 
-        snprintf(Buffer, sizeof(Buffer), "[%5s]", Prefix);
+        snprintf(Buffer, sizeof(Buffer), "[%5s]", UtAssert_GetCaseTypeAbbrev(MessageType));
 
         if (TermModeBits != OS_BSP_CONSOLEMODE_NORMAL)
         {
@@ -179,8 +170,14 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage)
         }
 
         OS_BSP_ConsoleOutput_Impl(" ", 1);
-        OS_BSP_ConsoleOutput_Impl(OutputMessage, strlen(OutputMessage));
-        OS_BSP_ConsoleOutput_Impl("\n", 1);
+        MsgLen = strlen(OutputMessage);
+        OS_BSP_ConsoleOutput_Impl(OutputMessage, MsgLen);
+        if (MsgLen == 0 || OutputMessage[MsgLen - 1] != '\n')
+        {
+            OS_BSP_ConsoleOutput_Impl("\n", 1);
+        }
+
+        UT_BSP_Unlock();
     }
 
     /*
@@ -208,7 +205,10 @@ void UT_BSP_EndTest(const UtAssert_TestCounter_t *TestCounters)
 
     snprintf(Message, sizeof(Message), "COMPLETE: %u tests Segment(s) executed\n\n",
              (unsigned int)TestCounters->TestSegmentCount);
+
+    UT_BSP_Lock();
     OS_BSP_ConsoleOutput_Impl(Message, strlen(Message));
+    UT_BSP_Unlock();
 
     if ((TestCounters->CaseCount[UTASSERT_CASETYPE_FAILURE] > 0) ||
         (TestCounters->CaseCount[UTASSERT_CASETYPE_TSF] > 0) || (TestCounters->CaseCount[UTASSERT_CASETYPE_TTF] > 0))

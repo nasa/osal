@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for errnoLib.h */
-#ifndef _OSAL_OVERRIDE_ERRNOLIB_H_
-#define _OSAL_OVERRIDE_ERRNOLIB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for errnoLib.h
+ */
 
-#include <OCS_errnoLib.h>
+#ifndef OVERRIDE_ERRNOLIB_H
+#define OVERRIDE_ERRNOLIB_H
+
+#include "OCS_errnoLib.h"
 #include <vxWorks.h>
 
 /* -----------------------------------------  */
@@ -30,4 +36,4 @@
 /* -----------------------------------------  */
 #define errnoGet OCS_errnoGet
 
-#endif /* _OSAL_OVERRIDE_ERRNOLIB_H_ */
+#endif /* OVERRIDE_ERRNOLIB_H */

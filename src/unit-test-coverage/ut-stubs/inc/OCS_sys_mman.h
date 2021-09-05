@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/mman.h */
-#ifndef _OSAL_STUB_SYS_MMAN_H_
-#define _OSAL_STUB_SYS_MMAN_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/mman.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_SYS_MMAN_H
+#define OCS_SYS_MMAN_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/mman.h */
@@ -45,4 +51,4 @@
 void *OCS_mmap(void *addr, size_t length, int prot, int flags, int fd, OCS_off_t offset);
 int   OCS_munmap(void *addr, size_t length);
 
-#endif /* _OSAL_STUB_SYS_MMAN_H_ */
+#endif /* OCS_SYS_MMAN_H */

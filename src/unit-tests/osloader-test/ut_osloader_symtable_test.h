@@ -18,14 +18,15 @@
  *  limitations under the License.
  */
 
-/*================================================================================*
-** File:  ut_osloader_symtable_test.h
-** Owner: Tam Ngo
-** Date:  April 2013
-**================================================================================*/
+/**
+ * \file
+ *
+ * Owner: Tam Ngo
+ * Date:  April 2013
+ */
 
-#ifndef _UT_OSLOADER_SYMTABLE_TEST_H_
-#define _UT_OSLOADER_SYMTABLE_TEST_H_
+#ifndef UT_OSLOADER_SYMTABLE_TEST_H
+#define UT_OSLOADER_SYMTABLE_TEST_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
@@ -59,8 +60,4 @@ void UT_os_symbol_table_dump_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif /* _UT_OSLOADER_SYMTABLE_TEST_H_ */
-
-/*================================================================================*
-** End of File: ut_osloader_symtable_test.h
-**================================================================================*/
+#endif /* UT_OSLOADER_SYMTABLE_TEST_H */

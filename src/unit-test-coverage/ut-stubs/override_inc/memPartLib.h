@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for memPartLib.h */
-#ifndef _OSAL_OVERRIDE_MEMPARTLIB_H_
-#define _OSAL_OVERRIDE_MEMPARTLIB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for memPartLib.h
+ */
 
-#include <OCS_memPartLib.h>
+#ifndef OVERRIDE_MEMPARTLIB_H
+#define OVERRIDE_MEMPARTLIB_H
+
+#include "OCS_memPartLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */
@@ -35,4 +41,4 @@
 #define memPartInfoGet OCS_memPartInfoGet
 #define memSysPartId   OCS_memSysPartId
 
-#endif /* _OSAL_OVERRIDE_MEMPARTLIB_H_ */
+#endif /* OVERRIDE_MEMPARTLIB_H */

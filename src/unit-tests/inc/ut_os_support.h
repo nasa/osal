@@ -18,14 +18,15 @@
  *  limitations under the License.
  */
 
-/*================================================================================*
-** File:  ut_os_support.h
-** Owner: Tam Ngo
-** Date:  May 2013
-**================================================================================*/
+/**
+ * \file
+ *
+ * Owner: Tam Ngo
+ * Date:  May 2013
+ */
 
-#ifndef _UT_OS_SUPPORT_H_
-#define _UT_OS_SUPPORT_H_
+#ifndef UT_OS_SUPPORT_H
+#define UT_OS_SUPPORT_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
@@ -60,42 +61,67 @@
  */
 #define UT_OS_IO_BUFF_SIZE 128
 
-static inline bool UtOsalRetVal(int32 Fn, int32 Exp, UtAssert_CaseType_t casetype, const char *File, uint32 Line,
-                                const char *FnTxt, const char *ExpTxt, const char *Msg)
+static inline bool UtOsalRetVal(int32 Fn, int32 Exp, bool NotImplAllowed, UtAssert_CaseType_t casetype,
+                                const char *File, uint32 Line, const char *FnTxt, const char *ExpTxt)
 {
-    return UtAssertEx(Fn == Exp, casetype, File, Line, "%s (%d) == %s (%d): %s", FnTxt, (int)Fn, ExpTxt, (int)Exp, Msg);
+    /* If "not implemented" is acceptable, override the casetype to be N/A */
+    if (NotImplAllowed && (Fn == OS_ERR_NOT_IMPLEMENTED || Fn == OS_ERR_OPERATION_NOT_SUPPORTED))
+    {
+        casetype = UTASSERT_CASETYPE_NA;
+    }
+
+    return UtAssertEx(Fn == Exp, casetype, File, Line, "%s (%d) == %s (%d)", FnTxt, (int)Fn, ExpTxt, (int)Exp);
+}
+
+static inline bool UtOsalNotSuccess(int32 Fn, UtAssert_CaseType_t casetype, const char *File, uint32 Line,
+                                    const char *FnTxt)
+{
+    /* Check result is negative to support APIs that return nonzero on success (e.g. read/write) */
+    return UtAssertEx(Fn < 0, casetype, File, Line, "%s (%d) not successful", FnTxt, (int)Fn);
+}
+
+static inline bool UtManualInspectionWithStatus(int32 Fn, const char *File, uint32 Line, const char *FnTxt)
+{
+    UtAssert_MIR("%s value=%d", FnTxt, (int)Fn);
+    return (Fn >= 0);
 }
 
 /* Only report errors */
-static inline bool UtOsalCheck(int32 Fn, int32 Exp, UtAssert_CaseType_t casetype, const char *File, uint32 Line,
-                               const char *FnTxt, const char *ExpTxt)
+static inline bool UtOsalCheck(int32 Fn, UtAssert_CaseType_t casetype, const char *File, uint32 Line, const char *FnTxt)
 {
-    return Fn == Exp
-               ? true
-               : UtAssertEx(Fn == Exp, casetype, File, Line, "%s (%d) == %s (%d)", FnTxt, (int)Fn, ExpTxt, (int)Exp);
+    /* Check non-negative to support APIs that return nonzero on success (e.g. read/write) */
+    if (Fn >= 0)
+    {
+        return true;
+    }
+
+    return UtAssertEx(false, casetype, File, Line, "%s (%d) >= %s", FnTxt, (int)Fn, "OS_SUCCESS");
 }
 
 static inline bool UtOsalImplemented(int32 Fn, const char *File, uint32 Line)
 {
     if (Fn == OS_ERR_NOT_IMPLEMENTED)
     {
-        UtAssertEx(false, UTASSERT_CASETYPE_NA, File, Line, "API not implemented");
+        UtAssertEx(false, UTASSERT_CASETYPE_NA, File, Line, "API not implemented (%d)", (int)Fn);
         return false;
     }
 
     return true;
 }
 
+#define UT_RETVAL(Fn, Exp) UtOsalRetVal(Fn, Exp, false, UTASSERT_CASETYPE_FAILURE, __FILE__, __LINE__, #Fn, #Exp)
 #define UT_NOMINAL(Fn) \
-    UtOsalRetVal(Fn, OS_SUCCESS, UTASSERT_CASETYPE_FAILURE, __FILE__, __LINE__, #Fn, "OS_SUCCESS", "Nominal")
-#define UT_RETVAL(Fn, Exp, Msg) UtOsalRetVal(Fn, Exp, UTASSERT_CASETYPE_FAILURE, __FILE__, __LINE__, #Fn, #Exp, Msg)
-#define UT_SETUP(Fn)            UtOsalCheck(Fn, OS_SUCCESS, UTASSERT_CASETYPE_TSF, __FILE__, __LINE__, #Fn, "OS_SUCCESS")
-#define UT_TEARDOWN(Fn)         UtOsalCheck(Fn, OS_SUCCESS, UTASSERT_CASETYPE_TTF, __FILE__, __LINE__, #Fn, "OS_SUCCESS")
-#define UT_IMPL(Fn)             UtOsalImplemented(Fn, __FILE__, __LINE__)
+    UtOsalRetVal(Fn, OS_SUCCESS, false, UTASSERT_CASETYPE_FAILURE, __FILE__, __LINE__, #Fn, "OS_SUCCESS")
+#define UT_NOMINAL_OR_NOTIMPL(Fn) \
+    UtOsalRetVal(Fn, OS_SUCCESS, true, UTASSERT_CASETYPE_FAILURE, __FILE__, __LINE__, #Fn, "OS_SUCCESS")
+#define UT_NOT_SUCCESS(Fn) UtOsalNotSuccess(Fn, UTASSERT_CASETYPE_FAILURE, __FILE__, __LINE__, #Fn)
 
-/*--------------------------------------------------------------------------------*/
+#define UT_MIR_STATUS(Fn) UtManualInspectionWithStatus(Fn, __FILE__, __LINE__, #Fn)
+#define UT_MIR_VOID(Fn)   Fn, UtAssert_MIR("%s", #Fn)
 
-#define UT_OS_TEST_RESULT(descStr, caseType) UtAssertEx(false, caseType, __FILE__, __LINE__, "%s", descStr)
+#define UT_SETUP(Fn)    UtOsalCheck(Fn, UTASSERT_CASETYPE_TSF, __FILE__, __LINE__, #Fn)
+#define UT_TEARDOWN(Fn) UtOsalCheck(Fn, UTASSERT_CASETYPE_TTF, __FILE__, __LINE__, #Fn)
+#define UT_IMPL(Fn)     UtOsalImplemented(Fn, __FILE__, __LINE__)
 
 /*--------------------------------------------------------------------------------*/
 
@@ -108,8 +134,6 @@ static inline bool UtOsalImplemented(int32 Fn, const char *File, uint32 Line)
     } while (0)
 
 /*--------------------------------------------------------------------------------*/
-
-#define UT_OS_LOG(...) UtAssert_Message(UTASSERT_CASETYPE_INFO, __FILE__, __LINE__, __VA_ARGS__);
 
 /*
  * An osal_id_t value which is not OS_OBJECT_ID_UNDEFINED and also
@@ -137,8 +161,4 @@ static inline bool UtOsalImplemented(int32 Fn, const char *File, uint32 Line)
 
 /*--------------------------------------------------------------------------------*/
 
-#endif /* _UT_OS_SUPPORT_H_ */
-
-/*================================================================================*
-** End of File: ut_os_support.h
-**================================================================================*/
+#endif /* UT_OS_SUPPORT_H */

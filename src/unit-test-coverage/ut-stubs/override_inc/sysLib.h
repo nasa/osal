@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sysLib.h */
-#ifndef _OSAL_OVERRIDE_SYSLIB_H_
-#define _OSAL_OVERRIDE_SYSLIB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sysLib.h
+ */
 
-#include <OCS_sysLib.h>
+#ifndef OVERRIDE_SYSLIB_H
+#define OVERRIDE_SYSLIB_H
+
+#include "OCS_sysLib.h"
 #include <vxWorks.h>
 
 /* ----------------------------------------- */
@@ -30,4 +36,4 @@
 /* ----------------------------------------- */
 #define sysClkRateGet OCS_sysClkRateGet
 
-#endif /* _OSAL_OVERRIDE_SYSLIB_H_ */
+#endif /* OVERRIDE_SYSLIB_H */

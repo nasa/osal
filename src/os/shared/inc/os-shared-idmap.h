@@ -19,18 +19,17 @@
  */
 
 /**
- * \file     os-shared-idmap.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_IDMAP_H_
-#define INCLUDE_OS_SHARED_IDMAP_H_
+#ifndef OS_SHARED_IDMAP_H
+#define OS_SHARED_IDMAP_H
 
-#include <os-shared-globaldefs.h>
-
-#define OS_OBJECT_EXCL_REQ_FLAG 0x0001
+#include "osapi-idmap.h"
+#include "os-shared-globaldefs.h"
 
 #define OS_OBJECT_ID_RESERVED ((osal_id_t) {0xFFFFFFFF})
 
@@ -43,19 +42,46 @@ struct OS_common_record
     osal_id_t   active_id;
     osal_id_t   creator;
     uint16      refcount;
-    uint16      flags;
 };
+
+typedef enum
+{
+    OS_TASK_BASE         = 0,
+    OS_QUEUE_BASE        = OS_TASK_BASE + OS_MAX_TASKS,
+    OS_BINSEM_BASE       = OS_QUEUE_BASE + OS_MAX_QUEUES,
+    OS_COUNTSEM_BASE     = OS_BINSEM_BASE + OS_MAX_BIN_SEMAPHORES,
+    OS_MUTEX_BASE        = OS_COUNTSEM_BASE + OS_MAX_COUNT_SEMAPHORES,
+    OS_STREAM_BASE       = OS_MUTEX_BASE + OS_MAX_MUTEXES,
+    OS_DIR_BASE          = OS_STREAM_BASE + OS_MAX_NUM_OPEN_FILES,
+    OS_TIMEBASE_BASE     = OS_DIR_BASE + OS_MAX_NUM_OPEN_DIRS,
+    OS_TIMECB_BASE       = OS_TIMEBASE_BASE + OS_MAX_TIMEBASES,
+    OS_MODULE_BASE       = OS_TIMECB_BASE + OS_MAX_TIMERS,
+    OS_FILESYS_BASE      = OS_MODULE_BASE + OS_MAX_MODULES,
+    OS_CONSOLE_BASE      = OS_FILESYS_BASE + OS_MAX_FILE_SYSTEMS,
+    OS_MAX_TOTAL_RECORDS = OS_CONSOLE_BASE + OS_MAX_CONSOLES
+} OS_ObjectIndex_t;
 
 /*
  * Type of locking that should occur when checking IDs.
  */
 typedef enum
 {
-    OS_LOCK_MODE_NONE,      /**< Do not lock global table at all (use with caution) */
-    OS_LOCK_MODE_GLOBAL,    /**< Lock during operation, and if successful, leave global table locked */
-    OS_LOCK_MODE_EXCLUSIVE, /**< Like OS_LOCK_MODE_GLOBAL but must be exclusive (refcount == zero)  */
-    OS_LOCK_MODE_REFCOUNT,  /**< If operation succeeds, increment refcount and unlock global table */
+    OS_LOCK_MODE_NONE,      /**< Quick ID validity check, does not lock global table at all (use with caution) */
+    OS_LOCK_MODE_GLOBAL,    /**< Confirm ID match, and if successful, leave global table locked */
+    OS_LOCK_MODE_REFCOUNT,  /**< Confirm ID match, increment refcount, and unlock global table.  ID is not changed. */
+    OS_LOCK_MODE_EXCLUSIVE, /**< Confirm ID match AND refcount equal zero, then change ID to RESERVED value and unlock
+                               global. */
+    OS_LOCK_MODE_RESERVED   /**< Confirm ID is already set to RESERVED, otherwise like OS_LOCK_MODE_GLOBAL. */
 } OS_lock_mode_t;
+
+/*
+ * A unique key value issued when obtaining a table lock, based on a
+ * the a combination of the requesting task ID and a transaction ID
+ */
+typedef struct
+{
+    uint32 key_value;
+} osal_key_t;
 
 /*
  * Actual (non-abstract) definition of "OS_object_token_t"
@@ -63,6 +89,7 @@ typedef enum
 struct OS_object_token
 {
     OS_lock_mode_t lock_mode;
+    osal_key_t     lock_key;
     osal_objtype_t obj_type;
     osal_index_t   obj_idx;
     osal_id_t      obj_id;
@@ -92,6 +119,13 @@ struct OS_object_token
  * Returns true if the id/obj matches the reference, false otherwise.
  */
 typedef bool (*OS_ObjectMatchFunc_t)(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
+
+/*
+ * A function to serve as callback with object ID iterators
+ *
+ * This is the prototype of callback functions for use with OS_ObjectIdIteratorProcessEntry()
+ */
+typedef int32 (*OS_ObjectIdIteratorProcessFunc_t)(osal_id_t, void *);
 
 /*
  * State object associated with an object iterator
@@ -147,7 +181,7 @@ int32 OS_ObjectIdInit(void);
 
    Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-void OS_Lock_Global(osal_objtype_t idtype);
+void OS_Lock_Global(OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_Lock_Global
@@ -156,7 +190,7 @@ void OS_Lock_Global(osal_objtype_t idtype);
 
    Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_Lock_Global_Impl(osal_objtype_t idtype);
+void OS_Lock_Global_Impl(osal_objtype_t idtype);
 
 /*----------------------------------------------------------------
    Function: OS_Unlock_Global
@@ -165,7 +199,7 @@ int32 OS_Lock_Global_Impl(osal_objtype_t idtype);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-void OS_Unlock_Global(osal_objtype_t idtype);
+void OS_Unlock_Global(OS_object_token_t *token);
 
 /*----------------------------------------------------------------
    Function: OS_Unlock_Global
@@ -174,7 +208,36 @@ void OS_Unlock_Global(osal_objtype_t idtype);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_Unlock_Global_Impl(osal_objtype_t idtype);
+void OS_Unlock_Global_Impl(osal_objtype_t idtype);
+
+/*----------------------------------------------------------------
+
+   Function: OS_WaitForStateChange
+
+    Purpose: Waits for a change in the global table identified by "idtype"
+
+   NOTE: The table must be already "owned" (via OS_Lock_Global) by the calling
+   at the time this function is invoked.  The lock is released and re-acquired
+   before returning from this function.
+
+  -----------------------------------------------------------------*/
+void OS_WaitForStateChange(OS_object_token_t *token, uint32 attempts);
+
+/*----------------------------------------------------------------
+
+   Function: OS_WaitForStateChange_Impl
+
+   Purpose: Block the caller until some sort of change event
+   has occurred for the given object type, such as a record changing
+   state i.e. the acquisition or release of a lock/refcount from
+   another thread.
+
+   It is not guaranteed what, if any, state change has actually
+   occured when this function returns.  This may be implement as
+   a simple OS_TaskDelay().
+
+ ------------------------------------------------------------------*/
+void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts);
 
 /*
    Function prototypes for routines implemented in common layers but private to OSAL
@@ -212,6 +275,26 @@ static inline osal_objtype_t OS_ObjectIdToType_Impl(osal_id_t id)
 static inline void OS_ObjectIdCompose_Impl(osal_objtype_t idtype, uint32 idserial, osal_id_t *result)
 {
     *result = OS_ObjectIdFromInteger((idtype << OS_OBJECT_TYPE_SHIFT) | idserial);
+}
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Check if an object ID represents a valid/active value.
+ *
+ * This tests that the ID value is within the range specifically used by
+ * valid OSAL IDs. This is smaller than the set of defined IDs.
+ *
+ * For example, the value of OS_OBJECT_ID_RESERVED is defined but not valid.
+ * So while OS_ObjectIdDefined() will match entries being actively created or
+ * deleted, OS_ObjectIdIsValid() will not.
+ *
+ * @param[in]   object_id The object ID
+ * @returns     true if table entry is valid
+ */
+static inline bool OS_ObjectIdIsValid(osal_id_t object_id)
+{
+    osal_objtype_t objtype = OS_ObjectIdToType_Impl(object_id);
+    return (objtype > OS_OBJECT_TYPE_UNDEFINED && objtype < OS_OBJECT_TYPE_USER);
 }
 
 /*----------------------------------------------------------------
@@ -305,7 +388,7 @@ void OS_ObjectIdTransactionCancel(OS_object_token_t *token);
 
     Returns: None
  ------------------------------------------------------------------*/
-void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id);
+void OS_ObjectIdTransactionFinish(OS_object_token_t *token, const osal_id_t *final_id);
 
 /*----------------------------------------------------------------
    Function: OS_ObjectIdConvertToken
@@ -474,15 +557,16 @@ static inline const OS_object_token_t *OS_ObjectIdIteratorRef(OS_object_iter_t *
 
     Returns: None
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t));
+int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, OS_ObjectIdIteratorProcessFunc_t func);
 
 /*
  * Internal helper functions
  * These are not normally called outside this unit, but need
  * to be exposed for unit testing.
  */
+bool  OS_ObjectFilterActive(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 bool  OS_ObjectNameMatch(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 int32 OS_ObjectIdFindNextMatch(OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_object_token_t *token);
 int32 OS_ObjectIdFindNextFree(OS_object_token_t *token);
 
-#endif /* INCLUDE_OS_SHARED_IDMAP_H_ */
+#endif /* OS_SHARED_IDMAP_H */

@@ -33,6 +33,7 @@
 
 #include "os-rtems.h"
 #include "os-shared-idmap.h"
+#include "os-impl-idmap.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -44,38 +45,33 @@
                                      GLOBALS
  ***************************************************************************************/
 
-rtems_id OS_task_table_sem;
-rtems_id OS_queue_table_sem;
-rtems_id OS_bin_sem_table_sem;
-rtems_id OS_mutex_table_sem;
-rtems_id OS_count_sem_table_sem;
-rtems_id OS_stream_table_mut;
-rtems_id OS_dir_table_mut;
-rtems_id OS_timebase_table_mut;
-rtems_id OS_timecb_table_mut;
-rtems_id OS_module_table_mut;
-rtems_id OS_filesys_table_mut;
-rtems_id OS_console_mut;
+static OS_impl_objtype_lock_t OS_task_table_lock;
+static OS_impl_objtype_lock_t OS_queue_table_lock;
+static OS_impl_objtype_lock_t OS_bin_sem_table_lock;
+static OS_impl_objtype_lock_t OS_mutex_table_lock;
+static OS_impl_objtype_lock_t OS_count_sem_table_lock;
+static OS_impl_objtype_lock_t OS_stream_table_lock;
+static OS_impl_objtype_lock_t OS_dir_table_lock;
+static OS_impl_objtype_lock_t OS_timebase_table_lock;
+static OS_impl_objtype_lock_t OS_timecb_table_lock;
+static OS_impl_objtype_lock_t OS_module_table_lock;
+static OS_impl_objtype_lock_t OS_filesys_table_lock;
+static OS_impl_objtype_lock_t OS_console_lock;
 
-static rtems_id *const MUTEX_TABLE[] = {
+OS_impl_objtype_lock_t *const OS_impl_objtype_lock_table[OS_OBJECT_TYPE_USER] = {
     [OS_OBJECT_TYPE_UNDEFINED]   = NULL,
-    [OS_OBJECT_TYPE_OS_TASK]     = &OS_task_table_sem,
-    [OS_OBJECT_TYPE_OS_QUEUE]    = &OS_queue_table_sem,
-    [OS_OBJECT_TYPE_OS_COUNTSEM] = &OS_count_sem_table_sem,
-    [OS_OBJECT_TYPE_OS_BINSEM]   = &OS_bin_sem_table_sem,
-    [OS_OBJECT_TYPE_OS_MUTEX]    = &OS_mutex_table_sem,
-    [OS_OBJECT_TYPE_OS_STREAM]   = &OS_stream_table_mut,
-    [OS_OBJECT_TYPE_OS_DIR]      = &OS_dir_table_mut,
-    [OS_OBJECT_TYPE_OS_TIMEBASE] = &OS_timebase_table_mut,
-    [OS_OBJECT_TYPE_OS_TIMECB]   = &OS_timecb_table_mut,
-    [OS_OBJECT_TYPE_OS_MODULE]   = &OS_module_table_mut,
-    [OS_OBJECT_TYPE_OS_FILESYS]  = &OS_filesys_table_mut,
-    [OS_OBJECT_TYPE_OS_CONSOLE]  = &OS_console_mut,
-};
-
-enum
-{
-    MUTEX_TABLE_SIZE = (sizeof(MUTEX_TABLE) / sizeof(MUTEX_TABLE[0]))
+    [OS_OBJECT_TYPE_OS_TASK]     = &OS_task_table_lock,
+    [OS_OBJECT_TYPE_OS_QUEUE]    = &OS_queue_table_lock,
+    [OS_OBJECT_TYPE_OS_COUNTSEM] = &OS_count_sem_table_lock,
+    [OS_OBJECT_TYPE_OS_BINSEM]   = &OS_bin_sem_table_lock,
+    [OS_OBJECT_TYPE_OS_MUTEX]    = &OS_mutex_table_lock,
+    [OS_OBJECT_TYPE_OS_STREAM]   = &OS_stream_table_lock,
+    [OS_OBJECT_TYPE_OS_DIR]      = &OS_dir_table_lock,
+    [OS_OBJECT_TYPE_OS_TIMEBASE] = &OS_timebase_table_lock,
+    [OS_OBJECT_TYPE_OS_TIMECB]   = &OS_timecb_table_lock,
+    [OS_OBJECT_TYPE_OS_MODULE]   = &OS_module_table_lock,
+    [OS_OBJECT_TYPE_OS_FILESYS]  = &OS_filesys_table_lock,
+    [OS_OBJECT_TYPE_OS_CONSOLE]  = &OS_console_lock,
 };
 
 /*----------------------------------------------------------------
@@ -86,30 +82,19 @@ enum
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_Lock_Global_Impl(osal_objtype_t idtype)
+void OS_Lock_Global_Impl(osal_objtype_t idtype)
 {
-    rtems_id *mut;
+    OS_impl_objtype_lock_t *impl;
+    rtems_status_code       rtems_sc;
 
-    if (idtype < MUTEX_TABLE_SIZE)
-    {
-        mut = MUTEX_TABLE[idtype];
-    }
-    else
-    {
-        mut = NULL;
-    }
+    impl = OS_impl_objtype_lock_table[idtype];
 
-    if (mut == NULL)
+    rtems_sc = rtems_semaphore_obtain(impl->id, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+    if (rtems_sc != RTEMS_SUCCESSFUL)
     {
-        return OS_ERROR;
+        OS_DEBUG("OS_Lock_Global_Impl: rtems_semaphore_obtain failed: %s\n", rtems_status_text(rtems_sc));
     }
 
-    if (rtems_semaphore_obtain(*mut, RTEMS_WAIT, RTEMS_NO_TIMEOUT) != 0)
-    {
-        return OS_ERROR;
-    }
-
-    return OS_SUCCESS;
 } /* end OS_Lock_Global_Impl */
 
 /*----------------------------------------------------------------
@@ -120,31 +105,46 @@ int32 OS_Lock_Global_Impl(osal_objtype_t idtype)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_Unlock_Global_Impl(osal_objtype_t idtype)
+void OS_Unlock_Global_Impl(osal_objtype_t idtype)
 {
-    rtems_id *mut;
+    OS_impl_objtype_lock_t *impl;
+    rtems_status_code       rtems_sc;
 
-    if (idtype < MUTEX_TABLE_SIZE)
+    impl = OS_impl_objtype_lock_table[idtype];
+
+    rtems_sc = rtems_semaphore_release(impl->id);
+    if (rtems_sc != RTEMS_SUCCESSFUL)
     {
-        mut = MUTEX_TABLE[idtype];
+        OS_DEBUG("OS_Unlock_Global_Impl: rtems_semaphore_release failed: %s\n", rtems_status_text(rtems_sc));
+    }
+
+} /* end OS_Unlock_Global_Impl */
+
+/*----------------------------------------------------------------
+ *
+ *  Function: OS_WaitForStateChange_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+void OS_WaitForStateChange_Impl(osal_objtype_t idtype, uint32 attempts)
+{
+    rtems_interval wait_ticks;
+
+    if (attempts <= 10)
+    {
+        wait_ticks = attempts * attempts;
     }
     else
     {
-        mut = NULL;
+        wait_ticks = 100;
     }
 
-    if (mut == NULL)
-    {
-        return OS_ERROR;
-    }
-
-    if (rtems_semaphore_release(*mut) != 0)
-    {
-        return OS_ERROR;
-    }
-
-    return OS_SUCCESS;
-} /* end OS_Unlock_Global_Impl */
+    OS_Unlock_Global_Impl(idtype);
+    rtems_task_wake_after(wait_ticks);
+    OS_Lock_Global_Impl(idtype);
+}
 
 /****************************************************************************************
                                 INITIALIZATION FUNCTION
@@ -160,20 +160,22 @@ int32 OS_Unlock_Global_Impl(osal_objtype_t idtype)
 ---------------------------------------------------------------------------------------*/
 int32 OS_Rtems_TableMutex_Init(osal_objtype_t idtype)
 {
-    int32             return_code = OS_SUCCESS;
-    rtems_status_code rtems_sc;
+    OS_impl_objtype_lock_t *impl;
+    rtems_status_code       rtems_sc;
 
-    /* Initialize the table mutex for the given idtype */
-    if (idtype < MUTEX_TABLE_SIZE && MUTEX_TABLE[idtype] != NULL)
+    impl = OS_impl_objtype_lock_table[idtype];
+    if (impl == NULL)
     {
-        rtems_sc = rtems_semaphore_create(idtype, 1, OSAL_TABLE_MUTEX_ATTRIBS, 0, MUTEX_TABLE[idtype]);
-
-        if (rtems_sc != RTEMS_SUCCESSFUL)
-        {
-            OS_DEBUG("Error: rtems_semaphore_create failed: %s\n", rtems_status_text(rtems_sc));
-            return_code = OS_ERROR;
-        }
+        return OS_SUCCESS;
     }
 
-    return (return_code);
+    /* Initialize the table mutex for the given idtype */
+    rtems_sc = rtems_semaphore_create(idtype, 1, OSAL_TABLE_MUTEX_ATTRIBS, 0, &impl->id);
+    if (rtems_sc != RTEMS_SUCCESSFUL)
+    {
+        OS_DEBUG("Error: rtems_semaphore_create failed: %s\n", rtems_status_text(rtems_sc));
+        return OS_ERROR;
+    }
+
+    return OS_SUCCESS;
 } /* end OS_Rtems_TableMutex_Init */

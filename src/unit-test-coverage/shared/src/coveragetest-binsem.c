@@ -27,7 +27,7 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-binsem.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /*
 **********************************************************************************
@@ -41,10 +41,7 @@ void Test_OS_BinSemAPI_Init(void)
      * Test Case For:
      * int32 OS_BinSemAPI_Init(void)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_BinSemAPI_Init();
-
-    UtAssert_True(actual == expected, "OS_BinSemAPI_Init() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemAPI_Init(), OS_SUCCESS);
 }
 
 void Test_OS_BinSemCreate(void)
@@ -54,16 +51,18 @@ void Test_OS_BinSemCreate(void)
      * int32 OS_BinSemCreate (uint32 *sem_id, const char *sem_name,
      *          uint32 sem_initial_value, uint32 options)
      */
-    int32     expected = OS_SUCCESS;
     osal_id_t objid;
-    int32     actual = OS_BinSemCreate(&objid, "UT", 0, 0);
 
-    UtAssert_True(actual == expected, "OS_BinSemCreate() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(&objid, "UT", 0, 0), OS_SUCCESS);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(NULL, NULL, 0, 0), OS_INVALID_POINTER);
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), 10 + OS_MAX_API_NAME);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(NULL, "UT", 0, 0), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(&objid, NULL, 0, 0), OS_INVALID_POINTER);
+    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(&objid, "UT", 0, 0), OS_ERR_NAME_TOO_LONG);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemCreate(&objid, "UT", 0, 0), OS_ERR_NO_FREE_IDS);
 }
 
 void Test_OS_BinSemDelete(void)
@@ -72,12 +71,10 @@ void Test_OS_BinSemDelete(void)
      * Test Case For:
      * int32 OS_BinSemDelete (uint32 sem_id)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemDelete(UT_OBJID_1), OS_SUCCESS);
 
-    actual = OS_BinSemDelete(UT_OBJID_1);
-
-    UtAssert_True(actual == expected, "OS_BinSemDelete() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemDelete(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_BinSemGive(void)
@@ -86,12 +83,10 @@ void Test_OS_BinSemGive(void)
      * Test Case For:
      * int32 OS_BinSemGive ( uint32 sem_id )
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGive(UT_OBJID_1), OS_SUCCESS);
 
-    actual = OS_BinSemGive(UT_OBJID_1);
-
-    UtAssert_True(actual == expected, "OS_BinSemGive() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGive(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_BinSemTake(void)
@@ -100,12 +95,10 @@ void Test_OS_BinSemTake(void)
      * Test Case For:
      * int32 OS_BinSemTake ( uint32 sem_id )
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemTake(UT_OBJID_1), OS_SUCCESS);
 
-    actual = OS_BinSemTake(UT_OBJID_1);
-
-    UtAssert_True(actual == expected, "OS_BinSemTake() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemTake(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_BinSemFlush(void)
@@ -114,12 +107,10 @@ void Test_OS_BinSemFlush(void)
      * Test Case For:
      * int32 OS_BinSemFlush (uint32 sem_id)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemFlush(UT_OBJID_1), OS_SUCCESS);
 
-    actual = OS_BinSemFlush(UT_OBJID_1);
-
-    UtAssert_True(actual == expected, "OS_BinSemFlush() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemFlush(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_BinSemTimedWait(void)
@@ -128,12 +119,10 @@ void Test_OS_BinSemTimedWait(void)
      * Test Case For:
      * int32 OS_BinSemTimedWait ( uint32 sem_id, uint32 msecs )
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait(UT_OBJID_1, 1), OS_SUCCESS);
 
-    actual = OS_BinSemTimedWait(UT_OBJID_1, 1);
-
-    UtAssert_True(actual == expected, "OS_BinSemTimedWait() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait(UT_OBJID_1, 1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_BinSemGetIdByName(void)
@@ -150,13 +139,14 @@ void Test_OS_BinSemGetIdByName(void)
     actual = OS_BinSemGetIdByName(&objid, "UT");
     UtAssert_True(actual == expected, "OS_BinSemGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName));
 
     expected = OS_ERR_NAME_NOT_FOUND;
     actual   = OS_BinSemGetIdByName(&objid, "NF");
     UtAssert_True(actual == expected, "OS_BinSemGetIdByName() (%ld) == %ld", (long)actual, (long)expected);
 
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetIdByName(NULL, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetIdByName(NULL, "UT"), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetIdByName(&objid, NULL), OS_INVALID_POINTER);
 }
 
 void Test_OS_BinSemGetInfo(void)
@@ -178,6 +168,9 @@ void Test_OS_BinSemGetInfo(void)
     UtAssert_True(strcmp(prop.name, "ABC") == 0, "prop.name (%s) == ABC", prop.name);
 
     OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo(UT_OBJID_1, &prop), OS_ERR_INVALID_ID);
 }
 
 /* Osapi_Test_Setup

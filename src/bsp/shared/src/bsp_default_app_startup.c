@@ -30,7 +30,6 @@
  */
 
 #include <stdlib.h>
-#include "osapi.h"
 
 #include "bsp-impl.h"
 

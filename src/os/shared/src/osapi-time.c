@@ -56,6 +56,12 @@
 
 OS_timecb_internal_record_t OS_timecb_table[OS_MAX_TIMERS];
 
+typedef union
+{
+    OS_TimerCallback_t timer_callback_func;
+    void *             opaque_arg;
+} OS_Timer_ArgWrapper_t;
+
 /****************************************************************************************
                                    Timer API
  ***************************************************************************************/
@@ -100,29 +106,13 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
     OS_timebase_internal_record_t *timebase;
 
     /*
-     ** Check Parameters
+     * Check parameters
+     *
+     * Note "callback_arg" is not checked, because in certain configurations it can be validly null.
      */
-    if (timer_id == NULL || timer_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    /*
-     ** we don't want to allow names too long
-     ** if truncated, two names might be the same
-     */
-    if (strlen(timer_name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
-
-    /*
-     ** Verify callback parameter
-     */
-    if (callback_ptr == NULL)
-    {
-        return OS_TIMER_ERR_INVALID_ARGS;
-    }
+    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_APINAME(timer_name);
+    OS_CHECK_POINTER(callback_ptr);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -139,8 +129,8 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
      * If successful, then after this statement, we MUST decrement the refcount
      * if we leave this routine with an error.
      */
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_TIMEBASE, timebase_ref_id,
-                                     &timebase_token);
+    return_code =
+        OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_TIMEBASE, timebase_ref_id, &timebase_token);
     if (return_code != OS_SUCCESS)
     {
         return return_code;
@@ -175,14 +165,16 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
          */
         OS_TimeBaseLock_Impl(&timebase_token);
 
-        if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timebase->first_cb, &listcb_token) == OS_SUCCESS)
+        if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timebase->first_cb, &listcb_token) ==
+            OS_SUCCESS)
         {
             list_timecb = OS_OBJECT_TABLE_GET(OS_timecb_table, listcb_token);
 
             timecb->next_cb = OS_ObjectIdFromToken(&listcb_token);
             timecb->prev_cb = list_timecb->prev_cb;
 
-            if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timecb->prev_cb, &listcb_token) == OS_SUCCESS)
+            if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timecb->prev_cb, &listcb_token) ==
+                OS_SUCCESS)
             {
                 list_timecb->prev_cb = OS_ObjectIdFromToken(&timecb_token);
                 list_timecb          = OS_OBJECT_TABLE_GET(OS_timecb_table, listcb_token);
@@ -228,7 +220,7 @@ int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebas
  *-----------------------------------------------------------------*/
 static void OS_Timer_NoArgCallback(osal_id_t objid, void *arg)
 {
-    OS_U32ValueWrapper_t Conv;
+    OS_Timer_ArgWrapper_t Conv;
 
     /*
      * Note - did not write this as simply *((OS_SimpleCallback_t)arg) because
@@ -248,27 +240,19 @@ static void OS_Timer_NoArgCallback(osal_id_t objid, void *arg)
  *-----------------------------------------------------------------*/
 int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *accuracy, OS_TimerCallback_t callback_ptr)
 {
-    int32                return_code;
-    osal_id_t            timebase_ref_id;
-    OS_U32ValueWrapper_t Conv;
+    int32                 return_code;
+    osal_id_t             timebase_ref_id;
+    OS_Timer_ArgWrapper_t Conv;
 
     /*
     ** Check Parameters.  Although DoTimerAdd will also
     ** check this stuff, also doing it here avoids unnecessarily
     ** creating and deleting a timebase object in case something is bad.
     */
-    if (timer_id == NULL || timer_name == NULL || accuracy == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    /*
-    ** Verify callback parameter
-    */
-    if (callback_ptr == NULL)
-    {
-        return OS_TIMER_ERR_INVALID_ARGS;
-    }
+    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_APINAME(timer_name);
+    OS_CHECK_POINTER(accuracy);
+    OS_CHECK_POINTER(callback_ptr);
 
     /*
      * Create our dedicated time base object to drive this timer
@@ -329,15 +313,9 @@ int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time)
 
     dedicated_timebase_id = OS_OBJECT_ID_UNDEFINED;
 
-    if (start_time >= (UINT32_MAX / 2) || interval_time >= (UINT32_MAX / 2))
-    {
-        return OS_TIMER_ERR_INVALID_ARGS;
-    }
-
-    if (start_time == 0 && interval_time == 0)
-    {
-        return OS_ERROR;
-    }
+    ARGCHECK(start_time < (UINT32_MAX / 2), OS_TIMER_ERR_INVALID_ARGS);
+    ARGCHECK(interval_time < (UINT32_MAX / 2), OS_TIMER_ERR_INVALID_ARGS);
+    ARGCHECK(start_time != 0 || interval_time != 0, OS_TIMER_ERR_INVALID_ARGS);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -455,12 +433,14 @@ int32 OS_TimerDelete(osal_id_t timer_id)
             }
         }
 
-        if(OS_ObjectIdGetById(OS_LOCK_MODE_NONE,OS_OBJECT_TYPE_OS_TIMECB,timecb->prev_cb,&listcb_token) == OS_SUCCESS)
+        if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timecb->prev_cb, &listcb_token) ==
+            OS_SUCCESS)
         {
             list_timecb          = OS_OBJECT_TABLE_GET(OS_timecb_table, listcb_token);
             list_timecb->next_cb = timecb->next_cb;
         }
-        if(OS_ObjectIdGetById(OS_LOCK_MODE_NONE,OS_OBJECT_TYPE_OS_TIMECB,timecb->next_cb,&listcb_token) == OS_SUCCESS)
+        if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timecb->next_cb, &listcb_token) ==
+            OS_SUCCESS)
         {
             list_timecb          = OS_OBJECT_TABLE_GET(OS_timecb_table, listcb_token);
             list_timecb->prev_cb = timecb->prev_cb;
@@ -504,10 +484,9 @@ int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name)
     int32          return_code;
     osal_objtype_t objtype;
 
-    if (timer_id == NULL || timer_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_POINTER(timer_name);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -542,10 +521,7 @@ int32 OS_TimerGetInfo(osal_id_t timer_id, OS_timer_prop_t *timer_prop)
     OS_timebase_internal_record_t *timebase;
 
     /* Check parameters */
-    if (timer_prop == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(timer_prop);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -566,7 +542,7 @@ int32 OS_TimerGetInfo(osal_id_t timer_id, OS_timer_prop_t *timer_prop)
         timecb   = OS_OBJECT_TABLE_GET(OS_timecb_table, token);
         timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, timecb->timebase_token);
 
-        strncpy(timer_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(timer_prop->name, record->name_entry, sizeof(timer_prop->name) - 1);
         timer_prop->creator       = record->creator;
         timer_prop->interval_time = (uint32)timecb->interval_time;
         timer_prop->accuracy      = timebase->accuracy_usec;

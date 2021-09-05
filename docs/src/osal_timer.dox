@@ -1,0 +1,8 @@
+/**
+ \page osaltimerover Timer Overview
+
+ The timer API is a generic interface to the OS timer facilities. It is
+ implemented using the POSIX timers on Linux and vxWorks and the native timer
+ API on RTEMS. The number of timers supported is controlled by the configuration
+ parameter OS_MAX_TIMERS.
+**/

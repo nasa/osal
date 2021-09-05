@@ -1,0 +1,110 @@
+name: "CodeQL cFE Build Analysis"
+
+on:
+  push:
+  pull_request:
+
+env:
+  SIMULATION: native
+  ENABLE_UNIT_TESTS: true
+  OMIT_DEPRECATED: true
+  BUILDTYPE: release
+
+jobs:
+  #Checks for duplicate actions. Skips push actions if there is a matching or duplicate pull-request action. 
+  check-for-duplicates:
+    runs-on: ubuntu-latest
+    # Map a step output to a job output
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          concurrent_skipping: 'same_content'
+          skip_after_successful_duplicate: 'true'
+          do_not_skip: '["pull_request", "workflow_dispatch", "schedule"]'
+
+  CodeQL-Security-Build:
+    needs: check-for-duplicates
+    if: ${{ needs.check-for-duplicates.outputs.should_skip != 'true' }}
+    runs-on: ubuntu-18.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout bundle
+        uses: actions/checkout@v2
+        with:
+          repository: nasa/cFS
+          submodules: true
+
+      - name: Checkout submodule
+        uses: actions/checkout@v2
+        with:
+          path: osal
+
+      - name: Check versions
+        run: git submodule
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+         languages: c
+         config-file: nasa/cFS/.github/codeql/codeql-security.yml@main
+
+      - name: Set up for build
+        run: |
+          cp ./cfe/cmake/Makefile.sample Makefile
+          cp -r ./cfe/cmake/sample_defs sample_defs
+          make prep
+
+      - name: Build
+        run: make -j native/default_cpu1/osal/
+
+      - name: Run tests
+        run: (cd build/native/default_cpu1/osal && make test)
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+
+  CodeQL-Coding-Standard-Build:
+    needs: check-for-duplicates
+    if: ${{ needs.check-for-duplicates.outputs.should_skip != 'true' }}
+    runs-on: ubuntu-18.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout bundle
+        uses: actions/checkout@v2
+        with:
+          repository: nasa/cFS
+          submodules: true
+
+      - name: Checkout submodule
+        uses: actions/checkout@v2
+        with:
+          path: osal
+
+      - name: Check versions
+        run: git submodule
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+         languages: c
+         config-file: nasa/cFS/.github/codeql/codeql-coding-standard.yml@main
+
+      - name: Set up for build
+        run: |
+          cp ./cfe/cmake/Makefile.sample Makefile
+          cp -r ./cfe/cmake/sample_defs sample_defs
+          make prep
+
+      - name: Build
+        run: make -j native/default_cpu1/osal/
+
+      - name: Run tests
+        run: (cd build/native/default_cpu1/osal && make test)
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1

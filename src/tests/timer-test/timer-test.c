@@ -74,6 +74,9 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     /*
      * Register the timer test setup and check routines in UT assert
      */
@@ -111,12 +114,12 @@ void TimerTestSetup(void)
 void TimerTestTask(void)
 {
 
-    int             i = 0;
-    int32           TimerStatus[NUMBER_OF_TIMERS];
-    osal_index_t    TableId;
-    osal_id_t       TimerID[NUMBER_OF_TIMERS];
-    char            TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4", "TIMER5"};
-    uint32          ClockAccuracy;
+    int          i = 0;
+    int32        TimerStatus[NUMBER_OF_TIMERS];
+    osal_index_t TableId;
+    osal_id_t    TimerID[NUMBER_OF_TIMERS];
+    char         TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4", "TIMER5"};
+    uint32       ClockAccuracy;
 
     for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
     {
@@ -189,15 +192,7 @@ void TimerTestCheck(void)
     /*
      * Time limited test - check and exit
      */
-    microsecs = 1000000 * (EndTime.seconds - StartTime.seconds);
-    if (EndTime.microsecs < StartTime.microsecs)
-    {
-        microsecs -= StartTime.microsecs - EndTime.microsecs;
-    }
-    else
-    {
-        microsecs += EndTime.microsecs - StartTime.microsecs;
-    }
+    microsecs = OS_TimeGetTotalMicroseconds(OS_TimeSubtract(EndTime, StartTime));
 
     /* Make sure the ratio of the timers are OK */
     for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)

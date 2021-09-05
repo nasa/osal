@@ -170,6 +170,17 @@ void OS_BSP_Setup(void)
     }
 
     /*
+     * Initialize the low level access sem
+     */
+    status = rtems_semaphore_create(rtems_build_name('B', 'S', 'P', '\0'), 1,
+                                    RTEMS_PRIORITY | RTEMS_BINARY_SEMAPHORE | RTEMS_INHERIT_PRIORITY, 0,
+                                    &OS_BSP_PcRtemsGlobal.AccessMutex);
+    if (status != RTEMS_SUCCESSFUL)
+    {
+        BSP_DEBUG("rtems_semaphore_create: %s\n", rtems_status_text(status));
+    }
+
+    /*
     ** Create the RTEMS Root file system
     */
     status = rtems_create_root_fs();
@@ -246,6 +257,34 @@ void OS_BSP_Setup(void)
     }
 
     printf("\n\n");
+}
+
+/*----------------------------------------------------------------
+   OS_BSP_Lock_Impl
+   See full description in header
+ ------------------------------------------------------------------*/
+void OS_BSP_Lock_Impl(void)
+{
+    rtems_status_code status;
+    status = rtems_semaphore_obtain(OS_BSP_PcRtemsGlobal.AccessMutex, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+    if (status != RTEMS_SUCCESSFUL)
+    {
+        BSP_DEBUG("rtems_semaphore_obtain: %s\n", rtems_status_text(status));
+    }
+}
+
+/*----------------------------------------------------------------
+   OS_BSP_Unlock_Impl
+   See full description in header
+ ------------------------------------------------------------------*/
+void OS_BSP_Unlock_Impl(void)
+{
+    rtems_status_code status;
+    status = rtems_semaphore_release(OS_BSP_PcRtemsGlobal.AccessMutex);
+    if (status != RTEMS_SUCCESSFUL)
+    {
+        BSP_DEBUG("rtems_semaphore_release: %s\n", rtems_status_text(status));
+    }
 }
 
 /* ---------------------------------------------------------
@@ -370,16 +409,16 @@ rtems_task Init(rtems_task_argument ignored)
  *   16 internal semaphores
  *
  */
-#define CONFIGURE_MAXIMUM_TASKS                  (OS_MAX_TASKS + 8)
-#define CONFIGURE_MAXIMUM_TIMERS                 (OS_MAX_TIMERS + 2)
-#define CONFIGURE_MAXIMUM_SEMAPHORES             (OS_MAX_BIN_SEMAPHORES + OS_MAX_COUNT_SEMAPHORES + OS_MAX_MUTEXES + 16)
-#define CONFIGURE_MAXIMUM_MESSAGE_QUEUES         (OS_MAX_QUEUES + 4)
-#define CONFIGURE_MAXIMUM_DRIVERS                10
-#define CONFIGURE_MAXIMUM_POSIX_KEYS             4
+#define CONFIGURE_MAXIMUM_TASKS          (OS_MAX_TASKS + 8)
+#define CONFIGURE_MAXIMUM_TIMERS         (OS_MAX_TIMERS + 2)
+#define CONFIGURE_MAXIMUM_SEMAPHORES     (OS_MAX_BIN_SEMAPHORES + OS_MAX_COUNT_SEMAPHORES + OS_MAX_MUTEXES + 16)
+#define CONFIGURE_MAXIMUM_MESSAGE_QUEUES (OS_MAX_QUEUES + 4)
+#define CONFIGURE_MAXIMUM_DRIVERS        10
+#define CONFIGURE_MAXIMUM_POSIX_KEYS     4
 #ifdef _RTEMS_5_
-   #define CONFIGURE_MAXIMUM_FILE_DESCRIPTORS        (OS_MAX_NUM_OPEN_FILES + 8)
+#define CONFIGURE_MAXIMUM_FILE_DESCRIPTORS (OS_MAX_NUM_OPEN_FILES + 8)
 #else
-   #define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS  (OS_MAX_NUM_OPEN_FILES + 8)
+#define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS (OS_MAX_NUM_OPEN_FILES + 8)
 #endif
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE

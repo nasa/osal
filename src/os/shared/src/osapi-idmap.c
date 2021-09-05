@@ -23,9 +23,8 @@
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *
- * This file contains utility functions to interpret OSAL IDs
- * in a generic/common manner.  They are used internally within
- * OSAL by all the various modules.
+ * This file contains utility functions to manipulate/interpret OSAL IDs
+ * in a generic/common manner.
  *
  * In order to add additional verification capabilities, each class of fundamental
  * objects will use its own ID space within the 32-bit integer ID value.  This way
@@ -35,11 +34,8 @@
  * These functions provide a consistent way to validate a 32-bit OSAL ID as
  * well as determine its internal type and index.
  *
- * The map/unmap functions are not part of the public API -- applications
- * should be treating OSAL IDs as opaque objects.
- *
- * NOTE: The only exception is OS_ConvertToArrayIndex() as this is necessary to
- * assist applications when storing OSAL IDs in a table.
+ * NOTE: This file includes local helpers, OSAL scope, and public API implementations
+ * as documented in the function headers
  */
 
 /****************************************************************************************
@@ -56,22 +52,23 @@
 #include "os-shared-idmap.h"
 #include "os-shared-task.h"
 
-typedef enum
+/*
+ * A fixed nonzero value to put into the upper 8 bits
+ * of lock keys.
+ */
+#define OS_LOCK_KEY_FIXED_VALUE 0x4D000000
+#define OS_LOCK_KEY_INVALID     ((osal_key_t) {0})
+
+/*
+ * A structure containing the user-specified
+ * details of a "foreach" iteration request
+ */
+typedef struct
 {
-    OS_TASK_BASE         = 0,
-    OS_QUEUE_BASE        = OS_TASK_BASE + OS_MAX_TASKS,
-    OS_BINSEM_BASE       = OS_QUEUE_BASE + OS_MAX_QUEUES,
-    OS_COUNTSEM_BASE     = OS_BINSEM_BASE + OS_MAX_BIN_SEMAPHORES,
-    OS_MUTEX_BASE        = OS_COUNTSEM_BASE + OS_MAX_COUNT_SEMAPHORES,
-    OS_STREAM_BASE       = OS_MUTEX_BASE + OS_MAX_MUTEXES,
-    OS_DIR_BASE          = OS_STREAM_BASE + OS_MAX_NUM_OPEN_FILES,
-    OS_TIMEBASE_BASE     = OS_DIR_BASE + OS_MAX_NUM_OPEN_DIRS,
-    OS_TIMECB_BASE       = OS_TIMEBASE_BASE + OS_MAX_TIMEBASES,
-    OS_MODULE_BASE       = OS_TIMECB_BASE + OS_MAX_TIMERS,
-    OS_FILESYS_BASE      = OS_MODULE_BASE + OS_MAX_MODULES,
-    OS_CONSOLE_BASE      = OS_FILESYS_BASE + OS_MAX_FILE_SYSTEMS,
-    OS_MAX_TOTAL_RECORDS = OS_CONSOLE_BASE + OS_MAX_CONSOLES
-} OS_ObjectIndex_t;
+    osal_id_t        creator_id;
+    OS_ArgCallback_t user_callback;
+    void *           user_arg;
+} OS_creator_filter_t;
 
 /*
  * Global ID storage tables
@@ -85,8 +82,12 @@ typedef struct
     /* Keep track of the last successfully-issued object ID of each type */
     osal_id_t last_id_issued;
 
-    /* The last task to lock/own this global table */
-    osal_id_t table_owner;
+    /* The number of individual transactions (lock/unlock cycles) on this type */
+    uint32 transaction_count;
+
+    /* The key required to unlock this table */
+    osal_key_t owner_key;
+
 } OS_objtype_state_t;
 
 OS_objtype_state_t OS_objtype_state[OS_OBJECT_TYPE_USER];
@@ -212,6 +213,43 @@ uint32 OS_GetBaseForObjectType(osal_objtype_t idtype)
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_ForEachFilterCreator
+ *
+ *  Purpose: Local helper routine, not part of OSAL API.
+ *           Determine if the object is a match for "foreach" operations
+ *
+ *-----------------------------------------------------------------*/
+bool OS_ForEachFilterCreator(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
+{
+    OS_creator_filter_t *filter = ref;
+
+    /*
+     * Check if the obj_id is both valid and matches
+     * the specified creator_id
+     */
+    return (OS_ObjectIdIsValid(obj->active_id) && (OS_ObjectIdEqual(filter->creator_id, OS_OBJECT_CREATOR_ANY) ||
+                                                   OS_ObjectIdEqual(obj->creator, filter->creator_id)));
+}
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_ForEachDoCallback
+ *
+ *  Purpose: Local helper routine, not part of OSAL API.
+ *           Invoke the user-specified callback routine
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_ForEachDoCallback(osal_id_t obj_id, void *ref)
+{
+    OS_creator_filter_t *filter = ref;
+
+    /* Just invoke the user callback */
+    filter->user_callback(obj_id, filter->user_arg);
+    return OS_SUCCESS;
+}
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_ObjectIdGlobalFromToken
  *
  *  Purpose: Local helper routine, not part of OSAL API.
@@ -265,7 +303,11 @@ int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype
 {
     memset(token, 0, sizeof(*token));
 
-    if (OS_SharedGlobalVars.Initialized == false)
+    /*
+     * Confirm that OSAL has been fully initialized before allowing any transactions
+     */
+    if (OS_SharedGlobalVars.GlobalState != OS_INIT_MAGIC_NUMBER &&
+        OS_SharedGlobalVars.GlobalState != OS_SHUTDOWN_MAGIC_NUMBER)
     {
         return OS_ERROR;
     }
@@ -274,24 +316,28 @@ int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype
      * only "exclusive" locks allowed after shutdown request (this is mode used for delete).
      * All regular ops will be blocked.
      */
-    if (OS_SharedGlobalVars.ShutdownFlag == OS_SHUTDOWN_MAGIC_NUMBER && lock_mode != OS_LOCK_MODE_EXCLUSIVE)
+    if (OS_SharedGlobalVars.GlobalState == OS_SHUTDOWN_MAGIC_NUMBER && lock_mode != OS_LOCK_MODE_EXCLUSIVE)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
 
-    if (idtype >= OS_OBJECT_TYPE_USER)
+    /*
+     * Transactions cannot be started on an object type for which
+     * there are no actual objects
+     */
+    if (OS_GetMaxForObjectType(idtype) == 0)
     {
-        return OS_ERR_INCORRECT_OBJ_TYPE;
-    }
-
-    if (lock_mode != OS_LOCK_MODE_NONE)
-    {
-        OS_Lock_Global(idtype);
+        return OS_ERR_INVALID_ID;
     }
 
     token->lock_mode = lock_mode;
     token->obj_type  = idtype;
     token->obj_idx   = OSAL_INDEX_C(-1);
+
+    if (lock_mode != OS_LOCK_MODE_NONE)
+    {
+        OS_Lock_Global(token);
+    }
 
     return OS_SUCCESS;
 
@@ -309,7 +355,7 @@ void OS_ObjectIdTransactionCancel(OS_object_token_t *token)
 {
     if (token->lock_mode != OS_LOCK_MODE_NONE)
     {
-        OS_Unlock_Global(token->obj_type);
+        OS_Unlock_Global(token);
         token->lock_mode = OS_LOCK_MODE_NONE;
     }
 }
@@ -354,74 +400,87 @@ void OS_ObjectIdTransactionCancel(OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
 {
-    int32  return_code    = OS_ERROR;
-    uint32 exclusive_bits = 0;
-    uint32 attempts       = 0;
+    int32               return_code = OS_ERROR;
+    uint32              attempts    = 0;
+    OS_common_record_t *obj;
+    osal_id_t           expected_id;
 
-    OS_common_record_t *obj = OS_ObjectIdGlobalFromToken(token);
+    obj         = OS_ObjectIdGlobalFromToken(token);
+    expected_id = OS_ObjectIdFromToken(token);
+
+    /*
+     * Upon entry the ID from the token must be valid
+     */
+    if (!OS_ObjectIdIsValid(expected_id))
+    {
+        return OS_ERR_INCORRECT_OBJ_STATE;
+    }
+
+    /*
+     * If lock mode is RESERVED, then the ID in the record should
+     * already be set to OS_OBJECT_ID_RESERVED.  This is for very
+     * specific use cases where a secondary task needs to access an
+     * object during its creation/deletion.
+     *
+     * For all typical modes the ID in the record should be equal
+     * to the token ID.
+     */
+    if (token->lock_mode == OS_LOCK_MODE_RESERVED)
+    {
+        expected_id = OS_OBJECT_ID_RESERVED;
+    }
 
     while (true)
     {
         /* Validate the integrity of the ID.  As the "active_id" is a single
          * integer, we can do this check regardless of whether global is locked or not. */
-        if (!OS_ObjectIdEqual(obj->active_id, OS_ObjectIdFromToken(token)))
-        {
-            /* The ID does not match, so unlock and return error.
-             * This basically means the ID was stale or otherwise no longer invalid */
-            return_code = OS_ERR_INVALID_ID;
-            break;
-        }
-
-        /*
-         * The REFCOUNT and EXCLUSIVE lock modes require additional
-         * conditions on before they can be successful.
-         */
-        if (token->lock_mode == OS_LOCK_MODE_REFCOUNT)
-        {
-            /* As long as no exclusive request is pending, we can increment the
-             * refcount and good to go. */
-            if ((obj->flags & OS_OBJECT_EXCL_REQ_FLAG) == 0)
-            {
-                ++obj->refcount;
-                return_code = OS_SUCCESS;
-                break;
-            }
-        }
-        else if (token->lock_mode == OS_LOCK_MODE_EXCLUSIVE)
+        if (OS_ObjectIdEqual(obj->active_id, expected_id))
         {
             /*
-             * Set the exclusive request flag -- this will prevent anyone else from
-             * incrementing the refcount while we are waiting.  However we can only
-             * do this if there are no OTHER exclusive requests.
+             * Got an ID match...
              */
-            if (exclusive_bits != 0 || (obj->flags & OS_OBJECT_EXCL_REQ_FLAG) == 0)
+            if (token->lock_mode == OS_LOCK_MODE_EXCLUSIVE)
             {
                 /*
-                 * As long as nothing is referencing this object, we are good to go.
-                 * The global table will be left in a locked state in this case.
+                 * For EXCLUSIVE mode, overwrite the ID to be RESERVED now -- this
+                 * makes any future ID checks or lock attempts in other tasks fail to match.
+                 */
+                if (!OS_ObjectIdEqual(expected_id, OS_OBJECT_ID_RESERVED))
+                {
+                    expected_id    = OS_OBJECT_ID_RESERVED;
+                    obj->active_id = expected_id;
+                }
+
+                /*
+                 * Also confirm that reference count is zero
+                 * If not zero, will need to wait for other tasks to release.
                  */
                 if (obj->refcount == 0)
                 {
                     return_code = OS_SUCCESS;
                     break;
                 }
-
-                exclusive_bits = OS_OBJECT_EXCL_REQ_FLAG;
-                obj->flags |= exclusive_bits;
+            }
+            else
+            {
+                /*
+                 * Nothing else to test for this lock type
+                 */
+                return_code = OS_SUCCESS;
+                break;
             }
         }
-        else
+        else if (token->lock_mode == OS_LOCK_MODE_NONE || !OS_ObjectIdEqual(obj->active_id, OS_OBJECT_ID_RESERVED))
         {
-            /* No fanciness required - move on. */
-            return_code = OS_SUCCESS;
+            /* Not an ID match and not RESERVED - fail out */
+            return_code = OS_ERR_INVALID_ID;
             break;
         }
 
         /*
          * If we get this far, it means there is contention for access to the object.
-         *  a) we want to increment refcount but an exclusive is pending
-         *  b) we want exclusive but refcount is nonzero
-         *  c) we want exclusive but another exclusive is pending
+         *  a) we want to some type of lock but the ID is currently RESERVED
+         *  b) the refcount is too high - need to wait for release
          *
          * In this case we will UNLOCK the global object again so that the holder
          * can relinquish it.  We'll try again a few times before giving up hope.
@@ -433,9 +492,10 @@ int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
             break;
         }
 
-        OS_Unlock_Global(token->obj_type);
-        OS_TaskDelay_Impl(attempts);
-        OS_Lock_Global(token->obj_type);
+        /*
+         * Call the impl layer to wait for some sort of change to occur.
+         */
+        OS_WaitForStateChange(token, attempts);
     }
 
     /*
@@ -446,20 +506,36 @@ int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
      */
     if (token->lock_mode != OS_LOCK_MODE_NONE)
     {
-        /*
-         * In case any exclusive bits were set locally, unset them now
-         * before the lock is (maybe) released.
-         */
-        obj->flags &= ~exclusive_bits;
-
-        /*
-         * On a successful operation, the global is unlocked if it is a REFCOUNT
-         * style lock.  For other styles (GLOBAL or EXCLUSIVE) the global lock
-         * should be maintained and returned to the caller.
-         */
-        if (return_code == OS_SUCCESS && token->lock_mode == OS_LOCK_MODE_REFCOUNT)
+        if (return_code == OS_SUCCESS)
         {
-            OS_Unlock_Global(token->obj_type);
+            /* always increment the refcount, which means a task is actively
+             * using or modifying this record. */
+            ++obj->refcount;
+
+            /*
+             * On a successful operation, the global is unlocked if it is
+             * a REFCOUNT or EXCLUSIVE lock.  Note for EXCLUSIVE, because the ID
+             * was overwritten to OS_OBJECT_ID_RESERVED, other tasks will not be
+             * able to access the object because the ID will not match, so the
+             * table can be unlocked while the remainder of the create/delete process
+             * continues.
+             *
+             * For OS_LOCK_MODE_GLOBAL the global lock should be maintained and
+             * returned to the caller.
+             */
+            if (token->lock_mode == OS_LOCK_MODE_REFCOUNT || token->lock_mode == OS_LOCK_MODE_EXCLUSIVE)
+            {
+                OS_Unlock_Global(token);
+            }
+        }
+        else if (token->lock_mode == OS_LOCK_MODE_EXCLUSIVE && OS_ObjectIdEqual(expected_id, OS_OBJECT_ID_RESERVED))
+        {
+            /*
+             * On failure, if the active_id was overwritten, then set
+             * it back to the original value which is in the token.
+             * (note it had to match initially before overwrite)
+             */
+            obj->active_id = OS_ObjectIdFromToken(token);
         }
     }
 
@@ -536,7 +612,7 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
 {
     uint32              max_id;
     uint32              base_id;
-    uint32              local_id;
+    uint32              local_id = 0;
     uint32              serial;
     uint32              i;
     int32               return_code;
@@ -616,87 +692,27 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
 
     Purpose: Locks the global table identified by "idtype"
  ------------------------------------------------------------------*/
-void OS_Lock_Global(osal_objtype_t idtype)
+void OS_Lock_Global(OS_object_token_t *token)
 {
-    int32               return_code;
     osal_id_t           self_task_id;
     OS_objtype_state_t *objtype;
 
-    if (idtype < OS_OBJECT_TYPE_USER)
+    if (token->obj_type < OS_OBJECT_TYPE_USER && token->lock_mode != OS_LOCK_MODE_NONE)
     {
-        objtype      = &OS_objtype_state[idtype];
+        objtype      = &OS_objtype_state[token->obj_type];
         self_task_id = OS_TaskGetId_Impl();
 
-        return_code = OS_Lock_Global_Impl(idtype);
-        if (return_code == OS_SUCCESS)
-        {
-            /*
-             * Track ownership of this table.  It should only be owned by one
-             * task at a time, and this aids in recovery if the owning task is
-             * deleted or experiences an exception causing it to not be freed.
-             *
-             * This is done after successfully locking, so this has exclusive access
-             * to the state object.
-             */
-            if (!OS_ObjectIdDefined(self_task_id))
-            {
-                /*
-                 * This just means the calling context is not an OSAL-created task.
-                 * This is not necessarily an error, but it should be tracked.
-                 * Also note that the root/initial task also does not have an ID.
-                 */
-                self_task_id = OS_OBJECT_ID_RESERVED; /* nonzero, but also won't alias a known task */
-            }
-
-            if (OS_ObjectIdDefined(objtype->table_owner))
-            {
-                /* this is almost certainly a bug */
-                OS_DEBUG("ERROR: global %u acquired by task 0x%lx when already owned by task 0x%lx\n",
-                         (unsigned int)idtype, OS_ObjectIdToInteger(self_task_id),
-                         OS_ObjectIdToInteger(objtype->table_owner));
-            }
-            else
-            {
-                objtype->table_owner = self_task_id;
-            }
-        }
-    }
-    else
-    {
-        return_code = OS_ERR_INCORRECT_OBJ_TYPE;
-    }
-
-    if (return_code != OS_SUCCESS)
-    {
-        OS_DEBUG("ERROR: unable to lock global %u, error=%d\n", (unsigned int)idtype, (int)return_code);
-    }
-}
-
-/*----------------------------------------------------------------
-   Function: OS_Unlock_Global
-
-    Purpose: Unlocks the global table identified by "idtype"
- ------------------------------------------------------------------*/
-void OS_Unlock_Global(osal_objtype_t idtype)
-{
-    int32               return_code;
-    osal_id_t           self_task_id;
-    OS_objtype_state_t *objtype;
-
-    if (idtype < OS_OBJECT_TYPE_USER)
-    {
-        objtype      = &OS_objtype_state[idtype];
-        self_task_id = OS_TaskGetId_Impl();
+        OS_Lock_Global_Impl(token->obj_type);
 
         /*
-         * Un-track ownership of this table.  It should only be owned by one
+         * Track ownership of this table.  It should only be owned by one
          * task at a time, and this aids in recovery if the owning task is
          * deleted or experiences an exception causing it to not be freed.
          *
-         * This is done before unlocking, while this has exclusive access
+         * This is done after successfully locking, so this has exclusive access
          * to the state object.
          */
-        if (!OS_ObjectIdDefined(self_task_id))
+        if (!OS_ObjectIdIsValid(self_task_id))
         {
             /*
              * This just means the calling context is not an OSAL-created task.
@@ -706,28 +722,119 @@ void OS_Unlock_Global(osal_objtype_t idtype)
             self_task_id = OS_OBJECT_ID_RESERVED; /* nonzero, but also won't alias a known task */
         }
 
-        if (!OS_ObjectIdEqual(objtype->table_owner, self_task_id))
+        /*
+         * The key value is computed with fixed/nonzero flag bits combined
+         * with the lower 24 bits of the task ID xor'ed with transaction id.
+         * This makes it different for every operation, and different depending
+         * on what task is calling the function.
+         */
+        token->lock_key.key_value =
+            OS_LOCK_KEY_FIXED_VALUE | ((OS_ObjectIdToInteger(self_task_id) ^ objtype->transaction_count) & 0xFFFFFF);
+
+        ++objtype->transaction_count;
+
+        if (objtype->owner_key.key_value != 0)
         {
             /* this is almost certainly a bug */
-            OS_DEBUG("ERROR: global %u released by task 0x%lx when owned by task 0x%lx\n", (unsigned int)idtype,
-                     OS_ObjectIdToInteger(self_task_id), OS_ObjectIdToInteger(objtype->table_owner));
+            OS_DEBUG("ERROR: global %u acquired by task 0x%lx when already assigned key 0x%lx\n",
+                     (unsigned int)token->obj_type, OS_ObjectIdToInteger(self_task_id),
+                     (unsigned long)objtype->owner_key.key_value);
         }
         else
         {
-            objtype->table_owner = OS_OBJECT_ID_UNDEFINED;
+            objtype->owner_key = token->lock_key;
         }
-
-        return_code = OS_Unlock_Global_Impl(idtype);
     }
     else
     {
-        return_code = OS_ERR_INCORRECT_OBJ_TYPE;
+        OS_DEBUG("ERROR: cannot lock global %u for mode %u\n", (unsigned int)token->obj_type,
+                 (unsigned int)token->lock_mode);
     }
+}
 
-    if (return_code != OS_SUCCESS)
+/*----------------------------------------------------------------
+   Function: OS_Unlock_Global
+
+    Purpose: Unlocks the global table identified by "idtype"
+ ------------------------------------------------------------------*/
+void OS_Unlock_Global(OS_object_token_t *token)
+{
+    OS_objtype_state_t *objtype;
+
+    if (token->obj_type < OS_OBJECT_TYPE_USER && token->lock_mode != OS_LOCK_MODE_NONE)
     {
-        OS_DEBUG("ERROR: unable to unlock global %u, error=%d\n", (unsigned int)idtype, (int)return_code);
+        objtype = &OS_objtype_state[token->obj_type];
+
+        /*
+         * Un-track ownership of this table.  It should only be owned by one
+         * task at a time, and this aids in recovery if the owning task is
+         * deleted or experiences an exception causing it to not be freed.
+         *
+         * This is done before unlocking, while this has exclusive access
+         * to the state object.
+         */
+        if ((objtype->owner_key.key_value & 0xFF000000) != OS_LOCK_KEY_FIXED_VALUE ||
+            objtype->owner_key.key_value != token->lock_key.key_value)
+        {
+            /* this is almost certainly a bug */
+            OS_DEBUG("ERROR: global %u released using mismatched key=0x%lx expected=0x%lx\n",
+                     (unsigned int)token->obj_type, (unsigned long)token->lock_key.key_value,
+                     (unsigned long)objtype->owner_key.key_value);
+        }
+
+        objtype->owner_key = OS_LOCK_KEY_INVALID;
+        token->lock_key    = OS_LOCK_KEY_INVALID;
+
+        OS_Unlock_Global_Impl(token->obj_type);
     }
+    else
+    {
+        OS_DEBUG("ERROR: cannot unlock global %u for mode %u\n", (unsigned int)token->obj_type,
+                 (unsigned int)token->lock_mode);
+    }
+}
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_WaitForStateChange
+ *
+ *  Purpose: Local helper routine, not part of OSAL API.
+ *  Waits for a change in the global table identified by "idtype"
+ *
+ *  NOTE: this must be called while the table is _LOCKED_
+ *  The "OS_WaitForStateChange_Impl" function should unlock + relock
+ *
+ *-----------------------------------------------------------------*/
+void OS_WaitForStateChange(OS_object_token_t *token, uint32 attempts)
+{
+    osal_key_t          saved_unlock_key;
+    OS_objtype_state_t *objtype;
+
+    /*
+     * This needs to release the lock, to allow other
+     * tasks to make a change to the table.  But to avoid
+     * ownership warnings the key must also be temporarily
+     * cleared too, and restored after waiting.
+     */
+
+    objtype          = &OS_objtype_state[token->obj_type];
+    saved_unlock_key = objtype->owner_key;
+
+    /* temporarily release the table */
+    objtype->owner_key = OS_LOCK_KEY_INVALID;
+
+    /*
+     * The implementation layer takes care of the actual unlock + wait.
+     * This permits use of condition variables where these two actions
+     * are done atomically.
+     */
+    OS_WaitForStateChange_Impl(token->obj_type, attempts);
+
+    /*
+     * After return, this task owns the table again
+     */
+    /* cppcheck-suppress redundantAssignment */
+    objtype->owner_key = saved_unlock_key;
 }
 
 /*----------------------------------------------------------------
@@ -787,7 +894,7 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_object_token_t *token, o
 } /* end OS_ObjectIdFinalizeNew(, &token, ) */
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdFinalizeDelete(, &token)
+   Function: OS_ObjectIdFinalizeDelete
 
     Purpose: Helper routine, not part of OSAL public API.
              See description in prototype
@@ -847,11 +954,11 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS
         /*
          * The "ConvertToken" routine will return with the global lock
          * in a state appropriate for returning to the caller, as indicated
-         * by the "check_mode" parameter.
+         * by the "lock_mode" parameter.
          */
         return_code = OS_ObjectIdConvertToken(token);
     }
-    else if (lock_mode != OS_LOCK_MODE_NONE)
+    else
     {
         OS_ObjectIdTransactionCancel(token);
     }
@@ -900,15 +1007,8 @@ int32 OS_ObjectIdFindByName(osal_objtype_t idtype, const char *name, osal_id_t *
      * This is required by the file/dir/socket API since these DO allow multiple
      * instances of the same name.
      */
-    if (name == NULL)
-    {
-        return OS_ERR_NAME_NOT_FOUND;
-    }
-
-    if (strlen(name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
+    ARGCHECK(name, OS_ERR_NAME_NOT_FOUND);
+    LENGTHCHECK(name, OS_MAX_API_NAME, OS_ERR_NAME_TOO_LONG);
 
     return_code = OS_ObjectIdGetByName(OS_LOCK_MODE_GLOBAL, idtype, name, &token);
     if (return_code == OS_SUCCESS)
@@ -986,7 +1086,7 @@ int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, osal_objtype_t idtype, osal_i
  * be changed.
  *
  *-----------------------------------------------------------------*/
-void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id)
+void OS_ObjectIdTransactionFinish(OS_object_token_t *token, const osal_id_t *final_id)
 {
     OS_common_record_t *record;
 
@@ -999,14 +1099,14 @@ void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id)
     record = OS_ObjectIdGlobalFromToken(token);
 
     /* re-acquire global table lock to adjust refcount */
-    if (token->lock_mode == OS_LOCK_MODE_REFCOUNT)
+    if (token->lock_mode == OS_LOCK_MODE_EXCLUSIVE || token->lock_mode == OS_LOCK_MODE_REFCOUNT)
     {
-        OS_Lock_Global(token->obj_type);
+        OS_Lock_Global(token);
+    }
 
-        if (record->refcount > 0)
-        {
-            --record->refcount;
-        }
+    if (record->refcount > 0)
+    {
+        --record->refcount;
     }
 
     /*
@@ -1021,9 +1121,18 @@ void OS_ObjectIdTransactionFinish(OS_object_token_t *token, osal_id_t *final_id)
     {
         record->active_id = *final_id;
     }
+    else if (token->lock_mode == OS_LOCK_MODE_EXCLUSIVE)
+    {
+        /*
+         * If the lock type was EXCLUSIVE, it means that the ID in the record
+         * was reset to OS_OBJECT_ID_RESERVED.  This must restore the original
+         * object ID from the token.
+         */
+        record->active_id = token->obj_id;
+    }
 
     /* always unlock (this also covers OS_LOCK_MODE_GLOBAL case) */
-    OS_Unlock_Global(token->obj_type);
+    OS_Unlock_Global(token);
 
     /*
      * Setting to "NONE" indicates that this token has been
@@ -1085,7 +1194,10 @@ int32 OS_ObjectIdAllocateNew(osal_objtype_t idtype, const char *name, OS_object_
 {
     int32 return_code;
 
-    if (OS_SharedGlobalVars.ShutdownFlag == OS_SHUTDOWN_MAGIC_NUMBER)
+    /*
+     * No new objects can be created after Shutdown request
+     */
+    if (OS_SharedGlobalVars.GlobalState == OS_SHUTDOWN_MAGIC_NUMBER)
     {
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
@@ -1118,16 +1230,28 @@ int32 OS_ObjectIdAllocateNew(osal_objtype_t idtype, const char *name, OS_object_
         return_code = OS_ObjectIdFindNextFree(token);
     }
 
+    /* If allocation failed, abort the operation now - no ID was allocated.
+     * After this point, if a future step fails, the allocated ID must be
+     * released. */
+    if (return_code != OS_SUCCESS)
+    {
+        OS_ObjectIdTransactionCancel(token);
+        return return_code;
+    }
+
     if (return_code == OS_SUCCESS)
     {
         return_code = OS_NotifyEvent(OS_EVENT_RESOURCE_ALLOCATED, token->obj_id, NULL);
     }
 
-    /* If allocation failed for any reason, unlock the global.
-     * otherwise the global should stay locked so remaining initialization can be done */
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_ObjectIdConvertToken(token);
+    }
+
     if (return_code != OS_SUCCESS)
     {
-        OS_ObjectIdTransactionCancel(token);
+        return_code = OS_ObjectIdFinalizeNew(return_code, token, NULL);
     }
 
     return return_code;
@@ -1234,7 +1358,7 @@ void OS_ObjectIdIteratorDestroy(OS_object_iter_t *iter)
 
     Purpose: Call a handler function on an iterator object ID
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t))
+int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal_id_t, void *))
 {
     int32 status;
 
@@ -1242,9 +1366,9 @@ int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal
      * This needs to temporarily unlock the global,
      * call the handler function, then re-lock.
      */
-    OS_Unlock_Global(iter->token.obj_type);
-    status = func(iter->token.obj_id);
-    OS_Lock_Global(iter->token.obj_type);
+    OS_Unlock_Global(&iter->token);
+    status = func(OS_ObjectIdFromToken(&iter->token), iter->arg);
+    OS_Lock_Global(&iter->token);
 
     return status;
 }
@@ -1265,7 +1389,7 @@ int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal
  *-----------------------------------------------------------------*/
 int32 OS_ConvertToArrayIndex(osal_id_t object_id, osal_index_t *ArrayIndex)
 {
-    /* just pass to the generic internal conversion routine */
+    /* pass to conversion routine with undefined type */
     return OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_UNDEFINED, object_id, ArrayIndex);
 } /* end OS_ConvertToArrayIndex */
 
@@ -1298,52 +1422,21 @@ void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void 
 void OS_ForEachObjectOfType(osal_objtype_t idtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr,
                             void *callback_arg)
 {
-    osal_index_t obj_index;
-    uint32       obj_max;
-    osal_id_t    obj_id;
+    OS_object_iter_t    iter;
+    OS_creator_filter_t filter;
 
-    obj_max = OS_GetMaxForObjectType(idtype);
-    if (obj_max > 0)
+    filter.creator_id    = creator_id;
+    filter.user_callback = callback_ptr;
+    filter.user_arg      = callback_arg;
+
+    if (OS_ObjectIdIteratorInit(OS_ForEachFilterCreator, &filter, idtype, &iter) == OS_SUCCESS)
     {
-        obj_index = OS_GetBaseForObjectType(idtype);
-        OS_Lock_Global(idtype);
-        while (obj_max > 0)
+        while (OS_ObjectIdIteratorGetNext(&iter))
         {
-            /*
-             * Check if the obj_id is both valid and matches
-             * the specified creator_id
-             */
-            obj_id = OS_common_table[obj_index].active_id;
-            if (OS_ObjectIdDefined(obj_id) && !OS_ObjectIdEqual(creator_id, OS_OBJECT_CREATOR_ANY) &&
-                !OS_ObjectIdEqual(OS_common_table[obj_index].creator, creator_id))
-            {
-                /* valid object but not a creator match -
-                 * skip the callback for this object */
-                obj_id = OS_OBJECT_ID_UNDEFINED;
-            }
-
-            if (OS_ObjectIdDefined(obj_id))
-            {
-                /*
-                 * Invoke Callback for the object, which must be done
-                 * while the global table is unlocked.
-                 *
-                 * Note this means by the time the callback is done,
-                 * the object could have been deleted by another task.
-                 *
-                 * But this must not invoke a callback with a locked table,
-                 * as the callback function might call other OSAL functions,
-                 * which could deadlock.
-                 */
-                OS_Unlock_Global(idtype);
-                (*callback_ptr)(obj_id, callback_arg);
-                OS_Lock_Global(idtype);
-            }
-
-            ++obj_index;
-            --obj_max;
+            OS_ObjectIdIteratorProcessEntry(&iter, OS_ForEachDoCallback);
         }
-        OS_Unlock_Global(idtype);
+
+        OS_ObjectIdIteratorDestroy(&iter);
     }
 } /* end OS_ForEachObjectOfType */
 
@@ -1376,10 +1469,8 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size)
     OS_object_token_t   token;
 
     /* sanity check the passed-in buffer and size */
-    if (buffer == NULL || buffer_size == 0)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(buffer);
+    OS_CHECK_SIZE(buffer_size);
 
     /*
      * Initially set the output string to empty.
@@ -1395,7 +1486,7 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size)
 
         if (record->name_entry != NULL)
         {
-            name_len = strlen(record->name_entry);
+            name_len = OS_strnlen(record->name_entry, buffer_size);
             if (buffer_size <= name_len)
             {
                 /* indicates the name does not fit into supplied buffer */
@@ -1416,15 +1507,8 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size)
  *
  * Function: OS_ObjectIdToArrayIndex
  *
- *  Purpose: Convert an object ID (which must be of the given type) to a number suitable
- *           for use as an array index.  The array index will be in the range of:
- *            0 <= ArrayIndex < OS_MAX_<OBJTYPE>
- *
- *            If the passed-in ID type is OS_OBJECT_TYPE_UNDEFINED, then any type
- *            is allowed.
- *
- *  returns: If the passed-in ID is not of the proper type, OS_ERROR is returned
- *           Otherwise OS_SUCCESS is returned.
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t object_id, osal_index_t *ArrayIndex)
@@ -1433,6 +1517,9 @@ int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t object_id, osal_i
     uint32         obj_index;
     osal_objtype_t actual_type;
     int32          return_code;
+
+    /* Check Parameters */
+    OS_CHECK_POINTER(ArrayIndex);
 
     obj_index   = OS_ObjectIdToSerialNumber_Impl(object_id);
     actual_type = OS_ObjectIdToType_Impl(object_id);

@@ -42,6 +42,8 @@
 #include "os-shared-idmap.h"
 #include "os-shared-timebase.h"
 
+#include "osapi-printf.h"
+
 /****************************************************************************************
                                      DEFINES
  ***************************************************************************************/
@@ -170,6 +172,20 @@ int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
     rtems_task_delete(impl->id);
     return OS_SUCCESS;
 } /* end OS_TaskDelete_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskDetach_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
+{
+    /* No-op on RTEMS */
+    return OS_SUCCESS;
+}
 
 /*----------------------------------------------------------------
  *
@@ -320,11 +336,20 @@ osal_id_t OS_TaskGetId_Impl(void)
 
     task_self = rtems_task_self();
     /* When the task was created the OSAL ID was used as the "classic name",
-     * which gives us an easy way to map it back again */
+     * which gives us an easy way to map it back again.  However, if this
+     * API is invoked from a non-OSAL task (i.e. the "root" task) then it is
+     * possible that rtems_object_get_classic_name() succeeds but the result
+     * is not actually an OSAL task ID. */
     status = rtems_object_get_classic_name(task_self, &self_name);
     if (status == RTEMS_SUCCESSFUL)
     {
         global_task_id = OS_ObjectIdFromInteger(self_name);
+
+        if (OS_ObjectIdToType_Impl(global_task_id) != OS_OBJECT_TYPE_OS_TASK)
+        {
+            /* not an OSAL task */
+            global_task_id = OS_OBJECT_ID_UNDEFINED;
+        }
     }
     else
     {
@@ -357,7 +382,7 @@ int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_p
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TaskValidateSystemData_Impl(const void *sysdata, uint32 sysdata_size)
+int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size)
 {
     if (sysdata == NULL || sysdata_size != sizeof(rtems_id))
     {

@@ -19,16 +19,17 @@
  */
 
 /**
- * \file     os-shared-filesys.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_FILESYS_H_
-#define INCLUDE_OS_SHARED_FILESYS_H_
+#ifndef OS_SHARED_FILESYS_H
+#define OS_SHARED_FILESYS_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-filesys.h"
+#include "os-shared-globaldefs.h"
 
 /**
  * This flag will be set on the internal record to indicate
@@ -82,22 +83,6 @@ enum
     OS_FILESYS_TYPE_MTD,           /**< A "memory technology device" such as FLASH or EEPROM */
     OS_FILESYS_TYPE_MAX
 };
-
-/*
- * The data type filled in by the "statvfs" call.
- *
- * This is defined here since there is no public API to get this info,
- * only the total bytes free is accessible via the current OSAL API.
- *
- * However, returning the detailed info at this level means that the
- * more detailed information could be made available with a new API call.
- */
-typedef struct
-{
-    size_t            block_size;
-    osal_blockcount_t total_blocks;
-    osal_blockcount_t blocks_free;
-} OS_statvfs_t;
 
 typedef struct
 {
@@ -205,5 +190,6 @@ int32 OS_FileSysUnmountVolume_Impl(const OS_object_token_t *token);
 bool  OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fsvolname, size_t blocksize,
                             osal_blockcount_t numblocks, bool should_format);
+bool  OS_FileSysFilterFree(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 
-#endif /* INCLUDE_OS_SHARED_FILESYS_H_ */
+#endif /* OS_SHARED_FILESYS_H */

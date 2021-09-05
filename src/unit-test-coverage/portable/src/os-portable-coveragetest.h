@@ -19,32 +19,22 @@
  */
 
 /**
- * \file     os-portable-coveragetest.h
- * \ingroup  portable
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup portable
  *
+ * Declarations and prototypes for os-portable-coveragetest
  */
 
-#ifndef INCLUDE_OS_PORTABLE_COVERAGETEST_H_
-#define INCLUDE_OS_PORTABLE_COVERAGETEST_H_
-
-/**
- * \file     os-vxworks-coveragetest.h
- * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
- *
- */
-
-#ifndef _OS_PORTABLE_COVERAGETEST_H_
-#define _OS_PORTABLE_COVERAGETEST_H_
+#ifndef OS_PORTABLE_COVERAGETEST_H
+#define OS_PORTABLE_COVERAGETEST_H
 
 /*
  * Includes
  */
 
-#include <utassert.h>
-#include <uttest.h>
-#include <utstubs.h>
+#include "utassert.h"
+#include "uttest.h"
+#include "utstubs.h"
 
 #include "os-shared-globaldefs.h"
 
@@ -76,6 +66,4 @@
 void Osapi_Test_Setup(void);
 void Osapi_Test_Teardown(void);
 
-#endif /* _OS_PORTABLE_COVERAGETEST_H_ */
-
-#endif /* INCLUDE_OS_PORTABLE_COVERAGETEST_H_ */
+#endif /* OS_PORTABLE_COVERAGETEST_H */

@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for stdarg.h */
-#ifndef _OSAL_STUB_STDARG_H_
-#define _OSAL_STUB_STDARG_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for stdarg.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_STDARG_H
+#define OCS_STDARG_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in stdarg.h */
@@ -43,4 +49,4 @@ typedef struct
 #define OCS_va_start(ap, last) ap.p = &last
 #define OCS_va_end(ap)
 
-#endif /* _OSAL_STUB_STDARG_H_ */
+#endif /* OCS_STDARG_H */

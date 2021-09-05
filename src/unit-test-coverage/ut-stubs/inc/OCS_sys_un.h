@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for sys/un.h */
-#ifndef _OSAL_STUB_SYS_UN_H_
-#define _OSAL_STUB_SYS_UN_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for sys/un.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_SYS_UN_H
+#define OCS_SYS_UN_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/un.h */
@@ -36,4 +42,4 @@
 /* prototypes normally declared in sys/un.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_SYS_UN_H_ */
+#endif /* OCS_SYS_UN_H */

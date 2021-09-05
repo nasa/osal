@@ -19,16 +19,17 @@
  */
 
 /**
- * \file     os-shared-module.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_MODULE_H_
-#define INCLUDE_OS_SHARED_MODULE_H_
+#ifndef OS_SHARED_MODULE_H
+#define OS_SHARED_MODULE_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-module.h"
+#include "os-shared-globaldefs.h"
 
 typedef enum
 {
@@ -129,4 +130,4 @@ int32 OS_SymbolTableDump_Impl(const char *filename, size_t size_limit);
 int32 OS_ModuleLoad_Static(const char *ModuleName);
 int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName, const char *ModuleName);
 
-#endif /* INCLUDE_OS_SHARED_MODULE_H_ */
+#endif /* OS_SHARED_MODULE_H */

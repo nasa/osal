@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for errno.h */
-#ifndef _OSAL_OVERRIDE_ERRNO_H_
-#define _OSAL_OVERRIDE_ERRNO_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for errno.h
+ */
 
-#include <OCS_errno.h>
+#ifndef OVERRIDE_ERRNO_H
+#define OVERRIDE_ERRNO_H
+
+#include "OCS_errno.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in errno.h */
@@ -30,10 +36,14 @@
 #define EINTR     OCS_EINTR
 #define EAGAIN    OCS_EAGAIN
 #define EINVAL    OCS_EINVAL
+#define EEXIST    OCS_EEXIST
 #define EMSGSIZE  OCS_EMSGSIZE
 #define ETIMEDOUT OCS_ETIMEDOUT
 #define ESPIPE    OCS_ESPIPE
+#define ENOTSUP   OCS_ENOTSUP
+#define ENOSYS    OCS_ENOSYS
+#define EROFS     OCS_EROFS
 
 #define errno OCS_errno
 
-#endif /* _OSAL_OVERRIDE_ERRNO_H_ */
+#endif /* OVERRIDE_ERRNO_H */

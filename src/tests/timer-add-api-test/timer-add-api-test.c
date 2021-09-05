@@ -65,33 +65,44 @@ void TestTimerAddApi(void)
      * callback_ptr, void *callback_arg)
      */
 
-    int32     actual;
-    int32     expected;
-    int32     tbc_ret_val;
-    int32     tbs_ret_val;
+    uint32    expected;
+    osal_id_t badid;
     osal_id_t timer_id;
     osal_id_t time_base_id;
     int       i = 0;
     int32     TimerStatus[NUMBER_OF_TIMERS];
-    osal_id_t TimerID[NUMBER_OF_TIMERS];
+    osal_id_t TimerID[OS_MAX_TIMERS];
+    char      temp_name[OS_MAX_API_NAME + 5];
     char      TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4"};
     uint32    microsecs;
 
     /* Create and set the TimeBase obj and verify success */
 
-    tbc_ret_val = OS_TimeBaseCreate(&time_base_id, "TimeBase", 0);
-    expected    = OS_SUCCESS;
-    UtAssert_True(tbc_ret_val == expected, "OS_TimeBaseCreate() (%ld) == OS_SUCCESS", (long)tbc_ret_val);
+    UtAssert_INT32_EQ(OS_TimeBaseCreate(&time_base_id, "TimeBase", 0), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_TimeBaseSet(time_base_id, 10000, 10000), OS_SUCCESS);
 
-    tbs_ret_val = OS_TimeBaseSet(time_base_id, 10000, 10000); /* ms */
-    expected    = OS_SUCCESS;
-    UtAssert_True(tbs_ret_val == expected, "OS_TimeBaseSet() (%ld) == OS_SUCCESS", (long)tbs_ret_val);
+    memset(temp_name, 'x', sizeof(temp_name) - 1);
+    temp_name[sizeof(temp_name) - 1] = 0;
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, temp_name, time_base_id, &null_func, NULL), OS_ERR_NAME_TOO_LONG);
+
+    for (i = 0; i < OS_MAX_TIMERS; i++)
+    {
+        snprintf(temp_name, sizeof(temp_name), "Timer%d", i);
+        UtAssert_INT32_EQ(OS_TimerAdd(&TimerID[i], temp_name, time_base_id, &null_func, NULL), OS_SUCCESS);
+        UtPrintf("Timer %d Created ID=%lx", i, OS_ObjectIdToInteger(TimerID[i]));
+    }
+
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "TooMany", time_base_id, &null_func, NULL), OS_ERR_NO_FREE_IDS);
+    for (i = 0; i < OS_MAX_TIMERS; i++)
+    {
+        UtAssert_INT32_EQ(OS_TimerDelete(TimerID[i]), OS_SUCCESS);
+    }
 
     for (i = 0; i < NUMBER_OF_TIMERS; i++)
     {
-        TimerStatus[i] = OS_TimerAdd(&TimerID[i], TimerName[i], time_base_id, &counter_func, &timer_counter[i]);
-        UtAssert_True(TimerStatus[i] == OS_SUCCESS, "Timer %d Created RC=%d ID=%lx", i, (int)TimerStatus[i],
-                      OS_ObjectIdToInteger(TimerID[i]));
+        UtAssert_INT32_EQ(OS_TimerAdd(&TimerID[i], TimerName[i], time_base_id, &counter_func, &timer_counter[i]),
+                          OS_SUCCESS);
+        UtPrintf("Timer %d Created ID=%lx", i, OS_ObjectIdToInteger(TimerID[i]));
     }
 
     /* Sample the clock now, before starting any timer */
@@ -130,7 +141,7 @@ void TestTimerAddApi(void)
 
     OS_GetLocalTime(&EndTime);
 
-    for (i = NUMBER_OF_TIMERS-1; i >= 0; --i)
+    for (i = NUMBER_OF_TIMERS - 1; i >= 0; --i)
     {
         TimerStatus[i] = OS_TimerDelete(TimerID[i]);
     }
@@ -144,15 +155,7 @@ void TestTimerAddApi(void)
     /*
      * Time limited test
      */
-    microsecs = 1000000 * (EndTime.seconds - StartTime.seconds);
-    if (EndTime.microsecs < StartTime.microsecs)
-    {
-        microsecs -= StartTime.microsecs - EndTime.microsecs;
-    }
-    else
-    {
-        microsecs += EndTime.microsecs - StartTime.microsecs;
-    }
+    microsecs = OS_TimeGetTotalMicroseconds(OS_TimeSubtract(EndTime, StartTime));
 
     /* Make sure the ratio of the timers are OK */
     for (i = 0; i < NUMBER_OF_TIMERS; i++)
@@ -173,30 +176,18 @@ void TestTimerAddApi(void)
     }
 
     /* Test nominal inputs */
-    expected = OS_SUCCESS;
-    actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_SUCCESS", (long)actual);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL), OS_SUCCESS);
+
+    /* create a bad ID by flipping the bits of a good ID */
+    badid = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(time_base_id) ^ 0xFFFFFFFF);
 
     /* Test invalid inputs */
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimerAdd(NULL, "Timer", time_base_id, null_func, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_INVALID_POINTER", (long)actual);
-
-    expected = OS_ERR_INVALID_ID;
-    actual   = OS_TimerAdd(&timer_id, "Timer", OS_OBJECT_ID_UNDEFINED, null_func, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_INVALID_ID", (long)actual);
-
-    expected = OS_TIMER_ERR_INVALID_ARGS;
-    actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, NULL, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_TIMER_ERR_INVALID_ARGS", (long)actual);
-
-    expected = OS_ERR_NAME_TAKEN;
-    actual   = OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_ERR_NAME_TAKEN", (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimerAdd(&timer_id, 0, time_base_id, null_func, NULL);
-    UtAssert_True(actual == expected, "OS_TimerAdd() (%ld) == OS_INVALID_POINTER", (long)actual);
+    UtAssert_INT32_EQ(OS_TimerAdd(NULL, "Timer", time_base_id, null_func, NULL), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", OS_OBJECT_ID_UNDEFINED, null_func, NULL), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", badid, null_func, NULL), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", time_base_id, NULL, NULL), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL), OS_ERR_NAME_TAKEN);
+    UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, 0, time_base_id, null_func, NULL), OS_INVALID_POINTER);
 
 } /* end TestTimerAddApi */
 
@@ -206,6 +197,9 @@ void UtTest_Setup(void)
     {
         UtAssert_Abort("OS_API_Init() failed");
     }
+
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     /*
      * Register the test setup and check routines in UT assert

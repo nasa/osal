@@ -19,16 +19,16 @@
  */
 
 /**
- * \file     os-impl-loader.h
+ * \file
+ *
  * \ingroup  posix
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_LOADER_H_
-#define INCLUDE_OS_IMPL_LOADER_H_
+#ifndef OS_IMPL_LOADER_H
+#define OS_IMPL_LOADER_H
 
-#include <osconfig.h>
+#include "osconfig.h"
 #include <dlfcn.h>
 
 /*
@@ -52,4 +52,4 @@ typedef struct
  */
 extern OS_impl_module_internal_record_t OS_impl_module_table[OS_MAX_MODULES];
 
-#endif /* INCLUDE_OS_IMPL_LOADER_H_ */
+#endif /* OS_IMPL_LOADER_H */

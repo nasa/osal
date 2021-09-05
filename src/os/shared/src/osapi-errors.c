@@ -52,7 +52,7 @@ static const OS_ErrorTable_Entry_t OS_GLOBAL_ERROR_NAME_TABLE[] = {
     {OS_SUCCESS, "OS_SUCCESS"},
     {OS_ERROR, "OS_ERROR"},
     {OS_INVALID_POINTER, "OS_INVALID_POINTER"},
-    {OS_ERROR_ADDRESS_MISALIGNED, "OS_ADDRESS_MISALIGNED"},
+    {OS_ERROR_ADDRESS_MISALIGNED, "OS_ERROR_ADDRESS_MISALIGNED"},
     {OS_ERROR_TIMEOUT, "OS_ERROR_TIMEOUT"},
     {OS_INVALID_INT_NUM, "OS_INVALID_INT_NUM"},
     {OS_SEM_FAILURE, "OS_SEM_FAILURE"},
@@ -69,10 +69,22 @@ static const OS_ErrorTable_Entry_t OS_GLOBAL_ERROR_NAME_TABLE[] = {
     {OS_ERR_NAME_NOT_FOUND, "OS_ERR_NAME_NOT_FOUND"},
     {OS_ERR_SEM_NOT_FULL, "OS_ERR_SEM_NOT_FULL"},
     {OS_ERR_INVALID_PRIORITY, "OS_ERR_INVALID_PRIORITY"},
+    {OS_INVALID_SEM_VALUE, "OS_INVALID_SEM_VALUE"},
+    {OS_ERR_FILE, "OS_ERR_FILE"},
+    {OS_ERR_NOT_IMPLEMENTED, "OS_ERR_NOT_IMPLEMENTED"},
+    {OS_TIMER_ERR_INVALID_ARGS, "OS_TIMER_ERR_INVALID_ARGS"},
+    {OS_TIMER_ERR_TIMER_ID, "OS_TIMER_ERR_TIMER_ID"},
+    {OS_TIMER_ERR_UNAVAILABLE, "OS_TIMER_ERR_UNAVAILABLE"},
+    {OS_TIMER_ERR_INTERNAL, "OS_TIMER_ERR_INTERNAL"},
     {OS_ERR_OBJECT_IN_USE, "OS_ERR_OBJECT_IN_USE"},
     {OS_ERR_BAD_ADDRESS, "OS_ERR_BAD_ADDRESS"},
     {OS_ERR_INCORRECT_OBJ_STATE, "OS_ERR_INCORRECT_OBJ_STATE"},
     {OS_ERR_INCORRECT_OBJ_TYPE, "OS_ERR_INCORRECT_OBJ_TYPE"},
+    {OS_ERR_STREAM_DISCONNECTED, "OS_ERR_STREAM_DISCONNECTED"},
+    {OS_ERR_OPERATION_NOT_SUPPORTED, "OS_ERR_OPERATION_NOT_SUPPORTED"},
+    {OS_ERR_INVALID_SIZE, "OS_ERR_INVALID_SIZE"},
+    {OS_ERR_OUTPUT_TOO_LARGE, "OS_ERR_OUTPUT_TOO_LARGE"},
+    {OS_ERR_INVALID_ARGUMENT, "OS_ERR_INVALID_ARGUMENT"},
     {OS_FS_ERR_PATH_TOO_LONG, "OS_FS_ERR_PATH_TOO_LONG"},
     {OS_FS_ERR_NAME_TOO_LONG, "OS_FS_ERR_NAME_TOO_LONG"},
     {OS_FS_ERR_DRIVE_NOT_CREATED, "OS_FS_ERR_DRIVE_NOT_CREATED"},
@@ -98,13 +110,11 @@ static const OS_ErrorTable_Entry_t OS_GLOBAL_ERROR_NAME_TABLE[] = {
  *-----------------------------------------------------------------*/
 int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name)
 {
-    uint32                       return_code;
+    int32                        return_code;
     const OS_ErrorTable_Entry_t *Error;
 
-    if (err_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(err_name);
 
     Error = OS_GLOBAL_ERROR_NAME_TABLE;
     while (Error->Name != NULL && Error->Number != error_num)
@@ -123,8 +133,9 @@ int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name)
 
     if (Error->Number == error_num && Error->Name != NULL)
     {
-        strncpy(*err_name, Error->Name, OS_ERROR_NAME_LENGTH - 1);
-        return_code = OS_SUCCESS;
+        strncpy(*err_name, Error->Name, sizeof(*err_name) - 1);
+        *err_name[sizeof(*err_name) - 1] = 0;
+        return_code                      = OS_SUCCESS;
     }
     else
     {

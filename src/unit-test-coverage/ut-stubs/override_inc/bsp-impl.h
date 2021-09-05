@@ -19,14 +19,14 @@
  */
 
 /**
- * \file     bsp-impl.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
  *
+ * Declarations and prototypes for bsp-impl
  */
 
-#ifndef INCLUDE_BSP_IMPL_H_
-#define INCLUDE_BSP_IMPL_H_
+#ifndef OVERRIDE_BSP_IMPL_H
+#define OVERRIDE_BSP_IMPL_H
 
 #include "OCS_bsp-impl.h"
 
@@ -36,11 +36,13 @@
 #define OS_BSP_CONSOLEMODE_BLUE      OCS_OS_BSP_CONSOLEMODE_BLUE
 #define OS_BSP_CONSOLEMODE_HIGHLIGHT OCS_OS_BSP_CONSOLEMODE_HIGHLIGHT
 
+#define OS_BSP_Lock_Impl           OCS_OS_BSP_Lock_Impl
 #define OS_BSP_ConsoleOutput_Impl  OCS_OS_BSP_ConsoleOutput_Impl
 #define OS_BSP_ConsoleSetMode_Impl OCS_OS_BSP_ConsoleSetMode_Impl
+#define OS_BSP_Unlock_Impl         OCS_OS_BSP_Unlock_Impl
 
 /*********************
    END bsp-impl.h
  *********************/
 
-#endif /* INCLUDE_BSP_IMPL_H_ */
+#endif /* OVERRIDE_BSP_IMPL_H */

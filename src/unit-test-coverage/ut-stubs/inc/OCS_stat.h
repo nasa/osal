@@ -18,12 +18,19 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for stat.h */
-#ifndef _OSAL_STUB_STAT_H_
-#define _OSAL_STUB_STAT_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for stat.h
+ */
 
-#include <OCS_basetypes.h>
-#include <OCS_sys_types.h>
+#ifndef OCS_STAT_H
+#define OCS_STAT_H
+
+#include "OCS_basetypes.h"
+#include "OCS_sys_types.h"
+#include "OCS_time.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in sys/stat.h */
@@ -39,11 +46,12 @@
 
 struct OCS_stat
 {
-    OCS_mode_t st_mode;
-    OCS_off_t  st_size;
-    OCS_time_t st_mtime;
-    OCS_uid_t  st_uid;
-    OCS_gid_t  st_gid;
+    OCS_mode_t          st_mode;
+    OCS_off_t           st_size;
+    OCS_time_t          st_mtime;
+    struct OCS_timespec st_mtim;
+    OCS_uid_t           st_uid;
+    OCS_gid_t           st_gid;
 };
 
 /* ----------------------------------------- */
@@ -72,4 +80,4 @@ extern int OCS_fstat(int fd, struct OCS_stat *buf);
 
 extern int OCS_statvfs(const char *file, struct OCS_statvfs *buf);
 
-#endif /* _OSAL_STUB_STAT_H_ */
+#endif /* OCS_STAT_H */

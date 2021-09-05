@@ -43,6 +43,7 @@ osal_id_t mutex_id1;
 osal_id_t mutex_id2;
 osal_id_t mutex_id3;
 osal_id_t time_base_id;
+osal_id_t badid;
 
 #define UT_EXIT_LOOP_MAX 100
 
@@ -135,24 +136,23 @@ void TestIdMapApi_Setup(void)
         loopcnt++;
     }
     UtAssert_True(loopcnt < UT_EXIT_LOOP_MAX, "Task exited after %ld iterations", (long)loopcnt);
-}
-/* *************************************** MAIN ************************************** */
-
-void TestIdMapApi(void)
-{
-    int32                  expected;
-    int32                  actual;
-    osal_index_t           TestArrayIndex;
-    osal_index_t           TestMutex1Index;
-    osal_index_t           TestMutex2Index;
-    osal_id_t              badid;
-    Test_OS_ObjTypeCount_t Count;
 
     /*
      * manufacture a "bad" ID value which is neither valid
      * nor equivalent to OS_OBJECT_ID_UNDEFINED
+     *
+     * This can be created by flipping the bits of a valid ID.
      */
-    memset(&badid, 0xFF, sizeof(badid));
+    badid = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(mutex_id2) ^ 0xFFFFFFFF);
+}
+/* *************************************** MAIN ************************************** */
+
+void Test_OS_IdentifyObject(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_IdentifyObject(void)
+     */
 
     /*
      * NOTE: The following objects were not created and tested:
@@ -165,36 +165,15 @@ void TestIdMapApi(void)
      */
 
     /*
-     * Test Case For:
-     * int32 OS_IdentifyObject(void)
-     */
-
-    /*
      * Test with nominal values
      */
-    expected = OS_OBJECT_TYPE_OS_TASK;
-    actual   = OS_IdentifyObject(task_id);
-    UtAssert_True(actual == expected, "OS_IdentifyObject() (%ld) == %ld", (long)actual, (long)expected);
-
-    expected = OS_OBJECT_TYPE_OS_QUEUE;
-    actual   = OS_IdentifyObject(queue_id);
-    UtAssert_True(actual == expected, "OS_IdentifyObject() (%ld) == %ld", (long)actual, (long)expected);
-
-    expected = OS_OBJECT_TYPE_OS_COUNTSEM;
-    actual   = OS_IdentifyObject(count_sem_id);
-    UtAssert_True(actual == expected, "OS_IdentifyObject() (%ld) == %ld", (long)actual, (long)expected);
-
-    expected = OS_OBJECT_TYPE_OS_BINSEM;
-    actual   = OS_IdentifyObject(bin_sem_id);
-    UtAssert_True(actual == expected, "OS_IdentifyObject() (%ld) == %ld", (long)actual, (long)expected);
-
-    expected = OS_OBJECT_TYPE_OS_MUTEX;
-    actual   = OS_IdentifyObject(mutex_id1);
-    UtAssert_True(actual == expected, "OS_IdentifyObject() (%ld) == %ld", (long)actual, (long)expected);
-
-    expected = OS_OBJECT_TYPE_OS_TIMEBASE;
-    actual   = OS_IdentifyObject(time_base_id);
-    UtAssert_True(actual == expected, "OS_IdentifyObject() (%ld) == %ld", (long)actual, (long)expected);
+    UtAssert_UINT32_EQ(OS_IdentifyObject(task_id), OS_OBJECT_TYPE_OS_TASK);
+    UtAssert_UINT32_EQ(OS_IdentifyObject(queue_id), OS_OBJECT_TYPE_OS_QUEUE);
+    UtAssert_UINT32_EQ(OS_IdentifyObject(count_sem_id), OS_OBJECT_TYPE_OS_COUNTSEM);
+    UtAssert_UINT32_EQ(OS_IdentifyObject(bin_sem_id), OS_OBJECT_TYPE_OS_BINSEM);
+    UtAssert_UINT32_EQ(OS_IdentifyObject(mutex_id1), OS_OBJECT_TYPE_OS_MUTEX);
+    UtAssert_UINT32_EQ(OS_IdentifyObject(time_base_id), OS_OBJECT_TYPE_OS_TIMEBASE);
+    UtAssert_UINT32_EQ(OS_IdentifyObject(OS_OBJECT_ID_UNDEFINED), OS_OBJECT_TYPE_UNDEFINED);
 
     /*
      * Test with extreme cases using min and max values
@@ -202,14 +181,18 @@ void TestIdMapApi(void)
      * here.  The only check is that the function doesn't return
      * an error when called
      */
-    OS_IdentifyObject(OS_OBJECT_ID_UNDEFINED);
     OS_IdentifyObject(badid);
+}
 
+void Test_OS_ConvertToArrayIndex(void)
+{
     /*
      * Test Case For:
      * int32 OS_ConvertToArrayIndex(void)
      */
-    expected = OS_SUCCESS;
+    osal_index_t TestArrayIndex;
+    osal_index_t TestMutex1Index;
+    osal_index_t TestMutex2Index;
 
     /*
      * Check different id types and verify array indices
@@ -221,40 +204,33 @@ void TestIdMapApi(void)
     /*
      * Test with nominal values
      */
-    actual = OS_ConvertToArrayIndex(task_id, &TestArrayIndex);
-    UtAssert_True(actual == expected, "OS_ConvertToArrayIndex() (%ld) == %ld ", (long)actual, (long)expected);
+    UtAssert_INT32_EQ(OS_ConvertToArrayIndex(task_id, &TestArrayIndex), OS_SUCCESS);
     UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_TASKS, "0 < TestArrayIndex(%lu)  <= OS_MAX_TASKS",
                   (long)TestArrayIndex);
 
-    actual = OS_ConvertToArrayIndex(queue_id, &TestArrayIndex);
-    UtAssert_True(actual == expected, "OS_ConvertToArrayIndex() (%ld) == %ld ", (long)actual, (long)expected);
+    UtAssert_INT32_EQ(OS_ConvertToArrayIndex(queue_id, &TestArrayIndex), OS_SUCCESS);
     UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_QUEUES, "0 < TestArrayIndex(%lu)  <= OS_MAX_QUEUES",
                   (long)TestArrayIndex);
 
-    actual = OS_ConvertToArrayIndex(count_sem_id, &TestArrayIndex);
-    UtAssert_True(actual == expected, "OS_ConvertToArrayIndex() (%ld) == %ld ", (long)actual, (long)expected);
+    UtAssert_INT32_EQ(OS_ConvertToArrayIndex(count_sem_id, &TestArrayIndex), OS_SUCCESS);
     UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_COUNT_SEMAPHORES,
                   "0 < TestArrayIndex(%lu)  <= OS_MAX_COUNT_SEMAPHORES", (long)TestArrayIndex);
 
-    actual = OS_ConvertToArrayIndex(bin_sem_id, &TestArrayIndex);
-    UtAssert_True(actual == expected, "OS_ConvertToArrayIndex() (%ld) == %ld ", (long)actual, (long)expected);
+    UtAssert_INT32_EQ(OS_ConvertToArrayIndex(bin_sem_id, &TestArrayIndex), OS_SUCCESS);
     UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_BIN_SEMAPHORES,
                   "0 < TestArrayIndex(%lu)  <= OS_MAX_BIN_SEMAPHORES", (long)TestArrayIndex);
 
-    actual = OS_ConvertToArrayIndex(mutex_id1, &TestMutex1Index);
-    UtAssert_True(actual == expected, "OS_ConvertToArrayIndex() (%ld) == %ld ", (long)actual, (long)expected);
+    UtAssert_INT32_EQ(OS_ConvertToArrayIndex(mutex_id1, &TestMutex1Index), OS_SUCCESS);
     UtAssert_True(TestMutex1Index >= 0 && TestMutex1Index < OS_MAX_MUTEXES,
                   "0 < TestMutex1Index(%lu)  <= OS_MAX_MUTEXES", (long)TestMutex1Index);
 
-    actual = OS_ConvertToArrayIndex(mutex_id2, &TestMutex2Index);
-    UtAssert_True(actual == expected, "OS_ConvertToArrayIndex() (%ld) == %ld ", (long)actual, (long)expected);
+    UtAssert_INT32_EQ(OS_ConvertToArrayIndex(mutex_id2, &TestMutex2Index), OS_SUCCESS);
     UtAssert_True(TestMutex2Index >= 0 && TestMutex2Index < OS_MAX_MUTEXES,
                   "0 < TestMutex2Index(%lu)  <= OS_MAX_MUTEXES", (long)TestMutex2Index);
     UtAssert_True(TestMutex1Index != TestMutex2Index, "TestMutex1Index(%lu) !=  TestMutex2Index(%lu)",
                   (long)TestMutex1Index, (long)TestMutex2Index);
 
-    actual = OS_ConvertToArrayIndex(time_base_id, &TestArrayIndex);
-    UtAssert_True(actual == expected, "OS_ConvertToArrayIndex() (%ld) == %ld ", (long)actual, (long)expected);
+    UtAssert_INT32_EQ(OS_ConvertToArrayIndex(time_base_id, &TestArrayIndex), OS_SUCCESS);
     UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_TIMEBASES,
                   "0 < TestArrayIndex(%lu)  <= OS_MAX_TIMEBASES", (long)TestArrayIndex);
 
@@ -262,18 +238,83 @@ void TestIdMapApi(void)
      * Test with extreme cases using invalid inputs and checking
      * for an error return code
      */
-    actual   = OS_ConvertToArrayIndex(OS_OBJECT_ID_UNDEFINED, &TestArrayIndex);
-    expected = OS_ERR_INVALID_ID;
-    UtAssert_True(actual == expected, "OS_ConvertToArrayIndex() (%ld) == %ld ", (long)actual, (long)expected);
+    UtAssert_INT32_EQ(OS_ConvertToArrayIndex(OS_OBJECT_ID_UNDEFINED, &TestArrayIndex), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_ConvertToArrayIndex(badid, &TestArrayIndex), OS_ERR_INVALID_ID);
 
-    actual   = OS_ConvertToArrayIndex(badid, &TestArrayIndex);
-    expected = OS_ERR_INVALID_ID;
-    UtAssert_True(actual == expected, "OS_ConvertToArrayIndex() (%ld) == %ld ", (long)actual, (long)expected);
+    /* Check with null pointer */
+    UtAssert_INT32_EQ(OS_ConvertToArrayIndex(bin_sem_id, NULL), OS_INVALID_POINTER);
+}
 
+void Test_OS_ObjectIdToArrayIndex(void)
+{
+    /*
+     * Test case for:
+     * int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t object_id, osal_index_t *ArrayIndex);
+     */
+    osal_index_t TestArrayIndex;
+    osal_index_t TestMutex1Index;
+    osal_index_t TestMutex2Index;
+
+    /* Test with nominal (correct) object types */
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TASK, task_id, &TestArrayIndex), OS_SUCCESS);
+    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_TASKS, "0 < TestArrayIndex(%lu)  <= OS_MAX_TASKS",
+                  (long)TestArrayIndex);
+
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_QUEUE, queue_id, &TestArrayIndex), OS_SUCCESS);
+    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_QUEUES, "0 < TestArrayIndex(%lu)  <= OS_MAX_QUEUES",
+                  (long)TestArrayIndex);
+
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_COUNTSEM, count_sem_id, &TestArrayIndex), OS_SUCCESS);
+    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_COUNT_SEMAPHORES,
+                  "0 < TestArrayIndex(%lu)  <= OS_MAX_COUNT_SEMAPHORES", (long)TestArrayIndex);
+
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_BINSEM, bin_sem_id, &TestArrayIndex), OS_SUCCESS);
+    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_BIN_SEMAPHORES,
+                  "0 < TestArrayIndex(%lu)  <= OS_MAX_BIN_SEMAPHORES", (long)TestArrayIndex);
+
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_MUTEX, mutex_id1, &TestMutex1Index), OS_SUCCESS);
+    UtAssert_True(TestMutex1Index >= 0 && TestMutex1Index < OS_MAX_MUTEXES,
+                  "0 < TestMutex1Index(%lu)  <= OS_MAX_MUTEXES", (long)TestMutex1Index);
+
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_MUTEX, mutex_id2, &TestMutex2Index), OS_SUCCESS);
+    UtAssert_True(TestMutex2Index >= 0 && TestMutex2Index < OS_MAX_MUTEXES,
+                  "0 < TestMutex2Index(%lu)  <= OS_MAX_MUTEXES", (long)TestMutex2Index);
+    UtAssert_True(TestMutex1Index != TestMutex2Index, "TestMutex1Index(%lu) !=  TestMutex2Index(%lu)",
+                  (long)TestMutex1Index, (long)TestMutex2Index);
+
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TIMEBASE, time_base_id, &TestArrayIndex), OS_SUCCESS);
+    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_TIMEBASES,
+                  "0 < TestArrayIndex(%lu)  <= OS_MAX_TIMEBASES", (long)TestArrayIndex);
+
+    /* Check cases where the object type and the ID are _not_ matched */
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_QUEUE, task_id, &TestArrayIndex), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_COUNTSEM, queue_id, &TestArrayIndex),
+                      OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_BINSEM, count_sem_id, &TestArrayIndex),
+                      OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_MUTEX, bin_sem_id, &TestArrayIndex), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TIMEBASE, mutex_id2, &TestMutex2Index),
+                      OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TASK, time_base_id, &TestArrayIndex),
+                      OS_ERR_INVALID_ID);
+
+    /* Check with bad object IDs */
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TASK, OS_OBJECT_ID_UNDEFINED, &TestArrayIndex),
+                      OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_MUTEX, badid, &TestArrayIndex), OS_ERR_INVALID_ID);
+
+    /* Check with null pointer */
+    UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_BINSEM, bin_sem_id, NULL), OS_INVALID_POINTER);
+}
+
+void Test_OS_ForEachObject(void)
+{
     /*
      * Test Case For:
      * void OS_ForEachObject (uint32 creator_id, OS_ArgCallback_t callback_ptr, void *callback_arg);
      */
+    Test_OS_ObjTypeCount_t Count;
+
     memset(&Count, 0, sizeof(Count));
 
     OS_ForEachObject(OS_OBJECT_CREATOR_ANY, &ObjTypeCounter, &Count);
@@ -287,6 +328,41 @@ void TestIdMapApi(void)
                   (unsigned long)Count.BinSemCount);
     UtAssert_True(Count.MutexCount == 3, "OS_ForEachObject() MutexCount (%lu) == 3", (unsigned long)Count.MutexCount);
     UtAssert_True(Count.TimeBaseCount == 1, "OS_ForEachObject() TimeBaseCount (%lu) == 1",
+                  (unsigned long)Count.TimeBaseCount);
+
+    /* OS_ForEachObjectOfType() is similar but only iterates one type */
+    memset(&Count, 0, sizeof(Count));
+    OS_ForEachObjectOfType(OS_OBJECT_TYPE_OS_MUTEX, OS_OBJECT_CREATOR_ANY, &ObjTypeCounter, &Count);
+
+    /* Verify Outputs */
+    UtAssert_True(Count.TaskCount == 0, "OS_ForEachObject() TaskCount (%lu) == 0", (unsigned long)Count.TaskCount);
+    UtAssert_True(Count.QueueCount == 0, "OS_ForEachObject() QueueCount (%lu) == 1", (unsigned long)Count.QueueCount);
+    UtAssert_True(Count.CountSemCount == 0, "OS_ForEachObject() CountSemCount (%lu) == 1",
+                  (unsigned long)Count.CountSemCount);
+    UtAssert_True(Count.BinSemCount == 0, "OS_ForEachObject() BinSemCount (%lu) == 2",
+                  (unsigned long)Count.BinSemCount);
+    UtAssert_True(Count.MutexCount == 3, "OS_ForEachObject() MutexCount (%lu) == 3", (unsigned long)Count.MutexCount);
+    UtAssert_True(Count.TimeBaseCount == 0, "OS_ForEachObject() TimeBaseCount (%lu) == 1",
+                  (unsigned long)Count.TimeBaseCount);
+
+    /*
+     * Pass an invalid input, and verify that object counts are not increased
+     */
+    memset(&Count, 0, sizeof(Count));
+    OS_ForEachObject(badid, &ObjTypeCounter, &Count);
+
+    /* Verify Outputs */
+    UtAssert_True(Count.TaskCount == 0, "OS_ForEachObject() TaskCount Invalid Input (%lu) == 0",
+                  (unsigned long)Count.TaskCount);
+    UtAssert_True(Count.QueueCount == 0, "OS_ForEachObject() QueueCount Invalid Input (%lu) == 0",
+                  (unsigned long)Count.QueueCount);
+    UtAssert_True(Count.CountSemCount == 0, "OS_ForEachObject() CountSemCount Invalid Input (%lu) == 0",
+                  (unsigned long)Count.CountSemCount);
+    UtAssert_True(Count.BinSemCount == 0, "OS_ForEachObject() BinSemCount Invalid Input (%lu) == 0",
+                  (unsigned long)Count.BinSemCount);
+    UtAssert_True(Count.MutexCount == 0, "OS_ForEachObject() MutexCount Invalid Input (%lu) == 0",
+                  (unsigned long)Count.MutexCount);
+    UtAssert_True(Count.TimeBaseCount == 0, "OS_ForEachObject() TimeBaseCount Invalid Input (%lu) == 0",
                   (unsigned long)Count.TimeBaseCount);
 
     /*
@@ -319,27 +395,40 @@ void TestIdMapApi(void)
                   (unsigned long)Count.MutexCount);
     UtAssert_True(Count.TimeBaseCount == 0, "OS_ForEachObject() TimeBaseCount After Delete (%lu) == 0",
                   (unsigned long)Count.TimeBaseCount);
+}
 
+void Test_OS_GetResourceName(void)
+{
     /*
-     * Pass an invalid input, and verify that object counts are not increased
+     * Test case for:
+     * int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size)
      */
-    OS_ForEachObject(badid, &ObjTypeCounter, &Count);
+    char name[OS_MAX_API_NAME];
 
-    /* Verify Outputs */
-    UtAssert_True(Count.TaskCount == 0, "OS_ForEachObject() TaskCount Invalid Input (%lu) == 0",
-                  (unsigned long)Count.TaskCount);
-    UtAssert_True(Count.QueueCount == 0, "OS_ForEachObject() QueueCount Invalid Input (%lu) == 0",
-                  (unsigned long)Count.QueueCount);
-    UtAssert_True(Count.CountSemCount == 0, "OS_ForEachObject() CountSemCount Invalid Input (%lu) == 0",
-                  (unsigned long)Count.CountSemCount);
-    UtAssert_True(Count.BinSemCount == 0, "OS_ForEachObject() BinSemCount Invalid Input (%lu) == 0",
-                  (unsigned long)Count.BinSemCount);
-    UtAssert_True(Count.MutexCount == 0, "OS_ForEachObject() MutexCount Invalid Input (%lu) == 0",
-                  (unsigned long)Count.MutexCount);
-    UtAssert_True(Count.TimeBaseCount == 0, "OS_ForEachObject() TimeBaseCount Invalid Input (%lu) == 0",
-                  (unsigned long)Count.TimeBaseCount);
+    /* Nominal cases */
+    UtAssert_INT32_EQ(OS_GetResourceName(queue_id, name, sizeof(name)), OS_SUCCESS);
+    UtAssert_StrCmp(name, "Queue", "%s == %s", name, "Queue");
+    UtAssert_INT32_EQ(OS_GetResourceName(count_sem_id, name, sizeof(name)), OS_SUCCESS);
+    UtAssert_StrCmp(name, "CountSem", "%s == %s", name, "CountSem");
+    UtAssert_INT32_EQ(OS_GetResourceName(bin_sem_id, name, sizeof(name)), OS_SUCCESS);
+    UtAssert_StrCmp(name, "BinSem", "%s == %s", name, "BinSem");
+    UtAssert_INT32_EQ(OS_GetResourceName(mutex_id1, name, sizeof(name)), OS_SUCCESS);
+    UtAssert_StrCmp(name, "Mutex1", "%s == %s", name, "Mutex1");
+    UtAssert_INT32_EQ(OS_GetResourceName(time_base_id, name, sizeof(name)), OS_SUCCESS);
+    UtAssert_StrCmp(name, "TimeBase", "%s == %s", name, "TimeBase");
 
-} /* end TestIdMapApi */
+    /* Error cases */
+    /* note the task has exited, so the task ID is no longer valid */
+    UtAssert_INT32_EQ(OS_GetResourceName(task_id, name, sizeof(name)), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_GetResourceName(badid, name, sizeof(name)), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_GetResourceName(OS_OBJECT_ID_UNDEFINED, name, sizeof(name)), OS_ERR_INVALID_ID);
+
+    UtAssert_INT32_EQ(OS_GetResourceName(time_base_id, name, 2), OS_ERR_NAME_TOO_LONG);
+    UtAssert_StrCmp(name, "T", "%s == %s", name, "T");
+
+    UtAssert_INT32_EQ(OS_GetResourceName(queue_id, NULL, sizeof(name)), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_GetResourceName(queue_id, name, 0), OS_ERR_INVALID_SIZE);
+}
 
 void UtTest_Setup(void)
 {
@@ -348,8 +437,16 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     /*
      * Register the test setup and check routines in UT assert
      */
-    UtTest_Add(TestIdMapApi, TestIdMapApi_Setup, NULL, "TestIdMapApi");
+    UtTest_Add(NULL, TestIdMapApi_Setup, NULL, "TestIdMapApi");
+    UtTest_Add(Test_OS_IdentifyObject, NULL, NULL, "OS_IdentifyObject");
+    UtTest_Add(Test_OS_ConvertToArrayIndex, NULL, NULL, "OS_ConvertToArrayIndex");
+    UtTest_Add(Test_OS_ObjectIdToArrayIndex, NULL, NULL, "OS_ObjectIdToArrayIndex");
+    UtTest_Add(Test_OS_GetResourceName, NULL, NULL, "OS_GetResourceName");
+    UtTest_Add(Test_OS_ForEachObject, NULL, NULL, "OS_ForEachObject");
 }

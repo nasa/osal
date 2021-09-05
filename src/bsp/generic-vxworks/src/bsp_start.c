@@ -30,8 +30,43 @@
 */
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "generic_vxworks_bsp_internal.h"
+
+OS_BSP_GenericVxWorksGlobalData_t OS_BSP_GenericVxWorksGlobal;
+
+/* ---------------------------------------------------------
+    OS_BSP_Lock_Impl()
+
+     Helper function to get exclusive access to BSP
+   --------------------------------------------------------- */
+void OS_BSP_Lock_Impl(void)
+{
+    int status;
+
+    status = semTake(OS_BSP_GenericVxWorksGlobal.AccessMutex, WAIT_FOREVER);
+    if (status != OK)
+    {
+        BSP_DEBUG("semTake: errno=%d\n", errno);
+    }
+}
+
+/* ---------------------------------------------------------
+    OS_BSP_Unlock_Impl()
+
+     Helper function to release exclusive access to BSP
+   --------------------------------------------------------- */
+void OS_BSP_Unlock_Impl(void)
+{
+    int status;
+
+    status = semGive(OS_BSP_GenericVxWorksGlobal.AccessMutex);
+    if (status != OK)
+    {
+        BSP_DEBUG("semGive: errno=%d\n", errno);
+    }
+}
 
 /* ---------------------------------------------------------
     OS_BSP_Shutdown_Impl()
@@ -63,6 +98,18 @@ int OS_BSPMain(void)
      * Initially clear the global object (this contains return code)
      */
     memset(&OS_BSP_Global, 0, sizeof(OS_BSP_Global));
+    memset(&OS_BSP_GenericVxWorksGlobal, 0, sizeof(OS_BSP_GenericVxWorksGlobal));
+
+    /*
+     * Initialize the low level access sem
+     */
+    OS_BSP_GenericVxWorksGlobal.AccessMutex = semMInitialize(OS_BSP_GenericVxWorksGlobal.AccessMutexMem,
+                                                             SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
+
+    if (OS_BSP_GenericVxWorksGlobal.AccessMutex == (SEM_ID)0)
+    {
+        BSP_DEBUG("semMInitalize: errno=%d\n", errno);
+    }
 
     /*
      * Call application specific entry point.

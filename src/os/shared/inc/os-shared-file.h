@@ -19,16 +19,17 @@
  */
 
 /**
- * \file     os-shared-file.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_FILE_H_
-#define INCLUDE_OS_SHARED_FILE_H_
+#ifndef OS_SHARED_FILE_H
+#define OS_SHARED_FILE_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-file.h"
+#include "os-shared-globaldefs.h"
 
 typedef struct
 {
@@ -114,11 +115,11 @@ int32 OS_GenericClose_Impl(const OS_object_token_t *token);
    Function: OS_FileOpen_Impl
 
     Purpose: Opens the file indicated by "local_path" with permission
-             indicated by "access".
+             indicated by "access_mode".
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, int32 flags, int32 access);
+int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, int32 flags, int32 access_mode);
 
 /*----------------------------------------------------------------
    Function: OS_ShellOutputToFile_Impl
@@ -180,6 +181,14 @@ int32 OS_FileRename_Impl(const char *old_path, const char *new_path);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_FileChmod_Impl(const char *local_path, uint32 access);
+int32 OS_FileChmod_Impl(const char *local_path, uint32 access_mode);
 
-#endif /* INCLUDE_OS_SHARED_FILE_H_ */
+/*
+ * Internal helper function
+ *
+ * Not called outside this unit, but need to be prototyped
+ * here for coverage test.
+ */
+int32 OS_FileIteratorClose(osal_id_t filedes, void *arg);
+
+#endif /* OS_SHARED_FILE_H */

@@ -178,25 +178,15 @@ int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry f
     OS_object_token_t          token;
     OS_task_internal_record_t *task;
 
-    /* Check for NULL pointers */
-    if (task_name == NULL || task_id == NULL || function_pointer == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    /* Check for bad stack size.  Note that NULL stack_pointer is
-     * OK (impl will allocate) but size must be nonzero. */
-    if (stack_size == 0)
-    {
-        return OS_ERROR;
-    }
-
-    /* we don't want to allow names too long*/
-    /* if truncated, two names might be the same */
-    if (strlen(task_name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
+    /*
+     * Check parameters
+     *
+     * Note "stack_pointer" is not checked, because in certain configurations it can be validly null.
+     */
+    OS_CHECK_POINTER(task_id);
+    OS_CHECK_POINTER(function_pointer);
+    OS_CHECK_APINAME(task_name);
+    OS_CHECK_SIZE(stack_size);
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
     return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, task_name, &token);
@@ -279,6 +269,8 @@ void OS_TaskExit()
     task_id = OS_TaskGetId_Impl();
     if (OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, task_id, &token) == OS_SUCCESS)
     {
+        OS_TaskDetach_Impl(&token);
+
         /* Complete the operation via the common routine */
         OS_ObjectIdFinalizeDelete(OS_SUCCESS, &token);
     }
@@ -339,25 +331,6 @@ int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_TaskRegister
- *
- *  Purpose: Implemented per public OSAL API
- *           See description in API and header file for detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_TaskRegister(void)
-{
-    OS_object_token_t token;
-
-    /*
-     * Just to retain compatibility (really, only the unit test cares)
-     * this will return NON success when called from a non-task context
-     */
-    return OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, OS_TaskGetId_Impl(), &token);
-} /* end OS_TaskRegister */
-
-/*----------------------------------------------------------------
- *
  * Function: OS_TaskGetId
  *
  *  Purpose: Implemented per public OSAL API
@@ -366,17 +339,9 @@ int32 OS_TaskRegister(void)
  *-----------------------------------------------------------------*/
 osal_id_t OS_TaskGetId(void)
 {
-    OS_object_token_t token;
-    osal_id_t         task_id;
+    osal_id_t task_id;
 
     task_id = OS_TaskGetId_Impl();
-
-    /* Confirm the task master table entry matches the expected.
-     * If not it means we have some stale/leftover value */
-    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, task_id, &token) != OS_SUCCESS)
-    {
-        task_id = OS_OBJECT_ID_UNDEFINED;
-    }
 
     return (task_id);
 } /* end OS_TaskGetId */
@@ -393,10 +358,9 @@ int32 OS_TaskGetIdByName(osal_id_t *task_id, const char *task_name)
 {
     int32 return_code;
 
-    if (task_id == NULL || task_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(task_id);
+    OS_CHECK_POINTER(task_name);
 
     return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, task_name, task_id);
 
@@ -420,10 +384,7 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
     OS_task_internal_record_t *task;
 
     /* Check parameters */
-    if (task_prop == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(task_prop);
 
     memset(task_prop, 0, sizeof(OS_task_prop_t));
 
@@ -497,10 +458,7 @@ int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t 
     OS_object_token_t token;
 
     /* Check parameters */
-    if (task_id == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(task_id);
 
     /* The "sysdata" and "sysdata_size" must be passed to the underlying impl for validation */
     return_code = OS_TaskValidateSystemData_Impl(sysdata, sysdata_size);

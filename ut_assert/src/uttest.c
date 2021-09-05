@@ -62,7 +62,9 @@ void UtTest_AddCommon(void (*Test)(void), void (*Setup)(void), void (*Teardown)(
         strncpy(UtTestDataBaseEntry.TestName, TestName, sizeof(UtTestDataBaseEntry.TestName) - 1);
     }
 
+    UT_BSP_Lock();
     UtList_Add(UtAssert_Global.DataBasePtr, &UtTestDataBaseEntry, sizeof(UtTestDataBaseEntry_t), EntryType);
+    UT_BSP_Unlock();
 }
 
 void UtTest_Add(void (*Test)(void), void (*Setup)(void), void (*Teardown)(void), const char *SequenceName)
@@ -80,11 +82,59 @@ void UtTest_AddTeardown(void (*Teardown)(void), const char *SequenceName)
     UtTest_AddCommon(NULL, NULL, Teardown, SequenceName, UTASSERT_GROUP_TEARDOWN);
 }
 
+void UtTest_AddSubTest(void (*Test)(void), void (*Setup)(void), void (*Teardown)(void), const char *GroupName,
+                       const char *TestName)
+{
+    char        CompleteTestName[128];
+    const char *GroupPtr;
+    const char *TestPtr;
+
+    /* Remove any common prefix between the two names.
+     * They are often function names that all start with "Test_XXX"
+     * and this repetitive information just becomes clutter.
+     */
+    GroupPtr = GroupName;
+    TestPtr  = TestName;
+    while (*GroupPtr != 0 && *GroupPtr == *TestPtr)
+    {
+        ++GroupPtr;
+        ++TestPtr;
+    }
+
+    /*
+     * Only break at an underscore(_) to avoid weird effects
+     */
+    while (TestPtr > TestName && *TestPtr != '_')
+    {
+        --TestPtr;
+    }
+    if (*TestPtr == '_')
+    {
+        ++TestPtr;
+    }
+
+    /*
+     * Remove a remaining "Test_" prefix on the group name.
+     * Again just to remove common repetitive content
+     */
+    GroupPtr = GroupName;
+    if (strncmp(GroupPtr, "Test_", 5) == 0)
+    {
+        GroupPtr += 5;
+    }
+
+    (void)snprintf(CompleteTestName, sizeof(CompleteTestName), "%s.%s", GroupPtr, TestPtr);
+
+    UtTest_AddCommon(Test, Setup, Teardown, CompleteTestName, UTASSERT_GROUP_TEST);
+}
+
 void UtTest_Run(void)
 {
     UtListNode_t *         UtListMain;
     UtListNode_t *         UtListNode;
     UtTestDataBaseEntry_t *UtTestDataBaseEntry;
+
+    UT_BSP_Lock();
 
     /*
      * The overall test sequence goes SETUP->TEST->TEARDOWN
@@ -98,6 +148,8 @@ void UtTest_Run(void)
     UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr, UTASSERT_GROUP_SETUP));
     UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr, UTASSERT_GROUP_TEST));
     UtList_Merge(UtListMain, UtList_GetHead(UtAssert_Global.DataBasePtr, UTASSERT_GROUP_TEARDOWN));
+
+    UT_BSP_Unlock();
 
     /*
      * Run through the merged list in order
@@ -132,7 +184,9 @@ void UtTest_Run(void)
         }
     }
 
+    UT_BSP_Lock();
     UtList_Destroy(UtAssert_Global.DataBasePtr);
+    UT_BSP_Unlock();
 
     UT_BSP_EndTest(UtAssert_GetCounters());
 }

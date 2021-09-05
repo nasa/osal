@@ -35,6 +35,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "osapi-filesys.h"
+
 /*
  * User defined include files
  */
@@ -116,10 +118,8 @@ int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
     OS_dir_internal_record_t *dir;
     int32                     return_code;
 
-    if (dir_id == NULL || path == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(dir_id);
 
     return_code = OS_TranslatePath(path, local_path);
     if (return_code == OS_SUCCESS)
@@ -183,10 +183,8 @@ int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
     OS_object_token_t token;
     int32             return_code;
 
-    if (dirent == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(dirent);
 
     /* Make sure the file descriptor is legit before using it */
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, dir_id, &token);
@@ -250,7 +248,7 @@ int32 OS_rmdir(const char *path)
     return_code = OS_TranslatePath(path, local_path);
     if (return_code == OS_SUCCESS)
     {
-        OS_DirRemove_Impl(local_path);
+        return_code = OS_DirRemove_Impl(local_path);
     }
 
     return return_code;

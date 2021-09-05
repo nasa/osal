@@ -48,6 +48,9 @@
 ** Global variables
 **--------------------------------------------------------------------------------*/
 
+static osal_id_t selecttest_fd;
+static osal_id_t invalid_fd;
+
 /*--------------------------------------------------------------------------------*
 ** External function prototypes
 **--------------------------------------------------------------------------------*/
@@ -60,19 +63,21 @@
 ** Local function definitions
 **--------------------------------------------------------------------------------*/
 
-char *           fsAddrPtr = NULL;
-static osal_id_t setup_file(void)
+char *fsAddrPtr = NULL;
+void  UT_os_select_setup_file(void)
 {
-    osal_id_t id;
     UT_SETUP(OS_mkfs(fsAddrPtr, "/ramdev3", "RAM3", OSAL_SIZE_C(512), OSAL_BLOCKCOUNT_C(20)));
     UT_SETUP(OS_mount("/ramdev3", "/drive3"));
-    UT_SETUP(OS_OpenCreate(&id, "/drive3/select_test.txt", OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE));
-    return id;
+    UT_SETUP(OS_OpenCreate(&selecttest_fd, "/drive3/select_test.txt", OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE,
+                           OS_READ_WRITE));
+
+    /* create a bad ID by flipping the bits of a good ID */
+    invalid_fd = OS_ObjectIdFromInteger(OS_ObjectIdToInteger(selecttest_fd) ^ 0xFFFFFFFF);
 }
 
-static void teardown_file(osal_id_t fd)
+void UT_os_select_teardown_file(void)
 {
-    OS_close(fd);
+    OS_close(selecttest_fd);
     OS_remove("/drive3/select_test.txt");
     OS_unmount("/drive3");
     OS_rmfs("/ramdev3");
@@ -87,32 +92,33 @@ static void teardown_file(osal_id_t fd)
 **--------------------------------------------------------------------------------*/
 void UT_os_select_fd_test(void)
 {
-    OS_FdSet  FdSet;
-    osal_id_t fd = setup_file();
+    OS_FdSet FdSet;
 
-    if (OS_SelectFdZero(&FdSet) == OS_ERR_NOT_IMPLEMENTED || OS_SelectFdAdd(&FdSet, fd) == OS_ERR_NOT_IMPLEMENTED ||
-        OS_SelectFdClear(&FdSet, fd) == OS_ERR_NOT_IMPLEMENTED)
+    if (!UT_NOMINAL_OR_NOTIMPL(OS_SelectFdZero(&FdSet)))
     {
-        UtAssertEx(false, UTASSERT_CASETYPE_NA, __FILE__, __LINE__, "OS_SelectFd...() not implemented");
-        goto UT_os_select_fd_test_exit_tag;
+        return;
     }
 
-    UtAssert_Simple(OS_SelectFdZero(NULL) == OS_INVALID_POINTER);
-    UtAssert_Simple(OS_SelectFdAdd(NULL, fd) == OS_INVALID_POINTER);
-    UtAssert_Simple(OS_SelectFdClear(NULL, fd) == OS_INVALID_POINTER);
-    UtAssert_Simple(OS_SelectFdIsSet(NULL, fd) == false);
+    UT_RETVAL(OS_SelectFdZero(NULL), OS_INVALID_POINTER);
+    UT_RETVAL(OS_SelectFdAdd(NULL, selecttest_fd), OS_INVALID_POINTER);
+    UT_RETVAL(OS_SelectFdClear(NULL, selecttest_fd), OS_INVALID_POINTER);
+    UT_RETVAL(OS_SelectFdIsSet(NULL, selecttest_fd), false);
 
-    OS_SelectFdZero(&FdSet);
-    OS_SelectFdAdd(&FdSet, fd);
-    UtAssert_Simple(OS_SelectFdIsSet(&FdSet, fd));
+    UT_RETVAL(OS_SelectFdAdd(&FdSet, invalid_fd), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_SelectFdAdd(&FdSet, OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_SelectFdClear(&FdSet, invalid_fd), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_SelectFdClear(&FdSet, OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_SelectFdIsSet(&FdSet, invalid_fd), false);
+    UT_RETVAL(OS_SelectFdIsSet(&FdSet, OS_OBJECT_ID_UNDEFINED), false);
 
-    OS_SelectFdZero(&FdSet);
-    OS_SelectFdAdd(&FdSet, fd);
-    OS_SelectFdClear(&FdSet, fd);
-    UtAssert_Simple(!OS_SelectFdIsSet(&FdSet, fd));
+    UT_NOMINAL(OS_SelectFdZero(&FdSet));
+    UT_NOMINAL(OS_SelectFdAdd(&FdSet, selecttest_fd));
+    UT_RETVAL(OS_SelectFdIsSet(&FdSet, selecttest_fd), true);
 
-UT_os_select_fd_test_exit_tag:
-    teardown_file(fd);
+    UT_NOMINAL(OS_SelectFdZero(&FdSet));
+    UT_NOMINAL(OS_SelectFdAdd(&FdSet, selecttest_fd));
+    UT_NOMINAL(OS_SelectFdClear(&FdSet, selecttest_fd));
+    UT_RETVAL(OS_SelectFdIsSet(&FdSet, selecttest_fd), false);
 }
 
 /*--------------------------------------------------------------------------------*
@@ -124,32 +130,27 @@ UT_os_select_fd_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_select_single_test(void)
 {
-    uint32    StateFlags;
-    osal_id_t fd = setup_file();
-    int32     rc;
+    uint32 StateFlags;
 
-    UT_RETVAL(OS_SelectSingle(fd, NULL, 0), OS_INVALID_POINTER, "NULL flags pointer");
+    UT_RETVAL(OS_SelectSingle(selecttest_fd, NULL, 0), OS_INVALID_POINTER);
 
     StateFlags = OS_STREAM_STATE_WRITABLE;
-    rc         = OS_SelectSingle(fd, &StateFlags, 0);
-    if (rc == OS_ERR_NOT_IMPLEMENTED || rc == OS_ERR_OPERATION_NOT_SUPPORTED)
+    if (!UT_NOMINAL_OR_NOTIMPL(OS_SelectSingle(selecttest_fd, &StateFlags, 0)))
     {
-        UtAssertEx(false, UTASSERT_CASETYPE_NA, __FILE__, __LINE__, "OS_SelectSingle() not supported");
-        goto UT_os_select_single_test_exit_tag;
+        return;
     }
 
-    UT_RETVAL(rc, OS_SUCCESS, "OS_SelectSingle(fd, OS_STREAM_STATE_WRITABLE, 0)");
     UtAssert_True((StateFlags & OS_STREAM_STATE_WRITABLE) != 0, "StateFlags (0x%x) & OS_STREAM_STATE_WRITABLE",
                   (unsigned int)StateFlags);
 
     StateFlags = OS_STREAM_STATE_READABLE;
-    rc         = OS_SelectSingle(fd, &StateFlags, 1);
-    UT_RETVAL(rc, OS_SUCCESS, "OS_SelectSingle(fd, OS_STREAM_STATE_READABLE, 0)");
+    UT_NOMINAL(OS_SelectSingle(selecttest_fd, &StateFlags, 1));
+
     UtAssert_True((StateFlags & OS_STREAM_STATE_READABLE) != 0, "StateFlags (0x%x) & OS_STREAM_STATE_READABLE",
                   (unsigned int)StateFlags);
 
-UT_os_select_single_test_exit_tag:
-    teardown_file(fd);
+    UT_RETVAL(OS_SelectSingle(invalid_fd, &StateFlags, 0), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_SelectSingle(OS_OBJECT_ID_UNDEFINED, &StateFlags, 0), OS_ERR_INVALID_ID);
 }
 
 /*--------------------------------------------------------------------------------*
@@ -161,30 +162,25 @@ UT_os_select_single_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_select_multi_test(void)
 {
-    OS_FdSet  ReadSet, WriteSet;
-    osal_id_t fd = setup_file();
-    int32     rc;
+    OS_FdSet ReadSet, WriteSet;
 
-    OS_SelectFdZero(&WriteSet);
-    OS_SelectFdAdd(&WriteSet, fd);
-    rc = OS_SelectMultiple(NULL, &WriteSet, 1);
-    if (rc == OS_ERR_NOT_IMPLEMENTED || rc == OS_ERR_OPERATION_NOT_SUPPORTED)
+    UT_SETUP(OS_SelectFdZero(&WriteSet));
+    UT_SETUP(OS_SelectFdAdd(&WriteSet, selecttest_fd));
+    if (!UT_NOMINAL_OR_NOTIMPL(OS_SelectMultiple(NULL, &WriteSet, 1)))
     {
-        UtAssertEx(false, UTASSERT_CASETYPE_NA, __FILE__, __LINE__, "OS_SelectMultiple() not supported");
-        goto UT_select_multi_test_exit_tag;
+        return;
     }
 
-    UT_RETVAL(rc, OS_SUCCESS, "OS_SelectMultiple(NULL, &WriteSet, 1)");
-    UtAssert_True(OS_SelectFdIsSet(&WriteSet, fd), "OS_SelectFdIsSet(&WriteSet, fd)");
+    UtAssert_True(OS_SelectFdIsSet(&WriteSet, selecttest_fd), "OS_SelectFdIsSet(&WriteSet, selecttest_fd)");
 
-    OS_SelectFdZero(&ReadSet);
-    OS_SelectFdAdd(&ReadSet, fd);
-    rc = OS_SelectMultiple(&ReadSet, NULL, 1);
-    UT_RETVAL(rc, OS_SUCCESS, "OS_SelectMultiple(&ReadSet, NULL, 1)");
-    UtAssert_True(OS_SelectFdIsSet(&ReadSet, fd), "!OS_SelectFdIsSet(&ReadSet, fd)");
+    UT_SETUP(OS_SelectFdZero(&ReadSet));
+    UT_SETUP(OS_SelectFdAdd(&ReadSet, selecttest_fd));
+    UT_NOMINAL(OS_SelectMultiple(&ReadSet, NULL, 1));
 
-UT_select_multi_test_exit_tag:
-    teardown_file(fd);
+    UtAssert_True(OS_SelectFdIsSet(&ReadSet, selecttest_fd), "!OS_SelectFdIsSet(&ReadSet, selecttest_fd)");
+
+    /* empty set */
+    UT_RETVAL(OS_SelectMultiple(NULL, NULL, 1), OS_ERR_INVALID_ID);
 }
 
 /*================================================================================*

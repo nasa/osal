@@ -28,8 +28,8 @@
 #include "osconfig.h"
 #include "ut-adaptor-countsem.h"
 
-#include <os-vxworks.h>
-#include <os-impl-countsem.h>
+#include "os-vxworks.h"
+#include "os-impl-countsem.h"
 
 void *const  UT_Ref_OS_impl_count_sem_table      = OS_impl_count_sem_table;
 size_t const UT_Ref_OS_impl_count_sem_table_SIZE = sizeof(OS_impl_count_sem_table);

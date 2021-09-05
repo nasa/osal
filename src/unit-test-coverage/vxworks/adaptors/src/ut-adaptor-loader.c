@@ -29,8 +29,8 @@
 #include "osconfig.h"
 #include "ut-adaptor-loader.h"
 
-#include <os-vxworks.h>
-#include <os-impl-loader.h>
+#include "os-vxworks.h"
+#include "os-impl-loader.h"
 
 void *const  UT_Ref_OS_impl_module_table      = OS_impl_module_table;
 size_t const UT_Ref_OS_impl_module_table_SIZE = sizeof(OS_impl_module_table);

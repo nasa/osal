@@ -28,8 +28,8 @@
 #include "ut-adaptor-filetable-stub.h"
 #include "os-shared-file.h"
 
-#include <OCS_shellLib.h>
-#include <OCS_taskLib.h>
+#include "OCS_shellLib.h"
+#include "OCS_taskLib.h"
 
 void Test_OS_ShellOutputToFile_Impl(void)
 {
@@ -37,8 +37,6 @@ void Test_OS_ShellOutputToFile_Impl(void)
      * Test Case For:
      * int32 OS_ShellOutputToFile_Impl(uint32 file_id, const char *Cmd)
      */
-    int32             expected = OS_SUCCESS;
-    int32             actual;
     OS_object_token_t token = UT_TOKEN_0;
 
     /*
@@ -47,17 +45,21 @@ void Test_OS_ShellOutputToFile_Impl(void)
      * must be set to avoid getting into an endless loop.
      */
     UT_SetDeferredRetcode(UT_KEY(OCS_taskNameToId), 2, -1);
-
-    actual = OS_ShellOutputToFile_Impl(&token, "TestCmd");
-
-    UtAssert_True(actual == expected, "OS_ShellOutputToFile_Impl() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_ShellOutputToFile_Impl(&token, "TestCmd"), OS_SUCCESS);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_shellGenericInit)) == 1, "shellGenericInit() called");
 
     /* failure to open the output file */
-    UT_SetDefaultReturnValue(UT_KEY(OS_OpenCreate), OS_ERROR);
-    expected = OS_ERROR;
-    actual   = OS_ShellOutputToFile_Impl(&token, "TestCmd");
-    UtAssert_True(actual == expected, "OS_ShellOutputToFile_Impl() (%ld) == OS_ERROR", (long)actual);
+    UT_SetDeferredRetcode(UT_KEY(OS_OpenCreate), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ShellOutputToFile_Impl(&token, "TestCmd"), OS_ERROR);
+
+    /* Shell failure */
+    UT_SetDefaultReturnValue(UT_KEY(OCS_shellGenericInit), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ShellOutputToFile_Impl(&token, "TestCmd"), OS_ERROR);
+
+    /* ID failure */
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_taskNameToId), -1);
+    OSAPI_TEST_FUNCTION_RC(OS_ShellOutputToFile_Impl(&token, "TestCmd"), OS_SUCCESS);
 }
 
 /* ------------------- End of test cases --------------------------------------*/

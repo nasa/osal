@@ -28,7 +28,8 @@
 #include "os-shared-select.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_sys_select.h>
+#include "OCS_sys_select.h"
+#include "OCS_errno.h"
 
 void Test_OS_SelectSingle_Impl(void)
 {
@@ -39,6 +40,7 @@ void Test_OS_SelectSingle_Impl(void)
     OS_object_token_t   token;
     struct OCS_timespec nowtime;
     struct OCS_timespec latertime;
+    struct OCS_timespec latertime2;
 
     memset(&token, 0, sizeof(token));
 
@@ -47,10 +49,49 @@ void Test_OS_SelectSingle_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 0), OS_SUCCESS);
+
+    /* Cover FD_ISSET true branches and pend */
+    UT_SetDeferredRetcode(UT_KEY(OCS_FD_ISSET), 1, true);
+    UT_SetDeferredRetcode(UT_KEY(OCS_FD_ISSET), 1, true);
     SelectFlags = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, -1), OS_SUCCESS);
+
+    /* No flags and non-read/write flag branches */
     SelectFlags = 0;
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 0), OS_SUCCESS);
+    SelectFlags = OS_STREAM_STATE_BOUND;
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 0), OS_SUCCESS);
+
+    /* try a case where select() needs to be repeated to achieve the desired wait time */
+    UT_ResetState(UT_KEY(OCS_clock_gettime));
+    UT_ResetState(UT_KEY(OCS_select));
+    UT_SetDefaultReturnValue(UT_KEY(OCS_select), -1);
+    OCS_errno = OCS_EINTR;
+    UT_SetDeferredRetcode(UT_KEY(OCS_select), 2, 0);
+    SelectFlags        = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
+    nowtime.tv_sec     = 1;
+    nowtime.tv_nsec    = 0;
+    latertime.tv_sec   = 1;
+    latertime.tv_nsec  = 800000000;
+    latertime2.tv_sec  = 2;
+    latertime2.tv_nsec = 200000000;
+    UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &nowtime, sizeof(nowtime), false);
+    UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &latertime, sizeof(latertime), false);
+    UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &latertime2, sizeof(latertime2), false);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 1200), OS_ERROR_TIMEOUT);
+    UtAssert_STUB_COUNT(OCS_clock_gettime, 3);
+    UtAssert_STUB_COUNT(OCS_select, 2);
+
+    /* Repeaded select with alternate branches */
+    OCS_errno          = OCS_EAGAIN;
+    SelectFlags        = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
+    latertime2.tv_nsec = 300000000;
+    UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &nowtime, sizeof(nowtime), false);
+    UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &latertime, sizeof(latertime), false);
+    UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &latertime2, sizeof(latertime2), false);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 1200), OS_ERROR_TIMEOUT);
+    UtAssert_STUB_COUNT(OCS_clock_gettime, 6);
+    UtAssert_STUB_COUNT(OCS_select, 3);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_select), 0);
     SelectFlags       = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
@@ -63,6 +104,7 @@ void Test_OS_SelectSingle_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 999), OS_ERROR_TIMEOUT);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_select), -1);
+    OCS_errno         = OCS_ETIMEDOUT;
     SelectFlags       = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
     nowtime.tv_sec    = 1;
     nowtime.tv_nsec   = 0;
@@ -71,6 +113,13 @@ void Test_OS_SelectSingle_Impl(void)
     UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &nowtime, sizeof(nowtime), false);
     UT_SetDataBuffer(UT_KEY(OCS_clock_gettime), &latertime, sizeof(latertime), false);
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 2100), OS_ERROR);
+
+    /* Test cases where the FD exceeds FD_SETSIZE */
+    SelectFlags = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
+    UT_PortablePosixIOTest_Set_FD(UT_INDEX_0, OCS_FD_SETSIZE);
+    UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+
 } /* end OS_SelectSingle_Impl */
 
 void Test_OS_SelectMultiple_Impl(void)
@@ -80,14 +129,65 @@ void Test_OS_SelectMultiple_Impl(void)
      */
     OS_FdSet ReadSet;
     OS_FdSet WriteSet;
+    int      i;
+
+    UT_PortablePosixIOTest_Set_FD(UT_INDEX_0, 0);
+    UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
 
     memset(&ReadSet, 0, sizeof(ReadSet));
-    memset(&WriteSet, 0xff, sizeof(WriteSet));
+    memset(&WriteSet, 0, sizeof(WriteSet));
+    WriteSet.object_ids[0] = 1;
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (NULL, &WriteSet, 0), OS_SUCCESS);
+    ReadSet.object_ids[0] = 1;
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, NULL, 0), OS_SUCCESS);
+
+    /* Branches for processing the set */
+    UT_SetDeferredRetcode(UT_KEY(OCS_FD_ISSET), 1, true);
+    WriteSet.object_ids[0] = 0x0D;
+    UT_PortablePosixIOTest_Set_FD(OSAL_INDEX_C(2), -1);
+    UT_PortablePosixIOTest_Set_FD(OSAL_INDEX_C(3), 0);
+    UT_PortablePosixIOTest_Set_Selectable(OSAL_INDEX_C(3), true);
     OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_SUCCESS);
+
+    memset(&ReadSet, 0, sizeof(ReadSet));
+    memset(&WriteSet, 0, sizeof(WriteSet));
+    ReadSet.object_ids[0] = 1;
+    UT_SetDeferredRetcode(UT_KEY(OCS_select), 1, 0);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 1), OS_ERROR_TIMEOUT);
+
+    /* Test where the FD set is empty */
+    memset(&ReadSet, 0, sizeof(ReadSet));
+    memset(&WriteSet, 0, sizeof(WriteSet));
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (NULL, NULL, 0), OS_ERR_INVALID_ID);
+
+    /* Test cases where the FD exceeds FD_SETSIZE in the read set */
+    UT_PortablePosixIOTest_Set_FD(UT_INDEX_0, OCS_FD_SETSIZE);
+    UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
     memset(&ReadSet, 0xff, sizeof(ReadSet));
     memset(&WriteSet, 0, sizeof(WriteSet));
-    UT_SetDefaultReturnValue(UT_KEY(OCS_select), 0);
-    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 1), OS_ERROR_TIMEOUT);
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+
+    /* Test cases where the FD exceeds FD_SETSIZE in the write set */
+    memset(&ReadSet, 0, sizeof(ReadSet));
+    memset(&WriteSet, 0xff, sizeof(WriteSet));
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+
+    /* Test cases where additional bits are set in the OS_FdSet */
+    UT_PortablePosixIOTest_Set_FD(UT_INDEX_0, 0);
+    UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
+    memset(&ReadSet, 0xff, sizeof(ReadSet));
+    memset(&WriteSet, 0xff, sizeof(WriteSet));
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+
+    /*
+     * Cover OS_FdSet_ConvertOut_Impl for id < OS_MAX_NUM_OPEN_FILES, requires no errors from in conversion
+     * NOTE - coverage only possible if OS_MAX_NUM_OPEN_FILES is not a multiple of 8 (exact fit)
+     */
+    for (i = 1; i < OS_MAX_NUM_OPEN_FILES; i++)
+    {
+        UT_PortablePosixIOTest_Set_FD(OSAL_INDEX_C(i), -1);
+    }
+    OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_SUCCESS);
 } /* end OS_SelectMultiple_Impl */
 
 /* ------------------- End of test cases --------------------------------------*/

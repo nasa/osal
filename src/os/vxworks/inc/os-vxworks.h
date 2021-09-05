@@ -19,14 +19,14 @@
  */
 
 /**
- * \file     os-vxworks.h
+ * \file
+ *
  * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_VXWORKS_H_
-#define INCLUDE_OS_VXWORKS_H_
+#ifndef OS_VXWORKS_H
+#define OS_VXWORKS_H
 
 /****************************************************************************************
                                     COMMON INCLUDE FILES
@@ -41,7 +41,7 @@
 #include <semLib.h>
 #include <errnoLib.h>
 
-#include <os-shared-globaldefs.h>
+#include "os-shared-globaldefs.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -51,29 +51,9 @@
                                     TYPEDEFS
 ****************************************************************************************/
 
-typedef struct
-{
-    void *const mem;
-    SEM_ID      vxid;
-} VxWorks_GlobalMutex_t;
-
-/*
- * Union to facilitate passing an osal_id_t through
- * a function/api designed to take an "int"
- *
- * This relies on sizeof(int) >= sizeof(osal_id_t)
- */
-typedef union
-{
-    osal_id_t id;
-    int       arg;
-} VxWorks_ID_Buffer_t;
-
 /****************************************************************************************
                                    GLOBAL DATA
 ****************************************************************************************/
-
-extern VxWorks_GlobalMutex_t VX_MUTEX_TABLE[];
 
 /****************************************************************************************
                        VXWORKS IMPLEMENTATION FUNCTION PROTOTYPES
@@ -102,4 +82,4 @@ int32 OS_VxWorks_GenericSemGive(SEM_ID vxid);
 
 int32 OS_VxWorks_TableMutex_Init(osal_objtype_t idtype);
 
-#endif /* INCLUDE_OS_VXWORKS_H_ */
+#endif /* OS_VXWORKS_H */

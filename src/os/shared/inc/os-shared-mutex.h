@@ -19,21 +19,22 @@
  */
 
 /**
- * \file     os-shared-mutex.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_MUTEX_H_
-#define INCLUDE_OS_SHARED_MUTEX_H_
+#ifndef OS_SHARED_MUTEX_H
+#define OS_SHARED_MUTEX_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-mutex.h"
+#include "os-shared-globaldefs.h"
 
 typedef struct
 {
-   char      obj_name[OS_MAX_API_NAME];
-   osal_id_t last_owner;
+    char      obj_name[OS_MAX_API_NAME];
+    osal_id_t last_owner;
 } OS_mutex_internal_record_t;
 
 /*
@@ -96,4 +97,4 @@ int32 OS_MutSemDelete_Impl(const OS_object_token_t *token);
  ------------------------------------------------------------------*/
 int32 OS_MutSemGetInfo_Impl(const OS_object_token_t *token, OS_mut_sem_prop_t *mut_prop);
 
-#endif /* INCLUDE_OS_SHARED_MUTEX_H_ */
+#endif /* OS_SHARED_MUTEX_H */

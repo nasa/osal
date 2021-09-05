@@ -121,6 +121,9 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     UT_os_init_fs_misc();
 
     UtTest_Add(UT_os_makefs_test, NULL, NULL, "OS_mkfs");
@@ -135,8 +138,7 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_translatepath_test, NULL, NULL, "OS_TranslatePath (internal)");
 
     UtTest_Add(UT_os_checkfs_test, NULL, NULL, "OS_chkfs");
-    UtTest_Add(UT_os_fsblocksfree_test, NULL, NULL, "OS_fsBlocksFree");
-    UtTest_Add(UT_os_fsbytesfree_test, NULL, NULL, "OS_fsBytesFree");
+    UtTest_Add(UT_os_fsstatvolume_test, NULL, NULL, "OS_FileSysStatVolume");
 }
 
 /*================================================================================*

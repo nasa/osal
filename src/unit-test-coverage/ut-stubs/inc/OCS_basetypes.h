@@ -18,9 +18,15 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub basic data types */
-#ifndef _OSAL_STUB_BASETYPES_H_
-#define _OSAL_STUB_BASETYPES_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub basic data types
+ */
+
+#ifndef OCS_BASETYPES_H
+#define OCS_BASETYPES_H
 
 /*
  * NOTE: These header files are intentionally _not_ overridden
@@ -36,4 +42,4 @@
 #include <limits.h>  /* for correct INT_MAX, etc. */
 #include <stdbool.h> /* for correct boolean semantics */
 
-#endif /* _OSAL_STUB_BASETYPES_H_ */
+#endif /* OCS_BASETYPES_H */

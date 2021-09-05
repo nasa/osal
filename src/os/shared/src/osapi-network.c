@@ -65,26 +65,18 @@ int32 OS_NetworkAPI_Init(void)
  *-----------------------------------------------------------------*/
 int32 OS_NetworkGetHostName(char *host_name, size_t name_len)
 {
-    uint32 return_code;
+    int32 return_code;
 
-    if (host_name == NULL)
-    {
-        return_code = OS_INVALID_POINTER;
-    }
-    else if (name_len == 0)
-    {
-        return_code = OS_ERROR;
-    }
-    else
-    {
-        /* delegate to low-level API */
-        return_code = OS_NetworkGetHostName_Impl(host_name, name_len);
+    /* Check parameters */
+    OS_CHECK_POINTER(host_name);
+    OS_CHECK_SIZE(name_len);
 
-        if (return_code != OS_SUCCESS)
-        {
-            /* return an empty string on failure, just in case */
-            host_name[0] = 0;
-        }
+    /* delegate to low-level API */
+    return_code = OS_NetworkGetHostName_Impl(host_name, name_len);
+    if (return_code != OS_SUCCESS)
+    {
+        /* return an empty string on failure, just in case */
+        host_name[0] = 0;
     }
 
     return (return_code);

@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for ctype.h */
-#ifndef _OSAL_STUB_CTYPE_H_
-#define _OSAL_STUB_CTYPE_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for ctype.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_CTYPE_H
+#define OCS_CTYPE_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in ctype.h */
@@ -38,4 +44,4 @@
 
 extern int OCS_isgraph(int c);
 
-#endif /* _OSAL_STUB_CTYPE_H_ */
+#endif /* OCS_CTYPE_H */

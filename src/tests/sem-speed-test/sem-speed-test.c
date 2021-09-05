@@ -96,7 +96,6 @@ void task_1(void)
     uint32 status;
 
     OS_printf("Starting task 1\n");
-    OS_TaskRegister();
 
     while (task_1_work < SEMTEST_WORK_LIMIT)
     {
@@ -123,7 +122,6 @@ void task_2(void)
     uint32 status;
 
     OS_printf("Starting task 2\n");
-    OS_TaskRegister();
 
     while (task_2_work < SEMTEST_WORK_LIMIT)
     {
@@ -151,6 +149,9 @@ void UtTest_Setup(void)
     {
         UtAssert_Abort("OS_API_Init() failed");
     }
+
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     /*
      * Register the test setup and check routines in UT assert

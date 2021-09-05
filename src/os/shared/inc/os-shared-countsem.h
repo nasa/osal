@@ -19,16 +19,17 @@
  */
 
 /**
- * \file     os-shared-countsem.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_COUNTSEM_H_
-#define INCLUDE_OS_SHARED_COUNTSEM_H_
+#ifndef OS_SHARED_COUNTSEM_H
+#define OS_SHARED_COUNTSEM_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-countsem.h"
+#include "os-shared-globaldefs.h"
 
 /* other objects that have only an API name and no other data */
 typedef struct
@@ -111,4 +112,4 @@ int32 OS_CountSemDelete_Impl(const OS_object_token_t *token);
  ------------------------------------------------------------------*/
 int32 OS_CountSemGetInfo_Impl(const OS_object_token_t *token, OS_count_sem_prop_t *count_prop);
 
-#endif /* INCLUDE_OS_SHARED_COUNTSEM_H_ */
+#endif /* OS_SHARED_COUNTSEM_H */

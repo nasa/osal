@@ -19,17 +19,17 @@
  */
 
 /**
- * \file     os-impl-timebase.h
+ * \file
+ *
  * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_TIMEBASE_H_
-#define INCLUDE_OS_IMPL_TIMEBASE_H_
+#ifndef OS_IMPL_TIMEBASE_H
+#define OS_IMPL_TIMEBASE_H
 
-#include <osconfig.h>
-#include <common_types.h>
+#include "osconfig.h"
+#include "common_types.h"
 #include <signal.h>
 #include <taskLib.h>
 #include <semLib.h>
@@ -61,4 +61,4 @@ typedef struct
 
 extern OS_impl_timebase_internal_record_t OS_impl_timebase_table[OS_MAX_TIMEBASES];
 
-#endif /* INCLUDE_OS_IMPL_TIMEBASE_H_ */
+#endif /* OS_IMPL_TIMEBASE_H */

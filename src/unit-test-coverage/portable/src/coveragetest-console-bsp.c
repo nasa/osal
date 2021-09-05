@@ -29,8 +29,8 @@
 #include "os-shared-printf.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_stdio.h>
-#include <OCS_bsp-impl.h>
+#include "OCS_stdio.h"
+#include "OCS_bsp-impl.h"
 
 #define TEST_BUFFER_LEN 16
 

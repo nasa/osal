@@ -27,7 +27,7 @@
 #include "os-shared-coveragetest.h"
 #include "os-shared-task.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 static uint32 UT_TestHook_Count = 0;
 
@@ -53,31 +53,27 @@ void Test_OS_TaskEntryPoint(void)
      * the internal "prepare" call will return INVALID_ID,
      * which in turn will invoke OS_TaskExit()
      */
-    uint32 CallCount = 0;
-
     UT_TestHook_Count = 0;
     UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_ERROR);
     OS_TaskEntryPoint(UT_OBJID_1);
     UtAssert_True(UT_TestHook_Count == 0, "UT_TestHook_Count (%lu) == 0", (unsigned long)UT_TestHook_Count);
-    CallCount = UT_GetStubCount(UT_KEY(OS_TaskMatch_Impl));
-    UtAssert_True(CallCount == 0, "OS_TaskMatch_Impl() count (%lu) == 0", (unsigned long)CallCount);
-
-    CallCount = UT_GetStubCount(UT_KEY(OS_TaskRegister_Impl));
-    UtAssert_True(CallCount == 0, "OS_TaskRegister_Impl() count (%lu) == 0", (unsigned long)CallCount);
+    UtAssert_STUB_COUNT(OS_TaskMatch_Impl, 0);
+    UtAssert_STUB_COUNT(OS_TaskRegister_Impl, 0);
 
     OS_global_task_table[1].active_id       = UT_OBJID_1;
     OS_task_table[1].entry_function_pointer = UT_TestHook;
 
     OS_TaskEntryPoint(UT_OBJID_1);
     UtAssert_True(UT_TestHook_Count == 1, "UT_TestHook_Count (%lu) == 1", (unsigned long)UT_TestHook_Count);
-    CallCount = UT_GetStubCount(UT_KEY(OS_TaskMatch_Impl));
-    UtAssert_True(CallCount == 1, "OS_TaskMatch_Impl() count (%lu) == 1", (unsigned long)CallCount);
+    UtAssert_STUB_COUNT(OS_TaskMatch_Impl, 1);
+    UtAssert_STUB_COUNT(OS_TaskRegister_Impl, 1);
 
-    CallCount = UT_GetStubCount(UT_KEY(OS_TaskRegister_Impl));
-    UtAssert_True(CallCount == 1, "OS_TaskRegister_Impl() count (%lu) == 1", (unsigned long)CallCount);
-
-    OS_global_task_table[1].active_id       = OS_OBJECT_ID_UNDEFINED;
     OS_task_table[1].entry_function_pointer = NULL;
+    UT_TestHook_Count                       = 0;
+    OS_TaskEntryPoint(UT_OBJID_1);
+    UtAssert_True(UT_TestHook_Count == 0, "UT_TestHook_Count (%lu) == 0", (unsigned long)UT_TestHook_Count);
+
+    OS_global_task_table[1].active_id = OS_OBJECT_ID_UNDEFINED;
 }
 
 void Test_OS_TaskAPI_Init(void)
@@ -86,10 +82,7 @@ void Test_OS_TaskAPI_Init(void)
      * Test Case For:
      * int32 OS_TaskAPI_Init(void)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_TaskAPI_Init();
-
-    UtAssert_True(actual == expected, "OS_TaskAPI_Init() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskAPI_Init(), OS_SUCCESS);
 }
 
 /*
@@ -105,25 +98,38 @@ void Test_OS_TaskCreate(void)
      * int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry function_pointer,
      *                uint32 *stack_pointer, uint32 stack_size, uint32 priority, uint32 flags)
      */
-    int32     expected = OS_SUCCESS;
     osal_id_t objid;
-    int32     actual;
 
-    actual = OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(128), OSAL_PRIORITY_C(0), 0);
-
-    UtAssert_True(actual == expected, "OS_TaskCreate() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(
+        OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(128), OSAL_PRIORITY_C(0), 0),
+        OS_SUCCESS);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
     OSAPI_TEST_FUNCTION_RC(
-        OS_TaskCreate(NULL, NULL, NULL, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(0), OSAL_PRIORITY_C(0), 0),
+        OS_TaskCreate(NULL, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(128), OSAL_PRIORITY_C(0), 0),
+        OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(
+        OS_TaskCreate(&objid, NULL, UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(128), OSAL_PRIORITY_C(0), 0),
+        OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(
+        OS_TaskCreate(&objid, "UT", NULL, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(128), OSAL_PRIORITY_C(0), 0),
         OS_INVALID_POINTER);
     OSAPI_TEST_FUNCTION_RC(
         OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(0), OSAL_PRIORITY_C(0), 0),
-        OS_ERROR);
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), 10 + OS_MAX_API_NAME);
+        OS_ERR_INVALID_SIZE);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(UINT32_MAX),
+                                         OSAL_PRIORITY_C(0), 0),
+                           OS_ERR_INVALID_SIZE);
+
+    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(
         OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(128), OSAL_PRIORITY_C(0), 0),
         OS_ERR_NAME_TOO_LONG);
+
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdAllocateNew), 1, OS_ERR_NO_FREE_IDS);
+    OSAPI_TEST_FUNCTION_RC(
+        OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(128), OSAL_PRIORITY_C(0), 0),
+        OS_ERR_NO_FREE_IDS);
 }
 
 void Test_OS_TaskDelete(void)
@@ -132,21 +138,23 @@ void Test_OS_TaskDelete(void)
      * Test Case For:
      * int32 OS_TaskDelete (uint32 task_id)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
-
     UT_TestHook_Count                    = 0;
     OS_task_table[1].delete_hook_pointer = UT_TestHook;
-    actual                               = OS_TaskDelete(UT_OBJID_1);
-
-    UtAssert_True(actual == expected, "OS_TaskDelete() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskDelete(UT_OBJID_1), OS_SUCCESS);
     UtAssert_True(UT_TestHook_Count == 1, "UT_TestHook_Count (%lu) == 1", (unsigned long)UT_TestHook_Count);
+    UT_TestHook_Count = 0;
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TaskDelete_Impl), OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OS_TaskDelete_Impl), 1, OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_TaskDelete(UT_OBJID_1), OS_ERROR);
-    UtAssert_True(UT_TestHook_Count == 1, "UT_TestHook_Count (%lu) == 1", (unsigned long)UT_TestHook_Count);
+    UtAssert_True(UT_TestHook_Count == 0, "UT_TestHook_Count (%lu) == 0", (unsigned long)UT_TestHook_Count);
 
+    /* Null case */
     OS_task_table[1].delete_hook_pointer = NULL;
+    OSAPI_TEST_FUNCTION_RC(OS_TaskDelete(UT_OBJID_1), OS_SUCCESS);
+    UtAssert_True(UT_TestHook_Count == 0, "UT_TestHook_Count (%lu) == 0", (unsigned long)UT_TestHook_Count);
+
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskDelete(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_TaskExit(void)
@@ -160,6 +168,11 @@ void Test_OS_TaskExit(void)
 
     /* TaskExit should have called OS_ObjectIdFinalizeDelete to clear the active_id */
     UtAssert_STUB_COUNT(OS_ObjectIdFinalizeDelete, 1);
+    UT_ResetState(UT_KEY(OS_ObjectIdFinalizeDelete));
+
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_ERR_INVALID_ID);
+    OS_TaskExit();
+    UtAssert_STUB_COUNT(OS_ObjectIdFinalizeDelete, 0);
 }
 void Test_OS_TaskDelay(void)
 {
@@ -167,10 +180,7 @@ void Test_OS_TaskDelay(void)
      * Test Case For:
      * int32 OS_TaskDelay(uint32 millisecond)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_TaskDelay(1);
-
-    UtAssert_True(actual == expected, "OS_TaskDelay() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskDelay(1), OS_SUCCESS);
 }
 void Test_OS_TaskSetPriority(void)
 {
@@ -178,21 +188,13 @@ void Test_OS_TaskSetPriority(void)
      * Test Case For:
      * int32 OS_TaskSetPriority (uint32 task_id, uint32 new_priority)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_TaskSetPriority(UT_OBJID_1, OSAL_PRIORITY_C(1));
+    OSAPI_TEST_FUNCTION_RC(OS_TaskSetPriority(UT_OBJID_1, OSAL_PRIORITY_C(1)), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_TaskSetPriority() (%ld) == OS_SUCCESS", (long)actual);
-}
-void Test_OS_TaskRegister(void)
-{
-    /*
-     * Test Case For:
-     * int32 OS_TaskRegister (void)
-     */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_TaskRegister();
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskSetPriority(UT_OBJID_1, OSAL_PRIORITY_C(1)), OS_ERR_INVALID_ID);
 
-    UtAssert_True(actual == expected, "OS_TaskRegister() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDeferredRetcode(UT_KEY(OS_TaskSetPriority_Impl), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskSetPriority(UT_OBJID_1, OSAL_PRIORITY_C(1)), OS_ERROR);
 }
 void Test_OS_TaskGetId(void)
 {
@@ -207,10 +209,6 @@ void Test_OS_TaskGetId(void)
     UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), idbuf.val);
     objid = OS_TaskGetId();
     OSAPI_TEST_OBJID(objid, ==, idbuf.id);
-
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
-    objid = OS_TaskGetId();
-    OSAPI_TEST_OBJID(objid, ==, OS_OBJECT_ID_UNDEFINED);
 }
 
 void Test_OS_TaskGetIdByName(void)
@@ -219,21 +217,16 @@ void Test_OS_TaskGetIdByName(void)
      * Test Case For:
      * int32 OS_TaskGetIdByName (uint32 *task_id, const char *task_name)
      */
-    int32     expected = OS_SUCCESS;
-    int32     actual   = ~OS_SUCCESS;
-    osal_id_t objid    = OS_OBJECT_ID_UNDEFINED;
+    osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
-    actual = OS_TaskGetIdByName(&objid, "UT");
-    UtAssert_True(actual == expected, "OS_TaskGetIdByName() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdFindByName), 1, OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskGetIdByName(&objid, "UT"), OS_SUCCESS);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdFindByName));
 
-    expected = OS_ERR_NAME_NOT_FOUND;
-    actual   = OS_TaskGetIdByName(&objid, "NF");
-    UtAssert_True(actual == expected, "OS_TaskGetIdByName() (%ld) == %ld", (long)actual, (long)expected);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskGetIdByName(&objid, "NF"), OS_ERR_NAME_NOT_FOUND);
 
-    OSAPI_TEST_FUNCTION_RC(OS_TaskGetIdByName(NULL, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskGetIdByName(&objid, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskGetIdByName(NULL, "UT"), OS_INVALID_POINTER);
 }
 
 void Test_OS_TaskGetInfo(void)
@@ -242,26 +235,32 @@ void Test_OS_TaskGetInfo(void)
      * Test Case For:
      * int32 OS_TaskGetInfo (uint32 task_id, OS_task_prop_t *task_prop)
      */
-    int32          expected = OS_SUCCESS;
-    int32          actual   = ~OS_SUCCESS;
     OS_task_prop_t task_prop;
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_TASK, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
     OS_task_table[1].stack_size = OSAL_SIZE_C(222);
     OS_task_table[1].priority   = OSAL_PRIORITY_C(133);
 
-    actual = OS_TaskGetInfo(UT_OBJID_1, &task_prop);
-
-    UtAssert_True(actual == expected, "OS_TaskGetInfo() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskGetInfo(UT_OBJID_1, &task_prop), OS_SUCCESS);
     OSAPI_TEST_OBJID(task_prop.creator, ==, UT_OBJID_OTHER);
     UtAssert_True(strcmp(task_prop.name, "ABC") == 0, "task_prop.name (%s) == ABC", task_prop.name);
-    UtAssert_True(task_prop.stack_size == 222, "task_prop.stack_size (%lu) == 222", (unsigned long)task_prop.stack_size);
+    UtAssert_True(task_prop.stack_size == 222, "task_prop.stack_size (%lu) == 222",
+                  (unsigned long)task_prop.stack_size);
     UtAssert_True(task_prop.priority == 133, "task_prop.priority (%lu) == 133", (unsigned long)task_prop.priority);
+
+    /* Null name entry path */
+    task_prop.name[0]                  = 0;
+    OS_global_task_table[1].name_entry = NULL;
+    OSAPI_TEST_FUNCTION_RC(OS_TaskGetInfo(UT_OBJID_1, &task_prop), OS_SUCCESS);
+    UtAssert_True(strlen(task_prop.name) == 0, "task_prop.name empty");
 
     OS_task_table[1].stack_size = OSAL_SIZE_C(0);
     OS_task_table[1].priority   = OSAL_PRIORITY_C(0);
 
-    OSAPI_TEST_FUNCTION_RC(OS_TaskGetInfo(OS_OBJECT_ID_UNDEFINED, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
+
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskGetInfo(UT_OBJID_1, &task_prop), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_TaskInstallDeleteHandler(void)
@@ -270,17 +269,16 @@ void Test_OS_TaskInstallDeleteHandler(void)
      * Test Case For:
      * int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
-
     UT_SetDefaultReturnValue(UT_KEY(OS_TaskGetId_Impl), 1);
-    actual = OS_TaskInstallDeleteHandler(UT_TestHook);
-    UtAssert_True(actual == expected, "OS_TaskInstallDeleteHandler() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskInstallDeleteHandler(UT_TestHook), OS_SUCCESS);
     UtAssert_True(OS_task_table[1].delete_hook_pointer == UT_TestHook,
                   "OS_task_table[1].delete_hook_pointer (%lx) == %lx",
                   (unsigned long)OS_task_table[1].delete_hook_pointer, (unsigned long)UT_TestHook);
 
     OS_task_table[1].delete_hook_pointer = NULL;
+
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskInstallDeleteHandler(UT_TestHook), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_TaskFindIdBySystemData(void)
@@ -289,9 +287,6 @@ void Test_OS_TaskFindIdBySystemData(void)
      * Test Case For:
      * int32 OS_TaskFindIdBySystemData(uint32 *task_id, const void *sysdata, size_t sysdata_size)
      */
-
-    int32     expected;
-    int32     actual;
     osal_id_t task_id;
 
     /*
@@ -306,26 +301,18 @@ void Test_OS_TaskFindIdBySystemData(void)
 
     memset(&test_sysdata, 'x', sizeof(test_sysdata));
 
-    expected = OS_SUCCESS;
-    actual   = OS_TaskFindIdBySystemData(&task_id, &test_sysdata, sizeof(test_sysdata));
-    UtAssert_True(actual == expected, "OS_TaskFindIdBySystemData() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskFindIdBySystemData(&task_id, &test_sysdata, sizeof(test_sysdata)), OS_SUCCESS);
 
     /* Test parameter validation branches */
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TaskFindIdBySystemData(NULL, &test_sysdata, sizeof(test_sysdata));
-    UtAssert_True(actual == expected, "OS_TaskFindIdBySystemData() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskFindIdBySystemData(NULL, &test_sysdata, sizeof(test_sysdata)), OS_INVALID_POINTER);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TaskValidateSystemData_Impl), expected);
-    actual = OS_TaskFindIdBySystemData(&task_id, &test_sysdata, sizeof(test_sysdata));
-    UtAssert_True(actual == expected, "OS_TaskFindIdBySystemData() (%ld) == OS_INVALID_POINTER", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TaskValidateSystemData_Impl));
+    UT_SetDeferredRetcode(UT_KEY(OS_TaskValidateSystemData_Impl), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskFindIdBySystemData(&task_id, &test_sysdata, sizeof(test_sysdata)), OS_ERROR);
 
     /* Test search failure */
-    expected = OS_ERR_NAME_NOT_FOUND;
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch), expected);
-    actual = OS_TaskFindIdBySystemData(&task_id, &test_sysdata, sizeof(test_sysdata));
-    UtAssert_True(actual == expected, "OS_TaskFindIdBySystemData() (%ld) == OS_ERR_NAME_NOT_FOUND", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_ObjectIdGetBySearch));
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetBySearch), 1, OS_ERR_NAME_NOT_FOUND);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskFindIdBySystemData(&task_id, &test_sysdata, sizeof(test_sysdata)),
+                           OS_ERR_NAME_NOT_FOUND);
 }
 
 /* Osapi_Test_Setup
@@ -358,7 +345,6 @@ void UtTest_Setup(void)
     ADD_TEST(OS_TaskExit);
     ADD_TEST(OS_TaskDelay);
     ADD_TEST(OS_TaskSetPriority);
-    ADD_TEST(OS_TaskRegister);
     ADD_TEST(OS_TaskGetId);
     ADD_TEST(OS_TaskGetIdByName);
     ADD_TEST(OS_TaskGetInfo);

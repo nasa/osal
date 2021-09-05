@@ -111,19 +111,8 @@ int32 OS_TimeBaseCreate(osal_id_t *timer_id, const char *timebase_name, OS_Timer
     /*
      ** Check Parameters
      */
-    if (timer_id == NULL || timebase_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
-
-    /*
-     ** we don't want to allow names too long
-     ** if truncated, two names might be the same
-     */
-    if (strlen(timebase_name) >= OS_MAX_API_NAME)
-    {
-        return OS_ERR_NAME_TOO_LONG;
-    }
+    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_APINAME(timebase_name);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -187,10 +176,8 @@ int32 OS_TimeBaseSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time
      * Note that the units are intentionally left unspecified.  The external sync period
      * could be measured in microseconds or hours -- it is whatever the application requires.
      */
-    if (interval_time >= 1000000000 || start_time >= 1000000000)
-    {
-        return OS_TIMER_ERR_INVALID_ARGS;
-    }
+    ARGCHECK(start_time < 1000000000, OS_TIMER_ERR_INVALID_ARGS);
+    ARGCHECK(interval_time < 1000000000, OS_TIMER_ERR_INVALID_ARGS);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -276,10 +263,9 @@ int32 OS_TimeBaseGetIdByName(osal_id_t *timer_id, const char *timebase_name)
     int32          return_code;
     osal_objtype_t objtype;
 
-    if (timer_id == NULL || timebase_name == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_APINAME(timebase_name);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -313,10 +299,7 @@ int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_pro
     OS_timebase_internal_record_t *timebase;
 
     /* Check parameters */
-    if (timebase_prop == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    OS_CHECK_POINTER(timebase_prop);
 
     /*
      * Check our context.  Not allowed to use the timer API from a timer callback.
@@ -336,7 +319,7 @@ int32 OS_TimeBaseGetInfo(osal_id_t timebase_id, OS_timebase_prop_t *timebase_pro
         record   = OS_OBJECT_TABLE_GET(OS_global_timebase_table, token);
         timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, token);
 
-        strncpy(timebase_prop->name, record->name_entry, OS_MAX_API_NAME - 1);
+        strncpy(timebase_prop->name, record->name_entry, sizeof(timebase_prop->name) - 1);
         timebase_prop->creator               = record->creator;
         timebase_prop->nominal_interval_time = timebase->nominal_interval_time;
         timebase_prop->freerun_time          = timebase->freerun_time;
@@ -365,6 +348,8 @@ int32 OS_TimeBaseGetFreeRun(osal_id_t timebase_id, uint32 *freerun_val)
     OS_timebase_internal_record_t *timebase;
 
     /* Check parameters */
+    OS_CHECK_POINTER(freerun_val);
+
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, LOCAL_OBJID_TYPE, timebase_id, &token);
     if (return_code == OS_SUCCESS)
     {
@@ -533,8 +518,9 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id)
                     }
                 }
 
-            } while (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timecb->next_cb, &cb_token) == OS_SUCCESS &&
-                    !OS_ObjectIdEqual(OS_ObjectIdFromToken(&cb_token), timebase->first_cb));
+            } while (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMECB, timecb->next_cb, &cb_token) ==
+                         OS_SUCCESS &&
+                     !OS_ObjectIdEqual(OS_ObjectIdFromToken(&cb_token), timebase->first_cb));
         }
 
         OS_TimeBaseUnlock_Impl(&token);

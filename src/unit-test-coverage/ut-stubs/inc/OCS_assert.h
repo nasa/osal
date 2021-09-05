@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for assert.h */
-#ifndef _OSAL_STUB_ASSERT_H_
-#define _OSAL_STUB_ASSERT_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for assert.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_ASSERT_H
+#define OCS_ASSERT_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in assert.h */
@@ -38,4 +44,4 @@
 
 void OCS_assert(bool expression);
 
-#endif /* _OSAL_STUB_ASSERT_H_ */
+#endif /* OCS_ASSERT_H */

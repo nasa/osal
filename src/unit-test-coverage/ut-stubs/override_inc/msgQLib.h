@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for msgQLib.h */
-#ifndef _OSAL_OVERRIDE_MSGQLIB_H_
-#define _OSAL_OVERRIDE_MSGQLIB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for msgQLib.h
+ */
 
-#include <OCS_msgQLib.h>
+#ifndef OVERRIDE_MSGQLIB_H
+#define OVERRIDE_MSGQLIB_H
+
+#include "OCS_msgQLib.h"
 #include <vxWorks.h>
 #include <objLib.h>
 
@@ -42,4 +48,4 @@
 #define msgQReceive OCS_msgQReceive
 #define msgQSend    OCS_msgQSend
 
-#endif /* _OSAL_OVERRIDE_MSGQLIB_H_ */
+#endif /* OVERRIDE_MSGQLIB_H */

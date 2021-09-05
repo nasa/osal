@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <osapi.h>
+#include "osapi.h"
 #include "os-shared-module.h"
 
 /*----------------------------------------------------------------

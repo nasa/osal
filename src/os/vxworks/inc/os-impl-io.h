@@ -19,17 +19,17 @@
  */
 
 /**
- * \file     os-impl-io.h
+ * \file
+ *
  * \ingroup  vxworks
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_IO_H_
-#define INCLUDE_OS_IMPL_IO_H_
+#ifndef OS_IMPL_IO_H
+#define OS_IMPL_IO_H
 
-#include <osconfig.h>
-#include <common_types.h>
+#include "osconfig.h"
+#include "common_types.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -55,4 +55,4 @@ extern OS_impl_file_internal_record_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_F
  */
 #define GENERIC_IO_CONST_DATA_CAST (void *)
 
-#endif /* INCLUDE_OS_IMPL_IO_H_ */
+#endif /* OS_IMPL_IO_H */

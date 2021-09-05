@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for semaphore.h */
-#ifndef _OSAL_STUB_SEMAPHORE_H_
-#define _OSAL_STUB_SEMAPHORE_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for semaphore.h
+ */
 
-#include <OCS_basetypes.h>
-#include <OCS_time.h>
+#ifndef OCS_SEMAPHORE_H
+#define OCS_SEMAPHORE_H
+
+#include "OCS_basetypes.h"
+#include "OCS_time.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in semaphore.h */
@@ -49,4 +55,4 @@ extern int OCS_sem_post(OCS_sem_t *sem);
 extern int OCS_sem_timedwait(OCS_sem_t *sem, const struct OCS_timespec *abstime);
 extern int OCS_sem_wait(OCS_sem_t *sem);
 
-#endif /* _OSAL_STUB_SEMAPHORE_H_ */
+#endif /* OCS_SEMAPHORE_H */

@@ -62,7 +62,6 @@ void task_1(void)
     int               counter = 0;
 
     OS_printf("Starting task 1\n");
-    OS_TaskRegister();
 
     OS_printf("TASK 1: Waiting on the semaphore\n");
     status = OS_BinSemTake(bin_sem_id);
@@ -101,7 +100,6 @@ void task_2(void)
 
     task_2_failures = 0;
     OS_printf("Starting task 2\n");
-    OS_TaskRegister();
 
     OS_printf("TASK 2: Waiting on the semaphore\n");
     status = OS_BinSemTake(bin_sem_id);
@@ -139,7 +137,6 @@ void task_3(void)
     int               counter = 0;
 
     OS_printf("Starting task 3\n");
-    OS_TaskRegister();
 
     OS_printf("TASK 3: Waiting on the semaphore\n");
     status = OS_BinSemTake(bin_sem_id);
@@ -179,6 +176,9 @@ void UtTest_Setup(void)
     {
         UtAssert_Abort("OS_API_Init() failed");
     }
+
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     /*
      * Register the test setup and check routines in UT assert

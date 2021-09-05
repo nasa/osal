@@ -18,14 +18,20 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for iv.h */
-#ifndef _OSAL_OVERRIDE_IV_H_
-#define _OSAL_OVERRIDE_IV_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for iv.h
+ */
 
-#include <OCS_iv.h>
+#ifndef OVERRIDE_IV_H
+#define OVERRIDE_IV_H
+
+#include "OCS_iv.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in iv.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_IV_H_ */
+#endif /* OVERRIDE_IV_H */

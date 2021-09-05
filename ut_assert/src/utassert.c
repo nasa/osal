@@ -79,13 +79,14 @@ void UtAssert_DoTestSegmentReport(const char *SegmentName, const UtAssert_TestCo
     char ReportBuffer[144];
 
     snprintf(ReportBuffer, sizeof(ReportBuffer),
-             "%02u %-20s TOTAL::%-4u  PASS::%-4u  FAIL::%-4u   MIR::%-4u   TSF::%-4u   N/A::%-4u\n",
+             "%02u %-20s TOTAL::%-4u  PASS::%-4u  FAIL::%-4u  MIR::%-4u  TSF::%-4u  TTF::%-4u  WARN::%-4u\n",
              (unsigned int)TestCounters->TestSegmentCount, SegmentName, (unsigned int)TestCounters->TotalTestCases,
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_PASS],
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_FAILURE],
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_MIR],
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_TSF],
-             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_NA]);
+             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_TTF],
+             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_WARN]);
 
     UT_BSP_DoText(UTASSERT_CASETYPE_END, ReportBuffer);
 }
@@ -107,10 +108,18 @@ const UtAssert_TestCounter_t *UtAssert_GetCounters(void)
 
 void UtAssert_BeginTest(const char *SegmentName)
 {
+    uint32 TestSegmentCount;
+
+    UT_BSP_Lock();
+
     memset(&UT_SegmentCounters, 0, sizeof(UT_SegmentCounters));
     strncpy(CurrentSegment, SegmentName, sizeof(CurrentSegment) - 1);
     CurrentSegment[sizeof(CurrentSegment) - 1] = 0;
-    UT_BSP_StartTestSegment(1 + UT_TotalCounters.TestSegmentCount, SegmentName);
+    TestSegmentCount                           = 1 + UT_TotalCounters.TestSegmentCount;
+
+    UT_BSP_Unlock();
+
+    UT_BSP_StartTestSegment(TestSegmentCount, SegmentName);
 }
 
 const char *UtAssert_GetSegmentName(void)
@@ -120,9 +129,15 @@ const char *UtAssert_GetSegmentName(void)
 
 void UtAssert_EndTest(void)
 {
-    uint32 Ct;
+    uint32                 Ct;
+    bool                   SegmentValid;
+    UtAssert_TestCounter_t Local_SegmentCounters;
+    char                   Local_SegmentName[sizeof(CurrentSegment)];
 
-    if (UT_SegmentCounters.TotalTestCases > 0)
+    UT_BSP_Lock();
+
+    SegmentValid = (UT_SegmentCounters.TotalTestCases > 0);
+    if (SegmentValid)
     {
         ++UT_TotalCounters.TestSegmentCount;
         UT_SegmentCounters.TestSegmentCount = UT_TotalCounters.TestSegmentCount;
@@ -131,14 +146,27 @@ void UtAssert_EndTest(void)
         {
             UT_TotalCounters.CaseCount[Ct] += UT_SegmentCounters.CaseCount[Ct];
         }
-        UtAssert_DoTestSegmentReport(CurrentSegment, &UT_SegmentCounters);
+        memcpy(&Local_SegmentCounters, &UT_SegmentCounters, sizeof(Local_SegmentCounters));
+
+        /*
+         * note, strcpy is OK because both are fixed size buffers of the same size,
+         * and the null termination on CurrentSegment was locally enforced already
+         */
+        strcpy(Local_SegmentName, CurrentSegment);
+    }
+
+    memset(&UT_SegmentCounters, 0, sizeof(UT_SegmentCounters));
+
+    UT_BSP_Unlock();
+
+    if (SegmentValid)
+    {
+        UtAssert_DoTestSegmentReport(Local_SegmentName, &Local_SegmentCounters);
     }
     else
     {
         UT_BSP_DoText(UTASSERT_CASETYPE_END, "No test cases\n");
     }
-
-    memset(&UT_SegmentCounters, 0, sizeof(UT_SegmentCounters));
 }
 
 void UtAssert_SetContext(UtAssert_CaseType_t Context)
@@ -161,6 +189,10 @@ bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File,
 {
     va_list va;
     char    FinalMessage[256];
+    uint32  TestSegmentCount;
+    uint32  TotalTestCases;
+
+    UT_BSP_Lock();
 
     ++UT_SegmentCounters.TotalTestCases;
 
@@ -174,12 +206,16 @@ bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File,
         ++UT_SegmentCounters.CaseCount[(uint32)CaseType];
     }
 
+    TestSegmentCount = 1 + UT_TotalCounters.TestSegmentCount;
+    TotalTestCases   = UT_SegmentCounters.TotalTestCases;
+
+    UT_BSP_Unlock();
+
     va_start(va, MessageFormat);
     vsnprintf(FinalMessage, sizeof(FinalMessage), MessageFormat, va);
     va_end(va);
 
-    UtAssert_DoReport(File, Line, 1 + UT_TotalCounters.TestSegmentCount, UT_SegmentCounters.TotalTestCases, CaseType,
-                      CurrentSegment, FinalMessage);
+    UtAssert_DoReport(File, Line, TestSegmentCount, TotalTestCases, CaseType, CurrentSegment, FinalMessage);
 
     return Expression;
 }
@@ -187,6 +223,60 @@ bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File,
 void UtAssert_Abort(const char *Message)
 {
     UT_BSP_DoText(UTASSERT_CASETYPE_ABORT, Message);
+}
+
+const char *UtAssert_GetCaseTypeAbbrev(UtAssert_CaseType_t CaseType)
+{
+    const char *AbbrevStr;
+
+    switch (CaseType)
+    {
+        case UTASSERT_CASETYPE_ABORT:
+            AbbrevStr = "ABORT";
+            break;
+        case UTASSERT_CASETYPE_FAILURE:
+            AbbrevStr = "FAIL";
+            break;
+        case UTASSERT_CASETYPE_MIR:
+            AbbrevStr = "MIR";
+            break;
+        case UTASSERT_CASETYPE_TSF:
+            AbbrevStr = "TSF";
+            break;
+        case UTASSERT_CASETYPE_TTF:
+            AbbrevStr = "TTF";
+            break;
+        case UTASSERT_CASETYPE_WARN:
+            AbbrevStr = "WARN";
+            break;
+        case UTASSERT_CASETYPE_NA:
+            AbbrevStr = "N/A";
+            break;
+        case UTASSERT_CASETYPE_BEGIN:
+            AbbrevStr = "BEGIN";
+            break;
+        case UTASSERT_CASETYPE_END:
+            AbbrevStr = "END";
+            break;
+        case UTASSERT_CASETYPE_PASS:
+            AbbrevStr = "PASS";
+            break;
+        case UTASSERT_CASETYPE_INFO:
+            AbbrevStr = "INFO";
+            break;
+        case UTASSERT_CASETYPE_FLOW:
+            AbbrevStr = "FLOW";
+            break;
+        case UTASSERT_CASETYPE_DEBUG:
+            AbbrevStr = "DEBUG";
+            break;
+        default:
+            /* do not return NULL, as the result may be directly passed to C library functions */
+            AbbrevStr = "OTHER";
+            break;
+    }
+
+    return AbbrevStr;
 }
 
 void UtAssert_Message(uint8 MessageType, const char *File, uint32 Line, const char *Spec, ...)
@@ -220,4 +310,279 @@ void UtAssert_Message(uint8 MessageType, const char *File, uint32 Line, const ch
     va_end(va);
 
     UT_BSP_DoText(MessageType, FinalMessage);
+}
+
+const char *UtAssert_GetOpText(UtAssert_Compare_t CompareType)
+{
+    const char *OpText;
+
+    switch (CompareType)
+    {
+        case UtAssert_Compare_EQ: /* actual equals reference value */
+            OpText = "==";
+            break;
+        case UtAssert_Compare_NEQ: /* actual does not non equal reference value */
+            OpText = "!=";
+            break;
+        case UtAssert_Compare_LT: /* actual less than reference (exclusive) */
+            OpText = "<";
+            break;
+        case UtAssert_Compare_GT: /* actual greater than reference (exclusive)  */
+            OpText = ">";
+            break;
+        case UtAssert_Compare_LTEQ: /* actual less than or equal to reference (inclusive) */
+            OpText = "<=";
+            break;
+        case UtAssert_Compare_GTEQ: /* actual greater than reference (inclusive) */
+            OpText = ">=";
+            break;
+        case UtAssert_Compare_BITMASK_SET: /* bit(s) in reference are set in actual */
+            OpText = "&";
+            break;
+        case UtAssert_Compare_BITMASK_UNSET: /* bit(s) in reference are not set in actual */
+            OpText = "&~";
+            break;
+        default: /* should never happen */
+            OpText = "??";
+            break;
+    }
+
+    return OpText;
+}
+
+bool UtAssert_GenericUnsignedCompare(unsigned long ActualValue, UtAssert_Compare_t CompareType,
+                                     unsigned long ReferenceValue, UtAssert_Radix_t RadixType, const char *File,
+                                     uint32 Line, const char *Desc, const char *ActualText, const char *ReferenceText)
+{
+    bool        Result;
+    const char *FormatStr;
+
+    switch (CompareType)
+    {
+        case UtAssert_Compare_EQ: /* actual equals reference value */
+            Result = (ActualValue == ReferenceValue);
+            break;
+        case UtAssert_Compare_NEQ: /* actual does not non equal reference value */
+            Result = (ActualValue != ReferenceValue);
+            break;
+        case UtAssert_Compare_LT: /* actual less than reference (exclusive) */
+            Result = (ActualValue < ReferenceValue);
+            break;
+        case UtAssert_Compare_GT: /* actual greater than reference (exclusive)  */
+            Result = (ActualValue > ReferenceValue);
+            break;
+        case UtAssert_Compare_LTEQ: /* actual less than or equal to reference (inclusive) */
+            Result = (ActualValue <= ReferenceValue);
+            break;
+        case UtAssert_Compare_GTEQ: /* actual greater than reference (inclusive) */
+            Result = (ActualValue >= ReferenceValue);
+            break;
+        case UtAssert_Compare_BITMASK_SET: /* bit(s) in reference are set in actual */
+            Result = (ActualValue & ReferenceValue) == ReferenceValue;
+            break;
+        case UtAssert_Compare_BITMASK_UNSET: /* bit(s) in reference are not set in actual */
+            Result = (ActualValue & ReferenceValue) == 0;
+            break;
+        default: /* should never happen */
+            Result = false;
+            break;
+    }
+
+    switch (RadixType)
+    {
+        case UtAssert_Radix_OCTAL:
+            FormatStr = "%s%s (0%lo) %s %s (0%lo)";
+            break;
+        case UtAssert_Radix_DECIMAL:
+            FormatStr = "%s%s (%lu) %s %s (%lu)";
+            break;
+        default:
+            /* for unsigned, default is hex */
+            FormatStr = "%s%s (0x%lx) %s %s (0x%lx)";
+            break;
+    }
+
+    return UtAssertEx(Result, UTASSERT_CASETYPE_FAILURE, File, Line, FormatStr, Desc, ActualText, ActualValue,
+                      UtAssert_GetOpText(CompareType), ReferenceText, ReferenceValue);
+}
+
+bool UtAssert_GenericSignedCompare(long ActualValue, UtAssert_Compare_t CompareType, long ReferenceValue,
+                                   UtAssert_Radix_t RadixType, const char *File, uint32 Line, const char *Desc,
+                                   const char *ActualText, const char *ReferenceText)
+{
+    bool        Result;
+    const char *FormatStr;
+
+    switch (CompareType)
+    {
+        case UtAssert_Compare_EQ: /* actual equals reference value */
+            Result = (ActualValue == ReferenceValue);
+            break;
+        case UtAssert_Compare_NEQ: /* actual does not non equal reference value */
+            Result = (ActualValue != ReferenceValue);
+            break;
+        case UtAssert_Compare_LT: /* actual less than reference (exclusive) */
+            Result = (ActualValue < ReferenceValue);
+            break;
+        case UtAssert_Compare_GT: /* actual greater than reference (exclusive)  */
+            Result = (ActualValue > ReferenceValue);
+            break;
+        case UtAssert_Compare_LTEQ: /* actual less than or equal to reference (inclusive) */
+            Result = (ActualValue <= ReferenceValue);
+            break;
+        case UtAssert_Compare_GTEQ: /* actual greater than reference (inclusive) */
+            Result = (ActualValue >= ReferenceValue);
+            break;
+        default: /* should never happen */
+            Result = false;
+            break;
+    }
+
+    switch (RadixType)
+    {
+        case UtAssert_Radix_OCTAL:
+            FormatStr = "%s%s (0%lo) %s %s (0%lo)";
+            break;
+        case UtAssert_Radix_HEX:
+            FormatStr = "%s%s (0x%lx) %s %s (0x%lx)";
+            break;
+        default:
+            /* for signed, default is decimal */
+            FormatStr = "%s%s (%ld) %s %s (%ld)";
+            break;
+    }
+
+    return UtAssertEx(Result, UTASSERT_CASETYPE_FAILURE, File, Line, FormatStr, Desc, ActualText, ActualValue,
+                      UtAssert_GetOpText(CompareType), ReferenceText, ReferenceValue);
+}
+
+bool UtAssert_StringBufCompare(const char *String1, size_t String1Max, const char *String2, size_t String2Max,
+                               UtAssert_Compare_t CompareType, const char *File, uint32 Line)
+{
+    char        ScrubbedString1[256];
+    char        ScrubbedString2[256];
+    const char *EndPtr1;
+    const char *EndPtr2;
+    size_t      FormatLen1;
+    size_t      FormatLen2;
+    bool        Result;
+    int         Compare;
+
+    /* Locate the actual end of both strings */
+    if (String1 == NULL)
+    {
+        EndPtr1 = NULL;
+    }
+    else
+    {
+        EndPtr1 = memchr(String1, 0, String1Max);
+    }
+
+    if (EndPtr1 != NULL)
+    {
+        FormatLen1 = EndPtr1 - String1;
+    }
+    else
+    {
+        FormatLen1 = String1Max;
+    }
+
+    if (String2 == NULL)
+    {
+        EndPtr2 = NULL;
+    }
+    else
+    {
+        EndPtr2 = memchr(String2, 0, String2Max);
+    }
+
+    if (EndPtr2 != NULL)
+    {
+        FormatLen2 = EndPtr2 - String2;
+    }
+    else
+    {
+        FormatLen2 = String2Max;
+    }
+
+    if (FormatLen1 == 0 && FormatLen2 == 0)
+    {
+        /* Two empty strings are considered equal */
+        Compare = 0;
+    }
+    else
+    {
+        /* Compare actual content based on the shorter of the two strings */
+        if (FormatLen1 < FormatLen2)
+        {
+            Compare = memcmp(String1, String2, FormatLen1);
+        }
+        else
+        {
+            Compare = memcmp(String1, String2, FormatLen2);
+        }
+
+        /* If initial content was the same, go by whichever is longer */
+        if (Compare == 0)
+        {
+            /*
+             * If String1 is longer, compare should be positive (String1 > String2)
+             * If String2 is longer, compare should be negative (String1 < String2)
+             * If strings are the same length, compare should be 0.
+             */
+            Compare = FormatLen1 - FormatLen2;
+        }
+    }
+
+    switch (CompareType)
+    {
+        case UtAssert_Compare_EQ: /* actual equals reference value */
+            Result = (Compare == 0);
+            break;
+        case UtAssert_Compare_NEQ: /* actual does not non equal reference value */
+            Result = (Compare != 0);
+            break;
+        case UtAssert_Compare_LT: /* actual less than reference (exclusive) */
+            Result = (Compare < 0);
+            break;
+        case UtAssert_Compare_GT: /* actual greater than reference (exclusive)  */
+            Result = (Compare > 0);
+            break;
+        case UtAssert_Compare_LTEQ: /* actual less than or equal to reference (inclusive) */
+            Result = (Compare <= 0);
+            break;
+        case UtAssert_Compare_GTEQ: /* actual greater than reference (inclusive) */
+            Result = (Compare >= 0);
+            break;
+        default: /* should never happen */
+            Result = false;
+            break;
+    }
+
+    /* Now make "safe" copies of the strings */
+    /* Check for a newline within the string, and if present, end the string there instead */
+    if (FormatLen1 > 0)
+    {
+        EndPtr1 = memchr(String1, '\n', FormatLen1);
+        if (EndPtr1 != NULL)
+        {
+            FormatLen1 = EndPtr1 - String1;
+        }
+        memcpy(ScrubbedString1, String1, FormatLen1);
+    }
+    ScrubbedString1[FormatLen1] = 0;
+
+    if (FormatLen2 > 0)
+    {
+        EndPtr2 = memchr(String2, '\n', FormatLen2);
+        if (EndPtr2 != NULL)
+        {
+            FormatLen2 = EndPtr2 - String2;
+        }
+        memcpy(ScrubbedString2, String2, FormatLen2);
+    }
+    ScrubbedString2[FormatLen2] = 0;
+
+    return UtAssertEx(Result, UTASSERT_CASETYPE_FAILURE, File, Line, "String: \'%s\' == \'%s\'", ScrubbedString1,
+                      ScrubbedString2);
 }

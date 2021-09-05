@@ -36,6 +36,7 @@
 
 #include "os-posix.h"
 #include "os-impl-timebase.h"
+#include "os-impl-tasks.h"
 
 #include "os-shared-timebase.h"
 #include "os-shared-idmap.h"
@@ -225,7 +226,7 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
         status = clock_getres(OS_PREFERRED_CLOCK, &clock_resolution);
         if (status != 0)
         {
-            OS_DEBUG("failed in clock_getres: %s\n", strerror(status));
+            OS_DEBUG("failed in clock_getres: %s\n", strerror(errno));
             return_code = OS_ERROR;
             break;
         }
@@ -301,8 +302,8 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
          *  - This is used internally for reporting accuracy,
          *  - TicksPerSecond values over 2M will return zero
          */
-        OS_SharedGlobalVars.MicroSecPerTick = (1000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) /
-                                              OS_SharedGlobalVars.TicksPerSecond;
+        OS_SharedGlobalVars.MicroSecPerTick =
+            (1000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) / OS_SharedGlobalVars.TicksPerSecond;
     } while (0);
 
     return (return_code);
@@ -314,7 +315,7 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
 
 static void *OS_TimeBasePthreadEntry(void *arg)
 {
-    OS_U32ValueWrapper_t local_arg;
+    OS_VoidPtrValueWrapper_t local_arg;
 
     local_arg.opaque_arg = arg;
     OS_TimeBase_CallbackThread(local_arg.id);
@@ -339,7 +340,7 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
     struct timespec                     ts;
     OS_impl_timebase_internal_record_t *local;
     OS_timebase_internal_record_t *     timebase;
-    OS_U32ValueWrapper_t                arg;
+    OS_VoidPtrValueWrapper_t            arg;
 
     local    = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
     timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, *token);
@@ -386,7 +387,7 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
          */
         for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
         {
-            if (OS_ObjectIdDefined(OS_global_timebase_table[idx].active_id) &&
+            if (OS_ObjectIdIsValid(OS_global_timebase_table[idx].active_id) &&
                 OS_impl_timebase_table[idx].assigned_signal != 0)
             {
                 sigaddset(&local->sigset, OS_impl_timebase_table[idx].assigned_signal);

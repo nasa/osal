@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <OCS_sys_ioctl.h>
+#include "OCS_sys_ioctl.h"
 
 int OCS_ioctl(int fd, unsigned long req, ...)
 {

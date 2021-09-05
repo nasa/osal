@@ -19,17 +19,18 @@
  */
 
 /**
- * \file     ut-adaptor-symtab.h
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup adaptors
  *
+ * Declarations and prototypes for ut-adaptor-symtab
  */
 
-#ifndef INCLUDE_UT_ADAPTOR_SYMTAB_H_
-#define INCLUDE_UT_ADAPTOR_SYMTAB_H_
+#ifndef UT_ADAPTOR_SYMTAB_H
+#define UT_ADAPTOR_SYMTAB_H
 
-#include <common_types.h>
+#include "common_types.h"
 
 int32 UT_SymTabTest_CallIteratorFunc(const char *name, void *val, size_t TestSize, size_t SizeLimit);
+int32 UT_SymTabTest_GetIteratorStatus(void);
 
-#endif /* INCLUDE_UT_ADAPTOR_SYMTAB_H_ */
+#endif /* UT_ADAPTOR_SYMTAB_H */

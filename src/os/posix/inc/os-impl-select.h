@@ -19,18 +19,18 @@
  */
 
 /**
- * \file     os-impl-select.h
+ * \file
+ *
  * \ingroup  posix
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_SELECT_H_
-#define INCLUDE_OS_IMPL_SELECT_H_
+#ifndef OS_IMPL_SELECT_H
+#define OS_IMPL_SELECT_H
 
 #include "os-impl-io.h"
 
 #include <sys/select.h>
 #include <sys/time.h>
 
-#endif /* INCLUDE_OS_IMPL_SELECT_H_ */
+#endif /* OS_IMPL_SELECT_H */

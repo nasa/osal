@@ -19,16 +19,17 @@
  */
 
 /**
- * \file     os-shared-timebase.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_TIMEBASE_H_
-#define INCLUDE_OS_SHARED_TIMEBASE_H_
+#ifndef OS_SHARED_TIMEBASE_H
+#define OS_SHARED_TIMEBASE_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-timebase.h"
+#include "os-shared-globaldefs.h"
 
 typedef struct
 {
@@ -137,4 +138,4 @@ void OS_TimeBase_CallbackThread(osal_id_t timebase_id);
  ------------------------------------------------------------------*/
 int32 OS_Milli2Ticks(uint32 milli_seconds, int *ticks);
 
-#endif /* INCLUDE_OS_SHARED_TIMEBASE_H_ */
+#endif /* OS_SHARED_TIMEBASE_H */

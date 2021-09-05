@@ -28,7 +28,7 @@
 #include "os-shared-file.h"
 #include "os-shared-idmap.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /*
 **********************************************************************************
@@ -42,17 +42,14 @@ void Test_OS_FileAPI_Init(void)
      * Test Case For:
      * int32 OS_FileAPI_Init(void)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_FileAPI_Init();
-
-    UtAssert_True(actual == expected, "OS_FileAPI_Init() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_FileAPI_Init(), OS_SUCCESS);
 }
 
 void Test_OS_OpenCreate(void)
 {
     /*
      * Test Case For:
-     * int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access)
+     * int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 access_mode)
      */
     int32     expected;
     int32     actual;
@@ -77,12 +74,15 @@ void Test_OS_OpenCreate(void)
     actual   = OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, 9999);
     UtAssert_True(actual == expected, "OS_OpenCreate() (%ld) == OS_ERROR (bad flags)", (long)actual);
 
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
+    OSAPI_TEST_FUNCTION_RC(OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, OS_READ_WRITE), OS_ERR_NO_FREE_IDS);
+
     /* Test failure to convert path */
     UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
     expected = OS_ERROR;
     actual   = OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, OS_READ_WRITE);
     UtAssert_True(actual == OS_ERROR, "OS_OpenCreate() (%ld) == OS_ERROR (bad path)", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TranslatePath));
+    UT_ClearDefaultReturnValue(UT_KEY(OS_TranslatePath));
 }
 
 void Test_OS_close(void)
@@ -91,10 +91,10 @@ void Test_OS_close(void)
      * Test Case For:
      * int32 OS_close (uint32 filedes)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_close(UT_OBJID_1);
+    OSAPI_TEST_FUNCTION_RC(OS_close(UT_OBJID_1), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_close() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_close(UT_OBJID_1), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_TimedRead(void)
@@ -113,9 +113,12 @@ void Test_OS_TimedRead(void)
     UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
     UtAssert_True(memcmp(Buf, SrcBuf, actual) == 0, "buffer content match");
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimedRead(UT_OBJID_1, NULL, sizeof(Buf), 10);
-    UtAssert_True(actual == expected, "OS_TimedRead() (%ld) == %ld", (long)actual, (long)expected);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, Buf, sizeof(Buf), 10), OS_ERR_INVALID_ID);
+
+    OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, NULL, sizeof(Buf), 10), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, Buf, OSAL_SIZE_C(0), 10), OS_ERR_INVALID_SIZE);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedRead(UT_OBJID_1, Buf, OSAL_SIZE_C(UINT32_MAX), 10), OS_ERR_INVALID_SIZE);
 }
 
 void Test_OS_TimedWrite(void)
@@ -135,9 +138,12 @@ void Test_OS_TimedWrite(void)
     UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
     UtAssert_True(memcmp(Buf, DstBuf, actual) == 0, "buffer content match");
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_TimedWrite(UT_OBJID_1, NULL, sizeof(Buf), 10);
-    UtAssert_True(actual == expected, "OS_TimedWrite() (%ld) == %ld", (long)actual, (long)expected);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, Buf, sizeof(Buf), 10), OS_ERR_INVALID_ID);
+
+    OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, NULL, sizeof(Buf), 10), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, Buf, OSAL_SIZE_C(0), 10), OS_ERR_INVALID_SIZE);
+    OSAPI_TEST_FUNCTION_RC(OS_TimedWrite(UT_OBJID_1, Buf, OSAL_SIZE_C(UINT32_MAX), 10), OS_ERR_INVALID_SIZE);
 }
 
 void Test_OS_read(void)
@@ -179,12 +185,12 @@ void Test_OS_chmod(void)
 {
     /*
      * Test Case For:
-     * int32 OS_chmod  (const char *path, uint32 access)
+     * int32 OS_chmod  (const char *path, uint32 access_mode)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_chmod("/cf/file", 0);
+    OSAPI_TEST_FUNCTION_RC(OS_chmod("/cf/file", 0), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_chmod() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_chmod("/cf/file", 0), OS_ERROR);
 }
 
 void Test_OS_stat(void)
@@ -193,15 +199,14 @@ void Test_OS_stat(void)
      * Test Case For:
      * int32 OS_stat   (const char *path, OS_FileStat_t *filestats)
      */
-    int32      expected = OS_SUCCESS;
     os_fstat_t statbuf;
-    int32      actual = OS_stat("/cf/file", &statbuf);
 
-    UtAssert_True(actual == expected, "OS_stat() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_stat("/cf/file", &statbuf), OS_SUCCESS);
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_stat("/cf/file", NULL);
-    UtAssert_True(actual == expected, "OS_stat() (%ld) == OS_INVALID_POINTER", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_stat("/cf/file", &statbuf), OS_ERROR);
+
+    OSAPI_TEST_FUNCTION_RC(OS_stat("/cf/file", NULL), OS_INVALID_POINTER);
 }
 
 void Test_OS_lseek(void)
@@ -210,10 +215,10 @@ void Test_OS_lseek(void)
      * Test Case For:
      * int32 OS_lseek  (uint32  filedes, int32 offset, uint32 whence)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_lseek(UT_OBJID_1, 0, 0);
+    OSAPI_TEST_FUNCTION_RC(OS_lseek(UT_OBJID_1, 0, 0), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_lseek() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_lseek(UT_OBJID_1, 0, 0), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_remove(void)
@@ -222,10 +227,10 @@ void Test_OS_remove(void)
      * Test Case For:
      * int32 OS_remove (const char *path)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_remove("/cf/file");
+    OSAPI_TEST_FUNCTION_RC(OS_remove("/cf/file"), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_remove() (%ld) == OS_SUCCESS", (long)actual);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_remove("/cf/file"), OS_ERROR);
 }
 
 void Test_OS_rename(void)
@@ -234,16 +239,17 @@ void Test_OS_rename(void)
      * Test Case For:
      * int32 OS_rename (const char *old, const char *new)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
-
-    OS_UT_SetupIterator(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, 1);
+    OS_UT_SetupIterator(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, 3);
     strncpy(OS_stream_table[1].stream_name, "/cf/file1", sizeof(OS_stream_table[1].stream_name));
-    actual = OS_rename("/cf/file1", "/cf/file2");
-
-    UtAssert_True(actual == expected, "OS_rename() (%ld) == OS_SUCCESS", (long)actual);
+    OS_stream_table[2].socket_domain = OS_SocketDomain_INET;
+    OSAPI_TEST_FUNCTION_RC(OS_rename("/cf/file1", "/cf/file2"), OS_SUCCESS);
     UtAssert_True(strcmp(OS_stream_table[1].stream_name, "/cf/file2") == 0,
                   "OS_stream_table[1].stream_name (%s) == /cf/file2", OS_stream_table[1].stream_name);
+
+    UT_SetDeferredRetcode(UT_KEY(OS_TranslatePath), 2, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_rename("/cf/file1", "/cf/file2"), OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OS_TranslatePath), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_rename("/cf/file1", "/cf/file2"), OS_ERROR);
 }
 
 void Test_OS_cp(void)
@@ -252,38 +258,26 @@ void Test_OS_cp(void)
      * Test Case For:
      * int32 OS_cp (const char *src, const char *dest)
      */
-    int32 expected                  = OS_INVALID_POINTER;
-    int32 actual                    = OS_cp(NULL, NULL);
-    char  ReadBuf[]                 = "cpcpcpcp";
-    char  WriteBuf[sizeof(ReadBuf)] = "";
+    char ReadBuf[]                 = "cpcpcpcp";
+    char WriteBuf[sizeof(ReadBuf)] = "";
 
-    UtAssert_True(actual == expected, "OS_cp() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_cp(NULL, "/cf/file2"), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_cp("/cf/file1", NULL), OS_INVALID_POINTER);
 
     /* setup to make internal copy loop execute at least once */
-    expected = OS_SUCCESS;
     UT_SetDataBuffer(UT_KEY(OS_GenericRead_Impl), ReadBuf, sizeof(ReadBuf), false);
     UT_SetDataBuffer(UT_KEY(OS_GenericWrite_Impl), WriteBuf, sizeof(WriteBuf), false);
-    actual = OS_cp("/cf/file1", "/cf/file2");
+    OSAPI_TEST_FUNCTION_RC(OS_cp("/cf/file1", "/cf/file2"), OS_SUCCESS);
 
-    UtAssert_True(actual == expected, "OS_cp() (%ld) == OS_SUCCESS", (long)actual);
-
-    UT_SetDefaultReturnValue(UT_KEY(OS_GenericRead_Impl), -444);
-    expected = -444;
-    actual   = OS_cp("/cf/file1", "/cf/file2");
-    UtAssert_True(actual == expected, "OS_cp() (%ld) == -444", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_GenericRead_Impl));
+    UT_SetDeferredRetcode(UT_KEY(OS_GenericRead_Impl), 1, -444);
+    OSAPI_TEST_FUNCTION_RC(OS_cp("/cf/file1", "/cf/file2"), -444);
 
     UT_SetDataBuffer(UT_KEY(OS_GenericRead_Impl), ReadBuf, sizeof(ReadBuf), false);
     UT_SetDefaultReturnValue(UT_KEY(OS_GenericWrite_Impl), -555);
-    expected = -555;
-    actual   = OS_cp("/cf/file1", "/cf/file2");
-    UtAssert_True(actual == expected, "OS_cp() (%ld) == -555", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_cp("/cf/file1", "/cf/file2"), -555);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_INVALID_POINTER);
-    expected = OS_INVALID_POINTER;
-    actual   = OS_cp("/cf/file1", "/cf/file2");
-    UtAssert_True(actual == expected, "OS_cp() (%ld) == OS_INVALID_POINTER", (long)actual);
-    UT_ClearForceFail(UT_KEY(OS_TranslatePath));
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), -666);
+    OSAPI_TEST_FUNCTION_RC(OS_cp("/cf/file1", "/cf/file2"), -666);
 }
 
 void Test_OS_mv(void)
@@ -292,16 +286,16 @@ void Test_OS_mv(void)
      * Test Case For:
      * int32 OS_mv (const char *src, const char *dest)
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = OS_mv("/cf/file1", "/cf/file2");
-
-    UtAssert_True(actual == expected, "OS_mv() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_mv("/cf/file1", "/cf/file2"), OS_SUCCESS);
 
     /* In the default case, the implementation tries to rename first.
      * Force rename to fail so it does a full copy and remove */
     UT_SetDefaultReturnValue(UT_KEY(OS_FileRename_Impl), OS_ERROR);
-    actual = OS_mv("/cf/file1", "/cf/file2");
-    UtAssert_True(actual == expected, "OS_mv() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_mv("/cf/file1", "/cf/file2"), OS_SUCCESS);
+
+    /* Fail the OS_cp/OS_OpenCreate */
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_mv("/cf/file1", "/cf/file2"), OS_ERROR);
 }
 
 void Test_OS_FDGetInfo(void)
@@ -310,20 +304,16 @@ void Test_OS_FDGetInfo(void)
      * Test Case For:
      * int32 OS_FDGetInfo (uint32 filedes, OS_file_prop_t *fd_prop)
      */
-    int32          expected = OS_SUCCESS;
-    int32          actual   = ~OS_SUCCESS;
     OS_file_prop_t file_prop;
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
-
-    actual = OS_FDGetInfo(UT_OBJID_1, &file_prop);
-
-    UtAssert_True(actual == expected, "OS_FDGetInfo() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_FDGetInfo(UT_OBJID_1, &file_prop), OS_SUCCESS);
     UtAssert_True(strcmp(file_prop.Path, "ABC") == 0, "file_prop.Path (%s) == ABC", file_prop.Path);
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_FDGetInfo(UT_OBJID_1, NULL);
-    UtAssert_True(actual == expected, "OS_FDGetInfo() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_FDGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_FDGetInfo(UT_OBJID_1, &file_prop), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_FileOpenCheck(void)
@@ -332,21 +322,14 @@ void Test_OS_FileOpenCheck(void)
      * Test Case For:
      * int32 OS_FileOpenCheck(const char *Filename)
      */
-    int32 expected = OS_ERROR;
-    int32 actual   = OS_FileOpenCheck("/cf/file");
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpenCheck("/cf/file"), OS_ERROR);
 
-    UtAssert_True(actual == expected, "OS_FileOpenCheck() (%ld) == OS_ERROR", (long)actual);
+    OS_UT_SetupIterator(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, 3);
+    strncpy(OS_stream_table[3].stream_name, "/cf/file", sizeof(OS_stream_table[1].stream_name));
+    OS_stream_table[2].socket_domain = OS_SocketDomain_INET;
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpenCheck("/cf/file"), OS_SUCCESS);
 
-    OS_UT_SetupIterator(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, 1);
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strcmp), 0);
-    expected = OS_SUCCESS;
-    actual   = OS_FileOpenCheck("/cf/file");
-
-    UtAssert_True(actual == expected, "OS_FileOpenCheck() (%ld) == OS_SUCCESS", (long)actual);
-
-    expected = OS_INVALID_POINTER;
-    actual   = OS_FileOpenCheck(NULL);
-    UtAssert_True(actual == expected, "OS_FDGetInfo() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_FileOpenCheck(NULL), OS_INVALID_POINTER);
 }
 
 void Test_OS_CloseFileByName(void)
@@ -355,21 +338,18 @@ void Test_OS_CloseFileByName(void)
      * Test Case For:
      * int32 OS_CloseFileByName(const char *Filename)
      */
-    int32 expected = OS_FS_ERR_PATH_INVALID;
-    int32 actual   = OS_CloseFileByName("/cf/file");
-
-    UtAssert_True(actual == expected, "OS_CloseFileByName() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_CloseFileByName("/cf/file"), OS_FS_ERR_PATH_INVALID);
 
     /* setup for success */
-    OS_UT_SetupIterator(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, 1);
-    expected = OS_SUCCESS;
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strcmp), 0);
-    actual = OS_CloseFileByName("/cf/file");
-    UtAssert_True(actual == expected, "OS_CloseFileByName() (%ld) == OS_SUCCESS", (long)actual);
+    OS_UT_SetupIterator(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, 5);
+    OS_stream_table[2].socket_domain = OS_SocketDomain_INET;
+    strncpy(OS_stream_table[3].stream_name, "/cf/file", sizeof(OS_stream_table[3].stream_name));
+    strncpy(OS_stream_table[4].stream_name, "/cf/file", sizeof(OS_stream_table[4].stream_name));
+    strncpy(OS_stream_table[5].stream_name, "/cf/file", sizeof(OS_stream_table[5].stream_name));
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdIteratorProcessEntry), 3, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_CloseFileByName("/cf/file"), OS_ERROR);
 
-    expected = OS_INVALID_POINTER;
-    actual   = OS_CloseFileByName(NULL);
-    UtAssert_True(actual == expected, "OS_CloseFileByName() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_CloseFileByName(NULL), OS_INVALID_POINTER);
 }
 
 void Test_OS_CloseAllFiles(void)
@@ -386,6 +366,13 @@ void Test_OS_CloseAllFiles(void)
     actual = OS_CloseAllFiles();
 
     UtAssert_True(actual == expected, "OS_CloseAllFiles() (%ld) == -222", (long)actual);
+
+    /* This uses a helper function OS_FileIteratorClose() with the iterator,
+     * which needs to be called for coverage - it just invokes OS_close() */
+    expected = OS_SUCCESS;
+    actual   = OS_FileIteratorClose(UT_OBJID_1, NULL);
+
+    UtAssert_True(actual == expected, "OS_FileIteratorClose() (%ld) == OS_SUCCESS", (long)actual);
 }
 
 /* Osapi_Test_Setup

@@ -18,8 +18,8 @@
  *  limitations under the License.
  */
 
-/*
- * File: uttest.h
+/**
+ * \file
  *
  * Purpose: This file contains functions to implement a standard way to execute unit tests.
  *
@@ -29,8 +29,8 @@
  *    test output define the macro UT_VERBOSE.
  */
 
-#ifndef _uttest_
-#define _uttest_
+#ifndef UTTEST_H
+#define UTTEST_H
 
 #include <stdbool.h>
 
@@ -42,6 +42,11 @@
  * \brief Adds a new unit test to the test database.
  *
  * Called by the user to register a new test case with the library.
+ *
+ * Note: Nested addition of tests is not supported.  Calling
+ *       UtTest_Add from within a test function added using UtTest_Add
+ *       will not cause the nested test to execute, and will be
+ *       silently ignored.
  *
  * \param Test     Main test function to call.
  * \param Setup    Setup function, called before the test function
@@ -73,6 +78,25 @@ void UtTest_AddSetup(void (*Setup)(void), const char *SequenceName);
 void UtTest_AddTeardown(void (*Teardown)(void), const char *SequenceName);
 
 /**
+ * \brief Add a test as a member of a subgroup.
+ *
+ * Allow tests to be grouped together
+ *
+ * This is just a wrapper around UtTest_Add() that registers
+ * a test with a "GroupName.TestName" convention.  Purely an
+ * organizational/identification helper for units which have
+ * lots of tests.
+ *
+ * \param Test     Main test function to call.
+ * \param Setup    Setup function, called before the test function
+ * \param Teardown Cleanup function, called after the test function
+ * \param GroupName Name of group for logging purposes
+ * \param TestName Name of test for logging purposes
+ */
+void UtTest_AddSubTest(void (*Test)(void), void (*Setup)(void), void (*Teardown)(void), const char *GroupName,
+                       const char *TestName);
+
+/**
  * \brief Early initialization function
  *
  * Reset the global data to a safe state for initial start-up.
@@ -95,4 +119,4 @@ void UtTest_Run(void);
  */
 void UtTest_Setup(void);
 
-#endif
+#endif /* UTTEST_H */

@@ -19,16 +19,16 @@
  */
 
 /**
- * \file     vxWorks.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
  *
+ * Declarations and prototypes for vxWorks
  */
 
-#ifndef INCLUDE_VXWORKS_H_
-#define INCLUDE_VXWORKS_H_
+#ifndef OVERRIDE_VXWORKS_H
+#define OVERRIDE_VXWORKS_H
 
-#include <OCS_vxWorks.h>
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in vxWorks.h */
@@ -53,4 +53,4 @@
 
 #define _Vx_usr_arg_t OCS_Vx_usr_arg_t
 
-#endif /* INCLUDE_VXWORKS_H_ */
+#endif /* OVERRIDE_VXWORKS_H */

@@ -50,10 +50,8 @@
  *-----------------------------------------------------------------*/
 int32 OS_GetLocalTime(OS_time_t *time_struct)
 {
-    if (time_struct == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(time_struct);
 
     return OS_GetLocalTime_Impl(time_struct);
 
@@ -67,12 +65,10 @@ int32 OS_GetLocalTime(OS_time_t *time_struct)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SetLocalTime(OS_time_t *time_struct)
+int32 OS_SetLocalTime(const OS_time_t *time_struct)
 {
-    if (time_struct == NULL)
-    {
-        return OS_INVALID_POINTER;
-    }
+    /* Check parameters */
+    OS_CHECK_POINTER(time_struct);
 
     return OS_SetLocalTime_Impl(time_struct);
 

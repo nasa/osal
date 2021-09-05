@@ -78,7 +78,7 @@ void UT_os_timercallback(osal_id_t timerId)
     static int32     loopCnt = 0, res = 0;
     static uint32    prevIntervalTime = 0;
     static uint32    currIntervalTime = 0;
-    static OS_time_t currTime = {0, 0}, endTime = {0, 0};
+    static OS_time_t currTime = {0}, endTime = {0};
 
     if (OS_ObjectIdEqual(timerId, g_timerId))
     {
@@ -94,7 +94,7 @@ void UT_os_timercallback(osal_id_t timerId)
 
         OS_GetLocalTime(&endTime);
 
-        currIntervalTime = 1000000 * (endTime.seconds - currTime.seconds) + endTime.microsecs - currTime.microsecs;
+        currIntervalTime = OS_TimeGetTotalMicroseconds(OS_TimeSubtract(endTime, currTime));
 
         if (currIntervalTime >= prevIntervalTime)
             deltaTime = currIntervalTime - prevIntervalTime;
@@ -193,6 +193,9 @@ void UtTest_Setup(void)
         UtAssert_Abort("OS_API_Init() failed");
     }
 
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     UT_os_init_timer_misc();
 
     UtTest_Add(UT_os_timercreate_test, UT_os_setup_timercreate_test, NULL, "OS_TimerCreate");
@@ -200,6 +203,11 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_timergetidbyname_test, UT_os_setup_timergetidbyname_test, NULL, "OS_TimerGetIdByName");
     UtTest_Add(UT_os_timergetinfo_test, UT_os_setup_timergetinfo_test, NULL, "OS_TimerGetInfo");
     UtTest_Add(UT_os_timerset_test, UT_os_setup_timerset_test, NULL, "OS_TimerSet");
+
+    /* the reconfig test only works on POSIX */
+#ifdef _POSIX_OS_
+    UtTest_Add(UT_os_timerreconf_test, NULL, NULL, "TimerReconfig");
+#endif
 }
 
 /*================================================================================*

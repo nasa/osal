@@ -29,7 +29,7 @@
  *   which will override this default.
  */
 
-#include "osapi.h"
+#include "osapi-common.h"
 #include "bsp-impl.h"
 
 /*

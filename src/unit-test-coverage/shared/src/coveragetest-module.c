@@ -29,7 +29,7 @@
 
 #include "os-shared-module.h"
 
-#include <OCS_string.h>
+#include "OCS_string.h"
 
 /* A dummy function for the static symbol lookup test.  Not called */
 void Test_DummyFunc(void) {}
@@ -40,7 +40,8 @@ void Test_DummyFunc(void) {}
  * Note - the symbol name is intentionally not the actual function name here.
  * This way, the test case knows that the answer actually came from the static table
  */
-OS_static_symbol_record_t OS_UT_STATIC_SYMBOL_TABLE[] = {{"UT_staticsym", &Test_DummyFunc, "UTS"}, {NULL}};
+OS_static_symbol_record_t OS_UT_STATIC_SYMBOL_TABLE[] = {
+    {"UT_staticsym", &Test_DummyFunc, "UTS"}, {"UT_nullmod", NULL, NULL}, {NULL}};
 
 /*
 **********************************************************************************
@@ -66,44 +67,37 @@ void Test_OS_ModuleLoad(void)
      * Test Case For:
      * int32 OS_ModuleLoad ( uint32 *module_id, const char *module_name, const char *filename )
      */
-    int32     expected = OS_SUCCESS;
     osal_id_t objid;
-    int32     actual = OS_ModuleLoad(&objid, "UT", "File", OS_MODULE_FLAG_GLOBAL_SYMBOLS);
 
-    UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_SUCCESS", (long)actual);
-    actual = UT_GetStubCount(UT_KEY(OS_ModuleLoad_Impl));
-    UtAssert_True(actual == 1, "OS_ModuleLoad_Impl() called (%ld) == 1", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UT", "File", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OS_ModuleLoad_Impl, 1);
+    UT_ResetState(UT_KEY(OS_ModuleLoad_Impl));
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
     /* for a static module, it should also return a valid objid, but should NOT invoke OS_ModuleLoad_Impl */
-    actual = OS_ModuleLoad(&objid, "UTS", "File2", OS_MODULE_FLAG_GLOBAL_SYMBOLS);
-    UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_SUCCESS", (long)actual);
-    actual = UT_GetStubCount(UT_KEY(OS_ModuleLoad_Impl));
-    UtAssert_True(actual == 1, "OS_ModuleLoad_Impl() called (%ld) == 1", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UTS", "File2", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OS_ModuleLoad_Impl, 0);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
     /* a dynamic module with local symbols */
-    actual = OS_ModuleLoad(&objid, "UT", "File3", OS_MODULE_FLAG_LOCAL_SYMBOLS);
-    UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_SUCCESS", (long)actual);
-    actual = UT_GetStubCount(UT_KEY(OS_ModuleLoad_Impl));
-    UtAssert_True(actual == 2, "OS_ModuleLoad_Impl() called (%ld) == 2", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UT", "File3", OS_MODULE_FLAG_LOCAL_SYMBOLS), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OS_ModuleLoad_Impl, 1);
+    UT_ResetState(UT_KEY(OS_ModuleLoad_Impl));
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
 
     /* error cases */
-    actual   = OS_ModuleLoad(NULL, NULL, NULL, OS_MODULE_FLAG_GLOBAL_SYMBOLS);
-    expected = OS_INVALID_POINTER;
-    UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(NULL, "UT", "File", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, NULL, "File", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_INVALID_POINTER);
 
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strlen), 2 + OS_MAX_API_NAME);
-    actual   = OS_ModuleLoad(&objid, "UTS", "File2", OS_MODULE_FLAG_GLOBAL_SYMBOLS);
-    expected = OS_ERR_NAME_TOO_LONG;
-    UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_ERR_NAME_TOO_LONG", (long)actual);
-    UT_ResetState(UT_KEY(OCS_strlen));
+    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UTS", "File2", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_ERR_NAME_TOO_LONG);
+    UT_ResetState(UT_KEY(OCS_memchr));
 
     UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
-    actual   = OS_ModuleLoad(&objid, "UT", "FileBad", OS_MODULE_FLAG_GLOBAL_SYMBOLS);
-    expected = OS_ERROR;
-    UtAssert_True(actual == expected, "OS_ModuleLoad() (%ld) == OS_ERROR", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UT", "FileBad", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_ERROR);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UT", "FileBad", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_ERR_NO_FREE_IDS);
 }
 
 void Test_OS_ModuleUnload(void)
@@ -112,19 +106,27 @@ void Test_OS_ModuleUnload(void)
      * Test Case For:
      * int32 OS_ModuleUnload ( uint32 module_id )
      */
-    int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    osal_id_t objid;
 
-    actual = OS_ModuleUnload(UT_OBJID_1);
+    /* Clear module table */
+    memset(OS_module_table, 0, sizeof(OS_module_table));
 
-    UtAssert_True(actual == expected, "OS_ModuleDelete() (%ld) == OS_SUCCESS", (long)actual);
+    /* Set up one dynamic and one static entry */
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UT", "File", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UTS", "File2", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_SUCCESS);
+
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleUnload(UT_OBJID_1), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleUnload(UT_OBJID_2), OS_SUCCESS);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleUnload(OS_OBJECT_ID_UNDEFINED), OS_ERROR);
 }
 
 void Test_OS_SymbolLookup(void)
 {
     /*
      * Test Case For:
-     * int32 OS_ModuleUnload ( uint32 module_id )
+     * int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
      */
     int32   expected = OS_SUCCESS;
     int32   actual   = ~OS_SUCCESS;
@@ -146,9 +148,8 @@ void Test_OS_SymbolLookup(void)
     UtAssert_True(symaddr == testaddr, "OS_SymbolLookup(address=%lx) == %lx", (unsigned long)symaddr,
                   (unsigned long)testaddr);
 
-    actual   = OS_SymbolLookup(NULL, NULL);
-    expected = OS_INVALID_POINTER;
-    UtAssert_True(actual == expected, "OS_SymbolLookup(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_SymbolLookup(NULL, "uttestsym0"), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_SymbolLookup(&symaddr, NULL), OS_INVALID_POINTER);
 
     /*
      * Look up a symbol that is present in the static symbol table
@@ -156,6 +157,38 @@ void Test_OS_SymbolLookup(void)
     actual   = OS_SymbolLookup(&symaddr, "UT_staticsym");
     expected = OS_SUCCESS;
     UtAssert_True(actual == expected, "OS_SymbolLookup(UT_staticsym) (%ld) == OS_SUCCESS", (long)actual);
+}
+
+void Test_OS_ModuleSymbolLookup(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const char *symbol_name)
+     */
+    cpuaddr testaddr = 0;
+    cpuaddr symaddr  = 0;
+
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symaddr, "uttestsym0"), OS_SUCCESS);
+
+    /* Fail implementation layer */
+    UT_SetDefaultReturnValue(UT_KEY(OS_ModuleSymbolLookup_Impl), OS_ERROR);
+    symaddr  = 0;
+    testaddr = 0;
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symaddr, "uttestsym1"), OS_ERROR);
+    UtAssert_True(symaddr == testaddr, "OS_ModuleSymbolLookup(address=%lx) == %lx", (unsigned long)symaddr,
+                  (unsigned long)testaddr);
+
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, NULL, "ut"), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symaddr, NULL), OS_INVALID_POINTER);
+
+    /*
+     * Look up a symbol that is present in the static symbol table
+     */
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symaddr, "UT_staticsym"), OS_SUCCESS);
+
+    /* Fail OS_ObjectIdGetById */
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symaddr, "uttestsym0"), OS_ERR_INVALID_ID);
 }
 
 void Test_OS_StaticSymbolLookup(void)
@@ -190,7 +223,7 @@ void Test_OS_StaticSymbolLookup(void)
     UtAssert_True(actual == expected, "OS_ModuleLoad_Static(name=%s) (%ld) == OS_SUCCESS", "UT", (long)actual);
 
     expected = OS_ERROR;
-    actual = OS_SymbolLookup_Static(&addr, "UT_staticsym", "NoModuleMatch");
+    actual   = OS_SymbolLookup_Static(&addr, "UT_staticsym", "NoModuleMatch");
     UtAssert_True(actual == expected, "OS_SymbolLookup_Static(name=%s, NoModuleMatch) (%ld) == OS_ERROR", "Test_Func1",
                   (long)actual);
     UtAssert_True(addr == (cpuaddr)&Test_DummyFunc, "OS_SymbolLookup_Static(address=%lx) == %lx", (unsigned long)addr,
@@ -221,6 +254,12 @@ void Test_OS_SymbolTableDump(void)
     expected = OS_ERROR;
     actual   = OS_SymbolTableDump("test", OSAL_SIZE_C(555));
     UtAssert_True(actual == expected, "OS_SymbolTableDump() (%ld) == OS_ERROR", (long)actual);
+
+    UT_ResetState(UT_KEY(OS_TranslatePath));
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdTransactionInit), OS_ERROR);
+    expected = OS_ERROR;
+    actual   = OS_SymbolTableDump("test", OSAL_SIZE_C(555));
+    UtAssert_True(actual == expected, "OS_SymbolTableDump() (%ld) == OS_ERROR", (long)actual);
 }
 
 void Test_OS_ModuleGetInfo(void)
@@ -229,22 +268,19 @@ void Test_OS_ModuleGetInfo(void)
      * Test Case For:
      * int32 OS_ModuleInfo ( uint32 module_id, OS_module_prop_t *module_prop )
      */
-    int32            expected = OS_SUCCESS;
-    int32            actual   = ~OS_SUCCESS;
     OS_module_prop_t module_prop;
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_MODULE, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
     strncpy(OS_module_table[1].file_name, "DEF", sizeof(OS_module_table[1].file_name));
 
-    actual = OS_ModuleInfo(UT_OBJID_1, &module_prop);
-
-    UtAssert_True(actual == expected, "OS_ModuleGetInfo() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleInfo(UT_OBJID_1, &module_prop), OS_SUCCESS);
     UtAssert_True(strcmp(module_prop.filename, "DEF") == 0, "module_prop.filename (%s) == DEF", module_prop.filename);
     UtAssert_True(strcmp(module_prop.name, "ABC") == 0, "module_prop.name (%s) == ABC", module_prop.name);
 
-    actual   = OS_ModuleInfo(UT_OBJID_1, NULL);
-    expected = OS_INVALID_POINTER;
-    UtAssert_True(actual == expected, "OS_ModuleGetInfo(NULL) (%ld) == OS_INVALID_POINTER", (long)actual);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, &module_prop), OS_ERROR);
 }
 
 /* Osapi_Test_Setup
@@ -274,6 +310,7 @@ void UtTest_Setup(void)
     ADD_TEST(OS_ModuleLoad);
     ADD_TEST(OS_ModuleUnload);
     ADD_TEST(OS_SymbolLookup);
+    ADD_TEST(OS_ModuleSymbolLookup);
     ADD_TEST(OS_ModuleGetInfo);
     ADD_TEST(OS_SymbolTableDump);
     ADD_TEST(OS_StaticSymbolLookup);

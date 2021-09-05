@@ -30,8 +30,8 @@
 
 #include "os-shared-idmap.h"
 
-#include <OCS_errno.h>
-#include <OCS_objLib.h>
+#include "OCS_errno.h"
+#include "OCS_objLib.h"
 
 OCS_SEM TestGlobalSem;
 
@@ -41,22 +41,13 @@ void Test_OS_Lock_Global_Impl(void)
      * Test Case For:
      * int32 OS_Lock_Global_Impl(uint32 idtype)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_Lock_Global_Impl(10000), OS_ERROR);
-
-    /*
-     * Confirm that if vxid is 0/NULL that the function returns error
-     * and does not call semTake.
-     */
-    UT_IdMapTest_SetImplTableMutex(OS_OBJECT_TYPE_OS_TASK, (OCS_SEM_ID)0);
-    OSAPI_TEST_FUNCTION_RC(OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semTake)) == 0, "semTake() NOT called");
 
     UT_IdMapTest_SetImplTableMutex(OS_OBJECT_TYPE_OS_TASK, &TestGlobalSem);
-    OSAPI_TEST_FUNCTION_RC(OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
+    OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK);
     UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semTake)) == 1, "semTake() called");
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_semTake), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
+    OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK); /* for coverage of error path */
 }
 
 void Test_OS_Unlock_Global_Impl(void)
@@ -65,11 +56,13 @@ void Test_OS_Unlock_Global_Impl(void)
      * Test Case For:
      * int32 OS_Unlock_Global_Impl(uint32 idtype)
      */
-    OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(10000), OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(0), OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
+
+    UT_IdMapTest_SetImplTableMutex(OS_OBJECT_TYPE_OS_TASK, &TestGlobalSem);
+    OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK);
+    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semGive)) == 1, "semTake() called");
+
     UT_SetDefaultReturnValue(UT_KEY(OCS_semGive), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
+    OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK); /* for coverage of error path */
 }
 
 void Test_OS_API_Impl_Init(void)
@@ -81,8 +74,24 @@ void Test_OS_API_Impl_Init(void)
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(0), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_KEY(OCS_semMInitialize), -1);
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
-    UT_ClearForceFail(UT_KEY(OCS_semMInitialize));
+    UT_ClearDefaultReturnValue(UT_KEY(OCS_semMInitialize));
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TableMutex_Init(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
+}
+
+void Test_OS_WaitForStateChange_Impl(void)
+{
+    /*
+     * Test Case For:
+     * void OS_WaitForStateChange_Impl(osal_objtype_t idtype, uint32 attempts)
+     */
+
+    /*
+     * This has no return value/error results - just needs to be called for coverage.
+     * Call it once with a low number and once with a high number of attempts -
+     * which should cause it to hit its limit for wait time.
+     */
+    OS_WaitForStateChange_Impl(OS_OBJECT_TYPE_OS_TASK, 1);
+    OS_WaitForStateChange_Impl(OS_OBJECT_TYPE_OS_TASK, 1000);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
@@ -115,4 +124,5 @@ void UtTest_Setup(void)
     ADD_TEST(OS_Lock_Global_Impl);
     ADD_TEST(OS_Unlock_Global_Impl);
     ADD_TEST(OS_API_Impl_Init);
+    ADD_TEST(OS_WaitForStateChange_Impl);
 }

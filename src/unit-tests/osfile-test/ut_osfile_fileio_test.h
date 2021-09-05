@@ -18,14 +18,15 @@
  *  limitations under the License.
  */
 
-/*================================================================================*
-** File:  ut_osfile_fileio.h
-** Owner: Tam Ngo
-** Date:  April 2013
-**================================================================================*/
+/**
+ * \file
+ *
+ * Owner: Tam Ngo
+ * Date:  April 2013
+ */
 
-#ifndef _UT_OSFILE_FILEIO_H_
-#define _UT_OSFILE_FILEIO_H_
+#ifndef UT_OSFILE_FILEIO_TEST_H
+#define UT_OSFILE_FILEIO_TEST_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
@@ -80,8 +81,4 @@ void UT_os_closefilebyname_test(void);
 
 /*--------------------------------------------------------------------------------*/
 
-#endif /* _UT_OSFILE_FILEIO_H_ */
-
-/*================================================================================*
-** End of File: ut_osfile_fileio.h
-**================================================================================*/
+#endif /* UT_OSFILE_FILEIO_TEST_H */

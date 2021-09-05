@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for unistd.h */
-#ifndef _OSAL_OVERRIDE_UNISTD_H_
-#define _OSAL_OVERRIDE_UNISTD_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for unistd.h
+ */
 
-#include <OCS_unistd.h>
+#ifndef OVERRIDE_UNISTD_H
+#define OVERRIDE_UNISTD_H
+
+#include "OCS_unistd.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in unistd.h */
@@ -47,4 +53,4 @@
 #define sysconf     OCS_sysconf
 #define write       OCS_write
 
-#endif /* _OSAL_OVERRIDE_UNISTD_H_ */
+#endif /* OVERRIDE_UNISTD_H */

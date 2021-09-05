@@ -19,16 +19,17 @@
  */
 
 /**
- * \file     os-shared-shell.h
+ * \file
+ *
  * \ingroup  shared
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_SHARED_SHELL_H_
-#define INCLUDE_OS_SHARED_SHELL_H_
+#ifndef OS_SHARED_SHELL_H
+#define OS_SHARED_SHELL_H
 
-#include <os-shared-globaldefs.h>
+#include "osapi-shell.h"
+#include "os-shared-globaldefs.h"
 
 /****************************************************************************************
                  SHELL API LOW-LEVEL IMPLEMENTATION FUNCTIONS
@@ -43,4 +44,4 @@
  ------------------------------------------------------------------*/
 int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd);
 
-#endif /* INCLUDE_OS_SHARED_SHELL_H_ */
+#endif /* OS_SHARED_SHELL_H */

@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for math.h */
-#ifndef _OSAL_STUB_MATH_H_
-#define _OSAL_STUB_MATH_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for math.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_MATH_H
+#define OCS_MATH_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in math.h */
@@ -36,4 +42,4 @@
 /* prototypes normally declared in math.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_MATH_H_ */
+#endif /* OCS_MATH_H */

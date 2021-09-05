@@ -18,12 +18,18 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for taskVarLib.h */
-#ifndef _OSAL_STUB_TASKVARLIB_H_
-#define _OSAL_STUB_TASKVARLIB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for taskVarLib.h
+ */
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#ifndef OCS_TASKVARLIB_H
+#define OCS_TASKVARLIB_H
+
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in taskVarLib.h */
@@ -39,4 +45,4 @@
 
 extern OCS_STATUS OCS_taskVarAdd(int tid, int *pVar);
 
-#endif /* _OSAL_STUB_TASKVARLIB_H_ */
+#endif /* OCS_TASKVARLIB_H */

@@ -19,14 +19,14 @@
  */
 
 /**
- * \file     os-impl-files.h
+ * \file
+ *
  * \ingroup  rtems
- * \author   joseph.p.hickey@nasa.gov
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_FILES_H_
-#define INCLUDE_OS_IMPL_FILES_H_
+#ifndef OS_IMPL_FILES_H
+#define OS_IMPL_FILES_H
 
 #include "os-impl-io.h"
 
@@ -42,4 +42,4 @@
 
 #define OS_IMPL_REGULAR_FILE_FLAGS 0
 
-#endif /* INCLUDE_OS_IMPL_FILES_H_ */
+#endif /* OS_IMPL_FILES_H */

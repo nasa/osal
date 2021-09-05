@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for stat.h */
-#ifndef _OSAL_OVERRIDE_STAT_H_
-#define _OSAL_OVERRIDE_STAT_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for stat.h
+ */
 
-#include <OCS_stat.h>
+#ifndef OVERRIDE_STAT_H
+#define OVERRIDE_STAT_H
+
+#include "OCS_stat.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in sys/stat.h */
@@ -40,4 +46,4 @@
 #define statvfs OCS_statvfs
 #define statfs  OCS_statvfs
 
-#endif /* _OSAL_OVERRIDE_STAT_H_ */
+#endif /* OVERRIDE_STAT_H */

@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for net/if.h */
-#ifndef _OSAL_STUB_NET_IF_H_
-#define _OSAL_STUB_NET_IF_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for net/if.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_NET_IF_H
+#define OCS_NET_IF_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in net/if.h */
@@ -36,4 +42,4 @@
 /* prototypes normally declared in net/if.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_NET_IF_H_ */
+#endif /* OCS_NET_IF_H */

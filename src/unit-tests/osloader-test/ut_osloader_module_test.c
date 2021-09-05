@@ -67,122 +67,98 @@
 **--------------------------------------------------------------------------------*/
 void UT_os_module_load_test()
 {
-    int         i;
-    int32       res = 0;
-    const char *testDesc;
-    uint32      test_setup_invalid = 0;
-    osal_id_t   module_id;
-    osal_id_t   module_id2;
-    char        module_name[UT_OS_NAME_BUFF_SIZE];
-    char        module_file_name[UT_OS_PATH_BUFF_SIZE];
+    int       i;
+    osal_id_t module_id;
+    osal_id_t module_id2;
+    char      module_name[UT_OS_NAME_BUFF_SIZE];
+    char      module_file_name[UT_OS_PATH_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
-    testDesc = "API Not implemented";
+    /* API Not implemented */
 
-    res = OS_ModuleLoad(0, "TestModule", UT_OS_GENERIC_MODULE_NAME1, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-    if (res == OS_ERR_NOT_IMPLEMENTED)
+    if (!UT_IMPL(OS_ModuleLoad(0, "TestModule", UT_OS_GENERIC_MODULE_NAME1, OS_MODULE_FLAG_LOCAL_SYMBOLS)))
     {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_module_load_test_exit_tag;
+        return;
     }
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 Null-pointer-arg-1";
+    /* #1 Null-pointer-arg-1 */
 
-    res = OS_ModuleLoad(0, "TestModule", UT_OS_GENERIC_MODULE_NAME1, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-    if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_ModuleLoad(0, "TestModule", UT_OS_GENERIC_MODULE_NAME1, OS_MODULE_FLAG_LOCAL_SYMBOLS),
+              OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    testDesc = "#2 Null-pointer-arg-2";
+    /* #2 Null-pointer-arg-2 */
 
-    res = OS_ModuleLoad(&module_id, 0, UT_OS_GENERIC_MODULE_NAME1, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-    if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_ModuleLoad(&module_id, 0, UT_OS_GENERIC_MODULE_NAME1, OS_MODULE_FLAG_LOCAL_SYMBOLS),
+              OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    testDesc = "#3 Null-pointer-arg-3";
+    /* #3 Null-pointer-arg-3 */
 
-    res = OS_ModuleLoad(&module_id, "TestModule", 0, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-    if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_ModuleLoad(&module_id, "TestModule", 0, OS_MODULE_FLAG_LOCAL_SYMBOLS), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    testDesc = "#4 No-free-IDs";
+    /* Name too long */
 
-    /* Setup */
-    for (i = 0; i < OS_MAX_MODULES; i++)
+    memset(module_name, 'x', sizeof(module_name) - 1);
+    module_name[sizeof(module_name) - 1] = 0;
+    UT_RETVAL(OS_ModuleLoad(&module_id, module_name, UT_OS_GENERIC_MODULE_NAME1, OS_MODULE_FLAG_LOCAL_SYMBOLS),
+              OS_ERR_NAME_TOO_LONG);
+
+    /*-----------------------------------------------------*/
+    /* Path invalid */
+
+    memset(module_file_name, 'x', OS_MAX_PATH_LEN - 1);
+    module_file_name[OS_MAX_PATH_LEN - 1] = 0;
+    UT_RETVAL(OS_ModuleLoad(&module_id, "TestModule", module_file_name, OS_MODULE_FLAG_LOCAL_SYMBOLS),
+              OS_FS_ERR_PATH_INVALID);
+
+    /*-----------------------------------------------------*/
+    /* #4 No-free-IDs */
+
+    for (i = 0; i <= OS_MAX_MODULES; i++)
     {
         snprintf(module_name, sizeof(module_name), UT_OS_GENERIC_MODULE_NAME_TEMPLATE, i);
         snprintf(module_file_name, sizeof(module_file_name), UT_OS_GENERIC_MODULE_FILE_TEMPLATE, i);
-        res = OS_ModuleLoad(&module_id, module_name, module_file_name, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-        if (res != OS_SUCCESS)
+
+        if (i == OS_MAX_MODULES)
         {
-            testDesc = "#4 No-free-IDs - Module Load failed";
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-            test_setup_invalid = 1;
+            UT_RETVAL(OS_ModuleLoad(&module_id, module_name, module_file_name, OS_MODULE_FLAG_LOCAL_SYMBOLS),
+                      OS_ERR_NO_FREE_IDS);
+        }
+        else if (!UT_SETUP(OS_ModuleLoad(&module_id, module_name, module_file_name, OS_MODULE_FLAG_LOCAL_SYMBOLS)))
+        {
             break;
         }
     }
 
-    if (test_setup_invalid == 0)
-    {
-        res = OS_ModuleLoad(&module_id, "OneTooMany", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-        if (res == OS_ERR_NO_FREE_IDS)
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-        else
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-    }
     /* Reset test environment */
     OS_DeleteAllObjects();
 
     /*-----------------------------------------------------*/
-    testDesc = "#5 Duplicate-name";
+    /* #5 Duplicate-name */
 
     /* Setup */
-    res = OS_ModuleLoad(&module_id2, "DUPLICATE", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-    if (res != OS_SUCCESS)
+    if (UT_SETUP(OS_ModuleLoad(&module_id2, "DUPLICATE", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS)))
     {
-        testDesc = "#5 Duplicate-name - Module Load failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-    }
-    else
-    {
-        res = OS_ModuleLoad(&module_id, "DUPLICATE", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-        if (res == OS_ERR_NAME_TAKEN)
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-        else
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_RETVAL(OS_ModuleLoad(&module_id, "DUPLICATE", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS),
+                  OS_ERR_NAME_TAKEN);
 
         /* Reset test environment */
-        res = OS_ModuleUnload(module_id2);
+        UT_TEARDOWN(OS_ModuleUnload(module_id2));
     }
 
     /*-----------------------------------------------------*/
-    testDesc = "#6 OS-call-failure";
-
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
+    /* #6 OS-call-failure */
 
     /*-----------------------------------------------------*/
-    testDesc = "#7 Nominal";
+    /* #7 Nominal */
 
-    res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-    if (res == OS_SUCCESS)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_NOMINAL(OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS));
 
     /* Reset test environment */
-    res = OS_ModuleUnload(module_id);
-
-UT_os_module_load_test_exit_tag:
-    return;
+    UT_TEARDOWN(OS_ModuleUnload(module_id));
 }
 
 /*--------------------------------------------------------------------------------*
@@ -195,55 +171,33 @@ UT_os_module_load_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_module_unload_test()
 {
-    int32       res = 0;
-    const char *testDesc;
-    osal_id_t   module_id;
+    osal_id_t module_id;
 
     /*-----------------------------------------------------*/
-    testDesc = "API Not implemented";
+    /* API Not implemented */
 
-    res = OS_ModuleUnload(OS_OBJECT_ID_UNDEFINED);
-    if (res == OS_ERR_NOT_IMPLEMENTED)
+    if (!UT_IMPL(OS_ModuleUnload(OS_OBJECT_ID_UNDEFINED)))
     {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_module_unload_test_exit_tag;
+        return;
     }
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 Invalid-ID-arg";
+    /* #1 Invalid-ID-arg */
 
-    res = OS_ModuleUnload(UT_OBJID_INCORRECT);
-    if (res == OS_ERR_INVALID_ID)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_ModuleUnload(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_ModuleUnload(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
-    testDesc = "#2 OS-call-failure";
-
-    UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_INFO);
+    /* #2 OS-call-failure */
 
     /*-----------------------------------------------------*/
-    testDesc = "#3 Nominal";
+    /* #3 Nominal */
 
     /* Setup */
-    res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-    if (res != OS_SUCCESS)
+    if (UT_SETUP(OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS)))
     {
-        testDesc = "#3 Nominal - Module Load failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
+        UT_NOMINAL(OS_ModuleUnload(module_id));
     }
-    else
-    {
-        res = OS_ModuleUnload(module_id);
-        if (res == OS_SUCCESS)
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-        else
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-    }
-
-UT_os_module_unload_test_exit_tag:
-    return;
 }
 
 /*--------------------------------------------------------------------------------*
@@ -256,62 +210,37 @@ UT_os_module_unload_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_module_info_test()
 {
-    int32            res = 0;
-    const char *     testDesc;
     osal_id_t        module_id;
     OS_module_prop_t module_info;
 
     /*-----------------------------------------------------*/
-    testDesc = "API Not implemented";
+    /* API Not implemented */
 
-    res = OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, &module_info);
-    if (res == OS_ERR_NOT_IMPLEMENTED)
+    if (!UT_IMPL(OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, &module_info)))
     {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_module_info_test_exit_tag;
+        return;
     }
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 Invalid-pointer-arg";
+    /* #2 Invalid-ID-arg */
 
-    res = OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, NULL);
-    if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_ModuleInfo(UT_OBJID_INCORRECT, &module_info), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, &module_info), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
-    testDesc = "#2 Invalid-ID-arg";
-
-    res = OS_ModuleInfo(UT_OBJID_INCORRECT, &module_info);
-    if (res == OS_ERR_INVALID_ID)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#3 Nominal";
+    /* #3 Nominal */
 
     /* Setup */
-    res = OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-    if (res != OS_SUCCESS)
+    if (UT_SETUP(OS_ModuleLoad(&module_id, "Good", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS)))
     {
-        testDesc = "#3 Nominal - Module Load failed";
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_TSF);
-    }
-    else
-    {
-        res = OS_ModuleInfo(module_id, &module_info);
-        if (res == OS_SUCCESS)
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-        else
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+        /* Invalid-pointer-arg */
+        UT_RETVAL(OS_ModuleInfo(module_id, NULL), OS_INVALID_POINTER);
 
-        res = OS_ModuleUnload(module_id);
-    }
+        /* Nominal */
+        UT_NOMINAL(OS_ModuleInfo(module_id, &module_info));
 
-UT_os_module_info_test_exit_tag:
-    return;
+        UT_TEARDOWN(OS_ModuleUnload(module_id));
+    }
 }
 
 /*================================================================================*

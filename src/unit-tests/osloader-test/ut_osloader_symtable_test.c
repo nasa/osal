@@ -35,6 +35,14 @@
 ** Macros
 **--------------------------------------------------------------------------------*/
 
+/**
+ * The size limit to pass for OS_SymbolTableDump nominal test
+ *
+ * This must be large enough to actually accomodate all of the symbols
+ * in the target system.
+ */
+#define UT_SYMTABLE_SIZE_LIMIT 1048576
+
 /*--------------------------------------------------------------------------------*
 ** Data types
 **--------------------------------------------------------------------------------*/
@@ -66,73 +74,44 @@
 
 void UT_os_symbol_lookup_test()
 {
-    int32       res = 0;
-    const char *testDesc;
-    cpuaddr     symbol_addr;
-    osal_id_t   module_id;
+    cpuaddr   symbol_addr;
+    osal_id_t module_id;
 
     /*-----------------------------------------------------*/
-    testDesc = "API Not implemented";
+    /* API Not implemented */
 
-    res = OS_SymbolLookup(&symbol_addr, "main");
-    if (res == OS_ERR_NOT_IMPLEMENTED)
+    if (!UT_IMPL(OS_SymbolLookup(&symbol_addr, "main")))
     {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_symbol_lookup_test_exit_tag;
+        return;
     }
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 Invalid-pointer-arg-1";
+    /* #1 Invalid-pointer-arg-1 */
 
-    res = OS_SymbolLookup(0, "main");
-    if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_SymbolLookup(0, "Sym"), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    testDesc = "#2 Invalid-pointer-arg-2";
+    /* #2 Invalid-pointer-arg-2 */
 
-    res = OS_SymbolLookup(&symbol_addr, 0);
-    if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_SymbolLookup(&symbol_addr, 0), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    testDesc = "#3 Symbol-not-found";
-
-    res = OS_SymbolLookup(&symbol_addr, "ThisSymbolIsNotFound");
-    if (res == OS_ERROR)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#4 Nominal, Global Symbols";
-
-    /* Setup */
-    res = OS_ModuleLoad(&module_id, "Mod1", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_GLOBAL_SYMBOLS);
-    if (res != OS_SUCCESS)
+    /* Setup for remainder of tests */
+    if (UT_SETUP(OS_ModuleLoad(&module_id, "Mod1", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_GLOBAL_SYMBOLS)))
     {
-        UT_OS_TEST_RESULT("#4 Nominal - Module Load failed", UTASSERT_CASETYPE_TSF);
-    }
-    else
-    {
-        res = OS_SymbolLookup(&symbol_addr, "module1");
-        if (res == OS_SUCCESS)
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-        else if (res == OS_ERR_NOT_IMPLEMENTED)
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        else
-            UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+        /*-----------------------------------------------------*/
+        /* #3 Symbol-not-found */
+
+        UT_RETVAL(OS_SymbolLookup(&symbol_addr, "NotFound"), OS_ERROR);
+
+        /*-----------------------------------------------------*/
+        /* #4 Nominal, Global Symbols */
+
+        UT_NOMINAL(OS_SymbolLookup(&symbol_addr, "module1"));
 
         /* Reset test environment */
-        res = OS_ModuleUnload(module_id);
+        UT_TEARDOWN(OS_ModuleUnload(module_id));
     }
-
-UT_os_symbol_lookup_test_exit_tag:
-    return;
 }
 
 /*--------------------------------------------------------------------------------*
@@ -146,73 +125,46 @@ UT_os_symbol_lookup_test_exit_tag:
 
 void UT_os_module_symbol_lookup_test()
 {
-    int32       res = 0;
-    const char *testDesc;
-    cpuaddr     symbol_addr;
-    osal_id_t   module_id;
+    cpuaddr   symbol_addr;
+    osal_id_t module_id;
 
     /*-----------------------------------------------------*/
-    testDesc = "API Not implemented";
+    /* API Not implemented */
 
-    res = OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symbol_addr, "main");
-    if (res == OS_ERR_NOT_IMPLEMENTED)
+    if (!UT_IMPL(OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symbol_addr, "main")))
     {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-        goto UT_os_module_symbol_lookup_test_exit_tag;
+        return;
     }
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 Invalid-pointer-arg-1";
+    /* Invalid object ID */
 
-    res = OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, 0, "main");
-    if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#2 Invalid-pointer-arg-2";
-
-    res = OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symbol_addr, 0);
-    if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_ModuleSymbolLookup(OS_OBJECT_ID_UNDEFINED, &symbol_addr, "Sym"), OS_ERR_INVALID_ID);
+    UT_RETVAL(OS_ModuleSymbolLookup(UT_OBJID_INCORRECT, &symbol_addr, "Sym"), OS_ERR_INVALID_ID);
 
     /*-----------------------------------------------------*/
     /* Setup for remainder of tests */
-    res = OS_ModuleLoad(&module_id, "Mod1", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS);
-    if (res != OS_SUCCESS)
+    if (UT_SETUP(OS_ModuleLoad(&module_id, "Mod1", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS)))
     {
-        UT_OS_TEST_RESULT("Module Load failed", UTASSERT_CASETYPE_TSF);
-        goto UT_os_module_symbol_lookup_test_exit_tag;
+        /*-----------------------------------------------------*/
+        /* #1 Invalid-pointer-arg */
+
+        UT_RETVAL(OS_ModuleSymbolLookup(module_id, NULL, "Sym"), OS_INVALID_POINTER);
+        UT_RETVAL(OS_ModuleSymbolLookup(module_id, &symbol_addr, NULL), OS_INVALID_POINTER);
+
+        /*-----------------------------------------------------*/
+        /* #3 Symbol-not-found */
+        UT_RETVAL(OS_ModuleSymbolLookup(module_id, &symbol_addr, "NotFound"), OS_ERROR);
+
+        /*-----------------------------------------------------*/
+        /* #4 Nominal, Local Symbols */
+
+        UT_NOMINAL(OS_ModuleSymbolLookup(module_id, &symbol_addr, "module1"));
+
+        /* Reset test environment */
+        UT_TEARDOWN(OS_ModuleUnload(module_id));
     }
-
-    /*-----------------------------------------------------*/
-    testDesc = "#3 Symbol-not-found";
-
-    res = OS_ModuleSymbolLookup(module_id, &symbol_addr, "ThisSymbolIsNotFound");
-    if (res == OS_ERROR)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /*-----------------------------------------------------*/
-    testDesc = "#4 Nominal, Local Symbols";
-
-    res = OS_ModuleSymbolLookup(module_id, &symbol_addr, "module1");
-    if (res == OS_SUCCESS)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
-
-    /* Reset test environment */
-    res = OS_ModuleUnload(module_id);
-
-UT_os_module_symbol_lookup_test_exit_tag:
-    return;
 }
-
 
 /*--------------------------------------------------------------------------------*
 ** Syntax: OS_SymbolTableDump
@@ -225,9 +177,6 @@ UT_os_module_symbol_lookup_test_exit_tag:
 **--------------------------------------------------------------------------------*/
 void UT_os_symbol_table_dump_test()
 {
-    int32       res = 0;
-    const char *testDesc;
-
     /*
      * Note that even if the functionality is not implemented,
      * the API still validates the input pointers (not null) and
@@ -235,39 +184,21 @@ void UT_os_symbol_table_dump_test()
      */
 
     /*-----------------------------------------------------*/
-    testDesc = "#1 Invalid-pointer-arg";
+    /* #1 Invalid-pointer-arg */
 
-    res = OS_SymbolTableDump(0, 10000);
-    if (res == OS_INVALID_POINTER)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_SymbolTableDump(0, 10000), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    testDesc = "#2 Invalid-path";
+    /* #2 Invalid-path */
 
-    res = OS_SymbolTableDump("/this/path/is/invalid.dat", 10000);
-    if (res == OS_FS_ERR_PATH_INVALID)
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    else
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+    UT_RETVAL(OS_SymbolTableDump("/this/path/is/invalid.dat", 10000), OS_FS_ERR_PATH_INVALID);
 
     /*-----------------------------------------------------*/
-    testDesc = "#3 Nominal";
+    /* #3 Nominal */
 
-    res = OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolFile.dat", 32000);
-    if (res == OS_ERR_NOT_IMPLEMENTED)
+    if (UT_NOMINAL_OR_NOTIMPL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolReal.dat", UT_SYMTABLE_SIZE_LIMIT)))
     {
-        /* allowed, not applicable on this system */
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_NA);
-    }
-    else if (res == OS_SUCCESS)
-    {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_PASS);
-    }
-    else
-    {
-        UT_OS_TEST_RESULT(testDesc, UTASSERT_CASETYPE_FAILURE);
+        UT_RETVAL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolZero.dat", 0), OS_ERR_OUTPUT_TOO_LARGE);
     }
 }
 

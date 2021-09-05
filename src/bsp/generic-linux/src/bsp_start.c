@@ -28,6 +28,7 @@
  *   2005/07/26  A. Cudmore      | Initial version for linux
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -48,8 +49,10 @@ OS_BSP_GenericLinuxGlobalData_t OS_BSP_GenericLinuxGlobal;
    --------------------------------------------------------- */
 void OS_BSP_Initialize(void)
 {
-    FILE *fp;
-    char  buffer[32];
+    FILE *              fp;
+    char                buffer[32];
+    pthread_mutexattr_t mutex_attr;
+    int                 status;
 
     /*
      * If not running as root, check /proc/sys/fs/mqueue/msg_max
@@ -74,6 +77,67 @@ void OS_BSP_Initialize(void)
             }
             fclose(fp);
         }
+    }
+
+    /* Initialize the low level access mutex (w/priority inheritance) */
+    status = pthread_mutexattr_init(&mutex_attr);
+    if (status < 0)
+    {
+        BSP_DEBUG("pthread_mutexattr_init: %s\n", strerror(status));
+    }
+    status = pthread_mutexattr_setprotocol(&mutex_attr, PTHREAD_PRIO_INHERIT);
+    if (status < 0)
+    {
+        BSP_DEBUG("pthread_mutexattr_setprotocol: %s\n", strerror(status));
+    }
+    status = pthread_mutex_init(&OS_BSP_GenericLinuxGlobal.AccessMutex, &mutex_attr);
+    if (status < 0)
+    {
+        BSP_DEBUG("pthread_mutex_init: %s\n", strerror(status));
+    }
+}
+
+/*----------------------------------------------------------------
+   OS_BSP_Lock_Impl
+   See full description in header
+ ------------------------------------------------------------------*/
+void OS_BSP_Lock_Impl(void)
+{
+    int status;
+
+    status = pthread_mutex_lock(&OS_BSP_GenericLinuxGlobal.AccessMutex);
+    if (status < 0)
+    {
+        BSP_DEBUG("pthread_mutex_lock: %s\n", strerror(status));
+    }
+    else
+    {
+        /*
+         * Temporarily Disable/Defer thread cancellation.
+         * Note that OS_BSP_ConsoleOutput_Impl() calls write() which is a cancellation point.
+         * So if this calling task is canceled, it risks leaving the BSP locked.
+         */
+        pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &OS_BSP_GenericLinuxGlobal.AccessCancelState);
+    }
+}
+
+/*----------------------------------------------------------------
+   OS_BSP_Unlock_Impl
+   See full description in header
+ ------------------------------------------------------------------*/
+void OS_BSP_Unlock_Impl(void)
+{
+    int status;
+
+    status = pthread_mutex_unlock(&OS_BSP_GenericLinuxGlobal.AccessMutex);
+    if (status < 0)
+    {
+        BSP_DEBUG("pthread_mutex_unlock: %s\n", strerror(status));
+    }
+    else
+    {
+        /* Restore previous cancelability state */
+        pthread_setcancelstate(OS_BSP_GenericLinuxGlobal.AccessCancelState, NULL);
     }
 }
 
@@ -165,7 +229,7 @@ int main(int argc, char *argv[])
     }
 
     /*
-     * Auto-Create any missing FS_BASED mount points specified in OS_VolumeTable
+     * Perform any other BSP-specific initialization
      */
     OS_BSP_Initialize();
 

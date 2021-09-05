@@ -29,18 +29,13 @@
 #include "osconfig.h"
 #include "ut-adaptor-console.h"
 
-#include <os-vxworks.h>
-#include <os-impl-console.h>
+#include "os-vxworks.h"
+#include "os-impl-console.h"
 
 void *const  UT_Ref_OS_impl_console_table      = OS_impl_console_table;
 size_t const UT_Ref_OS_impl_console_table_SIZE = sizeof(OS_impl_console_table);
 
-void UT_ConsoleTest_TaskEntry(int arg)
+int UT_ConsoleTest_TaskEntry(int arg)
 {
-    OS_VxWorks_ConsoleTask_Entry(arg);
-}
-
-void UT_ConsoleTest_SetConsoleAsync(osal_index_t local_id, bool is_async)
-{
-    OS_impl_console_table[local_id].is_async = is_async;
+    return OS_VxWorks_ConsoleTask_Entry(arg);
 }

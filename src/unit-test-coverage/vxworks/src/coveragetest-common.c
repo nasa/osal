@@ -30,8 +30,8 @@
 
 #include "os-shared-common.h"
 
-#include <OCS_errno.h>
-#include <OCS_objLib.h>
+#include "OCS_errno.h"
+#include "OCS_objLib.h"
 
 OCS_SEM TestGlobalSem;
 
@@ -44,7 +44,7 @@ void Test_OS_API_Impl_Init(void)
     OSAPI_TEST_FUNCTION_RC(OS_API_Impl_Init(0), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_StubKey_OS_VxWorks_TableMutex_Init, OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_API_Impl_Init(OS_OBJECT_TYPE_OS_TASK), OS_ERROR);
-    UT_ClearForceFail(UT_StubKey_OS_VxWorks_TableMutex_Init);
+    UT_ClearDefaultReturnValue(UT_StubKey_OS_VxWorks_TableMutex_Init);
     OSAPI_TEST_FUNCTION_RC(OS_API_Impl_Init(OS_OBJECT_TYPE_OS_TASK), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_API_Impl_Init(OS_OBJECT_TYPE_OS_QUEUE), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_API_Impl_Init(OS_OBJECT_TYPE_OS_BINSEM), OS_SUCCESS);
@@ -103,6 +103,9 @@ void Test_OS_VxWorks_GenericSemTake(void)
     OSAPI_TEST_FUNCTION_RC(OS_VxWorks_GenericSemTake(SemID, 0), OS_SEM_TIMEOUT);
     OCS_errno = OCS_S_objLib_OBJ_ID_ERROR;
     OSAPI_TEST_FUNCTION_RC(OS_VxWorks_GenericSemTake(SemID, 0), OS_SEM_FAILURE);
+    OCS_errno = OCS_S_objLib_OBJ_UNAVAILABLE;
+    OSAPI_TEST_FUNCTION_RC(OS_VxWorks_GenericSemTake(SemID, 0), OS_SEM_TIMEOUT);
+    OSAPI_TEST_FUNCTION_RC(OS_VxWorks_GenericSemTake(SemID, 1), OS_SEM_FAILURE);
 
 } /* end OS_VxWorks_GenericSemTake */
 

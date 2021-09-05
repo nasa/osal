@@ -18,14 +18,20 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for net/if.h */
-#ifndef _OSAL_OVERRIDE_NET_IF_H_
-#define _OSAL_OVERRIDE_NET_IF_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for net/if.h
+ */
 
-#include <OCS_net_if.h>
+#ifndef OVERRIDE_NET_IF_H
+#define OVERRIDE_NET_IF_H
+
+#include "OCS_net_if.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in net/if.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_NET_IF_H_ */
+#endif /* OVERRIDE_NET_IF_H */

@@ -188,7 +188,11 @@ void UT_os_init_task_get_info_test()
 
 void UtTest_Setup(void)
 {
+    /* the test should call OS_API_Teardown() before exiting */
+    UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
+
     UtTest_Add(UT_os_apiinit_test, NULL, NULL, "OS_API_Init");
+    UtTest_Add(UT_os_registereventhandler_test, NULL, NULL, "OS_RegisterEventHandler");
 
     UtTest_Add(UT_os_printf_test, NULL, NULL, "OS_printf");
     UtTest_Add(UT_os_printfenable_test, NULL, NULL, "OS_printf_enable");
@@ -225,9 +229,9 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_queue_get_id_by_name_test, NULL, NULL, "OS_QueueGetIdByName");
     UtTest_Add(UT_os_queue_get_info_test, NULL, NULL, "OS_QueueGetInfo");
 
-    UtTest_Add(UT_os_select_fd_test, NULL, NULL, "OS_SelectFd");
-    UtTest_Add(UT_os_select_single_test, NULL, NULL, "OS_SelectSingle");
-    UtTest_Add(UT_os_select_multi_test, NULL, NULL, "OS_SelectMultiple");
+    UtTest_Add(UT_os_select_fd_test, UT_os_select_setup_file, UT_os_select_teardown_file, "OS_SelectFd");
+    UtTest_Add(UT_os_select_single_test, UT_os_select_setup_file, UT_os_select_teardown_file, "OS_SelectSingle");
+    UtTest_Add(UT_os_select_multi_test, UT_os_select_setup_file, UT_os_select_teardown_file, "OS_SelectMultiple");
 
     UtTest_Add(NULL, UT_os_init_task_misc, NULL, "UT_os_init_task_misc");
     UtTest_Add(UT_os_task_create_test, UT_os_init_task_create_test, NULL, "OS_TaskCreate");
@@ -237,10 +241,10 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_task_exit_test, UT_os_init_task_exit_test, NULL, "OS_TaskExit");
     UtTest_Add(UT_os_task_delay_test, UT_os_init_task_delay_test, NULL, "OS_TaskDelay");
     UtTest_Add(UT_os_task_set_priority_test, UT_os_init_task_set_priority_test, NULL, "OS_TaskSetPriority");
-    UtTest_Add(UT_os_task_register_test, UT_os_init_task_register_test, NULL, "OS_TaskRegister");
     UtTest_Add(UT_os_task_get_id_test, UT_os_init_task_get_id_test, NULL, "OS_TaskGetId");
     UtTest_Add(UT_os_task_get_id_by_name_test, UT_os_init_task_get_id_by_name_test, NULL, "OS_TaskGetIdByName");
     UtTest_Add(UT_os_task_get_info_test, UT_os_init_task_get_info_test, NULL, "OS_TaskGetInfo");
+    UtTest_Add(UT_os_task_getid_by_sysdata_test, UT_os_task_getid_by_sysdata_test, NULL, "OS_TaskFindIdBySystemData");
 
     UtTest_Add(UT_os_geterrorname_test, NULL, NULL, "OS_GetErrorName");
 

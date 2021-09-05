@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for timers.h */
-#ifndef _OSAL_STUB_TIMERS_H_
-#define _OSAL_STUB_TIMERS_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for timers.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_TIMERS_H
+#define OCS_TIMERS_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in timers.h */
@@ -36,4 +42,4 @@
 /* prototypes normally declared in timers.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_TIMERS_H_ */
+#endif /* OCS_TIMERS_H */

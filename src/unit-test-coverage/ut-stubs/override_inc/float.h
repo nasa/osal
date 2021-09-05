@@ -18,14 +18,20 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for float.h */
-#ifndef _OSAL_OVERRIDE_FLOAT_H_
-#define _OSAL_OVERRIDE_FLOAT_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for float.h
+ */
 
-#include <OCS_float.h>
+#ifndef OVERRIDE_FLOAT_H
+#define OVERRIDE_FLOAT_H
+
+#include "OCS_float.h"
 
 /* ----------------------------------------- */
 /* mappings for declarations in float.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_OVERRIDE_FLOAT_H_ */
+#endif /* OVERRIDE_FLOAT_H */

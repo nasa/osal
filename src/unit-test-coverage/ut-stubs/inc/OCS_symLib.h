@@ -19,18 +19,17 @@
  */
 
 /**
- * \file     OCS_symLib.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
  *
  * OSAL coverage stub replacement for symLib.h
  */
 
-#ifndef INCLUDE_OCS_SYMLIB_H_
-#define INCLUDE_OCS_SYMLIB_H_
+#ifndef OCS_SYMLIB_H
+#define OCS_SYMLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in symLib.h */
@@ -70,4 +69,4 @@ extern OCS_STATUS  OCS_symFindByName(OCS_SYMTAB_ID symTblId, char *name, char **
 extern OCS_SYMBOL *OCS_symEach(OCS_SYMTAB_ID symTblId, OCS_symEach_Routine_t routine, int routineArg);
 extern OCS_STATUS  OCS_symFind(OCS_SYMTAB_ID symTblId, OCS_SYMBOL_DESC *pSymbol);
 
-#endif /* INCLUDE_OCS_SYMLIB_H_ */
+#endif /* OCS_SYMLIB_H */

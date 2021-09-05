@@ -19,17 +19,17 @@
  */
 
 /**
- * \file     OCS_hostLib.h
- * \ingroup  ut-stubs
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ * \ingroup ut-stubs
  *
+ * Declarations and prototypes for OCS_hostLib
  */
 
-#ifndef INCLUDE_OCS_HOSTLIB_H_
-#define INCLUDE_OCS_HOSTLIB_H_
+#ifndef OCS_HOSTLIB_H
+#define OCS_HOSTLIB_H
 
-#include <OCS_basetypes.h>
-#include <OCS_vxWorks.h>
+#include "OCS_basetypes.h"
+#include "OCS_vxWorks.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in hostLib.h */
@@ -44,4 +44,4 @@
 /* ----------------------------------------- */
 extern int OCS_hostGetByName(char *name);
 
-#endif /* INCLUDE_OCS_HOSTLIB_H_ */
+#endif /* OCS_HOSTLIB_H */

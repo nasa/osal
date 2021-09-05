@@ -28,6 +28,6 @@
 #include <stdlib.h>
 #include "utstubs.h"
 
-#include <os-shared-queue.h>
+#include "os-shared-queue.h"
 
 UT_DEFAULT_STUB(OS_VxWorks_QueueAPI_Impl_Init, (void))

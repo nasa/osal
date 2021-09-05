@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for unldLib.h */
-#ifndef _OSAL_OVERRIDE_UNLDLIB_H_
-#define _OSAL_OVERRIDE_UNLDLIB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for unldLib.h
+ */
 
-#include <OCS_unldLib.h>
+#ifndef OVERRIDE_UNLDLIB_H
+#define OVERRIDE_UNLDLIB_H
+
+#include "OCS_unldLib.h"
 #include <vxWorks.h>
 #include <moduleLib.h>
 
@@ -31,4 +37,4 @@
 /* ----------------------------------------- */
 #define unldByModuleId OCS_unldByModuleId
 
-#endif /* _OSAL_OVERRIDE_UNLDLIB_H_ */
+#endif /* OVERRIDE_UNLDLIB_H */

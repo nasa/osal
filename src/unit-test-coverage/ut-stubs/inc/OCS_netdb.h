@@ -18,11 +18,17 @@
  *  limitations under the License.
  */
 
-/* OSAL coverage stub replacement for netdb.h */
-#ifndef _OSAL_STUB_NETDB_H_
-#define _OSAL_STUB_NETDB_H_
+/**
+ * \file
+ * \ingroup ut-stubs
+ *
+ * OSAL coverage stub replacement for netdb.h
+ */
 
-#include <OCS_basetypes.h>
+#ifndef OCS_NETDB_H
+#define OCS_NETDB_H
+
+#include "OCS_basetypes.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in netdb.h */
@@ -36,4 +42,4 @@
 /* prototypes normally declared in netdb.h */
 /* ----------------------------------------- */
 
-#endif /* _OSAL_STUB_NETDB_H_ */
+#endif /* OCS_NETDB_H */

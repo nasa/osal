@@ -28,8 +28,8 @@
 
 #include "os-shared-network.h"
 
-#include <OCS_unistd.h>
-#include <OCS_hostLib.h>
+#include "OCS_unistd.h"
+#include "OCS_hostLib.h"
 
 /*----------------------------------------------------------------
  *
@@ -66,8 +66,13 @@ void Test_OS_NetworkGetID_Impl(void)
     UT_SetDefaultReturnValue(UT_KEY(OCS_hostGetByName), 1234);
     OSAPI_TEST_FUNCTION_RC(OS_NetworkGetID_Impl(&IdBuf), OS_SUCCESS);
     UtAssert_True(IdBuf == 1234, "IdBuf (%ld) == 1234", (long)IdBuf);
+
     UT_SetDefaultReturnValue(UT_KEY(OCS_hostGetByName), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_NetworkGetID_Impl(&IdBuf), OS_ERROR);
+
+    UT_SetDefaultReturnValue(UT_KEY(OCS_gethostname), OCS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_NetworkGetID_Impl(&IdBuf), OS_ERROR);
+
 } /* end OS_NetworkGetID_Impl */
 
 /* ------------------- End of test cases --------------------------------------*/
