@@ -39,12 +39,14 @@
 #include <dirent.h>
 #include <sys/statvfs.h>
 #include <sys/stat.h>
-#include <sys/mount.h>
+// #include <sys/mount.h>
 
 
 #include "os-qt.h"
+extern "C" {
 #include "os-shared-filesys.h"
 #include "os-shared-idmap.h"
+}
 
 /****************************************************************************************
                                      DEFINES
@@ -74,6 +76,8 @@ int32 OS_QT_FileSysAPI_Impl_Init(void)
 /*
  * System Level API
  */
+
+extern "C" {
 
 /*----------------------------------------------------------------
  *
@@ -339,3 +343,5 @@ int32 OS_FileSysCheckVolume_Impl(const OS_object_token_t *token, bool repair)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 } /* end OS_FileSysCheckVolume_Impl */
+
+}

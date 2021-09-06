@@ -44,13 +44,7 @@
 #include <signal.h>
 #include <time.h>
 #include <errno.h>
-// #include <pthread.h>
-// #include <mqueue.h>
-// #include <fcntl.h>
-// #include <semaphore.h>
-// #include <sys/types.h>
-// #include <sys/signal.h>
-
+#include "osapi-task.h"
 /*
  * Use the global definitions from the shared layer
  */

@@ -35,10 +35,12 @@
  ***************************************************************************************/
 
 #include "os-qt.h"
+extern "C" {
 #include "os-impl-timebase.h"
 #include "os-shared-timebase.h"
 #include "os-shared-idmap.h"
 #include "os-shared-common.h"
+}
 #include <algorithm>
 /****************************************************************************************
                                 EXTERNAL FUNCTION PROTOTYPES
@@ -99,6 +101,8 @@ static void OS_UsecToTimespec(uint32 usecs, struct timespec *time_spec)
     }
 } /* end OS_UsecToTimespec */
 
+extern "C" {
+
 /*----------------------------------------------------------------
  *
  * Function: OS_TimeBaseLock_Impl
@@ -110,10 +114,10 @@ static void OS_UsecToTimespec(uint32 usecs, struct timespec *time_spec)
 void OS_TimeBaseLock_Impl(const OS_object_token_t *token)
 {
 
-    // OS_impl_timebase_internal_record_t *impl;
+    OS_impl_timebase_internal_record_t *impl;
 
-    // impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
-    // impl->handler_mutex.lock();
+    impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+    impl->handler_mutex.lock();
     
 } /* end OS_TimeBaseLock_Impl */
 
@@ -128,10 +132,10 @@ void OS_TimeBaseLock_Impl(const OS_object_token_t *token)
 void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token)
 {
 
-    // OS_impl_timebase_internal_record_t *impl;
+    OS_impl_timebase_internal_record_t *impl;
 
-    // impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
-    // impl->handler_mutex.unlock();
+    impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
+    impl->handler_mutex.unlock();
 } /* end OS_TimeBaseUnlock_Impl */
 
 /*----------------------------------------------------------------
@@ -143,164 +147,57 @@ void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 static uint32 OS_TimeBase_SigWaitImpl(osal_id_t obj_id)
 {
-    return 0; /* TODO */
-    // bool                                 ret;
-    // OS_object_token_t                   token;
-    // OS_impl_timebase_internal_record_t *impl;
-    // OS_timebase_internal_record_t *     timebase;
-    // uint32                              interval_time;
+    bool                                 ret;
+    OS_object_token_t                   token;
+    OS_impl_timebase_internal_record_t *impl;
+    OS_timebase_internal_record_t *     timebase;
+    uint32                              interval_time;
 
-    // interval_time = 0;
+    interval_time = 0;
 
-    // if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMEBASE, obj_id, &token) == OS_SUCCESS)
-    // {
-    //     impl     = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, token);
-    //     timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, token);
+    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_TIMEBASE, obj_id, &token) == OS_SUCCESS)
+    {
+        impl     = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, token);
+        timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, token);
 
-    //     impl->sigMutex.lock();
-    //     ret = impl->sigWaiter.wait(&impl->sigMutex);
-    //     impl->sigMutex.unlock();
+        impl->sigMutex.lock();
+        ret = impl->sigWaiter.wait(&impl->sigMutex);
+        impl->sigMutex.unlock();
 
-    //     if (ret == false)
-    //     {
-    //         /*
-    //          * the sigwait call failed.
-    //          * returning 0 will cause the process to repeat.
-    //          */
-    //     }
-    //     else if (impl->reset_flag == 0)
-    //     {
-    //         /*
-    //          * Normal steady-state behavior.
-    //          * interval_time reflects the configured interval time.
-    //          */
-    //         interval_time = timebase->nominal_interval_time;
-    //     }
-    //     else
-    //     {
-    //         /*
-    //          * Reset/First interval behavior.
-    //          * timer_set() was invoked since the previous interval occurred (if any).
-    //          * interval_time reflects the configured start time.
-    //          */
-    //         interval_time    = timebase->nominal_start_time;
-    //         impl->reset_flag = 0;
-    //     }
-    // }
+        if (ret == false)
+        {
+            /*
+             * the sigwait call failed.
+             * returning 0 will cause the process to repeat.
+             */
+        }
+        else if (impl->reset_flag == 0)
+        {
+            /*
+             * Normal steady-state behavior.
+             * interval_time reflects the configured interval time.
+             */
+            interval_time = timebase->nominal_interval_time;
+        }
+        else
+        {
+            /*
+             * Reset/First interval behavior.
+             * timer_set() was invoked since the previous interval occurred (if any).
+             * interval_time reflects the configured start time.
+             */
+            interval_time    = timebase->nominal_start_time;
+            impl->reset_flag = 0;
+        }
+    }
 
-    // return interval_time;
+    return interval_time;
 } /* end OS_TimeBase_SoftWaitImpl */
 
 /****************************************************************************************
                                 INITIALIZATION FUNCTION
  ***************************************************************************************/
 
-/******************************************************************************
- *  Function:  OS_QT_TimeBaseAPI_Impl_Init
- *
- *  Purpose:  Initialize the timer implementation layer
- *
- *  Arguments:
- *
- *  Return:
- */
-int32 OS_QT_TimeBaseAPI_Impl_Init(void)
-{
-    return OS_ERR_NOT_IMPLEMENTED;
-    // int                 status;
-    // osal_index_t        idx;
-    // // pthread_mutexattr_t mutex_attr;
-    // struct timespec     clock_resolution;
-    // int32               return_code;
-
-    // return_code = OS_SUCCESS;
-
-    // do
-    // {
-    //     /*
-    //     ** Mark all timers as available
-    //     */
-    //     memset(OS_impl_timebase_table, 0, sizeof(OS_impl_timebase_table));
-
-    //     /*
-    //     ** get the resolution of the selected clock
-    //     */
-    //     status = clock_getres(OS_PREFERRED_CLOCK, &clock_resolution);
-    //     if (status != 0)
-    //     {
-    //         OS_DEBUG("failed in clock_getres: %s\n", strerror(status));
-    //         return_code = OS_ERROR;
-    //         break;
-    //     }
-
-    //     /*
-    //     ** Convert to microseconds
-    //     ** Note that the resolution MUST be in the sub-second range, if not then
-    //     ** it looks like the POSIX timer API in the C library is broken.
-    //     ** Note for any flavor of RTOS we would expect <= 1ms.  Even a "desktop"
-    //     ** linux or development system should be <= 100ms absolute worst-case.
-    //     */
-    //     if (clock_resolution.tv_sec > 0)
-    //     {
-    //         return_code = OS_TIMER_ERR_INTERNAL;
-    //         break;
-    //     }
-
-    //     /* Round to the nearest microsecond */
-    //     QT_GlobalVars.ClockAccuracyNsec = (uint32)(clock_resolution.tv_nsec);
-
-    //     /*
-    //     ** Allow the mutex to use priority inheritance
-    //     * TODO
-    //     */
-    //     // status = pthread_mutexattr_setprotocol(&mutex_attr, PTHREAD_PRIO_INHERIT);
-    //     // if (status != 0)
-    //     // {
-    //     //     OS_DEBUG("Error: pthread_mutexattr_setprotocol failed: %s\n", strerror(status));
-    //     //     return_code = OS_ERROR;
-    //     //     break;
-    //     // }
-
-    //     // for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
-    //     // {
-    //     //     /*
-    //     //     ** create the timebase sync mutex
-    //     //     ** This gives a mechanism to synchronize updates to the timer chain with the
-    //     //     ** expiration of the timer and processing the chain.
-    //     //     */
-    //     //     status = pthread_mutex_init(&OS_impl_timebase_table[idx].handler_mutex, &mutex_attr);
-    //     //     if (status != 0)
-    //     //     {
-    //     //         OS_DEBUG("Error: Mutex could not be created: %s\n", strerror(status));
-    //     //         return_code = OS_ERROR;
-    //     //         break;
-    //     //     }
-    //     // }
-
-    //     /*
-    //      * Pre-calculate the clock tick to microsecond conversion factor.
-    //      */
-    //     OS_SharedGlobalVars.TicksPerSecond = sysconf(_SC_CLK_TCK);
-    //     if (OS_SharedGlobalVars.TicksPerSecond <= 0)
-    //     {
-    //         OS_DEBUG("Error: Unable to determine OS ticks per second: %s\n", strerror(errno));
-    //         return_code = OS_ERROR;
-    //         break;
-    //     }
-
-    //     /*
-    //      * Calculate microseconds per tick
-    //      *  - If the ratio is not an integer, this will round to the nearest integer value
-    //      *  - This is used internally for reporting accuracy,
-    //      *  - TicksPerSecond values over 2M will return zero
-    //      */
-    //     OS_SharedGlobalVars.MicroSecPerTick = (1000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) /
-    //                                           OS_SharedGlobalVars.TicksPerSecond;
-
-    // } while (0);
-
-    // return (return_code);
-} /* end OS_QT_TimeBaseAPI_Impl_Init */
 
 /****************************************************************************************
                                    Time Base API
@@ -308,10 +205,10 @@ int32 OS_QT_TimeBaseAPI_Impl_Init(void)
 
 static void *OS_TimeBasePthreadEntry(void *arg)
 {
-    // OS_U32ValueWrapper_t local_arg;
-
-    // local_arg.opaque_arg = arg;
-    // OS_TimeBase_CallbackThread(local_arg.id);
+    OS_VoidPtrValueWrapper_t local_arg;
+    
+    local_arg.opaque_arg = arg;
+    OS_TimeBase_CallbackThread(local_arg.id);
     return NULL;
 }
 
@@ -325,7 +222,8 @@ static void *OS_TimeBasePthreadEntry(void *arg)
  *-----------------------------------------------------------------*/
 int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
 {
-    return OS_ERR_NOT_IMPLEMENTED;
+    return OS_SUCCESS;
+    // return OS_ERR_NOT_IMPLEMENTED;
     // int32                               return_code;
     // int                                 status;
     // int                                 i;
@@ -334,7 +232,7 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
     // struct timespec                     ts;
     // OS_impl_timebase_internal_record_t *local;
     // OS_timebase_internal_record_t *     timebase;
-    // OS_U32ValueWrapper_t                arg;
+    // OS_VoidPtrValueWrapper_t                arg;
 
     // local    = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
     // timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, *token);
@@ -391,6 +289,9 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
 
     //     for (i = SIGRTMIN; i <= SIGRTMAX; ++i)
     //     {
+    //         bool sigIsMember = (std::find(local->signalIDs.begin(), local->signalIDs.end(), OS_impl_timebase_table[idx].assigned_signal) != local->signalIDs.end());
+
+            
     //         if (!sigismember(&local->sigMutex, i))
     //         {
     //             local->assigned_signal = i;
@@ -590,3 +491,120 @@ int32 OS_TimeBaseGetInfo_Impl(const OS_object_token_t *token, OS_timebase_prop_t
     // return OS_SUCCESS;
 
 } /* end OS_TimeBaseGetInfo_Impl */
+
+}
+
+
+
+/******************************************************************************
+ *  Function:  OS_QT_TimeBaseAPI_Impl_Init
+ *
+ *  Purpose:  Initialize the timer implementation layer
+ *
+ *  Arguments:
+ *
+ *  Return:
+ */
+int32 OS_QT_TimeBaseAPI_Impl_Init(void)
+{
+    /* https://doc.qt.io/qt-5/qelapsedtimer.html */
+    OS_SharedGlobalVars.TicksPerSecond = (uint32)1000;
+    /* 1000 micro seconds per milisecond */
+    OS_SharedGlobalVars.MicroSecPerTick = 1000;
+
+    return OS_SUCCESS;
+    // return OS_ERR_NOT_IMPLEMENTED;
+    // int                 status;
+    // osal_index_t        idx;
+    // // pthread_mutexattr_t mutex_attr;
+    // struct timespec     clock_resolution;
+    // int32               return_code;
+
+    // return_code = OS_SUCCESS;
+
+    // do
+    // {
+    //     /*
+    //     ** Mark all timers as available
+    //     */
+    //     memset(OS_impl_timebase_table, 0, sizeof(OS_impl_timebase_table));
+
+    //     /*
+    //     ** get the resolution of the selected clock
+    //     */
+    //     status = clock_getres(OS_PREFERRED_CLOCK, &clock_resolution);
+    //     if (status != 0)
+    //     {
+    //         OS_DEBUG("failed in clock_getres: %s\n", strerror(status));
+    //         return_code = OS_ERROR;
+    //         break;
+    //     }
+
+    //     /*
+    //     ** Convert to microseconds
+    //     ** Note that the resolution MUST be in the sub-second range, if not then
+    //     ** it looks like the POSIX timer API in the C library is broken.
+    //     ** Note for any flavor of RTOS we would expect <= 1ms.  Even a "desktop"
+    //     ** linux or development system should be <= 100ms absolute worst-case.
+    //     */
+    //     if (clock_resolution.tv_sec > 0)
+    //     {
+    //         return_code = OS_TIMER_ERR_INTERNAL;
+    //         break;
+    //     }
+
+    //     /* Round to the nearest microsecond */
+    //     QT_GlobalVars.ClockAccuracyNsec = (uint32)(clock_resolution.tv_nsec);
+
+    //     /*
+    //     ** Allow the mutex to use priority inheritance
+    //     * TODO
+    //     */
+    //     // status = pthread_mutexattr_setprotocol(&mutex_attr, PTHREAD_PRIO_INHERIT);
+    //     // if (status != 0)
+    //     // {
+    //     //     OS_DEBUG("Error: pthread_mutexattr_setprotocol failed: %s\n", strerror(status));
+    //     //     return_code = OS_ERROR;
+    //     //     break;
+    //     // }
+
+    //     // for (idx = 0; idx < OS_MAX_TIMEBASES; ++idx)
+    //     // {
+    //     //     /*
+    //     //     ** create the timebase sync mutex
+    //     //     ** This gives a mechanism to synchronize updates to the timer chain with the
+    //     //     ** expiration of the timer and processing the chain.
+    //     //     */
+    //     //     status = pthread_mutex_init(&OS_impl_timebase_table[idx].handler_mutex, &mutex_attr);
+    //     //     if (status != 0)
+    //     //     {
+    //     //         OS_DEBUG("Error: Mutex could not be created: %s\n", strerror(status));
+    //     //         return_code = OS_ERROR;
+    //     //         break;
+    //     //     }
+    //     // }
+
+    //     /*
+    //      * Pre-calculate the clock tick to microsecond conversion factor.
+    //      */
+    //     OS_SharedGlobalVars.TicksPerSecond = sysconf(_SC_CLK_TCK);
+    //     if (OS_SharedGlobalVars.TicksPerSecond <= 0)
+    //     {
+    //         OS_DEBUG("Error: Unable to determine OS ticks per second: %s\n", strerror(errno));
+    //         return_code = OS_ERROR;
+    //         break;
+    //     }
+
+    //     /*
+    //      * Calculate microseconds per tick
+    //      *  - If the ratio is not an integer, this will round to the nearest integer value
+    //      *  - This is used internally for reporting accuracy,
+    //      *  - TicksPerSecond values over 2M will return zero
+    //      */
+    //     OS_SharedGlobalVars.MicroSecPerTick = (1000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) /
+    //                                           OS_SharedGlobalVars.TicksPerSecond;
+
+    // } while (0);
+
+    // return (return_code);
+} /* end OS_QT_TimeBaseAPI_Impl_Init */

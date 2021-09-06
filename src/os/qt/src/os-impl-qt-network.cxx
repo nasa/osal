@@ -44,11 +44,14 @@
 #include <errno.h>
 
 #include "os-impl-network.h"
+extern "C"{
 #include "os-shared-network.h"
+}
 
 /****************************************************************************************
                                     Network API
  ***************************************************************************************/
+extern "C" {
 
 /*----------------------------------------------------------------
  *
@@ -93,3 +96,5 @@ int32 OS_NetworkGetID_Impl(int32 *IdBuf)
     *IdBuf = gethostid();
     return OS_SUCCESS;
 } /* end OS_NetworkGetID_Impl */
+
+}

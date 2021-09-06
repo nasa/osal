@@ -19,14 +19,14 @@
  */
 
 /**
- * \file     os-impl-timebase.h
- * \ingroup  qt
- * \author   joseph.p.hickey@nasa.gov
+ * \file
+ *
+ * \ingroup  posix
  *
  */
 
-#ifndef INCLUDE_OS_IMPL_TIMEBASE_H_
-#define INCLUDE_OS_IMPL_TIMEBASE_H_
+#ifndef OS_IMPL_TIMEBASE_H
+#define OS_IMPL_TIMEBASE_H
 
 #include <osconfig.h>
 #include <QThread>
@@ -46,18 +46,12 @@ typedef struct
     QWaitCondition sigWaiter;
     QMutex        sigMutex;
     std::list<int> signalIDs;
+    int             assigned_signal;
     OS_impl_task_internal_record_t handler_thread;
     // pthread_t       handler_thread;
     char name[OS_MAX_API_NAME];
     sig_atomic_t    reset_flag;
-
-    // timer_t         host_timerid;
-    int             assigned_signal;
-
-
     struct timespec softsleep;
-    OS_TimerSync_t syncFunc;
-    OS_TimerCallback_t callback;
 
 } OS_impl_timebase_internal_record_t;
 

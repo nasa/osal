@@ -31,10 +31,12 @@
 
 #include "os-qt.h"
 #include "os-impl-console.h"
-
+extern "C" {
 #include "os-shared-idmap.h"
 #include "os-shared-printf.h"
 #include "os-shared-common.h"
+}
+
 #include <QSemaphore>
 /*
  * By default the console output is always asynchronous
@@ -59,6 +61,9 @@ OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
 /*                 CONSOLE OUTPUT                                   */
 /********************************************************************/
 
+extern "C" {
+
+
 /*----------------------------------------------------------------
  *
  * Function: OS_ConsoleWakeup_Impl
@@ -73,16 +78,9 @@ void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
 
     local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
 
-    if (local->is_async)
-    {
-        /* post the sem for the utility task to run */
-        local->data_sem.release();
-    }
-    else
-    {
-        /* output directly */
-        OS_ConsoleOutput_Impl(token);
-    }
+    /* post the sem for the utility task to run */
+    local->data_sem.release();
+
 } /* end OS_ConsoleWakeup_Impl */
 
 /*----------------------------------------------------------------
@@ -95,7 +93,7 @@ void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 static void *OS_ConsoleTask_Entry(void *arg)
 {
-    OS_U32ValueWrapper_t               local_arg;
+    OS_VoidPtrValueWrapper_t           local_arg;
     OS_impl_console_internal_record_t *local;
     OS_object_token_t                  token;
 
@@ -105,7 +103,7 @@ static void *OS_ConsoleTask_Entry(void *arg)
         local = OS_OBJECT_TABLE_GET(OS_impl_console_table, token);
 
         /* Loop forever (unless shutdown is set) */
-        while (OS_SharedGlobalVars.ShutdownFlag != OS_SHUTDOWN_MAGIC_NUMBER)
+        while (OS_SharedGlobalVars.GlobalState != OS_SHUTDOWN_MAGIC_NUMBER)
         {
             OS_ConsoleOutput_Impl(&token);
             local->data_sem.acquire();
@@ -126,21 +124,22 @@ static void *OS_ConsoleTask_Entry(void *arg)
 int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 {
     OS_impl_console_internal_record_t *local;
+    OS_console_internal_record_t *     console;
     OS_impl_task_internal_record_t     consoletask;
     int32                              return_code;
-    OS_U32ValueWrapper_t               local_arg = {0};
+    OS_VoidPtrValueWrapper_t           local_arg = {0};
 
-    local = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
+    console = OS_OBJECT_TABLE_GET(OS_console_table, *token);
+    local   = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
 
     if (token->obj_idx == 0)
     {
-        return_code     = OS_SUCCESS;
-        local->is_async = OS_CONSOLE_ASYNC;
+        return_code = OS_SUCCESS;
 
-        if (local->is_async)
+        if (console->IsAsync)
         {
             local_arg.id = OS_ObjectIdFromToken(token);
-            return_code  = OS_QT_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
+                return_code  = OS_QT_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
                                                             OS_ConsoleTask_Entry, local_arg.opaque_arg);
 
         }
@@ -153,3 +152,5 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
 
     return return_code;
 } /* end OS_ConsoleCreate_Impl */
+
+} /* End extern "C" */

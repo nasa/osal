@@ -32,8 +32,10 @@
  ***************************************************************************************/
 
 #include "os-qt.h"
-#include "os-shared-idmap.h"
-#include "os-shared-binsem.h"
+extern "C" {
+    #include "os-shared-idmap.h"
+    #include "os-shared-binsem.h"
+}
 #include "os-impl-binsem.h"
 
 int timespec_milli(const timespec * _t){
@@ -103,6 +105,9 @@ int32 OS_QT_BinSemAPI_Impl_Init(void)
     memset(OS_impl_bin_sem_table, 0, sizeof(OS_impl_bin_sem_table));
     return OS_SUCCESS;
 } /* end OS_QT_BinSemAPI_Impl_Init */
+
+
+extern "C" {
 
 /*----------------------------------------------------------------
  *
@@ -463,3 +468,5 @@ int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *s
     sem_prop->value = sem->current_value;
     return OS_SUCCESS;
 } /* end OS_BinSemGetInfo_Impl */
+
+} /* end extern "C"  */

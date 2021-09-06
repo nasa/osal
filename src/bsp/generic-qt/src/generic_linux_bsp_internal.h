@@ -21,32 +21,33 @@
 /**
  * \file
  *
- * \ingroup  posix
- *
+ * Purpose:
+ *   Header file for internal data to the LINUX BSP
  */
 
-#ifndef OS_IMPL_SOCKETS_H
-#define OS_IMPL_SOCKETS_H
+#ifndef GENERIC_LINUX_BSP_INTERNAL_H
+#define GENERIC_LINUX_BSP_INTERNAL_H
 
-#include "os-impl-io.h"
+#include "osapi-common.h"
+#include "osapi-bsp.h"
+#include "osapi-error.h"
+#include "bsp-impl.h"
 
-#include <fcntl.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-
-#define OS_NETWORK_SUPPORTS_IPV6
+#include <pthread.h>
 
 /*
- * Socket descriptors should be usable with the select() API
- */
-#define OS_IMPL_SOCKET_SELECTABLE true
+** BSP types
+*/
+typedef struct
+{
+    bool            EnableTermControl; /**< Will be set "true" when invoked from a TTY device, false otherwise */
+    pthread_mutex_t AccessMutex;
+    int             AccessCancelState;
+} OS_BSP_GenericLinuxGlobalData_t;
 
 /*
- * A full POSIX-compliant I/O layer should support using
- * nonblocking I/O calls in combination with select().
+ * Global Data object
  */
-#define OS_IMPL_SOCKET_FLAGS O_NONBLOCK
+extern OS_BSP_GenericLinuxGlobalData_t OS_BSP_GenericLinuxGlobal;
 
-#endif /* OS_IMPL_SOCKETS_H */
+#endif /* GENERIC_LINUX_BSP_INTERNAL_H */

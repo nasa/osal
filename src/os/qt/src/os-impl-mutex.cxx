@@ -30,8 +30,11 @@
  ***************************************************************************************/
 
 #include "os-qt.h"
+extern "C" {
 #include "os-shared-mutex.h"
 #include "os-shared-idmap.h"
+}
+
 #include "os-impl-mutex.h"
 
 /* Tables where the OS object information is stored */
@@ -53,6 +56,8 @@ int32 OS_QT_MutexAPI_Impl_Init(void)
     memset(OS_impl_mutex_table, 0, sizeof(OS_impl_mutex_table));
     return OS_SUCCESS;
 } /* end OS_QT_MutexAPI_Impl_Init */
+
+extern "C" {
 
 /*----------------------------------------------------------------
  *
@@ -211,3 +216,5 @@ int32 OS_MutSemGetInfo_Impl(const OS_object_token_t *token, OS_mut_sem_prop_t *m
     return OS_SUCCESS;
 
 } /* end OS_MutSemGetInfo_Impl */
+
+}

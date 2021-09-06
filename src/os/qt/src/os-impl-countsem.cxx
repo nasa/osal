@@ -30,9 +30,13 @@
  ***************************************************************************************/
 
 #include "os-qt.h"
+
+extern "C" {
+
 #include "os-impl-countsem.h"
 #include "os-shared-countsem.h"
 #include "os-shared-idmap.h"
+}
 
 /*
  * Added SEM_VALUE_MAX Define
@@ -66,6 +70,8 @@ int32 OS_QT_CountSemAPI_Impl_Init(void)
     memset(OS_impl_count_sem_table, 0, sizeof(OS_impl_count_sem_table));
     return OS_SUCCESS;
 } /* end OS_QT_CountSemAPI_Impl_Init */
+
+extern "C" {
 
 /*----------------------------------------------------------------
  *
@@ -199,3 +205,5 @@ int32 OS_CountSemGetInfo_Impl(const OS_object_token_t *token, OS_count_sem_prop_
     count_prop->value = impl->id->available();
     return OS_SUCCESS;
 } /* end OS_CountSemGetInfo_Impl */
+
+}

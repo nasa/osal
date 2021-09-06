@@ -32,8 +32,9 @@
 #include "os-qt.h"
 #include "bsp-impl.h"
 #include <sched.h>
-
+extern "C" {
 #include "os-shared-idmap.h"
+}
 
 typedef struct
 {
@@ -75,6 +76,8 @@ enum
     MUTEX_TABLE_SIZE = (sizeof(MUTEX_TABLE) / sizeof(MUTEX_TABLE[0]))
 };
 
+extern "C" {
+
 /*----------------------------------------------------------------
  *
  * Function: OS_Lock_Global_Impl
@@ -83,7 +86,7 @@ enum
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_Lock_Global_Impl(osal_objtype_t idtype)
+void OS_Lock_Global_Impl(osal_objtype_t idtype)
 {
     QT_GlobalLock_t *mut;
     sigset_t            previous;
@@ -92,7 +95,7 @@ int32 OS_Lock_Global_Impl(osal_objtype_t idtype)
 
     if (mut == NULL)
     {
-        return OS_ERROR;
+        return;
     }
     /* TODO */
     // if (pthread_sigmask(SIG_SETMASK, &QT_GlobalVars.MaximumSigMask, &previous) != 0)
@@ -107,7 +110,7 @@ int32 OS_Lock_Global_Impl(osal_objtype_t idtype)
     /* TODO */
 //    mut->sigmask = previous;
 
-    return OS_SUCCESS;
+
 } /* end OS_Lock_Global_Impl */
 
 /*----------------------------------------------------------------
@@ -118,7 +121,7 @@ int32 OS_Lock_Global_Impl(osal_objtype_t idtype)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_Unlock_Global_Impl(osal_objtype_t idtype)
+void OS_Unlock_Global_Impl(osal_objtype_t idtype)
 {
     QT_GlobalLock_t *mut;
     sigset_t            previous;
@@ -134,7 +137,7 @@ int32 OS_Unlock_Global_Impl(osal_objtype_t idtype)
 
     if (mut == NULL)
     {
-        return OS_ERROR;
+        return;
     }
 
     /* Only get values inside the GlobalLock _before_ it is unlocked */
@@ -145,8 +148,36 @@ int32 OS_Unlock_Global_Impl(osal_objtype_t idtype)
     /*TODO */
     // pthread_sigmask(SIG_SETMASK, &previous, NULL);
 
-    return OS_SUCCESS;
+
 } /* end OS_Unlock_Global_Impl */
+
+
+/*----------------------------------------------------------------
+ *
+ *  Function: OS_WaitForStateChange_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+void OS_WaitForStateChange_Impl(osal_objtype_t idtype, uint32 attempts)
+{
+    QT_GlobalLock_t *mut;
+    sigset_t previous;
+
+    mut = MUTEX_TABLE[idtype];
+
+    if (mut == NULL)
+    {
+        return;
+    }
+    QWaitCondition waiter;
+    waiter.wait(mut->mutex,  QDeadlineTimer::Forever);
+
+
+}
+
+}
 
 /*---------------------------------------------------------------------------------------
    Name: OS_QT_TableMutex_Init
@@ -207,3 +238,4 @@ int32 OS_QT_TableMutex_Init(osal_objtype_t idtype)
 
     return (return_code);
 } /* end OS_QT_TableMutex_Init */
+

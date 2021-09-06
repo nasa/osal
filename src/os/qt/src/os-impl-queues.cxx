@@ -33,8 +33,11 @@
 #include "bsp-impl.h"
 #include <QProcess>
 #include "os-impl-queues.h"
+extern "C"{
 #include "os-shared-queue.h"
 #include "os-shared-idmap.h"
+
+}
 
 /* Tables where the OS object information is stored */
 OS_impl_queue_internal_record_t OS_impl_queue_table[OS_MAX_QUEUES];
@@ -72,6 +75,8 @@ int32 OS_QT_QueueAPI_Impl_Init(void)
 
     return OS_SUCCESS;
 } /* end OS_QT_QueueAPI_Impl_Init */
+
+extern "C"{
 
 /*----------------------------------------------------------------
  *
@@ -281,3 +286,5 @@ int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, size_t 
     return return_code;
 
 } /* end OS_QueuePut_Impl */
+
+}

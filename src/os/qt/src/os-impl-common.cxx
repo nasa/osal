@@ -38,12 +38,19 @@
 #include "os-impl-countsem.h"
 #include "os-impl-mutex.h"
 
+extern "C" {
+
 #include "os-shared-common.h"
 #include "os-shared-idmap.h"
 #include "os-shared-errors.h"
 
-QT_GlobalVars_t QT_GlobalVars = {0};
+}
 
+
+
+
+QT_GlobalVars_t QT_GlobalVars = {0};
+extern "C" {
 /*---------------------------------------------------------------------------------------
    Name: OS_API_Impl_Init
 
@@ -139,6 +146,9 @@ void OS_ApplicationShutdown_Impl(void)
     kill(getpid(), SIGHUP);
 } /* end OS_ApplicationShutdown_Impl */
 
+}
+
+
 /*----------------------------------------------------------------
  *
  * Function: OS_CompAbsDelayTime
@@ -165,3 +175,4 @@ void OS_QT_CompAbsDelayTime(uint32 msecs, struct timespec *tm)
         tm->tv_sec++;
     }
 } /* end OS_CompAbsDelayTime */
+

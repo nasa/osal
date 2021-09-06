@@ -33,10 +33,13 @@
 #include "bsp-impl.h"
 #include <sched.h>
 
-#include "os-impl-tasks.h"
 
+extern "C" {
+#include "os-impl-tasks.h"
 #include "os-shared-task.h"
 #include "os-shared-idmap.h"
+
+}
 
 /*
  * Defines
@@ -51,6 +54,7 @@ OS_impl_task_internal_record_t OS_impl_task_table[OS_MAX_TASKS];
 /*
  * Local Function Prototypes
  */
+extern "C" {
 
 /*----------------------------------------------------------------------------
  * Name: OS_PriorityRemap
@@ -116,13 +120,324 @@ static void OS_NoopSigHandler(int signal) {} /* end OS_NoopSigHandler */
 ---------------------------------------------------------------------------------------*/
 static void *OS_PthreadTaskEntry(void *arg)
 {
-    OS_U32ValueWrapper_t local_arg;
+    OS_VoidPtrValueWrapper_t local_arg;
 
     local_arg.opaque_arg = arg;
     OS_TaskEntryPoint(local_arg.id); /* Never returns */
 
     return NULL;
 }
+
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskCreate_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
+{
+    OS_VoidPtrValueWrapper_t        arg;
+    int32                           return_code;
+    OS_impl_task_internal_record_t *impl;
+    OS_task_internal_record_t *     task;
+
+    arg.opaque_arg = NULL;
+    arg.id         = OS_ObjectIdFromToken(token);
+
+    task = OS_OBJECT_TABLE_GET(OS_task_table, *token);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    return_code = OS_QT_InternalTaskCreate_Impl(impl, task->priority, task->stack_size, OS_PthreadTaskEntry,
+                                                   arg.opaque_arg);
+
+    return return_code;
+} /* end OS_TaskCreate_Impl */
+
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskDetach_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
+{
+    OS_impl_task_internal_record_t *impl;
+    int                             ret;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    return OS_ERR_NOT_IMPLEMENTED;
+    // ret = pthread_detach(impl->id);
+
+    // if (ret != 0)
+    // {
+    //     OS_DEBUG("pthread_detach: Failed on Task ID = %lu, err = %s\n",
+    //              OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), strerror(ret));
+    //     return OS_ERROR;
+    // }
+
+    // return OS_SUCCESS;
+}
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskMatch_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskMatch_Impl(const OS_object_token_t *token)
+{
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    /* TODO */
+    // if (pthread_equal(pthread_self(), impl->id) == 0)
+    // {
+    //     return OS_ERROR;
+    // }
+    return OS_ERR_NOT_IMPLEMENTED;
+
+} /* end OS_TaskMatch_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskDelete_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
+{
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    if(impl->thread == NULL){
+        /* TODO Already deleted should this be an error? */
+        return OS_SUCCESS;
+    }
+
+    /*
+    ** Try to delete the task
+    ** If this fails, not much recourse - the only potential cause of failure
+    ** to cancel here is that the thread ID is invalid because it already exited itself,
+    ** and if that is true there is nothing wrong - everything is OK to continue normally.
+    */
+
+    /* TODO ... Decide proper way to stop the task */
+    impl->thread->quit();
+    impl->thread->requestInterruption();
+    impl->thread->wait(100);
+    impl->thread->terminate();
+    impl->thread->wait();
+
+    delete impl->thread;
+
+
+    return OS_SUCCESS;
+
+} /* end OS_TaskDelete_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskExit_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+void OS_TaskExit_Impl()
+{
+    /* TODO .. How to get curent thread ... */
+    // OS_impl_task_internal_record_t *impl;
+    // impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    // if(impl->thread == NULL){
+    //     /* TODO Already deleted should this be an error? */
+    //     return;
+    // }
+
+    // impl->thread->quit();
+
+
+} /* end OS_TaskExit_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskDelay_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskDelay_Impl(uint32 millisecond)
+{
+    QThread *thread = QThread::currentThread();
+    if(thread == NULL)
+        return OS_ERROR;
+
+    thread->msleep(millisecond);
+    return OS_SUCCESS;
+
+} /* end OS_TaskDelay_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskSetPriority_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskSetPriority_Impl(const OS_object_token_t *token, osal_priority_t new_priority)
+{
+    int os_priority;
+    int ret;
+
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+    if(impl->thread == NULL){
+        return OS_ERROR;
+    }
+    if (QT_GlobalVars.EnableTaskPriorities)
+    {
+        /* Change OSAL priority into a priority that will work for this OS */
+        os_priority = OS_PriorityRemap(new_priority);
+        QThread::Priority priorty = (QThread::Priority)os_priority;
+        /*
+        ** Set priority
+        */
+        impl->thread->setPriority(priorty);
+    }
+
+    return OS_SUCCESS;
+} /* end OS_TaskSetPriority_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskRegister_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
+{
+    int32                return_code;
+    // OS_U32ValueWrapper_t arg;
+
+    // arg.opaque_arg = 0;
+    // arg.id         = global_task_id;
+    /* TODO */
+    return OS_ERR_NOT_IMPLEMENTED;
+
+    // return_code = pthread_setspecific(QT_GlobalVars.ThreadKey, arg.opaque_arg);
+    // if (return_code == 0)
+    // {
+    //     return_code = OS_SUCCESS;
+    // }
+    // else
+    // {
+    //     OS_DEBUG("OS_TaskRegister_Impl failed during pthread_setspecific() error=%s\n", strerror(return_code));
+    //     return_code = OS_ERROR;
+    // }
+
+    // return return_code;
+} /* end OS_TaskRegister_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskGetId_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+osal_id_t OS_TaskGetId_Impl(void)
+{
+    /* TODO */
+    return OS_ERR_NOT_IMPLEMENTED;
+    // OS_U32ValueWrapper_t self_record;
+
+    // self_record.opaque_arg = pthread_getspecific(QT_GlobalVars.ThreadKey);
+
+    // return (self_record.id);
+} /* end OS_TaskGetId_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskGetInfo_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_prop)
+{
+    OS_impl_task_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+    if(impl->thread == NULL){
+        return OS_ERROR;
+    }
+    memcpy(task_prop->name,impl->name, sizeof(task_prop->name));
+    task_prop->creator = 0; /* TODO */
+    task_prop->stack_size = impl->thread->stackSize();
+    task_prop->priority   = impl->thread->priority(); /*TODO Map from QT to OSAL */
+
+    return OS_SUCCESS;
+} /* end OS_TaskGetInfo_Impl */
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskIdMatchSystemData_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+bool OS_TaskIdMatchSystemData_Impl(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
+{
+    /* TODO */
+    return OS_ERR_NOT_IMPLEMENTED;
+    // const pthread_t *               target = (const pthread_t *)ref;
+    // OS_impl_task_internal_record_t *impl;
+
+    // impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    // return (pthread_equal(*target, impl->id) != 0);
+}
+
+/*----------------------------------------------------------------
+ *
+ * Function: OS_TaskValidateSystemData_Impl
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size)
+{
+    if (sysdata == NULL || sysdata_size != sizeof(OSALThread))
+    {
+        return OS_INVALID_POINTER;
+    }
+    return OS_SUCCESS;
+}
+
+}
+
 
 /*---------------------------------------------------------------------------------------
    Name: OS_QT_GetSchedulerParams
@@ -553,281 +868,3 @@ int32 OS_QT_InternalTaskCreate_Impl(OS_impl_task_internal_record_t *ost, osal_pr
 
     return return_code;
 } /* end OS_QT_InternalTaskCreate_Impl */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_TaskCreate_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
-{
-    OS_U32ValueWrapper_t            arg;
-    int32                           return_code;
-    OS_impl_task_internal_record_t *impl;
-    OS_task_internal_record_t *     task;
-
-    arg.opaque_arg = NULL;
-    arg.id         = OS_ObjectIdFromToken(token);
-
-    task = OS_OBJECT_TABLE_GET(OS_task_table, *token);
-    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
-
-    return_code = OS_QT_InternalTaskCreate_Impl(impl, task->priority, task->stack_size, OS_PthreadTaskEntry,
-                                                   arg.opaque_arg);
-
-    return return_code;
-} /* end OS_TaskCreate_Impl */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_TaskMatch_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_TaskMatch_Impl(const OS_object_token_t *token)
-{
-    OS_impl_task_internal_record_t *impl;
-
-    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
-
-    /* TODO */
-    // if (pthread_equal(pthread_self(), impl->id) == 0)
-    // {
-    //     return OS_ERROR;
-    // }
-    return OS_ERR_NOT_IMPLEMENTED;
-
-} /* end OS_TaskMatch_Impl */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_TaskDelete_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
-{
-    OS_impl_task_internal_record_t *impl;
-
-    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
-
-    if(impl->thread == NULL){
-        /* TODO Already deleted should this be an error? */
-        return OS_SUCCESS;
-    }
-
-    /*
-    ** Try to delete the task
-    ** If this fails, not much recourse - the only potential cause of failure
-    ** to cancel here is that the thread ID is invalid because it already exited itself,
-    ** and if that is true there is nothing wrong - everything is OK to continue normally.
-    */
-
-    /* TODO ... Decide proper way to stop the task */
-    impl->thread->quit();
-    impl->thread->requestInterruption();
-    impl->thread->wait(100);
-    impl->thread->terminate();
-    impl->thread->wait();
-
-    delete impl->thread;
-
-
-    return OS_SUCCESS;
-
-} /* end OS_TaskDelete_Impl */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_TaskExit_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-void OS_TaskExit_Impl()
-{
-    /* TODO .. How to get curent thread ... */
-    // OS_impl_task_internal_record_t *impl;
-    // impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
-
-    // if(impl->thread == NULL){
-    //     /* TODO Already deleted should this be an error? */
-    //     return;
-    // }
-
-    // impl->thread->quit();
-
-
-} /* end OS_TaskExit_Impl */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_TaskDelay_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_TaskDelay_Impl(uint32 millisecond)
-{
-    QThread *thread = QThread::currentThread();
-    if(thread == NULL)
-        return OS_ERROR;
-
-    thread->msleep(millisecond);
-    return OS_SUCCESS;
-
-} /* end OS_TaskDelay_Impl */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_TaskSetPriority_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_TaskSetPriority_Impl(const OS_object_token_t *token, osal_priority_t new_priority)
-{
-    int os_priority;
-    int ret;
-
-    OS_impl_task_internal_record_t *impl;
-
-    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
-    if(impl->thread == NULL){
-        return OS_ERROR;
-    }
-    if (QT_GlobalVars.EnableTaskPriorities)
-    {
-        /* Change OSAL priority into a priority that will work for this OS */
-        os_priority = OS_PriorityRemap(new_priority);
-        QThread::Priority priorty = (QThread::Priority)os_priority;
-        /*
-        ** Set priority
-        */
-        impl->thread->setPriority(priorty);
-    }
-
-    return OS_SUCCESS;
-} /* end OS_TaskSetPriority_Impl */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_TaskRegister_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
-{
-    int32                return_code;
-    // OS_U32ValueWrapper_t arg;
-
-    // arg.opaque_arg = 0;
-    // arg.id         = global_task_id;
-    /* TODO */
-    return OS_ERR_NOT_IMPLEMENTED;
-
-    // return_code = pthread_setspecific(QT_GlobalVars.ThreadKey, arg.opaque_arg);
-    // if (return_code == 0)
-    // {
-    //     return_code = OS_SUCCESS;
-    // }
-    // else
-    // {
-    //     OS_DEBUG("OS_TaskRegister_Impl failed during pthread_setspecific() error=%s\n", strerror(return_code));
-    //     return_code = OS_ERROR;
-    // }
-
-    // return return_code;
-} /* end OS_TaskRegister_Impl */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_TaskGetId_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-osal_id_t OS_TaskGetId_Impl(void)
-{
-    /* TODO */
-    return OS_ERR_NOT_IMPLEMENTED;
-    // OS_U32ValueWrapper_t self_record;
-
-    // self_record.opaque_arg = pthread_getspecific(QT_GlobalVars.ThreadKey);
-
-    // return (self_record.id);
-} /* end OS_TaskGetId_Impl */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_TaskGetInfo_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_prop)
-{
-    OS_impl_task_internal_record_t *impl;
-
-    impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
-    if(impl->thread == NULL){
-        return OS_ERROR;
-    }
-    memcpy(task_prop->name,impl->name, sizeof(task_prop->name));
-    task_prop->creator = 0; /* TODO */
-    task_prop->stack_size = impl->thread->stackSize();
-    task_prop->priority   = impl->thread->priority(); /*TODO Map from QT to OSAL */
-
-    return OS_SUCCESS;
-} /* end OS_TaskGetInfo_Impl */
-
-/*----------------------------------------------------------------
- *
- * Function: OS_TaskIdMatchSystemData_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-bool OS_TaskIdMatchSystemData_Impl(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
-{
-    /* TODO */
-    return OS_ERR_NOT_IMPLEMENTED;
-    // const pthread_t *               target = (const pthread_t *)ref;
-    // OS_impl_task_internal_record_t *impl;
-
-    // impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
-
-    // return (pthread_equal(*target, impl->id) != 0);
-}
-
-/*----------------------------------------------------------------
- *
- * Function: OS_TaskValidateSystemData_Impl
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size)
-{
-    if (sysdata == NULL || sysdata_size != sizeof(OSALThread))
-    {
-        return OS_INVALID_POINTER;
-    }
-    return OS_SUCCESS;
-}

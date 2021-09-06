@@ -5,8 +5,8 @@
 ######################################################################
 
 #enable_language(CXX)
-find_package(Qt5Core)
-find_package(Qt5Widgets REQUIRED)
+# find_package(Qt5Core)
+# find_package(Qt5Widgets REQUIRED)
 find_package(Qt5 COMPONENTS Core network REQUIRED)
 
 # This CMake script generates targets specific to the QT implementation
@@ -16,21 +16,30 @@ find_package(Qt5 COMPONENTS Core network REQUIRED)
 # Set up Qt
 set(CMAKE_AUTOMOC ON)                    
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED) 
-include_directories(${Qt5Core_INCLUDE_DIRS})
-include_directories(${Qt5Gui_INCLUDE_DIRS})
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
+# find_package(Qt5 Core REQUIRED)
+# find_package(Qt5Gui REQUIRED)
+# find_package(Qt5Widgets REQUIRED) 
+include_directories(osal_qt_impl PUBLIC ${Qt5Core_INCLUDE_DIRS})
+include_directories(osal PUBLIC ${Qt5Core_INCLUDE_DIRS})
+# include_directories(${Qt5Gui_INCLUDE_DIRS})
+# include_directories(${Qt5Widgets_INCLUDE_DIRS})
 add_definitions(${Qt5Widgets_DEFINITIONS})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 
-include_directories(${QT_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/inc
+include_directories(osal_qt_impl 
+    ${CMAKE_CURRENT_SOURCE_DIR}/inc
+    PUBLIC    
+    ${QT_INCLUDES} 
+)
+
+include_directories(osal 
+PUBLIC
+${QT_INCLUDES} 
 )
 
 # Widgets finds its own dependencies (QtGui and QtCore).
-find_package(Qt5Widgets REQUIRED)
+#find_package(Qt5Widgets REQUIRED)
 
 
 # We need add -DQT_WIDGETS_LIB when using QtWidgets in Qt 5.
@@ -57,7 +66,7 @@ set(QT_BASE_SRCLIST
     src/os-impl-queues.cxx
     src/os-impl-tasks.cxx
     src/os-impl-timebase.cxx
-    src/os-impl-qt-gettime.cxx
+    # src/os-impl-qt-gettime.cxx
 )
 
 
@@ -99,8 +108,9 @@ endif ()
 
 if (OSAL_CONFIG_INCLUDE_NETWORK)
     list(APPEND QT_IMPL_SRCLIST
-        ../portable/os-impl-bsd-sockets.c   # Use BSD socket layer implementation
-        ../portable/os-impl-posix-network.c # Use QT-defined hostname/id implementation
+        src/os-impl-sockets.cxx   # Use BSD socket layer implementation
+        src/os-impl-qt-network.cxx
+#        ../portable/os-impl-posix-network.c # Use QT-defined hostname/id implementation
     )
 else()
     list(APPEND QT_IMPL_SRCLIST
