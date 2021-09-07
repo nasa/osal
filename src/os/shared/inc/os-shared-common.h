@@ -149,7 +149,7 @@ void OS_ApplicationShutdown_Impl(void);
  ------------------------------------------------------------------*/
 static inline size_t OS_strnlen(const char *s, size_t maxlen)
 {
-    const char *end = memchr(s, 0, maxlen);
+    const char *end = (const char *)memchr(s, 0, maxlen);
     if (end != NULL)
     {
         /* actual length of string is difference */
