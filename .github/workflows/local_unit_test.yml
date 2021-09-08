@@ -44,10 +44,10 @@ jobs:
         run: |
           # Current best possible branch coverage is all but 4, with associated issues for each missing case
           missed_branches=4
-          coverage_nums=$(grep -A 3 "Overall coverage rate" lcov_out.txt | grep branches | grep -oP "[1-9]+[0-9]*")
+          coverage_nums=$(grep -A 3 "Overall coverage rate" lcov_out.txt | grep branches | grep -oP "[0-9]+[0-9]*")
 
           diff=$(echo $coverage_nums | awk '{ print $4 - $3 }')
-          if [ $(($diff > $missed_branches)) == 1 ]
+          if [ $diff -gt $missed_branches ]
           then 
             grep -A 3 "Overall coverage rate" lcov_out.txt
             echo "More than $missed_branches branches missed"
