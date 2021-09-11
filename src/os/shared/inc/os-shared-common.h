@@ -98,7 +98,7 @@ int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data);
 int32 OS_API_Impl_Init(osal_objtype_t idtype);
 
 /*
- * This functions implement a the OS-specific portion
+ * This function implements the OS-specific portion
  * of various OSAL functions.  They are defined in
  * OS-specific source files.
  */

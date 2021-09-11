@@ -108,7 +108,7 @@ int OS_BSPMain(void)
 
     if (OS_BSP_GenericVxWorksGlobal.AccessMutex == (SEM_ID)0)
     {
-        BSP_DEBUG("semMInitalize: errno=%d\n", errno);
+        BSP_DEBUG("semMInitialize: errno=%d\n", errno);
     }
 
     /*

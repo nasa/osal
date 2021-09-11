@@ -57,7 +57,7 @@ static void OS_UsecToTimespec(uint32 usecs, struct timespec *time_spec);
  ***************************************************************************************/
 
 /*
- * Prefer to use the MONOTONIC clock if available, as it will not get distrupted by setting
+ * Prefer to use the MONOTONIC clock if available, as it will not get disrupted by setting
  * the time like the REALTIME clock will.
  */
 #ifndef OS_PREFERRED_CLOCK

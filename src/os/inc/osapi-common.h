@@ -150,7 +150,7 @@ int32 OS_API_Init(void);
  *
  * Normally for embedded applications, the OSAL is initialized after boot and will remain
  * initialized in memory until the processor is rebooted.  However for testing and
- * developement purposes, it is potentially useful to reset back to initial conditions.
+ * development purposes, it is potentially useful to reset back to initial conditions.
  *
  * For testing purposes, this API is designed/intended to be compatible with the
  * UtTest_AddTeardown() routine provided by the UT-Assert subsystem.

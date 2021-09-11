@@ -1,7 +1,7 @@
 ABOUT THE SYSTEM HEADER OVERRIDES
 =================================
 
-The "overrides" directory contain replacement versions of many system-provided 
+The "overrides" directory contains replacement versions of many system-provided 
 header files.  All replacement functions and types are identified using an 
 `OCS_` prefix.
 

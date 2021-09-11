@@ -70,7 +70,7 @@ typedef enum
 /**
  * @brief Wait for events across multiple file handles
  *
- * Wait for any of the given sets of IDs to be become readable or writable
+ * Wait for any of the given sets of IDs to become readable or writable
  *
  * This function will block until any of the following occurs:
  *  - At least one OSAL ID in the ReadSet is readable

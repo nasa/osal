@@ -144,7 +144,7 @@ int32 OS_ModuleLoad_Impl(const OS_object_token_t *token, const char *translated_
          * is acceptable.  If not acceptable, it sets the status back to an error.
          */
 
-        OS_DEBUG("module has has unresolved externals\n");
+        OS_DEBUG("Module has unresolved externals\n");
         status = OS_SUCCESS; /* note - not final, probably overridden */
         OSAL_UNRESOLVED_ITERATE(OS_rtems_rtl_check_unresolved, &status);
     }

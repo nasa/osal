@@ -38,7 +38,7 @@
 /**
  * The size limit to pass for OS_SymbolTableDump nominal test
  *
- * This must be large enough to actually accomodate all of the symbols
+ * This must be large enough to actually accommodate all of the symbols
  * in the target system.
  */
 #define UT_SYMTABLE_SIZE_LIMIT 1048576

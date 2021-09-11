@@ -172,7 +172,7 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
                 /* check if task_create failed */
                 if (status != RTEMS_SUCCESSFUL)
                 {
-                    /* Provide some freedback as to why this failed */
+                    /* Provide some feedback as to why this failed */
                     OS_DEBUG("rtems_task_create failed: %s\n", rtems_status_text(status));
                     rtems_semaphore_delete(local->data_sem);
                     return_code = OS_ERROR;

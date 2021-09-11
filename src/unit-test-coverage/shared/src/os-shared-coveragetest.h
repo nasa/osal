@@ -79,7 +79,7 @@ typedef union
 #define UT_INDEX_2 OSAL_INDEX_C(2)
 
 /*
- * Set up an coverage test iterator of the given type.
+ * Set up a coverage test iterator of the given type.
  *
  * The OS_ObjectIdIteratorGetNext() stub routine will be configured
  * to return the given range of IDs.

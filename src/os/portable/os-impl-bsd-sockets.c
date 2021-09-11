@@ -22,7 +22,7 @@
  * \file   os-impl-bsd-sockets.c
  * \author joseph.p.hickey@nasa.gov
  *
- * Purpose: This file contains the network functionality for for
+ * Purpose: This file contains the network functionality for
  *      systems which implement the BSD-style socket API.
  */
 
@@ -77,7 +77,7 @@ typedef union
  * Confirm that the abstract socket address buffer size (OS_SOCKADDR_MAX_LEN) is
  * large enough to store any of the enabled address types.  If this is true, the
  * size of the above union will match OS_SOCKADDR_MAX_LEN.  However, if any
- * implemention-provided struct types are larger than this, the union will be
+ * implementation-provided struct types are larger than this, the union will be
  * larger, and this indicates a configuration error.
  */
 CompileTimeAssert(sizeof(OS_SockAddr_Accessor_t) == OS_SOCKADDR_MAX_LEN, SockAddrSize);

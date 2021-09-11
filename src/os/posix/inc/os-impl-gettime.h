@@ -32,7 +32,7 @@
 #include <time.h>
 
 /**
- * \brief Idenfies the clock ID for OSAL clock operations on POSIX
+ * \brief Identifies the clock ID for OSAL clock operations on POSIX
  *
  * This is the POSIX clock ID that will be used to implement
  * OS_GetLocalTime() and OS_SetLocalTime().

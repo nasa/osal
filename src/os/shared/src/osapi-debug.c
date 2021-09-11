@@ -25,7 +25,7 @@
  *
  *      Contains the implementation for OS_DEBUG().
  *
- *      This is only compiled in when OSAL_CONFIG_DEBUG_PRINTF is enabled.
+ *      This is only compiled when OSAL_CONFIG_DEBUG_PRINTF is enabled.
  */
 
 /****************************************************************************************

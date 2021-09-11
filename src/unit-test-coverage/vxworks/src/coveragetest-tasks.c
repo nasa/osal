@@ -147,7 +147,7 @@ void Test_OS_TaskDetach_Impl(void)
      */
     OS_object_token_t token;
 
-    /* no-op on VxWorks - always returns sucess */
+    /* no-op on VxWorks - always returns success */
     OSAPI_TEST_FUNCTION_RC(OS_TaskDetach_Impl(&token), OS_SUCCESS);
 }
 

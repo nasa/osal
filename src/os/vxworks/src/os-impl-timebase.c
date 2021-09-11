@@ -48,7 +48,7 @@
                                      DEFINES
 ****************************************************************************************/
 
-/* Each "timebase" resource spawns an dedicated servicing task-
+/* Each "timebase" resource spawns a dedicated servicing task-
  * this task (not the timer ISR) is the context that calls back to
  * the user application.
  *
@@ -60,7 +60,7 @@
 
 #define OSAL_TIMEBASE_REG_WAIT_LIMIT 100
 /*
- * Prefer to use the MONOTONIC clock if available, as it will not get distrupted by setting
+ * Prefer to use the MONOTONIC clock if available, as it will not get disrupted by setting
  * the time like the REALTIME clock will.
  */
 #ifndef OS_PREFERRED_CLOCK

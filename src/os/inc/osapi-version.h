@@ -49,7 +49,7 @@
 /*!
  * @brief Mission revision.
  *
- * Set to 0 on OFFIFICIAL releases, and set to 255 (0xFF) on development versions.
+ * Set to 0 on OFFICIAL releases, and set to 255 (0xFF) on development versions.
  * Values 1-254 are reserved for mission use to denote patches/customizations as needed.
  */
 #define OS_MISSION_REV 0xFF

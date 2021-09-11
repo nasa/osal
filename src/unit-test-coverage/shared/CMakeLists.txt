@@ -54,7 +54,7 @@ foreach(MODNAME ${MODULE_LIST})
     )
 endforeach(MODNAME ${MODULE_LIST})
 
-# Add extra defintion to force the OS_STATIC_SYMTABLE_SOURCE to the
+# Add extra definition to force the OS_STATIC_SYMTABLE_SOURCE to the
 # local value within the module coverage test
 target_compile_definitions(utobj_coverage-shared-module PRIVATE
     "OS_STATIC_SYMTABLE_SOURCE=OS_UT_STATIC_SYMBOL_TABLE"

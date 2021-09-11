@@ -66,7 +66,7 @@
  *
  * The returned value is of the type "unsigned long" for direct use with
  * printf-style functions. It is recommended to use the "%lx" conversion
- * specifier as the hexidecimal encoding clearly delineates the internal fields.
+ * specifier as the hexadecimal encoding clearly delineates the internal fields.
  *
  * @note This provides the raw integer value and is _not_ suitable for use
  * as an array index, as the result is not zero-based.  See the

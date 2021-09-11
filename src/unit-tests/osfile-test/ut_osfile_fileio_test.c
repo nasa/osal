@@ -1257,7 +1257,7 @@ void UT_os_copyfile_test()
 ** Syntax: int32 OS_mv(const char *src, const char *dest)
 ** Purpose: Moves the given file to a new specified file
 ** Parameters: *src - pointer to the absolute path of the file to be moved
-**             *dest - pointer to the aboslute path of the new file
+**             *dest - pointer to the absolute path of the new file
 ** Returns: OS_INVALID_POINTER if any of the pointers passed in is null
 **          OS_FS_ERR_INVALID_PATH if path is invalid
 **          OS_FS_ERR_PATH_TOO_LONG if the path name is too long

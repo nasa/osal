@@ -89,7 +89,7 @@ void UT_BSP_DoText(uint8 MessageType, const char *OutputMessage);
 /**
  * The BSP overall test end function.
  *
- * Invokes the BSP-specific global pass/fail reporting mechanism based the global overall pass/fail counters.
+ * Invokes the BSP-specific global pass/fail reporting mechanism based on the global overall pass/fail counters.
  *
  * This function ends the current test process and returns to the controlling process.
  *

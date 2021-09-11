@@ -57,7 +57,7 @@
 #ifdef OSAL_CONFIG_BUGCHECK_STRICT
 
 /*
- * This BUGREPORT implementation aborts the application so that the applicaiton
+ * This BUGREPORT implementation aborts the application so that the application
  * can be debugged immediately.  This prints the message direct to stderr, which is
  * typically not buffered, so it should appear on the console before the abort occurs,
  * but may appear out of order with respect to calls to OS_printf().
@@ -114,7 +114,7 @@
  * which may (validly) occur at runtime and do not necessarily indicate bugs in the
  * application.
  *
- * These argument checks are NOT considered a fatal errors.  The application
+ * These argument checks are NOT considered fatal errors.  The application
  * continues to run normally.  This does not report the error on the console.
  *
  * As such, ARGCHECK actions are always compiled in - not selectable at compile-time.

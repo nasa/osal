@@ -226,7 +226,7 @@ void QueueMessageSetup(void)
     UtAssert_True(status == OS_SUCCESS, "Timer 1 set Rc=%d", (int)status);
 
     /*
-     * Put 10 messages onto the que with some time inbetween the later messages
+     * Put 10 messages onto the que with some time in between the later messages
      * to make sure the que handles both storing and waiting for messages
      */
     for (i = 0; i < MSGQ_TOTAL; i++)

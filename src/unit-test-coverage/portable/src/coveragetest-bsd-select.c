@@ -82,7 +82,7 @@ void Test_OS_SelectSingle_Impl(void)
     UtAssert_STUB_COUNT(OCS_clock_gettime, 3);
     UtAssert_STUB_COUNT(OCS_select, 2);
 
-    /* Repeaded select with alternate branches */
+    /* Repeated select with alternate branches */
     OCS_errno          = OCS_EAGAIN;
     SelectFlags        = OS_STREAM_STATE_READABLE | OS_STREAM_STATE_WRITABLE;
     latertime2.tv_nsec = 300000000;

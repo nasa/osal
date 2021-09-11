@@ -221,7 +221,7 @@ int32 OS_CountSemGetInfo_Impl(const OS_object_token_t *token, OS_count_sem_prop_
         return OS_SEM_FAILURE;
     }
 
-    /* put the info into the stucture */
+    /* put the info into the structure */
     count_prop->value = sval;
     return OS_SUCCESS;
 } /* end OS_CountSemGetInfo_Impl */
