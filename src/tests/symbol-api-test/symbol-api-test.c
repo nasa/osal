@@ -55,6 +55,10 @@ void TestSymbolApi(void)
     {
         UtAssert_MIR("32k too small for OS_SymbolTableDump");
     }
+    else if (status == OS_ERR_NAME_TOO_LONG)
+    {
+        UtAssert_MIR("OS_SymbolTableDump name to long, consider increasing OSAL_CONFIG_MAX_SYM_LEN");
+    }
     else
     {
         UtAssert_True(status == OS_SUCCESS, "status after 32k OS_SymbolTableDump = %d", (int)status);
@@ -73,6 +77,10 @@ void TestSymbolApi(void)
     {
         UtAssert_MIR("128k too small for OS_SymbolTableDump");
     }
+    else if (status == OS_ERR_NAME_TOO_LONG)
+    {
+        UtAssert_MIR("OS_SymbolTableDump name to long, consider increasing OSAL_CONFIG_MAX_SYM_LEN");
+    }
     else
     {
         UtAssert_True(status == OS_SUCCESS, "status after 128k OS_SymbolTableDump = %d", (int)status);
@@ -90,6 +98,10 @@ void TestSymbolApi(void)
     else if (status == OS_ERR_OUTPUT_TOO_LARGE)
     {
         UtAssert_MIR("512k too small for OS_SymbolTableDump");
+    }
+    else if (status == OS_ERR_NAME_TOO_LONG)
+    {
+        UtAssert_MIR("OS_SymbolTableDump name to long, consider increasing OSAL_CONFIG_MAX_SYM_LEN");
     }
     else
     {
