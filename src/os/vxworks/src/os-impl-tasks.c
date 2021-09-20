@@ -34,6 +34,7 @@
 #include "os-shared-task.h"
 #include "os-shared-idmap.h"
 #include "os-shared-timebase.h"
+#include "osapi-bsp.h"
 
 #include <errnoLib.h>
 #include <taskLib.h>
@@ -132,7 +133,7 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
     /* see if the user wants floating point enabled. If
      * so, then se the correct option.
      */
-    vxflags = 0;
+    vxflags = OS_BSP_GetResourceTypeConfig(OS_OBJECT_TYPE_OS_TASK);
     if (flags & OS_FP_ENABLED)
     {
         vxflags |= VX_FP_TASK;
