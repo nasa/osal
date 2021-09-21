@@ -37,6 +37,7 @@
 
 #define OCS_FIOCHKDSK  0x1E01
 #define OCS_FIOUNMOUNT 0x1E02
+#define OCS_FIONBIO    0x1E03
 
 /* ----------------------------------------- */
 /* types normally defined in ioLib.h */

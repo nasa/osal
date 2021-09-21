@@ -19,25 +19,15 @@
  */
 
 /**
- * \file
- * \ingroup ut-stubs
+ * \file     vxworks-os-impl-socket-stubs.c
+ * \ingroup  ut-stubs
+ * \author   joseph.p.hickey@nasa.gov
  *
- * OSAL coverage stub replacement for ioLib.h
  */
+#include <string.h>
+#include <stdlib.h>
+#include "utstubs.h"
 
-#ifndef OVERRIDE_IOLIB_H
-#define OVERRIDE_IOLIB_H
+#include "os-shared-idmap.h"
 
-#include "OCS_ioLib.h"
-#include <vxWorks.h>
-
-/* ----------------------------------------- */
-/* mappings for declarations in ioLib.h */
-/* ----------------------------------------- */
-
-#define FIOCHKDSK  OCS_FIOCHKDSK
-#define FIOUNMOUNT OCS_FIOUNMOUNT
-#define FIONBIO    OCS_FIONBIO
-#define ioctl      OCS_ioctl
-
-#endif /* OVERRIDE_IOLIB_H */
+void OS_VxWorks_SetSocketFlags_Impl(const OS_object_token_t *token) {}

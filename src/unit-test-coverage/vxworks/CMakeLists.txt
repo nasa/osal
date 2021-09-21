@@ -15,6 +15,7 @@ set(VXWORKS_MODULE_LIST
     network
     queues
     shell
+    sockets
     symtab
     tasks
     timebase

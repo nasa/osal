@@ -8,6 +8,7 @@ add_library(ut_vxworks_impl_stubs
     src/vxworks-os-impl-module-stubs.c
     src/vxworks-os-impl-mutex-stubs.c
     src/vxworks-os-impl-queue-stubs.c
+    src/vxworks-os-impl-sockets-stubs.c
     src/vxworks-os-impl-task-stubs.c
     src/vxworks-os-impl-timer-stubs.c
 )
