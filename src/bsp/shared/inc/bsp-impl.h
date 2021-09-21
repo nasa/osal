@@ -47,6 +47,7 @@
 #include "osapi-common.h"
 #include "osapi-bsp.h"
 #include "osapi-error.h"
+#include "osapi-idmap.h"
 
 /*
  * A set of simplified console control options
@@ -97,6 +98,14 @@ typedef struct
     char **           ArgV;          /* strings for boot/startup parameters */
     int32             AppStatus;     /* value which can be returned to the OS (0=nominal) */
     osal_blockcount_t MaxQueueDepth; /* Queue depth limit supported by BSP (0=no limit) */
+
+    /*
+     * Configuration registry - abstract integer flags to select platform-specific options
+     * for each resource type.  Flags are all platform-defined, and not every platform uses this
+     * feature.
+     */
+    uint32 ResoureConfig[OS_OBJECT_TYPE_USER];
+
 } OS_BSP_GlobalData_t;
 
 /*

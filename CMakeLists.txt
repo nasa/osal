@@ -175,6 +175,7 @@ set(BSP_SRCLIST
     src/bsp/shared/src/bsp_default_app_run.c
     src/bsp/shared/src/bsp_default_app_startup.c
     src/bsp/shared/src/bsp_default_symtab.c
+    src/bsp/shared/src/bsp_default_resourcecfg.c
 )
 
 # Define the external "osal_bsp" static library target
