@@ -21,6 +21,7 @@ add_library(ut-adaptor-${SETNAME} STATIC
     src/ut-adaptor-mutex.c
     src/ut-adaptor-queues.c
     src/ut-adaptor-filetable-stub.c
+    src/ut-adaptor-sockets.c
     src/ut-adaptor-symtab.c
     src/ut-adaptor-tasks.c
     src/ut-adaptor-timebase.c

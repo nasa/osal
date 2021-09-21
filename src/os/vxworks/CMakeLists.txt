@@ -65,6 +65,7 @@ if (OSAL_CONFIG_INCLUDE_NETWORK)
     list(APPEND VXWORKS_IMPL_SRCLIST
 	src/os-impl-network.c
         ../portable/os-impl-bsd-sockets.c   # Use BSD socket layer implementation
+        src/os-impl-sockets.c               # Additional vxworks-specific code to handle socket flags
     )
 else()
     list(APPEND VXWORKS_IMPL_SRCLIST

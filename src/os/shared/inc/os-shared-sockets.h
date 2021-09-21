@@ -188,5 +188,6 @@ int32 OS_SocketAddrSetPort_Impl(OS_SockAddr_t *Addr, uint16 PortNum);
  * Not normally called outside the local unit, except during unit test
  */
 void OS_CreateSocketName(const OS_object_token_t *token, const OS_SockAddr_t *Addr, const char *parent_name);
+void OS_SetSocketDefaultFlags_Impl(const OS_object_token_t *token);
 
 #endif /* OS_SHARED_SOCKETS_H */
