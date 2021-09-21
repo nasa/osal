@@ -177,6 +177,7 @@ void UT_os_module_symbol_lookup_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_symbol_table_dump_test()
 {
+    int32 status;
     /*
      * Note that even if the functionality is not implemented,
      * the API still validates the input pointers (not null) and
@@ -196,7 +197,25 @@ void UT_os_symbol_table_dump_test()
     /*-----------------------------------------------------*/
     /* #3 Nominal */
 
-    if (UT_NOMINAL_OR_NOTIMPL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolReal.dat", UT_SYMTABLE_SIZE_LIMIT)))
+    status = OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolReal.dat", UT_SYMTABLE_SIZE_LIMIT);
+    if (status == OS_ERR_NOT_IMPLEMENTED)
+    {
+        UtAssert_NA("OS_SymbolTableDump API not implemented");
+    }
+    else if (status == OS_ERR_OUTPUT_TOO_LARGE)
+    {
+        UtAssert_MIR("UT_SYMTABLE_SIZE_LIMIT too small for OS_SymbolTableDump");
+    }
+    else if (status == OS_ERR_NAME_TOO_LONG)
+    {
+        UtAssert_MIR("OSAL_CONFIG_MAX_SYM_LEN too small for OS_SymbolTableDump");
+    }
+    else
+    {
+        UtAssert_True(status == OS_SUCCESS, "status after 128k OS_SymbolTableDump = %d", (int)status);
+    }
+
+    if (status == OS_SUCCESS)
     {
         UT_RETVAL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolZero.dat", 0), OS_ERR_OUTPUT_TOO_LARGE);
     }
