@@ -19,25 +19,26 @@
  */
 
 /**
- * \file
- * \ingroup ut-stubs
+ * \file     ut-adaptor-sockets.c
+ * \ingroup  adaptors
+ * \author   joseph.p.hickey@nasa.gov
  *
- * OSAL coverage stub replacement for ioLib.h
  */
 
-#ifndef OVERRIDE_IOLIB_H
-#define OVERRIDE_IOLIB_H
+/* pull in the OSAL configuration */
+#include "osconfig.h"
+#include "ut-adaptor-sockets.h"
 
-#include "OCS_ioLib.h"
-#include <vxWorks.h>
+#include "os-vxworks.h"
+#include "os-shared-idmap.h"
+#include "os-impl-sockets.h"
 
-/* ----------------------------------------- */
-/* mappings for declarations in ioLib.h */
-/* ----------------------------------------- */
+/*
+ * A UT-specific wrapper function to invoke the VxWorks "SetFlag" helper
+ */
+void UT_SocketTest_CallVxWorksSetFlags_Impl(uint32 index)
+{
+    OS_object_token_t token = {.obj_idx = index};
 
-#define FIOCHKDSK  OCS_FIOCHKDSK
-#define FIOUNMOUNT OCS_FIOUNMOUNT
-#define FIONBIO    OCS_FIONBIO
-#define ioctl      OCS_ioctl
-
-#endif /* OVERRIDE_IOLIB_H */
+    OS_VxWorks_SetSocketFlags_Impl(&token);
+}

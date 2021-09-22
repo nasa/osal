@@ -29,6 +29,7 @@
 #define OS_IMPL_SOCKETS_H
 
 #include "os-impl-io.h"
+#include "os-shared-globaldefs.h"
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -37,25 +38,19 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <hostLib.h>
+#include <ioLib.h>
 
 /*
- * Socket descriptors should be usable with the select() API
+ * Override the socket flag set routine on this platform.
+ * This is required because some versions of VxWorks do not support
+ * the standard POSIX fcntl() opcodes, and must use ioctl() instead.
  */
-#define OS_IMPL_SOCKET_SELECTABLE true
-
-/*
- * Use the O_NONBLOCK flag on sockets
- *
- * NOTE: the fcntl() F_GETFL/F_SETFL opcodes that set descriptor flags may not
- * work correctly on some version of VxWorks.
- *
- * This flag is not strictly required, things still mostly work without it,
- * but lack of this mode does introduce some potential race conditions if more
- * than one task attempts to use the same descriptor handle at the same time.
- */
-#define OS_IMPL_SOCKET_FLAGS O_NONBLOCK
+#define OS_IMPL_SET_SOCKET_FLAGS(impl) OS_VxWorks_SetSocketFlags_Impl(impl)
 
 /* The "in.h" header file supplied in VxWorks 6.9 is missing the "in_port_t" typedef */
 typedef u_short in_port_t;
+
+/* VxWorks-specific helper function to configure the socket flags on a connection */
+void OS_VxWorks_SetSocketFlags_Impl(const OS_object_token_t *token);
 
 #endif /* OS_IMPL_SOCKETS_H */

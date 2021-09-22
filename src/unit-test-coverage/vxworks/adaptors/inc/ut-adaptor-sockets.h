@@ -20,24 +20,16 @@
 
 /**
  * \file
- * \ingroup ut-stubs
+ * \ingroup adaptors
  *
- * OSAL coverage stub replacement for ioLib.h
+ * Declarations and prototypes for ut-adaptor-symtab
  */
 
-#ifndef OVERRIDE_IOLIB_H
-#define OVERRIDE_IOLIB_H
+#ifndef UT_ADAPTOR_SOCKETS_H
+#define UT_ADAPTOR_SOCKETS_H
 
-#include "OCS_ioLib.h"
-#include <vxWorks.h>
+#include "common_types.h"
 
-/* ----------------------------------------- */
-/* mappings for declarations in ioLib.h */
-/* ----------------------------------------- */
+void UT_SocketTest_CallVxWorksSetFlags_Impl(uint32 index);
 
-#define FIOCHKDSK  OCS_FIOCHKDSK
-#define FIOUNMOUNT OCS_FIOUNMOUNT
-#define FIONBIO    OCS_FIONBIO
-#define ioctl      OCS_ioctl
-
-#endif /* OVERRIDE_IOLIB_H */
+#endif /* UT_ADAPTOR_SOCKETS_H */

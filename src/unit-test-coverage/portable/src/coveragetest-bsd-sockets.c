@@ -100,21 +100,34 @@ void Test_OS_SocketOpen_Impl(void)
     OS_stream_table[0].socket_type   = OS_SocketType_STREAM;
     OS_stream_table[0].socket_domain = OS_SocketDomain_INET6;
     OSAPI_TEST_FUNCTION_RC(OS_SocketOpen_Impl, (&token), OS_SUCCESS);
-    UtAssert_True(UT_PortablePosixIOTest_Get_Selectable(token.obj_idx), "Socket is selectable");
+}
+
+void Test_OS_SetSocketDefaultFlags_Impl(void)
+{
+    OS_object_token_t token = {0};
 
     /* Failure in fcntl() GETFL */
     UT_PortablePosixIOTest_ResetImpl(token.obj_idx);
     UT_ResetState(UT_KEY(OCS_fcntl));
     UT_SetDeferredRetcode(UT_KEY(OCS_fcntl), 1, -1);
-    OSAPI_TEST_FUNCTION_RC(OS_SocketOpen_Impl, (&token), OS_SUCCESS);
+    UtAssert_VOIDCALL(OS_SetSocketDefaultFlags_Impl(&token));
     UtAssert_STUB_COUNT(OCS_fcntl, 1);
+    UtAssert_True(UT_PortablePosixIOTest_Get_Selectable(token.obj_idx), "Socket is selectable");
 
     /* Failure in fcntl() SETFL */
     UT_PortablePosixIOTest_ResetImpl(token.obj_idx);
     UT_ResetState(UT_KEY(OCS_fcntl));
     UT_SetDeferredRetcode(UT_KEY(OCS_fcntl), 2, -1);
-    OSAPI_TEST_FUNCTION_RC(OS_SocketOpen_Impl, (&token), OS_SUCCESS);
+    UtAssert_VOIDCALL(OS_SetSocketDefaultFlags_Impl(&token));
     UtAssert_STUB_COUNT(OCS_fcntl, 2);
+    UtAssert_True(UT_PortablePosixIOTest_Get_Selectable(token.obj_idx), "Socket is selectable");
+
+    /* Nominal path */
+    UT_PortablePosixIOTest_ResetImpl(token.obj_idx);
+    UT_ResetState(UT_KEY(OCS_fcntl));
+    UtAssert_VOIDCALL(OS_SetSocketDefaultFlags_Impl(&token));
+    UtAssert_STUB_COUNT(OCS_fcntl, 2);
+    UtAssert_True(UT_PortablePosixIOTest_Get_Selectable(token.obj_idx), "Socket is selectable");
 }
 
 void Test_OS_SocketBind_Impl(void)
@@ -255,20 +268,6 @@ void Test_OS_SocketAccept_Impl(void)
 
     /* Success case */
     OSAPI_TEST_FUNCTION_RC(OS_SocketAccept_Impl, (&sock_token, &conn_token, &addr, 0), OS_SUCCESS);
-
-    /* Failure in fcntl() GETFL */
-    UT_PortablePosixIOTest_ResetImpl(conn_token.obj_idx);
-    UT_ResetState(UT_KEY(OCS_fcntl));
-    UT_SetDeferredRetcode(UT_KEY(OCS_fcntl), 1, -1);
-    OSAPI_TEST_FUNCTION_RC(OS_SocketAccept_Impl, (&sock_token, &conn_token, &addr, 0), OS_SUCCESS);
-    UtAssert_STUB_COUNT(OCS_fcntl, 1);
-
-    /* Failure in fcntl() SETFL */
-    UT_PortablePosixIOTest_ResetImpl(conn_token.obj_idx);
-    UT_ResetState(UT_KEY(OCS_fcntl));
-    UT_SetDeferredRetcode(UT_KEY(OCS_fcntl), 2, -1);
-    OSAPI_TEST_FUNCTION_RC(OS_SocketAccept_Impl, (&sock_token, &conn_token, &addr, 0), OS_SUCCESS);
-    UtAssert_STUB_COUNT(OCS_fcntl, 2);
 }
 
 void Test_OS_SocketRecvFrom_Impl(void)
@@ -484,6 +483,7 @@ void Osapi_Test_Teardown(void) {}
 void UtTest_Setup(void)
 {
     ADD_TEST(OS_SocketOpen_Impl);
+    ADD_TEST(OS_SetSocketDefaultFlags_Impl);
     ADD_TEST(OS_SocketBind_Impl);
     ADD_TEST(OS_SocketConnect_Impl);
     ADD_TEST(OS_SocketShutdown_Impl);

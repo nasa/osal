@@ -45,6 +45,22 @@
  */
 
 /*----------------------------------------------------------------
+   Function: OS_BSP_SetResourceTypeConfig
+
+    Purpose: Sets BSP/platform-specific flags for the given resource type
+             Flags and bit meanings are all platform defined.
+ ------------------------------------------------------------------*/
+void OS_BSP_SetResourceTypeConfig(uint32 ResourceType, uint32 ConfigOptionValue);
+
+/*----------------------------------------------------------------
+   Function: OS_BSP_SetResourceTypeConfig
+
+    Purpose: Gets BSP/platform-specific flags for the given resource type
+             Flags and bit meanings are all platform defined.
+ ------------------------------------------------------------------*/
+uint32 OS_BSP_GetResourceTypeConfig(uint32 ResourceType);
+
+/*----------------------------------------------------------------
    Function: OS_BSP_GetArgC
 
     Purpose: Obtain the number of boot arguments passed from the bootloader

@@ -29,6 +29,18 @@
 
 /*
  * ----------------------------------------------------
+ * Generated stub function for OS_SetSocketDefaultFlags_Impl()
+ * ----------------------------------------------------
+ */
+void OS_SetSocketDefaultFlags_Impl(const OS_object_token_t *token)
+{
+    UT_GenStub_AddParam(OS_SetSocketDefaultFlags_Impl, const OS_object_token_t *, token);
+
+    UT_GenStub_Execute(OS_SetSocketDefaultFlags_Impl, Basic, NULL);
+}
+
+/*
+ * ----------------------------------------------------
  * Generated stub function for OS_SocketAccept_Impl()
  * ----------------------------------------------------
  */
