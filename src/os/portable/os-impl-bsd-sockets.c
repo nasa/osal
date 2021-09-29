@@ -196,7 +196,10 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
      * code restarts.  However if setting the option fails then it is not worth bailing out over.
      */
     os_flags = 1;
+    if (setsockopt(impl->fd, SOL_SOCKET, SO_REUSEADDR, &os_flags, sizeof(os_flags)) == 0)
+    {
     setsockopt(impl->fd, SOL_SOCKET, SO_REUSEADDR, &os_flags, sizeof(os_flags));
+    }
 
     /*
      * Set the standard options on the filehandle by default --
