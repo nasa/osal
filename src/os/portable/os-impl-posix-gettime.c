@@ -22,7 +22,7 @@
  * \file   os-impl-posix-gettime.c
  * \author joseph.p.hickey@nasa.gov
  *
- * This file contains implementation for OS_GetTime() and OS_SetTime()
+ * This file contains implementation for OS_GetLocalTime() and OS_SetLocalTime()
  * that map to the C library clock_gettime() and clock_settime() calls.
  * This should be usable on any OS that supports those standard calls.
  * The OS-specific code must \#include the correct headers that define the
