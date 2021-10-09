@@ -327,7 +327,7 @@ foreach my $basename (sort keys %{$publicapi}) {
             if ($fileapi->{$funcname}->{variadic}) {
                 $args .= ", va_list";
             }
-            print OUT "extern void ".$handler_func->{$funcname}."($args);\n";
+            print OUT "void ".$handler_func->{$funcname}."($args);\n";
         }
     }
 
