@@ -57,14 +57,15 @@ typedef struct
 bool UtMem2BinFile(const void *Memory, const char *Filename, uint32 Length)
 {
     FILE *      fp;
+    int         fd;
     struct stat dststat;
 
     if ((fp = fopen(Filename, "w")))
     {
-        if (stat(Filename, &dststat) == 0)
+        fd = fileno(fp);
+        if (fstat(fd, &dststat) == 0)
         {
-            chmod(Filename, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
-            stat(Filename, &dststat);
+            fchmod(fd, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
         }
 
         fwrite(Memory, Length, 1, fp);
@@ -106,14 +107,15 @@ bool UtMem2HexFile(const void *Memory, const char *Filename, uint32 Length)
     FILE *      fp;
     uint32      i;
     uint32      j;
+    int         fd;
     struct stat dststat;
 
     if ((fp = fopen(Filename, "w")))
     {
-        if (stat(Filename, &dststat) == 0)
+        fd = fileno(fp);
+        if (fstat(fd, &dststat) == 0)
         {
-            chmod(Filename, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
-            stat(Filename, &dststat);
+            fchmod(fd, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
         }
 
         for (i = 0; i < Length; i += 16)
