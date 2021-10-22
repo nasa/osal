@@ -3,13 +3,27 @@ name: Format Check
 # Run on main push and pull requests
 on:
   push:
-    branches:
-      - main
   pull_request:
 
 jobs:
-
-  static-analysis:
+  #Checks for duplicate actions. Skips push actions if there is a matching or duplicate pull-request action. 
+  check-for-duplicates:
+    runs-on: ubuntu-latest
+    # Map a step output to a job output
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          concurrent_skipping: 'same_content'
+          skip_after_successful_duplicate: 'true'
+          do_not_skip: '["pull_request", "workflow_dispatch", "schedule"]'
+          
+  format-check:
+    #Continue if check-for-duplicates found no duplicates. Always runs for pull-requests.
+    needs: check-for-duplicates
+    if: ${{ needs.check-for-duplicates.outputs.should_skip != 'true' }}
     name: Run format check
     runs-on: ubuntu-18.04
     timeout-minutes: 15
