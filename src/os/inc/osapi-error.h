@@ -140,6 +140,22 @@ typedef char os_err_name_t[OS_ERROR_NAME_LENGTH];
 
 /*-------------------------------------------------------------------------------------*/
 /**
+ * @brief Convert a status code to a native "long" type
+ *
+ * For printing or logging purposes, this converts the given status code
+ * to a "long" (signed integer) value.  It should be used in conjunction
+ * with the "%ld" conversion specifier in printf-style statements.
+ *
+ * @param[in] Status Execution status, see @ref OSReturnCodes
+ * @return Same status value converted to the "long" data type
+ */
+static inline long OS_StatusToInteger(osal_status_t Status)
+{
+    return (long)Status;
+}
+
+/*-------------------------------------------------------------------------------------*/
+/**
  * @brief Convert an error number to a string
  *
  * @param[in] error_num Error number to convert
