@@ -54,10 +54,12 @@ OCS_VOIDFUNCPTR *OCS_INUM_TO_IVEC(unsigned int ui)
     OCS_VOIDFUNCPTR *      VecTbl;
     static OCS_VOIDFUNCPTR DummyVec;
     size_t                 VecTblSize;
+    void *                 GenericPtr;
 
     if (Status == 0)
     {
-        UT_GetDataBuffer(UT_KEY(OCS_INUM_TO_IVEC), (void **)&VecTbl, &VecTblSize, NULL);
+        UT_GetDataBuffer(UT_KEY(OCS_INUM_TO_IVEC), &GenericPtr, &VecTblSize, NULL);
+        VecTbl = GenericPtr;
         if (VecTbl != NULL && ui < (VecTblSize / sizeof(OCS_VOIDFUNCPTR)))
         {
             VecTbl += ui;
