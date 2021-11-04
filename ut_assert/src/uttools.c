@@ -61,15 +61,20 @@ bool UtMem2BinFile(const void *Memory, const char *Filename, uint32 Length)
 
     if ((fp = fopen(Filename, "w")))
     {
-        if (stat(Filename, &dststat) == 0)
+        int fd = fileno(fp);
+        fstat(fd, &dststat);
+        if ((fchmod(fd, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH)) == 0))
         {
-            chmod(Filename, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
-            stat(Filename, &dststat);
+            fwrite(Memory, Length, 1, fp);
+            fclose(fp);
+            return (true);
         }
-
-        fwrite(Memory, Length, 1, fp);
-        fclose(fp);
-        return (true);
+        else
+        {
+            printf("Unable to limit permissions on file");
+            fclose(fp);
+            return (false);
+        }
     }
     else
     {
@@ -77,6 +82,8 @@ bool UtMem2BinFile(const void *Memory, const char *Filename, uint32 Length)
         UtAssert_True(false, "UtMem2BinFile: Error Opening File");
         return (false);
     }
+
+    return (false);
 }
 
 bool UtBinFile2Mem(void *Memory, const char *Filename, uint32 Length)
@@ -110,32 +117,37 @@ bool UtMem2HexFile(const void *Memory, const char *Filename, uint32 Length)
 
     if ((fp = fopen(Filename, "w")))
     {
-        if (stat(Filename, &dststat) == 0)
+        int fd = fileno(fp);
+        fstat(fd, &dststat);
+        if ((fchmod(fd, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH)) == 0))
         {
-            chmod(Filename, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
-            stat(Filename, &dststat);
+            for (i = 0; i < Length; i += 16)
+            {
+                fprintf(fp, "   %06lX: ", (unsigned long)i);
+                for (j = 0; j < 16; j++)
+                {
+                    if ((i + j) < Length)
+                        fprintf(fp, "%02X ", ((uint8 *)Memory)[i + j]);
+                    else
+                        fprintf(fp, "   ");
+                }
+                fprintf(fp, " ");
+                for (j = 0; j < 16; j++)
+                {
+                    if ((i + j) < Length)
+                        fprintf(fp, "%c", isprint(((uint8 *)Memory)[i + j]) ? ((uint8 *)Memory)[i + j] : '.');
+                }
+                fprintf(fp, "\n");
+            }
+            fclose(fp);
+            return (true);
         }
-
-        for (i = 0; i < Length; i += 16)
+        else
         {
-            fprintf(fp, "   %06lX: ", (unsigned long)i);
-            for (j = 0; j < 16; j++)
-            {
-                if ((i + j) < Length)
-                    fprintf(fp, "%02X ", ((uint8 *)Memory)[i + j]);
-                else
-                    fprintf(fp, "   ");
-            }
-            fprintf(fp, " ");
-            for (j = 0; j < 16; j++)
-            {
-                if ((i + j) < Length)
-                    fprintf(fp, "%c", isprint(((uint8 *)Memory)[i + j]) ? ((uint8 *)Memory)[i + j] : '.');
-            }
-            fprintf(fp, "\n");
+            printf("Unable to limit permissions on file\n");
+            fclose(fp);
+            return (false);
         }
-        fclose(fp);
-        return (true);
     }
     else
     {
