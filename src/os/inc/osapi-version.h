@@ -36,8 +36,8 @@
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER   619
-#define OS_BUILD_BASELINE "v5.1.0-rc1"
+#define OS_BUILD_NUMBER   15
+#define OS_BUILD_BASELINE "v6.0.0-rc4"
 
 /*
  * Version Macro Definitions
@@ -68,7 +68,7 @@
 /*! @brief Version code name
  * All modular components which are tested/validated together should share the same code name
  */
-#define OS_VERSION_CODENAME "Bootes"
+#define OS_VERSION_CODENAME "Draco"
 
 /*! @brief Development Build Version String.
  * @details Reports the current development build's baseline, number, and name. Also includes a note about the latest
