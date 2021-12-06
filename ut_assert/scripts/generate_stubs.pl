@@ -110,6 +110,7 @@ foreach my $hdr (@hdrlist)
     my $file = "";
     my $file_boilerplate;
     my $file_variadic;
+    my @ifdef_level = (1);
 
     # All header files start with some legal boilerplate comments
     # Take the first one and save it, so it can be put into the output.
@@ -125,7 +126,31 @@ foreach my $hdr (@hdrlist)
             # so it will be in a single "line" in the result.
             chomp if (s/\\$//);
         }
-        push(@lines, $_);
+
+        # detect "#ifdef" lines - some may need to be recognized.
+        # at the very least, any C++-specific bits need to be skipped.
+        # for now this just specifically looks for __cplusplus
+        if (/^\#(if\w+)\s+(.*)$/) {
+            my $check = $1;
+            my $cond = $2;
+            my $result = $ifdef_level[0];
+
+            if ($cond eq "__cplusplus" && $check eq "ifdef") {
+                $result = 0;
+            }
+
+            unshift(@ifdef_level, $result);
+        }
+        elsif (/^\#else/) {
+            # invert the last preprocessor condition
+            $ifdef_level[0] = $ifdef_level[0] ^ $ifdef_level[1];
+        }
+        elsif (/^\#endif/) {
+            shift(@ifdef_level);
+        }
+        elsif ($ifdef_level[0]) {
+            push(@lines, $_) ;
+        }
     }
     close(HDR);
 
@@ -163,7 +188,6 @@ foreach my $hdr (@hdrlist)
     foreach (@lines) {
         next if (/\btypedef\b/);        # ignore typedefs
         next if (/\bstatic inline\b/);  # ignore
-
 
         # discard "extern" qualifier
         # (but other qualifiers like "const" are OK and should be preserved, as
@@ -327,7 +351,7 @@ foreach my $basename (sort keys %{$publicapi}) {
             if ($fileapi->{$funcname}->{variadic}) {
                 $args .= ", va_list";
             }
-            print OUT "extern void ".$handler_func->{$funcname}."($args);\n";
+            print OUT "void ".$handler_func->{$funcname}."($args);\n";
         }
     }
 
@@ -408,4 +432,3 @@ foreach my $basename (sort keys %{$publicapi}) {
 
     print "Generated $stubfile\n";
 }
-

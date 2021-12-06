@@ -119,6 +119,11 @@ extern "C"
     typedef uint32 osal_objtype_t;
 
     /**
+     * The preferred type to represent OSAL status codes defined in osapi-error.h
+     */
+    typedef int32 osal_status_t;
+
+    /**
      * @brief General purpose OSAL callback function
      *
      * This may be used by multiple APIS
@@ -155,5 +160,6 @@ extern "C"
 #define OSAL_BLOCKCOUNT_C(X) ((osal_blockcount_t)(X))
 #define OSAL_INDEX_C(X)      ((osal_index_t)(X))
 #define OSAL_OBJTYPE_C(X)    ((osal_objtype_t)(X))
+#define OSAL_STATUS_C(X)     ((osal_status_t)(X))
 
 #endif /* COMMON_TYPES_H */
