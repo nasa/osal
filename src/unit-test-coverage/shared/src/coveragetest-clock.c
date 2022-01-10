@@ -50,9 +50,9 @@ void Test_OS_SetLocalTime(void)
      * Test Case For:
      * int32 OS_SetLocalTime(OS_time_t *time_struct)
      */
-    OS_time_t time_struct;
-    int32     expected = OS_SUCCESS;
-    int32     actual   = OS_SetLocalTime(&time_struct);
+    OS_time_t time_struct = OS_TimeAssembleFromMicroseconds(5, 12345);
+    int32     expected    = OS_SUCCESS;
+    int32     actual      = OS_SetLocalTime(&time_struct);
 
     UtAssert_True(actual == expected, "OS_SetLocalTime() (%ld) == OS_SUCCESS", (long)actual);
 
