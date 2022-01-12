@@ -96,7 +96,7 @@ void UT_os_symbol_lookup_test()
     UT_RETVAL(OS_SymbolLookup(&symbol_addr, 0), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
-    /* Setup for remainder of tests */
+    /* Setup for global symbol test */
     if (UT_SETUP(OS_ModuleLoad(&module_id, "Mod1", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_GLOBAL_SYMBOLS)))
     {
         /*-----------------------------------------------------*/
@@ -106,6 +106,19 @@ void UT_os_symbol_lookup_test()
 
         /*-----------------------------------------------------*/
         /* #4 Nominal, Global Symbols */
+
+        UT_NOMINAL(OS_SymbolLookup(&symbol_addr, "module1"));
+
+        /* Reset test environment */
+        UT_TEARDOWN(OS_ModuleUnload(module_id));
+    }
+
+    /*-----------------------------------------------------*/
+    /* Setup for local symbol test */
+    if (UT_SETUP(OS_ModuleLoad(&module_id, "Mod1", UT_OS_GENERIC_MODULE_NAME2, OS_MODULE_FLAG_LOCAL_SYMBOLS)))
+    {
+        /*-----------------------------------------------------*/
+        /* #5 Nominal, Local Symbols */
 
         UT_NOMINAL(OS_SymbolLookup(&symbol_addr, "module1"));
 

@@ -361,9 +361,9 @@ int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
     OS_CHECK_POINTER(SymbolName);
 
     /*
-     * attempt to find the symbol in the global symbol table.
+     * attempt to find the symbol in the symbol table
      */
-    return_code = OS_GlobalSymbolLookup_Impl(SymbolAddress, SymbolName);
+    return_code = OS_SymbolLookup_Impl(SymbolAddress, SymbolName);
 
     /*
      * If the OS call did not find the symbol or the loader is
