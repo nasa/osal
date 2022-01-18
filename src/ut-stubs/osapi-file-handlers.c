@@ -192,13 +192,20 @@ void UT_DefaultHandler_OS_TimedWrite(void *UserObj, UT_EntryKey_t FuncKey, const
 void UT_DefaultHandler_OS_stat(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
 {
     os_fstat_t *filestats = UT_Hook_GetArgValueByName(Context, "filestats", os_fstat_t *);
+    size_t      CopySize;
     int32       Status;
 
     UT_Stub_GetInt32StatusCode(Context, &Status);
 
     if (Status == OS_SUCCESS)
     {
-        UT_Stub_CopyToLocal(UT_KEY(OS_stat), filestats, sizeof(*filestats));
+        CopySize = UT_Stub_CopyToLocal(UT_KEY(OS_stat), filestats, sizeof(*filestats));
+
+        /* Ensure memory is set if not provided by test */
+        if (CopySize < sizeof(*filestats))
+        {
+            memset(filestats, 0, sizeof(*filestats));
+        }
     }
 }
 
