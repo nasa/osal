@@ -145,7 +145,7 @@ void Test_OS_TaskDetach_Impl(void)
      * Test Case For:
      * int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
      */
-    OS_object_token_t token;
+    OS_object_token_t token = UT_TOKEN_0;
 
     /* no-op on VxWorks - always returns success */
     OSAPI_TEST_FUNCTION_RC(OS_TaskDetach_Impl(&token), OS_SUCCESS);

@@ -316,10 +316,10 @@ void Test_OS_SocketRecvFrom_Impl(void)
 
 void Test_OS_SocketSendTo_Impl(void)
 {
-    OS_object_token_t    token = {0};
-    uint8                buffer[UT_BUFFER_SIZE];
-    OS_SockAddr_t        addr = {0};
-    struct OCS_sockaddr *sa   = (struct OCS_sockaddr *)&addr.AddrData;
+    OS_object_token_t    token                  = {0};
+    const uint8          buffer[UT_BUFFER_SIZE] = {0};
+    OS_SockAddr_t        addr                   = {0};
+    struct OCS_sockaddr *sa                     = (struct OCS_sockaddr *)&addr.AddrData;
 
     /* Set up token */
     token.obj_idx = UT_INDEX_0;
@@ -393,9 +393,9 @@ void Test_OS_SocketAddrToString_Impl(void)
 
 void Test_OS_SocketAddrFromString_Impl(void)
 {
-    char                 buffer[UT_BUFFER_SIZE];
-    OS_SockAddr_t        addr = {0};
-    struct OCS_sockaddr *sa   = (struct OCS_sockaddr *)&addr.AddrData;
+    const char           buffer[UT_BUFFER_SIZE] = "UT";
+    OS_SockAddr_t        addr                   = {0};
+    struct OCS_sockaddr *sa                     = (struct OCS_sockaddr *)&addr.AddrData;
 
     /* Bad family */
     sa->sa_family = -1;
