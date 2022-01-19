@@ -498,7 +498,7 @@ typedef struct
  */
 #define UtAssert_STUB_COUNT(stub, expected)                                                     \
     UtAssert_GenericSignedCompare(UT_GetStubCount(UT_KEY(stub)), UtAssert_Compare_EQ, expected, \
-                                  UtAssert_Radix_DECIMAL, __FILE__, __LINE__, "CallCount", #stub "()", #expected)
+                                  UtAssert_Radix_DECIMAL, __FILE__, __LINE__, "CallCount ", #stub "()", #expected)
 
 /*
  * Exported Functions
