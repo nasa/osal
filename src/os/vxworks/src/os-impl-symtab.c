@@ -108,16 +108,16 @@ int32 OS_GenericSymbolLookup_Impl(SYMTAB_ID SymTab, cpuaddr *SymbolAddress, cons
 
 /*----------------------------------------------------------------
  *
- * Function: OS_GlobalSymbolLookup_Impl
+ * Function: OS_SymbolLookup_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 {
     return OS_GenericSymbolLookup_Impl(sysSymTbl, SymbolAddress, SymbolName);
-} /* end OS_GlobalSymbolLookup_Impl */
+} /* end OS_SymbolLookup_Impl */
 
 /*----------------------------------------------------------------
  *
@@ -130,7 +130,7 @@ int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 int32 OS_ModuleSymbolLookup_Impl(const OS_object_token_t *token, cpuaddr *SymbolAddress, const char *SymbolName)
 {
     /*
-     * NOTE: this is currently exactly the same as OS_GlobalSymbolLookup_Impl().
+     * NOTE: this is currently exactly the same as OS_SymbolLookup_Impl().
      *
      * Ideally this should get a SYMTAB_ID from the MODULE_ID and search only
      * for the symbols provided by that module - but it is not clear if vxWorks

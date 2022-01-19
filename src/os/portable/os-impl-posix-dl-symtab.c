@@ -134,17 +134,36 @@ int32 OS_GenericSymbolLookup_Impl(void *dl_handle, cpuaddr *SymbolAddress, const
 
 /*----------------------------------------------------------------
  *
- * Function: OS_GlobalSymbolLookup_Impl
+ * Function: OS_SymbolLookup_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 {
-    int32 status;
+    int32            status;
+    int32            local_status = OS_ERROR;
+    OS_object_iter_t iter;
 
+    /* First search global table */
     status = OS_GenericSymbolLookup_Impl(OSAL_DLSYM_DEFAULT_HANDLE, SymbolAddress, SymbolName);
+
+    /* If not found iterate through module local symbols and break if found */
+    if (status != OS_SUCCESS)
+    {
+        OS_ObjectIdIterateActive(OS_OBJECT_TYPE_OS_MODULE, &iter);
+        while (OS_ObjectIdIteratorGetNext(&iter))
+        {
+            local_status = OS_ModuleSymbolLookup_Impl(&iter.token, SymbolAddress, SymbolName);
+            if (local_status == OS_SUCCESS)
+            {
+                status = local_status;
+                break;
+            }
+        }
+        OS_ObjectIdIteratorDestroy(&iter);
+    }
 
     return status;
 

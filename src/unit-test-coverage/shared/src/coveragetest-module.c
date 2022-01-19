@@ -136,8 +136,8 @@ void Test_OS_SymbolLookup(void)
     actual = OS_SymbolLookup(&symaddr, "uttestsym0");
     UtAssert_True(actual == expected, "OS_SymbolLookup(name=%s) (%ld) == OS_SUCCESS", "uttestsym0", (long)actual);
 
-    UT_ResetState(UT_KEY(OS_GlobalSymbolLookup_Impl));
-    UT_SetDefaultReturnValue(UT_KEY(OS_GlobalSymbolLookup_Impl), OS_ERROR);
+    UT_ResetState(UT_KEY(OS_SymbolLookup_Impl));
+    UT_SetDefaultReturnValue(UT_KEY(OS_SymbolLookup_Impl), OS_ERROR);
 
     /* this lookup should always fail */
     symaddr  = 0;

@@ -29,19 +29,19 @@
 
 /*
  * ----------------------------------------------------
- * Generated stub function for OS_GlobalSymbolLookup_Impl()
+ * Generated stub function for OS_SymbolLookup_Impl()
  * ----------------------------------------------------
  */
-int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 {
-    UT_GenStub_SetupReturnBuffer(OS_GlobalSymbolLookup_Impl, int32);
+    UT_GenStub_SetupReturnBuffer(OS_SymbolLookup_Impl, int32);
 
-    UT_GenStub_AddParam(OS_GlobalSymbolLookup_Impl, cpuaddr *, SymbolAddress);
-    UT_GenStub_AddParam(OS_GlobalSymbolLookup_Impl, const char *, SymbolName);
+    UT_GenStub_AddParam(OS_SymbolLookup_Impl, cpuaddr *, SymbolAddress);
+    UT_GenStub_AddParam(OS_SymbolLookup_Impl, const char *, SymbolName);
 
-    UT_GenStub_Execute(OS_GlobalSymbolLookup_Impl, Basic, NULL);
+    UT_GenStub_Execute(OS_SymbolLookup_Impl, Basic, NULL);
 
-    return UT_GenStub_GetReturnValue(OS_GlobalSymbolLookup_Impl, int32);
+    return UT_GenStub_GetReturnValue(OS_SymbolLookup_Impl, int32);
 }
 
 /*

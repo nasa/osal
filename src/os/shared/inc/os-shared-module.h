@@ -95,14 +95,15 @@ int32 OS_ModuleUnload_Impl(const OS_object_token_t *token);
 int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *module_prop);
 
 /*----------------------------------------------------------------
-   Function: OS_GlobalSymbolLookup_Impl
+   Function: OS_SymbolLookup_Impl
 
-    Purpose: Find the Address of a Symbol in the global symbol table.
+    Purpose: Find the Address of a Symbol in the symbol table.  If global and
+             local tables exist all are checked.
              The address of the symbol will be stored in the pointer that is passed in.
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName);
+int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName);
 
 /*----------------------------------------------------------------
    Function: OS_SymbolLookup_Impl
