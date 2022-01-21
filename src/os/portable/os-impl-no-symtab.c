@@ -35,7 +35,7 @@
  *
  * See prototype for argument/return detail
  *-----------------------------------------------------------------*/
-int32 OS_GlobalSymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 }

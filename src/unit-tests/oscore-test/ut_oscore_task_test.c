@@ -605,7 +605,7 @@ void UT_os_task_get_info_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_task_getid_by_sysdata_test()
 {
-    uint8     sysdata;
+    uint8     sysdata = 0;
     osal_id_t task_id;
 
     /*

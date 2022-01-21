@@ -407,6 +407,162 @@ typedef struct
                                     __FILE__, __LINE__, "", #expr, #ref)
 
 /**
+ * \brief Compare two 16-bit values for equality with an auto-generated description message
+ *
+ * This macro confirms that the given expression is equal to the reference value
+ * The generated log message will include the actual and reference values in decimal notation
+ * Values will be compared in an "uint16" type context.
+ */
+#define UtAssert_UINT16_EQ(actual, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint16)(actual), UtAssert_Compare_EQ, (uint16)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT16: ", #actual, #ref)
+
+/**
+ * \brief Compare two 16-bit values for inequality with an auto-generated description message
+ *
+ * This macro confirms that the given expression is _not_ equal to the reference value
+ * The generated log message will include the actual and reference values in decimal notation
+ * Values will be compared in an "uint16" type context.
+ */
+#define UtAssert_UINT16_NEQ(actual, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint16)(actual), UtAssert_Compare_NEQ, (uint16)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT16: ", #actual, #ref)
+
+/**
+ * \brief Asserts the minimum 16-bit value of a given function or expression
+ *
+ * \par Description
+ *        This macro confirms that the given expression is at least the minimum 16-bit value (inclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT16_GTEQ(expr, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint16)(expr), UtAssert_Compare_GTEQ, (uint16)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT16: ", #expr, #ref)
+
+/**
+ * \brief Asserts the maximum 16-bit value of a given function or expression
+ *
+ * \par Description
+ *        This macro confirms that the given expression is at most the maximum 16-bit value (inclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT16_LTEQ(expr, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint16)(expr), UtAssert_Compare_LTEQ, (uint16)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT16: ", #expr, #ref)
+
+/**
+ * \brief Asserts the 16-bit value of a given function or expression is less than the 16-bit reference value
+ *
+ * \par Description
+ *        This macro confirms that the given expression is less than the maximum 16-bit value (exclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT16_LT(expr, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint16)(expr), UtAssert_Compare_LT, (uint16)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT16: ", #expr, #ref)
+
+/**
+ * \brief Asserts the 16-bit value of a given function or expression is greater than the 16-bit reference value
+ *
+ * \par Description
+ *        This macro confirms that the given expression is greater than the minimum 16-bit value (exclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT16_GT(expr, ref)                                                                           \
+    UtAssert_GenericUnsignedCompare((uint16)(expr), UtAssert_Compare_GT, (uint16)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT16: ", #expr, #ref)
+
+/**
+ * \brief Compare two 8-bit values for equality with an auto-generated description message
+ *
+ * This macro confirms that the given expression is equal to the reference value
+ * The generated log message will include the actual and reference values in decimal notation
+ * Values will be compared in an "uint8" type context.
+ */
+#define UtAssert_UINT8_EQ(actual, ref)                                                                          \
+    UtAssert_GenericUnsignedCompare((uint8)(actual), UtAssert_Compare_EQ, (uint8)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT8: ", #actual, #ref)
+
+/**
+ * \brief Compare two 8-bit values for inequality with an auto-generated description message
+ *
+ * This macro confirms that the given expression is _not_ equal to the reference value
+ * The generated log message will include the actual and reference values in decimal notation
+ * Values will be compared in an "uint8" type context.
+ */
+#define UtAssert_UINT8_NEQ(actual, ref)                                                                          \
+    UtAssert_GenericUnsignedCompare((uint8)(actual), UtAssert_Compare_NEQ, (uint8)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT8: ", #actual, #ref)
+
+/**
+ * \brief Asserts the minimum 8-bit value of a given function or expression
+ *
+ * \par Description
+ *        This macro confirms that the given expression is at least the minimum 8-bit value (inclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT8_GTEQ(expr, ref)                                                                          \
+    UtAssert_GenericUnsignedCompare((uint8)(expr), UtAssert_Compare_GTEQ, (uint8)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT8: ", #expr, #ref)
+
+/**
+ * \brief Asserts the maximum 8-bit value of a given function or expression
+ *
+ * \par Description
+ *        This macro confirms that the given expression is at most the maximum 8-bit value (inclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT8_LTEQ(expr, ref)                                                                          \
+    UtAssert_GenericUnsignedCompare((uint8)(expr), UtAssert_Compare_LTEQ, (uint8)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT8: ", #expr, #ref)
+
+/**
+ * \brief Asserts the 8-bit value of a given function or expression is less than the 8-bit reference value
+ *
+ * \par Description
+ *        This macro confirms that the given expression is less than the maximum 8-bit value (exclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT8_LT(expr, ref)                                                                          \
+    UtAssert_GenericUnsignedCompare((uint8)(expr), UtAssert_Compare_LT, (uint8)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT8: ", #expr, #ref)
+
+/**
+ * \brief Asserts the 8-bit value of a given function or expression is greater than the 8-bit reference value
+ *
+ * \par Description
+ *        This macro confirms that the given expression is greater than the minimum 8-bit value (exclusive)
+ *
+ * \par Assumptions, External Events, and Notes:
+ *        None
+ *
+ */
+#define UtAssert_UINT8_GT(expr, ref)                                                                          \
+    UtAssert_GenericUnsignedCompare((uint8)(expr), UtAssert_Compare_GT, (uint8)(ref), UtAssert_Radix_DECIMAL, \
+                                    __FILE__, __LINE__, "Compare UINT8: ", #expr, #ref)
+
+/**
  * \brief Macro for checking that bits in a bit field are set
  *
  * Test Passes if all the bits specified in "mask" are set in "rawval"
@@ -498,7 +654,7 @@ typedef struct
  */
 #define UtAssert_STUB_COUNT(stub, expected)                                                     \
     UtAssert_GenericSignedCompare(UT_GetStubCount(UT_KEY(stub)), UtAssert_Compare_EQ, expected, \
-                                  UtAssert_Radix_DECIMAL, __FILE__, __LINE__, "CallCount", #stub "()", #expected)
+                                  UtAssert_Radix_DECIMAL, __FILE__, __LINE__, "CallCount ", #stub "()", #expected)
 
 /*
  * Exported Functions
