@@ -91,10 +91,24 @@ extern "C"
     typedef size_t    cpusize;
     typedef ptrdiff_t cpudiff;
 
+#ifdef OSAL_OMIT_DEPRECATED
     /**
      * A type to be used for OSAL resource identifiers.
+     * This is a type-safe ID, and cannot be implicitly converted to an integer.
+     * Use the provided inline functions in osapi-idmap.h to interpret ID values.
      */
-    typedef uint32_t osal_id_t;
+    typedef struct
+    {
+        uint32_t v;
+    } osal_id_t;
+#else
+
+/**
+ * A type to be used for OSAL resource identifiers.
+ * This typedef is backward compatible with the IDs from older versions of OSAL
+ */
+typedef uint32 osal_id_t;
+#endif
 
     /**
      * A type used to represent a number of blocks or buffers
