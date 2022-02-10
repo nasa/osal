@@ -172,6 +172,7 @@ add_library(ut_osapi_impl_stubs STATIC EXCLUDE_FROM_ALL
     src/os-shared-queue-impl-stubs.c
     src/os-shared-select-impl-stubs.c
     src/os-shared-shell-impl-stubs.c
+    src/os-shared-sockets-impl-handlers.c
     src/os-shared-sockets-impl-stubs.c
     src/os-shared-task-impl-stubs.c
     src/os-shared-timebase-impl-stubs.c
