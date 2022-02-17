@@ -67,7 +67,8 @@ void UT_BSP_Setup(void);
  *
  * This is just a hook for the BSP to be informed of the start-of-test event and may be a no-op.
  *
- * \param Appname Name of current test segment
+ * \param[in] SegmentNumber Number of current test segment
+ * \param[in] SegmentName   Name of current test segment
  */
 void UT_BSP_StartTestSegment(uint32 SegmentNumber, const char *SegmentName);
 

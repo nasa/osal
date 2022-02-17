@@ -212,7 +212,7 @@ void UT_SetDataBuffer(UT_EntryKey_t FuncKey, void *DataBuffer, size_t BufferSize
  *
  * \param FuncKey The stub function to reference.
  * \param DataBuffer Set to Pointer to data buffer that is associated with the stub function (output)
- * \param BufferSize Set to Maximum Size of data buffer (output)
+ * \param MaxSize Set to Maximum Size of data buffer (output)
  * \param Position Set to current position in data buffer (output)
  */
 void UT_GetDataBuffer(UT_EntryKey_t FuncKey, void **DataBuffer, size_t *MaxSize, size_t *Position);
@@ -557,9 +557,10 @@ void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t FuncKey, const char *Name
  *
  * This does not return NULL, such that the returned value can always be dereferenced.
  *
- * \param ContextPtr   The context structure containing arguments
- * \param Name         Argument name to find
- * \param ExpectedSize The size of the expected object type
+ * \param ContextPtr       The context structure containing arguments
+ * \param Name             Argument name to find
+ * \param ExpectedTypeSize The size of the expected object type
+ *
  * \returns Pointer to buffer containing the value.
  */
 const void *UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Name, size_t ExpectedTypeSize);
@@ -588,8 +589,10 @@ const void *UT_Hook_GetArgPtr(const UT_StubContext_t *ContextPtr, const char *Na
  * \param FunctionName  The printable name of the actual function called, for the debug message.  If
  *    NULL then no debug message will be generated.
  * \param FuncKey       The Key to look up in the table
+ * \param DefaultRc     Default return code
+ * \param ArgList       Argument list
  */
-int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey, int32 DefaultRc, va_list va);
+int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey, int32 DefaultRc, va_list ArgList);
 
 /**
  * Handles a stub call for a variadic function
@@ -605,8 +608,10 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
  *
  * \sa UT_DefaultStubImplWithArgs()
  *
- * \param FuncKey       The key of the stub being executed
- * \param FunctionName  The printable name of the actual function called, for the debug message.
+ * \param FuncKey        The key of the stub being executed
+ * \param FunctionName   The printable name of the actual function called, for the debug message.
+ * \param DefaultHandler The default handler
+ * \param VaList         Argument list
  */
 void UT_ExecuteVaHandler(UT_EntryKey_t FuncKey, const char *FunctionName, UT_VaHandlerFunc_t DefaultHandler,
                          va_list VaList);
@@ -637,8 +642,9 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
  *
  * \sa UT_DefaultStubImplWithArgs()
  *
- * \param FuncKey       The key of the stub being executed
- * \param FunctionName  The printable name of the actual function called, for the debug message.
+ * \param FuncKey        The key of the stub being executed
+ * \param FunctionName   The printable name of the actual function called, for the debug message.
+ * \param DefaultHandler The default handler
  */
 void UT_ExecuteBasicHandler(UT_EntryKey_t FuncKey, const char *FunctionName, UT_HandlerFunc_t DefaultHandler);
 

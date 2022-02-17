@@ -126,9 +126,10 @@ static int32 OS_FdSet_ConvertIn_Impl(int *os_maxfd, fd_set *os_set, const OS_FdS
  *
  * This un-sets bits in OSAL_set that are set in the OS_set
  *
- * \param[in]      OS_set   The fd_set from select
- * \param[in, out] OSAL_set The OS_FdSet updated by this helper
- *-----------------------------------------------------------------*/
+ * \param[in]     OS_set   The fd_set from select
+ * \param[in,out] OSAL_set The OS_FdSet updated by this helper
+ */
+/*-----------------------------------------------------------------*/
 static void OS_FdSet_ConvertOut_Impl(fd_set *OS_set, OS_FdSet *OSAL_set)
 {
     size_t       offset;
