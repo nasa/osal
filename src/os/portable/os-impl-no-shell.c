@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-no-shell.c
+ * \file
  *
  * No shell implementation, returns OS_ERR_NOT_IMPLEMENTED for calls
  */

@@ -19,7 +19,7 @@
  */
 
 /**
- * \file   os-impl-bsd-select.c
+ * \file
  * \author joseph.p.hickey@nasa.gov
  *
  * Purpose: This file contains wrappers around the select() system call

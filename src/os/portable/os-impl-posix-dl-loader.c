@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-posix-dl-loader.c
+ * \file
  * \author   joseph.p.hickey@nasa.gov
  *
  * This file contains a module loader implementation for systems

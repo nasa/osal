@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     osapi-shared-task-table-stubs.c
+ * \file
  * \ingroup  ut-stubs
  * \author   joseph.p.hickey@nasa.gov
  *

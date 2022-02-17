@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-binsem.c
+ * \file
  * \ingroup  posix
  * \author   joseph.p.hickey@nasa.gov
  *

@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     vxworks-os-impl-file-stubs.c
+ * \file
  * \ingroup  ut-stubs
  * \author   joseph.p.hickey@nasa.gov
  *

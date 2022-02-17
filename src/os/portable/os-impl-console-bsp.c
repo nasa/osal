@@ -19,7 +19,7 @@
  */
 
 /**
- * \file   os-impl-console-bsp.c
+ * \file
  * \author joseph.p.hickey@nasa.gov
  *
  * Purpose:

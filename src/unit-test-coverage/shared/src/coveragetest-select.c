@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     coveragetest-select.c
+ * \file
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *

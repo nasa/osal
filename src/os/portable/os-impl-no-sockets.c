@@ -19,7 +19,7 @@
  */
 
 /**
- * \file   os-impl-no-sockets.c
+ * \file
  * \author joseph.p.hickey@nasa.gov
  *
  * Purpose: All functions return OS_ERR_NOT_IMPLEMENTED.

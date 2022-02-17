@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-no-module.c
+ * \file
  * \ingroup  rtems
  * \author   joseph.p.hickey@nasa.gov
  *

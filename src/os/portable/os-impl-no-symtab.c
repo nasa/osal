@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-no-symtab.c
+ * \file
  * \author   joseph.p.hickey@nasa.gov
  *
  * This file contains a symbol table implementation for systems

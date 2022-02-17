@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     ut-adaptor-binsem.c
+ * \file
  * \ingroup  adaptors
  * \author   joseph.p.hickey@nasa.gov
  *

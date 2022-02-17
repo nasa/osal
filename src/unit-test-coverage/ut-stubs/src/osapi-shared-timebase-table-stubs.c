@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     osapi-shared-timebase-table-stubs.c
+ * \file
  * \ingroup  ut-stubs
  * \author   joseph.p.hickey@nasa.gov
  *

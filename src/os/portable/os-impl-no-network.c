@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-no-network.c
+ * \file
  * \author   joseph.p.hickey@nasa.gov
  *
  * This file contains the network implementation for

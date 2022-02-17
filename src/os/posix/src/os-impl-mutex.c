@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-mutex.c
+ * \file
  * \ingroup  posix
  * \author   joseph.p.hickey@nasa.gov
  *

@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     osapi-bsp.c
+ * \file
  * \author   joseph.p.hickey@nasa.gov
  *
  * This file  contains some of the OS APIs abstraction layer code
