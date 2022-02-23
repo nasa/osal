@@ -27,6 +27,8 @@
 #include "os-shared-sockets.h"
 #include "utgenstub.h"
 
+void UT_DefaultHandler_OS_SocketAddrGetPort_Impl(void *, UT_EntryKey_t, const UT_StubContext_t *);
+
 /*
  * ----------------------------------------------------
  * Generated stub function for OS_SetSocketDefaultFlags_Impl()
@@ -88,7 +90,7 @@ int32 OS_SocketAddrGetPort_Impl(uint16 *PortNum, const OS_SockAddr_t *Addr)
     UT_GenStub_AddParam(OS_SocketAddrGetPort_Impl, uint16 *, PortNum);
     UT_GenStub_AddParam(OS_SocketAddrGetPort_Impl, const OS_SockAddr_t *, Addr);
 
-    UT_GenStub_Execute(OS_SocketAddrGetPort_Impl, Basic, NULL);
+    UT_GenStub_Execute(OS_SocketAddrGetPort_Impl, Basic, UT_DefaultHandler_OS_SocketAddrGetPort_Impl);
 
     return UT_GenStub_GetReturnValue(OS_SocketAddrGetPort_Impl, int32);
 }
