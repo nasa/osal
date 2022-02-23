@@ -108,7 +108,7 @@ void OS_UT_SetupBasicInfoTest(osal_objtype_t obj_type, osal_index_t test_idx, co
     rptr += test_idx;
     memset(rptr, 0, sizeof(*rptr));
     rptr->creator    = UT_OBJID_OTHER;
-    rptr->name_entry = "ABC";
+    rptr->name_entry = name;
 
     OS_UT_SetupTestTargetIndex(obj_type, test_idx);
 }
