@@ -818,7 +818,7 @@ void UtAssert_Message(uint8 MessageType, const char *File, uint32 Line, const ch
  * \param SubsysName   The subsystem under test (abbreviated name)
  * \param ShortDesc    Short description of the test case
  * \param SegmentNum   Sequence among the overall/global test Segments
- * \param TestDescr    Sequence within the current test Segment
+ * \param SegmentSeq   Sequence within the current test Segment
  */
 void UtAssert_DoReport(const char *File, uint32 LineNum, uint32 SegmentNum, uint32 SegmentSeq, uint8 MessageType,
                        const char *SubsysName, const char *ShortDesc);
@@ -831,7 +831,7 @@ void UtAssert_DoReport(const char *File, uint32 LineNum, uint32 SegmentNum, uint
  * Like the UtAssert_DoReport() function, this is typically done as a message on the console/log however
  * it might be different for embedded targets.
  *
- * \param Appname       The application under test
+ * \param SegmentName   The segment under test
  * \param TestCounters  Counter object for the completed test
  */
 void UtAssert_DoTestSegmentReport(const char *SegmentName, const UtAssert_TestCounter_t *TestCounters);

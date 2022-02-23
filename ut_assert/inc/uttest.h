@@ -61,8 +61,8 @@ void UtTest_Add(void (*Test)(void), void (*Setup)(void), void (*Teardown)(void),
  * This group of functions are invoked BEFORE normal test routines added with UtTest_Add.
  * Within the group, functions are executed in the order registered.
  *
- * \param Setup    Setup function, called before the test function
- * \param TestName Name of function for logging purposes
+ * \param Setup        Setup function, called before the test function
+ * \param SequenceName Name of sequence for logging purposes
  */
 void UtTest_AddSetup(void (*Setup)(void), const char *SequenceName);
 
@@ -72,8 +72,8 @@ void UtTest_AddSetup(void (*Setup)(void), const char *SequenceName);
  * This group of functions is invoked AFTER normal test routines added with UtTest_Add.
  * Within the group, functions are executed in the order registered.
  *
- * \param Teardown Teardown function, called before the test function
- * \param TestName Name of function for logging purposes
+ * \param Teardown     Teardown function, called before the test function
+ * \param SequenceName Name of sequence for logging purposes
  */
 void UtTest_AddTeardown(void (*Teardown)(void), const char *SequenceName);
 

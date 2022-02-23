@@ -1037,24 +1037,24 @@ int32 UT_DefaultStubImpl(const char *FunctionName, UT_EntryKey_t FuncKey, int32 
     return Retcode;
 }
 
-void UT_ExecuteBasicHandler(UT_EntryKey_t FuncKey, const char *FunctionName, UT_HandlerFunc_t DefaultHook)
+void UT_ExecuteBasicHandler(UT_EntryKey_t FuncKey, const char *FunctionName, UT_HandlerFunc_t DefaultHandler)
 {
     /* Check if the test case registered a hook, and use the default if not */
-    if (UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FINAL_HANDLER) == NULL && DefaultHook != NULL)
+    if (UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FINAL_HANDLER) == NULL && DefaultHandler != NULL)
     {
-        UT_SetHandlerFunction(FuncKey, DefaultHook, NULL);
+        UT_SetHandlerFunction(FuncKey, DefaultHandler, NULL);
     }
 
     UT_DefaultStubImpl(FunctionName, FuncKey, 0, NULL);
 }
 
-void UT_ExecuteVaHandler(UT_EntryKey_t FuncKey, const char *FunctionName, UT_VaHandlerFunc_t DefaultHook,
+void UT_ExecuteVaHandler(UT_EntryKey_t FuncKey, const char *FunctionName, UT_VaHandlerFunc_t DefaultHandler,
                          va_list VaList)
 {
     /* Check if the test case registered a hook, and use the default if not */
-    if (UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FINAL_HANDLER) == NULL && DefaultHook != NULL)
+    if (UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FINAL_HANDLER) == NULL && DefaultHandler != NULL)
     {
-        UT_SetVaHandlerFunction(FuncKey, DefaultHook, NULL);
+        UT_SetVaHandlerFunction(FuncKey, DefaultHandler, NULL);
     }
 
     UT_DefaultStubImplWithArgs(FunctionName, FuncKey, 0, VaList);
