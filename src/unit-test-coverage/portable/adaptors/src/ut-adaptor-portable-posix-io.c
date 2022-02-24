@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     ut-adaptor-portable-posix-io.c
+ * \file
  * \ingroup  adaptors
  * \author   joseph.p.hickey@nasa.gov
  *

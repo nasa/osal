@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     ut-adaptor-filesys.c
+ * \file
  * \ingroup  adaptors
  * \author   joseph.p.hickey@nasa.gov
  *

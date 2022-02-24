@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-no-loader.c
+ * \file
  * \author   joseph.p.hickey@nasa.gov
  *
  * This file contains a module loader implementation for systems

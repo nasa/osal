@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-loader.c
+ * \file
  * \ingroup  vxworks
  * \author   joseph.p.hickey@nasa.gov
  *

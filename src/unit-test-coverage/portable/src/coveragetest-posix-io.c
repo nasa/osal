@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     coveragetest-posix-io.c
+ * \file
  * \ingroup  portable
  * \author   joseph.p.hickey@nasa.gov
  *

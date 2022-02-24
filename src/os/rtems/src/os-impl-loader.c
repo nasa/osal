@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-loader.c
+ * \file
  * \ingroup  rtems
  * \author   joseph.p.hickey@nasa.gov
  *

@@ -19,7 +19,7 @@
  */
 
 /**
- * \file   os-impl-posix-gettime.c
+ * \file
  * \author joseph.p.hickey@nasa.gov
  *
  * This file contains implementation for OS_GetLocalTime() and OS_SetLocalTime()

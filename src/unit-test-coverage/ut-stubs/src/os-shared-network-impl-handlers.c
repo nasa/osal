@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     osapi-utstub-idmap.c
+ * \file
  * \author   joseph.p.hickey@nasa.gov
  *
  * Stub implementations for the functions defined in the OSAL API

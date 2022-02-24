@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     coveragetest-no-shell.c
+ * \file
  * \ingroup  portable
  * \author   joseph.p.hickey@nasa.gov
  *

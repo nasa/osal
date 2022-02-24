@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     coveragetest-no-loader.c
+ * \file
  * \author   joseph.p.hickey@nasa.gov
  *
  */

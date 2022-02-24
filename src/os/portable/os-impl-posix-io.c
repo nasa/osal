@@ -19,7 +19,7 @@
  */
 
 /**
- * \file   os-impl-posix-io.c
+ * \file
  * \author joseph.p.hickey@nasa.gov
  *
  * This file contains generic calls for manipulating filehandles
