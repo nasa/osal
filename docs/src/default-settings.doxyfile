@@ -1,0 +1,55 @@
+#---------------------------------------------------------------------------
+# Default Doxygen settings
+#---------------------------------------------------------------------------
+
+# Common aliases
+ALIASES               +=  nonnull="(must not be null)"
+ALIASES               +=  nonzero="(must not be zero)"
+ALIASES               +=  covtest="(return value only verified in coverage test)"
+
+# Source options
+OPTIMIZE_OUTPUT_FOR_C  = YES
+
+# Build related
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+CASE_SENSE_NAMES       = NO
+GENERATE_TODOLIST      = NO
+GENERATE_BUGLIST       = YES
+GENERATE_DEPRECATEDLIST= YES
+
+# Warnings
+WARN_NO_PARAMDOC       = YES
+
+# Matching
+FILE_PATTERNS          = *.c *.cpp *.cc *.C *.h *.hh *.hpp *.H *.dox *.md
+RECURSIVE              = YES
+
+# Source browsing
+SOURCE_BROWSER         = YES
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+# LaTeX output
+GENERATE_LATEX         = YES
+LATEX_CMD_NAME         = latex
+COMPACT_LATEX          = YES
+PAPER_TYPE             = letter
+
+# RTF output
+COMPACT_RTF            = YES
+
+# Dot tool
+CLASS_DIAGRAMS         = NO
+HAVE_DOT               = YES
+CLASS_GRAPH            = NO
+COLLABORATION_GRAPH    = NO
+INCLUDE_GRAPH          = NO
+INCLUDED_BY_GRAPH      = NO
+CALL_GRAPH             = YES
+GRAPHICAL_HIERARCHY    = NO
+MAX_DOT_GRAPH_DEPTH    = 1000
+
+# Search engine
+SEARCHENGINE           = NO
