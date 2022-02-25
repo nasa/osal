@@ -20,7 +20,6 @@
 
 /**
  * \file
- * \author   joseph.p.hickey@nasa.gov
  *
  * Stub implementations for the functions defined in the OSAL API
  *
@@ -30,25 +29,25 @@
  * can be executed.
  */
 
-#include "osapi-filesys.h" /* OSAL public API for this subsystem */
-#include "os-shared-filesys.h"
+#include "osapi-sockets.h" /* OSAL public API for this subsystem */
+#include "os-shared-sockets.h"
 #include "utstubs.h"
 
 /*
  * -----------------------------------------------------------------
- * Default handler implementation for 'OS_FileSysStatVolume_Impl' stub
+ * Default handler implementation
  * -----------------------------------------------------------------
  */
-void UT_DefaultHandler_OS_FileSysStatVolume_Impl(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
+void UT_DefaultHandler_OS_SocketAddrGetPort_Impl(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
 {
-    OS_statvfs_t *result = UT_Hook_GetArgValueByName(Context, "result", OS_statvfs_t *);
-    int32         status;
+    uint16 *PortNum = UT_Hook_GetArgValueByName(Context, "PortNum", uint16 *);
+    int32   status;
 
     UT_Stub_GetInt32StatusCode(Context, &status);
 
     if (status == OS_SUCCESS &&
-        UT_Stub_CopyToLocal(UT_KEY(OS_FileSysStatVolume_Impl), result, sizeof(*result)) < sizeof(*result))
+        UT_Stub_CopyToLocal(UT_KEY(OS_SocketAddrGetPort_Impl), PortNum, sizeof(*PortNum)) < sizeof(*PortNum))
     {
-        memset(result, 0, sizeof(*result));
+        *PortNum = 0;
     }
 }

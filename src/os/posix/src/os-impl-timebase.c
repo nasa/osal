@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-timebase.c
+ * \file
  * \ingroup  posix
  * \author   joseph.p.hickey@nasa.gov
  *

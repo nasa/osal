@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-queues.c
+ * \file
  * \ingroup  rtems
  * \author   joseph.p.hickey@nasa.gov
  *

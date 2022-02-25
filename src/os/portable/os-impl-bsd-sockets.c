@@ -19,7 +19,7 @@
  */
 
 /**
- * \file   os-impl-bsd-sockets.c
+ * \file
  * \author joseph.p.hickey@nasa.gov
  *
  * Purpose: This file contains the network functionality for

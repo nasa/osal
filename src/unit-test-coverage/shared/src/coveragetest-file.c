@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     coveragetest-file.c
+ * \file
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *
@@ -309,6 +309,10 @@ void Test_OS_FDGetInfo(void)
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
     OSAPI_TEST_FUNCTION_RC(OS_FDGetInfo(UT_OBJID_1, &file_prop), OS_SUCCESS);
     UtAssert_True(strcmp(file_prop.Path, "ABC") == 0, "file_prop.Path (%s) == ABC", file_prop.Path);
+
+    OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, NULL, UT_OBJID_OTHER);
+    OSAPI_TEST_FUNCTION_RC(OS_FDGetInfo(UT_OBJID_1, &file_prop), OS_SUCCESS);
+    UtAssert_STRINGBUF_EQ(file_prop.Path, 1, "", 1);
 
     OSAPI_TEST_FUNCTION_RC(OS_FDGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
 

@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     coveragetest-posix-files.c
+ * \file
  * \author   joseph.p.hickey@nasa.gov
  *
  */

@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     osapi-shared-console-table-stubs.c
+ * \file
  * \ingroup  ut-stubs
  * \author   joseph.p.hickey@nasa.gov
  *

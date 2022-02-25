@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     coveragetest-posix-gettime.c
+ * \file
  * \author   joseph.p.hickey@nasa.gov
  *
  */

@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     coveragetest-filesys.c
+ * \file
  * \ingroup  vxworks
  * \author   joseph.p.hickey@nasa.gov
  *

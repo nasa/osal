@@ -19,7 +19,7 @@
  */
 
 /**
- * \file utstub-helpers.h
+ * \file
  *
  * Internal header file for OSAL UT stub functions
  *

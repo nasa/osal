@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     coveragetest-dirs-globals.c
+ * \file
  * \ingroup  vxworks
  * \author   steven.seeger@nasa.gov
  *

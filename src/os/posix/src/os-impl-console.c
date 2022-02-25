@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-console.c
+ * \file
  * \ingroup  posix
  * \author   joseph.p.hickey@nasa.gov
  *

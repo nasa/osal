@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-posix-network.c
+ * \file
  * \author   joseph.p.hickey@nasa.gov
  *
  * This file contains the network functionality for

@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     osapi-shell.c
+ * \file
  * \ingroup  shared
  * \author   joseph.p.hickey@nasa.gov
  *

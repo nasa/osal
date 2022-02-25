@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-tasks.c
+ * \file
  * \ingroup  vxworks
  * \author   joseph.p.hickey@nasa.gov
  *

@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     coveragetest-bsd-select.c
+ * \file
  * \author   joseph.p.hickey@nasa.gov
  *
  */

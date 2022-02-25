@@ -19,7 +19,7 @@
  */
 
 /**
- * \file     os-impl-timebase.c
+ * \file
  * \ingroup  vxworks
  * \author   joseph.p.hickey@nasa.gov
  *
