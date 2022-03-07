@@ -34,7 +34,7 @@ project(OSAL_DOCS NONE)
 # List of dox files to include -
 # note that order is relevant here, doxygen processes in the order listed.
 set(OSAL_DOCFILE_LIST
-    ${CMAKE_CURRENT_SOURCE_DIR}/osalmain.dox
+    ${CMAKE_CURRENT_SOURCE_DIR}/osal_frontpage.dox
     ${CMAKE_CURRENT_SOURCE_DIR}/osal_fs.dox
     ${CMAKE_CURRENT_SOURCE_DIR}/osal_timer.dox
 )
@@ -63,6 +63,7 @@ endforeach()
 file(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/osal-apiguide-warnings.log OSAL_NATIVE_LOGFILE)
 file(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/osal-common.doxyfile OSAL_NATIVE_COMMON_CFGFILE)
 file(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/osal-apiguide.doxyfile OSAL_NATIVE_APIGUIDE_CFGFILE)
+file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/default-settings.doxyfile OSAL_NATIVE_DEFAULT_SETTINGS)
 
 # generate the configuration files
 configure_file(
@@ -70,6 +71,7 @@ configure_file(
         ${CMAKE_CURRENT_BINARY_DIR}/osal-common.doxyfile
         @ONLY
 )
+
 configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/osal-apiguide.doxyfile.in
         ${CMAKE_CURRENT_BINARY_DIR}/osal-apiguide.doxyfile
@@ -78,7 +80,8 @@ configure_file(
 
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/apiguide/html/index.html"
     COMMAND doxygen ${OSAL_NATIVE_APIGUIDE_CFGFILE}
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/osal-apiguide.doxyfile ${OSAL_DOCFILE_LIST} ${OSAL_DOC_DEPENDENCY_LIST}
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/osal-apiguide.doxyfile ${CMAKE_CURRENT_BINARY_DIR}/osal-common.doxyfile
+            ${OSAL_DOCFILE_LIST} ${OSAL_DOC_DEPENDENCY_LIST}
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
