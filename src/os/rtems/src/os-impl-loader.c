@@ -35,6 +35,7 @@
 #include "os-impl-loader.h"
 #include "os-shared-module.h"
 #include "os-shared-idmap.h"
+#include <rtems/rtl/rtl.h>
 
 /****************************************************************************************
                                    GLOBAL DATA
@@ -216,10 +217,46 @@ int32 OS_ModuleUnload_Impl(const OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *module_prop)
 {
-    /*
-    ** RTEMS does not specify a way to get these values
-    ** Everything left at zero
-    */
-    return (OS_SUCCESS);
+    rtems_rtl_obj *                   obj;
+    OS_impl_module_internal_record_t *impl;
+    int32                             status = OS_ERROR;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_module_table, *token);
+
+    /* Lock RTEMS runtime loader */
+    if (rtems_rtl_lock() != NULL)
+    {
+        /* Get RTL object from handle and populate section info */
+        obj = rtems_rtl_check_handle(impl->dl_handle);
+
+        if (obj != NULL)
+        {
+            module_prop->addr.valid        = true;
+            module_prop->addr.code_address = obj->text_base;
+            module_prop->addr.code_size    = rtems_rtl_obj_text_size(obj);
+            module_prop->addr.data_address = obj->data_base;
+            module_prop->addr.data_size    = rtems_rtl_obj_data_size(obj);
+            module_prop->addr.bss_address  = obj->bss_base;
+            module_prop->addr.bss_size     = rtems_rtl_obj_bss_size(obj);
+
+            status = OS_SUCCESS;
+        }
+
+        /* Unlock RTEMS runtime loader, report error if applicable */
+        rtems_rtl_unlock();
+
+        if (obj == NULL)
+        {
+            OS_DEBUG("Error getting object information from handle\n");
+            module_prop->addr.valid = false;
+        }
+    }
+    else
+    {
+        OS_DEBUG("Error locking RTEMS runtime loader\n");
+        module_prop->addr.valid = false;
+    }
+
+    return status;
 
 } /* end OS_ModuleGetInfo_Impl */
