@@ -2,10 +2,8 @@
 # Doxygen Configuration options to generate the "OSAL API Guide"
 #---------------------------------------------------------------------------
 
-# Common definitions, some of which are extended or overridden here.
+# Common definitions, can be overridden here
 @INCLUDE               = @OSAL_NATIVE_COMMON_CFGFILE@
-PROJECT_NAME           = "OSAL User's Guide"
-OUTPUT_DIRECTORY       = apiguide
 
-# output the warnings to a separate file
+PROJECT_NAME           = "OSAL User's Guide"
 WARN_LOGFILE           = @OSAL_NATIVE_LOGFILE@
