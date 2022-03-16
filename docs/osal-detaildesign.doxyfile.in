@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 
 # Common files
-@INCLUDE  = @MISSION_BINARY_DIR@/docs/osalguide/osal-common.doxyfile
+@INCLUDE  = @MISSION_BINARY_DIR@/docs/osal-common.doxyfile
 
 # All of the OSAL FSW code relevant for a detail design document is under
 # src/os and src/bsp, everything else is test and examples/support

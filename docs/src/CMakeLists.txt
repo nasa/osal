@@ -5,7 +5,7 @@
 ########################################################
 
 #
-# This CMake script currently defines a top-level target "apiguide"
+# This CMake script currently defines a top-level target "osal-apiguide"
 # to build the OSAL API documentation.  This may be invoked either
 # from the main OSAL CMakeLists.txt as a subdirectory (useful in the
 # case of a self-contained/standalone build) or by a separate script
@@ -61,14 +61,19 @@ foreach(DIR ${OSAL_API_INCLUDE_DIRECTORIES})
 endforeach()
 
 file(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/osal-apiguide-warnings.log OSAL_NATIVE_LOGFILE)
-file(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/osal-common.doxyfile OSAL_NATIVE_COMMON_CFGFILE)
+file(TO_NATIVE_PATH ${CMAKE_BINARY_DIR}/docs/osal-common.doxyfile OSAL_NATIVE_COMMON_CFGFILE)
 file(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/osal-apiguide.doxyfile OSAL_NATIVE_APIGUIDE_CFGFILE)
 file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/default-settings.doxyfile OSAL_NATIVE_DEFAULT_SETTINGS)
+
+# Add a top level source directory if not defined
+if (NOT DEFINED MISSION_SOURCE_DIR)
+    set(MISSION_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+endif()
 
 # generate the configuration files
 configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/osal-common.doxyfile.in
-        ${CMAKE_CURRENT_BINARY_DIR}/osal-common.doxyfile
+        ${CMAKE_BINARY_DIR}/docs/osal-common.doxyfile
         @ONLY
 )
 
@@ -78,14 +83,14 @@ configure_file(
         @ONLY
 )
 
-add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/apiguide/html/index.html"
+add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html/index.html"
     COMMAND doxygen ${OSAL_NATIVE_APIGUIDE_CFGFILE}
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/osal-apiguide.doxyfile ${CMAKE_CURRENT_BINARY_DIR}/osal-common.doxyfile
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/osal-apiguide.doxyfile ${CMAKE_BINARY_DIR}/docs/osal-common.doxyfile
             ${OSAL_DOCFILE_LIST} ${OSAL_DOC_DEPENDENCY_LIST}
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 add_custom_target(osal-apiguide
-    COMMAND echo "OSAL API Guide: file://${CMAKE_CURRENT_BINARY_DIR}/apiguide/html/index.html"
-    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/apiguide/html/index.html"
+    COMMAND echo "OSAL API Guide: file://${CMAKE_CURRENT_BINARY_DIR}/html/index.html"
+    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/html/index.html"
 )
