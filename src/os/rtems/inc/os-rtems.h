@@ -60,12 +60,16 @@
 #define OSAL_UNRESOLV_REC_TYPE  rtems_rtl_unresolv_rec
 #define OSAL_UNRESOLVED_SYMBOL  rtems_rtl_unresolved_symbol
 #define OSAL_UNRESOLVED_ITERATE rtems_rtl_unresolved_iterate
+
 #else
+
 #define OSAL_HEAP_INFO_BLOCK    region_information_block
 #define OSAL_UNRESOLV_REC_TYPE  rtems_rtl_unresolv_rec_t
 #define OSAL_UNRESOLVED_SYMBOL  rtems_rtl_unresolved_name
 #define OSAL_UNRESOLVED_ITERATE rtems_rtl_unresolved_interate
+
 #endif
+
 
 /****************************************************************************************
                                     TYPEDEFS

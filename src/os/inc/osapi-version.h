@@ -36,7 +36,7 @@
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER   42
+#define OS_BUILD_NUMBER   54
 #define OS_BUILD_BASELINE "v6.0.0-rc4"
 
 /*
@@ -44,15 +44,14 @@
  */
 #define OS_MAJOR_VERSION 5 /*!< @brief ONLY APPLY for OFFICIAL releases. Major version number. */
 #define OS_MINOR_VERSION 0 /*!< @brief ONLY APPLY for OFFICIAL releases. Minor version number. */
-#define OS_REVISION      0 /*!< @brief ONLY APPLY for OFFICIAL releases. Revision number.      */
+#define OS_REVISION      99 /*!< * Set to 0 on OFFICIAL releases, and set to 99 on development versions. Revision number.      */
 
 /*!
  * @brief Mission revision.
  *
- * Set to 0 on OFFICIAL releases, and set to 255 (0xFF) on development versions.
- * Values 1-254 are reserved for mission use to denote patches/customizations as needed.
+ * Reserved for mission use to denote patches/customizations as needed.
  */
-#define OS_MISSION_REV 0xFF
+#define OS_MISSION_REV 0
 
 /*
  * Tools to construct version string

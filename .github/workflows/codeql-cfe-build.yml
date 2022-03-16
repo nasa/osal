@@ -7,8 +7,9 @@ on:
 jobs:
   codeql:
     name: CodeQl Analysis
-    uses: nasa/cFS/.github/workflows/codeql-build.yml@main
+    uses: nasa/cFS/.github/workflows/codeql-reusable.yml@main
     with: 
-      make-prep: 'make prep'
       make: 'make -j native/default_cpu1/osal/'
-      tests: '(cd build/native/default_cpu1/osal && make test)'
+      component-path: osal
+      test: true
+      
