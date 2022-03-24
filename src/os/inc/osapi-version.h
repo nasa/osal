@@ -40,18 +40,20 @@
 #define OS_BUILD_BASELINE "v6.0.0-rc4"
 
 /*
- * Version Macro Definitions
+ * Version Macros, see \ref cfsversions for definitions.
  */
-#define OS_MAJOR_VERSION 5 /*!< @brief ONLY APPLY for OFFICIAL releases. Major version number. */
-#define OS_MINOR_VERSION 0 /*!< @brief ONLY APPLY for OFFICIAL releases. Minor version number. */
-#define OS_REVISION      99 /*!< * Set to 0 on OFFICIAL releases, and set to 99 on development versions. Revision number.      */
+#define OS_MAJOR_VERSION 5  /**< @brief Major version number */
+#define OS_MINOR_VERSION 0  /**< @brief Minor version number */
+#define OS_REVISION      99 /**< @brief Revision version number. Value of 99 indicates a development version.*/
 
 /*!
  * @brief Mission revision.
  *
  * Reserved for mission use to denote patches/customizations as needed.
+ * Values 1-254 are reserved for mission use to denote patches/customizations as needed. NOTE: Reserving 0 and 0xFF for
+ * cFS open-source development use (pending resolution of nasa/cFS#440)
  */
-#define OS_MISSION_REV 0
+#define OS_MISSION_REV 0xFF
 
 /*
  * Tools to construct version string
