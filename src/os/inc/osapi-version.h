@@ -42,9 +42,9 @@
 /*
  * Version Macro Definitions
  */
-#define OS_MAJOR_VERSION 5 /*!< @brief ONLY APPLY for OFFICIAL releases. Major version number. */
-#define OS_MINOR_VERSION 0 /*!< @brief ONLY APPLY for OFFICIAL releases. Minor version number. */
-#define OS_REVISION      99 /*!< * Set to 0 on OFFICIAL releases, and set to 99 on development versions. Revision number.      */
+#define OS_MAJOR_VERSION 5  /*!< @brief ONLY APPLY for OFFICIAL releases. Major version number. */
+#define OS_MINOR_VERSION 0  /*!< @brief ONLY APPLY for OFFICIAL releases. Minor version number. */
+#define OS_REVISION      99 /*!< @brief Set to 99 on DEVELOPMENT versions. Revision number. */
 
 /*!
  * @brief Mission revision.

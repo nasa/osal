@@ -227,7 +227,7 @@ int32 OS_ModuleUnload_Impl(const OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *module_prop)
 {
-    rtems_rtl_obj                    *obj;
+    rtems_rtl_obj *                   obj;
     OS_impl_module_internal_record_t *impl;
     int32                             status = OS_ERROR;
 
@@ -242,12 +242,12 @@ int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *mo
         if (obj != NULL)
         {
             module_prop->addr.valid        = true;
-            module_prop->addr.code_address = (cpuaddr) obj->text_base;
-            module_prop->addr.code_size    = (cpuaddr) rtems_rtl_obj_text_size(obj);
-            module_prop->addr.data_address = (cpuaddr) obj->data_base;
-            module_prop->addr.data_size    = (cpuaddr) rtems_rtl_obj_data_size(obj);
-            module_prop->addr.bss_address  = (cpuaddr) obj->bss_base;
-            module_prop->addr.bss_size     = (cpuaddr) rtems_rtl_obj_bss_size(obj);
+            module_prop->addr.code_address = (cpuaddr)obj->text_base;
+            module_prop->addr.code_size    = (cpuaddr)rtems_rtl_obj_text_size(obj);
+            module_prop->addr.data_address = (cpuaddr)obj->data_base;
+            module_prop->addr.data_size    = (cpuaddr)rtems_rtl_obj_data_size(obj);
+            module_prop->addr.bss_address  = (cpuaddr)obj->bss_base;
+            module_prop->addr.bss_size     = (cpuaddr)rtems_rtl_obj_bss_size(obj);
 
             status = OS_SUCCESS;
         }
