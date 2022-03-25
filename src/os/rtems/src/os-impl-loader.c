@@ -1,22 +1,20 @@
-/*
- *  NASA Docket No. GSC-18,370-1, and identified as "Operating System Abstraction Layer"
+/************************************************************************
+ * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
  *
- *  Copyright (c) 2019 United States Government as represented by
- *  the Administrator of the National Aeronautics and Space Administration.
- *  All Rights Reserved.
+ * Copyright (c) 2020 United States Government as represented by the
+ * Administrator of the National Aeronautics and Space Administration.
+ * All Rights Reserved.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ************************************************************************/
 
 /**
  * \file
@@ -227,7 +225,7 @@ int32 OS_ModuleUnload_Impl(const OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *module_prop)
 {
-    rtems_rtl_obj                    *obj;
+    rtems_rtl_obj *                   obj;
     OS_impl_module_internal_record_t *impl;
     int32                             status = OS_ERROR;
 
@@ -242,12 +240,12 @@ int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *mo
         if (obj != NULL)
         {
             module_prop->addr.valid        = true;
-            module_prop->addr.code_address = (cpuaddr) obj->text_base;
-            module_prop->addr.code_size    = (cpuaddr) rtems_rtl_obj_text_size(obj);
-            module_prop->addr.data_address = (cpuaddr) obj->data_base;
-            module_prop->addr.data_size    = (cpuaddr) rtems_rtl_obj_data_size(obj);
-            module_prop->addr.bss_address  = (cpuaddr) obj->bss_base;
-            module_prop->addr.bss_size     = (cpuaddr) rtems_rtl_obj_bss_size(obj);
+            module_prop->addr.code_address = (cpuaddr)obj->text_base;
+            module_prop->addr.code_size    = (cpuaddr)rtems_rtl_obj_text_size(obj);
+            module_prop->addr.data_address = (cpuaddr)obj->data_base;
+            module_prop->addr.data_size    = (cpuaddr)rtems_rtl_obj_data_size(obj);
+            module_prop->addr.bss_address  = (cpuaddr)obj->bss_base;
+            module_prop->addr.bss_size     = (cpuaddr)rtems_rtl_obj_bss_size(obj);
 
             status = OS_SUCCESS;
         }

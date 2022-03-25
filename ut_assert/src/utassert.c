@@ -1,22 +1,20 @@
-/*
- *  NASA Docket No. GSC-18,370-1, and identified as "Operating System Abstraction Layer"
+/************************************************************************
+ * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
  *
- *  Copyright (c) 2019 United States Government as represented by
- *  the Administrator of the National Aeronautics and Space Administration.
- *  All Rights Reserved.
+ * Copyright (c) 2020 United States Government as represented by the
+ * Administrator of the National Aeronautics and Space Administration.
+ * All Rights Reserved.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ************************************************************************/
 
 /*
  * File: utassert.c
@@ -473,6 +471,16 @@ bool UtAssert_StringBufCompare(const char *String1, size_t String1Max, const cha
     {
         EndPtr1 = NULL;
     }
+    else if (String1Max == UTASSERT_STRINGBUF_NULL_TERM)
+    {
+        /*
+         * NOTE: it is technically undefined behavior to pass a size to memchr()
+         * that is larger than the actual buffer, even if it is known/guaranteed
+         * to find a match within the actual buffer.  Therefore the regular strlen()
+         * is used instead.
+         */
+        EndPtr1 = String1 + strlen(String1);
+    }
     else
     {
         EndPtr1 = memchr(String1, 0, String1Max);
@@ -490,6 +498,10 @@ bool UtAssert_StringBufCompare(const char *String1, size_t String1Max, const cha
     if (String2 == NULL)
     {
         EndPtr2 = NULL;
+    }
+    else if (String2Max == UTASSERT_STRINGBUF_NULL_TERM)
+    {
+        EndPtr2 = String2 + strlen(String2);
     }
     else
     {
