@@ -34,15 +34,15 @@
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER   54
+#define OS_BUILD_NUMBER   66
 #define OS_BUILD_BASELINE "v6.0.0-rc4"
 
 /*
  * Version Macros, see \ref cfsversions for definitions.
  */
-#define OS_MAJOR_VERSION 5  /**< @brief Major version number */
-#define OS_MINOR_VERSION 0  /**< @brief Minor version number */
-#define OS_REVISION      99 /**< @brief Revision version number. Value of 99 indicates a development version.*/
+#define OS_MAJOR_VERSION 5  /*!< @brief Major version number */
+#define OS_MINOR_VERSION 0  /*!< @brief Minor version number */
+#define OS_REVISION      99 /*!< @brief Revision version number. Value of 99 indicates a development version.*/
 
 /*!
  * @brief Mission revision.
