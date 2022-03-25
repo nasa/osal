@@ -473,6 +473,16 @@ bool UtAssert_StringBufCompare(const char *String1, size_t String1Max, const cha
     {
         EndPtr1 = NULL;
     }
+    else if (String1Max == UTASSERT_STRINGBUF_NULL_TERM)
+    {
+        /*
+         * NOTE: it is technically undefined behavior to pass a size to memchr()
+         * that is larger than the actual buffer, even if it is known/guaranteed
+         * to find a match within the actual buffer.  Therefore the regular strlen()
+         * is used instead.
+         */
+        EndPtr1 = String1 + strlen(String1);
+    }
     else
     {
         EndPtr1 = memchr(String1, 0, String1Max);
@@ -490,6 +500,10 @@ bool UtAssert_StringBufCompare(const char *String1, size_t String1Max, const cha
     if (String2 == NULL)
     {
         EndPtr2 = NULL;
+    }
+    else if (String2Max == UTASSERT_STRINGBUF_NULL_TERM)
+    {
+        EndPtr2 = String2 + strlen(String2);
     }
     else
     {
