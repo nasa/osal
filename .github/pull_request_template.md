@@ -1,3 +1,8 @@
+**Checklist (Please check before submitting)**
+
+* [ ] I reviewed the [Contributing Guide](https://github.com/nasa/osal/blob/main/CONTRIBUTING.md).
+* [ ] I signed and emailed the appropriate [Contributor License Agreement](https://github.com/nasa/cFS/blob/main/CONTRIBUTING.md#contributor-license-agreement-cla) to GSFC-SoftwareRelease@mail.nasa.gov and copied cfs-program@lists.nasa.gov.
+
 **Describe the contribution**
 A clear and concise description of what the contribution is.
 - Include explicitly what issue it addresses [e.g. Fixes #X]
@@ -26,9 +31,4 @@ If included, identify any third party code and provide text file of license
 
 **Contributor Info - All information REQUIRED for consideration of pull request**
 Full name and company/organization/center of all contributors ("Personal" if individual work)
-- If NASA Civil Servant Employee or GSFC Contractor on SES II
-  - Address/email/phone and contract/task information (if applicable) must be on file
-- Else if Company
-  - **HAND SIGNED** Company CLA must be on file (once per release): [OSAL Company CLA](../docs/GSC_18370_Corp_CLA_form_1219.pdf)
-- Else if Individual
-  - **HAND SIGNED** Individual CLA must be on file (once per release): [OSAL Individual CLA](../docs/GSC_18370_Ind_CLA_form_1219.pdf)
+ - Note CLAs apply to only software contributions.
