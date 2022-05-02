@@ -30,7 +30,6 @@ set(RTEMS_BASE_SRCLIST
 set(RTEMS_IMPL_SRCLIST
     ../portable/os-impl-posix-gettime.c
     ../portable/os-impl-console-bsp.c
-    ../portable/os-impl-bsd-select.c
     ../portable/os-impl-posix-io.c
     ../portable/os-impl-posix-files.c
     ../portable/os-impl-posix-dirs.c
@@ -61,11 +60,13 @@ if (OSAL_CONFIG_INCLUDE_NETWORK)
     list(APPEND RTEMS_IMPL_SRCLIST
         src/os-impl-network.c
         ../portable/os-impl-bsd-sockets.c
+        ../portable/os-impl-bsd-select.c
     )
 else()
     list(APPEND RTEMS_IMPL_SRCLIST
         ../portable/os-impl-no-network.c
         ../portable/os-impl-no-sockets.c
+        ../portable/os-impl-no-select.c
     )
 endif ()
 
