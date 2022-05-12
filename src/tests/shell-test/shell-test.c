@@ -59,7 +59,7 @@ void TestOutputToFile(void)
     size_t    size;
     int32     filepos;
     int32     status;
-    osal_id_t fd;
+    osal_id_t fd = OS_OBJECT_ID_UNDEFINED;
 
     OS_mkfs(NULL, "/ramdev0", "RAM", 512, 20);
     OS_mount("/ramdev0", "/drive0");

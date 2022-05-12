@@ -66,8 +66,8 @@
 void UT_os_mut_sem_create_test()
 {
     int       i;
-    osal_id_t mut_sem_id;
-    osal_id_t mut_sem_id2;
+    osal_id_t mut_sem_id  = OS_OBJECT_ID_UNDEFINED;
+    osal_id_t mut_sem_id2 = OS_OBJECT_ID_UNDEFINED;
     char      sem_name[UT_OS_NAME_BUFF_SIZE];
     char      long_sem_name[UT_OS_NAME_BUFF_SIZE];
 
@@ -141,7 +141,7 @@ void UT_os_mut_sem_create_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_mut_sem_delete_test()
 {
-    osal_id_t mut_sem_id;
+    osal_id_t mut_sem_id = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* #1 Invalid-ID-arg */
@@ -169,7 +169,7 @@ void UT_os_mut_sem_delete_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_mut_sem_give_test()
 {
-    osal_id_t mut_sem_id;
+    osal_id_t mut_sem_id = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* #1 Invalid-ID-arg */
@@ -202,7 +202,7 @@ void UT_os_mut_sem_give_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_mut_sem_take_test()
 {
-    osal_id_t mut_sem_id;
+    osal_id_t mut_sem_id = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* #1 Invalid-ID-arg */
@@ -233,7 +233,7 @@ void UT_os_mut_sem_take_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_mut_sem_get_id_by_name_test()
 {
-    osal_id_t mut_sem_id;
+    osal_id_t mut_sem_id = OS_OBJECT_ID_UNDEFINED;
     char      long_sem_name[UT_OS_NAME_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
@@ -278,7 +278,7 @@ void UT_os_mut_sem_get_id_by_name_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_mut_sem_get_info_test()
 {
-    osal_id_t         mut_sem_id;
+    osal_id_t         mut_sem_id = OS_OBJECT_ID_UNDEFINED;
     OS_mut_sem_prop_t mut_sem_prop;
 
     /*-----------------------------------------------------*/

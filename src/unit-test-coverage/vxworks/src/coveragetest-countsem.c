@@ -124,7 +124,7 @@ void Osapi_Test_Setup(void)
     UT_ResetState(0);
 
     memset(OS_count_sem_table, 0, sizeof(OS_count_sem_table));
-    memset(OS_global_count_sem_table, 0, sizeof(OS_common_record_t) * OS_MAX_BIN_SEMAPHORES);
+    memset(OS_global_count_sem_table, 0, sizeof(OS_common_record_t) * OS_MAX_COUNT_SEMAPHORES);
 
     memset(UT_Ref_OS_impl_count_sem_table, 0, UT_Ref_OS_impl_count_sem_table_SIZE);
 }

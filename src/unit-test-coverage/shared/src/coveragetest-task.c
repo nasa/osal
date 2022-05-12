@@ -96,7 +96,7 @@ void Test_OS_TaskCreate(void)
      * int32 OS_TaskCreate (uint32 *task_id, const char *task_name, osal_task_entry function_pointer,
      *                uint32 *stack_pointer, uint32 stack_size, uint32 priority, uint32 flags)
      */
-    osal_id_t objid;
+    osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 
     OSAPI_TEST_FUNCTION_RC(
         OS_TaskCreate(&objid, "UT", UT_TestHook, OSAL_TASK_STACK_ALLOCATE, OSAL_SIZE_C(128), OSAL_PRIORITY_C(0), 0),
@@ -234,6 +234,8 @@ void Test_OS_TaskGetInfo(void)
      * int32 OS_TaskGetInfo (uint32 task_id, OS_task_prop_t *task_prop)
      */
     OS_task_prop_t task_prop;
+
+    memset(&task_prop, 0, sizeof(task_prop));
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_TASK, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
     OS_task_table[1].stack_size = OSAL_SIZE_C(222);

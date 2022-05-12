@@ -30,6 +30,7 @@ OCS_STATUS OCS_memPartShow(OCS_PART_ID partId, int type)
 
 OCS_STATUS OCS_memPartInfoGet(OCS_PART_ID partId, OCS_MEM_PART_STATS *ppartStats)
 {
+    memset(ppartStats, 0, sizeof(*ppartStats));
     return (UT_DEFAULT_IMPL(OCS_memPartInfoGet));
 }
 

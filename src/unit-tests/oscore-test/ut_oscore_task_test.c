@@ -396,6 +396,10 @@ void UT_os_task_delay_test()
     OS_time_t after_time;
     int64     elapsed;
 
+    /* Initialize to avoid static analysis warnings */
+    memset(&before_time, 0, sizeof(before_time));
+    memset(&after_time, 0, sizeof(after_time));
+
     /*
      * Note, if running under a VM/hypervisor, the real time clock may not
      * be very precise, depending on its implementation.  Therefore the allowed

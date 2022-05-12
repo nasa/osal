@@ -159,9 +159,9 @@ void Test_OS_QueueGetInfo(void)
      * int32 OS_QueueGetInfo (uint32 queue_id, OS_queue_prop_t *queue_prop)
      */
     OS_queue_prop_t queue_prop;
-    osal_id_t       id;
+    osal_id_t       id = UT_OBJID_OTHER;
 
-    id = UT_OBJID_OTHER;
+    memset(&queue_prop, 0, sizeof(queue_prop));
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_QUEUE, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
 

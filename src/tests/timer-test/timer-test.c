@@ -57,7 +57,7 @@ uint32 timer_idlookup[OS_MAX_TIMERS];
  */
 void test_func(osal_id_t timer_id)
 {
-    osal_index_t idx;
+    osal_index_t idx = OSAL_INDEX_C(0);
     OS_ConvertToArrayIndex(timer_id, &idx);
     timer_counter[timer_idlookup[idx]]++;
 }
@@ -114,10 +114,12 @@ void TimerTestTask(void)
 
     int          i = 0;
     int32        TimerStatus[NUMBER_OF_TIMERS];
-    osal_index_t TableId;
+    osal_index_t TableId = OSAL_INDEX_C(0);
     osal_id_t    TimerID[NUMBER_OF_TIMERS];
     char         TimerName[NUMBER_OF_TIMERS][20] = {"TIMER1", "TIMER2", "TIMER3", "TIMER4", "TIMER5"};
-    uint32       ClockAccuracy;
+    uint32       ClockAccuracy                   = 0;
+
+    memset(TimerID, 0, sizeof(TimerID));
 
     for (i = 0; i < NUMBER_OF_TIMERS && i < OS_MAX_TIMERS; i++)
     {

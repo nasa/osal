@@ -69,8 +69,8 @@ void TestTimeBaseApi(void)
     uint32             freerun;
     osal_id_t          objid;
     osal_id_t          badid;
-    osal_id_t          time_base_id;
-    osal_id_t          time_base_id2;
+    osal_id_t          time_base_id  = OS_OBJECT_ID_UNDEFINED;
+    osal_id_t          time_base_id2 = OS_OBJECT_ID_UNDEFINED;
     osal_id_t          tb_id[OS_MAX_TIMEBASES];
     char               timebase_name[OS_MAX_API_NAME + 5];
     OS_timebase_prop_t timebase_prop;

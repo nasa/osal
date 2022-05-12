@@ -31,7 +31,7 @@
 void TestSymbolApi(void)
 {
     int32   status;
-    cpuaddr SymAddress;
+    cpuaddr SymAddress = 0;
 
     /* Make the file system */
     status = OS_mkfs(0, "/ramdev0", "RAM", 512, 2048);

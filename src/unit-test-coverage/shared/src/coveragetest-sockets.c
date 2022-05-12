@@ -90,7 +90,7 @@ void Test_OS_SocketOpen(void)
      * Test Case For:
      * int32 OS_SocketOpen(uint32 *sock_id, OS_SocketDomain_t Domain, OS_SocketType_t Type)
      */
-    osal_id_t objid;
+    osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 
     OSAPI_TEST_FUNCTION_RC(OS_SocketOpen(&objid, OS_SocketDomain_INET, OS_SocketType_STREAM), OS_SUCCESS);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
@@ -418,7 +418,7 @@ void Test_OS_SocketGetIdByName(void)
      * Test Case For:
      * int32 OS_SocketGetIdByName (uint32 *sock_id, const char *sock_name)
      */
-    osal_id_t objid;
+    osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 
     UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdFindByName), 1, OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_SocketGetIdByName(&objid, "UT"), OS_SUCCESS);
@@ -442,6 +442,8 @@ void Test_OS_SocketGetInfo(void)
      * int32 OS_SocketGetInfo (uint32 sock_id, OS_socket_prop_t *sock_prop)
      */
     OS_socket_prop_t prop;
+
+    memset(&prop, 0, sizeof(prop));
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
 

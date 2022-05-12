@@ -121,7 +121,7 @@ void TestNetworkApiBadArgs(void)
 
 void TestNetworkApiInet6(void)
 {
-    osal_id_t     socket_id;
+    osal_id_t     socket_id = OS_OBJECT_ID_UNDEFINED;
     OS_SockAddr_t addr;
     int32         actual;
 
@@ -234,9 +234,15 @@ void TestDatagramNetworkApi(void)
     uint32           Buf4 = 000;
     osal_id_t        objid;
     osal_id_t        invalid_fd;
-    uint16           PortNum;
+    uint16           PortNum = 0;
     OS_socket_prop_t prop;
     OS_SockAddr_t    l_addr;
+
+    memset(AddrBuffer1, 0, sizeof(AddrBuffer1));
+    memset(AddrBuffer2, 0, sizeof(AddrBuffer2));
+    memset(AddrBuffer3, 0, sizeof(AddrBuffer3));
+    memset(AddrBuffer4, 0, sizeof(AddrBuffer4));
+    memset(&prop, 0, sizeof(prop));
 
     if (!networkImplemented)
     {

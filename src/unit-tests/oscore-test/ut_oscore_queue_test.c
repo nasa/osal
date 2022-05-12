@@ -69,9 +69,9 @@
 **--------------------------------------------------------------------------------*/
 void UT_os_queue_create_test()
 {
-    int       i = 0;
-    osal_id_t queue_id;
-    osal_id_t queue_id2;
+    int       i         = 0;
+    osal_id_t queue_id  = OS_OBJECT_ID_UNDEFINED;
+    osal_id_t queue_id2 = OS_OBJECT_ID_UNDEFINED;
     char      queue_name[UT_OS_NAME_BUFF_SIZE];
     char      long_queue_name[UT_OS_NAME_BUFF_SIZE];
 
@@ -153,7 +153,7 @@ void UT_os_queue_create_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_queue_delete_test()
 {
-    osal_id_t queue_id;
+    osal_id_t queue_id = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* #1 Invalid-ID-arg */
@@ -183,7 +183,7 @@ void UT_os_queue_delete_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_queue_get_test()
 {
-    osal_id_t queue_id;
+    osal_id_t queue_id = OS_OBJECT_ID_UNDEFINED;
     uint32    queue_data_out;
     uint32    queue_data_in;
     size_t    size_copied;
@@ -298,7 +298,7 @@ void UT_os_queue_get_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_queue_put_test()
 {
-    osal_id_t queue_id;
+    osal_id_t queue_id       = OS_OBJECT_ID_UNDEFINED;
     uint32    queue_data_out = 0;
     int       i;
 
@@ -364,7 +364,7 @@ void UT_os_queue_put_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_queue_get_id_by_name_test()
 {
-    osal_id_t queue_id;
+    osal_id_t queue_id = OS_OBJECT_ID_UNDEFINED;
     char      long_queue_name[UT_OS_NAME_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
@@ -410,7 +410,7 @@ void UT_os_queue_get_id_by_name_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_queue_get_info_test()
 {
-    osal_id_t       queue_id;
+    osal_id_t       queue_id = OS_OBJECT_ID_UNDEFINED;
     OS_queue_prop_t queue_prop;
 
     /*-----------------------------------------------------*/

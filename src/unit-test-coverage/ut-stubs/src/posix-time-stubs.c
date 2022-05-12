@@ -38,7 +38,7 @@ int OCS_clock_gettime(OCS_clockid_t clock_id, struct OCS_timespec *tp)
 
     Status = UT_DEFAULT_IMPL(OCS_clock_gettime);
 
-    if (Status == 0 && UT_Stub_CopyToLocal(UT_KEY(OCS_clock_gettime), tp, sizeof(*tp)) < sizeof(*tp))
+    if (UT_Stub_CopyToLocal(UT_KEY(OCS_clock_gettime), tp, sizeof(*tp)) < sizeof(*tp))
     {
         memset(tp, 0, sizeof(*tp));
     }
@@ -101,7 +101,7 @@ int OCS_timer_gettime(OCS_timer_t timerid, struct OCS_itimerspec *value)
 
     Status = UT_DEFAULT_IMPL(OCS_timer_gettime);
 
-    if (Status == 0 && UT_Stub_CopyToLocal(UT_KEY(OCS_timer_gettime), value, sizeof(*value)) < sizeof(*value))
+    if (UT_Stub_CopyToLocal(UT_KEY(OCS_timer_gettime), value, sizeof(*value)) < sizeof(*value))
     {
         memset(value, 0, sizeof(*value));
     }
