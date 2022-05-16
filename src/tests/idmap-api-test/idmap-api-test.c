@@ -203,34 +203,29 @@ void Test_OS_ConvertToArrayIndex(void)
      * Test with nominal values
      */
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(task_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_TASKS, "0 < TestArrayIndex(%lu)  <= OS_MAX_TASKS",
-                  (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_TASKS, "TestArrayIndex(%lu) < OS_MAX_TASKS", (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(queue_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_QUEUES, "0 < TestArrayIndex(%lu)  <= OS_MAX_QUEUES",
-                  (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_QUEUES, "TestArrayIndex(%lu) < OS_MAX_QUEUES", (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(count_sem_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_COUNT_SEMAPHORES,
-                  "0 < TestArrayIndex(%lu)  <= OS_MAX_COUNT_SEMAPHORES", (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_COUNT_SEMAPHORES, "TestArrayIndex(%lu) < OS_MAX_COUNT_SEMAPHORES",
+                  (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(bin_sem_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_BIN_SEMAPHORES,
-                  "0 < TestArrayIndex(%lu)  <= OS_MAX_BIN_SEMAPHORES", (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_BIN_SEMAPHORES, "TestArrayIndex(%lu) < OS_MAX_BIN_SEMAPHORES",
+                  (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(mutex_id1, &TestMutex1Index), OS_SUCCESS);
-    UtAssert_True(TestMutex1Index >= 0 && TestMutex1Index < OS_MAX_MUTEXES,
-                  "0 < TestMutex1Index(%lu)  <= OS_MAX_MUTEXES", (long)TestMutex1Index);
+    UtAssert_True(TestMutex1Index < OS_MAX_MUTEXES, "TestMutex1Index(%lu) < OS_MAX_MUTEXES", (long)TestMutex1Index);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(mutex_id2, &TestMutex2Index), OS_SUCCESS);
-    UtAssert_True(TestMutex2Index >= 0 && TestMutex2Index < OS_MAX_MUTEXES,
-                  "0 < TestMutex2Index(%lu)  <= OS_MAX_MUTEXES", (long)TestMutex2Index);
+    UtAssert_True(TestMutex2Index < OS_MAX_MUTEXES, "TestMutex2Index(%lu) < OS_MAX_MUTEXES", (long)TestMutex2Index);
     UtAssert_True(TestMutex1Index != TestMutex2Index, "TestMutex1Index(%lu) !=  TestMutex2Index(%lu)",
                   (long)TestMutex1Index, (long)TestMutex2Index);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(time_base_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_TIMEBASES,
-                  "0 < TestArrayIndex(%lu)  <= OS_MAX_TIMEBASES", (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_TIMEBASES, "TestArrayIndex(%lu) < OS_MAX_TIMEBASES", (long)TestArrayIndex);
 
     /*
      * Test with extreme cases using invalid inputs and checking

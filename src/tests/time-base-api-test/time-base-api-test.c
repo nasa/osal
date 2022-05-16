@@ -201,8 +201,6 @@ void TestTimeBaseApi(void)
                   (unsigned long)timebase_prop.nominal_interval_time);
     UtAssert_True(timebase_prop.freerun_time == 0, "timebase_prop.freerun_time (%lu) == 0",
                   (unsigned long)timebase_prop.freerun_time);
-    UtAssert_True(timebase_prop.accuracy >= 0, "timebase_prop.accuracy (%lu) >= 0",
-                  (unsigned long)timebase_prop.accuracy);
 
     /* Test for invalid inputs */
     UtAssert_INT32_EQ(OS_TimeBaseGetInfo(OS_OBJECT_ID_UNDEFINED, &timebase_prop), OS_ERR_INVALID_ID);
