@@ -228,11 +228,11 @@ void TestDatagramNetworkApi(void)
     char             AddrBuffer2[32];
     char             AddrBuffer3[32];
     char             AddrBuffer4[32];
-    uint32           Buf1 = 111;
-    uint32           Buf2 = 000;
-    uint32           Buf3 = 222;
-    uint32           Buf4 = 000;
-    osal_id_t        objid;
+    uint32           Buf1  = 111;
+    uint32           Buf2  = 0;
+    uint32           Buf3  = 222;
+    uint32           Buf4  = 0;
+    osal_id_t        objid = OS_OBJECT_ID_UNDEFINED;
     osal_id_t        invalid_fd;
     uint16           PortNum = 0;
     OS_socket_prop_t prop;
