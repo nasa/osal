@@ -39,7 +39,7 @@
                                    TYPEDEFS
  ***************************************************************************************/
 
-#ifndef _RTEMS_5_
+#ifdef OS_RTEMS_4_DEPRECATED
 
 typedef rtems_rtl_obj_t rtems_rtl_obj; /* Alias for RTEMS 4.11 */
 

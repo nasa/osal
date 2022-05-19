@@ -190,7 +190,9 @@ int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
      */
     if (return_code == OS_SUCCESS && local->system_mountpt[0] == 0)
     {
-        snprintf(local->system_mountpt, sizeof(local->system_mountpt), "/%s", local->volume_name);
+        local->system_mountpt[0]                                 = '/';
+        local->system_mountpt[sizeof(local->system_mountpt) - 1] = 0;
+        strncpy(&local->system_mountpt[1], local->volume_name, sizeof(local->system_mountpt) - 2);
         OS_DEBUG("OSAL: using mount point %s for %s\n", local->system_mountpt, local->volume_name);
     }
 

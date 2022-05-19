@@ -51,20 +51,21 @@
                                      DEFINES
  ***************************************************************************************/
 /*
- * Handle the data structure and API name changes between RTEMS 4.11 and RTEMS 5.1
+ * Handle the data structure and API name changes between RTEMS 4.11 and RTEMS 5.1+
  */
-#ifdef _RTEMS_5_
-#define OSAL_HEAP_INFO_BLOCK    Heap_Information_block
-#define OSAL_UNRESOLV_REC_TYPE  rtems_rtl_unresolv_rec
-#define OSAL_UNRESOLVED_SYMBOL  rtems_rtl_unresolved_symbol
-#define OSAL_UNRESOLVED_ITERATE rtems_rtl_unresolved_iterate
-
-#else
+#ifdef OS_RTEMS_4_DEPRECATED
 
 #define OSAL_HEAP_INFO_BLOCK    region_information_block
 #define OSAL_UNRESOLV_REC_TYPE  rtems_rtl_unresolv_rec_t
 #define OSAL_UNRESOLVED_SYMBOL  rtems_rtl_unresolved_name
 #define OSAL_UNRESOLVED_ITERATE rtems_rtl_unresolved_interate
+
+#else
+
+#define OSAL_HEAP_INFO_BLOCK    Heap_Information_block
+#define OSAL_UNRESOLV_REC_TYPE  rtems_rtl_unresolv_rec
+#define OSAL_UNRESOLVED_SYMBOL  rtems_rtl_unresolved_symbol
+#define OSAL_UNRESOLVED_ITERATE rtems_rtl_unresolved_iterate
 
 #endif
 
