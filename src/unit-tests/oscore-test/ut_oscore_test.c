@@ -245,6 +245,7 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_task_getid_by_sysdata_test, UT_os_task_getid_by_sysdata_test, NULL, "OS_TaskFindIdBySystemData");
 
     UtTest_Add(UT_os_geterrorname_test, NULL, NULL, "OS_GetErrorName");
+    UtTest_Add(UT_os_statustostring_test, NULL, NULL, "OS_StatusToString");
 
     UtTest_Add(UT_os_getlocaltime_test, NULL, NULL, "OS_GetLocalTime");
     UtTest_Add(UT_os_setlocaltime_test, NULL, NULL, "OS_SetLocalTime");
