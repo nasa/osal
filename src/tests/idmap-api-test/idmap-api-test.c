@@ -188,9 +188,9 @@ void Test_OS_ConvertToArrayIndex(void)
      * Test Case For:
      * int32 OS_ConvertToArrayIndex(void)
      */
-    osal_index_t TestArrayIndex;
-    osal_index_t TestMutex1Index;
-    osal_index_t TestMutex2Index;
+    osal_index_t TestArrayIndex  = OSAL_INDEX_C(0);
+    osal_index_t TestMutex1Index = OSAL_INDEX_C(0);
+    osal_index_t TestMutex2Index = OSAL_INDEX_C(0);
 
     /*
      * Check different id types and verify array indices
@@ -203,34 +203,29 @@ void Test_OS_ConvertToArrayIndex(void)
      * Test with nominal values
      */
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(task_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_TASKS, "0 < TestArrayIndex(%lu)  <= OS_MAX_TASKS",
-                  (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_TASKS, "TestArrayIndex(%lu) < OS_MAX_TASKS", (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(queue_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_QUEUES, "0 < TestArrayIndex(%lu)  <= OS_MAX_QUEUES",
-                  (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_QUEUES, "TestArrayIndex(%lu) < OS_MAX_QUEUES", (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(count_sem_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_COUNT_SEMAPHORES,
-                  "0 < TestArrayIndex(%lu)  <= OS_MAX_COUNT_SEMAPHORES", (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_COUNT_SEMAPHORES, "TestArrayIndex(%lu) < OS_MAX_COUNT_SEMAPHORES",
+                  (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(bin_sem_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_BIN_SEMAPHORES,
-                  "0 < TestArrayIndex(%lu)  <= OS_MAX_BIN_SEMAPHORES", (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_BIN_SEMAPHORES, "TestArrayIndex(%lu) < OS_MAX_BIN_SEMAPHORES",
+                  (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(mutex_id1, &TestMutex1Index), OS_SUCCESS);
-    UtAssert_True(TestMutex1Index >= 0 && TestMutex1Index < OS_MAX_MUTEXES,
-                  "0 < TestMutex1Index(%lu)  <= OS_MAX_MUTEXES", (long)TestMutex1Index);
+    UtAssert_True(TestMutex1Index < OS_MAX_MUTEXES, "TestMutex1Index(%lu) < OS_MAX_MUTEXES", (long)TestMutex1Index);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(mutex_id2, &TestMutex2Index), OS_SUCCESS);
-    UtAssert_True(TestMutex2Index >= 0 && TestMutex2Index < OS_MAX_MUTEXES,
-                  "0 < TestMutex2Index(%lu)  <= OS_MAX_MUTEXES", (long)TestMutex2Index);
+    UtAssert_True(TestMutex2Index < OS_MAX_MUTEXES, "TestMutex2Index(%lu) < OS_MAX_MUTEXES", (long)TestMutex2Index);
     UtAssert_True(TestMutex1Index != TestMutex2Index, "TestMutex1Index(%lu) !=  TestMutex2Index(%lu)",
                   (long)TestMutex1Index, (long)TestMutex2Index);
 
     UtAssert_INT32_EQ(OS_ConvertToArrayIndex(time_base_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_TIMEBASES,
-                  "0 < TestArrayIndex(%lu)  <= OS_MAX_TIMEBASES", (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_TIMEBASES, "TestArrayIndex(%lu) < OS_MAX_TIMEBASES", (long)TestArrayIndex);
 
     /*
      * Test with extreme cases using invalid inputs and checking
@@ -249,40 +244,35 @@ void Test_OS_ObjectIdToArrayIndex(void)
      * Test case for:
      * int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t object_id, osal_index_t *ArrayIndex);
      */
-    osal_index_t TestArrayIndex;
-    osal_index_t TestMutex1Index;
-    osal_index_t TestMutex2Index;
+    osal_index_t TestArrayIndex  = OSAL_INDEX_C(0);
+    osal_index_t TestMutex1Index = OSAL_INDEX_C(0);
+    osal_index_t TestMutex2Index = OSAL_INDEX_C(0);
 
     /* Test with nominal (correct) object types */
     UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TASK, task_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_TASKS, "0 < TestArrayIndex(%lu)  <= OS_MAX_TASKS",
-                  (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_TASKS, "TestArrayIndex(%lu) < OS_MAX_TASKS", (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_QUEUE, queue_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_QUEUES, "0 < TestArrayIndex(%lu)  <= OS_MAX_QUEUES",
-                  (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_QUEUES, "TestArrayIndex(%lu) < OS_MAX_QUEUES", (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_COUNTSEM, count_sem_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_COUNT_SEMAPHORES,
-                  "0 < TestArrayIndex(%lu)  <= OS_MAX_COUNT_SEMAPHORES", (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_COUNT_SEMAPHORES, "TestArrayIndex(%lu) < OS_MAX_COUNT_SEMAPHORES",
+                  (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_BINSEM, bin_sem_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_BIN_SEMAPHORES,
-                  "0 < TestArrayIndex(%lu)  <= OS_MAX_BIN_SEMAPHORES", (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_BIN_SEMAPHORES, "TestArrayIndex(%lu) < OS_MAX_BIN_SEMAPHORES",
+                  (long)TestArrayIndex);
 
     UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_MUTEX, mutex_id1, &TestMutex1Index), OS_SUCCESS);
-    UtAssert_True(TestMutex1Index >= 0 && TestMutex1Index < OS_MAX_MUTEXES,
-                  "0 < TestMutex1Index(%lu)  <= OS_MAX_MUTEXES", (long)TestMutex1Index);
+    UtAssert_True(TestMutex1Index < OS_MAX_MUTEXES, "TestMutex1Index(%lu) < OS_MAX_MUTEXES", (long)TestMutex1Index);
 
     UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_MUTEX, mutex_id2, &TestMutex2Index), OS_SUCCESS);
-    UtAssert_True(TestMutex2Index >= 0 && TestMutex2Index < OS_MAX_MUTEXES,
-                  "0 < TestMutex2Index(%lu)  <= OS_MAX_MUTEXES", (long)TestMutex2Index);
+    UtAssert_True(TestMutex2Index < OS_MAX_MUTEXES, "TestMutex2Index(%lu) < OS_MAX_MUTEXES", (long)TestMutex2Index);
     UtAssert_True(TestMutex1Index != TestMutex2Index, "TestMutex1Index(%lu) !=  TestMutex2Index(%lu)",
                   (long)TestMutex1Index, (long)TestMutex2Index);
 
     UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_TIMEBASE, time_base_id, &TestArrayIndex), OS_SUCCESS);
-    UtAssert_True(TestArrayIndex >= 0 && TestArrayIndex < OS_MAX_TIMEBASES,
-                  "0 < TestArrayIndex(%lu)  <= OS_MAX_TIMEBASES", (long)TestArrayIndex);
+    UtAssert_True(TestArrayIndex < OS_MAX_TIMEBASES, "TestArrayIndex(%lu) < OS_MAX_TIMEBASES", (long)TestArrayIndex);
 
     /* Check cases where the object type and the ID are _not_ matched */
     UtAssert_INT32_EQ(OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_OS_QUEUE, task_id, &TestArrayIndex), OS_ERR_INVALID_ID);
@@ -402,6 +392,8 @@ void Test_OS_GetResourceName(void)
      * int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size)
      */
     char name[OS_MAX_API_NAME];
+
+    memset(name, 0, sizeof(name));
 
     /* Nominal cases */
     UtAssert_INT32_EQ(OS_GetResourceName(queue_id, name, sizeof(name)), OS_SUCCESS);

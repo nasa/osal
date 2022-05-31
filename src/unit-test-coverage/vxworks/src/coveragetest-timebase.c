@@ -287,7 +287,7 @@ void Osapi_Test_Setup(void)
     UT_ResetState(0);
 
     memset(OS_timebase_table, 0, sizeof(OS_timebase_table));
-    memset(OS_global_timebase_table, 0, sizeof(OS_common_record_t) * OS_MAX_BIN_SEMAPHORES);
+    memset(OS_global_timebase_table, 0, sizeof(OS_common_record_t) * OS_MAX_TIMEBASES);
 
     memset(UT_Ref_OS_impl_timebase_table, 0, UT_Ref_OS_impl_timebase_table_SIZE);
 }

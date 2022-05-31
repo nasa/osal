@@ -68,7 +68,10 @@ int counter = 0;
  */
 void TimerFunction(osal_id_t local_timer_id)
 {
-    int32 status;
+    int32             status;
+    OS_bin_sem_prop_t bin_sem_prop;
+
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
 
     timer_counter++;
 
@@ -79,7 +82,6 @@ void TimerFunction(osal_id_t local_timer_id)
     }
 
     {
-        OS_bin_sem_prop_t bin_sem_prop;
         status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
         if (status != OS_SUCCESS)
         {
@@ -101,6 +103,8 @@ void task_1(void)
     uint32            status;
     OS_bin_sem_prop_t bin_sem_prop;
     int               printf_counter = 0;
+
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
 
     OS_printf("Starting task 1\n");
 
@@ -153,6 +157,8 @@ void BinSemCheck(void)
     uint32            status;
     OS_bin_sem_prop_t bin_sem_prop;
 
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
+
     /* Delete the task, which should be pending in OS_BinSemTake() */
     status = OS_TaskDelete(task_1_id);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskDelete Rc=%d", (int)status);
@@ -196,8 +202,10 @@ void UtTest_Setup(void)
 void BinSemSetup(void)
 {
     uint32            status;
-    uint32            accuracy;
+    uint32            accuracy = 0;
     OS_bin_sem_prop_t bin_sem_prop;
+
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
 
     /* separate task failure counter because ut-assert is not reentrant */
     task_1_failures = 0;

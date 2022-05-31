@@ -42,10 +42,10 @@
 /*
  * Handle the differences between RTEMS 5 and 4.11 copyright notice
  */
-#ifdef _RTEMS_5_
-#define OSAL_BSP_COPYRIGHT_NOTICE rtems_get_copyright_notice()
-#else
+#ifdef OS_RTEMS_4_DEPRECATED
 #define OSAL_BSP_COPYRIGHT_NOTICE _Copyright_Notice
+#else
+#define OSAL_BSP_COPYRIGHT_NOTICE rtems_get_copyright_notice()
 #endif
 
 /*

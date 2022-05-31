@@ -878,8 +878,12 @@ void UT_os_chmodfile_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_statfile_test()
 {
-    os_fstat_t fstats1, fstats2;
+    os_fstat_t fstats1;
+    os_fstat_t fstats2;
     size_t     expected_len;
+
+    memset(&fstats1, 0, sizeof(fstats1));
+    memset(&fstats2, 0, sizeof(fstats2));
 
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */

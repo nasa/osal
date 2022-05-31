@@ -58,7 +58,7 @@ void Test_OS_DirectoryOpen(void)
      * Test Case For:
      * int32 OS_DirectoryOpen(uint32 *dir_id, const char *path)
      */
-    osal_id_t objid;
+    osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 
     OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(&objid, "Dir"), OS_SUCCESS);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);

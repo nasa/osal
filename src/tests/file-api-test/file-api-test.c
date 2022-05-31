@@ -129,7 +129,7 @@ void TestCreatRemove(void)
     char      maxfilename[OS_MAX_PATH_LEN];
     char      longfilename[OS_MAX_PATH_LEN + 10];
     int32     status;
-    osal_id_t fd;
+    osal_id_t fd = OS_OBJECT_ID_UNDEFINED;
     int       i;
 
     /* Short file name */
@@ -199,7 +199,7 @@ void TestOpenClose(void)
 {
     char      filename[OS_MAX_PATH_LEN];
     int32     status;
-    osal_id_t fd;
+    osal_id_t fd = OS_OBJECT_ID_UNDEFINED;
 
     strncpy(filename, "/drive0/Filename1", sizeof(filename) - 1);
     filename[sizeof(filename) - 1] = 0;
@@ -251,7 +251,7 @@ void TestChmod(void)
 {
     char      filename[OS_MAX_PATH_LEN];
     int32     status;
-    osal_id_t fd;
+    osal_id_t fd = OS_OBJECT_ID_UNDEFINED;
 
     /*Make a file to test on. Start in Read only mode */
     strncpy(filename, "/drive0/Filename1", sizeof(filename) - 1);
@@ -324,7 +324,9 @@ void TestReadWriteLseek(void)
     size_t    offset;
     size_t    size;
     int32     status;
-    osal_id_t fd;
+    osal_id_t fd = OS_OBJECT_ID_UNDEFINED;
+
+    memset(newbuffer, 0, sizeof(newbuffer));
 
     strncpy(filename, "/drive0/Filename1", sizeof(filename) - 1);
     filename[sizeof(filename) - 1] = 0;
@@ -446,10 +448,12 @@ void TestMkRmDirFreeBytes(void)
     char         buffer2[OS_MAX_PATH_LEN];
     char         copybuffer1[OS_MAX_PATH_LEN];
     char         copybuffer2[OS_MAX_PATH_LEN];
-    osal_id_t    fd1;
-    osal_id_t    fd2;
+    osal_id_t    fd1 = OS_OBJECT_ID_UNDEFINED;
+    osal_id_t    fd2 = OS_OBJECT_ID_UNDEFINED;
     size_t       size;
     OS_statvfs_t statbuf;
+
+    memset(&statbuf, 0, sizeof(statbuf));
 
     /* make the directory names for testing, as well as the filenames and the buffers
      * to put in the files */
@@ -561,9 +565,9 @@ void TestOpenReadCloseDir(void)
     char        buffer1[OS_MAX_PATH_LEN];
     char        buffer2[OS_MAX_PATH_LEN];
     size_t      size;
-    osal_id_t   fd1;
-    osal_id_t   fd2;
-    osal_id_t   dirh;
+    osal_id_t   fd1  = OS_OBJECT_ID_UNDEFINED;
+    osal_id_t   fd2  = OS_OBJECT_ID_UNDEFINED;
+    osal_id_t   dirh = OS_OBJECT_ID_UNDEFINED;
     os_dirent_t dirent;
 
     /* make the directory names for testing, as well as the filenames and the buffers
@@ -768,7 +772,7 @@ void TestRename(void)
     char midname1[OS_MAX_PATH_LEN];
     char newfilename1[OS_MAX_PATH_LEN];
 
-    osal_id_t fd1;
+    osal_id_t fd1 = OS_OBJECT_ID_UNDEFINED;
     size_t    size;
 
     /* make the directory names for testing, as well as the filenames and the buffers
@@ -854,7 +858,7 @@ void TestStat(void)
     char       dir1slash[OS_MAX_PATH_LEN];
     char       buffer1[OS_MAX_PATH_LEN];
     os_fstat_t StatBuff;
-    osal_id_t  fd1;
+    osal_id_t  fd1 = OS_OBJECT_ID_UNDEFINED;
     size_t     size;
 
     strcpy(dir1, "/drive0/DirectoryName");

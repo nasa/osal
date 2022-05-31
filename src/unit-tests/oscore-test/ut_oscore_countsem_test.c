@@ -70,6 +70,8 @@ void UT_os_count_sem_create_test()
     char      sem_name[UT_OS_NAME_BUFF_SIZE];
     char      long_sem_name[UT_OS_NAME_BUFF_SIZE];
 
+    memset(count_sem_ids, 0, sizeof(count_sem_ids));
+
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg-1 */
 
@@ -155,7 +157,7 @@ void UT_os_count_sem_create_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_delete_test()
 {
-    osal_id_t count_sem_id;
+    osal_id_t count_sem_id = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* #1 Invalid-ID-arg */
@@ -184,7 +186,7 @@ void UT_os_count_sem_delete_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_give_test()
 {
-    osal_id_t count_sem_id;
+    osal_id_t count_sem_id = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* #1 Invalid-ID-arg */
@@ -215,7 +217,7 @@ void UT_os_count_sem_give_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_take_test()
 {
-    osal_id_t count_sem_id;
+    osal_id_t count_sem_id = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* #1 Invalid-ID-arg */
@@ -245,7 +247,7 @@ void UT_os_count_sem_take_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_timed_wait_test()
 {
-    osal_id_t count_sem_id;
+    osal_id_t count_sem_id = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* #1 Invalid-ID-arg */
@@ -289,7 +291,7 @@ void UT_os_count_sem_timed_wait_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_get_id_by_name_test()
 {
-    osal_id_t count_sem_id;
+    osal_id_t count_sem_id = OS_OBJECT_ID_UNDEFINED;
     char      long_sem_name[UT_OS_NAME_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
@@ -336,7 +338,7 @@ void UT_os_count_sem_get_id_by_name_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_count_sem_get_info_test()
 {
-    osal_id_t           count_sem_id;
+    osal_id_t           count_sem_id = OS_OBJECT_ID_UNDEFINED;
     OS_count_sem_prop_t count_sem_prop;
 
     /*-----------------------------------------------------*/

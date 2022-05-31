@@ -144,7 +144,7 @@ void Test_OS_TimeBaseGetIdByName(void)
      * Test Case For:
      * int32 OS_TimeBaseGetIdByName (uint32 *timer_id, const char *timebase_name)
      */
-    osal_id_t objid;
+    osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 
     UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdFindByName), 1, OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseGetIdByName(&objid, "UT"), OS_SUCCESS);
@@ -170,6 +170,8 @@ void Test_OS_TimeBaseGetInfo(void)
      * int32 OS_TimeBaseGetInfo (uint32 timebase_id, OS_timebase_prop_t *timebase_prop)
      */
     OS_timebase_prop_t timebase_prop;
+
+    memset(&timebase_prop, 0, sizeof(timebase_prop));
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_TIMEBASE, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
 
@@ -223,6 +225,9 @@ void Test_OS_TimeBase_CallbackThread(void)
     OS_common_record_t *recptr;
     OS_object_token_t   timecb_token;
     OS_object_token_t   timecb_token2;
+
+    memset(&timecb_token, 0, sizeof(timecb_token));
+    memset(&timecb_token2, 0, sizeof(timecb_token2));
 
     recptr = &OS_global_timebase_table[2];
     memset(recptr, 0, sizeof(*recptr));
@@ -284,7 +289,7 @@ void Test_OS_Milli2Ticks(void)
      * int32 OS_Milli2Ticks(uint32 milli_seconds)
      */
     uint32 msec;
-    int    ticks;
+    int    ticks = 0;
     int    expected;
 
     msec                               = 5678;

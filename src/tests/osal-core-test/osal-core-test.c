@@ -618,6 +618,8 @@ void TestGenericQueries(void)
     TestCallbackState_t State;
     char                ResourceName[OS_MAX_API_NAME];
 
+    memset(ResourceName, 0, sizeof(ResourceName));
+
     status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack),
                            sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_TaskCreate (%ld) == OS_SUCCESS", (long)status);

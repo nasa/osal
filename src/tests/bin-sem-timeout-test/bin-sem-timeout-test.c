@@ -64,7 +64,10 @@ int counter = 0;
  */
 void TimerFunction(osal_id_t local_timer_id)
 {
-    int32 status;
+    int32             status;
+    OS_bin_sem_prop_t bin_sem_prop;
+
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
 
     timer_counter++;
 
@@ -75,7 +78,6 @@ void TimerFunction(osal_id_t local_timer_id)
     }
 
     {
-        OS_bin_sem_prop_t bin_sem_prop;
         status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
         if (status != OS_SUCCESS)
         {
@@ -96,6 +98,8 @@ void task_1(void)
 {
     uint32            status;
     OS_bin_sem_prop_t bin_sem_prop;
+
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
 
     OS_printf("Starting task 1\n");
 
@@ -192,7 +196,9 @@ void BinSemTimeoutSetup(void)
 {
     uint32            status;
     OS_bin_sem_prop_t bin_sem_prop;
-    uint32            accuracy;
+    uint32            accuracy = 0;
+
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
 
     task_1_timeouts         = 0;
     task_1_work             = 0;

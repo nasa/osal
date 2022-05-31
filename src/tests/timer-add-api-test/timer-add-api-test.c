@@ -66,8 +66,8 @@ void TestTimerAddApi(void)
     uint32    expected;
     osal_id_t badid;
     osal_id_t timer_id;
-    osal_id_t time_base_id;
-    int       i = 0;
+    osal_id_t time_base_id = OS_OBJECT_ID_UNDEFINED;
+    int       i            = 0;
     int32     TimerStatus[NUMBER_OF_TIMERS];
     osal_id_t TimerID[OS_MAX_TIMERS];
     char      temp_name[OS_MAX_API_NAME + 5];
@@ -85,6 +85,7 @@ void TestTimerAddApi(void)
 
     for (i = 0; i < OS_MAX_TIMERS; i++)
     {
+        TimerID[i] = OS_OBJECT_ID_UNDEFINED;
         snprintf(temp_name, sizeof(temp_name), "Timer%d", i);
         UtAssert_INT32_EQ(OS_TimerAdd(&TimerID[i], temp_name, time_base_id, &null_func, NULL), OS_SUCCESS);
         UtPrintf("Timer %d Created ID=%lx", i, OS_ObjectIdToInteger(TimerID[i]));

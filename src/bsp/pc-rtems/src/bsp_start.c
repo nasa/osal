@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include <bsp.h>
 #include <rtems.h>
-#include <rtems/mkrootfs.h>
 #include <rtems/bdbuf.h>
 #include <rtems/blkdev.h>
 #include <rtems/diskdevs.h>
@@ -46,6 +45,10 @@
 #include <rtems/fsmount.h>
 #include <rtems/shell.h>
 #include <rtems/rtl/dlfcn-shell.h>
+
+#if defined(OS_RTEMS_4_DEPRECATED) || defined(OS_RTEMS_5)
+#include <rtems/mkrootfs.h>
+#endif
 
 #include "pcrtems_bsp_internal.h"
 
@@ -178,6 +181,7 @@ void OS_BSP_Setup(void)
         BSP_DEBUG("rtems_semaphore_create: %s\n", rtems_status_text(status));
     }
 
+#if defined(OS_RTEMS_4_DEPRECATED) || defined(OS_RTEMS_5)
     /*
     ** Create the RTEMS Root file system
     */
@@ -186,6 +190,7 @@ void OS_BSP_Setup(void)
     {
         printf("Creating Root file system failed: %s\n", rtems_status_text(status));
     }
+#endif
 
     /*
      * Create the mountpoint for the general purpose file system
@@ -413,10 +418,10 @@ rtems_task Init(rtems_task_argument ignored)
 #define CONFIGURE_MAXIMUM_MESSAGE_QUEUES (OS_MAX_QUEUES + 4)
 #define CONFIGURE_MAXIMUM_DRIVERS        10
 #define CONFIGURE_MAXIMUM_POSIX_KEYS     4
-#ifdef _RTEMS_5_
-#define CONFIGURE_MAXIMUM_FILE_DESCRIPTORS (OS_MAX_NUM_OPEN_FILES + 8)
-#else
+#ifdef OS_RTEMS_4_DEPRECATED
 #define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS (OS_MAX_NUM_OPEN_FILES + 8)
+#else
+#define CONFIGURE_MAXIMUM_FILE_DESCRIPTORS (OS_MAX_NUM_OPEN_FILES + 8)
 #endif
 
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE

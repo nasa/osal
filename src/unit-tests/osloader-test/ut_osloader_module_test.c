@@ -66,8 +66,8 @@
 void UT_os_module_load_test()
 {
     int       i;
-    osal_id_t module_id;
-    osal_id_t module_id2;
+    osal_id_t module_id  = OS_OBJECT_ID_UNDEFINED;
+    osal_id_t module_id2 = OS_OBJECT_ID_UNDEFINED;
     char      module_name[UT_OS_NAME_BUFF_SIZE];
     char      module_file_name[UT_OS_PATH_BUFF_SIZE];
 
@@ -169,7 +169,7 @@ void UT_os_module_load_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_module_unload_test()
 {
-    osal_id_t module_id;
+    osal_id_t module_id = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* API Not implemented */
@@ -208,7 +208,7 @@ void UT_os_module_unload_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_module_info_test()
 {
-    osal_id_t        module_id;
+    osal_id_t        module_id = OS_OBJECT_ID_UNDEFINED;
     OS_module_prop_t module_info;
 
     /*-----------------------------------------------------*/

@@ -65,7 +65,7 @@ void Test_OS_ModuleLoad(void)
      * Test Case For:
      * int32 OS_ModuleLoad ( uint32 *module_id, const char *module_name, const char *filename )
      */
-    osal_id_t objid;
+    osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 
     OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UT", "File", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_SUCCESS);
     UtAssert_STUB_COUNT(OS_ModuleLoad_Impl, 1);
@@ -202,7 +202,7 @@ void Test_OS_StaticSymbolLookup(void)
      */
     int32   expected = OS_SUCCESS;
     int32   actual   = ~OS_SUCCESS;
-    cpuaddr addr;
+    cpuaddr addr     = 0;
 
     /* nominal */
     actual = OS_SymbolLookup_Static(&addr, "UT_staticsym", NULL);
@@ -267,6 +267,8 @@ void Test_OS_ModuleGetInfo(void)
      * int32 OS_ModuleInfo ( uint32 module_id, OS_module_prop_t *module_prop )
      */
     OS_module_prop_t module_prop;
+
+    memset(&module_prop, 0, sizeof(module_prop));
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_MODULE, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
     strncpy(OS_module_table[1].file_name, "DEF", sizeof(OS_module_table[1].file_name));
