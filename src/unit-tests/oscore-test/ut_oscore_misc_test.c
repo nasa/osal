@@ -86,12 +86,13 @@
 *--------------------------------------------------------------------------------*/
 void UT_os_apiinit_test()
 {
-    osal_id_t         qId;
-    osal_blockcount_t qDepth = OSAL_BLOCKCOUNT_C(10);
-    size_t            qSize  = OSAL_SIZE_C(4);
-    uint32            qFlags = 0;
-    osal_id_t         semIds[3];
-    uint32            semInitValue = 1, semOptions = 0;
+    osal_id_t         qId          = OS_OBJECT_ID_UNDEFINED;
+    osal_blockcount_t qDepth       = OSAL_BLOCKCOUNT_C(10);
+    size_t            qSize        = OSAL_SIZE_C(4);
+    uint32            qFlags       = 0;
+    osal_id_t         semIds[3]    = {OS_OBJECT_ID_UNDEFINED, OS_OBJECT_ID_UNDEFINED, OS_OBJECT_ID_UNDEFINED};
+    uint32            semInitValue = 1;
+    uint32            semOptions   = 0;
 
     /*-----------------------------------------------------*/
     /* #1 Init-not-call-first */
@@ -245,6 +246,8 @@ void UT_os_getlocaltime_test()
     OS_time_t time_struct;
     int32     i = 0;
 
+    memset(&time_struct, 0, sizeof(time_struct));
+
     /*-----------------------------------------------------*/
     /* API not implemented */
 
@@ -308,6 +311,8 @@ void UT_os_setlocaltime_test()
 {
     OS_time_t time_struct;
     int32     i = 0;
+
+    memset(&time_struct, 0, sizeof(time_struct));
 
     /*-----------------------------------------------------*/
     /* API not implemented */
@@ -385,6 +390,8 @@ void UT_os_setlocaltime_test()
 void UT_os_geterrorname_test(void)
 {
     os_err_name_t errNames[4];
+
+    memset(errNames, 0, sizeof(errNames));
 
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */

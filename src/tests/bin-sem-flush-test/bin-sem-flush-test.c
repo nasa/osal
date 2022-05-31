@@ -59,6 +59,8 @@ void task_1(void)
     OS_bin_sem_prop_t bin_sem_prop;
     int               counter = 0;
 
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
+
     OS_printf("Starting task 1\n");
 
     OS_printf("TASK 1: Waiting on the semaphore\n");
@@ -95,6 +97,8 @@ void task_2(void)
     uint32            status;
     OS_bin_sem_prop_t bin_sem_prop;
     int               counter = 0;
+
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
 
     task_2_failures = 0;
     OS_printf("Starting task 2\n");
@@ -133,6 +137,8 @@ void task_3(void)
     uint32            status;
     OS_bin_sem_prop_t bin_sem_prop;
     int               counter = 0;
+
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
 
     OS_printf("Starting task 3\n");
 
@@ -188,6 +194,8 @@ void BinSemFlushSetup(void)
 {
     uint32            status;
     OS_bin_sem_prop_t bin_sem_prop;
+
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
 
     /* Note that UT assert is not multi-thread safe,
      * so each thread must use a separate error counter

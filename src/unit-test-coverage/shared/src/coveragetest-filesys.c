@@ -260,6 +260,8 @@ void Test_OS_FileSysStatVolume(void)
     int32        expected;
     int32        actual;
 
+    memset(&statbuf, 0, sizeof(statbuf));
+
     statref.block_size   = OSAL_SIZE_C(1024);
     statref.blocks_free  = OSAL_BLOCKCOUNT_C(1111);
     statref.total_blocks = OSAL_BLOCKCOUNT_C(2222);
@@ -374,6 +376,8 @@ void Test_OS_GetFsInfo(void)
     os_fsinfo_t        filesys_info;
     OS_common_record_t rec;
 
+    memset(&filesys_info, 0, sizeof(filesys_info));
+
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdIteratorGetNext), 1);
     UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdIteratorGetNext), 3, 0);
     UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdIteratorGetNext), 4, 0);
@@ -414,6 +418,8 @@ void Test_OS_TranslatePath(void)
     char  LocalBuffer[OS_MAX_PATH_LEN];
     int32 expected = OS_SUCCESS;
     int32 actual   = ~OS_SUCCESS;
+
+    memset(LocalBuffer, 0, sizeof(LocalBuffer));
 
     /* Set up the local record for success */
     OS_filesys_table[1].flags =

@@ -59,7 +59,7 @@ void Test_OS_NetworkGetID_Impl(void)
      * Test Case For:
      * int32 OS_NetworkGetID_Impl             (int32 *IdBuf)
      */
-    int32 IdBuf;
+    int32 IdBuf = 0;
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_hostGetByName), 1234);
     OSAPI_TEST_FUNCTION_RC(OS_NetworkGetID_Impl(&IdBuf), OS_SUCCESS);

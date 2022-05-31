@@ -56,7 +56,7 @@ int OCS_stat(const char *file, struct OCS_stat *buf)
 
     Status = UT_DEFAULT_IMPL(OCS_stat);
 
-    if (Status == 0 && UT_Stub_CopyToLocal(UT_KEY(OCS_stat), buf, sizeof(*buf)) < sizeof(*buf))
+    if (UT_Stub_CopyToLocal(UT_KEY(OCS_stat), buf, sizeof(*buf)) < sizeof(*buf))
     {
         memset(buf, 0, sizeof(*buf));
     }
@@ -70,7 +70,7 @@ int OCS_fstat(int fd, struct OCS_stat *buf)
 
     Status = UT_DEFAULT_IMPL(OCS_fstat);
 
-    if (Status == 0 && UT_Stub_CopyToLocal(UT_KEY(OCS_fstat), buf, sizeof(*buf)) < sizeof(*buf))
+    if (UT_Stub_CopyToLocal(UT_KEY(OCS_fstat), buf, sizeof(*buf)) < sizeof(*buf))
     {
         memset(buf, 0, sizeof(*buf));
     }
@@ -84,7 +84,7 @@ int OCS_statvfs(const char *file, struct OCS_statvfs *buf)
 
     Status = UT_DEFAULT_IMPL(OCS_statvfs);
 
-    if (Status == 0 && UT_Stub_CopyToLocal(UT_KEY(OCS_statvfs), buf, sizeof(*buf)) < sizeof(*buf))
+    if (UT_Stub_CopyToLocal(UT_KEY(OCS_statvfs), buf, sizeof(*buf)) < sizeof(*buf))
     {
         memset(buf, 0, sizeof(*buf));
     }

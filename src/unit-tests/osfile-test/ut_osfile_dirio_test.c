@@ -124,7 +124,7 @@ void UT_os_read_n_sort_dirs(osal_id_t);
 **--------------------------------------------------------------------------------*/
 void UT_os_makedir_test()
 {
-    osal_id_t fileDesc;
+    osal_id_t fileDesc = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */
@@ -205,7 +205,7 @@ void UT_os_makedir_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_opendir_test()
 {
-    osal_id_t dirh;
+    osal_id_t dirh = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */
@@ -278,7 +278,7 @@ void UT_os_opendir_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_closedir_test()
 {
-    osal_id_t   dirh;
+    osal_id_t   dirh = OS_OBJECT_ID_UNDEFINED;
     os_dirent_t dirEntry;
 
     UT_RETVAL(OS_DirectoryClose(UT_OBJID_INCORRECT), OS_ERR_INVALID_ID);
@@ -543,7 +543,7 @@ void UT_os_rewinddir_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_removedir_test()
 {
-    osal_id_t fileDesc;
+    osal_id_t fileDesc = OS_OBJECT_ID_UNDEFINED;
 
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */
@@ -600,6 +600,7 @@ void UT_os_read_n_sort_dirs(osal_id_t dirh)
     const char *Name;
 
     memset(g_dirItems, 0, sizeof(g_dirItems));
+    memset(&dirEntry, 0, sizeof(dirEntry));
 
     NumMatched = 0;
     NumEntries = 0;

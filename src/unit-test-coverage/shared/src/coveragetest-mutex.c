@@ -48,7 +48,7 @@ void Test_OS_MutSemCreate(void)
      * Test Case For:
      * int32 OS_MutSemCreate (uint32 *sem_id, const char *sem_name, uint32 options)
      */
-    osal_id_t objid;
+    osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 
     OSAPI_TEST_FUNCTION_RC(OS_MutSemCreate(&objid, "UT", 0), OS_SUCCESS);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
@@ -132,7 +132,7 @@ void Test_OS_MutSemGetIdByName(void)
      * Test Case For:
      * int32 OS_MutSemGetIdByName (uint32 *sem_id, const char *sem_name)
      */
-    osal_id_t objid;
+    osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     OSAPI_TEST_FUNCTION_RC(OS_MutSemGetIdByName(&objid, "UT"), OS_SUCCESS);
@@ -152,6 +152,8 @@ void Test_OS_MutSemGetInfo(void)
      * int32 OS_MutSemGetInfo (uint32 sem_id, OS_mut_sem_prop_t *mut_prop)
      */
     OS_mut_sem_prop_t prop;
+
+    memset(&prop, 0, sizeof(prop));
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_MUTEX, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
 

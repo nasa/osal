@@ -65,8 +65,8 @@ void task_1(void)
 {
     int32  status;
     size_t data_size;
-    uint32 data_received;
-    uint32 expected = 0;
+    uint32 data_received = 0;
+    uint32 expected      = 0;
 
     OS_printf("Starting task 1\n");
 
@@ -134,7 +134,7 @@ void QueueTimeoutCheck(void)
 void QueueTimeoutSetup(void)
 {
     int32  status;
-    uint32 accuracy;
+    uint32 accuracy = 0;
 
     task_1_failures = 0;
     task_1_messages = 0;
@@ -193,7 +193,7 @@ void QueueMessageCheck(void)
 void QueueMessageSetup(void)
 {
     int32  status;
-    uint32 accuracy;
+    uint32 accuracy = 0;
     int    i;
     uint32 Data     = 0;
     task_1_failures = 0;

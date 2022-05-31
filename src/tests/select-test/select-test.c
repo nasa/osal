@@ -64,6 +64,8 @@ void BinSemSetup(void)
 {
     OS_bin_sem_prop_t bin_sem_prop;
 
+    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
+
     /*
      * Create the binary semaphore
      * BinSem1 is used to control when the server can accept connections
@@ -165,7 +167,7 @@ bool FillOutputBuffer(osal_id_t conn_id)
 
 void Server_Fn(void)
 {
-    osal_id_t     connsock_id;
+    osal_id_t     connsock_id = OS_OBJECT_ID_UNDEFINED;
     OS_SockAddr_t addr;
 
     /* Accept incoming connections */
@@ -177,7 +179,7 @@ void Server_Fn(void)
 
 void Server_Fn2(void)
 {
-    osal_id_t     connsock_id;
+    osal_id_t     connsock_id = OS_OBJECT_ID_UNDEFINED;
     OS_SockAddr_t addr;
 
     /* Accept incoming connections */

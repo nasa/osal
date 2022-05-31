@@ -49,7 +49,7 @@ void Test_OS_CountSemCreate(void)
      * int32 OS_CountSemCreate (uint32 *sem_id, const char *sem_name,
      *          uint32 sem_initial_value, uint32 options)
      */
-    osal_id_t objid;
+    osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 
     OSAPI_TEST_FUNCTION_RC(OS_CountSemCreate(&objid, "UT", 0, 0), OS_SUCCESS);
     OSAPI_TEST_OBJID(objid, !=, OS_OBJECT_ID_UNDEFINED);
@@ -119,7 +119,7 @@ void Test_OS_CountSemGetIdByName(void)
      */
     int32     expected = OS_SUCCESS;
     int32     actual   = ~OS_SUCCESS;
-    osal_id_t objid;
+    osal_id_t objid    = OS_OBJECT_ID_UNDEFINED;
 
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_CountSemGetIdByName(&objid, "UT");
@@ -144,6 +144,8 @@ void Test_OS_CountSemGetInfo(void)
     int32               expected = OS_SUCCESS;
     int32               actual   = ~OS_SUCCESS;
     OS_count_sem_prop_t prop;
+
+    memset(&prop, 0, sizeof(prop));
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_COUNTSEM, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
 

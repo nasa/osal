@@ -33,6 +33,8 @@ void Test_OS_GetErrorName(void)
      */
     os_err_name_t err_name;
 
+    memset(&err_name, 0, sizeof(err_name));
+
     OSAPI_TEST_FUNCTION_RC(OS_GetErrorName(OS_ERROR, &err_name), OS_SUCCESS);
     UtAssert_True(strcmp(err_name, "OS_ERROR") == 0, "string(%s) == OS_ERROR", err_name);
 
