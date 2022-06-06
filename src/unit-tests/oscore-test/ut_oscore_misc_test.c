@@ -414,14 +414,14 @@ void UT_os_geterrorname_test(void)
 **--------------------------------------------------------------------------------*/
 void UT_os_statustostring_test_helper(osal_status_t status)
 {
-    os_status_string_t  status_string;
-    os_status_string_t *rtn_addr;
-    char                expected[OS_STATUS_STRING_LENGTH + 1];
+    os_status_string_t status_string;
+    char *             rtn_addr;
+    char               expected[OS_STATUS_STRING_LENGTH + 1];
 
     /* Used oversized string to test for truncation */
     snprintf(expected, sizeof(expected) - 1, "%ld", OS_StatusToInteger(status));
     rtn_addr = OS_StatusToString(status, &status_string);
-    UtAssert_ADDRESS_EQ(rtn_addr, &status_string);
+    UtAssert_ADDRESS_EQ(rtn_addr, status_string);
     UtAssert_STRINGBUF_EQ(status_string, sizeof(status_string), expected, sizeof(expected));
 }
 

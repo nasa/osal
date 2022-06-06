@@ -189,7 +189,7 @@ int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name);
  *
  * @return Passed in string pointer
  */
-os_status_string_t *OS_StatusToString(osal_status_t status, os_status_string_t *status_string);
+char *OS_StatusToString(osal_status_t status, os_status_string_t *status_string);
 /**@}*/
 
 #endif /* OSAPI_ERROR_H */
