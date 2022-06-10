@@ -417,6 +417,37 @@ void UT_os_geterrorname_test(void)
 }
 
 /*--------------------------------------------------------------------------------*
+** OS_StatusToString test helper function to avoid repeating logic
+**--------------------------------------------------------------------------------*/
+void UT_os_statustostring_test_helper(osal_status_t status)
+{
+    os_status_string_t status_string;
+    char *             rtn_addr;
+    char               expected[OS_STATUS_STRING_LENGTH + 1];
+
+    /* Used oversized string to test for truncation */
+    snprintf(expected, sizeof(expected) - 1, "%ld", OS_StatusToInteger(status));
+    rtn_addr = OS_StatusToString(status, &status_string);
+    UtAssert_ADDRESS_EQ(rtn_addr, status_string);
+    UtAssert_STRINGBUF_EQ(status_string, sizeof(status_string), expected, sizeof(expected));
+}
+
+/*--------------------------------------------------------------------------------*
+** Functional OS_StatusToString test
+**--------------------------------------------------------------------------------*/
+void UT_os_statustostring_test(void)
+{
+    /* NULL test */
+    UtAssert_ADDRESS_EQ(OS_StatusToString(OS_SUCCESS, NULL), NULL);
+
+    /* Status value tests */
+    UT_os_statustostring_test_helper(OS_SUCCESS);
+    UT_os_statustostring_test_helper(OS_ERROR);
+    UT_os_statustostring_test_helper(OSAL_STATUS_C(INT32_MAX));
+    UT_os_statustostring_test_helper(OSAL_STATUS_C(INT32_MIN));
+}
+
+/*--------------------------------------------------------------------------------*
 ** Syntax: int32 OS_HeapGetInfo(OS_heap_prop_t *heap_prop)
 ** Purpose: Returns current info on the heap
 ** Parameters: prop - out pointer to heap data

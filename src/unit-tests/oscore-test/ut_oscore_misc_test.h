@@ -63,6 +63,7 @@ void UT_os_getlocaltime_test(void);
 void UT_os_setlocaltime_test(void);
 
 void UT_os_geterrorname_test(void);
+void UT_os_statustostring_test(void);
 
 void UT_os_heapgetinfo_test(void);
 

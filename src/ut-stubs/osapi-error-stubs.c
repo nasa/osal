@@ -43,3 +43,20 @@ int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name)
 
     return UT_GenStub_GetReturnValue(OS_GetErrorName, int32);
 }
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_StatusToString()
+ * ----------------------------------------------------
+ */
+char *OS_StatusToString(osal_status_t status, os_status_string_t *status_string)
+{
+    UT_GenStub_SetupReturnBuffer(OS_StatusToString, char *);
+
+    UT_GenStub_AddParam(OS_StatusToString, osal_status_t, status);
+    UT_GenStub_AddParam(OS_StatusToString, os_status_string_t *, status_string);
+
+    UT_GenStub_Execute(OS_StatusToString, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_StatusToString, char *);
+}

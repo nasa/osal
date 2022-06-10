@@ -47,6 +47,37 @@ void Test_OS_GetErrorName(void)
     OSAPI_TEST_FUNCTION_RC(OS_GetErrorName(-555555, NULL), OS_INVALID_POINTER);
 }
 
+/*--------------------------------------------------------------------------------*
+** OS_StatusToString test helper function to avoid repeating logic
+**--------------------------------------------------------------------------------*/
+void Test_OS_StatusToString_Helper(osal_status_t status)
+{
+    os_status_string_t status_string;
+    char *             rtn_addr;
+    char               expected[OS_STATUS_STRING_LENGTH + 1];
+
+    /* Used oversized string to test for truncation */
+    snprintf(expected, sizeof(expected), "%ld", OS_StatusToInteger(status));
+    rtn_addr = OS_StatusToString(status, &status_string);
+    UtAssert_ADDRESS_EQ(rtn_addr, status_string);
+    UtAssert_STRINGBUF_EQ(status_string, sizeof(status_string), expected, sizeof(expected));
+}
+
+/*--------------------------------------------------------------------------------*
+** Functional OS_StatusToString test
+**--------------------------------------------------------------------------------*/
+void Test_OS_StatusToString(void)
+{
+    /* NULL test */
+    UtAssert_ADDRESS_EQ(OS_StatusToString(OS_SUCCESS, NULL), NULL);
+
+    /* Status value tests */
+    Test_OS_StatusToString_Helper(OS_SUCCESS);
+    Test_OS_StatusToString_Helper(OS_ERROR);
+    Test_OS_StatusToString_Helper(OSAL_STATUS_C(INT32_MAX));
+    Test_OS_StatusToString_Helper(OSAL_STATUS_C(INT32_MIN));
+}
+
 /* Osapi_Test_Setup
  *
  * Purpose:
@@ -71,4 +102,5 @@ void Osapi_Test_Teardown(void) {}
 void UtTest_Setup(void)
 {
     ADD_TEST(OS_GetErrorName);
+    ADD_TEST(OS_StatusToString);
 }
