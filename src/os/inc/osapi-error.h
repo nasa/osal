@@ -46,6 +46,20 @@
  */
 typedef char os_err_name_t[OS_ERROR_NAME_LENGTH];
 
+/**
+ * @brief Status converted to string length limit
+ *
+ * Used for sizing os_status_string_t intended for use in printing osal_status_t values
+ * Sized to fit LONG_MIN including NULL termination
+ */
+#define OS_STATUS_STRING_LENGTH 12
+
+/**
+ * @brief For the @ref OS_StatusToString() function, to ensure
+ * everyone is making an array of the same length.
+ */
+typedef char os_status_string_t[OS_STATUS_STRING_LENGTH];
+
 /** @defgroup OSReturnCodes OSAL Return Code Defines
  *
  * The specific status/return code definitions listed in this section may be extended or refined
@@ -165,6 +179,17 @@ static inline long OS_StatusToInteger(osal_status_t Status)
  * @retval #OS_ERROR if error could not be converted
  */
 int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Convert status to a string
+ *
+ * @param[in] status Status value to convert
+ * @param[out] status_string Buffer to store status converted to string
+ *
+ * @return Passed in string pointer
+ */
+char *OS_StatusToString(osal_status_t status, os_status_string_t *status_string);
 /**@}*/
 
 #endif /* OSAPI_ERROR_H */

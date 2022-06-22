@@ -100,6 +100,26 @@ static const OS_ErrorTable_Entry_t OS_GLOBAL_ERROR_NAME_TABLE[] = {
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_StatusToString
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+char *OS_StatusToString(osal_status_t status, os_status_string_t *status_string)
+{
+    char *string = NULL;
+
+    if (status_string != NULL)
+    {
+        snprintf(*status_string, sizeof(*status_string), "%ld", OS_StatusToInteger(status));
+        string = *status_string;
+    }
+    return string;
+}
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_GetErrorName
  *
  *  Purpose: Implemented per public OSAL API
