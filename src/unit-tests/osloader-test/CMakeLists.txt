@@ -9,8 +9,9 @@ add_osal_ut_exe(osal_loader_UT ${TEST_MODULE_FILES})
 
 # build many copies of the test module
 # we need to have unique modules to load up to OS_MAX_MODULES
-# This will cover up to 32 -- extras are ignored.  If needed this can be increased.
-set(MOD 32)
+# This will cover up to $OSAL_CONFIG_MAX_MODULES + 1.  If needed
+# this can be increased by increasing $OSAL_CONFIG_MAX_MODULES.
+math(EXPR MOD "${OSAL_CONFIG_MAX_MODULES} + 1")
 while(MOD GREATER 0)
   math(EXPR MOD "${MOD} - 1")
   add_library(MODULE${MOD} SHARED ut_module.c)
