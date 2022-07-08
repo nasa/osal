@@ -40,7 +40,7 @@
 # OSAL resources.
 #
 ######################################################################
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
 project(OSAL C)
 
 # The "OSAL_EXT_SOURCE_DIR" cache variable may be set to a path
