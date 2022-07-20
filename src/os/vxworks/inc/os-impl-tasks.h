@@ -30,8 +30,12 @@
 #include <taskLib.h>
 
 #if defined(VX_WIND_TCB_SIZE)
-/* vxworks >= 7.0 should provide this symbol via taskLib.h. WIND_TCB is an opaque type */
-typedef char OS_VxWorks_TCB_t[VX_WIND_TCB_SIZE];
+/**
+ * vxworks >= 7.0 should provide this symbol via taskLib.h. WIND_TCB is an opaque type
+ * NOTE: uint64 used to ensure sufficient alignment, and + 1 means it's at least big enough
+ *       but might be slightly bigger than necessary if VX_WIND_TCB_SIZE mod 8 is zero
+ */
+typedef uint64 OS_VxWorks_TCB_t[(VX_WIND_TCB_SIZE / 8) + 1];
 #else
 /* older vxworks expose the definition of VX_WIND_TCB_SIZE */
 typedef WIND_TCB OS_VxWorks_TCB_t;
