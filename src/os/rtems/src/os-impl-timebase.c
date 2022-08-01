@@ -288,6 +288,24 @@ void OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks)
 
 /*----------------------------------------------------------------
  *
+ * Function: OS_TimeBase_CallbackThreadEntry
+ *
+ *  Purpose: Local helper routine, not part of OSAL API.
+ *           Wrapper function used by OS_TimeBaseCreate_Impl to
+ *           convert the rtems_task_argument on newly created
+ *           timebase task into an osal_id_t used by the
+ *           OS_TimeBase_CallbackThread.
+ *
+ *-----------------------------------------------------------------*/
+static void OS_TimeBase_CallbackThreadEntry(rtems_task_argument arg)
+{
+    osal_id_t id;
+    id = OS_ObjectIdFromInteger(arg);
+    OS_TimeBase_CallbackThread(id);
+}
+
+/*----------------------------------------------------------------
+ *
  * Function: OS_TimeBaseCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
@@ -390,9 +408,9 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
         else
         {
             /* will place the task in 'ready for scheduling' state */
-            rtems_sc = rtems_task_start(local->handler_task,                          /*rtems task id*/
-                                        (rtems_task_entry)OS_TimeBase_CallbackThread, /* task entry point */
-                                        (rtems_task_argument)r_name);                 /* passed argument  */
+            rtems_sc = rtems_task_start(local->handler_task,                               /*rtems task id*/
+                                        (rtems_task_entry)OS_TimeBase_CallbackThreadEntry, /* task entry point */
+                                        (rtems_task_argument)r_name);                      /* passed argument  */
 
             if (rtems_sc != RTEMS_SUCCESSFUL)
             {
