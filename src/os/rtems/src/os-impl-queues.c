@@ -229,11 +229,6 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     if (status == RTEMS_SUCCESSFUL)
     {
         *size_copied = rtems_size;
-        if (rtems_size != size)
-        {
-            /* Success, but the size was wrong */
-            return_code = OS_QUEUE_INVALID_SIZE;
-        }
     }
     else
     {
