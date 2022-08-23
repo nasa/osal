@@ -46,6 +46,7 @@ static OS_impl_objtype_lock_t OS_timecb_table_lock;
 static OS_impl_objtype_lock_t OS_module_table_lock;
 static OS_impl_objtype_lock_t OS_filesys_table_lock;
 static OS_impl_objtype_lock_t OS_console_lock;
+static OS_impl_objtype_lock_t OS_condvar_lock;
 
 OS_impl_objtype_lock_t *const OS_impl_objtype_lock_table[OS_OBJECT_TYPE_USER] = {
     [OS_OBJECT_TYPE_UNDEFINED]   = NULL,
@@ -61,6 +62,7 @@ OS_impl_objtype_lock_t *const OS_impl_objtype_lock_table[OS_OBJECT_TYPE_USER] = 
     [OS_OBJECT_TYPE_OS_MODULE]   = &OS_module_table_lock,
     [OS_OBJECT_TYPE_OS_FILESYS]  = &OS_filesys_table_lock,
     [OS_OBJECT_TYPE_OS_CONSOLE]  = &OS_console_lock,
+    [OS_OBJECT_TYPE_OS_CONDVAR]  = &OS_condvar_lock,
 };
 
 /*---------------------------------------------------------------------------------------
@@ -244,7 +246,6 @@ int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype)
             return_code = OS_ERROR;
             break;
         }
-
     } while (0);
 
     return (return_code);

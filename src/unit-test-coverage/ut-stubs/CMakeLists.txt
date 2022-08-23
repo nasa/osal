@@ -103,6 +103,7 @@ set(OSAL_SHARED_IMPL_HEADERS
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-clock.h
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-common.h
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-console.h
+    ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-condvar.h
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-countsem.h
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-dir.h
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-errors.h
@@ -155,6 +156,8 @@ add_library(ut_osapi_impl_stubs STATIC EXCLUDE_FROM_ALL
     src/os-shared-binsem-impl-stubs.c
     src/os-shared-clock-impl-stubs.c
     src/os-shared-common-impl-stubs.c
+    src/os-shared-condvar-impl-stubs.c
+    src/os-shared-condvar-init-stubs.c
     src/os-shared-console-impl-stubs.c
     src/os-shared-countsem-impl-stubs.c
     src/os-shared-dir-impl-stubs.c

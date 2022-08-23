@@ -232,6 +232,7 @@ set(OSAL_SRCLIST
     src/os/shared/src/osapi-binsem.c
     src/os/shared/src/osapi-clock.c
     src/os/shared/src/osapi-common.c
+    src/os/shared/src/osapi-condvar.c
     src/os/shared/src/osapi-countsem.c
     src/os/shared/src/osapi-dir.c
     src/os/shared/src/osapi-errors.c
@@ -357,7 +358,3 @@ else(HAS_PARENT)
     # Note that in a CFE/integrated build, it is expected this will be built separately.
     add_subdirectory(docs/src docs)
 endif(HAS_PARENT)
-
-
-
-

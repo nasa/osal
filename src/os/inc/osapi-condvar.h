@@ -197,7 +197,7 @@ int32 OS_CondVarWait(osal_id_t var_id);
  * This refers to the same system clock that is the subject of the OS_GetLocalTime() API.
  *
  * @param[in] var_id The object ID to operate on
- * @param[in] abs_wakeup_time The system time at which the task should be unblocked
+ * @param[in] abs_wakeup_time The system time at which the task should be unblocked @nonnull
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS

@@ -33,6 +33,7 @@ set(RTEMS_IMPL_SRCLIST
     ../portable/os-impl-posix-io.c
     ../portable/os-impl-posix-files.c
     ../portable/os-impl-posix-dirs.c
+    ../portable/os-impl-no-condvar.c
 )
 
 # Currently the "shell output to file" for RTEMS is not implemented

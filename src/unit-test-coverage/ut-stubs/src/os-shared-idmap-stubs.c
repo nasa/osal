@@ -25,21 +25,21 @@
 #include "os-shared-idmap.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_GetBaseForObjectType(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_GetMaxForObjectType(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdAllocateNew(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdFinalizeDelete(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdFinalizeNew(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdFindByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdGetById(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdGetByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdGetBySearch(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdGlobalFromToken(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdIterateActive(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdIteratorGetNext(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdIteratorInit(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdTransactionInit(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdTransferToken(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_GetBaseForObjectType(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_GetMaxForObjectType(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdAllocateNew(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdFinalizeDelete(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdFinalizeNew(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdFindByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdGetById(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdGetByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdGetBySearch(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdGlobalFromToken(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdIterateActive(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdIteratorGetNext(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdIteratorInit(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdTransactionInit(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdTransferToken(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------
