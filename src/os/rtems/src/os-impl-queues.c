@@ -223,8 +223,7 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     }
 
     /*
-    ** Check the size of the message.  If a valid message was
-    ** obtained, indicate success.
+    ** If a valid message was obtained fill in queue size, otherwise fill in zero on error
     */
     if (status == RTEMS_SUCCESSFUL)
     {
