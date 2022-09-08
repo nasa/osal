@@ -102,6 +102,7 @@ OS_common_record_t *const OS_global_timecb_table    = &OS_common_table[OS_TIMECB
 OS_common_record_t *const OS_global_module_table    = &OS_common_table[OS_MODULE_BASE];
 OS_common_record_t *const OS_global_filesys_table   = &OS_common_table[OS_FILESYS_BASE];
 OS_common_record_t *const OS_global_console_table   = &OS_common_table[OS_CONSOLE_BASE];
+OS_common_record_t *const OS_global_condvar_table   = &OS_common_table[OS_CONDVAR_BASE];
 
 /*
  *********************************************************************************
@@ -159,6 +160,8 @@ uint32 OS_GetMaxForObjectType(osal_objtype_t idtype)
             return OS_MAX_FILE_SYSTEMS;
         case OS_OBJECT_TYPE_OS_CONSOLE:
             return OS_MAX_CONSOLES;
+        case OS_OBJECT_TYPE_OS_CONDVAR:
+            return OS_MAX_CONDVARS;
         default:
             return 0;
     }
@@ -199,6 +202,8 @@ uint32 OS_GetBaseForObjectType(osal_objtype_t idtype)
             return OS_FILESYS_BASE;
         case OS_OBJECT_TYPE_OS_CONSOLE:
             return OS_CONSOLE_BASE;
+        case OS_OBJECT_TYPE_OS_CONDVAR:
+            return OS_CONDVAR_BASE;
         default:
             return 0;
     }

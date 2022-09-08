@@ -71,7 +71,14 @@
   */
 #define OS_MAX_MUTEXES                  @OSAL_CONFIG_MAX_MUTEXES@
 
- /**
+/**
+  * \brief The maximum number of condition variables to support
+  *
+  * Based on the OSAL_CONFIG_MAX_CONDVARS configuration option
+  */
+#define OS_MAX_CONDVARS                  @OSAL_CONFIG_MAX_CONDVARS@
+
+  /**
   * \brief The maximum number of modules to support
   *
   * Based on the OSAL_CONFIG_MAX_MODULES configuration option
@@ -268,4 +275,3 @@
 
 
 #endif      /* OSCONFIG_H */
-

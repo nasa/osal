@@ -40,6 +40,7 @@
  */
 #include "os-shared-binsem.h"
 #include "os-shared-common.h"
+#include "os-shared-condvar.h"
 #include "os-shared-countsem.h"
 #include "os-shared-dir.h"
 #include "os-shared-file.h"
@@ -187,6 +188,9 @@ int32 OS_API_Init(void)
                 break;
             case OS_OBJECT_TYPE_OS_CONSOLE:
                 return_code = OS_ConsoleAPI_Init();
+                break;
+            case OS_OBJECT_TYPE_OS_CONDVAR:
+                return_code = OS_CondVarAPI_Init();
                 break;
             default:
                 break;
@@ -346,6 +350,9 @@ void OS_CleanUpObject(osal_id_t object_id, void *arg)
             break;
         case OS_OBJECT_TYPE_OS_DIR:
             OS_DirectoryClose(object_id);
+            break;
+        case OS_OBJECT_TYPE_OS_CONDVAR:
+            OS_CondVarDelete(object_id);
             break;
         default:
             break;

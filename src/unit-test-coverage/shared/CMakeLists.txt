@@ -6,6 +6,7 @@ set(MODULE_LIST
     binsem
     clock
     common
+    condvar
     countsem
     dir
     errors
@@ -59,5 +60,3 @@ endforeach(MODNAME ${MODULE_LIST})
 target_compile_definitions(utobj_coverage-shared-module PRIVATE
     "OS_STATIC_SYMTABLE_SOURCE=OS_UT_STATIC_SYMBOL_TABLE"
 )
-
-

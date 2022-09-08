@@ -48,6 +48,7 @@
 #define OS_OBJECT_TYPE_OS_MODULE   0x0A /**< @brief Object module type */
 #define OS_OBJECT_TYPE_OS_FILESYS  0x0B /**< @brief Object file system type */
 #define OS_OBJECT_TYPE_OS_CONSOLE  0x0C /**< @brief Object console type */
+#define OS_OBJECT_TYPE_OS_CONDVAR  0x0D /**< @brief Object condition variable type */
 #define OS_OBJECT_TYPE_USER        0x10 /**< @brief Object user type */
 /**@}*/
 

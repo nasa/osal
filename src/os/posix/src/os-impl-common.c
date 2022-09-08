@@ -91,6 +91,9 @@ int32 OS_API_Impl_Init(osal_objtype_t idtype)
         case OS_OBJECT_TYPE_OS_FILESYS:
             return_code = OS_Posix_FileSysAPI_Impl_Init();
             break;
+        case OS_OBJECT_TYPE_OS_CONDVAR:
+            return_code = OS_Posix_CondVarAPI_Impl_Init();
+            break;
         default:
             break;
     }
