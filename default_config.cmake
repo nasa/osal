@@ -238,6 +238,11 @@ set(OSAL_CONFIG_MAX_MUTEXES             20
     CACHE STRING "Maximum Number of Mutexes to support"
 )
 
+# The maximum number of condition variables to support
+set(OSAL_CONFIG_MAX_CONDVARS             4
+    CACHE STRING "Maximum Number of Condition Variables to support"
+)
+
 # The maximum number of loadable modules to support
 # Note that emulating module loading for statically-linked objects also
 # requires a slot in this table, as it still assigns an OSAL ID.

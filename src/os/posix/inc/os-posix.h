@@ -96,6 +96,7 @@ int32 OS_Posix_QueueAPI_Impl_Init(void);
 int32 OS_Posix_BinSemAPI_Impl_Init(void);
 int32 OS_Posix_CountSemAPI_Impl_Init(void);
 int32 OS_Posix_MutexAPI_Impl_Init(void);
+int32 OS_Posix_CondVarAPI_Impl_Init(void);
 int32 OS_Posix_ModuleAPI_Impl_Init(void);
 int32 OS_Posix_TimeBaseAPI_Impl_Init(void);
 int32 OS_Posix_StreamAPI_Impl_Init(void);

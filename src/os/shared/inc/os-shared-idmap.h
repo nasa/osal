@@ -56,7 +56,8 @@ typedef enum
     OS_MODULE_BASE       = OS_TIMECB_BASE + OS_MAX_TIMERS,
     OS_FILESYS_BASE      = OS_MODULE_BASE + OS_MAX_MODULES,
     OS_CONSOLE_BASE      = OS_FILESYS_BASE + OS_MAX_FILE_SYSTEMS,
-    OS_MAX_TOTAL_RECORDS = OS_CONSOLE_BASE + OS_MAX_CONSOLES
+    OS_CONDVAR_BASE      = OS_CONSOLE_BASE + OS_MAX_CONSOLES,
+    OS_MAX_TOTAL_RECORDS = OS_CONDVAR_BASE + OS_MAX_CONDVARS
 } OS_ObjectIndex_t;
 
 /*
@@ -153,6 +154,7 @@ extern OS_common_record_t *const OS_global_timecb_table;
 extern OS_common_record_t *const OS_global_module_table;
 extern OS_common_record_t *const OS_global_filesys_table;
 extern OS_common_record_t *const OS_global_console_table;
+extern OS_common_record_t *const OS_global_condvar_table;
 
 /****************************************************************************************
                                 ID MAPPING FUNCTIONS

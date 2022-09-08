@@ -27,23 +27,6 @@
 
 /*
  * ----------------------------------------------------
- * Generated stub function for OS_SymbolLookup_Impl()
- * ----------------------------------------------------
- */
-int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
-{
-    UT_GenStub_SetupReturnBuffer(OS_SymbolLookup_Impl, int32);
-
-    UT_GenStub_AddParam(OS_SymbolLookup_Impl, cpuaddr *, SymbolAddress);
-    UT_GenStub_AddParam(OS_SymbolLookup_Impl, const char *, SymbolName);
-
-    UT_GenStub_Execute(OS_SymbolLookup_Impl, Basic, NULL);
-
-    return UT_GenStub_GetReturnValue(OS_SymbolLookup_Impl, int32);
-}
-
-/*
- * ----------------------------------------------------
  * Generated stub function for OS_ModuleGetInfo_Impl()
  * ----------------------------------------------------
  */
@@ -108,6 +91,23 @@ int32 OS_ModuleUnload_Impl(const OS_object_token_t *token)
     UT_GenStub_Execute(OS_ModuleUnload_Impl, Basic, NULL);
 
     return UT_GenStub_GetReturnValue(OS_ModuleUnload_Impl, int32);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_SymbolLookup_Impl()
+ * ----------------------------------------------------
+ */
+int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
+{
+    UT_GenStub_SetupReturnBuffer(OS_SymbolLookup_Impl, int32);
+
+    UT_GenStub_AddParam(OS_SymbolLookup_Impl, cpuaddr *, SymbolAddress);
+    UT_GenStub_AddParam(OS_SymbolLookup_Impl, const char *, SymbolName);
+
+    UT_GenStub_Execute(OS_SymbolLookup_Impl, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_SymbolLookup_Impl, int32);
 }
 
 /*

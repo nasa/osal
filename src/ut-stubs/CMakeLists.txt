@@ -14,6 +14,7 @@ set(OSAL_PUBLIC_API_HEADERS
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-bsp.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-clock.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-common.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-condvar.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-constants.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-countsem.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-dir.h
@@ -59,6 +60,7 @@ add_library(ut_osapi_stubs STATIC
     osapi-clock-stubs.c
     osapi-clock-handlers.c
     osapi-common-stubs.c
+    osapi-condvar-stubs.c
     osapi-countsem-stubs.c
     osapi-countsem-handlers.c
     osapi-dir-stubs.c

@@ -36,6 +36,7 @@ set(VXWORKS_PORTABLE_BLOCK_LIST
     no-symtab
     no-network
     no-sockets
+    no-condvar
 )
 
 
