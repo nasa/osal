@@ -35,7 +35,6 @@
 
 #include "osapi-idmap.h" /* OSAL public API for this subsystem */
 #include "utstub-helpers.h"
-#include "os-shared-idmap.h"
 
 /*
  * -----------------------------------------------------------------

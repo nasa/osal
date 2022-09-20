@@ -42,6 +42,10 @@ add_library(os-shared-coverage-support STATIC
         src/os-shared-coverage-support.c
 )
 
+target_link_libraries(os-shared-coverage-support PUBLIC
+	ut_osapi_stub_headers
+)
+
 add_subdirectory(adaptors)
 
 

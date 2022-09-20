@@ -40,11 +40,9 @@ endforeach(OSTYPE ${OSALCOVERAGE_TARGET_OSTYPE})
 
 message(STATUS "Coverage Test Target OS: ${OSALCOVERAGE_TARGET_OSTYPE}")
 
-# Utilize the shared UT assert library, along with the standard OSAL includes
-include_directories(${UT_ASSERT_SOURCE_DIR}/inc)
-include_directories(${OSAL_SOURCE_DIR}/src/os/inc)
+# This unit test is allowed to directly include any internal file in
+# the respective set under test.
 include_directories(${OSAL_SOURCE_DIR}/src/os/shared/inc)
-include_directories(${OSALCOVERAGE_SOURCE_DIR}/ut-stubs/inc)
 
 add_subdirectory(ut-stubs)
 
@@ -58,14 +56,18 @@ function (add_coverage_testrunner TESTNAME FSW_SRCFILE TESTCASE_SRCFILE)
         ${FSW_SRCFILE}
     )
 
-    # only the actual FSW src file gets the coverage instrumentation
-    target_compile_options(utobj_${TESTNAME} PRIVATE
-        ${UT_COVERAGE_COMPILE_FLAGS}
-    )
-
     # both the FSW src file and the adaptor file get compiled with override includes
     target_include_directories(utobj_${TESTNAME} BEFORE PRIVATE
         ${OSALCOVERAGE_SOURCE_DIR}/ut-stubs/override_inc
+        $<TARGET_PROPERTY:ut_osapi_stub_headers,INTERFACE_INCLUDE_DIRECTORIES>
+    )
+
+    target_compile_options(utobj_${TESTNAME} PRIVATE
+        $<TARGET_PROPERTY:ut_coverage_compile,INTERFACE_COMPILE_OPTIONS>
+    )
+
+    target_compile_definitions(utobj_${TESTNAME} PRIVATE
+        $<TARGET_PROPERTY:ut_coverage_compile,INTERFACE_COMPILE_DEFINITIONS>
     )
 
     # the testcase is compiled with no special flags or override includes
@@ -74,9 +76,10 @@ function (add_coverage_testrunner TESTNAME FSW_SRCFILE TESTCASE_SRCFILE)
         $<TARGET_OBJECTS:utobj_${TESTNAME}>
     )
 
-    target_link_libraries(${TESTNAME}-testrunner
-        ${UT_COVERAGE_LINK_FLAGS}
+    target_link_libraries(${TESTNAME}-testrunner PUBLIC
         ${ARGN}
+        osal_public_api
+        ut_coverage_link
         ut_assert
     )
 
@@ -92,4 +95,3 @@ endfunction()
 foreach(SETNAME ${OSALCOVERAGE_TARGET_OSTYPE})
     add_subdirectory(${SETNAME})
 endforeach(SETNAME ${OSALCOVERAGE_TARGET_OSTYPE})
-

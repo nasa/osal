@@ -19,3 +19,7 @@ target_include_directories(ut-adaptor-${SETNAME} BEFORE PRIVATE
 target_include_directories(ut-adaptor-${SETNAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/inc
 )
+
+target_link_libraries(ut-adaptor-${SETNAME} PUBLIC 
+	ut_osapi_stub_headers
+)

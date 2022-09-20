@@ -1,0 +1,9 @@
+#---------------------------------------------------------------------------
+# OSAL API Documentation Input List (generated from build system)
+#---------------------------------------------------------------------------
+
+# List of compile definitions from osal_public_api
+PREDEFINED += @OSALDOC_PREDEFINED@
+
+# List of header files from osal_public_api
+INPUT      += @OSAL_NATIVE_APIGUIDE_SOURCEFILES@

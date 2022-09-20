@@ -39,3 +39,7 @@ target_include_directories(ut-adaptor-${SETNAME} PUBLIC
     ${OSALCOVERAGE_SOURCE_DIR}/portable/adaptors/inc
     ${CMAKE_CURRENT_SOURCE_DIR}/inc
 )
+
+target_link_libraries(ut-adaptor-${SETNAME} PUBLIC 
+    ut_osapi_stub_headers
+)
