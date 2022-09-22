@@ -130,6 +130,13 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
         return OS_ERROR;
     }
 
+    status = rtems_object_set_name(impl->id, task->task_name);
+    if (status != RTEMS_SUCCESSFUL)
+    {
+        /* Provide some feedback */
+        OS_printf("Unable to set task name: %s\n", rtems_status_text(status));
+    }
+
     /* will place the task in 'ready for scheduling' state */
     status = rtems_task_start(impl->id,                        /*rtems task id*/
                               (rtems_task_entry)OS_RtemsEntry, /* task entry point */
