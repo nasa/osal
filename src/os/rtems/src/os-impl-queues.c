@@ -156,12 +156,13 @@ int32 OS_QueueDelete_Impl(const OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, size_t *size_copied, int32 timeout)
 {
-    int32                            return_code;
-    rtems_status_code                status;
-    rtems_interval                   ticks;
-    int                              tick_count;
-    rtems_option                     option_set;
-    size_t                           rtems_size;
+    int32             return_code;
+    rtems_status_code status;
+    rtems_interval    ticks;
+    int               tick_count;
+    rtems_option      option_set;
+    /* Implementation read size */
+    size_t                           impl_size;
     rtems_id                         rtems_queue_id;
     OS_impl_queue_internal_record_t *impl;
 
@@ -198,46 +199,43 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
      */
     status = rtems_message_queue_receive(rtems_queue_id, /* message queue descriptor */
                                          data,           /* pointer to message buffer */
-                                         &rtems_size,    /* returned size of message */
+                                         &impl_size,     /* returned size of message */
                                          option_set,     /* wait option */
                                          ticks           /* timeout */
     );
 
-    if (status == RTEMS_SUCCESSFUL)
+    if (status != RTEMS_SUCCESSFUL)
     {
-        return_code = OS_SUCCESS;
-    }
-    else if (status == RTEMS_TIMEOUT)
-    {
-        return_code = OS_QUEUE_TIMEOUT;
-    }
-    else if (status == RTEMS_UNSATISFIED)
-    {
-        return_code = OS_QUEUE_EMPTY;
-    }
-    else
-    {
-        /* Something else went wrong */
-        return_code = OS_ERROR;
-        OS_DEBUG("Unhandled queue_receive error: %s\n", rtems_status_text(status));
-    }
+        *size_copied = 0;
 
-    /*
-    ** Check the size of the message.  If a valid message was
-    ** obtained, indicate success.
-    */
-    if (status == RTEMS_SUCCESSFUL)
-    {
-        *size_copied = rtems_size;
-        if (rtems_size != size)
+        /* Map the rtems error to the most appropriate OSAL return code */
+        if ((timeout == OS_PEND) && (status != RTEMS_TIMEOUT))
         {
-            /* Success, but the size was wrong */
-            return_code = OS_QUEUE_INVALID_SIZE;
+            /* OS_PEND was supposed to pend forever until a message arrived
+             * so something else is wrong.  Otherwise, at this point the only
+             * "acceptable" errno is TIMEDOUT for the other cases.
+             */
+            return_code = OS_ERROR;
+        }
+        else if (status == RTEMS_UNSATISFIED)
+        {
+            return_code = OS_QUEUE_EMPTY;
+        }
+        else if (status == RTEMS_TIMEOUT)
+        {
+            return_code = OS_QUEUE_TIMEOUT;
+        }
+        else
+        {
+            /* Something else went wrong */
+            return_code = OS_ERROR;
+            OS_DEBUG("Unhandled queue_receive error: %s\n", rtems_status_text(status));
         }
     }
     else
     {
-        *size_copied = 0;
+        *size_copied = impl_size;
+        return_code  = OS_SUCCESS;
     }
 
     return return_code;
