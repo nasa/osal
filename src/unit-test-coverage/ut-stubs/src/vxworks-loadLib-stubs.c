@@ -46,5 +46,5 @@ OCS_MODULE_ID OCS_loadModule(int fd, unsigned int symFlag)
 
 OCS_STATUS OCS_unldByModuleId(OCS_MODULE_ID moduleId, int options)
 {
-    return (UT_DEFAULT_IMPL(OCS_unldByModuleId));
+    return UT_DEFAULT_IMPL(OCS_unldByModuleId);
 }

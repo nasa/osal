@@ -166,6 +166,6 @@ int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *mo
      * This returns success - although there is no information to add here,
      * the parent/shared layer information is still valid.
      */
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 
 } /* end OS_ModuleGetInfo_Impl */

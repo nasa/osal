@@ -55,5 +55,5 @@ int32 OS_ModuleSymbolLookup_Impl(const OS_object_token_t *token, cpuaddr *Symbol
  *-----------------------------------------------------------------*/
 int32 OS_SymbolTableDump_Impl(const char *filename, size_t SizeLimit)
 {
-    return (OS_ERR_NOT_IMPLEMENTED);
+    return OS_ERR_NOT_IMPLEMENTED;
 }

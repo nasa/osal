@@ -65,7 +65,7 @@ OS_impl_module_internal_record_t OS_impl_module_table[OS_MAX_MODULES];
 int32 OS_Rtems_ModuleAPI_Impl_Init(void)
 {
     memset(OS_impl_module_table, 0, sizeof(OS_impl_module_table));
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 } /* end OS_Rtems_ModuleAPI_Impl_Init */
 
 /****************************************************************************************

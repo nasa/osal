@@ -312,7 +312,7 @@ int32 OS_BinSemGive_Impl(const OS_object_token_t *token)
     /* Lock the mutex ( not the table! ) */
     if (OS_Posix_BinSemAcquireMutex(&sem->id) != OS_SUCCESS)
     {
-        return (OS_SEM_FAILURE);
+        return OS_SEM_FAILURE;
     }
 
     /* Binary semaphores are always set as "1" when given */
@@ -343,7 +343,7 @@ int32 OS_BinSemFlush_Impl(const OS_object_token_t *token)
     /* Lock the mutex ( not the table! ) */
     if (OS_Posix_BinSemAcquireMutex(&sem->id) != OS_SUCCESS)
     {
-        return (OS_SEM_FAILURE);
+        return OS_SEM_FAILURE;
     }
 
     /* increment the flush counter.  Any other threads that are
@@ -383,7 +383,7 @@ static int32 OS_GenericBinSemTake_Impl(const OS_object_token_t *token, const str
     /* Lock the mutex ( not the table! ) */
     if (OS_Posix_BinSemAcquireMutex(&sem->id) != OS_SUCCESS)
     {
-        return (OS_SEM_FAILURE);
+        return OS_SEM_FAILURE;
     }
 
     /* because pthread_cond_wait() is also a cancellation point,
