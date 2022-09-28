@@ -114,15 +114,12 @@ void task_generic_no_exit(void)
     {
         OS_TaskDelay(100);
     }
-
-    return;
 } /* end task_0 */
 
 /* **************** A TASK THAT EXITS ITSELF **************************** */
 
 void task_generic_with_exit(void)
 {
-    return;
 } /* end task_0 */
 
 typedef struct
@@ -524,7 +521,6 @@ void InitializeTaskIds(void)
     task_1_id = OS_OBJECT_ID_UNDEFINED;
     task_2_id = OS_OBJECT_ID_UNDEFINED;
     task_3_id = OS_OBJECT_ID_UNDEFINED;
-    return;
 } /* end InitializeTaskIds */
 
 /* **************************************************************************** */
@@ -534,7 +530,6 @@ void InitializeQIds(void)
     msgq_1 = OS_OBJECT_ID_UNDEFINED;
     msgq_2 = OS_OBJECT_ID_UNDEFINED;
     msgq_3 = OS_OBJECT_ID_UNDEFINED;
-    return;
 } /* end InitializeQIds */
 
 /* ***************************************************************************** */
@@ -544,7 +539,6 @@ void InitializeBinIds(void)
     bin_1 = OS_OBJECT_ID_UNDEFINED;
     bin_2 = OS_OBJECT_ID_UNDEFINED;
     bin_3 = OS_OBJECT_ID_UNDEFINED;
-    return;
 } /* end InitializeBinIds */
 
 /* ***************************************************************************** */
@@ -554,7 +548,6 @@ void InitializeMutIds(void)
     mut_1 = OS_OBJECT_ID_UNDEFINED;
     mut_2 = OS_OBJECT_ID_UNDEFINED;
     mut_3 = OS_OBJECT_ID_UNDEFINED;
-    return;
 } /* end InitializeMutIds */
 
 /* ***************************************************************************** */
