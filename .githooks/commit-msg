@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# Purpose: Enforce proper commit message to avoid message rework.
+# See https://github.com/nasa/cFS/blob/main/.github/workflows/format-check.yml for true format
+
+# Check for issue tag in commit message
+issue_tag_regex="^((Fix|HotFix|Part)\s\#[0-9]+,\s[a-zA-Z0-9]+|Merge\spull\srequest\s\#[0-9]+\s[a-zA-Z0-9]+|IC:\s[a-zA-Z0-9]+)"
+
+if ! grep -qE "$issue_tag_regex" "$1"; then
+    cat << EOF
+ERROR - Commit message format wrong. 
+You need at least one "Fix|HotFix|Part #<issue number>, <short description>" line in the commit message.
+Or delete / update .git/hooks/commit-msg
+EOF
+
+    exit 1
+fi
+
+exit 0
