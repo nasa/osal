@@ -206,7 +206,7 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
 
     if (status != RTEMS_SUCCESSFUL)
     {
-        *size_copied = 0;
+        *size_copied = OSAL_SIZE_C(0);
 
         /* Map the rtems error to the most appropriate OSAL return code */
         if ((timeout == OS_PEND) && (status != RTEMS_TIMEOUT))
@@ -234,7 +234,7 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     }
     else
     {
-        *size_copied = impl_size;
+        *size_copied = OSAL_SIZE_C(impl_size);
         return_code  = OS_SUCCESS;
     }
 
