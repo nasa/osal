@@ -243,7 +243,7 @@ int32 OS_Rtems_TimeBaseAPI_Impl_Init(void)
      */
     OS_SharedGlobalVars.MicroSecPerTick = (RTEMS_GlobalVars.ClockAccuracyNsec + 500) / 1000;
 
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 } /* end OS_Rtems_TimeBaseAPI_Impl_Init */
 
 /****************************************************************************************

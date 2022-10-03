@@ -331,7 +331,7 @@ int32 OS_VxWorks_TimeBaseAPI_Impl_Init(void)
      */
     OS_SharedGlobalVars.MicroSecPerTick = (OS_ClockAccuracyNsec + 500) / 1000;
 
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 } /* end OS_VxWorks_TimeBaseAPI_Impl_Init */
 
 /****************************************************************************************

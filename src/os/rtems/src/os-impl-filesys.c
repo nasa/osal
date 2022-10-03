@@ -419,7 +419,7 @@ int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *re
         return_code = OS_SUCCESS;
     }
 
-    return (return_code);
+    return return_code;
 } /* end OS_FileSysStatVolume_Impl */
 
 /*----------------------------------------------------------------

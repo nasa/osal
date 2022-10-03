@@ -697,7 +697,7 @@ int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
     }
     OS_ObjectIdIteratorDestroy(&iter);
 
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 } /* end OS_GetFsInfo */
 
 /*----------------------------------------------------------------

@@ -78,7 +78,7 @@ int32 OS_GenericSymbolLookup_Impl(SYMTAB_ID SymTab, cpuaddr *SymbolAddress, cons
     */
     if ((SymbolAddress == NULL) || (SymbolName == NULL))
     {
-        return (OS_INVALID_POINTER);
+        return OS_INVALID_POINTER;
     }
 
     /*
@@ -97,10 +97,10 @@ int32 OS_GenericSymbolLookup_Impl(SYMTAB_ID SymTab, cpuaddr *SymbolAddress, cons
 
     if (vxStatus == ERROR)
     {
-        return (OS_ERROR);
+        return OS_ERROR;
     }
 
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 
 } /* end OS_GenericSymbolLookup_Impl */
 
@@ -174,7 +174,7 @@ BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_
     {
         OS_DEBUG("%s(): symbol name too long\n", __func__);
         state->StatusCode = OS_ERR_NAME_TOO_LONG;
-        return (false);
+        return false;
     }
 
     /*
@@ -189,7 +189,7 @@ BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_
         */
         OS_DEBUG("%s(): symbol table size exceeded\n", __func__);
         state->StatusCode = OS_ERR_OUTPUT_TOO_LARGE;
-        return (false);
+        return false;
     }
 
     /*
@@ -212,7 +212,7 @@ BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_
     if (status < (int)sizeof(symRecord))
     {
         state->StatusCode = OS_ERROR;
-        return (false);
+        return false;
     }
 
     state->CurrSize = NextSize;
@@ -220,7 +220,7 @@ BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_
     /*
     ** It's OK to continue
     */
-    return (true);
+    return true;
 } /* end OS_SymTableIterator_Impl */
 
 /*----------------------------------------------------------------
@@ -273,6 +273,6 @@ int32 OS_SymbolTableDump_Impl(const char *filename, size_t size_limit)
         state->StatusCode = OS_ERROR;
     }
 
-    return (state->StatusCode);
+    return state->StatusCode;
 
 } /* end OS_SymbolTableDump_Impl */

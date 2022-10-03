@@ -91,12 +91,12 @@ void UtAssert_DoTestSegmentReport(const char *SegmentName, const UtAssert_TestCo
 
 uint32 UtAssert_GetPassCount(void)
 {
-    return (UT_TotalCounters.CaseCount[UTASSERT_CASETYPE_PASS]);
+    return UT_TotalCounters.CaseCount[UTASSERT_CASETYPE_PASS];
 }
 
 uint32 UtAssert_GetFailCount(void)
 {
-    return (UT_TotalCounters.CaseCount[UTASSERT_CASETYPE_FAILURE]);
+    return UT_TotalCounters.CaseCount[UTASSERT_CASETYPE_FAILURE];
 }
 
 const UtAssert_TestCounter_t *UtAssert_GetCounters(void)

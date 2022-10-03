@@ -79,7 +79,7 @@ static rtems_task OS_RtemsEntry(rtems_task_argument arg)
 int32 OS_Rtems_TaskAPI_Impl_Init(void)
 {
     memset(OS_impl_task_table, 0, sizeof(OS_impl_task_table));
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 } /* end OS_Rtems_TaskAPI_Impl_Init */
 
 /*----------------------------------------------------------------
@@ -230,7 +230,7 @@ int32 OS_TaskDelay_Impl(uint32 milli_second)
     */
     rtems_task_wake_after((rtems_interval)tick_count);
 
-    return (return_code);
+    return return_code;
 
 } /* end OS_TaskDelay_Impl */
 
@@ -281,7 +281,7 @@ int32 OS_TaskMatch_Impl(const OS_object_token_t *token)
     */
     if (rtems_task_self() != impl->id)
     {
-        return (OS_ERROR);
+        return OS_ERROR;
     }
 
     return OS_SUCCESS;

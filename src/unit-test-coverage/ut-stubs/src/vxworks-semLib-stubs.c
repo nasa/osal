@@ -106,17 +106,17 @@ OCS_SEM_ID OCS_semCCreate(int flags, int count)
 
 OCS_STATUS OCS_semDelete(OCS_SEM_ID semId)
 {
-    return (UT_DEFAULT_IMPL(OCS_semDelete));
+    return UT_DEFAULT_IMPL(OCS_semDelete);
 }
 OCS_STATUS OCS_semFlush(OCS_SEM_ID semId)
 {
-    return (UT_DEFAULT_IMPL(OCS_semFlush));
+    return UT_DEFAULT_IMPL(OCS_semFlush);
 }
 OCS_STATUS OCS_semTake(OCS_SEM_ID semId, int timeout)
 {
-    return (UT_DEFAULT_IMPL(OCS_semTake));
+    return UT_DEFAULT_IMPL(OCS_semTake);
 }
 OCS_STATUS OCS_semGive(OCS_SEM_ID semId)
 {
-    return (UT_DEFAULT_IMPL(OCS_semGive));
+    return UT_DEFAULT_IMPL(OCS_semGive);
 }
