@@ -261,7 +261,7 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
         return_code = OS_ObjectIdFinalizeNew(return_code, &token, module_id);
     }
 
-    return (return_code);
+    return return_code;
 
 } /* end OS_ModuleLoad */
 
@@ -381,7 +381,7 @@ int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
         }
     }
 
-    return (return_code);
+    return return_code;
 
 } /* end OS_SymbolLookup */
 
@@ -430,7 +430,7 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
         OS_ObjectIdRelease(&token);
     }
 
-    return (return_code);
+    return return_code;
 
 } /* end OS_ModuleSymbolLookup */
 
@@ -457,7 +457,7 @@ int32 OS_SymbolTableDump(const char *filename, size_t SizeLimit)
     return_code = OS_TranslatePath(filename, translated_path);
     if (return_code != OS_SUCCESS)
     {
-        return (return_code);
+        return return_code;
     }
 
     /*
@@ -472,13 +472,13 @@ int32 OS_SymbolTableDump(const char *filename, size_t SizeLimit)
     return_code = OS_ObjectIdTransactionInit(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, &token);
     if (return_code != OS_SUCCESS)
     {
-        return (return_code);
+        return return_code;
     }
 
     return_code = OS_SymbolTableDump_Impl(translated_path, SizeLimit);
 
     OS_ObjectIdTransactionCancel(&token);
 
-    return (return_code);
+    return return_code;
 
 } /* end OS_SymbolTableDump */

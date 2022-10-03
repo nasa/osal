@@ -101,7 +101,7 @@ int OS_VxWorks_TaskEntry(int arg)
 int32 OS_VxWorks_TaskAPI_Impl_Init(void)
 {
     memset(OS_impl_task_table, 0, sizeof(OS_impl_task_table));
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 } /* end OS_VxWorks_TaskAPI_Impl_Init */
 
 /*----------------------------------------------------------------
@@ -384,7 +384,7 @@ int32 OS_TaskMatch_Impl(const OS_object_token_t *token)
     */
     if (taskIdSelf() != impl->vxid)
     {
-        return (OS_ERROR);
+        return OS_ERROR;
     }
 
     return OS_SUCCESS;

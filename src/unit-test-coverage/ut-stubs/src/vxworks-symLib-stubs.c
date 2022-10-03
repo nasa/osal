@@ -47,7 +47,7 @@ OCS_SYMTAB_ID OCS_sysSymTbl = &LOCAL_SYMTAB;
 
 OCS_STATUS OCS_symFindByName(OCS_SYMTAB_ID symTblId, char *name, char **pValue, OCS_SYM_TYPE *pType)
 {
-    return (UT_DEFAULT_IMPL(OCS_symFindByName));
+    return UT_DEFAULT_IMPL(OCS_symFindByName);
 }
 
 OCS_SYMBOL *OCS_symEach(OCS_SYMTAB_ID symTblId, OCS_symEach_Routine_t routine, int routineArg)

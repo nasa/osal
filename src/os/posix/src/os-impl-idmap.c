@@ -248,5 +248,5 @@ int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype)
         }
     } while (0);
 
-    return (return_code);
+    return return_code;
 } /* end OS_Posix_TableMutex_Init */

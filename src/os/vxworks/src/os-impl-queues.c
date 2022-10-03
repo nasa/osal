@@ -51,7 +51,7 @@ OS_impl_queue_internal_record_t OS_impl_queue_table[OS_MAX_QUEUES];
 int32 OS_VxWorks_QueueAPI_Impl_Init(void)
 {
     memset(OS_impl_queue_table, 0, sizeof(OS_impl_queue_table));
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 } /* end OS_VxWorks_QueueAPI_Impl_Init */
 
 /*----------------------------------------------------------------

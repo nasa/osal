@@ -51,12 +51,12 @@ int32 OS_HeapGetInfo_Impl(OS_heap_prop_t *heap_prop)
 
     if (status != 0)
     {
-        return (OS_ERROR);
+        return OS_ERROR;
     }
 
     heap_prop->free_bytes         = (uint32)info.Free.total;
     heap_prop->free_blocks        = (uint32)info.Free.number;
     heap_prop->largest_free_block = (uint32)info.Free.largest;
 
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 } /* end OS_HeapGetInfo_Impl */

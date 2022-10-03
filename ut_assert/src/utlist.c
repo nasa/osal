@@ -63,7 +63,7 @@ UtListHead_t *UtList_Create(uint32 NumTags)
         TagHead->Prev = TagHead;
     }
 
-    return (&NewList->Head);
+    return &NewList->Head;
 }
 
 void UtList_Destroy(UtListHead_t *ListHead)

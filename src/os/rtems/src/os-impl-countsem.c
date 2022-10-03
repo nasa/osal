@@ -71,7 +71,7 @@ OS_impl_countsem_internal_record_t OS_impl_count_sem_table[OS_MAX_COUNT_SEMAPHOR
 int32 OS_Rtems_CountSemAPI_Impl_Init(void)
 {
     memset(OS_impl_count_sem_table, 0, sizeof(OS_impl_count_sem_table));
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 } /* end OS_Rtems_CountSemAPI_Impl_Init */
 
 /*----------------------------------------------------------------
@@ -165,7 +165,7 @@ int32 OS_CountSemGive_Impl(const OS_object_token_t *token)
         return OS_SEM_FAILURE;
     }
 
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 
 } /* end OS_CountSemGive_Impl */
 

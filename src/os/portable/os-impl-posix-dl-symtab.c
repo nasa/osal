@@ -212,6 +212,6 @@ int32 OS_SymbolTableDump_Impl(const char *filename, size_t SizeLimit)
      * unimplemented here.
      */
 
-    return (OS_ERR_NOT_IMPLEMENTED);
+    return OS_ERR_NOT_IMPLEMENTED;
 
 } /* end OS_SymbolTableDump_Impl */

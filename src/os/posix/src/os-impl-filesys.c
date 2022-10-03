@@ -322,7 +322,7 @@ int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *re
     result->blocks_free  = OSAL_BLOCKCOUNT_C(stat_buf.f_bfree);
     result->total_blocks = OSAL_BLOCKCOUNT_C(stat_buf.f_blocks);
 
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 } /* end OS_FileSysStatVolume_Impl */
 
 /*----------------------------------------------------------------

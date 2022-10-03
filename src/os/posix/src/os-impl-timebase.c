@@ -304,7 +304,7 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
             (1000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) / OS_SharedGlobalVars.TicksPerSecond;
     } while (0);
 
-    return (return_code);
+    return return_code;
 } /* end OS_Posix_TimeBaseAPI_Impl_Init */
 
 /****************************************************************************************
@@ -568,7 +568,7 @@ int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token)
         if (status < 0)
         {
             OS_DEBUG("Error deleting timer: %s\n", strerror(errno));
-            return (OS_TIMER_ERR_INTERNAL);
+            return OS_TIMER_ERR_INTERNAL;
         }
 
         local->assigned_signal = 0;

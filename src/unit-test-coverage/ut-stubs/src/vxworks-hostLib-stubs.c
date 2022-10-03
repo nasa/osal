@@ -32,5 +32,5 @@
 
 int OCS_hostGetByName(char *name)
 {
-    return (UT_DEFAULT_IMPL(OCS_hostGetByName));
+    return UT_DEFAULT_IMPL(OCS_hostGetByName);
 }

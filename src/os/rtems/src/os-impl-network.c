@@ -73,5 +73,5 @@ int32 OS_NetworkGetHostName_Impl(char *host_name, size_t name_len)
         return_code             = OS_SUCCESS;
     }
 
-    return (return_code);
+    return return_code;
 } /* end OS_NetworkGetHostName_Impl */

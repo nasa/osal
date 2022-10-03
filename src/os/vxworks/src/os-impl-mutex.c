@@ -55,7 +55,7 @@ OS_impl_mutsem_internal_record_t OS_impl_mutex_table[OS_MAX_MUTEXES];
 int32 OS_VxWorks_MutexAPI_Impl_Init(void)
 {
     memset(OS_impl_mutex_table, 0, sizeof(OS_impl_mutex_table));
-    return (OS_SUCCESS);
+    return OS_SUCCESS;
 } /* end OS_VxWorks_MutexAPI_Impl_Init */
 
 /*----------------------------------------------------------------

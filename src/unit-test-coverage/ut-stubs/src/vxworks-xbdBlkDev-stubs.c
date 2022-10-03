@@ -42,5 +42,5 @@ OCS_device_t OCS_xbdBlkDevCreateSync(OCS_BLK_DEV *bd, const char *name)
 
 OCS_STATUS OCS_xbdBlkDevDelete(OCS_device_t dev, OCS_BLK_DEV **ppbd)
 {
-    return (UT_DEFAULT_IMPL(OCS_xbdBlkDevDelete));
+    return UT_DEFAULT_IMPL(OCS_xbdBlkDevDelete);
 }

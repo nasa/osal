@@ -44,13 +44,13 @@ OCS_MSG_Q_ID OCS_msgQCreate(int maxMsgs, int maxMsgLength, int options)
 }
 OCS_STATUS OCS_msgQDelete(OCS_MSG_Q_ID msgQId)
 {
-    return (UT_DEFAULT_IMPL(OCS_msgQDelete));
+    return UT_DEFAULT_IMPL(OCS_msgQDelete);
 }
 int OCS_msgQReceive(OCS_MSG_Q_ID msgQId, char *buffer, OCS_UINT maxNBytes, int timeout)
 {
-    return (UT_DEFAULT_IMPL(OCS_msgQReceive));
+    return UT_DEFAULT_IMPL(OCS_msgQReceive);
 }
 OCS_STATUS OCS_msgQSend(OCS_MSG_Q_ID msgQId, char *buffer, OCS_UINT nBytes, int timeout, int priority)
 {
-    return (UT_DEFAULT_IMPL(OCS_msgQSend));
+    return UT_DEFAULT_IMPL(OCS_msgQSend);
 }

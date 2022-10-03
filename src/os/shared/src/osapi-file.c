@@ -501,7 +501,7 @@ int32 OS_mv(const char *src, const char *dest)
         }
     }
 
-    return (return_code);
+    return return_code;
 
 } /* end OS_mv */
 
@@ -620,7 +620,7 @@ int32 OS_CloseFileByName(const char *Filename)
 
     OS_ObjectIdIteratorDestroy(&iter);
 
-    return (return_code);
+    return return_code;
 
 } /* end OS_CloseFileByName */
 
@@ -654,6 +654,6 @@ int32 OS_CloseAllFiles(void)
 
     OS_ObjectIdIteratorDestroy(&iter);
 
-    return (return_code);
+    return return_code;
 
 } /* end OS_CloseAllFiles */

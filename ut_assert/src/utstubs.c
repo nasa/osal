@@ -182,7 +182,7 @@ static UT_StubTableEntry_t *UT_GetStubEntry(UT_EntryKey_t FuncKey, UT_EntryType_
         UT_MaxStubSearchLen = SearchLen;
     }
 
-    return (StubPtr);
+    return StubPtr;
 }
 
 void UT_ResetState(UT_EntryKey_t FuncKey)
@@ -307,7 +307,7 @@ bool UT_Stub_CheckDeferredRetcode(UT_EntryKey_t FuncKey, int32 *Retcode)
         }
     }
 
-    return (Result);
+    return Result;
 }
 
 void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value)
@@ -403,7 +403,7 @@ bool UT_Stub_CheckDefaultReturnValue(UT_EntryKey_t FuncKey, int32 *Value)
         Result = true;
     }
 
-    return (Result);
+    return Result;
 }
 
 void UT_Stub_RegisterReturnType(UT_EntryKey_t FuncKey, size_t ReturnSize)
