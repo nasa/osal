@@ -31,7 +31,6 @@
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
-#include <sys/stat.h>
 
 #include "common_types.h"
 #include "utassert.h"
@@ -54,18 +53,10 @@ typedef struct
 
 bool UtMem2BinFile(const void *Memory, const char *Filename, uint32 Length)
 {
-    FILE *      fp;
-    int         fd;
-    struct stat dststat;
+    FILE *fp;
 
     if ((fp = fopen(Filename, "w")))
     {
-        fd = fileno(fp);
-        if (fstat(fd, &dststat) == 0)
-        {
-            fchmod(fd, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
-        }
-
         fwrite(Memory, Length, 1, fp);
         fclose(fp);
         return true;
@@ -102,20 +93,12 @@ bool UtBinFile2Mem(void *Memory, const char *Filename, uint32 Length)
 
 bool UtMem2HexFile(const void *Memory, const char *Filename, uint32 Length)
 {
-    FILE *      fp;
-    uint32      i;
-    uint32      j;
-    int         fd;
-    struct stat dststat;
+    FILE * fp;
+    uint32 i;
+    uint32 j;
 
     if ((fp = fopen(Filename, "w")))
     {
-        fd = fileno(fp);
-        if (fstat(fd, &dststat) == 0)
-        {
-            fchmod(fd, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
-        }
-
         for (i = 0; i < Length; i += 16)
         {
             fprintf(fp, "   %06lX: ", (unsigned long)i);
