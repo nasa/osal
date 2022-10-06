@@ -212,7 +212,7 @@ int32 OS_GenericRead_Impl(const OS_object_token_t *token, void *buffer, size_t n
         }
     }
 
-    return (return_code);
+    return return_code;
 } /* end OS_GenericRead_Impl */
 
 /*----------------------------------------------------------------
@@ -269,5 +269,5 @@ int32 OS_GenericWrite_Impl(const OS_object_token_t *token, const void *buffer, s
         }
     }
 
-    return (return_code);
+    return return_code;
 } /* end OS_GenericWrite_Impl */

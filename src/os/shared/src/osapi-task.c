@@ -341,7 +341,7 @@ osal_id_t OS_TaskGetId(void)
 
     task_id = OS_TaskGetId_Impl();
 
-    return (task_id);
+    return task_id;
 } /* end OS_TaskGetId */
 
 /*----------------------------------------------------------------

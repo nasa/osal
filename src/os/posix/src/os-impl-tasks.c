@@ -450,7 +450,7 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
     if (return_code != 0)
     {
         OS_DEBUG("pthread_attr_init error in OS_TaskCreate: %s\n", strerror(return_code));
-        return (OS_ERROR);
+        return OS_ERROR;
     }
 
     /*
@@ -479,7 +479,7 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
     if (return_code != 0)
     {
         OS_DEBUG("pthread_attr_setstacksize error in OS_TaskCreate: %s\n", strerror(return_code));
-        return (OS_ERROR);
+        return OS_ERROR;
     }
 
     /*
@@ -489,7 +489,7 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
     if (return_code != 0)
     {
         OS_DEBUG("pthread_attr_setdetachstate error in OS_TaskCreate: %s\n", strerror(return_code));
-        return (OS_ERROR);
+        return OS_ERROR;
     }
 
     /*
@@ -506,7 +506,7 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
         if (return_code != 0)
         {
             OS_DEBUG("pthread_attr_setinheritsched error in OS_TaskCreate, errno = %s\n", strerror(return_code));
-            return (OS_ERROR);
+            return OS_ERROR;
         }
 
         /*
@@ -517,7 +517,7 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
         if (return_code != 0)
         {
             OS_DEBUG("pthread_attr_setschedpolity error in OS_TaskCreate: %s\n", strerror(return_code));
-            return (OS_ERROR);
+            return OS_ERROR;
         }
 
         /*
@@ -527,7 +527,7 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
         if (return_code != 0)
         {
             OS_DEBUG("pthread_attr_getschedparam error in OS_TaskCreate: %s\n", strerror(return_code));
-            return (OS_ERROR);
+            return OS_ERROR;
         }
 
         priority_holder.sched_priority = OS_PriorityRemap(priority);
@@ -535,7 +535,7 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
         if (return_code != 0)
         {
             OS_DEBUG("pthread_attr_setschedparam error in OS_TaskCreate: %s\n", strerror(return_code));
-            return (OS_ERROR);
+            return OS_ERROR;
         }
 
     } /* End if user is root */
@@ -547,7 +547,7 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
     if (return_code != 0)
     {
         OS_DEBUG("pthread_create error in OS_TaskCreate: %s\n", strerror(return_code));
-        return (OS_ERROR);
+        return OS_ERROR;
     }
 
     /*
@@ -778,7 +778,7 @@ int32 OS_TaskSetPriority_Impl(const OS_object_token_t *token, osal_priority_t ne
         {
             OS_DEBUG("pthread_setschedprio: Task ID = %lu, prio = %d, err = %s\n",
                      OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), os_priority, strerror(ret));
-            return (OS_ERROR);
+            return OS_ERROR;
         }
     }
 
@@ -840,7 +840,7 @@ osal_id_t OS_TaskGetId_Impl(void)
 
     self_record.opaque_arg = pthread_getspecific(POSIX_GlobalVars.ThreadKey);
 
-    return (self_record.id);
+    return self_record.id;
 } /* end OS_TaskGetId_Impl */
 
 /*----------------------------------------------------------------

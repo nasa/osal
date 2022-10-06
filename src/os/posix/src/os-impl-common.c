@@ -98,7 +98,7 @@ int32 OS_API_Impl_Init(osal_objtype_t idtype)
             break;
     }
 
-    return (return_code);
+    return return_code;
 } /* end OS_API_Impl_Init */
 
 /*----------------------------------------------------------------

@@ -77,7 +77,7 @@ int32 OS_NetworkGetHostName(char *host_name, size_t name_len)
         host_name[0] = 0;
     }
 
-    return (return_code);
+    return return_code;
 } /* end OS_NetworkGetHostName */
 
 /*----------------------------------------------------------------
@@ -96,7 +96,7 @@ int32 OS_NetworkGetID(void)
     if (OS_NetworkGetID_Impl(&IdBuf) != OS_SUCCESS)
     {
         /* return a hardcoded value on failure */
-        return (-1);
+        return -1;
     }
 
     return IdBuf;

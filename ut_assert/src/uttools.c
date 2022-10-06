@@ -31,7 +31,6 @@
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
-#include <sys/stat.h>
 
 #include "common_types.h"
 #include "utassert.h"
@@ -54,26 +53,19 @@ typedef struct
 
 bool UtMem2BinFile(const void *Memory, const char *Filename, uint32 Length)
 {
-    FILE *      fp;
-    struct stat dststat;
+    FILE *fp;
 
     if ((fp = fopen(Filename, "w")))
     {
-        if (stat(Filename, &dststat) == 0)
-        {
-            chmod(Filename, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
-            stat(Filename, &dststat);
-        }
-
         fwrite(Memory, Length, 1, fp);
         fclose(fp);
-        return (true);
+        return true;
     }
     else
     {
         printf("UtMem2BinFile: Error Opening File: %s, %s\n", Filename, strerror(errno));
         UtAssert_True(false, "UtMem2BinFile: Error Opening File");
-        return (false);
+        return false;
     }
 }
 
@@ -96,24 +88,17 @@ bool UtBinFile2Mem(void *Memory, const char *Filename, uint32 Length)
         UtAssert_Failed("UtBinFile2Mem: Error Opening %s: %s", Filename, strerror(errno));
     }
 
-    return (Success);
+    return Success;
 }
 
 bool UtMem2HexFile(const void *Memory, const char *Filename, uint32 Length)
 {
-    FILE *      fp;
-    uint32      i;
-    uint32      j;
-    struct stat dststat;
+    FILE * fp;
+    uint32 i;
+    uint32 j;
 
     if ((fp = fopen(Filename, "w")))
     {
-        if (stat(Filename, &dststat) == 0)
-        {
-            chmod(Filename, dststat.st_mode & ~(S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH));
-            stat(Filename, &dststat);
-        }
-
         for (i = 0; i < Length; i += 16)
         {
             fprintf(fp, "   %06lX: ", (unsigned long)i);
@@ -133,13 +118,13 @@ bool UtMem2HexFile(const void *Memory, const char *Filename, uint32 Length)
             fprintf(fp, "\n");
         }
         fclose(fp);
-        return (true);
+        return true;
     }
     else
     {
         printf("UtMem2HexFile: Error Opening File: %s, %s\n", Filename, strerror(errno));
         UtAssert_True(false, "UtMem2HexFile: Error Opening File");
-        return (false);
+        return false;
     }
 }
 
@@ -180,7 +165,7 @@ char *UtSprintf(const char *Spec, ...)
     vsnprintf(Buf[TextIndex].Text, sizeof(Buf[TextIndex].Text), Spec, Args);
     va_end(Args);
 
-    return (Buf[TextIndex].Text);
+    return Buf[TextIndex].Text;
 }
 
 void UtPrintx(const void *Memory, uint32 Length)
@@ -216,10 +201,10 @@ bool UtMemCmpValue(const void *Memory, uint8 Value, uint32 Length)
     {
         if (Byte_ptr[i] != Value)
         {
-            return (false);
+            return false;
         }
     }
-    return (true);
+    return true;
 }
 
 bool UtMemCmpCount(const void *Memory, uint32 Length)
@@ -231,10 +216,10 @@ bool UtMemCmpCount(const void *Memory, uint32 Length)
     {
         if (Byte_ptr[i] != (i & 0xFF))
         {
-            return (false);
+            return false;
         }
     }
-    return (true);
+    return true;
 }
 
 bool UtMem2BinFileCmp(const void *Memory, const char *Filename)
@@ -268,5 +253,5 @@ bool UtMem2BinFileCmp(const void *Memory, const char *Filename)
         UtAssert_True(false, "UtMem2BinFileCmp: Error Opening File");
     }
 
-    return (Success);
+    return Success;
 }

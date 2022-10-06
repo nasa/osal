@@ -245,7 +245,7 @@ int32 OS_API_Init(void)
         OS_SharedGlobalVars.GlobalState = OS_SHUTDOWN_MAGIC_NUMBER;
     }
 
-    return (return_code);
+    return return_code;
 } /* end OS_API_Init */
 
 /*----------------------------------------------------------------

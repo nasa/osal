@@ -37,7 +37,7 @@ OCS_TASK_ID OCS_taskIdSelf(void)
     Status = UT_DEFAULT_IMPL(OCS_taskIdSelf);
     if (Status != 0)
     {
-        return ((OCS_TASK_ID)OCS_ERROR);
+        return (OCS_TASK_ID)OCS_ERROR;
     }
 
     return &OCS_LOCAL_TASK;
@@ -49,41 +49,41 @@ OCS_TASK_ID OCS_taskNameToId(const char *name)
     Status = UT_DEFAULT_IMPL(OCS_taskNameToId);
     if (Status != 0)
     {
-        return ((OCS_TASK_ID)OCS_ERROR);
+        return (OCS_TASK_ID)OCS_ERROR;
     }
 
     return &OCS_LOCAL_TASK;
 }
 OCS_STATUS OCS_taskDelay(int ticks)
 {
-    return (UT_DEFAULT_IMPL(OCS_taskDelay));
+    return UT_DEFAULT_IMPL(OCS_taskDelay);
 }
 OCS_STATUS OCS_taskDelete(OCS_TASK_ID tid)
 {
-    return (UT_DEFAULT_IMPL(OCS_taskDelete));
+    return UT_DEFAULT_IMPL(OCS_taskDelete);
 }
 OCS_STATUS OCS_taskDeleteForce(OCS_TASK_ID tid)
 {
-    return (UT_DEFAULT_IMPL(OCS_taskDeleteForce));
+    return UT_DEFAULT_IMPL(OCS_taskDeleteForce);
 }
 OCS_STATUS OCS_taskSuspend(OCS_TASK_ID tid)
 {
-    return (UT_DEFAULT_IMPL(OCS_taskSuspend));
+    return UT_DEFAULT_IMPL(OCS_taskSuspend);
 }
 OCS_STATUS OCS_taskResume(OCS_TASK_ID tid)
 {
-    return (UT_DEFAULT_IMPL(OCS_taskResume));
+    return UT_DEFAULT_IMPL(OCS_taskResume);
 }
 OCS_STATUS OCS_taskPrioritySet(OCS_TASK_ID tid, int newPriority)
 {
-    return (UT_DEFAULT_IMPL(OCS_taskPrioritySet));
+    return UT_DEFAULT_IMPL(OCS_taskPrioritySet);
 }
 
 OCS_STATUS OCS_taskInit(OCS_WIND_TCB *pTcb, char *name, int priority, int options, char *pStackBase, int stackSize,
                         OCS_FUNCPTR entryPt, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
                         int arg8, int arg9, int arg10)
 {
-    return (UT_DEFAULT_IMPL(OCS_taskInit));
+    return UT_DEFAULT_IMPL(OCS_taskInit);
 }
 
 OCS_TASK_ID OCS_taskSpawn(char *name, int priority, int options, int stackSize, OCS_FUNCPTR entryPt, int arg1, int arg2,
@@ -95,7 +95,7 @@ OCS_TASK_ID OCS_taskSpawn(char *name, int priority, int options, int stackSize, 
     Status = UT_DEFAULT_IMPL(OCS_taskSpawn);
     if (Status != 0)
     {
-        return ((OCS_TASK_ID)OCS_ERROR);
+        return (OCS_TASK_ID)OCS_ERROR;
     }
 
     return &OCS_LOCAL_TASK;
@@ -118,7 +118,7 @@ OCS_WIND_TCB *OCS_taskTcb(OCS_TASK_ID tid)
     Status = UT_DEFAULT_IMPL(OCS_taskTcb);
     if (Status != 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (UT_Stub_CopyToLocal(UT_KEY(OCS_taskTcb), &LocalTcb, sizeof(LocalTcb)) < sizeof(LocalTcb))
