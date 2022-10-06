@@ -1,5 +1,15 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev120
+- Fix #1300, do not set file permissions on UT assert outputs
+- See <https://github.com/nasa/osal/pull/1301>
+
+## Development Build: v6.0.0-rc4+dev116
+- Use fstat and fchmod for TOCTOU Bug
+- Remove 'return;' from last line of void functions.
+- Remove unnecessary parentheses around return values.
+- See <https://github.com/nasa/osal/pull/1181>, <https://github.com/nasa/osal/pull/1294>, and <https://github.com/nasa/osal/pull/1292>
+
 ## Development Build: v6.0.0-rc4+dev108
 - condition variable API for OSAL
 - See <https://github.com/nasa/osal/issues/1252>
@@ -19,12 +29,10 @@
 - See <https://github.com/nasa/osal/pull/1267> and <https://github.com/nasa/osal/pull/1265>
 
 ## Development Build: v6.0.0-rc4+dev87
-
 - Add OS_StatusToString API
 - See <https://github.com/nasa/cFS/pull/505> 
 
 ## Development Build: v6.0.0-rc4+dev83
-
 - Resolve UT uninit vars static analysis warnings
 - Remove redundant checks in UT
 - Resolve UT uninit vars static analysis warnings
@@ -32,20 +40,18 @@
 - See https://github.com/nasa/osal/pull/1260 and <https://github.com/nasa/cFS/pull/492>
 
 ## Development Build: v6.0.0-rc4+dev74
-
 - Update codeql workflows for reusable update
 - add os-impl-no-select.c for RTEMS
 - See <https://github.com/nasa/osal/pull/1251> and <https://github.com/nasa/cFS/pull/471>
 
 ## Development Build: v6.0.0-rc4+dev66
-
 - Fix UtAssert_StringBufCompare SEGV when -1 for size passed in (on CentOS 7)
 - Enable format check workflow on push to all branches
 - Update Copyright Headers
 - Standardize version.h 
 - See <https://github.com/nasa/osal/pull/1239> and <https://github.com/nasa/cFS/445>
-## Development Build: v6.0.0-rc4+dev54
 
+## Development Build: v6.0.0-rc4+dev54
 - Revert development version identifier to 99 for revision number
 - Fix cFS-build CodeQL reusable worfklow
 - Implement OS_ModuleGetInfo_Impl for RTEMS
@@ -54,19 +60,16 @@
 - See <https://github.com/nasa/osal/pull/1233> and <https://github.com/nasa/cFS/pull/443>
 
 ## Development Build: v6.0.0-rc4+dev42
-
 - Resolve UT uninitialized variable warnings
 - Add ut_assert to doxygen and fix warnings
 - Protect if OS_FDGetInfo called on socket
 - See <https://github.com/nasa/osal/pull/1226> and <https://github.com/nasa/cFS/pull/432>
 
 ## Development Build: v6.0.0-rc4+dev32
-
 - Typesafe definition of osal_id_t
 - See <https://github.com/nasa/osal/pull/1209> and <https://github.com/nasa/cFS/pull/414>
 
 ## Development Build: v6.0.0-rc4+dev29
-
 - Search global and local symbol tables
 - Add missing space to UtAssert_STUB_COUNT
 - Add UINT8 and UINT16 equivalents for UtAssert_UINT32_ macros
@@ -74,8 +77,8 @@
 - Set output in OS_stat handler
 - Reuse CodeQL, Static Analysis, Format Check
 - See <https://github.com/nasa/osal/pull/1212> and <https://github.com/nasa/cFS/pull/410>
-## Development Build: v6.0.0-rc4+dev15
 
+## Development Build: v6.0.0-rc4+dev15
 - Add Duplicate Check to Local Unit Test
 - Rename OS_XXXTime to OS_XXXLocalTime in comments
 - Fix vxWorks intLib stub aliasing issue
@@ -85,9 +88,7 @@
 - Set new build baseline for cFS-Caelum-rc4: v6.0.0-rc4
 - See <https://github.com/nasa/osal/pull/1191> and <https://github.com/nasa/cFS/pull/390>
 
-
 ## Development Build: v5.1.0-rc1+dev619
-
 - Enable symbol api test and MIR dump too large
 - MIR symbol too long or table to long for osloader test
 - Add bsp-specific configuration flag registry 
@@ -95,51 +96,41 @@
 - See <https://github.com/nasa/osal/pull/1158> and <https://github.com/nasa/cFS/pull/359>
 
 ## Development Build: v5.1.0-rc1+dev604
-
 - Add typecast to memchr call
 - Regex update in coverage enforcement to match `.0`
 - See <https://github.com/nasa/osal/pull/1145> and <https://github.com/nasa/cFS/pull/351>
-## Development Build: v5.1.0-rc1+dev598
 
+## Development Build: v5.1.0-rc1+dev598
 - Add UTAssert macros that help test bit field storage
 - See <https://github.com/nasa/osal/pull/1138> and <https://github.com/nasa/cFS/pull/348>
 
 ## Development Build: v5.1.0-rc1+dev594
-
 - Add test case types similar to NA
 - See <https://github.com/nasa/osal/pull/1132> and <https://github.com/nasa/cFS/pull/340>
 
-
 ## Development Build: v5.1.0-rc1+dev590
-
 - Add absolute branch coverage check 
 - See <https://github.com/nasa/osal/pull/1127> and <https://github.com/nasa/cFS/pull/333>
 
 ## Development Build: v5.1.0-rc1+dev586
-
 - Add UtAssert_MIR macro
 - Add generic asserts from CFE coverage testing 
 - Add osapi-shell-stubs.c to OSAL stub library
 - See <https://github.com/nasa/osal/pull/1126> and <https://github.com/nasa/cFS/pull/328>
 
-
 ## Development Build: v5.1.0-rc1+dev578
-
 - Add unit test branch coverage
 - See <https://github.com/nasa/osal/pull/1116> and <https://github.com/nasa/cfs/pull/313>
 
 ## Development Build: v5.1.0-rc1+dev573
-
 - Add independent OS_rename functional test parameter checks
 - See <https://github.com/nasa/osal/pull/1113> and <https://github.com/nasa/cfs/pull/311>
 
 ## Development Build: v5.1.0-rc1+dev569
-
 - Skip these "timer reconfig" unit tests on non-POSIX platforms. Add documentation clearly indicating that the API must not be called from a timer context.
 - See <https://github.com/nasa/osal/pull/1100> and <https://github.com/nasa/cFS/pull/297>
 
 ## Development Build: v5.1.0-rc1+dev564
-
 - Add range to OS_TaskDelay checks
 - Return `OS_OBJECT_ID_UNDEFINED` for root task ID on RTEMS
 - Increase timeout in network-api-test
@@ -151,12 +142,10 @@
 - See <https://github.com/nasa/osal/pull/1098> and <https://github.com/nasa/cfs/pull/287>
 
 ## Development Build: v5.1.0-rc1+dev548
-
 - implement missing parameter/retcode test permutations
 - See <https://github.com/nasa/osal/pull/1079> and <https://github.com/nasa/cFS/pull/270>
 
 ## Development Build: v5.1.0-rc1+dev530
-
 - Implement Coding Standard Rules in CodeQL
 - rename doc to docs
 - add mutex lock around UtAssert globals
@@ -174,7 +163,6 @@
 - See <https://github.com/nasa/osal/pull/1076> and <https://github.com/nasa/cFS/pull/265>
 
 ## Development Build: v5.1.0-rc1+dev501
-
 - include doxygen targets locally
 - resolve discrepancies between timer API and unit tests
 - Ensure correlation between the test cases and documented return values for the OSAL timer API.
@@ -195,14 +183,12 @@
 - See <https://github.com/nasa/osal/pull/1058> and <https://github.com/nasa/cFS/pull/263>
 
 ## Development Build: v5.1.0-rc1+dev458
-
 - Adds Counting Semaphore Test with timeouts
 - Removes chance of deadlock by ensuring OS_TaskGetId returns the task ID it knows about, regardless of whether the task is pending cancellation or not. Defers cancellation of the task while the BSP is locked, ensure it reaches the unlock, then restores the previous cancel state.
 - Fixes a bogus debug message about unlocking from the wrong task if the task is pending delete.
 See <https://github.com/nasa/osal/pull/1050> and <https://github.com/nasa/cFS/pull/260>
 
 ## Development Build: v5.1.0-rc1+dev452
-
 - Makes filenames better match terms used in implementation.
 - Propagates return code from the caller in low-level implementations when status is not `OS_SUCCESS`.
 - The status returned from `OS_rmdir()` should now be correct if the implementation failed.
@@ -216,7 +202,6 @@ See <https://github.com/nasa/osal/pull/1050> and <https://github.com/nasa/cFS/pu
 - [continuous-integration] Adds new workflow to display CodeQL alerts preview
 
 ## Development Build: v5.1.0-rc1+dev434
-
 - Updates the configuration guide to reflect cmake build system and the currently provided set of OS/BSP layers. Removes obsolete items from guide.
 - Converts UtAssert API documentation to doxygen and corrects stale and incorrect references.
 - Clarifies use of the stack_size parameter, and that it should not be 0.
@@ -226,13 +211,11 @@ See <https://github.com/nasa/osal/pull/1050> and <https://github.com/nasa/cFS/pu
 - See <https://github.com/nasa/osal/pull/996> and <https://github.com/nasa/cfs/pull/256>
 
 ## Development Build: v5.1.0-rc1+dev417
-
 - Fixes infinite loop  in `UtPrintx()`. Adds the data's memory address to output. Note, UtPrintf displays the file/line of the `UtPrintx` function, **not the actual test location**; it is better to call `UT_BSP_DoText` directly.
 - Adds `OS_SocketShutdown()` API wrapper around BSD's socket shutdown() API. This allows a data transfer of a stream socket to be gracefully shut down prior to socket closure.
 - See osal <https://github.com/nasa/osal/pull/979> and <https://github.com/nasa/cFS/pull/252>
 
 ## Development Build: v5.1.0-rc1+dev411
-
 - [docs] Clarifies that zero will be returned on EOF condition in the API documentation for OS_read/write/TimedRead/TimedWrite. In the case of the timed API calls, the `OS_ERR_TIMEOUT` status code will be returned if the timeout expired without the handle becoming readable/writable during that time.
 - Addresses shortcomings in the UT Assert hook functions. Namely the assumed return type of int32 which is not always the case.
 - Adds the concept of a "handler" function to UT assert to replace hard-coded custom logic in UT assert. A handler is the custom logic that exists between the hook function and the return to the stub caller. The handler is directly responsible for setting all outputs.
@@ -245,15 +228,12 @@ the declarations, and generates a source file with stub definitions that rely on
 - Promotes the `OS_CONFIG_CONSOLE_ASYNC` option into the shared layer to remove duplicate implementation code and add more coverage testing.
 - Adds an osconfig option to allow the user to elect this mode at configuration time.
 
-
 ## Development Build: v5.1.0-rc1+dev393
-
 - Changes parameter names to avoid collisions. Renames `access` as `access_mode` in `osapi-file.h`. Renames `time` as `TimeSp` in `os-impl-posix-gettime.c`.
 - Deletes the broken RTEMS `os-impl-shell.c` file so OSAL builds with `OSAL_CONFIG_INCLUDE_SHELL=true`. RTEMS will always report `OS_ERR_NOT_IMPLEMENTED`.
 - See <https://github.com/nasa/osal/pull/967> and <https://github.com/nasa/cFS/pull/248>
 
 ## Development Build: v5.1.0-rc1+dev387
-
 - Replaces the separate "Initialized" and "Shutdown" flags with a single state flag. Creates a global single source of truth for the OSAL state. This enables users to run tests and OS_API_Init() multiple times without a reboot in the middle to reset the state.
   - Multiple invocations of OS_API_Init() are allowed - subsequent calls can be ignored
   - Deleting of any internal objects that did get created if OS_API_Init() fails (this leaves system in same state as when it started)
@@ -263,14 +243,12 @@ the declarations, and generates a source file with stub definitions that rely on
 - See <https://github.com/nasa/osal/pull/956> and <https://github.com/nasa/cFS/pull/242>
 
 ## Development Build: v5.1.0-rc1+dev378
-
 - Replaces nonstandard header file block comments and include guards. No behavior changes
 - Removes `CLOCK_MONOTONIC` as the osal clock source since PSP no longer needs it. `OS_GetLocalTime()` and `OS_SetLocalTime()` will work as described.
 - Replaces `shellName` with a specific `localShellName` that can be polled safely and changes its type to a char of `OS_MAX_API_NAME` length for safety.
 - See <https://github.com/nasa/osal/pull/951> and <https://github.com/nasa/cFS/pull/238>
 
 ## Development Build: v5.1.0-rc1+dev367
-
 - Removes `SOFTWARE_BIG_BIT_ORDER` and `SOFTWARE_LITTLE_BIT_ORDER` macros from `common_types.h`. These are not needed by OSAL and cannot handle all cases.  Application code with endianness dependency that was relying on these symbols may break. Users should leverage code in cFE: `cfe_endian.h`. See <https://github.com/nasa/cFE/pull/1218> for more details.
 - Applies minor code and documentation cleanup: white space, typos, etc.
 - Adds test to get full coverage of vxworks in `os-impl-bsd-socket.c` resulting in full line coverage for OSAL
@@ -281,7 +259,6 @@ the declarations, and generates a source file with stub definitions that rely on
 - See <https://github.com/nasa/osal/pull/927>
 
 ## Development Build: v5.1.0-rc1+dev350
-
 - Moves copyblock size to a macro and add comments. Defines `OS_CP_BLOCK_SIZE` and adds clear documentation that it could be adjusted for page size, performance, etc.
 - Removes while loop
 - Replaces all #includes of <os and <OSC_ matches with " to match coding standard.
@@ -309,12 +286,10 @@ the declarations, and generates a source file with stub definitions that rely on
 - See <https://github.com/nasa/osal/pull/917>
 
 ## Development Build: v5.1.0-rc1+dev297
-
 - Add Testing Tools to the Security Policy
 - See <https://github.com/nasa/osal/pull/838>
 
 ## Development Build: v5.1.0-rc1+dev293
-
 - Avoids various "possible uninitialized variable" warnings for routines that utilize this API.
 - Renames `sockaddr*` structures to `sa*` to deconflict from structure name in `os-impl-bsd-sockets.c`. Adds `OS_NETWORK_SUPPORTS_IPV6` to `os-impl-bsd-sockets.c` compilation. Renames `bsd-select-stubs.c` to `sys-select-stubs.c`. Coverage now includes all currently possible files in VxWorks build
 - Resolves CodeQL security warning by restricting permissions on file create.
@@ -328,7 +303,6 @@ Adds `osapi-version.c` to implement these 3 calls and associated coverage test. 
 - See <https://github.com/nasa/osal/pull/835>
 
 ## Development Build: v5.1.0-rc1+dev280
-
 - Makes tests skip after getting their first not implemented error.
 - Updates stub helpers to match the behavior of calling the default implementation stub macro (NULL VA list)
 - Removes redundant logic and assignment to fix static analysis warnings
@@ -339,7 +313,6 @@ Adds `osapi-version.c` to implement these 3 calls and associated coverage test. 
 - See <https://github.com/nasa/osal/pull/830>
 
 ## Development Build: v5.1.0-rc1+dev262
-
 - Adds test cases for `OS_ObjectIdFinalizeDelete`, `OS_DeleteAllObjects`, and others to get 100% line and function coverage on VxWorks and shared/portable layers.
 - Ensures APIs check for `NULL` inputs or have documentation stating that a null value is allowed.
 - Adds timeout to static analysis check and adds format check. Removes old .travis.yml and updates badges in readme.
@@ -361,7 +334,6 @@ Adds `osapi-version.c` to implement these 3 calls and associated coverage test. 
 - See <https://github.com/nasa/osal/pull/774>
 
 ## Development Build: v5.1.0-rc1+dev221
-
 - Fixes `printf` format to correctly build in RTEMS-5.
 - **Deprecates `OS_fsBlocksFree()` and `OS_fsBytesFree()`** in favor of `OS_FileSysStatVolume()`.
 - Adds `Security.md` with instructions to report vulnerabilities.
@@ -380,7 +352,6 @@ Adds `osapi-version.c` to implement these 3 calls and associated coverage test. 
 - See <https://github.com/nasa/osal/pulls/767>
 
 ## Development Build: v5.1.0-rc1+dev184
-
 - Address issues with OSAL global table management:
   - use iterators whenever possible
   - use an unlock key rather than task ID so OS_TaskExit() doesn't trigger a warning
@@ -406,7 +377,6 @@ Adds `osapi-version.c` to implement these 3 calls and associated coverage test. 
 - See <https://github.com/nasa/osal/pulls/750>
 
 ## Development Build: v5.1.0-rc1+dev149
-
 - Document UtAssert_Message parameters, also adds "see also" note for helper macros.
 - Fix doxygen typo
 - Replace `OS_BinSemFlush` with `OS_BinSemGive` to prevent a rare race condition. Change the port numbers to be different from network test for when tests are run in parallel.
@@ -416,7 +386,6 @@ Adds `osapi-version.c` to implement these 3 calls and associated coverage test. 
 - See <https://github.com/nasa/osal/pull/744>
 
 ## Development Build: v5.1.0-rc1+dev132
-
 - Convert the OSAL Configuration Guide from docx and pdf to a markdown file.
 - Test Tasks do not run at 100%. Move all definitions and instantiations out of the core-test header file and reuse the already-existing single task definition.
 - Break up `osapi-os-*.h` files into units that correspond to the implementation units. Kept old header file names for compatibility.
@@ -430,7 +399,6 @@ Adds `osapi-version.c` to implement these 3 calls and associated coverage test. 
 - See <https://github.com/nasa/osal/pull/690>
 
 ## Development Build: v5.1.0-rc1+dev109
-
 - Add support for RTEMS 5.1 in the OSAL and provides defines and necessary ifdefs so RTEMS 4.11 can continue to be supported.
 - Adds functional test for OS_chmod
 - Refactor the table array access across OSAL. Use a token concept in combination with a macro to obtain the table entry instead of indexing arrays directly. All access is then done through this table pointer. Use the full object ID in the timer call back list. Update the timer sync callback prototype. Pass the entire OSAL ID to the sync function, not just the index. This is technically an API change.
@@ -438,9 +406,7 @@ Adds `osapi-version.c` to implement these 3 calls and associated coverage test. 
 - Removes obsolete printf tests that didn't work
 - See <https://github.com/nasa/osal/pull/680>
 
-
 ## Development Build: v5.1.0-rc1+dev91
-
 - Rename `UT_SetForceFail` to `UT_SetDefaultReturnValue` since some functions that retain more than 1 value are not necessarily failing
 - Add a 5th timer to TimerTest functional to test the one shot (zero-length time interval) case.
 - Ensure all APIs use the proper type. Sizes are now size_t; these will now be 64 bits on a 64 bit platform.
@@ -448,9 +414,7 @@ Adds `osapi-version.c` to implement these 3 calls and associated coverage test. 
 -  The address calculations now use `unsigned long` instead of `long` to ensure that all rounding and base address adjustments behave the same way in the event that the addresses lie in the upper half of memory (i.e. start with a 1 bit) which would put it in the negative range of a long type.
 - See <https://github.com/nasa/osal/pull/662>
 
-
 ## Development Build: v5.1.0-rc1+dev75
-
 - Ensure that the handle is not NULL before invoking dlclose(). In particular the handle will be NULL for static modules. Shutdown after CTRL+C occurs normally (no segfault).
 - Add a "flags" parameter to OS_ModuleLoad() to indicate the desired symbol visibility:
     - GLOBAL (0, the default, and matches current behavior)
@@ -471,47 +435,39 @@ OS_MutSemTake():216:WARNING: Task 65547 taking mutex 327685 while owned by task 
 - See <https://github.com/nasa/osal/pull/639>
 
 ## Development Build: v5.1.0-rc1+dev60
-
 - Apply standard formatting, whitespace-only changes
 - See <https://github.com/nasa/osal/pull/627>
 
 ## Development Build: v5.1.0-rc1+dev55
-
 - Deprecate `OS_open` and `OS_creat` to and replaced them with by `OS_OpenCreate`, which implements both functions via flags, and follows the correct OSAL API patterns.
 - Change use of uint32 for ID to the correct typedef. Also use ObjectIdFromInteger/ObjectIdToInteger where it is intended to convert these values to integers e.g. for the "name" fields in RTEMS.
 - See <https://github.com/nasa/osal/pull/621>
 
 ## Development Build: v5.1.0-rc1+dev49
-
 - Adds an event callback mechanism to certain state changes in OSAL. This allows the CFE PSP to be notified at these points, and therefore it can add platform-specific functionality.
 - Correct issues involving recent OS_Milli2Ticks change.
 - See <https://github.com/nasa/osal/pull/612>
 
 ## Development Build: v5.1.0-rc1+dev44
-
 - Removes OS_Tick2Micros and internalize OS_Milli2Ticks.
 - Adds ut_assert address equal macro.
 - See <https://github.com/nasa/osal/pull/607>
 
 ## Development Build: v5.1.0-rc1+dev38
-
 - Sets Revision to 99 for development builds
 - See <https://github.com/nasa/osal/pull/600>
 
 ## Development Build: v5.1.0-rc1+dev34
-
 - Move this existing function into the public API, as it performs more verification than the OS_ConvertToArrayIndex function.
 - The C library type is signed, and this makes the result check work as intended.
 - See <https://github.com/nasa/osal/pull/596>
 
 
 ## Development Build: v5.1.0-rc1+dev16
-
  - In the next major OSAL release, this code will be no longer supported at all. It should be removed early in the cycle to avoid needing to maintain this compatibility code. This code was already conditional on the OSAL_OMIT_DEPRECATED flag and as such the CCB has already tested/verified running the code in this configuration as part of CI scripts. After this change, the build should be equivalent to the result of building with OMIT_DEPRECATED=true.
 - See <https://github.com/nasa/osal/pull/582>
 
 ## Development Build: v5.1.0-rc1+dev12
-
 - Removes internal functions that are no longer used or defined but whose prototypes and stubs were still present in OS_ObjectIdMap
 - Removes repetitive clearing of the global ID and unlocking global table and replaces these with common implementation in the idmap source file. This moves deleting tables to be similar to creating tables and provides
 a common location for additional table-deletion-related logic.
@@ -519,7 +475,6 @@ a common location for additional table-deletion-related logic.
 - See <https://github.com/nasa/osal/pull/576>
 
 ## Development Build: v5.1.0-rc1+dev5
-
 - Adds OSAL network APIs missing functional tests as well as tests for OS_TimedRead and OS_TimedWrite
 - Allows separate, dynamic registration of test setup and teardown routines which are executed before and after the normal test routine, which can create and delete any global/common test prerequisites.
 - Adds FileSysAddFixedMap missing functional API test
@@ -527,7 +482,6 @@ a common location for additional table-deletion-related logic.
 
 
 ## Development Build: 5.0.0+dev247
-
 - `OS_SocketOpen()` sets `sock_id` and returns a status when successful.
 - Changed timer-test to be able to use OS_MAX_TIMERS value on top of the hard-coded NUMBER_OF_TIMERS value. This will allow the test to be functional even if the OS_MAX_TIMERS value is reconfigured.
 - Ensures that
@@ -541,7 +495,6 @@ a common location for additional table-deletion-related logic.
 - See <https://github.com/nasa/osal/pull/529>
 
 ## Development Build: 5.0.21
-
 - Command line options in Linux are no longer ignored/dropped.
 - No impact to current unit testing which runs UT assert as a standalone app. Add a position independent code (PIC) variant of the ut_assert library, which can be dynamically loaded into other applications rather than running as a standalone OSAL application. This enables loading
 UT assert as a CFE library.
@@ -567,7 +520,6 @@ UT assert as a CFE library.
 - See <https://github.com/nasa/osal/pull/511> and <https://github.com/nasa/osal/pull/513>
 
 ## Development Build: 5.0.19
-
 - Rename BSPs that can be used on multiple platforms.
 `mcp750-vxworks` becomes `generic-vxworks`
 `pc-linux` becomes `generic-linux`
@@ -577,9 +529,7 @@ UT Hook functions now have the capability to get argument values by name, which 
 - Added functional tests for `OS_TimeBase Api` on `OS_TimeBaseCreate`, `OS_TimeBaseSet`, `OS_TimeBaseDelete`, `OS_TimeBaseGetIdByName`, `OS_TimeBaseGetInfo`, `OS_TimeBaseGetFreeRun`
 - See <https://github.com/nasa/osal/pull/487> for details
 
-
 ## Development Build: 5.0.18
-
 - Add functional tests for `OS_IdentifyObject`, `OS_ConvertToArrayIndex` and `OS_ForEachObject` functions.
 - Fix doxygen warnings
 - Unit test cases which use `OS_statfs` and run on an `RTEMS IMFS` volume will be skipped and categorized as "NA" due to `OS_ERR_NOT_IMPLEMENTED` response, rather than a failure.
@@ -595,25 +545,21 @@ UT Hook functions now have the capability to get argument values by name, which 
 - See <https://github.com/nasa/osal/pull/482>
 
 ## Development Build: 5.0.17
-
 -  `OS_QueueCreate()` will return an error code if the depth parameter is larger than the configured `OS_MAX_QUEUE_DEPTH`.
 - See <https://github.com/nasa/osal/pull/477>
 
 ## Development Build: 5.0.16
-
 - Resized buffers and added explicit termination to string copies. No warnings on GCC9 with strict settings and optimization enabled.
 - New API to reverse lookup an OS-provided thread/task identifier back to an OSAL ID. Any use of existing OStask_id field within the task property structure is now deprecated.
 - See <https://github.com/nasa/osal/pull/458>
 
 ## Development Build: 5.0.15
-
 - Changes the build system.
 - No more user-maintained osconfig.h file, this is now replaced by a cmake configuration file.
 - Breaks up low-level implementation into small, separate subsystem units, with a separate header file for each one.
 - See <https://github.com/nasa/osal/pull/444>
 
 ## Development Build: 5.0.14
-
 - Adds library build, functional, and coverage test to CI
 - Deprecates `OS_FS_SUCCESS, OS_FS_ERROR , OS_FS_ERR_INVALID_POINTER, OS_FS_ERR_NO_FREE_FDS , OS_FS_ERR_INVALID_FD, and OS_FS_UNIMPLEMENTED` from from `osapi-os-filesys.h`
 - Individual directory names now limited to OS_MAX_FILE_NAME
@@ -623,7 +569,6 @@ UT Hook functions now have the capability to get argument values by name, which 
 - See <https://github.com/nasa/osal/pull/440> for more details
 
 ## Development Build: 5.0.13
-
 - Added coverage test to `OS_TimerCreate` for `OS_ERR_NAME_TOO_LONG`.
 - Externalize enum for `SelectSingle`, ensures that pointers passed to `SelectFd...()` APIs are not null, ensures that pointer to `SelectSingle` is not null.
 - Command to run in shell and output to fill will fail with default (not implemented) setting.
@@ -631,20 +576,17 @@ UT Hook functions now have the capability to get argument values by name, which 
 - See <https://github.com/nasa/osal/pull/433> for more details
 
 ## Development Build: 5.0.12
-
 - Use the target_include_directories and target_compile_definitions functions from CMake to manage the build flags per target.
 - Build implementation components using a separate CMakeLists.txt file rather than aux_source_directory.
 - Provide sufficient framework for combining the OSAL BSP, UT BSP, and the CFE PSP and eliminating the duplication/overlap between these items.
 - Minor updates (see <https://github.com/nasa/osal/pull/417>)
 
 ## Development Build: 5.0.11
-
 - The more descriptive return value OS_ERR_NAME_NOT_FOUND (instead of OS_FS_ERROR) will now be returned from the following functions (): OS_rmfs, OS_mount, OS_unmount, OS_FS_GetPhysDriveName
 - Wraps OS_ShMem* prototype and unit test wrapper additions in OSAL_OMIT_DEPRECATED
 - Minor updates (see <https://github.com/nasa/osal/pull/408>)
 
 ## Development Build: 5.0.10
-
 - Minor updates (see <https://github.com/nasa/osal/pull/401>)
 
   - 5.0.9: DEVELOPMENT
@@ -652,56 +594,44 @@ UT Hook functions now have the capability to get argument values by name, which 
 - Documentation updates (see <https://github.com/nasa/osal/pull/375>)
 
 ## Development Build: 5.0.8
-
 - Minor updates (see <https://github.com/nasa/osal/pull/369>)
 
 ## Development Build: 5.0.7
-
 - Fixes memset bug
 - Minor updates (see <https://github.com/nasa/osal/pull/361>)
 
 ## Development Build: 5.0.6
-
 - Minor updates (see <https://github.com/nasa/osal/pull/355>)
 
 ## Development Build: 5.0.5
-
 - Fixed osal_timer_UT test failure case
 - Minor updates (see <https://github.com/nasa/osal/pull/350>)
 
 ## Development Build: 5.0.4
-
 - Minor updates (see <https://github.com/nasa/osal/pull/334>)
 
 ## Development Build: 5.0.3
-
 - Minor updates (see <https://github.com/nasa/osal/pull/292>)
 
 ## Development Build: 5.0.2
-
 - Bug fixes and minor updates (see <https://github.com/nasa/osal/pull/281>)
 
 ## Development Build: 5.0.1
-
 - Minor updates (see <https://github.com/nasa/osal/pull/264>)
 
 ## **_OFFICIAL RELEASE: 5.0.0 - Aquila_**
-
 - Changes are detailed in [cFS repo](https://github.com/nasa/cFS) release 6.7.0 documentation
 - Released under the Apache 2.0 license
 
 ## **_OFFICIAL RELEASE: 4.2.1a_**
-
 - Released under the [NOSA license](https://github.com/nasa/osal/blob/osal-4.2.1a/LICENSE)
 - See [version description document](https://github.com/nasa/osal/blob/osal-4.2.1a/OSAL%204.2.1.0%20Version%20Description%20Document.pdf)
 - This is a point release from an internal repository
 
 ## Known issues
-
 See all open issues and closed to milestones later than this version.
 
 ## Getting Help
-
 For best results, submit issues:questions or issues:help wanted requests at <https://github.com/nasa/cFS>.
 
 Official cFS page: <http://cfs.gsfc.nasa.gov>
