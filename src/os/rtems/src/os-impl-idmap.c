@@ -55,6 +55,7 @@ static OS_impl_objtype_lock_t OS_timecb_table_lock;
 static OS_impl_objtype_lock_t OS_module_table_lock;
 static OS_impl_objtype_lock_t OS_filesys_table_lock;
 static OS_impl_objtype_lock_t OS_console_lock;
+static OS_impl_objtype_lock_t OS_condvar_lock;
 
 OS_impl_objtype_lock_t *const OS_impl_objtype_lock_table[OS_OBJECT_TYPE_USER] = {
     [OS_OBJECT_TYPE_UNDEFINED]   = NULL,
@@ -70,6 +71,7 @@ OS_impl_objtype_lock_t *const OS_impl_objtype_lock_table[OS_OBJECT_TYPE_USER] = 
     [OS_OBJECT_TYPE_OS_MODULE]   = &OS_module_table_lock,
     [OS_OBJECT_TYPE_OS_FILESYS]  = &OS_filesys_table_lock,
     [OS_OBJECT_TYPE_OS_CONSOLE]  = &OS_console_lock,
+    [OS_OBJECT_TYPE_OS_CONDVAR]  = &OS_condvar_lock,
 };
 
 /*----------------------------------------------------------------
@@ -87,10 +89,13 @@ void OS_Lock_Global_Impl(osal_objtype_t idtype)
 
     impl = OS_impl_objtype_lock_table[idtype];
 
-    rtems_sc = rtems_semaphore_obtain(impl->id, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
-    if (rtems_sc != RTEMS_SUCCESSFUL)
+    if (impl != NULL)
     {
-        OS_DEBUG("OS_Lock_Global_Impl: rtems_semaphore_obtain failed: %s\n", rtems_status_text(rtems_sc));
+        rtems_sc = rtems_semaphore_obtain(impl->id, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+        if (rtems_sc != RTEMS_SUCCESSFUL)
+        {
+            OS_DEBUG("OS_Lock_Global_Impl: rtems_semaphore_obtain failed: %s\n", rtems_status_text(rtems_sc));
+        }
     }
 
 } /* end OS_Lock_Global_Impl */
@@ -110,10 +115,13 @@ void OS_Unlock_Global_Impl(osal_objtype_t idtype)
 
     impl = OS_impl_objtype_lock_table[idtype];
 
-    rtems_sc = rtems_semaphore_release(impl->id);
-    if (rtems_sc != RTEMS_SUCCESSFUL)
+    if (impl != NULL)
     {
-        OS_DEBUG("OS_Unlock_Global_Impl: rtems_semaphore_release failed: %s\n", rtems_status_text(rtems_sc));
+        rtems_sc = rtems_semaphore_release(impl->id);
+        if (rtems_sc != RTEMS_SUCCESSFUL)
+        {
+            OS_DEBUG("OS_Unlock_Global_Impl: rtems_semaphore_release failed: %s\n", rtems_status_text(rtems_sc));
+        }
     }
 
 } /* end OS_Unlock_Global_Impl */
