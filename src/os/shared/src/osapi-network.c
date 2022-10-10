@@ -43,19 +43,15 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_NetworkAPI_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
 int32 OS_NetworkAPI_Init(void)
 {
     return OS_SUCCESS;
-} /* end OS_NetworkAPI_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_NetworkGetHostName
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -78,11 +74,9 @@ int32 OS_NetworkGetHostName(char *host_name, size_t name_len)
     }
 
     return return_code;
-} /* end OS_NetworkGetHostName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_NetworkGetID
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -100,5 +94,4 @@ int32 OS_NetworkGetID(void)
     }
 
     return IdBuf;
-
-} /* end OS_NetworkGetID */
+}

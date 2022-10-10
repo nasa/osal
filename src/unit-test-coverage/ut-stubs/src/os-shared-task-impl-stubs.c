@@ -97,7 +97,6 @@ int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
  */
 void OS_TaskExit_Impl(void)
 {
-
     UT_GenStub_Execute(OS_TaskExit_Impl, Basic, NULL);
 }
 

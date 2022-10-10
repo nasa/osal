@@ -47,8 +47,6 @@ OS_impl_module_internal_record_t OS_impl_module_table[OS_MAX_MODULES];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_VxWorks_ModuleAPI_Impl_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
@@ -56,15 +54,13 @@ int32 OS_VxWorks_ModuleAPI_Impl_Init(void)
 {
     memset(&OS_impl_module_table, 0, sizeof(OS_impl_module_table));
     return OS_SUCCESS;
-} /* end OS_VxWorks_ModuleAPI_Impl_Init */
+}
 
 /****************************************************************************************
                                     Module Loader API
 ****************************************************************************************/
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ModuleLoad_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -117,12 +113,9 @@ int32 OS_ModuleLoad_Impl(const OS_object_token_t *token, const char *translated_
     }
 
     return return_code;
-
-} /* end OS_ModuleLoad_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ModuleUnload_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -146,12 +139,9 @@ int32 OS_ModuleUnload_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_ModuleUnload_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ModuleGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -191,5 +181,4 @@ int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *mo
     }
 
     return return_code;
-
-} /* end OS_ModuleGetInfo_Impl */
+}

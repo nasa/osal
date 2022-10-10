@@ -107,11 +107,9 @@ int32 OS_Posix_BinSemAPI_Impl_Init(void)
 {
     memset(OS_impl_bin_sem_table, 0, sizeof(OS_impl_bin_sem_table));
     return OS_SUCCESS;
-} /* end OS_Posix_BinSemAPI_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -239,12 +237,9 @@ int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 initial_value,
     }
 
     return return_code;
-
-} /* end OS_BinSemCreate_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemDelete_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -279,11 +274,9 @@ int32 OS_BinSemDelete_Impl(const OS_object_token_t *token)
     }
 
     return return_code;
-} /* end OS_BinSemDelete_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemGive_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -324,11 +317,9 @@ int32 OS_BinSemGive_Impl(const OS_object_token_t *token)
     pthread_mutex_unlock(&(sem->id));
 
     return OS_SUCCESS;
-} /* end OS_BinSemGive_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemFlush_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -358,7 +349,7 @@ int32 OS_BinSemFlush_Impl(const OS_object_token_t *token)
     pthread_mutex_unlock(&(sem->id));
 
     return OS_SUCCESS;
-} /* end OS_BinSemFlush_Impl */
+}
 
 /*---------------------------------------------------------------------------------------
    Name: OS_GenericBinSemTake_Impl
@@ -444,11 +435,9 @@ static int32 OS_GenericBinSemTake_Impl(const OS_object_token_t *token, const str
     pthread_cleanup_pop(true);
 
     return return_code;
-} /* end OS_GenericBinSemTake_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemTake_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -457,11 +446,9 @@ static int32 OS_GenericBinSemTake_Impl(const OS_object_token_t *token, const str
 int32 OS_BinSemTake_Impl(const OS_object_token_t *token)
 {
     return (OS_GenericBinSemTake_Impl(token, NULL));
-} /* end OS_BinSemTake_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemTimedWait_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -477,11 +464,9 @@ int32 OS_BinSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
     OS_Posix_CompAbsDelayTime(msecs, &ts);
 
     return (OS_GenericBinSemTake_Impl(token, &ts));
-} /* end OS_BinSemTimedWait_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -496,4 +481,4 @@ int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *s
     /* put the info into the structure */
     sem_prop->value = sem->current_value;
     return OS_SUCCESS;
-} /* end OS_BinSemGetInfo_Impl */
+}

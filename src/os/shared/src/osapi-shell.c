@@ -42,8 +42,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ShellOutputToFile
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -64,4 +62,4 @@ int32 OS_ShellOutputToFile(const char *Cmd, osal_id_t filedes)
     }
 
     return return_code;
-} /* end OS_ShellOutputToFile */
+}

@@ -59,8 +59,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_GenericClose_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -90,11 +88,9 @@ int32 OS_GenericClose_Impl(const OS_object_token_t *token)
     }
     impl->fd = -1;
     return OS_SUCCESS;
-} /* end OS_GenericClose_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_GenericSeek_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -158,11 +154,9 @@ int32 OS_GenericSeek_Impl(const OS_object_token_t *token, int32 offset, uint32 w
     }
 
     return retval;
-} /* end OS_GenericSeek_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_GenericRead_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -213,11 +207,9 @@ int32 OS_GenericRead_Impl(const OS_object_token_t *token, void *buffer, size_t n
     }
 
     return return_code;
-} /* end OS_GenericRead_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_GenericWrite_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -270,4 +262,4 @@ int32 OS_GenericWrite_Impl(const OS_object_token_t *token, const void *buffer, s
     }
 
     return return_code;
-} /* end OS_GenericWrite_Impl */
+}

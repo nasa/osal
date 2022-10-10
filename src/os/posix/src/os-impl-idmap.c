@@ -76,8 +76,6 @@ void OS_Posix_ReleaseTableMutex(void *mut)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_Lock_Global_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -94,12 +92,9 @@ void OS_Lock_Global_Impl(osal_objtype_t idtype)
     {
         OS_DEBUG("pthread_mutex_lock(&impl->mutex): %s", strerror(ret));
     }
-
-} /* end OS_Lock_Global_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_Unlock_Global_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -125,12 +120,9 @@ void OS_Unlock_Global_Impl(osal_objtype_t idtype)
     {
         OS_DEBUG("pthread_mutex_unlock(&impl->mutex): %s", strerror(ret));
     }
-
-} /* end OS_Unlock_Global_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- *  Function: OS_WaitForStateChange_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -249,4 +241,4 @@ int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype)
     } while (0);
 
     return return_code;
-} /* end OS_Posix_TableMutex_Init */
+}

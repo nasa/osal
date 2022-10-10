@@ -174,8 +174,7 @@ void Server_Fn(void)
     UtAssert_INT32_EQ(OS_SocketAccept(s1_socket_id, &connsock_id, &addr, OS_PEND), OS_SUCCESS);
     UtAssert_INT32_EQ(OS_BinSemTake(bin_sem_id), OS_SUCCESS);
     UtAssert_INT32_EQ(OS_close(connsock_id), OS_SUCCESS);
-
-} /* end Server_Fn */
+}
 
 void Server_Fn2(void)
 {
@@ -185,8 +184,7 @@ void Server_Fn2(void)
     /* Accept incoming connections */
     UtAssert_INT32_EQ(OS_SocketAccept(s2_socket_id, &connsock_id, &addr, OS_PEND), OS_SUCCESS);
     UtAssert_INT32_EQ(OS_close(connsock_id), OS_SUCCESS);
-
-} /* end Server_Fn */
+}
 
 void Setup_Single(void)
 {

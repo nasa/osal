@@ -49,8 +49,6 @@ OS_impl_countsem_internal_record_t OS_impl_count_sem_table[OS_MAX_COUNT_SEMAPHOR
 
 /*----------------------------------------------------------------
  *
- * Function: OS_VxWorks_CountSemAPI_Impl_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
@@ -58,11 +56,9 @@ int32 OS_VxWorks_CountSemAPI_Impl_Init(void)
 {
     memset(OS_impl_count_sem_table, 0, sizeof(OS_impl_count_sem_table));
     return OS_SUCCESS;
-} /* end OS_VxWorks_CountSemAPI_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -88,12 +84,9 @@ int32 OS_CountSemCreate_Impl(const OS_object_token_t *token, uint32 sem_initial_
 
     impl->vxid = tmp_sem_id;
     return OS_SUCCESS;
-
-} /* end OS_CountSemCreate_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemDelete_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -110,12 +103,9 @@ int32 OS_CountSemDelete_Impl(const OS_object_token_t *token)
      */
     impl->vxid = 0;
     return OS_SUCCESS;
-
-} /* end OS_CountSemDelete_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemGive_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -129,11 +119,9 @@ int32 OS_CountSemGive_Impl(const OS_object_token_t *token)
 
     /* Give VxWorks Semaphore */
     return OS_VxWorks_GenericSemGive(impl->vxid);
-} /* end OS_CountSemGive_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemTake_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -146,11 +134,9 @@ int32 OS_CountSemTake_Impl(const OS_object_token_t *token)
     impl = OS_OBJECT_TABLE_GET(OS_impl_count_sem_table, *token);
 
     return OS_VxWorks_GenericSemTake(impl->vxid, WAIT_FOREVER);
-} /* end OS_CountSemTake_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemTimedWait_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -172,11 +158,9 @@ int32 OS_CountSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
     }
 
     return status;
-} /* end OS_CountSemTimedWait_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -186,5 +170,4 @@ int32 OS_CountSemGetInfo_Impl(const OS_object_token_t *token, OS_count_sem_prop_
 {
     /* VxWorks does not provide an API to get the value */
     return OS_SUCCESS;
-
-} /* end OS_CountSemGetInfo_Impl */
+}

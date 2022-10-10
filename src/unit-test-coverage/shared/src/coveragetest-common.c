@@ -72,7 +72,6 @@ static int32 ObjectDeleteCountHook(void *UserObj, int32 StubRetcode, uint32 Call
 /* Always returns 1 so TryCount will be exceeded */
 static int32 ObjectDeleteFailHook(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context)
 {
-
     uint32 *counter = UT_Hook_GetArgValueByName(Context, "callback_arg", uint32 *);
 
     *counter = 1;

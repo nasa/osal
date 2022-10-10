@@ -47,8 +47,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ShellOutputToFile_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -103,5 +101,4 @@ int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
     OS_close(fdCmd);
 
     return ReturnCode;
-
-} /* end OS_ShellOutputToFile_Impl */
+}

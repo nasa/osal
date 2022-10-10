@@ -88,8 +88,6 @@ int32 OS_FileIteratorClose(osal_id_t filedes, void *arg)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_FileAPI_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Init function for OS-independent layer
  *
@@ -98,11 +96,9 @@ int32 OS_FileAPI_Init(void)
 {
     memset(OS_stream_table, 0, sizeof(OS_stream_table));
     return OS_SUCCESS;
-} /* end OS_FileAPI_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_OpenCreate
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -154,11 +150,9 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
     }
 
     return return_code;
-} /* end OS_OpenCreate */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_close
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -180,12 +174,9 @@ int32 OS_close(osal_id_t filedes)
     }
 
     return return_code;
-
-} /* end OS_close */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimedRead
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -209,11 +200,9 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout
     }
 
     return return_code;
-} /* end OS_TimedRead */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimedWrite
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -236,11 +225,9 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
     }
 
     return return_code;
-} /* end OS_TimedWrite */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_read
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -249,11 +236,9 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
 int32 OS_read(osal_id_t filedes, void *buffer, size_t nbytes)
 {
     return OS_TimedRead(filedes, buffer, nbytes, OS_PEND);
-} /* end OS_read */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_write
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -262,11 +247,9 @@ int32 OS_read(osal_id_t filedes, void *buffer, size_t nbytes)
 int32 OS_write(osal_id_t filedes, const void *buffer, size_t nbytes)
 {
     return OS_TimedWrite(filedes, buffer, nbytes, OS_PEND);
-} /* end OS_write */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_chmod
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -284,12 +267,9 @@ int32 OS_chmod(const char *path, uint32 access_mode)
     }
 
     return return_code;
-
-} /* end OS_chmod */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_stat
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -312,11 +292,9 @@ int32 OS_stat(const char *path, os_fstat_t *filestats)
     }
 
     return return_code;
-} /* end OS_stat */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_lseek
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -336,11 +314,9 @@ int32 OS_lseek(osal_id_t filedes, int32 offset, uint32 whence)
     }
 
     return return_code;
-} /* end OS_lseek */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_remove
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -358,12 +334,9 @@ int32 OS_remove(const char *path)
     }
 
     return return_code;
-
-} /* end OS_remove */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_rename
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -407,12 +380,9 @@ int32 OS_rename(const char *old, const char *new)
     }
 
     return return_code;
-
-} /* end OS_rename */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_cp
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -475,12 +445,9 @@ int32 OS_cp(const char *src, const char *dest)
     }
 
     return return_code;
-
-} /* end OS_cp */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_mv
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -502,12 +469,9 @@ int32 OS_mv(const char *src, const char *dest)
     }
 
     return return_code;
-
-} /* end OS_mv */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FDGetInfo
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -541,12 +505,9 @@ int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop)
     }
 
     return return_code;
-
-} /* end OS_FDGetInfo */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileOpenCheck
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -578,11 +539,9 @@ int32 OS_FileOpenCheck(const char *Filename)
     OS_ObjectIdIteratorDestroy(&iter);
 
     return return_code;
-} /* end OS_FileOpenCheck */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CloseFileByName
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -621,12 +580,9 @@ int32 OS_CloseFileByName(const char *Filename)
     OS_ObjectIdIteratorDestroy(&iter);
 
     return return_code;
-
-} /* end OS_CloseFileByName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CloseAllFiles
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -655,5 +611,4 @@ int32 OS_CloseAllFiles(void)
     OS_ObjectIdIteratorDestroy(&iter);
 
     return return_code;
-
-} /* end OS_CloseAllFiles */
+}

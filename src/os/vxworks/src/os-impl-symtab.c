@@ -62,8 +62,6 @@ extern SYMTAB_ID sysSymTbl;
 
 /*----------------------------------------------------------------
  *
- * Function: OS_GenericSymbolLookup_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -101,12 +99,9 @@ int32 OS_GenericSymbolLookup_Impl(SYMTAB_ID SymTab, cpuaddr *SymbolAddress, cons
     }
 
     return OS_SUCCESS;
-
-} /* end OS_GenericSymbolLookup_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SymbolLookup_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -115,11 +110,9 @@ int32 OS_GenericSymbolLookup_Impl(SYMTAB_ID SymTab, cpuaddr *SymbolAddress, cons
 int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 {
     return OS_GenericSymbolLookup_Impl(sysSymTbl, SymbolAddress, SymbolName);
-} /* end OS_SymbolLookup_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ModuleSymbolLookup_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -135,11 +128,9 @@ int32 OS_ModuleSymbolLookup_Impl(const OS_object_token_t *token, cpuaddr *Symbol
      * offers this capability.
      */
     return OS_GenericSymbolLookup_Impl(sysSymTbl, SymbolAddress, SymbolName);
-} /* end OS_ModuleSymbolLookup_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SymTableIterator_Impl
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Function called by vxWorks to iterate the vxworks symbol table
@@ -221,11 +212,9 @@ BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_
     ** It's OK to continue
     */
     return true;
-} /* end OS_SymTableIterator_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SymbolTableDump_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -274,5 +263,4 @@ int32 OS_SymbolTableDump_Impl(const char *filename, size_t size_limit)
     }
 
     return state->StatusCode;
-
-} /* end OS_SymbolTableDump_Impl */
+}

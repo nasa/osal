@@ -214,8 +214,7 @@ void TestDatagramNetworkApi_Setup(void)
                                         OS_READ_WRITE),
                           OS_SUCCESS);
     }
-
-} /* end TestDatagramNetworkApi_Setup */
+}
 
 /*****************************************************************************
  *
@@ -339,8 +338,7 @@ void TestDatagramNetworkApi(void)
 
     UtAssert_INT32_EQ(OS_SocketGetIdByName(&objid, "127.0.0.1:9999"), OS_SUCCESS);
     UtAssert_True(OS_ObjectIdEqual(objid, p1_socket_id), "objid (%lu) == p1_socket_id", OS_ObjectIdToInteger(objid));
-
-} /* end TestDatagramNetworkApi */
+}
 
 /*****************************************************************************
  *
@@ -352,8 +350,7 @@ void TestDatagramNetworkApi_Teardown(void)
     /* Close sockets */
     OS_close(p1_socket_id);
     OS_close(p2_socket_id);
-
-} /* end TestDatagramNetworkApi_Teardown */
+}
 
 /*****************************************************************************
  *
@@ -445,8 +442,7 @@ void Server_Fn(void)
     }
 
     OS_close(s_socket_id);
-
-} /* end Server_Fn */
+}
 
 /*****************************************************************************
  *
@@ -730,8 +726,7 @@ void TestStreamNetworkApi(void)
         }
         UtAssert_True(loopcnt < UT_EXIT_LOOP_MAX, "Task exited after %ld iterations", (long)loopcnt);
     }
-
-} /* end TestStreamNetworkApi */
+}
 
 /*****************************************************************************
  *
@@ -742,8 +737,7 @@ void TestStreamNetworkApi_Teardown(void)
 {
     /* Close sockets */
     OS_close(c_socket_id);
-
-} /* end TestStreamNetworkApi_Teardown */
+}
 
 void UtTest_Setup(void)
 {

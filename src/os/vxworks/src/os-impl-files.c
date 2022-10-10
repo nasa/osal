@@ -40,8 +40,6 @@ OS_impl_file_internal_record_t OS_impl_filehandle_table[OS_MAX_NUM_OPEN_FILES];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_VxWorks_StreamAPI_Impl_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
@@ -60,4 +58,4 @@ int32 OS_VxWorks_StreamAPI_Impl_Init(void)
     }
 
     return OS_SUCCESS;
-} /* end OS_VxWorks_StreamAPI_Impl_Init */
+}

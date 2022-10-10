@@ -53,7 +53,6 @@ typedef struct OCS_MODULE_INFO
         unsigned long bssAddr;
         unsigned long bssSize;
     } segInfo;
-
 } OCS_MODULE_INFO;
 
 /* ----------------------------------------- */

@@ -45,7 +45,6 @@ void OCS_OS_BSP_Unlock_Impl(void)
 }
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_ConsoleOutput_Impl
 
     Purpose: Low level raw console data output.  Writes a sequence of
              characters directly to the BSP debug terminal or console device.
@@ -68,7 +67,6 @@ void OCS_OS_BSP_ConsoleOutput_Impl(const char *Str, size_t DataLen)
 }
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_ConsoleSetMode_Impl
 
     Purpose: Set the console output mode, if supported by the BSP.
 

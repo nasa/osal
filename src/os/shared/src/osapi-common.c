@@ -69,8 +69,6 @@ OS_SharedGlobalVars_t OS_SharedGlobalVars = {
 
 /*----------------------------------------------------------------
  *
- * Function: OS_NotifyEvent
- *
  *  Purpose: Helper function to invoke the user-defined event handler
  *
  *-----------------------------------------------------------------*/
@@ -97,8 +95,6 @@ int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data)
  */
 
 /*----------------------------------------------------------------
- *
- * Function: OS_API_Init
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -246,11 +242,9 @@ int32 OS_API_Init(void)
     }
 
     return return_code;
-} /* end OS_API_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_API_Teardown
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -272,8 +266,6 @@ void OS_API_Teardown(void)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_RegisterEventHandler
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -287,8 +279,6 @@ int32 OS_RegisterEventHandler(OS_EventHandler_t handler)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ApplicationExit
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -304,11 +294,9 @@ void OS_ApplicationExit(int32 Status)
     {
         exit(EXIT_FAILURE);
     }
-} /* end OS_ApplicationExit */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CleanUpObject
  *
  *  Purpose: Local helper routine that can delete ANY object, not part of OSAL API.
  *
@@ -357,11 +345,9 @@ void OS_CleanUpObject(osal_id_t object_id, void *arg)
         default:
             break;
     }
-} /* end OS_CleanUpObject */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_DeleteAllObjects
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -396,11 +382,9 @@ void OS_DeleteAllObjects(void)
         }
         OS_TaskDelay(5);
     }
-} /* end OS_DeleteAllObjects */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_IdleLoop
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -417,11 +401,9 @@ void OS_IdleLoop()
     {
         OS_IdleLoop_Impl();
     }
-} /* end OS_IdleLoop */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ApplicationShutdown
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -440,4 +422,4 @@ void OS_ApplicationShutdown(uint8 flag)
      * should do whatever is needed to wake that task up.
      */
     OS_ApplicationShutdown_Impl();
-} /* end OS_ApplicationShutdown */
+}

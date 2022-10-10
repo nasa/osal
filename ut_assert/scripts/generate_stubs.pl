@@ -280,7 +280,6 @@ foreach my $hdr (@hdrlist)
         $basename =~ s/\..*$//; # trim filename extension
         $publicapi->{$basename} = { boilerplate => $file_boilerplate, variadic => $file_variadic, api => $fileapi };
     }
-
 }
 
 # Now generate a stub function for all items in API

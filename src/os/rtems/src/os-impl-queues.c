@@ -57,8 +57,6 @@ OS_impl_queue_internal_record_t OS_impl_queue_table[OS_MAX_QUEUES];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_Rtems_QueueAPI_Impl_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
@@ -66,11 +64,9 @@ int32 OS_Rtems_QueueAPI_Impl_Init(void)
 {
     memset(OS_impl_queue_table, 0, sizeof(OS_impl_queue_table));
     return OS_SUCCESS;
-} /* end OS_Rtems_QueueAPI_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -116,12 +112,9 @@ int32 OS_QueueCreate_Impl(const OS_object_token_t *token, uint32 flags)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_QueueCreate_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueDelete_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -143,12 +136,9 @@ int32 OS_QueueDelete_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_QueueDelete_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueGet_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -241,11 +231,9 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     }
 
     return return_code;
-} /* end OS_QueueGet_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueuePut_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -287,12 +275,9 @@ int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, size_t 
     }
 
     return OS_SUCCESS;
-
-} /* end OS_QueuePut_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -302,5 +287,4 @@ int32 OS_QueueGetInfo_Impl(const OS_object_token_t *token, OS_queue_prop_t *queu
 {
     /* No extra info for queues in the OS implementation */
     return OS_SUCCESS;
-
-} /* end OS_QueueGetInfo_Impl */
+}

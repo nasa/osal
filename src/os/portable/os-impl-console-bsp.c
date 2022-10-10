@@ -47,8 +47,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ConsoleOutput_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -92,4 +90,4 @@ void OS_ConsoleOutput_Impl(const OS_object_token_t *token)
 
     /* Update the global with the new read location */
     console->ReadPos = StartPos;
-} /* end OS_ConsoleOutput_Impl */
+}

@@ -39,7 +39,6 @@ typedef struct
     sigset_t        sigset;
     sig_atomic_t    reset_flag;
     struct timespec softsleep;
-
 } OS_impl_timebase_internal_record_t;
 
 /****************************************************************************************

@@ -52,7 +52,6 @@ void OS_printf(const char *string, ...)
  */
 void OS_printf_disable(void)
 {
-
     UT_GenStub_Execute(OS_printf_disable, Basic, NULL);
 }
 
@@ -63,6 +62,5 @@ void OS_printf_disable(void)
  */
 void OS_printf_enable(void)
 {
-
     UT_GenStub_Execute(OS_printf_enable, Basic, NULL);
 }

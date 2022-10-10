@@ -187,8 +187,7 @@ void TestTimerAddApi(void)
     UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", time_base_id, NULL, NULL), OS_INVALID_POINTER);
     UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, "Timer", time_base_id, null_func, NULL), OS_ERR_NAME_TAKEN);
     UtAssert_INT32_EQ(OS_TimerAdd(&timer_id, 0, time_base_id, null_func, NULL), OS_INVALID_POINTER);
-
-} /* end TestTimerAddApi */
+}
 
 void UtTest_Setup(void)
 {

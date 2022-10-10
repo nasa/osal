@@ -78,8 +78,6 @@ OS_console_internal_record_t OS_console_table[OS_MAX_CONSOLES];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ConsoleAPI_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
@@ -121,7 +119,7 @@ int32 OS_ConsoleAPI_Init(void)
     }
 
     return return_code;
-} /* end OS_ConsoleAPI_Init */
+}
 
 /*
  *********************************************************************************
@@ -130,8 +128,6 @@ int32 OS_ConsoleAPI_Init(void)
  */
 
 /*----------------------------------------------------------------
- *
- * Function: OS_Console_CopyOut
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *    Write into the console ring buffer
@@ -181,7 +177,7 @@ static int32 OS_Console_CopyOut(OS_console_internal_record_t *console, const cha
     }
 
     return return_code;
-} /* end OS_Console_CopyOut */
+}
 
 /*
  *********************************************************************************
@@ -190,8 +186,6 @@ static int32 OS_Console_CopyOut(OS_console_internal_record_t *console, const cha
  */
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ConsoleWrite
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Write into the console ring buffer
@@ -258,11 +252,9 @@ int32 OS_ConsoleWrite(osal_id_t console_id, const char *Str)
     }
 
     return return_code;
-} /* end OS_ConsoleWrite */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_printf
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -319,12 +311,9 @@ void OS_printf(const char *String, ...)
 
         OS_ConsoleWrite(OS_SharedGlobalVars.PrintfConsoleId, msg_buffer);
     }
-
-} /* end OS_printf */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_printf_disable
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -333,11 +322,9 @@ void OS_printf(const char *String, ...)
 void OS_printf_disable(void)
 {
     OS_SharedGlobalVars.PrintfEnabled = false;
-} /* end OS_printf_disable */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_printf_enable
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -346,4 +333,4 @@ void OS_printf_disable(void)
 void OS_printf_enable(void)
 {
     OS_SharedGlobalVars.PrintfEnabled = true;
-} /* end OS_printf_enable */
+}

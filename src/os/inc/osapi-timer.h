@@ -41,7 +41,6 @@ typedef struct
     uint32    start_time;
     uint32    interval_time;
     uint32    accuracy;
-
 } OS_timer_prop_t;
 
 /** @defgroup OSAPITimer OSAL Timer APIs

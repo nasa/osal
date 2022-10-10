@@ -85,15 +85,13 @@ int OS_VxWorks_TaskEntry(int arg)
     OS_TaskEntryPoint(OS_ObjectIdFromInteger(arg));
 
     return 0;
-} /* end OS_VxWorksEntry */
+}
 
 /****************************************************************************************
                                     TASK API
 ****************************************************************************************/
 
 /*----------------------------------------------------------------
- *
- * Function: OS_VxWorks_TaskAPI_Impl_Init
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -102,11 +100,9 @@ int32 OS_VxWorks_TaskAPI_Impl_Init(void)
 {
     memset(OS_impl_task_table, 0, sizeof(OS_impl_task_table));
     return OS_SUCCESS;
-} /* end OS_VxWorks_TaskAPI_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -252,12 +248,9 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
     taskActivate(lrec->vxid);
 
     return OS_SUCCESS;
-
-} /* end OS_TaskCreate_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskDelete_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -283,12 +276,9 @@ int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
 
     impl->vxid = 0;
     return OS_SUCCESS;
-
-} /* end OS_TaskDelete_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskDetach_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -302,8 +292,6 @@ int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_TaskExit_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -311,11 +299,9 @@ int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
 void OS_TaskExit_Impl()
 {
     taskExit(0);
-} /* end OS_TaskExit_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskDelay_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -338,12 +324,9 @@ int32 OS_TaskDelay_Impl(uint32 milli_second)
         return OS_ERROR;
     }
     return OS_SUCCESS;
-
-} /* end OS_TaskDelay_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskSetPriority_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -362,12 +345,9 @@ int32 OS_TaskSetPriority_Impl(const OS_object_token_t *token, osal_priority_t ne
     }
 
     return OS_SUCCESS;
-
-} /* end OS_TaskSetPriority_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskMatch_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -388,11 +368,9 @@ int32 OS_TaskMatch_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-} /* end OS_TaskMatch_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskRegister_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -401,11 +379,9 @@ int32 OS_TaskMatch_Impl(const OS_object_token_t *token)
 int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
 {
     return OS_SUCCESS;
-} /* end OS_TaskRegister_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskGetId_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -430,12 +406,9 @@ osal_id_t OS_TaskGetId_Impl(void)
     }
 
     return id;
-
-} /* end OS_TaskGetId_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -444,12 +417,9 @@ osal_id_t OS_TaskGetId_Impl(void)
 int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_prop)
 {
     return OS_SUCCESS;
-
-} /* end OS_TaskGetInfo_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskValidateSystemData_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -465,8 +435,6 @@ int32 OS_TaskValidateSystemData_Impl(const void *sysdata, size_t sysdata_size)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskIdMatchSystemData_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail

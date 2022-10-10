@@ -49,8 +49,7 @@ void UT_DefaultHandler_OS_GetLocalTime(void *UserObj, UT_EntryKey_t FuncKey, con
     {
         *time_struct = OS_TimeAssembleFromNanoseconds(1 + (count / 100), 10000000 * (count % 100));
     }
-
-} /* end OS_GetLocalTime */
+}
 
 /*
  * -----------------------------------------------------------------
@@ -68,5 +67,4 @@ void UT_DefaultHandler_OS_SetLocalTime(void *UserObj, UT_EntryKey_t FuncKey, con
     {
         UT_Stub_CopyFromLocal(UT_KEY(OS_SetLocalTime), time_struct, sizeof(*time_struct));
     }
-
 } /*end OS_SetLocalTime */

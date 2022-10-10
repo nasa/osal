@@ -182,7 +182,6 @@ void OS_BSP_Shutdown_Impl(void)
 }
 
 /******************************************************************************
-**  Function:  main()
 **
 **  Purpose:
 **    BSP Application entry point.

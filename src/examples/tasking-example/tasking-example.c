@@ -207,7 +207,6 @@ void task_2(void)
 
 void task_3(void)
 {
-
     uint32 data_received;
     uint32 data_size;
     uint32 status;

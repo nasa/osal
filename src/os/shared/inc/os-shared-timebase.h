@@ -66,7 +66,6 @@ int32 OS_TimeBaseAPI_Init(void);
  */
 
 /*----------------------------------------------------------------
-   Function: OS_TimeBaseCreate_Impl
 
     Purpose: Prepare OS resources for a time base
 
@@ -75,7 +74,6 @@ int32 OS_TimeBaseAPI_Init(void);
 int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_TimeBaseSet_Impl
 
     Purpose: Configure the OS resources to provide a timer tick
 
@@ -84,7 +82,6 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token);
 int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uint32 interval_time);
 
 /*----------------------------------------------------------------
-   Function: OS_TimeBaseDelete_Impl
 
     Purpose: Free the OS resources associated with the time base
 
@@ -97,7 +94,6 @@ int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token);
 ****************************************************************************************/
 
 /*----------------------------------------------------------------
-   Function: OS_TimeBaseLock_Impl
 
     Purpose: Get exclusive access to the given timebase
              Add/remove of application callbacks is prevented
@@ -105,7 +101,6 @@ int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token);
 void OS_TimeBaseLock_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_TimeBaseLock_Impl
 
     Purpose: Release exclusive access to the given timebase
              Add/remove of application callbacks is allowed
@@ -113,7 +108,6 @@ void OS_TimeBaseLock_Impl(const OS_object_token_t *token);
 void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_TimeBaseGetInfo_Impl
 
     Purpose: Obtain the OS-specific time base information, if any
 
@@ -122,7 +116,6 @@ void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token);
 int32 OS_TimeBaseGetInfo_Impl(const OS_object_token_t *token, OS_timebase_prop_t *timer_prop);
 
 /*----------------------------------------------------------------
-   Function: OS_TimeBase_CallbackThread
 
     Purpose: Implement the time base helper thread
              This is the context for providing application callbacks
@@ -130,7 +123,6 @@ int32 OS_TimeBaseGetInfo_Impl(const OS_object_token_t *token, OS_timebase_prop_t
 void OS_TimeBase_CallbackThread(osal_id_t timebase_id);
 
 /*----------------------------------------------------------------
-   Function: OS_Milli2Ticks
 
     Purpose: Convert milliseconds to ticks
  ------------------------------------------------------------------*/

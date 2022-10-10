@@ -133,7 +133,7 @@ void TestSymbolApi(void)
         UtAssert_True(status != OS_SUCCESS, "OS_SymbolLookup(ShouldNotExist) = %d, Addr = %lx", (int)status,
                       (unsigned long)SymAddress);
     }
-} /* end TestSymbolApi */
+}
 
 void UtTest_Setup(void)
 {

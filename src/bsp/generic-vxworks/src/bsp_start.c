@@ -77,7 +77,6 @@ void OS_BSP_Shutdown_Impl(void)
 }
 
 /******************************************************************************
-**  Function:  OS_BSPMain()
 **
 **  Purpose:
 **    vxWorks/BSP Application entry point.

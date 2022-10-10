@@ -67,15 +67,13 @@ const char OS_POSIX_DEVICEFILE_PREFIX[] = "/dev/";
 int32 OS_Posix_FileSysAPI_Impl_Init(void)
 {
     return OS_SUCCESS;
-} /* end OS_Posix_FileSysAPI_Impl_Init */
+}
 
 /*
  * System Level API
  */
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysStartVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -174,12 +172,9 @@ int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_FileSysStartVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysStopVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -197,12 +192,9 @@ int32 OS_FileSysStopVolume_Impl(const OS_object_token_t *token)
      * If the volume is started again, the directory will be re-used.
      */
     return OS_SUCCESS;
-
-} /* end OS_FileSysStopVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysFormatVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -220,12 +212,9 @@ int32 OS_FileSysFormatVolume_Impl(const OS_object_token_t *token)
      * (this is also backward compatible since POSIX mkfs was always a no-op)
      */
     return OS_SUCCESS;
-
-} /* end OS_FileSysFormatVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysMountVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -274,12 +263,9 @@ int32 OS_FileSysMountVolume_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_FileSysMountVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysUnmountVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -295,12 +281,9 @@ int32 OS_FileSysUnmountVolume_Impl(const OS_object_token_t *token)
      * the mount process can stay for the next mount.
      */
     return OS_SUCCESS;
-
-} /* end OS_FileSysUnmountVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysStatVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -323,11 +306,9 @@ int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *re
     result->total_blocks = OSAL_BLOCKCOUNT_C(stat_buf.f_blocks);
 
     return OS_SUCCESS;
-} /* end OS_FileSysStatVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysCheckVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -336,4 +317,4 @@ int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *re
 int32 OS_FileSysCheckVolume_Impl(const OS_object_token_t *token, bool repair)
 {
     return OS_ERR_NOT_IMPLEMENTED;
-} /* end OS_FileSysCheckVolume_Impl */
+}

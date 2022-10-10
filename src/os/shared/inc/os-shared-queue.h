@@ -56,7 +56,6 @@ extern OS_queue_internal_record_t OS_queue_table[OS_MAX_QUEUES];
 int32 OS_QueueAPI_Init(void);
 
 /*----------------------------------------------------------------
-   Function: OS_QueueCreate_Impl
 
     Purpose: Prepare/Allocate OS resources for a message queue
 
@@ -65,7 +64,6 @@ int32 OS_QueueAPI_Init(void);
 int32 OS_QueueCreate_Impl(const OS_object_token_t *token, uint32 flags);
 
 /*----------------------------------------------------------------
-   Function: OS_QueueDelete_Impl
 
     Purpose: Free the OS resources associated with the message queue
 
@@ -74,7 +72,6 @@ int32 OS_QueueCreate_Impl(const OS_object_token_t *token, uint32 flags);
 int32 OS_QueueDelete_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_QueueGet_Impl
 
     Purpose: Receive a message on a message queue.
              The calling task will be blocked if no message is immediately available
@@ -87,7 +84,6 @@ int32 OS_QueueDelete_Impl(const OS_object_token_t *token);
 int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, size_t *size_copied, int32 timeout);
 
 /*----------------------------------------------------------------
-   Function: OS_QueuePut_Impl
 
     Purpose: Put a message into a message queue
 
@@ -97,7 +93,6 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
 int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, size_t size, uint32 flags);
 
 /*----------------------------------------------------------------
-   Function: OS_QueueGetInfo_Impl
 
     Purpose: Obtain OS-specific information about a message queue
 

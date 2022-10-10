@@ -99,11 +99,9 @@ int32 OS_API_Impl_Init(osal_objtype_t idtype)
     }
 
     return return_code;
-} /* end OS_API_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_IdleLoop_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -120,11 +118,9 @@ void OS_IdleLoop_Impl(void)
      * timebase objects have a dedicated thread that will be doing "sigwait" on those.
      */
     sigsuspend(&POSIX_GlobalVars.NormalSigMask);
-} /* end OS_IdleLoop_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ApplicationShutdown_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -137,11 +133,9 @@ void OS_ApplicationShutdown_Impl(void)
      * which should break it out of the sigsuspend() call.
      */
     kill(getpid(), SIGHUP);
-} /* end OS_ApplicationShutdown_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CompAbsDelayTime
  *
  * Purpose:  Local helper function
  *
@@ -164,4 +158,4 @@ void OS_Posix_CompAbsDelayTime(uint32 msecs, struct timespec *tm)
         tm->tv_nsec -= 1000000000L;
         tm->tv_sec++;
     }
-} /* end OS_CompAbsDelayTime */
+}

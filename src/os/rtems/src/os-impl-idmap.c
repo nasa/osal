@@ -74,8 +74,6 @@ OS_impl_objtype_lock_t *const OS_impl_objtype_lock_table[OS_OBJECT_TYPE_USER] = 
 
 /*----------------------------------------------------------------
  *
- * Function: OS_Lock_Global_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -92,12 +90,9 @@ void OS_Lock_Global_Impl(osal_objtype_t idtype)
     {
         OS_DEBUG("OS_Lock_Global_Impl: rtems_semaphore_obtain failed: %s\n", rtems_status_text(rtems_sc));
     }
-
-} /* end OS_Lock_Global_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_Unlock_Global_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -115,12 +110,9 @@ void OS_Unlock_Global_Impl(osal_objtype_t idtype)
     {
         OS_DEBUG("OS_Unlock_Global_Impl: rtems_semaphore_release failed: %s\n", rtems_status_text(rtems_sc));
     }
-
-} /* end OS_Unlock_Global_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- *  Function: OS_WaitForStateChange_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -176,4 +168,4 @@ int32 OS_Rtems_TableMutex_Init(osal_objtype_t idtype)
     }
 
     return OS_SUCCESS;
-} /* end OS_Rtems_TableMutex_Init */
+}

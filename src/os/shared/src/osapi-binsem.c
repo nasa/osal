@@ -73,8 +73,6 @@ OS_bin_sem_internal_record_t OS_bin_sem_table[LOCAL_NUM_OBJECTS];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_BinSemAPI_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
@@ -82,11 +80,9 @@ int32 OS_BinSemAPI_Init(void)
 {
     memset(OS_bin_sem_table, 0, sizeof(OS_bin_sem_table));
     return OS_SUCCESS;
-} /* end OS_BinSemAPI_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemCreate
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -119,12 +115,9 @@ int32 OS_BinSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_initia
     }
 
     return return_code;
-
-} /* end OS_BinSemCreate */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemDelete
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -145,12 +138,9 @@ int32 OS_BinSemDelete(osal_id_t sem_id)
     }
 
     return return_code;
-
-} /* end OS_BinSemDelete */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemGive
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -169,12 +159,9 @@ int32 OS_BinSemGive(osal_id_t sem_id)
     }
 
     return return_code;
-
-} /* end OS_BinSemGive */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemFlush
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -193,11 +180,9 @@ int32 OS_BinSemFlush(osal_id_t sem_id)
     }
 
     return return_code;
-} /* end OS_BinSemFlush */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemTake
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -216,11 +201,9 @@ int32 OS_BinSemTake(osal_id_t sem_id)
     }
 
     return return_code;
-} /* end OS_BinSemTake */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemTimedWait
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -239,11 +222,9 @@ int32 OS_BinSemTimedWait(osal_id_t sem_id, uint32 msecs)
     }
 
     return return_code;
-} /* end OS_BinSemTimedWait */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemGetIdByName
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -260,11 +241,9 @@ int32 OS_BinSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
     return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, sem_name, sem_id);
 
     return return_code;
-} /* end OS_BinSemGetIdByName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemGetInfo
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -295,4 +274,4 @@ int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
     }
 
     return return_code;
-} /* end OS_BinSemGetInfo */
+}

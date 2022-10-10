@@ -55,7 +55,6 @@ extern OS_count_sem_internal_record_t OS_count_sem_table[OS_MAX_COUNT_SEMAPHORES
 int32 OS_CountSemAPI_Init(void);
 
 /*----------------------------------------------------------------
-   Function: OS_CountSemCreate_Impl
 
     Purpose: Prepare/allocate OS resources for a counting semaphore
 
@@ -64,7 +63,6 @@ int32 OS_CountSemAPI_Init(void);
 int32 OS_CountSemCreate_Impl(const OS_object_token_t *token, uint32 sem_initial_value, uint32 options);
 
 /*----------------------------------------------------------------
-   Function: OS_CountSemGive_Impl
 
     Purpose: Increment the semaphore value
 
@@ -73,7 +71,6 @@ int32 OS_CountSemCreate_Impl(const OS_object_token_t *token, uint32 sem_initial_
 int32 OS_CountSemGive_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_CountSemTake_Impl
 
     Purpose: Decrement the semaphore value
              Block the calling task if the semaphore is 0.
@@ -83,7 +80,6 @@ int32 OS_CountSemGive_Impl(const OS_object_token_t *token);
 int32 OS_CountSemTake_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_CountSemTimedWait_Impl
 
     Purpose: Decrement the semaphore value, with a time limit
 
@@ -93,7 +89,6 @@ int32 OS_CountSemTake_Impl(const OS_object_token_t *token);
 int32 OS_CountSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs);
 
 /*----------------------------------------------------------------
-   Function: OS_CountSemDelete_Impl
 
     Purpose: Free the OS resources associated with the counting semaphore
 
@@ -102,7 +97,6 @@ int32 OS_CountSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs);
 int32 OS_CountSemDelete_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_CountSemGetInfo_Impl
 
     Purpose: Obtain OS-specific information about the semaphore
 

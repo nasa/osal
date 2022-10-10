@@ -69,11 +69,9 @@ int32 OS_Posix_QueueAPI_Impl_Init(void)
 #endif
 
     return OS_SUCCESS;
-} /* end OS_Posix_QueueAPI_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -152,11 +150,9 @@ int32 OS_QueueCreate_Impl(const OS_object_token_t *token, uint32 flags)
     }
 
     return return_code;
-} /* end OS_QueueCreate_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueDelete_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -181,11 +177,9 @@ int32 OS_QueueDelete_Impl(const OS_object_token_t *token)
     }
 
     return return_code;
-} /* end OS_QueueDelete_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueGet_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -280,11 +274,9 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     }
 
     return return_code;
-} /* end OS_QueueGet_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueuePut_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -328,5 +320,4 @@ int32 OS_QueuePut_Impl(const OS_object_token_t *token, const void *data, size_t 
     }
 
     return return_code;
-
-} /* end OS_QueuePut_Impl */
+}

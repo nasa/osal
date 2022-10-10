@@ -77,8 +77,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_GenericSymbolLookup_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -132,8 +130,6 @@ int32 OS_GenericSymbolLookup_Impl(void *dl_handle, cpuaddr *SymbolAddress, const
 
 /*----------------------------------------------------------------
  *
- * Function: OS_SymbolLookup_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -164,12 +160,9 @@ int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
     }
 
     return status;
-
-} /* end OS_SymbolLookup_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ModuleSymbolLookup_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -185,12 +178,9 @@ int32 OS_ModuleSymbolLookup_Impl(const OS_object_token_t *token, cpuaddr *Symbol
     status = OS_GenericSymbolLookup_Impl(impl->dl_handle, SymbolAddress, SymbolName);
 
     return status;
-
-} /* end OS_ModuleSymbolLookup_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SymbolTableDump_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -213,5 +203,4 @@ int32 OS_SymbolTableDump_Impl(const char *filename, size_t SizeLimit)
      */
 
     return OS_ERR_NOT_IMPLEMENTED;
-
-} /* end OS_SymbolTableDump_Impl */
+}
