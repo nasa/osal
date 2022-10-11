@@ -1,5 +1,11 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev131
+- rtems queue multi-size, mimic posix logic
+- cmake script modernization
+- Create CHANGELOG.md
+- See <https://github.com/nasa/osal/pull/1283>, <https://github.com/nasa/osal/pull/1291>, and <https://github.com/nasa/osal/pull/1298>
+
 ## Development Build: v6.0.0-rc4+dev120
 - Fix #1300, do not set file permissions on UT assert outputs
 - See <https://github.com/nasa/osal/pull/1301>
