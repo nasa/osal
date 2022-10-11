@@ -21,11 +21,26 @@ add_library(osal_generic-linux_impl OBJECT
 #
 # See http://www.gnu.org/software/libc/manual/html_node/Feature-Test-Macros.html
 # for a more detailed description of the feature test macros and available values
-target_compile_definitions(osal_generic-linux_impl PUBLIC
+target_compile_definitions(osal_public_api INTERFACE
     _XOPEN_SOURCE=600
 )
 
+# Linux system libraries required for the final link of applications using OSAL
+target_link_libraries(osal_public_api INTERFACE
+    pthread dl rt
+)
 
 # This BSP only works with "posix" OS layer.
 # Confirming this reduces risk of accidental misconfiguration
-set(OSAL_EXPECTED_OSTYPE    "posix" PARENT_SCOPE)
+set_property(TARGET osal_generic-linux_impl PROPERTY OSAL_EXPECTED_OSTYPE "posix")
+
+# Configure the ut_coverage_compile and ut_coverage_link for enabling coverage
+# testing on this platform.
+if (NOT CMAKE_CROSSCOMPILING AND ENABLE_UNIT_TESTS)
+  # Support for other compilers/coverage tools could be added here.
+  # for now only the GNU "gcov" will be enabled
+  if (CMAKE_C_COMPILER_ID STREQUAL GNU)
+    target_compile_options(ut_coverage_compile INTERFACE -pg -ftest-coverage -fprofile-arcs)
+    target_link_libraries(ut_coverage_link INTERFACE gcov)
+  endif()
+endif()

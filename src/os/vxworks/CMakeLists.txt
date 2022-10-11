@@ -5,7 +5,6 @@
 ######################################################################
 
 # This CMake script generates targets specific to the VxWorks implementation
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 # The basic set of files which are always built
 set(VXWORKS_BASE_SRCLIST
@@ -81,7 +80,16 @@ add_library(osal_vxworks_impl OBJECT
     ${VXWORKS_IMPL_SRCLIST}
 )
 
+target_include_directories(osal_vxworks_impl PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/inc
+)
+
 if (CMAKE_SYSTEM_VERSION VERSION_LESS 7.0)
-    target_compile_definitions(osal_vxworks_impl PRIVATE OSAL_VXWORKS6_COMPATIBILITY)
+    target_compile_definitions(osal_vxworks_impl PRIVATE
+        OSAL_VXWORKS6_COMPATIBILITY
+    )
 endif ()
 
+target_compile_definitions(osal_public_api INTERFACE
+    _VXWORKS_OS_
+)

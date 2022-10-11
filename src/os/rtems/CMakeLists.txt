@@ -5,7 +5,6 @@
 ######################################################################
 
 # This CMake script generates targets specific to the RTEMS implementation
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
 # The basic set of files which are always built
 set(RTEMS_BASE_SRCLIST
@@ -63,6 +62,15 @@ if (OSAL_CONFIG_INCLUDE_NETWORK)
         ../portable/os-impl-bsd-sockets.c
         ../portable/os-impl-bsd-select.c
     )
+
+    # In RTEMS 6+ the networking subsystem is not included with the defualt libs,
+    # it needs to be explicitly added to the final link.  Note the "VERSION_GREATER_EQUAL"
+    # operation was not added until CMake 3.7, so this uses not "VERSION_LESS" instead.
+    if(NOT CMAKE_SYSTEM_VERSION VERSION_LESS 6.0)
+        target_link_libraries(osal_public_api INTERFACE
+            networking
+        )
+    endif()
 else()
     list(APPEND RTEMS_IMPL_SRCLIST
         ../portable/os-impl-no-network.c
@@ -75,4 +83,11 @@ endif ()
 add_library(osal_rtems_impl OBJECT
     ${RTEMS_BASE_SRCLIST}
     ${RTEMS_IMPL_SRCLIST}
+)
+
+target_include_directories(osal_rtems_impl PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/inc
+)
+target_compile_definitions(osal_public_api INTERFACE
+    _RTEMS_OS_
 )
