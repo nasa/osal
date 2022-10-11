@@ -17,6 +17,14 @@
 #     any coverage test referencing on the shared/ng OSAL layer.
 #
 
+add_library(ut_osapi_stub_headers INTERFACE)
+target_include_directories(ut_osapi_stub_headers INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/inc
+)
+target_link_libraries(ut_osapi_stub_headers INTERFACE 
+    ut_assert
+)
+
 # The "ut_libc_stubs" target provides stub versions of C library calls.
 # They are prefixed with "OCS_" and target code must be recompiled to
 # call the OCS_ version of the syscall instead of the regular syscall.
@@ -73,10 +81,11 @@ add_library(ut_libc_stubs STATIC EXCLUDE_FROM_ALL
     src/vxworks-sysLib-stubs.c
     src/vxworks-taskLib-stubs.c
     src/vxworks-taskVarLib-stubs.c
-    src/vxworks-xbdBlkDev-stubs.c)
+    src/vxworks-xbdBlkDev-stubs.c
+)
 
-target_include_directories(ut_libc_stubs PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/inc
+target_link_libraries(ut_libc_stubs PUBLIC
+    ut_osapi_stub_headers
 )
 
 # About the generated UT stub sources
@@ -181,6 +190,10 @@ add_library(ut_osapi_impl_stubs STATIC EXCLUDE_FROM_ALL
     src/os-shared-timebase-impl-stubs.c
 )
 
+target_link_libraries(ut_osapi_impl_stubs PUBLIC
+    ut_osapi_stub_headers
+)
+
 # The "ut_osapi_init_stubs" provides stub functions for the
 # initialization function calls that are declared under os/shared/inc
 # header directory.  These are the functions that all end in an "_Init" suffix,
@@ -203,6 +216,10 @@ add_library(ut_osapi_init_stubs STATIC EXCLUDE_FROM_ALL
     src/os-shared-time-init-stubs.c
 )
 
+target_link_libraries(ut_osapi_init_stubs PUBLIC
+    ut_osapi_stub_headers
+)
+
 # The "ut_osapi_shared_stubs" provides stub functions for the
 # all other function calls that are declared under os/shared/inc
 # header directory.  These are the non-public functions that do
@@ -222,6 +239,9 @@ add_library(ut_osapi_shared_stubs STATIC EXCLUDE_FROM_ALL
     src/os-shared-timebase-stubs.c
 )
 
+target_link_libraries(ut_osapi_shared_stubs PUBLIC
+    ut_osapi_stub_headers
+)
 
 # The "ut_osapi_table_stubs" provides stub objects for shared
 # table objects used by the implementation layer.  These
@@ -244,6 +264,15 @@ add_library(ut_osapi_table_stubs STATIC EXCLUDE_FROM_ALL
     src/osapi-shared-timecb-table-stubs.c
 )
 
+target_link_libraries(ut_osapi_table_stubs PUBLIC
+    ut_osapi_stub_headers
+)
+
 add_library(ut_bsp_impl_stubs STATIC EXCLUDE_FROM_ALL
     src/bsp-console-impl-stubs.c
 )
+
+target_link_libraries(ut_bsp_impl_stubs PUBLIC
+    ut_osapi_stub_headers
+)
+

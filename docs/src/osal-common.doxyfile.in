@@ -8,11 +8,11 @@
 # Default settings
 @INCLUDE               = @OSAL_NATIVE_DEFAULT_SETTINGS@
 
-# Include any passed in predefines
-PREDEFINED            += @OSALDOC_PREDEFINED@
-
 # Minimum set of source files (includes *.dox, followed by public headers)
 INPUT                 += @OSAL_NATIVE_APIGUIDE_SOURCEFILES@
+
+# Public header list is generated from the interface includes of the osal_public_api target
+@INCLUDE               = @CMAKE_BINARY_DIR@/docs/osal-public-api.doxyfile
 
 # Strip source dir from path
 STRIP_FROM_PATH       += @MISSION_SOURCE_DIR@

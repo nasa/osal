@@ -12,3 +12,7 @@ add_library(ut_vxworks_impl_stubs
     src/vxworks-os-impl-task-stubs.c
     src/vxworks-os-impl-timer-stubs.c
 )
+
+target_link_libraries(ut_vxworks_impl_stubs PUBLIC 
+    ut_osapi_stub_headers
+)
