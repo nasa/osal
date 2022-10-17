@@ -42,7 +42,11 @@ void Test_OS_Lock_Global_Impl(void)
 
     UT_IdMapTest_SetImplTableMutex(OS_OBJECT_TYPE_OS_TASK, &TestGlobalSem);
     OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semTake)) == 1, "semTake() called");
+    UtAssert_STUB_COUNT(OCS_semTake, 1);
+
+    /* The "undefined" type should not have a lock instantiated */
+    OS_Lock_Global_Impl(OS_OBJECT_TYPE_UNDEFINED);
+    UtAssert_STUB_COUNT(OCS_semTake, 1);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_semTake), -1);
     OS_Lock_Global_Impl(OS_OBJECT_TYPE_OS_TASK); /* for coverage of error path */
@@ -57,7 +61,11 @@ void Test_OS_Unlock_Global_Impl(void)
 
     UT_IdMapTest_SetImplTableMutex(OS_OBJECT_TYPE_OS_TASK, &TestGlobalSem);
     OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semGive)) == 1, "semTake() called");
+    UtAssert_STUB_COUNT(OCS_semGive, 1);
+
+    /* The "undefined" type should not have a lock instantiated */
+    OS_Unlock_Global_Impl(OS_OBJECT_TYPE_UNDEFINED);
+    UtAssert_STUB_COUNT(OCS_semGive, 1);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_semGive), -1);
     OS_Unlock_Global_Impl(OS_OBJECT_TYPE_OS_TASK); /* for coverage of error path */
