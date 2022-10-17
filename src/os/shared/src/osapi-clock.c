@@ -40,8 +40,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_GetLocalTime
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -52,12 +50,9 @@ int32 OS_GetLocalTime(OS_time_t *time_struct)
     OS_CHECK_POINTER(time_struct);
 
     return OS_GetLocalTime_Impl(time_struct);
-
-} /* end OS_GetLocalTime */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SetLocalTime
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -69,5 +64,4 @@ int32 OS_SetLocalTime(const OS_time_t *time_struct)
     OS_CHECK_POINTER(time_struct);
 
     return OS_SetLocalTime_Impl(time_struct);
-
-} /* end OS_SetLocalTime */
+}

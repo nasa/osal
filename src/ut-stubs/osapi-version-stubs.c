@@ -63,7 +63,6 @@ const char *OS_GetVersionCodeName(void)
  */
 void OS_GetVersionNumber(uint8 VersionNumbers[4])
 {
-
     UT_GenStub_Execute(OS_GetVersionNumber, Basic, NULL);
 }
 

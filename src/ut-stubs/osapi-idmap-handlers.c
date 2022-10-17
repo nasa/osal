@@ -116,8 +116,7 @@ void UT_DefaultHandler_OS_ConvertToArrayIndex(void *UserObj, UT_EntryKey_t FuncK
     }
 
     *ArrayIndex = OSAL_INDEX_C(tempserial);
-
-} /* end OS_ConvertToArrayIndex */
+}
 
 /*
  * -----------------------------------------------------------------

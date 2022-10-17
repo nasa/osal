@@ -60,8 +60,6 @@ OS_condvar_internal_record_t OS_condvar_table[OS_MAX_CONDVARS];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_CondVarAPI_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Init function for OS-independent layer
  *
@@ -73,8 +71,6 @@ int32 OS_CondVarAPI_Init(void)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CondVarCreate
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -111,8 +107,6 @@ int32 OS_CondVarCreate(osal_id_t *var_id, const char *var_name, uint32 options)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_CondVarDelete
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -136,8 +130,6 @@ int32 OS_CondVarDelete(osal_id_t var_id)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_CondVarLock
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -158,8 +150,6 @@ int32 OS_CondVarLock(osal_id_t var_id)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CondVarUnlock
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -182,8 +172,6 @@ int32 OS_CondVarUnlock(osal_id_t var_id)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_CondVarSignal
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -204,8 +192,6 @@ int32 OS_CondVarSignal(osal_id_t var_id)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CondVarBroadcast
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -228,8 +214,6 @@ int32 OS_CondVarBroadcast(osal_id_t var_id)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_CondVarWait
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -250,8 +234,6 @@ int32 OS_CondVarWait(osal_id_t var_id)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CondVarTimedWait
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -277,8 +259,6 @@ int32 OS_CondVarTimedWait(osal_id_t var_id, const OS_time_t *abs_wakeup_time)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_CondVarGetIdByName
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -297,8 +277,6 @@ int32 OS_CondVarGetIdByName(osal_id_t *var_id, const char *var_name)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CondVarGetInfo
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail

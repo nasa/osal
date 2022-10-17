@@ -31,8 +31,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_GetVersionString
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -44,8 +42,6 @@ const char *OS_GetVersionString(void)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_GetVersionCodeName
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -56,8 +52,6 @@ const char *OS_GetVersionCodeName(void)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_GetVersionNumber
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -72,8 +66,6 @@ void OS_GetVersionNumber(uint8 VersionNumbers[4])
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_GetBuildNumber
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail

@@ -64,8 +64,6 @@ const char OS_FILESYS_RAMDISK_VOLNAME_PREFIX[] = "RAM";
 
 /*----------------------------------------------------------------
  *
- * Function: OS_FileSysFilterFree
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Iterator function to match only the free/open entries
  *
@@ -78,8 +76,6 @@ bool OS_FileSysFilterFree(void *ref, const OS_object_token_t *token, const OS_co
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSys_FindVirtMountPoint
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Checks if the filesys table index matches the "virtual_mountpt" field.
@@ -122,11 +118,9 @@ bool OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, co
      * for target=/mnt/abcd - this should return false in that case.
      */
     return (target[mplen] == '/' || target[mplen] == 0);
-} /* end OS_FileSys_FindVirtMountPoint */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSys_Initialize
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Implements Common code between the mkfs and initfs calls -
@@ -219,16 +213,13 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
     }
 
     return return_code;
-
-} /* end OS_FileSys_Initialize */
+}
 
 /****************************************************************************************
                                   INITIALIZATION
  ***************************************************************************************/
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysAPI_Init
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -240,11 +231,9 @@ int32 OS_FileSysAPI_Init(void)
     memset(OS_filesys_table, 0, sizeof(OS_filesys_table));
 
     return return_code;
-} /* end OS_FileSysAPI_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysAddFixedMap
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -325,11 +314,9 @@ int32 OS_FileSysAddFixedMap(osal_id_t *filesys_id, const char *phys_path, const 
     }
 
     return return_code;
-} /* end OS_FileSysAddFixedMap */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_mkfs
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -354,12 +341,9 @@ int32 OS_mkfs(char *address, const char *devname, const char *volname, size_t bl
     }
 
     return return_code;
-
-} /* end OS_mkfs */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_rmfs
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -395,11 +379,9 @@ int32 OS_rmfs(const char *devname)
     }
 
     return return_code;
-} /* end OS_rmfs */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_initfs
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -424,12 +406,9 @@ int32 OS_initfs(char *address, const char *devname, const char *volname, size_t 
     }
 
     return return_code;
-
-} /* end OS_initfs */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_mount
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -492,12 +471,9 @@ int32 OS_mount(const char *devname, const char *mountpoint)
     }
 
     return return_code;
-
-} /* end OS_mount */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_unmount
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -553,11 +529,9 @@ int32 OS_unmount(const char *mountpoint)
     }
 
     return return_code;
-} /* end OS_unmount */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysStatVolume
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -583,12 +557,9 @@ int32 OS_FileSysStatVolume(const char *name, OS_statvfs_t *statbuf)
     }
 
     return return_code;
-
-} /* end OS_FileSysStatVolume */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_chkfs
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -614,12 +585,9 @@ int32 OS_chkfs(const char *name, bool repair)
     }
 
     return return_code;
-
-} /* end OS_chkfs */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FS_GetPhysDriveName
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -661,11 +629,9 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint)
     }
 
     return return_code;
-} /* end OS_FS_GetPhysDriveName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_GetFsInfo
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -698,11 +664,9 @@ int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
     OS_ObjectIdIteratorDestroy(&iter);
 
     return OS_SUCCESS;
-} /* end OS_GetFsInfo */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TranslatePath
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -810,5 +774,4 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     }
 
     return return_code;
-
-} /* end OS_TranslatePath */
+}

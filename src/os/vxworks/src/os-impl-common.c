@@ -53,8 +53,6 @@ static TASK_ID OS_idle_task_id;
 
 /*----------------------------------------------------------------
  *
- * Function: OS_API_Impl_Init
- *
  *  Purpose: Initialize the tables that the OS API uses to keep track of information
  *           about objects
  *
@@ -103,11 +101,9 @@ int32 OS_API_Impl_Init(osal_objtype_t idtype)
     }
 
     return return_code;
-} /* end OS_API_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_IdleLoop_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -118,11 +114,9 @@ void OS_IdleLoop_Impl(void)
     TASK_ID tid     = taskIdSelf();
     OS_idle_task_id = tid;
     taskSuspend(tid);
-} /* end OS_IdleLoop_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ApplicationShutdown_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -131,7 +125,7 @@ void OS_IdleLoop_Impl(void)
 void OS_ApplicationShutdown_Impl(void)
 {
     taskResume(OS_idle_task_id);
-} /* end OS_ApplicationShutdown_Impl */
+}
 
 /****************************************************************************************
                               GENERIC SEMAPHORE API
@@ -148,8 +142,6 @@ void OS_ApplicationShutdown_Impl(void)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_VxWorks_GenericSemGive
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
@@ -162,11 +154,9 @@ int32 OS_VxWorks_GenericSemGive(SEM_ID vxid)
         return OS_SEM_FAILURE;
     }
     return OS_SUCCESS;
-} /* end OS_VxWorks_GenericSemGive */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_VxWorks_GenericSemTake
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -197,4 +187,4 @@ int32 OS_VxWorks_GenericSemTake(SEM_ID vxid, int sys_ticks)
     }
 
     return OS_SUCCESS;
-} /* end OS_VxWorks_GenericSemTake */
+}

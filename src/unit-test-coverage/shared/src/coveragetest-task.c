@@ -172,6 +172,7 @@ void Test_OS_TaskExit(void)
     OS_TaskExit();
     UtAssert_STUB_COUNT(OS_ObjectIdFinalizeDelete, 0);
 }
+
 void Test_OS_TaskDelay(void)
 {
     /*
@@ -180,6 +181,7 @@ void Test_OS_TaskDelay(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_TaskDelay(1), OS_SUCCESS);
 }
+
 void Test_OS_TaskSetPriority(void)
 {
     /*
@@ -194,6 +196,7 @@ void Test_OS_TaskSetPriority(void)
     UT_SetDeferredRetcode(UT_KEY(OS_TaskSetPriority_Impl), 1, OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_TaskSetPriority(UT_OBJID_1, OSAL_PRIORITY_C(1)), OS_ERROR);
 }
+
 void Test_OS_TaskGetId(void)
 {
     /*

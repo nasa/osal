@@ -133,8 +133,6 @@ void OS_SetSocketDefaultFlags_Impl(const OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_SocketOpen_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -208,11 +206,9 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
     OS_IMPL_SET_SOCKET_FLAGS(token);
 
     return OS_SUCCESS;
-} /* end OS_SocketOpen_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SocketBind_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -269,11 +265,9 @@ int32 OS_SocketBind_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Ad
         }
     }
     return OS_SUCCESS;
-} /* end OS_SocketBind_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SocketConnect_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -367,10 +361,9 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
         }
     }
     return return_code;
-} /* end OS_SocketConnect_Impl */
+}
 
 /*----------------------------------------------------------------
-   Function: OS_SocketShutdown_Impl
 
     Purpose: Connects the socket to a remote address.
              Socket must be of the STREAM variety.
@@ -410,11 +403,9 @@ int32 OS_SocketShutdown_Impl(const OS_object_token_t *token, OS_SocketShutdownMo
     }
 
     return return_code;
-} /* end OS_SocketShutdown_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SocketAccept_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -466,11 +457,9 @@ int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_
     }
 
     return return_code;
-} /* end OS_SocketAccept_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SocketRecvFrom_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -558,11 +547,9 @@ int32 OS_SocketRecvFrom_Impl(const OS_object_token_t *token, void *buffer, size_
     }
 
     return return_code;
-} /* end OS_SocketRecvFrom_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SocketSendTo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -607,11 +594,9 @@ int32 OS_SocketSendTo_Impl(const OS_object_token_t *token, const void *buffer, s
     }
 
     return os_result;
-} /* end OS_SocketSendTo_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SocketGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -620,11 +605,9 @@ int32 OS_SocketSendTo_Impl(const OS_object_token_t *token, const void *buffer, s
 int32 OS_SocketGetInfo_Impl(const OS_object_token_t *token, OS_socket_prop_t *sock_prop)
 {
     return OS_SUCCESS;
-} /* end OS_SocketGetInfo_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SocketAddrInit_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -666,11 +649,9 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
     Accessor->sa.sa_family = sa_family;
 
     return OS_SUCCESS;
-} /* end OS_SocketAddrInit_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SocketAddrToString_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -704,11 +685,9 @@ int32 OS_SocketAddrToString_Impl(char *buffer, size_t buflen, const OS_SockAddr_
     }
 
     return OS_SUCCESS;
-} /* end OS_SocketAddrToString_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SocketAddrFromString_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -743,11 +722,9 @@ int32 OS_SocketAddrFromString_Impl(OS_SockAddr_t *Addr, const char *string)
     }
 
     return OS_SUCCESS;
-} /* end OS_SocketAddrFromString_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SocketAddrGetPort_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -778,11 +755,9 @@ int32 OS_SocketAddrGetPort_Impl(uint16 *PortNum, const OS_SockAddr_t *Addr)
     *PortNum = ntohs(sa_port);
 
     return OS_SUCCESS;
-} /* end OS_SocketAddrGetPort_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SocketAddrSetPort_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -811,4 +786,4 @@ int32 OS_SocketAddrSetPort_Impl(OS_SockAddr_t *Addr, uint16 PortNum)
     }
 
     return OS_SUCCESS;
-} /* end OS_SocketAddrSetPort_Impl */
+}

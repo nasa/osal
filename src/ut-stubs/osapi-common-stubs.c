@@ -46,7 +46,6 @@ int32 OS_API_Init(void)
  */
 void OS_API_Teardown(void)
 {
-
     UT_GenStub_Execute(OS_API_Teardown, Basic, NULL);
 }
 
@@ -81,7 +80,6 @@ void OS_ApplicationShutdown(uint8 flag)
  */
 void OS_DeleteAllObjects(void)
 {
-
     UT_GenStub_Execute(OS_DeleteAllObjects, Basic, NULL);
 }
 
@@ -92,7 +90,6 @@ void OS_DeleteAllObjects(void)
  */
 void OS_IdleLoop(void)
 {
-
     UT_GenStub_Execute(OS_IdleLoop, Basic, NULL);
 }
 

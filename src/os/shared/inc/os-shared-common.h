@@ -103,8 +103,6 @@ int32 OS_API_Impl_Init(osal_objtype_t idtype);
 
 /*----------------------------------------------------------------
 
-   Function: OS_IdleLoop_Impl
-
    Purpose: Block the "idle" thread until woken up
 
    The "IdleLoop_Impl" is called by the main thread once
@@ -117,8 +115,6 @@ int32 OS_API_Impl_Init(osal_objtype_t idtype);
 void OS_IdleLoop_Impl(void);
 
 /*----------------------------------------------------------------
-
-   Function: OS_ApplicationShutdown_Impl
 
     Purpose: Wake up the idle task
 
@@ -134,8 +130,6 @@ void OS_IdleLoop_Impl(void);
 void OS_ApplicationShutdown_Impl(void);
 
 /*----------------------------------------------------------------
-
-   Function: OS_strnlen
 
     Purpose: Utility function to safely find the length of a string
              within a fixed-size array buffer.

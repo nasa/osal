@@ -58,7 +58,6 @@ typedef struct
     const char *               mount_fstype;
     rtems_filesystem_options_t mount_options;
     const void *               mount_data;
-
 } OS_impl_filesys_internal_record_t;
 
 /****************************************************************************************
@@ -92,11 +91,9 @@ int32 OS_Rtems_FileSysAPI_Impl_Init(void)
     /* clear the local filesys table */
     memset(OS_impl_filesys_table, 0, sizeof(OS_impl_filesys_table));
     return OS_SUCCESS;
-} /* end OS_Rtems_FileSysAPI_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysStartVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -197,12 +194,9 @@ int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
     }
 
     return return_code;
-
-} /* end OS_FileSysStartVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysStopVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -223,12 +217,9 @@ int32 OS_FileSysStopVolume_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_FileSysStopVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysFormatVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -288,12 +279,9 @@ int32 OS_FileSysFormatVolume_Impl(const OS_object_token_t *token)
     }
 
     return return_code;
-
-} /* end OS_FileSysFormatVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysMountVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -345,12 +333,9 @@ int32 OS_FileSysMountVolume_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_FileSysMountVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysUnmountVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -375,12 +360,9 @@ int32 OS_FileSysUnmountVolume_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_FileSysUnmountVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysStatVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -420,11 +402,9 @@ int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *re
     }
 
     return return_code;
-} /* end OS_FileSysStatVolume_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileSysCheckVolume_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -433,4 +413,4 @@ int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *re
 int32 OS_FileSysCheckVolume_Impl(const OS_object_token_t *token, bool repair)
 {
     return OS_ERR_NOT_IMPLEMENTED;
-} /* end OS_FileSysCheckVolume_Impl */
+}

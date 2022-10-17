@@ -66,7 +66,6 @@ void test_func(osal_id_t timer_id)
 
 void UtTest_Setup(void)
 {
-
     if (OS_API_Init() != OS_SUCCESS)
     {
         UtAssert_Abort("OS_API_Init() failed");
@@ -111,7 +110,6 @@ void TimerTestSetup(void)
 
 void TimerTestTask(void)
 {
-
     int          i = 0;
     int32        TimerStatus[NUMBER_OF_TIMERS];
     osal_index_t TableId = OSAL_INDEX_C(0);

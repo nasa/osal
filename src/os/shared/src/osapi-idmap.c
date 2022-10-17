@@ -85,7 +85,6 @@ typedef struct
 
     /* The key required to unlock this table */
     osal_key_t owner_key;
-
 } OS_objtype_state_t;
 
 OS_objtype_state_t OS_objtype_state[OS_OBJECT_TYPE_USER];
@@ -112,8 +111,6 @@ OS_common_record_t *const OS_global_condvar_table   = &OS_common_table[OS_CONDVA
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ObjectIdInit
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           clears the entire table and brings it to a proper initial state
  *
@@ -123,11 +120,9 @@ int32 OS_ObjectIdInit(void)
     memset(OS_common_table, 0, sizeof(OS_common_table));
     memset(OS_objtype_state, 0, sizeof(OS_objtype_state));
     return OS_SUCCESS;
-} /* end OS_ObjectIdInit */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_GetMaxForObjectType
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -165,11 +160,9 @@ uint32 OS_GetMaxForObjectType(osal_objtype_t idtype)
         default:
             return 0;
     }
-} /* end OS_GetMaxForObjectType */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_GetBaseForObjectType
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -207,7 +200,7 @@ uint32 OS_GetBaseForObjectType(osal_objtype_t idtype)
         default:
             return 0;
     }
-} /* end OS_GetBaseForObjectType */
+}
 
 /**************************************************************
  * LOCAL HELPER FUNCTIONS
@@ -215,8 +208,6 @@ uint32 OS_GetBaseForObjectType(osal_objtype_t idtype)
  **************************************************************/
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ForEachFilterCreator
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Determine if the object is a match for "foreach" operations
@@ -236,8 +227,6 @@ bool OS_ForEachFilterCreator(void *ref, const OS_object_token_t *token, const OS
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ForEachDoCallback
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Invoke the user-specified callback routine
  *
@@ -253,8 +242,6 @@ int32 OS_ForEachDoCallback(osal_id_t obj_id, void *ref)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ObjectIdGlobalFromToken
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Gets the global/common record associated with the token
  *
@@ -269,8 +256,6 @@ OS_common_record_t *OS_ObjectIdGlobalFromToken(const OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ObjectNameMatch
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           A matching function to compare the name of the record against
  *           a reference value (which must be a const char* string).
@@ -284,11 +269,9 @@ OS_common_record_t *OS_ObjectIdGlobalFromToken(const OS_object_token_t *token)
 bool OS_ObjectNameMatch(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj)
 {
     return (obj->name_entry != NULL && strcmp((const char *)ref, obj->name_entry) == 0);
-} /* end OS_ObjectNameMatch */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdTransactionInit
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *   Initiate the locking process for the given mode and ID type, prior
@@ -343,12 +326,9 @@ int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype
     }
 
     return OS_SUCCESS;
-
-} /* end OS_ObjectIdTransactionInit */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdTransactionInit
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Cancels/aborts a previously initialized transaction
@@ -364,8 +344,6 @@ void OS_ObjectIdTransactionCancel(OS_object_token_t *token)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdConvertToken
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -543,12 +521,9 @@ int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
     }
 
     return return_code;
-
-} /* end OS_ObjectIdConvertToken */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdFindNextMatch
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Locate an existing object using the supplied Match function.
@@ -592,11 +567,9 @@ int32 OS_ObjectIdFindNextMatch(OS_ObjectMatchFunc_t MatchFunc, void *arg, OS_obj
     }
 
     return return_code;
-} /* end OS_ObjectIdFindNextMatch */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdFindNextFree
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Find the next available Object ID of the given type
@@ -679,7 +652,7 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
     }
 
     return return_code;
-} /* end OS_ObjectIdFindNextFree */
+}
 
 /*
  *********************************************************************************
@@ -691,7 +664,6 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
  */
 
 /*----------------------------------------------------------------
-   Function: OS_Lock_Global
 
     Purpose: Locks the global table identified by "idtype"
  ------------------------------------------------------------------*/
@@ -756,7 +728,6 @@ void OS_Lock_Global(OS_object_token_t *token)
 }
 
 /*----------------------------------------------------------------
-   Function: OS_Unlock_Global
 
     Purpose: Unlocks the global table identified by "idtype"
  ------------------------------------------------------------------*/
@@ -799,8 +770,6 @@ void OS_Unlock_Global(OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_WaitForStateChange
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *  Waits for a change in the global table identified by "idtype"
  *
@@ -841,8 +810,6 @@ void OS_WaitForStateChange(OS_object_token_t *token, uint32 attempts)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdFinalizeNew
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Called when the initialization of a newly-issued object ID is fully complete,
@@ -894,10 +861,9 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_object_token_t *token, o
     }
 
     return operation_status;
-} /* end OS_ObjectIdFinalizeNew(, &token, ) */
+}
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdFinalizeDelete
 
     Purpose: Helper routine, not part of OSAL public API.
              See description in prototype
@@ -930,8 +896,6 @@ int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_object_token_t *token
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdGetBySearch
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Locate an existing object using the supplied Match function.
@@ -967,11 +931,9 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS
     }
 
     return return_code;
-} /* end OS_ObjectIdGetBySearch */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdGetByName
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Locate an existing object with matching name and type
@@ -986,12 +948,9 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS
 int32 OS_ObjectIdGetByName(OS_lock_mode_t lock_mode, osal_objtype_t idtype, const char *name, OS_object_token_t *token)
 {
     return OS_ObjectIdGetBySearch(lock_mode, idtype, OS_ObjectNameMatch, (void *)name, token);
-
-} /* end OS_ObjectIdGetByName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdFindByName
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Locate an existing object with matching name and type
@@ -1022,12 +981,9 @@ int32 OS_ObjectIdFindByName(osal_objtype_t idtype, const char *name, osal_id_t *
     }
 
     return return_code;
-
-} /* end OS_ObjectIdFindByName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdGetById
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Gets the resource record pointer and index associated with the given resource ID.
@@ -1073,11 +1029,9 @@ int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, osal_objtype_t idtype, osal_i
     }
 
     return return_code;
-} /* end OS_ObjectIdGetById */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdTransactionFinish
  *
  *  Purpose: Complete a transaction which was previously obtained via
  *           OS_ObjectIdGetById() or OS_ObjectIdGetBySearch().
@@ -1146,8 +1100,6 @@ void OS_ObjectIdTransactionFinish(OS_object_token_t *token, const osal_id_t *fin
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ObjectIdRelease
- *
  *  Purpose: Release/Unlock a transaction token which was previously obtained via
  *           OS_ObjectIdGetById() or OS_ObjectIdGetBySearch().
  *
@@ -1164,8 +1116,6 @@ void OS_ObjectIdRelease(OS_object_token_t *token)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdAllocateNew
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Locks the global table for the indicated ID type and allocates a
@@ -1258,10 +1208,9 @@ int32 OS_ObjectIdAllocateNew(osal_objtype_t idtype, const char *name, OS_object_
     }
 
     return return_code;
-} /* end OS_ObjectIdAllocateNew */
+}
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdTransferToken
 
     Purpose: Transfer ownership of a token to another buffer
  ------------------------------------------------------------------*/
@@ -1279,7 +1228,6 @@ void OS_ObjectIdTransferToken(OS_object_token_t *token_from, OS_object_token_t *
 }
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdIteratorInit
 
     Purpose: Start the process of iterating through OSAL objects
  ------------------------------------------------------------------*/
@@ -1295,7 +1243,6 @@ int32 OS_ObjectIdIteratorInit(OS_ObjectMatchFunc_t matchfunc, void *matcharg, os
 }
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectFilterActive
 
     Purpose: Match function to iterate only active objects
  ------------------------------------------------------------------*/
@@ -1305,7 +1252,6 @@ bool OS_ObjectFilterActive(void *ref, const OS_object_token_t *token, const OS_c
 }
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdIterateActive
 
     Purpose: Start the process of iterating through OSAL objects
  ------------------------------------------------------------------*/
@@ -1315,7 +1261,6 @@ int32 OS_ObjectIdIterateActive(osal_objtype_t objtype, OS_object_iter_t *iter)
 }
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdIteratorGetNext
 
     Purpose: Move iterator to the next entry
  ------------------------------------------------------------------*/
@@ -1344,10 +1289,9 @@ bool OS_ObjectIdIteratorGetNext(OS_object_iter_t *iter)
     } while (!got_next);
 
     return got_next;
-} /* end OS_ObjectIdIteratorGetNext */
+}
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdIteratorDestroy
 
     Purpose: Release iterator resources
  ------------------------------------------------------------------*/
@@ -1357,7 +1301,6 @@ void OS_ObjectIdIteratorDestroy(OS_object_iter_t *iter)
 }
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdIteratorProcessEntry
 
     Purpose: Call a handler function on an iterator object ID
  ------------------------------------------------------------------*/
@@ -1384,8 +1327,6 @@ int32 OS_ObjectIdIteratorProcessEntry(OS_object_iter_t *iter, int32 (*func)(osal
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ConvertToArrayIndex
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -1394,11 +1335,9 @@ int32 OS_ConvertToArrayIndex(osal_id_t object_id, osal_index_t *ArrayIndex)
 {
     /* pass to conversion routine with undefined type */
     return OS_ObjectIdToArrayIndex(OS_OBJECT_TYPE_UNDEFINED, object_id, ArrayIndex);
-} /* end OS_ConvertToArrayIndex */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ForEachObject
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -1412,11 +1351,9 @@ void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void 
     {
         OS_ForEachObjectOfType(idtype, creator_id, callback_ptr, callback_arg);
     }
-} /* end OS_ForEachObject */
+}
 
 /*-----------------------------------------------------------------
- *
- * Function: OS_ForEachObjectOfType
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -1441,11 +1378,9 @@ void OS_ForEachObjectOfType(osal_objtype_t idtype, osal_id_t creator_id, OS_ArgC
 
         OS_ObjectIdIteratorDestroy(&iter);
     }
-} /* end OS_ForEachObjectOfType */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_IdentifyObject
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -1454,11 +1389,9 @@ void OS_ForEachObjectOfType(osal_objtype_t idtype, osal_id_t creator_id, OS_ArgC
 osal_objtype_t OS_IdentifyObject(osal_id_t object_id)
 {
     return OS_ObjectIdToType_Impl(object_id);
-} /* end OS_IdentifyObject */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_GetResourceName
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -1504,11 +1437,9 @@ int32 OS_GetResourceName(osal_id_t object_id, char *buffer, size_t buffer_size)
     }
 
     return return_code;
-} /* end OS_GetResourceName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ObjectIdToArrayIndex
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -1550,4 +1481,4 @@ int32 OS_ObjectIdToArrayIndex(osal_objtype_t idtype, osal_id_t object_id, osal_i
     }
 
     return return_code;
-} /* end OS_ObjectIdToArrayIndex */
+}

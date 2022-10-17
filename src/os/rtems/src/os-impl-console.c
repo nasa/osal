@@ -78,8 +78,6 @@ OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ConsoleWakeup_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -92,12 +90,9 @@ void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
 
     /* post the sem for the utility task to run */
     rtems_semaphore_release(local->data_sem);
-
-} /* end OS_ConsoleWakeup_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ConsoleTask_Entry
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -120,11 +115,9 @@ static void OS_ConsoleTask_Entry(rtems_task_argument arg)
         }
         OS_ObjectIdRelease(&token);
     }
-} /* end OS_ConsoleTask_Entry */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ConsoleCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -200,4 +193,4 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
     }
 
     return return_code;
-} /* end OS_ConsoleCreate_Impl */
+}

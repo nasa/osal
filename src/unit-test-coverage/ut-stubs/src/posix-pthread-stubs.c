@@ -121,6 +121,7 @@ int OCS_pthread_cond_init(OCS_pthread_cond_t *cond, const OCS_pthread_condattr_t
 
     return Status;
 }
+
 int OCS_pthread_cond_signal(OCS_pthread_cond_t *cond)
 {
     int32 Status;

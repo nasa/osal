@@ -175,7 +175,6 @@ int32 OS_ObjectIdInit(void);
  */
 
 /*----------------------------------------------------------------
-   Function: OS_Lock_Global
 
     Purpose: Locks the global table identified by "idtype"
 
@@ -184,7 +183,6 @@ int32 OS_ObjectIdInit(void);
 void OS_Lock_Global(OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_Lock_Global
 
     Purpose: Locks the global table identified by "idtype"
 
@@ -193,7 +191,6 @@ void OS_Lock_Global(OS_object_token_t *token);
 void OS_Lock_Global_Impl(osal_objtype_t idtype);
 
 /*----------------------------------------------------------------
-   Function: OS_Unlock_Global
 
     Purpose: Unlocks the global table identified by "idtype"
 
@@ -202,7 +199,6 @@ void OS_Lock_Global_Impl(osal_objtype_t idtype);
 void OS_Unlock_Global(OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_Unlock_Global
 
     Purpose: Unlocks the global table identified by "idtype"
 
@@ -211,8 +207,6 @@ void OS_Unlock_Global(OS_object_token_t *token);
 void OS_Unlock_Global_Impl(osal_objtype_t idtype);
 
 /*----------------------------------------------------------------
-
-   Function: OS_WaitForStateChange
 
     Purpose: Waits for a change in the global table identified by "idtype"
 
@@ -224,8 +218,6 @@ void OS_Unlock_Global_Impl(osal_objtype_t idtype);
 void OS_WaitForStateChange(OS_object_token_t *token, uint32 attempts);
 
 /*----------------------------------------------------------------
-
-   Function: OS_WaitForStateChange_Impl
 
    Purpose: Block the caller until some sort of change event
    has occurred for the given object type, such as a record changing
@@ -248,7 +240,6 @@ void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts);
  */
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdToSerialNumber
 
     Purpose: Obtain the serial number component of a generic OSAL Object ID
  ------------------------------------------------------------------*/
@@ -258,7 +249,6 @@ static inline uint32 OS_ObjectIdToSerialNumber_Impl(osal_id_t id)
 }
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdToType
 
     Purpose: Obtain the object type component of a generic OSAL Object ID
  ------------------------------------------------------------------*/
@@ -268,7 +258,6 @@ static inline osal_objtype_t OS_ObjectIdToType_Impl(osal_id_t id)
 }
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdCompose
 
     Purpose: Convert an object serial number and resource type into an external 32-bit OSAL ID
  ------------------------------------------------------------------*/
@@ -298,7 +287,6 @@ static inline bool OS_ObjectIdIsValid(osal_id_t object_id)
 }
 
 /*----------------------------------------------------------------
-   Function: OS_GetMaxForObjectType
 
     Purpose: Obtains the maximum number of objects for "idtype" in the global table
 
@@ -307,7 +295,6 @@ static inline bool OS_ObjectIdIsValid(osal_id_t object_id)
 uint32 OS_GetMaxForObjectType(osal_objtype_t idtype);
 
 /*----------------------------------------------------------------
-   Function: OS_GetBaseForObjectType
 
     Purpose: Obtains the base object number for "idtype" in the global table
 
@@ -316,7 +303,6 @@ uint32 OS_GetMaxForObjectType(osal_objtype_t idtype);
 uint32 OS_GetBaseForObjectType(osal_objtype_t idtype);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIndexFromToken
 
     Purpose: Gets the index referenced by the token
 
@@ -328,7 +314,6 @@ static inline osal_objtype_t OS_ObjectTypeFromToken(const OS_object_token_t *tok
 }
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIndexFromToken
 
     Purpose: Gets the index referenced by the token
 
@@ -340,7 +325,6 @@ static inline osal_index_t OS_ObjectIndexFromToken(const OS_object_token_t *toke
 }
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdFromToken
 
     Purpose: Gets the object ID referenced by the token
 
@@ -352,7 +336,6 @@ static inline osal_id_t OS_ObjectIdFromToken(const OS_object_token_t *token)
 }
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdGlobalFromToken
 
     Purpose: Obtains the global record corresponding to the token
 
@@ -361,7 +344,6 @@ static inline osal_id_t OS_ObjectIdFromToken(const OS_object_token_t *token)
 OS_common_record_t *OS_ObjectIdGlobalFromToken(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdTransactionInit
 
     Purpose: Initiates a transaction by obtaining the global table lock
              and preparing the object token value
@@ -371,7 +353,6 @@ OS_common_record_t *OS_ObjectIdGlobalFromToken(const OS_object_token_t *token);
 int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdTransactionCancel
 
     Purpose: Cancels/Releases the lock obtained by OS_ObjectIdTransactionInit()
              without making any modification to global IDs.
@@ -381,7 +362,6 @@ int32 OS_ObjectIdTransactionInit(OS_lock_mode_t lock_mode, osal_objtype_t idtype
 void OS_ObjectIdTransactionCancel(OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdTransactionFinish
 
     Purpose: Releases the lock obtained by OS_ObjectIdTransactionInit()
              with an optional synchronized ID update for new/deleted IDs.
@@ -391,7 +371,6 @@ void OS_ObjectIdTransactionCancel(OS_object_token_t *token);
 void OS_ObjectIdTransactionFinish(OS_object_token_t *token, const osal_id_t *final_id);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdConvertToken
 
     Purpose: Converts a token from OS_ObjectIdTransactionInit() to the
              type that was requested by the user.
@@ -401,7 +380,6 @@ void OS_ObjectIdTransactionFinish(OS_object_token_t *token, const osal_id_t *fin
 int32 OS_ObjectIdConvertToken(OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdFindByName
 
     Purpose: Finds an entry in the global resource table matching the given name
 
@@ -410,7 +388,6 @@ int32 OS_ObjectIdConvertToken(OS_object_token_t *token);
 int32 OS_ObjectIdFindByName(osal_objtype_t idtype, const char *name, osal_id_t *object_id);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdGetBySearch
 
     Purpose: Find and lock an entry in the global resource table
              Search is performed using a user-specified match function
@@ -422,7 +399,6 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS
                              OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdGetByName
 
     Purpose: Find and lock an entry in the global resource table
              Search is performed using a name match function
@@ -432,7 +408,6 @@ int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS
 int32 OS_ObjectIdGetByName(OS_lock_mode_t lock_mode, osal_objtype_t idtype, const char *name, OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdGetById
 
     Purpose: Find and lock an entry in the global resource table
              Lookup is performed by ID value (no searching required)
@@ -442,7 +417,6 @@ int32 OS_ObjectIdGetByName(OS_lock_mode_t lock_mode, osal_objtype_t idtype, cons
 int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, osal_objtype_t idtype, osal_id_t id, OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdRelease
 
     Purpose: Releases (unlocks) the object token previously obtained using
              OS_ObjectIdGetById() or OS_ObjectIdGetBySearch().
@@ -452,7 +426,6 @@ int32 OS_ObjectIdGetById(OS_lock_mode_t lock_mode, osal_objtype_t idtype, osal_i
 void OS_ObjectIdRelease(OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdTransferToken
 
     Purpose: Transfers ownership of an object token without unlocking/releasing.
              The original token will become benign and the new token becomes active.
@@ -462,7 +435,6 @@ void OS_ObjectIdRelease(OS_object_token_t *token);
 void OS_ObjectIdTransferToken(OS_object_token_t *token_from, OS_object_token_t *token_to);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdAllocateNew
 
     Purpose: Issue a new object ID of the given type and associate with the given name
              The array index (0-based) and global record pointers are output back to the caller
@@ -474,7 +446,6 @@ void OS_ObjectIdTransferToken(OS_object_token_t *token_from, OS_object_token_t *
 int32 OS_ObjectIdAllocateNew(osal_objtype_t idtype, const char *name, OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdFinalizeNew
 
     Purpose: Completes the operation initiated by OS_ObjectIdAllocateNew()
              If the operation was successful, the final OSAL ID is returned
@@ -486,7 +457,6 @@ int32 OS_ObjectIdAllocateNew(osal_objtype_t idtype, const char *name, OS_object_
 int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_object_token_t *token, osal_id_t *outid);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdFinalizeDelete
 
     Purpose: Completes a delete operation
              If the operation was successful, the OSAL ID is deleted and returned to the pool
@@ -498,7 +468,6 @@ int32 OS_ObjectIdFinalizeNew(int32 operation_status, OS_object_token_t *token, o
 int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdIteratorInit
 
     Purpose: Initialize a generic object iterator of the given type.
              Note This obtains and holds a global lock on the internal table, so
@@ -510,7 +479,6 @@ int32 OS_ObjectIdIteratorInit(OS_ObjectMatchFunc_t matchfunc, void *matcharg, os
                               OS_object_iter_t *iter);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdIterateActive
 
     Purpose: Initialize an object iterator of the given type that will
              return only active/valid OSAL objects.
@@ -520,7 +488,6 @@ int32 OS_ObjectIdIteratorInit(OS_ObjectMatchFunc_t matchfunc, void *matcharg, os
 int32 OS_ObjectIdIterateActive(osal_objtype_t objtype, OS_object_iter_t *iter);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdIteratorGetNext
 
     Purpose: Move then token to the next matching iterator entry
 
@@ -529,7 +496,6 @@ int32 OS_ObjectIdIterateActive(osal_objtype_t objtype, OS_object_iter_t *iter);
 bool OS_ObjectIdIteratorGetNext(OS_object_iter_t *iter);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdIteratorDestroy
 
     Purpose: Releases an iterator from OS_ObjectIdIteratorInit()
 
@@ -538,7 +504,6 @@ bool OS_ObjectIdIteratorGetNext(OS_object_iter_t *iter);
 void OS_ObjectIdIteratorDestroy(OS_object_iter_t *iter);
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdIteratorRef
 
     Purpose: Gets the token indicating current iterator position
              The returned token can be used to access the relevant entry
@@ -551,7 +516,6 @@ static inline const OS_object_token_t *OS_ObjectIdIteratorRef(OS_object_iter_t *
 }
 
 /*----------------------------------------------------------------
-   Function: OS_ObjectIdIteratorProcessEntry
 
     Purpose: Calls a function using the ID of the entry from the iterator
 

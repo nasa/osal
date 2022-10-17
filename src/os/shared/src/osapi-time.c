@@ -66,8 +66,6 @@ typedef union
 
 /*----------------------------------------------------------------
  *
- * Function: OS_TimerCbAPI_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Init function for OS-independent layer
  *
@@ -76,11 +74,9 @@ int32 OS_TimerCbAPI_Init(void)
 {
     memset(OS_timecb_table, 0, sizeof(OS_timecb_table));
     return OS_SUCCESS;
-} /* end OS_TimerCbAPI_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_DoTimerAdd
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Adds new OSAL Timer based on an existing timebase
@@ -193,11 +189,9 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
     }
 
     return return_code;
-} /* end OS_DoTimerAdd */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimerAdd
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -207,11 +201,9 @@ int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebas
                   void *callback_arg)
 {
     return (OS_DoTimerAdd(timer_id, timer_name, timebase_ref_id, callback_ptr, callback_arg, 0));
-} /* end OS_TimerAdd */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_Timer_NoArgCallback
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -226,11 +218,9 @@ static void OS_Timer_NoArgCallback(osal_id_t objid, void *arg)
      */
     Conv.opaque_arg = arg;
     (*Conv.timer_callback_func)(objid);
-} /* end OS_Timer_NoArgCallback */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimerCreate
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -291,11 +281,9 @@ int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *accura
     }
 
     return return_code;
-} /* end OS_TimerCreate */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimerSet
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -363,11 +351,9 @@ int32 OS_TimerSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time)
         return_code = OS_TimeBaseSet(dedicated_timebase_id, start_time, interval_time);
     }
     return return_code;
-} /* end OS_TimerSet */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimerDelete
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -467,11 +453,9 @@ int32 OS_TimerDelete(osal_id_t timer_id)
     }
 
     return return_code;
-} /* end OS_TimerDelete */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimerGetIdByName
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -499,11 +483,9 @@ int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name)
     return_code = OS_ObjectIdFindByName(OS_OBJECT_TYPE_OS_TIMECB, timer_name, timer_id);
 
     return return_code;
-} /* end OS_TimerGetIdByName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimerGetInfo
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -549,4 +531,4 @@ int32 OS_TimerGetInfo(osal_id_t timer_id, OS_timer_prop_t *timer_prop)
     }
 
     return return_code;
-} /* end OS_TimerGetInfo */
+}

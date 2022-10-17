@@ -26,8 +26,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ShellOutputToFile_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *

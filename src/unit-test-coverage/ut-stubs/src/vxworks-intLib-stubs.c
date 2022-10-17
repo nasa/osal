@@ -27,18 +27,22 @@ OCS_STATUS OCS_intConnect(OCS_VOIDFUNCPTR *vector, OCS_VOIDFUNCPTR routine, int 
 {
     return UT_DEFAULT_IMPL(OCS_intConnect);
 }
+
 int OCS_intDisable(int level)
 {
     return UT_DEFAULT_IMPL(OCS_intDisable);
 }
+
 int OCS_intEnable(int level)
 {
     return UT_DEFAULT_IMPL(OCS_intEnable);
 }
+
 int OCS_intLock(void)
 {
     return UT_DEFAULT_IMPL(OCS_intLock);
 }
+
 int OCS_intUnlock(int lockKey)
 {
     return UT_DEFAULT_IMPL(OCS_intUnlock);

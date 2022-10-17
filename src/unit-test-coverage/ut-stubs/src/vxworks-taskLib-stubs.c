@@ -30,6 +30,7 @@ void OCS_taskExit(int code)
 {
     UT_DEFAULT_IMPL(OCS_taskExit);
 }
+
 OCS_TASK_ID OCS_taskIdSelf(void)
 {
     int32 Status;
@@ -42,6 +43,7 @@ OCS_TASK_ID OCS_taskIdSelf(void)
 
     return &OCS_LOCAL_TASK;
 }
+
 OCS_TASK_ID OCS_taskNameToId(const char *name)
 {
     int32 Status;
@@ -54,26 +56,32 @@ OCS_TASK_ID OCS_taskNameToId(const char *name)
 
     return &OCS_LOCAL_TASK;
 }
+
 OCS_STATUS OCS_taskDelay(int ticks)
 {
     return UT_DEFAULT_IMPL(OCS_taskDelay);
 }
+
 OCS_STATUS OCS_taskDelete(OCS_TASK_ID tid)
 {
     return UT_DEFAULT_IMPL(OCS_taskDelete);
 }
+
 OCS_STATUS OCS_taskDeleteForce(OCS_TASK_ID tid)
 {
     return UT_DEFAULT_IMPL(OCS_taskDeleteForce);
 }
+
 OCS_STATUS OCS_taskSuspend(OCS_TASK_ID tid)
 {
     return UT_DEFAULT_IMPL(OCS_taskSuspend);
 }
+
 OCS_STATUS OCS_taskResume(OCS_TASK_ID tid)
 {
     return UT_DEFAULT_IMPL(OCS_taskResume);
 }
+
 OCS_STATUS OCS_taskPrioritySet(OCS_TASK_ID tid, int newPriority)
 {
     return UT_DEFAULT_IMPL(OCS_taskPrioritySet);

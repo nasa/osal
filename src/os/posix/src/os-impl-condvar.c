@@ -50,8 +50,6 @@ static void OS_Posix_CondVarReleaseMutex(void *mut)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_Posix_CondVarAPI_Impl_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
@@ -62,8 +60,6 @@ int32 OS_Posix_CondVarAPI_Impl_Init(void)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CondVarCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -109,8 +105,6 @@ int32 OS_CondVarCreate_Impl(const OS_object_token_t *token, uint32 options)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_CondVarDelete_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -141,8 +135,6 @@ int32 OS_CondVarDelete_Impl(const OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_CondVarUnlock_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -164,8 +156,6 @@ int32 OS_CondVarUnlock_Impl(const OS_object_token_t *token)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CondVarLock_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -189,8 +179,6 @@ int32 OS_CondVarLock_Impl(const OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_CondVarSignal_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -213,8 +201,6 @@ int32 OS_CondVarSignal_Impl(const OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_CondVarBroadcast_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -236,8 +222,6 @@ int32 OS_CondVarBroadcast_Impl(const OS_object_token_t *token)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CondVarWait_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -269,8 +253,6 @@ int32 OS_CondVarWait_Impl(const OS_object_token_t *token)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CondVarTimedWait_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -304,8 +286,6 @@ int32 OS_CondVarTimedWait_Impl(const OS_object_token_t *token, const OS_time_t *
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CondVarGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail

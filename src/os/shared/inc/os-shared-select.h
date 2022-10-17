@@ -36,7 +36,6 @@
  */
 
 /*----------------------------------------------------------------
-   Function: OS_SelectSingle_Impl
 
    Purpose: Waits for activity on a single file descriptor
             This wrapper is usable by the File or Socket API
@@ -52,8 +51,6 @@
 int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, int32 msecs);
 
 /*----------------------------------------------------------------
-
-   Function: OS_SelectMultiple_Impl
 
    Purpose: Waits for activity on multiple file descriptors
             This wrapper is usable by the File or Socket API

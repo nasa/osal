@@ -40,7 +40,6 @@ typedef struct
 {
     SEM_ID AccessMutex;
     VX_MUTEX_SEMAPHORE(AccessMutexMem);
-
 } OS_BSP_GenericVxWorksGlobalData_t;
 
 /*

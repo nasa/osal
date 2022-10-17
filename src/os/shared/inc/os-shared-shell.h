@@ -34,7 +34,6 @@
  ****************************************************************************************/
 
 /*----------------------------------------------------------------
-   Function: OS_ShellOutputToFile_Impl
 
     Purpose: Takes a shell command in and writes the output of that command to the specified file
 

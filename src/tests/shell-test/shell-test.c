@@ -129,8 +129,7 @@ void TestOutputToFile(void)
     /* try removing the file from the drive */
     status = OS_remove(OS_TEST_SHELL_FILENAME);
     UtAssert_True(status == OS_SUCCESS, "status after remove = %d", (int)status);
-
-} /* end TestOutputToFile */
+}
 
 void UtTest_Setup(void)
 {

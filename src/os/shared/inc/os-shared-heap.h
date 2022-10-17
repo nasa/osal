@@ -38,7 +38,6 @@
  */
 
 /*----------------------------------------------------------------
-   Function: OS_HeapGetInfo_Impl
 
     Purpose: Return current info on the heap
 

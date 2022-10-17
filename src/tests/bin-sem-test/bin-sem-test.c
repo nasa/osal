@@ -114,7 +114,6 @@ void task_1(void)
     /* if failures occur, do not loop endlessly */
     while (task_1_failures < 20)
     {
-
         status = OS_BinSemTake(bin_sem_id);
         if (status != OS_SUCCESS)
         {

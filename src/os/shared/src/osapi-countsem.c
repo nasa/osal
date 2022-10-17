@@ -64,8 +64,6 @@ OS_count_sem_internal_record_t OS_count_sem_table[LOCAL_NUM_OBJECTS];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_CountSemAPI_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Init function for OS-independent layer
  *
@@ -74,11 +72,9 @@ int32 OS_CountSemAPI_Init(void)
 {
     memset(OS_count_sem_table, 0, sizeof(OS_count_sem_table));
     return OS_SUCCESS;
-} /* end OS_CountSemAPI_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemCreate
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -111,12 +107,9 @@ int32 OS_CountSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 sem_init
     }
 
     return return_code;
-
-} /* end OS_CountSemCreate */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemDelete
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -137,12 +130,9 @@ int32 OS_CountSemDelete(osal_id_t sem_id)
     }
 
     return return_code;
-
-} /* end OS_CountSemDelete */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemGive
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -161,12 +151,9 @@ int32 OS_CountSemGive(osal_id_t sem_id)
     }
 
     return return_code;
-
-} /* end OS_CountSemGive */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemTake
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -185,11 +172,9 @@ int32 OS_CountSemTake(osal_id_t sem_id)
     }
 
     return return_code;
-} /* end OS_CountSemTake */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemTimedWait
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -208,11 +193,9 @@ int32 OS_CountSemTimedWait(osal_id_t sem_id, uint32 msecs)
     }
 
     return return_code;
-} /* end OS_CountSemTimedWait */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemGetIdByName
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -229,11 +212,9 @@ int32 OS_CountSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
     return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, sem_name, sem_id);
 
     return return_code;
-} /* end OS_CountSemGetIdByName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_CountSemGetInfo
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -265,4 +246,4 @@ int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop)
     }
 
     return return_code;
-} /* end OS_CountSemGetInfo */
+}

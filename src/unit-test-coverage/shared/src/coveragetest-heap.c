@@ -42,6 +42,7 @@ void Test_OS_HeapGetInfo(void)
 
     UtAssert_True(actual == expected, "OS_HeapGetInfo() (%ld) == OS_INVALID_POINTER", (long)actual);
 }
+
 /* Osapi_Test_Setup
  *
  * Purpose:

@@ -51,7 +51,6 @@ typedef struct
     volatile size_t WritePos;       /**< Offset of next byte to write */
     uint32          OverflowEvents; /**< Number of lines dropped due to overflow */
     bool            IsAsync;        /**< Whether to write data via deferred utility task */
-
 } OS_console_internal_record_t;
 
 extern OS_console_internal_record_t OS_console_table[OS_MAX_CONSOLES];
@@ -70,7 +69,6 @@ extern OS_console_internal_record_t OS_console_table[OS_MAX_CONSOLES];
 int32 OS_ConsoleAPI_Init(void);
 
 /*----------------------------------------------------------------
-   Function: OS_ConsoleCreate_Impl
 
     Purpose: Prepare a console device for use
              For Async devices, this sets up the background writer task
@@ -78,7 +76,6 @@ int32 OS_ConsoleAPI_Init(void);
 int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ConsoleWakeup_Impl
 
     Purpose: Console output data notification
 

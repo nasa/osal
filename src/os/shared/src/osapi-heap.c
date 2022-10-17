@@ -40,8 +40,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_HeapGetInfo
- *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
@@ -52,4 +50,4 @@ int32 OS_HeapGetInfo(OS_heap_prop_t *heap_prop)
     OS_CHECK_POINTER(heap_prop);
 
     return OS_HeapGetInfo_Impl(heap_prop);
-} /* end OS_HeapGetInfo */
+}

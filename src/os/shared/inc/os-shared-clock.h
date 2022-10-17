@@ -35,7 +35,6 @@
  */
 
 /*----------------------------------------------------------------
-   Function: OS_GetLocalTime_Impl
 
     Purpose: Get the time from the RTC
 
@@ -44,7 +43,6 @@
 int32 OS_GetLocalTime_Impl(OS_time_t *time_struct);
 
 /*----------------------------------------------------------------
-   Function: OS_SetLocalTime_Impl
 
     Purpose: Set the time in the RTC
 

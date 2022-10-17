@@ -60,8 +60,6 @@ OS_impl_console_internal_record_t OS_impl_console_table[OS_MAX_CONSOLES];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_ConsoleWakeup_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -77,12 +75,9 @@ void OS_ConsoleWakeup_Impl(const OS_object_token_t *token)
     {
         OS_DEBUG("semGive() - vxWorks errno %d\n", errno);
     }
-
-} /* end OS_ConsoleWakeup_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ConsoleTask_Entry
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -112,11 +107,9 @@ int OS_VxWorks_ConsoleTask_Entry(int arg)
 
     /* Return OK since called from taskSpawn, error is reported in debug message */
     return OK;
-} /* end OS_ConsoleTask_Entry */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ConsoleCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -169,4 +162,4 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
     }
 
     return return_code;
-} /* end OS_ConsoleCreate_Impl */
+}

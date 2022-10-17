@@ -71,7 +71,6 @@ int32 OS_FileAPI_Init(void);
  */
 
 /*----------------------------------------------------------------
-   Function: OS_GenericSeek_Impl
 
     Purpose: Seek to a given position in a file
 
@@ -80,7 +79,6 @@ int32 OS_FileAPI_Init(void);
 int32 OS_GenericSeek_Impl(const OS_object_token_t *token, int32 offset, uint32 whence);
 
 /*----------------------------------------------------------------
-   Function: OS_GenericRead_Impl
 
     Purpose: Read from a file descriptor
              This may be a normal file or a socket/pipe
@@ -90,7 +88,6 @@ int32 OS_GenericSeek_Impl(const OS_object_token_t *token, int32 offset, uint32 w
 int32 OS_GenericRead_Impl(const OS_object_token_t *token, void *buffer, size_t nbytes, int32 timeout);
 
 /*----------------------------------------------------------------
-   Function: OS_GenericWrite_Impl
 
     Purpose: Write to a file descriptor
              This may be a normal file or a socket/pipe
@@ -100,7 +97,6 @@ int32 OS_GenericRead_Impl(const OS_object_token_t *token, void *buffer, size_t n
 int32 OS_GenericWrite_Impl(const OS_object_token_t *token, const void *buffer, size_t nbytes, int32 timeout);
 
 /*----------------------------------------------------------------
-   Function: OS_GenericClose_Impl
 
     Purpose: Close a file descriptor
              This may be a normal file or a socket/pipe
@@ -110,7 +106,6 @@ int32 OS_GenericWrite_Impl(const OS_object_token_t *token, const void *buffer, s
 int32 OS_GenericClose_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_FileOpen_Impl
 
     Purpose: Opens the file indicated by "local_path" with permission
              indicated by "access_mode".
@@ -120,7 +115,6 @@ int32 OS_GenericClose_Impl(const OS_object_token_t *token);
 int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, int32 flags, int32 access_mode);
 
 /*----------------------------------------------------------------
-   Function: OS_ShellOutputToFile_Impl
 
     Purpose: Takes a shell command in and writes the output of that command to the specified file
 
@@ -145,7 +139,6 @@ int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
  */
 
 /*----------------------------------------------------------------
-   Function: OS_FileStat_Impl
 
     Purpose: Output stats on the file indicated by "local_path"
 
@@ -154,7 +147,6 @@ int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
 int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *filestat);
 
 /*----------------------------------------------------------------
-   Function: OS_FileRemove_Impl
 
     Purpose: Remove/Unlink the file indicated by "local_path"
 
@@ -163,7 +155,6 @@ int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *filestat);
 int32 OS_FileRemove_Impl(const char *local_path);
 
 /*----------------------------------------------------------------
-   Function: OS_FileRename_Impl
 
     Purpose: Rename "old_path" to "new_path" in the filesystem
 
@@ -172,8 +163,6 @@ int32 OS_FileRemove_Impl(const char *local_path);
 int32 OS_FileRename_Impl(const char *old_path, const char *new_path);
 
 /*----------------------------------------------------------------
-
-   Function: OS_FileChmod_Impl
 
     Purpose: Change permission on an existing file
 

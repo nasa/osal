@@ -78,15 +78,12 @@ OS_impl_timebase_internal_record_t OS_impl_timebase_table[OS_MAX_TIMEBASES];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_UsecToTimespec
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Convert Microseconds to a POSIX timespec structure.
  *
  *-----------------------------------------------------------------*/
 static void OS_UsecToTimespec(uint32 usecs, struct timespec *time_spec)
 {
-
     if (usecs < 1000000)
     {
         time_spec->tv_nsec = (usecs * 1000);
@@ -97,11 +94,9 @@ static void OS_UsecToTimespec(uint32 usecs, struct timespec *time_spec)
         time_spec->tv_sec  = usecs / 1000000;
         time_spec->tv_nsec = (usecs % 1000000) * 1000;
     }
-} /* end OS_UsecToTimespec */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBaseLock_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -114,11 +109,9 @@ void OS_TimeBaseLock_Impl(const OS_object_token_t *token)
     impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
 
     pthread_mutex_lock(&impl->handler_mutex);
-} /* end OS_TimeBaseLock_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBaseUnlock_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -131,11 +124,9 @@ void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token)
     impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
 
     pthread_mutex_unlock(&impl->handler_mutex);
-} /* end OS_TimeBaseUnlock_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBase_SoftWaitImpl
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -186,14 +177,13 @@ static uint32 OS_TimeBase_SigWaitImpl(osal_id_t obj_id)
     }
 
     return interval_time;
-} /* end OS_TimeBase_SoftWaitImpl */
+}
 
 /****************************************************************************************
                                 INITIALIZATION FUNCTION
  ***************************************************************************************/
 
 /******************************************************************************
- *  Function:  OS_Posix_TimeBaseAPI_Impl_Init
  *
  *  Purpose:  Initialize the timer implementation layer
  *
@@ -305,7 +295,7 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
     } while (0);
 
     return return_code;
-} /* end OS_Posix_TimeBaseAPI_Impl_Init */
+}
 
 /****************************************************************************************
                                    Time Base API
@@ -321,8 +311,6 @@ static void *OS_TimeBasePthreadEntry(void *arg)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBaseCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -484,11 +472,9 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
     }
 
     return return_code;
-} /* end OS_TimeBaseCreate_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBaseSet_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -540,11 +526,9 @@ int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uin
 
     local->reset_flag = (return_code == OS_SUCCESS);
     return return_code;
-} /* end OS_TimeBaseSet_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBaseDelete_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -575,11 +559,9 @@ int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-} /* end OS_TimeBaseDelete_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBaseGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -588,5 +570,4 @@ int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token)
 int32 OS_TimeBaseGetInfo_Impl(const OS_object_token_t *token, OS_timebase_prop_t *timer_prop)
 {
     return OS_SUCCESS;
-
-} /* end OS_TimeBaseGetInfo_Impl */
+}

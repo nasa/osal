@@ -50,8 +50,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_NetworkGetHostName_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -75,11 +73,9 @@ int32 OS_NetworkGetHostName_Impl(char *host_name, size_t name_len)
     }
 
     return return_code;
-} /* end OS_NetworkGetHostName_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_NetworkGetID_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -90,4 +86,4 @@ int32 OS_NetworkGetID_Impl(int32 *IdBuf)
     /* gethostid() has no failure modes */
     *IdBuf = gethostid();
     return OS_SUCCESS;
-} /* end OS_NetworkGetID_Impl */
+}

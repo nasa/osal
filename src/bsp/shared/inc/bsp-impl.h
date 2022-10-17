@@ -103,7 +103,6 @@ typedef struct
      * feature.
      */
     uint32 ResoureConfig[OS_OBJECT_TYPE_USER];
-
 } OS_BSP_GlobalData_t;
 
 /*
@@ -116,7 +115,6 @@ extern OS_BSP_GlobalData_t OS_BSP_Global;
 /********************************************************************/
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_Lock_Impl
 
     Purpose: Get exclusive access to a BSP-provided service or object
 
@@ -127,7 +125,6 @@ extern OS_BSP_GlobalData_t OS_BSP_Global;
 void OS_BSP_Lock_Impl(void);
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_Unlock_Impl
 
     Purpose: Release exclusive access to a BSP-provided service or object
 
@@ -138,7 +135,6 @@ void OS_BSP_Lock_Impl(void);
 void OS_BSP_Unlock_Impl(void);
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_ConsoleOutput_Impl
 
     Purpose: Low level raw console data output.  Writes a sequence of
              characters directly to the BSP debug terminal or console device.
@@ -153,7 +149,6 @@ void OS_BSP_Unlock_Impl(void);
 void OS_BSP_ConsoleOutput_Impl(const char *Str, size_t DataLen);
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_ConsoleSetMode_Impl
 
     Purpose: Set the console output mode, if supported by the BSP.
 
@@ -171,7 +166,6 @@ void OS_BSP_ConsoleOutput_Impl(const char *Str, size_t DataLen);
 void OS_BSP_ConsoleSetMode_Impl(uint32 ModeBits);
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_Shutdown_Impl
 
     Purpose: Causes the calling task to abort in a BSP-safe way.
              This may map to the abort() system call, but on some systems

@@ -65,8 +65,6 @@ OS_queue_internal_record_t OS_queue_table[LOCAL_NUM_OBJECTS];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_QueueAPI_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Init function for OS-independent layer
  *
@@ -75,11 +73,9 @@ int32 OS_QueueAPI_Init(void)
 {
     memset(OS_queue_table, 0, sizeof(OS_queue_table));
     return OS_SUCCESS;
-} /* end OS_QueueAPI_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueCreate
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -118,12 +114,9 @@ int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcoun
     }
 
     return return_code;
-
-} /* end OS_QueueCreate */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueDelete
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -144,12 +137,9 @@ int32 OS_QueueDelete(osal_id_t queue_id)
     }
 
     return return_code;
-
-} /* end OS_QueueDelete */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueGet
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -186,11 +176,9 @@ int32 OS_QueueGet(osal_id_t queue_id, void *data, size_t size, size_t *size_copi
     }
 
     return return_code;
-} /* end OS_QueueGet */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueuePut
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -225,11 +213,9 @@ int32 OS_QueuePut(osal_id_t queue_id, const void *data, size_t size, uint32 flag
     }
 
     return return_code;
-} /* end OS_QueuePut */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueGetIdByName
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -246,12 +232,9 @@ int32 OS_QueueGetIdByName(osal_id_t *queue_id, const char *queue_name)
     return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, queue_name, queue_id);
 
     return return_code;
-
-} /* end OS_QueueGetIdByName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_QueueGetInfo
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -285,5 +268,4 @@ int32 OS_QueueGetInfo(osal_id_t queue_id, OS_queue_prop_t *queue_prop)
     }
 
     return return_code;
-
-} /* end OS_QueueGetInfo */
+}

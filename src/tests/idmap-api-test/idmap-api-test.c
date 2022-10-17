@@ -96,8 +96,7 @@ void Test_Void_Fn(void)
     osal_id_t bin_sem_id_my_task;
     OS_BinSemCreate(&bin_sem_id_my_task, "BinSemTaskMyTask", 1, 0);
     OS_TaskDelay(5);
-
-} /* end Test_Void_Fn */
+}
 
 void TestIdMapApi_Setup(void)
 {

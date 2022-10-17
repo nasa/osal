@@ -61,7 +61,6 @@
  ***************************************************************************************/
 
 /*----------------------------------------------------------------
- * Function: OS_FdSet_ConvertIn_Impl
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -113,7 +112,7 @@ static int32 OS_FdSet_ConvertIn_Impl(int *os_maxfd, fd_set *os_set, const OS_FdS
     }
 
     return status;
-} /* end OS_FdSet_ConvertIn_Impl */
+}
 
 /*----------------------------------------------------------------*/
 /**
@@ -155,10 +154,9 @@ static void OS_FdSet_ConvertOut_Impl(fd_set *OS_set, OS_FdSet *OSAL_set)
             objids >>= 1;
         }
     }
-} /* end OS_FdSet_ConvertOut_Impl */
+}
 
 /*----------------------------------------------------------------
- * Function: OS_DoSelect
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -243,15 +241,13 @@ static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, int32 msecs)
     }
 
     return return_code;
-} /* end OS_DoSelect */
+}
 
 /****************************************************************************************
                                 SELECT API
  ***************************************************************************************/
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SelectSingle_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -319,11 +315,9 @@ int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, 
     }
 
     return return_code;
-} /* end OS_SelectSingle_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SelectMultiple_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -382,4 +376,4 @@ int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
     }
 
     return return_code;
-} /* end OS_SelectMultiple_Impl */
+}
