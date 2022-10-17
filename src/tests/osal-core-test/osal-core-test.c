@@ -118,9 +118,7 @@ void task_generic_no_exit(void)
 
 /* **************** A TASK THAT EXITS ITSELF **************************** */
 
-void task_generic_with_exit(void)
-{
-} /* end task_0 */
+void task_generic_with_exit(void) {}
 
 typedef struct
 {
