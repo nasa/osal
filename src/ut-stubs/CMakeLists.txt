@@ -106,3 +106,11 @@ target_link_libraries(ut_osapi_stubs PUBLIC
     ut_assert
 )
 
+if (OSAL_INSTALL_LIBRARIES)
+    install(
+        TARGETS ut_osapi_stubs
+        EXPORT nasa-osal-export
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+    )
+endif()

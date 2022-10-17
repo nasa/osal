@@ -49,6 +49,15 @@
 #                  Normally this setting is not needed to be configured as it is
 #                  inferred from the BSP type.
 #
+# OSAL_INSTALL_LIBRARIES : Boolean, enables "install" of targets listed above such 
+#                  that libraries and public API header files are copied into the system
+#                  location specified by CMAKE_INSTALL_PREFIX.  This set of headers
+#                  and link libraries can then be used to compile other applications
+#                  separately from OSAL.  Default is "ON" when OSAL is being compiled
+#                  standalone (i.e. cmake called directly on the OSAL source dir).
+#                  Default is "OFF" when OSAL is included via 'add_subdirectory' in 
+#                  a parent application project such as CFE/CFS.
+#
 # ENABLE_UNIT_TESTS : Boolean, enables build of the unit tests (coverage and functional)
 #
 # OSAL_OMIT_DEPRECATED : Boolean, Compile without deprecated or obsolete features for
@@ -99,7 +108,23 @@ define_property(TARGET PROPERTY OSAL_EXPECTED_OSTYPE
         "This property is used to indicate the OS implementation layer that is intended to be paired with the BSP implementation"
 )
 
+# If this build is being performed as a subdirectory within a larger project,
+# then the static libraries and header files will _not_ be installed by default,
+# as in those cases one would typically just use the "osal" target directly.
+# This behavior can be explicitly controlled via the OSAL_INSTALL_LIBRARIES option.
+get_directory_property(HAS_PARENT PARENT_DIRECTORY)
+if (HAS_PARENT)
+    set(OSAL_DEFAULT_INSTALL_LIBRARIES OFF)
+else()
+    set(OSAL_DEFAULT_INSTALL_LIBRARIES ON)
+endif()
+
+option(OSAL_INSTALL_LIBRARIES "Whether or not to install static libraries and headers" ${OSAL_DEFAULT_INSTALL_LIBRARIES})
 option(OSAL_OMIT_DEPRECATED   "Compile without deprecated or obsolete features for backward compatibility testing" OFF)
+
+if (OSAL_INSTALL_LIBRARIES)
+    include(CMakePackageConfigHelpers)
+endif()
 
 # The "OSAL_EXT_SOURCE_DIR" cache variable may be set to a path
 # on the host containing extra OS/BSP implementations which are not
@@ -406,7 +431,6 @@ endif (ENABLE_UNIT_TESTS)
 # If this build is being performed as a subdirectory within a larger project,
 # then export the important data regarding compile flags/dirs to that parent
 # This is conditional to avoid warnings in a standalone build.
-get_directory_property(HAS_PARENT PARENT_DIRECTORY)
 if (HAS_PARENT)
     # Export the UT coverage compiler/linker flags to the parent build.
     # These flags are based on the target system type and should be used
@@ -420,3 +444,35 @@ else(HAS_PARENT)
     # Note that in a CFE/integrated build, it is expected this will be built separately.
     add_subdirectory(docs/src docs)
 endif(HAS_PARENT)
+
+if (OSAL_INSTALL_LIBRARIES)
+
+    # Install and also export this library, so it can be found via
+    # "find_package()" from some other CMake build
+    install(
+        TARGETS osal_public_api osal_bsp osal
+        EXPORT nasa-osal-export
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        PUBLIC_HEADER DESTINATION include/osal
+        INCLUDES DESTINATION include/osal
+    )
+    install(DIRECTORY
+        ${OSAL_SOURCE_DIR}/src/os/inc/
+        ${CMAKE_CURRENT_BINARY_DIR}/inc/
+      DESTINATION include/osal
+    )
+    install(EXPORT nasa-osal-export
+      FILE NasaOsalTargets.cmake
+      DESTINATION lib/cmake
+    )
+    configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/NasaOsalConfig.cmake.in
+        "${CMAKE_CURRENT_BINARY_DIR}/NasaOsalConfig.cmake"
+        INSTALL_DESTINATION lib/cmake
+    )
+    install(FILES
+          "${CMAKE_CURRENT_BINARY_DIR}/NasaOsalConfig.cmake"
+        DESTINATION lib/cmake
+    )
+
+endif()
