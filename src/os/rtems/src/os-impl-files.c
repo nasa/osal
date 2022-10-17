@@ -73,4 +73,4 @@ int32 OS_Rtems_StreamAPI_Impl_Init(void)
     }
 
     return OS_SUCCESS;
-} /* end OS_Rtems_StreamAPI_Impl_Init */
+}

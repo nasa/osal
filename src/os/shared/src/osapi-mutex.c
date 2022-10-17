@@ -69,8 +69,6 @@ OS_mutex_internal_record_t OS_mutex_table[LOCAL_NUM_OBJECTS];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_MutexAPI_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Init function for OS-independent layer
  *
@@ -79,11 +77,9 @@ int32 OS_MutexAPI_Init(void)
 {
     memset(OS_mutex_table, 0, sizeof(OS_mutex_table));
     return OS_SUCCESS;
-} /* end OS_MutexAPI_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_MutSemCreate
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -116,12 +112,9 @@ int32 OS_MutSemCreate(osal_id_t *sem_id, const char *sem_name, uint32 options)
     }
 
     return return_code;
-
-} /* end OS_MutSemCreate */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_MutSemDelete
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -142,12 +135,9 @@ int32 OS_MutSemDelete(osal_id_t sem_id)
     }
 
     return return_code;
-
-} /* end OS_MutSemDelete */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_MutSemGive
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -180,12 +170,9 @@ int32 OS_MutSemGive(osal_id_t sem_id)
     }
 
     return return_code;
-
-} /* end OS_MutSemGive */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_MutSemTake
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -212,12 +199,9 @@ int32 OS_MutSemTake(osal_id_t sem_id)
     }
 
     return return_code;
-
-} /* end OS_MutSemTake */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_MutSemGetIdByName
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -234,12 +218,9 @@ int32 OS_MutSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
     return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, sem_name, sem_id);
 
     return return_code;
-
-} /* end OS_MutSemGetIdByName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_MutSemGetInfo
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -270,5 +251,4 @@ int32 OS_MutSemGetInfo(osal_id_t sem_id, OS_mut_sem_prop_t *mut_prop)
     }
 
     return return_code;
-
-} /* end OS_MutSemGetInfo */
+}

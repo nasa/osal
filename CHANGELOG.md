@@ -1,5 +1,13 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4:dev143
+- locks for condvar objects on rtems/vxworks
+- Add time conversion reciprocal functions
+- add export targets and package script
+- Stop empty function catching CI workflow format checks
+- Remove redundant/inconsistent comments (/* end of function */, /* end if */ etc.) and clean up empty lines.
+- See <https://github.com/nasa/osal/pull/1311>, <https://github.com/nasa/osal/pull/1310>, <https://github.com/nasa/osal/pull/1313>, <https://github.com/nasa/osal/pull/1306>, and <https://github.com/nasa/osal/pull/1309>
+
 ## Development Build: v6.0.0-rc4+dev131
 - rtems queue multi-size, mimic posix logic
 - cmake script modernization

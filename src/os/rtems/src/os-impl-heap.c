@@ -36,8 +36,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_HeapGetInfo_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -59,4 +57,4 @@ int32 OS_HeapGetInfo_Impl(OS_heap_prop_t *heap_prop)
     heap_prop->largest_free_block = (uint32)info.Free.largest;
 
     return OS_SUCCESS;
-} /* end OS_HeapGetInfo_Impl */
+}

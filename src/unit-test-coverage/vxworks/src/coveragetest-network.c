@@ -31,8 +31,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_NetworkGetHostName_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -49,8 +47,7 @@ void Test_OS_NetworkGetHostName_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_NetworkGetHostName_Impl(buffer, sizeof(buffer)), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_KEY(OCS_gethostname), -1);
     OSAPI_TEST_FUNCTION_RC(OS_NetworkGetHostName_Impl(buffer, sizeof(buffer)), OS_ERROR);
-
-} /* end OS_NetworkGetHostName_Impl */
+}
 
 void Test_OS_NetworkGetID_Impl(void)
 
@@ -70,8 +67,7 @@ void Test_OS_NetworkGetID_Impl(void)
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_gethostname), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_NetworkGetID_Impl(&IdBuf), OS_ERROR);
-
-} /* end OS_NetworkGetID_Impl */
+}
 
 /* ------------------- End of test cases --------------------------------------*/
 

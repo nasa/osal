@@ -71,8 +71,7 @@ void TestFileSysAddFixedMapApi(void)
     /* create a path where only the "name" part is too long, but the overall path length is within limit */
     translated_path[OS_MAX_LOCAL_PATH_LEN - 1] = 0;
     UtAssert_INT32_EQ(OS_FileSysAddFixedMap(&fs_id, translated_path, "/test"), OS_ERR_NAME_TOO_LONG);
-
-} /* end TestFileSysAddFixedMapApi */
+}
 
 void UtTest_Setup(void)
 {

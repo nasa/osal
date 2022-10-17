@@ -43,7 +43,6 @@
  */
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_SetResourceTypeConfig
 
     Purpose: Sets BSP/platform-specific flags for the given resource type
              Flags and bit meanings are all platform defined.
@@ -51,7 +50,6 @@
 void OS_BSP_SetResourceTypeConfig(uint32 ResourceType, uint32 ConfigOptionValue);
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_SetResourceTypeConfig
 
     Purpose: Gets BSP/platform-specific flags for the given resource type
              Flags and bit meanings are all platform defined.
@@ -59,7 +57,6 @@ void OS_BSP_SetResourceTypeConfig(uint32 ResourceType, uint32 ConfigOptionValue)
 uint32 OS_BSP_GetResourceTypeConfig(uint32 ResourceType);
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_GetArgC
 
     Purpose: Obtain the number of boot arguments passed from the bootloader
              or shell if supported by the platform
@@ -70,7 +67,6 @@ uint32 OS_BSP_GetResourceTypeConfig(uint32 ResourceType);
 uint32 OS_BSP_GetArgC(void);
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_GetArgV
 
     Purpose: Obtain an array of boot argument strings passed from the bootloader
              or shell if supported by the platform
@@ -83,7 +79,6 @@ uint32 OS_BSP_GetArgC(void);
 char *const *OS_BSP_GetArgV(void);
 
 /*----------------------------------------------------------------
-   Function: OS_BSP_SetExitCode
 
     Purpose: Sets the status to be returned to the shell or bootloader
              if supported by the platform.  The value is an integer with

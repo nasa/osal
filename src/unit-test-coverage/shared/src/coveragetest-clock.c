@@ -156,6 +156,19 @@ void Test_OS_TimeAccessConversions(void)
     UtAssert_UINT32_EQ(OS_TimeGetTotalMilliseconds(t3), 8666);
     t4 = OS_TimeSubtract(t3, t2);
     UtAssert_UINT32_EQ(OS_TimeGetTotalMilliseconds(t4), 3777);
+
+    /*
+     * Confirm reciprocity of the Get/From unit conversions.
+     * Note there is no (easy) way to directly compare a OS_time_t here,
+     * so this uses both conversions an just confirms the result, subject
+     * to rounding from the conversion.  In the default configuration the
+     * tick units are 100ns and so the numbers here are chosen such that
+     * the result will not lose precision, and also not overflow a uint32.
+     */
+    UtAssert_UINT32_EQ(OS_TimeGetTotalSeconds(OS_TimeFromTotalSeconds(123)), 123);
+    UtAssert_UINT32_EQ(OS_TimeGetTotalMilliseconds(OS_TimeFromTotalMilliseconds(12659687)), 12659687);
+    UtAssert_UINT32_EQ(OS_TimeGetTotalMicroseconds(OS_TimeFromTotalMicroseconds(3329165800)), 3329165800);
+    UtAssert_UINT32_EQ(OS_TimeGetTotalNanoseconds(OS_TimeFromTotalNanoseconds(347230000)), 347230000);
 }
 
 /* Osapi_Test_Setup

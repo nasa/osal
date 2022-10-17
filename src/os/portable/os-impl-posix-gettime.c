@@ -61,8 +61,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_GetLocalTime_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -87,11 +85,9 @@ int32 OS_GetLocalTime_Impl(OS_time_t *time_struct)
     }
 
     return ReturnCode;
-} /* end OS_GetLocalTime_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SetLocalTime_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -118,5 +114,4 @@ int32 OS_SetLocalTime_Impl(const OS_time_t *time_struct)
     }
 
     return ReturnCode;
-
-} /* end OS_SetLocalTime_Impl */
+}

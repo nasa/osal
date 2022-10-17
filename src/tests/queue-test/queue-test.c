@@ -76,7 +76,6 @@ void task_1(void)
     /* if errors occur do not loop endlessly */
     while (task_1_failures < 20)
     {
-
         status = OS_QueueGet(msgq_id, (void *)&data_received, OSAL_SIZE_C(MSGQ_SIZE), &data_size, 1000);
 
         if (status == OS_SUCCESS)

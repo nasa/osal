@@ -36,6 +36,7 @@ void UT_TimerCallback(osal_id_t timer_id)
 {
     ++UT_TimerCount;
 }
+
 void UT_TimerArgCallback(osal_id_t object_id, void *arg)
 {
     ++UT_TimerArgCount;

@@ -32,7 +32,6 @@
  */
 void OS_ApplicationShutdown_Impl(void)
 {
-
     UT_GenStub_Execute(OS_ApplicationShutdown_Impl, Basic, NULL);
 }
 
@@ -43,6 +42,5 @@ void OS_ApplicationShutdown_Impl(void)
  */
 void OS_IdleLoop_Impl(void)
 {
-
     UT_GenStub_Execute(OS_IdleLoop_Impl, Basic, NULL);
 }

@@ -98,4 +98,4 @@ int32 OS_Posix_StreamAPI_Impl_Init(void)
     OS_IMPL_SELF_EGID = getegid();
 
     return OS_SUCCESS;
-} /* end OS_Posix_StreamAPI_Impl_Init */
+}

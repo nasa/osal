@@ -94,7 +94,6 @@ int32 OS_TaskDelete(osal_id_t task_id)
  */
 void OS_TaskExit(void)
 {
-
     UT_GenStub_Execute(OS_TaskExit, Basic, NULL);
 }
 

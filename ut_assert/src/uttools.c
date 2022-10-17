@@ -233,7 +233,6 @@ bool UtMem2BinFileCmp(const void *Memory, const char *Filename)
     Success = true;
     if ((fp = fopen(Filename, "r")))
     {
-
         for (i = 0; (FileByte = fgetc(fp)) != EOF; i++)
         {
             if (MemByte[i] != FileByte)

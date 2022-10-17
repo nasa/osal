@@ -117,7 +117,6 @@ extern OS_filesys_internal_record_t OS_filesys_table[OS_MAX_FILE_SYSTEMS];
 int32 OS_FileSysAPI_Init(void);
 
 /*----------------------------------------------------------------
-   Function: OS_FileSysStartVolume_Impl
 
     Purpose: Starts/Registers a file system on the target
 
@@ -126,7 +125,6 @@ int32 OS_FileSysAPI_Init(void);
 int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_FileSysStopVolume_Impl
 
     Purpose: Stops/Unregisters a file system on the target
 
@@ -135,7 +133,6 @@ int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token);
 int32 OS_FileSysStopVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_FileSysFormatVolume_Impl
 
     Purpose: Formats a file system on the target to prepare it for use
 
@@ -144,7 +141,6 @@ int32 OS_FileSysStopVolume_Impl(const OS_object_token_t *token);
 int32 OS_FileSysFormatVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_FileSysCheckVolume_Impl
 
     Purpose: Checks the drives and optionally repairs inconsistencies
 
@@ -153,7 +149,6 @@ int32 OS_FileSysFormatVolume_Impl(const OS_object_token_t *token);
 int32 OS_FileSysCheckVolume_Impl(const OS_object_token_t *token, bool repair);
 
 /*----------------------------------------------------------------
-   Function: OS_FileSysStatVolume_Impl
 
     Purpose: Returns stats about a volume
 
@@ -162,7 +157,6 @@ int32 OS_FileSysCheckVolume_Impl(const OS_object_token_t *token, bool repair);
 int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *result);
 
 /*----------------------------------------------------------------
-   Function: OS_FileSysMountVolume_Impl
 
     Purpose: mounts a drive
 
@@ -171,7 +165,6 @@ int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *re
 int32 OS_FileSysMountVolume_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_FileSysUnmountVolume_Impl
 
     Purpose: unmounts a drive.
 

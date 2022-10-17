@@ -117,8 +117,7 @@ void Test_OS_SelectSingle_Impl(void)
     UT_PortablePosixIOTest_Set_FD(UT_INDEX_0, OCS_FD_SETSIZE);
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
     OSAPI_TEST_FUNCTION_RC(OS_SelectSingle_Impl, (&token, &SelectFlags, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
-
-} /* end OS_SelectSingle_Impl */
+}
 
 void Test_OS_SelectMultiple_Impl(void)
 {
@@ -186,7 +185,7 @@ void Test_OS_SelectMultiple_Impl(void)
         UT_PortablePosixIOTest_Set_FD(OSAL_INDEX_C(i), -1);
     }
     OSAPI_TEST_FUNCTION_RC(OS_SelectMultiple_Impl, (&ReadSet, &WriteSet, 0), OS_SUCCESS);
-} /* end OS_SelectMultiple_Impl */
+}
 
 /* ------------------- End of test cases --------------------------------------*/
 

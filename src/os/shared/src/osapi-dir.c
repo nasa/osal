@@ -66,8 +66,6 @@ OS_dir_internal_record_t OS_dir_table[LOCAL_NUM_OBJECTS];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_DirAPI_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Init function for OS-independent layer
  *
@@ -76,11 +74,9 @@ int32 OS_DirAPI_Init(void)
 {
     memset(OS_dir_table, 0, sizeof(OS_dir_table));
     return OS_SUCCESS;
-} /* end OS_DirAPI_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_mkdir
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -98,12 +94,9 @@ int32 OS_mkdir(const char *path, uint32 access)
     }
 
     return return_code;
-
-} /* end OS_mkdir */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_DirectoryOpen
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -140,11 +133,9 @@ int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
     }
 
     return return_code;
-} /* end OS_DirectoryOpen */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_DirectoryClose
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -166,11 +157,9 @@ int32 OS_DirectoryClose(osal_id_t dir_id)
     }
 
     return return_code;
-} /* end OS_DirectoryClose */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_DirectoryRead
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -204,12 +193,9 @@ int32 OS_DirectoryRead(osal_id_t dir_id, os_dirent_t *dirent)
     }
 
     return return_code;
-
-} /* end OS_DirectoryRead */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_DirectoryRewind
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -228,11 +214,9 @@ int32 OS_DirectoryRewind(osal_id_t dir_id)
     }
 
     return return_code;
-} /* end OS_DirectoryRewind */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_rmdir
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -250,5 +234,4 @@ int32 OS_rmdir(const char *path)
     }
 
     return return_code;
-
-} /* end OS_rmdir */
+}

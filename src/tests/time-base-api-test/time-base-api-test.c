@@ -224,8 +224,7 @@ void TestTimeBaseApi(void)
     UtAssert_INT32_EQ(OS_TimeBaseGetFreeRun(OS_OBJECT_ID_UNDEFINED, &freerun), OS_ERR_INVALID_ID);
     UtAssert_INT32_EQ(OS_TimeBaseGetFreeRun(badid, &freerun), OS_ERR_INVALID_ID);
     UtAssert_INT32_EQ(OS_TimeBaseGetFreeRun(time_base_id2, NULL), OS_INVALID_POINTER);
-
-} /* end TestTimeBaseApi */
+}
 
 void UtTest_Setup(void)
 {

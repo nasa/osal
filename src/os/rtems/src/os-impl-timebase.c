@@ -83,8 +83,6 @@ OS_impl_timebase_internal_record_t OS_impl_timebase_table[OS_MAX_TIMEBASES];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_TimeBaseLock_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -96,11 +94,9 @@ void OS_TimeBaseLock_Impl(const OS_object_token_t *token)
     impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
 
     rtems_semaphore_obtain(impl->handler_mutex, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
-} /* end OS_TimeBaseLock_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBaseUnlock_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -113,11 +109,9 @@ void OS_TimeBaseUnlock_Impl(const OS_object_token_t *token)
     impl = OS_OBJECT_TABLE_GET(OS_impl_timebase_table, *token);
 
     rtems_semaphore_release(impl->handler_mutex);
-} /* end OS_TimeBaseUnlock_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBase_ISR
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           An ISR to service a timer tick interrupt, which in turn
@@ -151,12 +145,9 @@ static rtems_timer_service_routine OS_TimeBase_ISR(rtems_id rtems_timer_id, void
          */
         rtems_semaphore_release(local->tick_sem);
     }
-
-} /* end OS_TimeBase_ISR */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBase_WaitImpl
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Pends on the semaphore for the next timer tick
@@ -198,15 +189,13 @@ static uint32 OS_TimeBase_WaitImpl(osal_id_t timebase_id)
     }
 
     return tick_time;
-} /* end OS_TimeBase_WaitImpl */
+}
 
 /****************************************************************************************
                                 INITIALIZATION FUNCTION
  ***************************************************************************************/
 
 /*----------------------------------------------------------------
- *
- * Function: OS_Rtems_TimeBaseAPI_Impl_Init
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -244,15 +233,13 @@ int32 OS_Rtems_TimeBaseAPI_Impl_Init(void)
     OS_SharedGlobalVars.MicroSecPerTick = (RTEMS_GlobalVars.ClockAccuracyNsec + 500) / 1000;
 
     return OS_SUCCESS;
-} /* end OS_Rtems_TimeBaseAPI_Impl_Init */
+}
 
 /****************************************************************************************
                                 INTERNAL FUNCTIONS
  ***************************************************************************************/
 
 /*----------------------------------------------------------------
- *
- * Function: OS_UsecsToTicks
  *
  *  Purpose:  Convert Microseconds to a number of ticks.
  *
@@ -277,7 +264,7 @@ void OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks)
     }
 
     *ticks = (rtems_interval)result;
-} /* end OS_UsecsToTicks */
+}
 
 /****************************************************************************************
                                    Time Base API
@@ -287,8 +274,6 @@ void OS_UsecsToTicks(uint32 usecs, rtems_interval *ticks)
 #define OSAL_TIMEBASE_MUTEX_ATTRIBS RTEMS_PRIORITY | RTEMS_BINARY_SEMAPHORE | RTEMS_INHERIT_PRIORITY
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBase_CallbackThreadEntry
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Wrapper function used by OS_TimeBaseCreate_Impl to
@@ -305,8 +290,6 @@ static void OS_TimeBase_CallbackThreadEntry(rtems_task_argument arg)
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBaseCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -431,11 +414,9 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
     }
 
     return return_code;
-} /* end OS_TimeBaseCreate_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBaseSet_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -535,11 +516,9 @@ int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uin
         local->reset_flag = 1;
     }
     return return_code;
-} /* end OS_TimeBaseSet_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBaseDelete_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -599,11 +578,9 @@ int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token)
     }
 
     return return_code;
-} /* end OS_TimeBaseDelete_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TimeBaseGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -612,5 +589,4 @@ int32 OS_TimeBaseDelete_Impl(const OS_object_token_t *token)
 int32 OS_TimeBaseGetInfo_Impl(const OS_object_token_t *token, OS_timebase_prop_t *timer_prop)
 {
     return OS_SUCCESS;
-
-} /* end OS_TimeBaseGetInfo_Impl */
+}

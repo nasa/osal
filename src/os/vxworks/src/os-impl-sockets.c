@@ -38,8 +38,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_VxWorks_ModuleAPI_Impl_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/

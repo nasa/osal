@@ -51,7 +51,6 @@ extern OS_mutex_internal_record_t OS_mutex_table[OS_MAX_MUTEXES];
 int32 OS_MutexAPI_Init(void);
 
 /*----------------------------------------------------------------
-   Function: OS_MutSemCreate_Impl
 
     Purpose: Prepare/allocate OS resources for a mutex object
 
@@ -60,7 +59,6 @@ int32 OS_MutexAPI_Init(void);
 int32 OS_MutSemCreate_Impl(const OS_object_token_t *token, uint32 options);
 
 /*----------------------------------------------------------------
-   Function: OS_MutSemGive_Impl
 
     Purpose: Release the mutex, which must be owned by the caller
 
@@ -69,7 +67,6 @@ int32 OS_MutSemCreate_Impl(const OS_object_token_t *token, uint32 options);
 int32 OS_MutSemGive_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_MutSemTake_Impl
 
     Purpose: Acquire the mutex, blocking the caller as necessary
 
@@ -78,7 +75,6 @@ int32 OS_MutSemGive_Impl(const OS_object_token_t *token);
 int32 OS_MutSemTake_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_MutSemDelete_Impl
 
     Purpose: Free the OS resources associated with a mutex object
 
@@ -87,7 +83,6 @@ int32 OS_MutSemTake_Impl(const OS_object_token_t *token);
 int32 OS_MutSemDelete_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_MutSemGetInfo_Impl
 
     Purpose: Obtain OS-specific information about the mutex object
 

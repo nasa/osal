@@ -55,7 +55,6 @@ typedef struct
 {
     bool            IsTested;
     OS_timer_prop_t Prop;
-
 } UT_reconf_status_t;
 
 /*--------------------------------------------------------------------------------*

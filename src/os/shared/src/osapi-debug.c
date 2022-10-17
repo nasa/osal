@@ -46,8 +46,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_DebugPrintf
- *
  *  Purpose: Outputs a single debug statement to the console
  *
  *-----------------------------------------------------------------*/
@@ -75,5 +73,4 @@ void OS_DebugPrintf(uint32 Level, const char *Func, uint32 Line, const char *For
 
         OS_BSP_Unlock_Impl();
     }
-
-} /* end OS_DebugPrintf */
+}

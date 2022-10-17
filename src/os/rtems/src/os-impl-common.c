@@ -98,11 +98,9 @@ int32 OS_API_Impl_Init(osal_objtype_t idtype)
     }
 
     return return_code;
-} /* end OS_API_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_IdleLoop_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -112,11 +110,9 @@ void OS_IdleLoop_Impl()
 {
     RTEMS_GlobalVars.IdleTaskId = rtems_task_self();
     rtems_task_suspend(RTEMS_SELF);
-} /* end OS_IdleLoop_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ApplicationShutdown_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -129,4 +125,4 @@ void OS_ApplicationShutdown_Impl()
      * is a remote chance that this could attempt to
      * resume a task that is not yet suspended. */
     rtems_task_resume(RTEMS_GlobalVars.IdleTaskId);
-} /* end OS_ApplicationShutdown_Impl */
+}

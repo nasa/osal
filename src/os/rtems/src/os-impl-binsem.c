@@ -66,8 +66,6 @@ OS_impl_binsem_internal_record_t OS_impl_bin_sem_table[OS_MAX_BIN_SEMAPHORES];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_Rtems_BinSemAPI_Impl_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
@@ -75,11 +73,9 @@ int32 OS_Rtems_BinSemAPI_Impl_Init(void)
 {
     memset(OS_impl_bin_sem_table, 0, sizeof(OS_impl_bin_sem_table));
     return OS_SUCCESS;
-} /* end OS_Rtems_BinSemAPI_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -117,12 +113,9 @@ int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 sem_initial_va
     }
 
     return OS_SUCCESS;
-
-} /* end OS_BinSemCreate_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemDelete_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -143,12 +136,9 @@ int32 OS_BinSemDelete_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_BinSemDelete_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemGive_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -169,11 +159,9 @@ int32 OS_BinSemGive_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-} /* end OS_BinSemGive_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemFlush_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -195,12 +183,9 @@ int32 OS_BinSemFlush_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_BinSemFlush_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemTake_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -229,12 +214,9 @@ int32 OS_BinSemTake_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_BinSemTake_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemTimedWait_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -268,12 +250,9 @@ int32 OS_BinSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_BinSemTimedWait_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_BinSemGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -283,4 +262,4 @@ int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *b
 {
     /* RTEMS has no API for obtaining the current value of a semaphore */
     return OS_SUCCESS;
-} /* end OS_BinSemGetInfo_Impl */
+}

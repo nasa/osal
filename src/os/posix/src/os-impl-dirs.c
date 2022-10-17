@@ -62,4 +62,4 @@ int32 OS_Posix_DirAPI_Impl_Init(void)
 {
     memset(OS_impl_dir_table, 0, sizeof(OS_impl_dir_table));
     return OS_SUCCESS;
-} /* end OS_Posix_DirAPI_Impl_Init */
+}

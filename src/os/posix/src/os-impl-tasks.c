@@ -90,11 +90,9 @@ static int OS_PriorityRemap(osal_priority_t InputPri)
     }
 
     return OutputPri;
-} /* end OS_PriorityRemap */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_NoopSigHandler
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           A POSIX signal handler that does nothing
@@ -187,7 +185,7 @@ static bool OS_Posix_GetSchedulerParams(int sched_policy, POSIX_PriorityLimits_t
     OS_DEBUG("Policy %d: available, min-max: %d-%d\n", sched_policy, (int)PriLim->PriorityMin,
              (int)PriLim->PriorityMax);
     return true;
-} /* end OS_Posix_GetSchedulerParams */
+}
 
 /*
  *********************************************************************************
@@ -425,11 +423,9 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
     POSIX_GlobalVars.PageSize = ret_long;
 
     return OS_SUCCESS;
-} /* end OS_Posix_TaskAPI_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_Posix_InternalTaskCreate_Impl
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
@@ -563,11 +559,9 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
     }
 
     return OS_SUCCESS;
-} /* end OS_Posix_InternalTaskCreate_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -590,11 +584,9 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
                                                    arg.opaque_arg);
 
     return return_code;
-} /* end OS_TaskCreate_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskDetach_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -621,8 +613,6 @@ int32 OS_TaskDetach_Impl(const OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_TaskMatch_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -639,11 +629,9 @@ int32 OS_TaskMatch_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-} /* end OS_TaskMatch_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskDelete_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -693,12 +681,9 @@ int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
         }
     }
     return OS_SUCCESS;
-
-} /* end OS_TaskDelete_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskExit_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -707,12 +692,9 @@ int32 OS_TaskDelete_Impl(const OS_object_token_t *token)
 void OS_TaskExit_Impl()
 {
     pthread_exit(NULL);
-
-} /* end OS_TaskExit_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskDelay_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -746,11 +728,9 @@ int32 OS_TaskDelay_Impl(uint32 millisecond)
     {
         return OS_SUCCESS;
     }
-} /* end OS_TaskDelay_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskSetPriority_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -783,11 +763,9 @@ int32 OS_TaskSetPriority_Impl(const OS_object_token_t *token, osal_priority_t ne
     }
 
     return OS_SUCCESS;
-} /* end OS_TaskSetPriority_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskRegister_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -824,11 +802,9 @@ int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
     }
 
     return return_code;
-} /* end OS_TaskRegister_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskGetId_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -841,11 +817,9 @@ osal_id_t OS_TaskGetId_Impl(void)
     self_record.opaque_arg = pthread_getspecific(POSIX_GlobalVars.ThreadKey);
 
     return self_record.id;
-} /* end OS_TaskGetId_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -854,11 +828,9 @@ osal_id_t OS_TaskGetId_Impl(void)
 int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_prop)
 {
     return OS_SUCCESS;
-} /* end OS_TaskGetInfo_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskIdMatchSystemData_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -875,8 +847,6 @@ bool OS_TaskIdMatchSystemData_Impl(void *ref, const OS_object_token_t *token, co
 }
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskValidateSystemData_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail

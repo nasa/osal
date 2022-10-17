@@ -38,6 +38,7 @@ OCS_SEM_ID OCS_semBInitialize(OCS_SEM *pSemMem, int options, OCS_SEM_B_STATE ini
 
     return retval;
 }
+
 OCS_SEM_ID OCS_semBCreate(int options, OCS_SEM_B_STATE initialState)
 {
     OCS_SEM_ID retval = NULL;
@@ -51,6 +52,7 @@ OCS_SEM_ID OCS_semBCreate(int options, OCS_SEM_B_STATE initialState)
 
     return retval;
 }
+
 OCS_SEM_ID OCS_semMInitialize(OCS_SEM *pSemMem, int options)
 {
     OCS_SEM_ID retval = NULL;
@@ -64,6 +66,7 @@ OCS_SEM_ID OCS_semMInitialize(OCS_SEM *pSemMem, int options)
 
     return retval;
 }
+
 OCS_SEM_ID OCS_semMCreate(int options)
 {
     OCS_SEM_ID retval = NULL;
@@ -77,6 +80,7 @@ OCS_SEM_ID OCS_semMCreate(int options)
 
     return retval;
 }
+
 OCS_SEM_ID OCS_semCInitialize(OCS_SEM *pSemMem, int options, int initialCount)
 {
     OCS_SEM_ID retval = NULL;
@@ -90,6 +94,7 @@ OCS_SEM_ID OCS_semCInitialize(OCS_SEM *pSemMem, int options, int initialCount)
 
     return retval;
 }
+
 OCS_SEM_ID OCS_semCCreate(int flags, int count)
 {
     OCS_SEM_ID retval = NULL;
@@ -108,14 +113,17 @@ OCS_STATUS OCS_semDelete(OCS_SEM_ID semId)
 {
     return UT_DEFAULT_IMPL(OCS_semDelete);
 }
+
 OCS_STATUS OCS_semFlush(OCS_SEM_ID semId)
 {
     return UT_DEFAULT_IMPL(OCS_semFlush);
 }
+
 OCS_STATUS OCS_semTake(OCS_SEM_ID semId, int timeout)
 {
     return UT_DEFAULT_IMPL(OCS_semTake);
 }
+
 OCS_STATUS OCS_semGive(OCS_SEM_ID semId)
 {
     return UT_DEFAULT_IMPL(OCS_semGive);

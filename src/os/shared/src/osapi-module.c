@@ -84,8 +84,6 @@ extern OS_static_symbol_record_t OS_STATIC_SYMTABLE_SOURCE[];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_SymbolLookup_Static
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Checks for a symbol name in the static symbol table
  *
@@ -118,11 +116,9 @@ int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName, con
     }
 
     return return_code;
-} /* end OS_SymbolLookup_Static */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ModuleLoad_Static
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Checks for a module name in the static symbol table
@@ -151,15 +147,13 @@ int32 OS_ModuleLoad_Static(const char *ModuleName)
     }
 
     return return_code;
-} /* end OS_ModuleLoad_Static */
+}
 
 /****************************************************************************************
                                    Module API
  ***************************************************************************************/
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ModuleAPI_Init
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Init function for OS-independent layer
@@ -169,11 +163,9 @@ int32 OS_ModuleAPI_Init(void)
 {
     memset(OS_module_table, 0, sizeof(OS_module_table));
     return OS_SUCCESS;
-} /* end OS_ModuleAPI_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ModuleLoad
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -262,12 +254,9 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
     }
 
     return return_code;
-
-} /* end OS_ModuleLoad */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ModuleUnload
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -299,11 +288,9 @@ int32 OS_ModuleUnload(osal_id_t module_id)
     }
 
     return return_code;
-} /* end OS_ModuleUnload */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ModuleInfo
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -336,12 +323,9 @@ int32 OS_ModuleInfo(osal_id_t module_id, OS_module_prop_t *module_prop)
     }
 
     return return_code;
-
-} /* end OS_ModuleInfo */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SymbolLookup
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -382,12 +366,9 @@ int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
     }
 
     return return_code;
-
-} /* end OS_SymbolLookup */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_ModuleSymbolLookup
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -431,12 +412,9 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
     }
 
     return return_code;
-
-} /* end OS_ModuleSymbolLookup */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SymbolTableDump
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -480,5 +458,4 @@ int32 OS_SymbolTableDump(const char *filename, size_t SizeLimit)
     OS_ObjectIdTransactionCancel(&token);
 
     return return_code;
-
-} /* end OS_SymbolTableDump */
+}

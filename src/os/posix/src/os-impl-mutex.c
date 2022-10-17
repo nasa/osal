@@ -41,8 +41,6 @@ OS_impl_mutex_internal_record_t OS_impl_mutex_table[OS_MAX_MUTEXES];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_Posix_MutexAPI_Impl_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
@@ -50,11 +48,9 @@ int32 OS_Posix_MutexAPI_Impl_Init(void)
 {
     memset(OS_impl_mutex_table, 0, sizeof(OS_impl_mutex_table));
     return OS_SUCCESS;
-} /* end OS_Posix_MutexAPI_Impl_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_MutSemCreate_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -114,11 +110,9 @@ int32 OS_MutSemCreate_Impl(const OS_object_token_t *token, uint32 options)
     }
 
     return OS_SUCCESS;
-} /* end OS_MutSemCreate_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_MutSemDelete_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -139,12 +133,9 @@ int32 OS_MutSemDelete_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-
-} /* end OS_MutSemDelete_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_MutSemGive_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -167,11 +158,9 @@ int32 OS_MutSemGive_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-} /* end OS_MutSemGive_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_MutSemTake_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -194,11 +183,9 @@ int32 OS_MutSemTake_Impl(const OS_object_token_t *token)
     }
 
     return OS_SUCCESS;
-} /* end OS_MutSemTake_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_MutSemGetInfo_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -207,5 +194,4 @@ int32 OS_MutSemTake_Impl(const OS_object_token_t *token)
 int32 OS_MutSemGetInfo_Impl(const OS_object_token_t *token, OS_mut_sem_prop_t *mut_prop)
 {
     return OS_SUCCESS;
-
-} /* end OS_MutSemGetInfo_Impl */
+}

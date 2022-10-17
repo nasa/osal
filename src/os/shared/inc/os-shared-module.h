@@ -65,7 +65,6 @@ extern OS_module_internal_record_t OS_module_table[OS_MAX_MODULES];
 int32 OS_ModuleAPI_Init(void);
 
 /*----------------------------------------------------------------
-   Function: OS_ModuleLoad_Impl
 
     Purpose: Loads an object file into the running operating system
 
@@ -75,8 +74,6 @@ int32 OS_ModuleLoad_Impl(const OS_object_token_t *token, const char *translated_
 
 /*----------------------------------------------------------------
 
-   Function: OS_ModuleUnload_Impl
-
     Purpose: Unloads the module file from the running operating system
 
     Returns: OS_SUCCESS on success, or relevant error code
@@ -84,7 +81,6 @@ int32 OS_ModuleLoad_Impl(const OS_object_token_t *token, const char *translated_
 int32 OS_ModuleUnload_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_ModuleGetInfo_Impl
 
     Purpose: Returns information about the loadable module
 
@@ -93,7 +89,6 @@ int32 OS_ModuleUnload_Impl(const OS_object_token_t *token);
 int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *module_prop);
 
 /*----------------------------------------------------------------
-   Function: OS_SymbolLookup_Impl
 
     Purpose: Find the Address of a Symbol in the symbol table.  If global and
              local tables exist all are checked.
@@ -104,7 +99,6 @@ int32 OS_ModuleGetInfo_Impl(const OS_object_token_t *token, OS_module_prop_t *mo
 int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName);
 
 /*----------------------------------------------------------------
-   Function: OS_SymbolLookup_Impl
 
     Purpose: Find the Address of a Symbol within a specific module.
              The address of the symbol will be stored in the pointer that is passed in.
@@ -114,7 +108,6 @@ int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName);
 int32 OS_ModuleSymbolLookup_Impl(const OS_object_token_t *token, cpuaddr *SymbolAddress, const char *SymbolName);
 
 /*----------------------------------------------------------------
-   Function: OS_SymbolTableDump_Impl
 
     Purpose: Dumps the system symbol table to a file
 

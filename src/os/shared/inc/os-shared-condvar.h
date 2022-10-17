@@ -50,7 +50,6 @@ extern OS_condvar_internal_record_t OS_condvar_table[OS_MAX_CONDVARS];
 int32 OS_CondVarAPI_Init(void);
 
 /*----------------------------------------------------------------
-   Function: OS_CondVarCreate_Impl
 
     Purpose: Prepare/allocate OS resources for a condvar object
 
@@ -59,7 +58,6 @@ int32 OS_CondVarAPI_Init(void);
 int32 OS_CondVarCreate_Impl(const OS_object_token_t *token, uint32 options);
 
 /*----------------------------------------------------------------
-   Function: OS_CondVarLock_Impl
 
     Purpose: Acquires the underlying mutex
 
@@ -68,7 +66,6 @@ int32 OS_CondVarCreate_Impl(const OS_object_token_t *token, uint32 options);
 int32 OS_CondVarLock_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_CondVarUnlock_Impl
 
     Purpose: Release the underlying mutex
 
@@ -77,7 +74,6 @@ int32 OS_CondVarLock_Impl(const OS_object_token_t *token);
 int32 OS_CondVarUnlock_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_CondVarSignal_Impl
 
     Purpose: Wake up one blocked task
 
@@ -86,7 +82,6 @@ int32 OS_CondVarUnlock_Impl(const OS_object_token_t *token);
 int32 OS_CondVarSignal_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_CondVarBroadcast_Impl
 
     Purpose: Wake up all blocked tasks
 
@@ -95,7 +90,6 @@ int32 OS_CondVarSignal_Impl(const OS_object_token_t *token);
 int32 OS_CondVarBroadcast_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_CondVarWait_Impl
 
     Purpose: Wait indefinitely for the condvar to be signaled
 
@@ -104,7 +98,6 @@ int32 OS_CondVarBroadcast_Impl(const OS_object_token_t *token);
 int32 OS_CondVarWait_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_CondVarTimedWait_Impl
 
     Purpose: Time-Limited wait for the condvar to be signaled
 
@@ -113,7 +106,6 @@ int32 OS_CondVarWait_Impl(const OS_object_token_t *token);
 int32 OS_CondVarTimedWait_Impl(const OS_object_token_t *token, const OS_time_t *abs_wakeup_time);
 
 /*----------------------------------------------------------------
-   Function: OS_CondVarDelete_Impl
 
     Purpose: Free the OS resources associated with a condvar object
 
@@ -122,7 +114,6 @@ int32 OS_CondVarTimedWait_Impl(const OS_object_token_t *token, const OS_time_t *
 int32 OS_CondVarDelete_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_CondVarGetInfo_Impl
 
     Purpose: Obtain OS-specific information about the condvar object
 

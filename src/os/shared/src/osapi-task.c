@@ -63,8 +63,6 @@ OS_task_internal_record_t OS_task_table[LOCAL_NUM_OBJECTS];
 
 /*----------------------------------------------------------------
  *
- * Function: OS_TaskPrepare
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Helper function for registering new tasks in the global database.
  *           This maps the given task_id back to the array entry (OS_task_internal_record_t)
@@ -111,11 +109,9 @@ static int32 OS_TaskPrepare(osal_id_t task_id, osal_task_entry *entrypt)
     }
 
     return return_code;
-} /* end OS_TaskPrepare */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskEntryPoint
  *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           The entry point for all OSAL tasks
@@ -139,7 +135,7 @@ void OS_TaskEntryPoint(osal_id_t task_id)
 
     /* If the function returns, treat as a normal exit and do the proper cleanup */
     OS_TaskExit();
-} /* end OS_TaskEntryPoint */
+}
 
 /*
  *********************************************************************************
@@ -149,8 +145,6 @@ void OS_TaskEntryPoint(osal_id_t task_id)
 
 /*----------------------------------------------------------------
  *
- * Function: OS_TaskAPI_Init
- *
  *  Purpose: Local helper routine, not part of OSAL API.
  *           Init function for OS-independent layer
  *
@@ -159,11 +153,9 @@ int32 OS_TaskAPI_Init(void)
 {
     memset(OS_task_table, 0, sizeof(OS_task_table));
     return OS_SUCCESS;
-} /* end OS_TaskAPI_Init */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskCreate
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -208,11 +200,9 @@ int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry f
     }
 
     return return_code;
-} /* end OS_TaskCreate */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskDelete
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -249,11 +239,9 @@ int32 OS_TaskDelete(osal_id_t task_id)
     }
 
     return return_code;
-} /* end OS_TaskDelete */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskExit
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -277,11 +265,9 @@ void OS_TaskExit()
     OS_TaskExit_Impl();
 
     /* Impl function never returns */
-} /* end OS_TaskExit */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskDelay
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -291,11 +277,9 @@ int32 OS_TaskDelay(uint32 millisecond)
 {
     /* just call the implementation */
     return OS_TaskDelay_Impl(millisecond);
-} /* end OS_TaskDelay */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskSetPriority
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -325,11 +309,9 @@ int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority)
     }
 
     return return_code;
-} /* end OS_TaskSetPriority */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskGetId
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -342,11 +324,9 @@ osal_id_t OS_TaskGetId(void)
     task_id = OS_TaskGetId_Impl();
 
     return task_id;
-} /* end OS_TaskGetId */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskGetIdByName
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -363,12 +343,9 @@ int32 OS_TaskGetIdByName(osal_id_t *task_id, const char *task_name)
     return_code = OS_ObjectIdFindByName(LOCAL_OBJID_TYPE, task_name, task_id);
 
     return return_code;
-
-} /* end OS_TaskGetIdByName */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskGetInfo
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -407,12 +384,9 @@ int32 OS_TaskGetInfo(osal_id_t task_id, OS_task_prop_t *task_prop)
     }
 
     return return_code;
-
-} /* end OS_TaskGetInfo */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskInstallDeleteHandler
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -440,11 +414,9 @@ int32 OS_TaskInstallDeleteHandler(osal_task_entry function_pointer)
     }
 
     return return_code;
-} /* end OS_TaskInstallDeleteHandler */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_TaskFindIdBySystemData
  *
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
@@ -475,4 +447,4 @@ int32 OS_TaskFindIdBySystemData(osal_id_t *task_id, const void *sysdata, size_t 
     }
 
     return return_code;
-} /* end OS_TaskFindIdBySystemData */
+}

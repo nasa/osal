@@ -59,8 +59,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_FileOpen_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -120,11 +118,9 @@ int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, i
     impl->selectable = ((os_perm & O_NONBLOCK) != 0);
 
     return OS_SUCCESS;
-} /* end OS_FileOpen_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileStat_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -211,11 +207,9 @@ int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
     }
 
     return OS_SUCCESS;
-} /* end OS_FileStat_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileChmod_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -332,12 +326,9 @@ int32 OS_FileChmod_Impl(const char *local_path, uint32 access_mode)
     close(fd);
 
     return status;
-
-} /* end OS_FileChmod_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileRemove_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -351,11 +342,9 @@ int32 OS_FileRemove_Impl(const char *local_path)
     }
 
     return OS_SUCCESS;
-} /* end OS_FileRemove_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_FileRename_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -369,4 +358,4 @@ int32 OS_FileRename_Impl(const char *old_path, const char *new_path)
     }
 
     return OS_SUCCESS;
-} /* end OS_FileRename_Impl */
+}

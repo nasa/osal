@@ -43,7 +43,6 @@
 int32 OS_SocketAPI_Init(void);
 
 /*----------------------------------------------------------------
-   Function: OS_SocketOpen_Impl
 
     Purpose: Opens the OS socket indicated by the sock_id table entry
 
@@ -52,7 +51,6 @@ int32 OS_SocketAPI_Init(void);
 int32 OS_SocketOpen_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_SocketBind_Impl
 
    Purpose: Binds the indicated socket table entry to the passed-in address
 
@@ -61,7 +59,6 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token);
 int32 OS_SocketBind_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr);
 
 /*----------------------------------------------------------------
-   Function: OS_SocketAccept_Impl
 
    Purpose: Accept an incoming connection on the indicated socket (must be a STREAM socket)
             Will wait up to "timeout" milliseconds for an incoming connection
@@ -73,7 +70,6 @@ int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_
                            OS_SockAddr_t *Addr, int32 timeout);
 
 /*----------------------------------------------------------------
-   Function: OS_SocketConnect_Impl
 
     Purpose: Connects the socket to a remote address.
              Socket must be of the STREAM variety.
@@ -83,7 +79,6 @@ int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_
 int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr, int32 timeout);
 
 /*----------------------------------------------------------------
-   Function: OS_SocketShutdown_Impl
 
     Purpose: Graceful shutdown of a stream socket
 
@@ -92,7 +87,6 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
 int32 OS_SocketShutdown_Impl(const OS_object_token_t *token, OS_SocketShutdownMode_t Mode);
 
 /*----------------------------------------------------------------
-   Function: OS_SocketRecvFrom_Impl
 
     Purpose: Receives a datagram from the specified socket (must be of the DATAGRAM type)
              Stores the datagram in "buffer" which has a maximum size of "buflen"
@@ -106,7 +100,6 @@ int32 OS_SocketRecvFrom_Impl(const OS_object_token_t *token, void *buffer, size_
                              int32 timeout);
 
 /*----------------------------------------------------------------
-   Function: OS_SocketSendTo_Impl
 
     Purpose: Sends a datagram from the specified socket (must be of the DATAGRAM type)
              to the remote address specified by "RemoteAddr"
@@ -119,8 +112,6 @@ int32 OS_SocketSendTo_Impl(const OS_object_token_t *token, const void *buffer, s
 
 /*----------------------------------------------------------------
 
-   Function: OS_SocketGetInfo_Impl
-
     Purpose: Get OS-specific information about a socket
 
     Returns: OS_SUCCESS on success, or relevant error code
@@ -129,8 +120,6 @@ int32 OS_SocketGetInfo_Impl(const OS_object_token_t *token, OS_socket_prop_t *so
 
 /*----------------------------------------------------------------
 
-   Function: OS_SocketAddrInit_Impl
-
     Purpose: Initializes an OSAL SockAddr structure to the given address domain
 
     Returns: OS_SUCCESS on success, or relevant error code
@@ -138,7 +127,6 @@ int32 OS_SocketGetInfo_Impl(const OS_object_token_t *token, OS_socket_prop_t *so
 int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain);
 
 /*----------------------------------------------------------------
-   Function: OS_SocketAddrToString_Impl
 
    Purpose: Converts a Socket Address structure to a printable string
             Useful for including a dotted-decimal IP address in a message or log
@@ -148,7 +136,6 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain);
 int32 OS_SocketAddrToString_Impl(char *buffer, size_t buflen, const OS_SockAddr_t *Addr);
 
 /*----------------------------------------------------------------
-   Function: OS_SocketAddrFromString_Impl
 
    Purpose: Sets the Address portion of the SockAddr structure according to the string
             For IPV4 (SocketDomain_INET) this will parse the dotted decimal IP address.
@@ -158,7 +145,6 @@ int32 OS_SocketAddrToString_Impl(char *buffer, size_t buflen, const OS_SockAddr_
 int32 OS_SocketAddrFromString_Impl(OS_SockAddr_t *Addr, const char *string);
 
 /*----------------------------------------------------------------
-   Function: OS_SocketAddrGetPort_Impl
 
    Purpose: Retrieve the TCP/UDP port number from the SockAddr structure
 
@@ -170,7 +156,6 @@ int32 OS_SocketAddrFromString_Impl(OS_SockAddr_t *Addr, const char *string);
 int32 OS_SocketAddrGetPort_Impl(uint16 *PortNum, const OS_SockAddr_t *Addr);
 
 /*----------------------------------------------------------------
-   Function: OS_SocketAddrSetPort_Impl
 
     Purpose: Set the TCP/UDP port number in the SockAddr structure
 

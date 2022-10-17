@@ -61,7 +61,6 @@ extern OS_task_internal_record_t OS_task_table[OS_MAX_TASKS];
 int32 OS_TaskAPI_Init(void);
 
 /*----------------------------------------------------------------
-   Function: OS_TaskEntryPoint
 
     Purpose: Entry point for all newly created tasks
 
@@ -74,7 +73,6 @@ int32 OS_TaskAPI_Init(void);
 void OS_TaskEntryPoint(osal_id_t global_task_id);
 
 /*----------------------------------------------------------------
-   Function: OS_TaskMatch_Impl
 
     Purpose: Determines if the caller matches the given task_id
 
@@ -84,8 +82,6 @@ int32 OS_TaskMatch_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
 
-   Function: OS_TaskCreate_Impl
-
     Purpose: Prepare/Allocate OS resources for a new task and start
              running it, based on configuration in the global object
 
@@ -94,7 +90,6 @@ int32 OS_TaskMatch_Impl(const OS_object_token_t *token);
 int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags);
 
 /*----------------------------------------------------------------
-   Function: OS_TaskDetach_Impl
 
     Purpose: Sets the thread so that the OS resources associated with the task
              will be released when the thread exits itself
@@ -104,7 +99,6 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags);
 int32 OS_TaskDetach_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_TaskDelete_Impl
 
     Purpose: Free the OS resources associated with the specified task
 
@@ -113,7 +107,6 @@ int32 OS_TaskDetach_Impl(const OS_object_token_t *token);
 int32 OS_TaskDelete_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
-   Function: OS_TaskExit_Impl
 
     Purpose: Exits the calling task
 
@@ -122,7 +115,6 @@ int32 OS_TaskDelete_Impl(const OS_object_token_t *token);
 void OS_TaskExit_Impl(void);
 
 /*----------------------------------------------------------------
-   Function: OS_TaskDelay_Impl
 
     Purpose: Blocks the calling task for the specified number of milliseconds
 
@@ -131,7 +123,6 @@ void OS_TaskExit_Impl(void);
 int32 OS_TaskDelay_Impl(uint32 millisecond);
 
 /*----------------------------------------------------------------
-   Function: OS_TaskSetPriority_Impl
 
     Purpose: Set the scheduling priority of the specified task
 
@@ -140,7 +131,6 @@ int32 OS_TaskDelay_Impl(uint32 millisecond);
 int32 OS_TaskSetPriority_Impl(const OS_object_token_t *token, osal_priority_t new_priority);
 
 /*----------------------------------------------------------------
-   Function: OS_TaskGetId_Impl
 
     Purpose: Obtain the OSAL task ID of the caller
 
@@ -149,7 +139,6 @@ int32 OS_TaskSetPriority_Impl(const OS_object_token_t *token, osal_priority_t ne
 osal_id_t OS_TaskGetId_Impl(void);
 
 /*----------------------------------------------------------------
-   Function: OS_TaskGetInfo_Impl
 
     Purpose: Obtain OS-specific information about a task
 
@@ -158,8 +147,6 @@ osal_id_t OS_TaskGetId_Impl(void);
 int32 OS_TaskGetInfo_Impl(const OS_object_token_t *token, OS_task_prop_t *task_prop);
 
 /*----------------------------------------------------------------
-
-   Function: OS_TaskRegister_Impl
 
     Purpose: Perform registration actions after new task creation
 
@@ -172,8 +159,6 @@ int32 OS_TaskRegister_Impl(osal_id_t global_task_id);
 
 /*----------------------------------------------------------------
 
-   Function: OS_TaskIdMatchSystemData_Impl
-
     Purpose: A helper "match" function to find an OSAL task ID based on system ID
              Compatible with the "OS_ObjectIdFindBySearch" routine
 
@@ -181,8 +166,6 @@ int32 OS_TaskRegister_Impl(osal_id_t global_task_id);
 bool OS_TaskIdMatchSystemData_Impl(void *ref, const OS_object_token_t *token, const OS_common_record_t *obj);
 
 /*----------------------------------------------------------------
-
-   Function: OS_TaskValidateSystemData_Impl
 
     Purpose: Checks that the supplied sysdata pointer and sysdata_size are
              compatible/reasonable for the underlying OS.

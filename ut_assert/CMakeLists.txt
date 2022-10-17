@@ -82,4 +82,25 @@ target_link_libraries(ut_coverage_compile INTERFACE ut_assert)
 add_library(ut_coverage_link INTERFACE)
 target_link_libraries(ut_coverage_link INTERFACE ut_assert)
 
+if (OSAL_INSTALL_LIBRARIES)
 
+    install(
+        TARGETS ut_assert ut_coverage_compile ut_coverage_link
+        EXPORT nasa-osal-export
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        PUBLIC_HEADER DESTINATION include/ut_assert
+        INCLUDES DESTINATION include/ut_assert
+    )
+    install(DIRECTORY
+        ${UT_ASSERT_SOURCE_DIR}/inc/
+        DESTINATION include/ut_assert
+    )
+    install(
+        PROGRAMS scripts/generate_stubs.pl
+        DESTINATION bin
+        RENAME utassert_generate_stubs.pl
+    )
+
+endif()

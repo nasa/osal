@@ -85,7 +85,7 @@ void Test_OS_VxWorks_GenericSemGive(void)
     OSAPI_TEST_FUNCTION_RC(OS_VxWorks_GenericSemGive(SemID), OS_SUCCESS);
     UT_SetDefaultReturnValue(UT_KEY(OCS_semGive), OCS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_VxWorks_GenericSemGive(SemID), OS_SEM_FAILURE);
-} /* end OS_VxWorks_GenericSemGive */
+}
 
 void Test_OS_VxWorks_GenericSemTake(void)
 {
@@ -104,8 +104,7 @@ void Test_OS_VxWorks_GenericSemTake(void)
     OCS_errno = OCS_S_objLib_OBJ_UNAVAILABLE;
     OSAPI_TEST_FUNCTION_RC(OS_VxWorks_GenericSemTake(SemID, 0), OS_SEM_TIMEOUT);
     OSAPI_TEST_FUNCTION_RC(OS_VxWorks_GenericSemTake(SemID, 1), OS_SEM_FAILURE);
-
-} /* end OS_VxWorks_GenericSemTake */
+}
 
 /* ------------------- End of test cases --------------------------------------*/
 

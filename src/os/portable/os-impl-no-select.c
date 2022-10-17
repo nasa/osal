@@ -53,8 +53,6 @@
 
 /*----------------------------------------------------------------
  *
- * Function: OS_SelectSingle_Impl
- *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
  *
@@ -62,11 +60,9 @@
 int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, int32 msecs)
 {
     return OS_ERR_NOT_IMPLEMENTED;
-} /* end OS_SelectSingle_Impl */
+}
 
 /*----------------------------------------------------------------
- *
- * Function: OS_SelectMultiple_Impl
  *
  *  Purpose: Implemented per internal OSAL API
  *           See prototype for argument/return detail
@@ -75,4 +71,4 @@ int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, 
 int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
 {
     return OS_ERR_NOT_IMPLEMENTED;
-} /* end OS_SelectMultiple_Impl */
+}
