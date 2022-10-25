@@ -90,7 +90,7 @@ void condvar_worker(uint32 my_num)
         ++my_state->run_count;
         UtPrintf("Doing Work task %u, mask=0x%x condition was=%x\n", (unsigned int)my_num, (unsigned int)my_state->mask,
                  (unsigned int)prev_condition);
-        OS_TaskDelay(50 + (NUM_TASKS * 5));
+        OS_TaskDelay(25 + (NUM_TASKS * 5));
     }
 }
 
@@ -169,7 +169,6 @@ void CondVarTest_Execute(void)
         UtAssert_UINT32_EQ(total_work, num_signals);
         UtAssert_UINT32_NEQ(curr_condition, ALL_RUN_CONDITION);
         UtAssert_UINT32_NEQ(curr_condition, 0);
-        UtAssert_UINT32_EQ(task_states[i].run_count, 1);
         UtAssert_INT32_EQ(OS_CondVarUnlock(condvar_id), OS_SUCCESS);
 
         UtAssert_INT32_EQ(OS_CondVarSignal(condvar_id), OS_SUCCESS);
@@ -180,13 +179,19 @@ void CondVarTest_Execute(void)
 
     /* after a the last signal, all the other tasks should have run */
     UtAssert_INT32_EQ(OS_CondVarLock(condvar_id), OS_SUCCESS);
+    for (i = 0; i < NUM_TASKS; ++i)
+    {
+        UtAssert_UINT32_EQ(task_states[i].run_count, 1);
+    }
     UtAssert_UINT32_EQ(total_work, num_signals);
     UtAssert_BITMASK_UNSET(curr_condition, ALL_RUN_CONDITION);
     curr_condition = ALL_RUN_CONDITION;
     UtAssert_INT32_EQ(OS_CondVarBroadcast(condvar_id), OS_SUCCESS);
     UtAssert_INT32_EQ(OS_CondVarUnlock(condvar_id), OS_SUCCESS);
 
-    OS_TaskDelay(100);
+    /* Give sufficient time for all tasks to wake up and do their work */
+    OS_TaskDelay(100 + (NUM_TASKS * 10));
+
     UtAssert_INT32_EQ(OS_CondVarLock(condvar_id), OS_SUCCESS);
     UtAssert_BITMASK_UNSET(curr_condition, ALL_RUN_CONDITION);
     for (i = 0; i < NUM_TASKS; ++i)
@@ -198,7 +203,8 @@ void CondVarTest_Execute(void)
     UtAssert_INT32_EQ(OS_CondVarBroadcast(condvar_id), OS_SUCCESS);
     UtAssert_INT32_EQ(OS_CondVarUnlock(condvar_id), OS_SUCCESS);
 
-    OS_TaskDelay(20);
+    /* Give sufficient time for all tasks to wake up and do their work */
+    OS_TaskDelay(100 + (NUM_TASKS * 10));
 
     UtAssert_INT32_EQ(OS_CondVarLock(condvar_id), OS_SUCCESS);
     UtAssert_UINT32_EQ(total_work, (NUM_TASKS * 2) + 1);
