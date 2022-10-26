@@ -1,6 +1,10 @@
 # Changelog
 
-## Development Build: v6.0.0-rc4:dev143
+## Development Build: v6.0.0-rc4+dev147
+- adjust timing on condvar tests
+- See <https://github.com/nasa/osal/pull/1319>
+
+## Development Build: v6.0.0-rc4+dev143
 - locks for condvar objects on rtems/vxworks
 - Add time conversion reciprocal functions
 - add export targets and package script
