@@ -266,7 +266,7 @@ void OS_printf(const char *String, ...)
     char    msg_buffer[OS_BUFFER_SIZE];
     int     actualsz;
 
-    BUGCHECK((String) != NULL, )
+    BUGCHECK_VOID(String != NULL)
 
     if (OS_SharedGlobalVars.GlobalState != OS_INIT_MAGIC_NUMBER)
     {
