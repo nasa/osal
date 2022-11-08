@@ -49,13 +49,13 @@
 #                  Normally this setting is not needed to be configured as it is
 #                  inferred from the BSP type.
 #
-# OSAL_INSTALL_LIBRARIES : Boolean, enables "install" of targets listed above such 
+# OSAL_INSTALL_LIBRARIES : Boolean, enables "install" of targets listed above such
 #                  that libraries and public API header files are copied into the system
 #                  location specified by CMAKE_INSTALL_PREFIX.  This set of headers
 #                  and link libraries can then be used to compile other applications
 #                  separately from OSAL.  Default is "ON" when OSAL is being compiled
 #                  standalone (i.e. cmake called directly on the OSAL source dir).
-#                  Default is "OFF" when OSAL is included via 'add_subdirectory' in 
+#                  Default is "OFF" when OSAL is included via 'add_subdirectory' in
 #                  a parent application project such as CFE/CFS.
 #
 # ENABLE_UNIT_TESTS : Boolean, enables build of the unit tests (coverage and functional)
@@ -203,12 +203,18 @@ add_definitions(${OSAL_USER_C_FLAGS})
 #
 # Build UT assert -
 # the basic ut_assert library target is always defined regardless of "ENABLE_UNIT_TESTS",
-# but flagged using "EXCLUDE_FROM_ALL" so they won't be built unless actually used.  This
-# is because the library is usable with functional tests, not just unit (coverage) tests.
+# This is because the library is usable with functional tests, not just unit (coverage) tests.
 # This is done early, so that other targets may reference UT_ASSERT_SOURCE_DIR if needed
 # Note that UT assert is only usable with an OSAL BSP implementation, thus this target
 # cannot be compiled unless a specific BSP is selected.
 add_subdirectory(ut_assert)
+
+# The "ut_osapi_stubs" library contains stub functions of the OSAL API calls, used for
+# testing _other_ application code that uses OSAL.  Like UT Assert, this is also
+# provided independently of the local ENABLE_UNIT_TESTS switch, because it mainly affects
+# testing of other components.  That is, even if OSAL itself is not being tested in this
+# build, a dependent application may still be built with testing enabled.
+add_subdirectory(src/ut-stubs ut-stubs)
 
 #
 # Step 1:
@@ -409,10 +415,6 @@ if (ENABLE_UNIT_TESTS)
       endforeach()
 
     endfunction(add_osal_ut_exe)
-
-    # The "ut_osapi_stubs" library contains "stub" functions of the OSAL API calls, used for
-    # testing other application code built on top of OSAL.
-    add_subdirectory(src/ut-stubs ut-stubs)
 
     # The "unit-test-coverage" is a white-box line coverage test.
     # It re-compiles each source unit for coverage analysis and links
