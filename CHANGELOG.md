@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev151
+- add BUGCHECK_VOID macro
+- See <https://github.com/nasa/osal/pull/1323>
+
 ## Development Build: v6.0.0-rc4+dev147
 - adjust timing on condvar tests
 - See <https://github.com/nasa/osal/pull/1319>

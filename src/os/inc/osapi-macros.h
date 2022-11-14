@@ -136,4 +136,13 @@
  */
 #define LENGTHCHECK(str, len, errcode) ARGCHECK(memchr(str, '\0', len), errcode)
 
+/**
+ * @brief Bug-Check macro for void functions
+ *
+ * The basic BUGCHECK macro returns a value, which needs to be empty
+ * for functions that do not have a return value.  In this case the
+ * second argument (errcode) is intentionally left blank.
+ */
+#define BUGCHECK_VOID(cond) BUGCHECK(cond, )
+
 #endif /* OSAPI_MACROS_H */
