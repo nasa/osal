@@ -77,7 +77,7 @@ void Test_OS_SymTableIterator_Impl(void)
 
     /* Check case where entry has a name that is too long */
     UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000), false);
+    OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_CallIteratorFunc("ut", &Data, 100, 1000), true);
     OSAPI_TEST_FUNCTION_RC(UT_SymTabTest_GetIteratorStatus(), OS_ERR_NAME_TOO_LONG);
     UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
