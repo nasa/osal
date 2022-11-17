@@ -168,11 +168,13 @@ int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
                 OS_DEBUG("rtems_blkdev_create() failed: %s.\n", rtems_status_text(sc));
                 return_code = OS_ERROR;
             }
+            else
+            {
+                OS_DEBUG("RAM disk initialized: volume=%s device=%s address=0x%08lX\n", local->volume_name,
+                         impl->blockdev_name, (unsigned long)local->address);
 
-            OS_DEBUG("RAM disk initialized: volume=%s device=%s address=0x%08lX\n", local->volume_name,
-                     impl->blockdev_name, (unsigned long)local->address);
-
-            return_code = OS_SUCCESS;
+                return_code = OS_SUCCESS;
+            }
             break;
         }
         default:

@@ -80,6 +80,7 @@ static void *OS_ConsoleTask_Entry(void *arg)
     OS_impl_console_internal_record_t *local;
     OS_object_token_t                  token;
 
+    /* cppcheck-suppress unreadVariable // intentional use of other union member */
     local_arg.opaque_arg = arg;
     if (OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_CONSOLE, local_arg.id, &token) == OS_SUCCESS)
     {
@@ -125,6 +126,7 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
             }
             else
             {
+                /* cppcheck-suppress unreadVariable // intentional use of other union member */
                 local_arg.id = OS_ObjectIdFromToken(token);
                 return_code  = OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
                                                                OS_ConsoleTask_Entry, local_arg.opaque_arg);
