@@ -93,16 +93,18 @@ void UT_os_count_sem_create_test()
     /* #4 Initial-count-too-high */
 
     /*
-     * This test can only be done if the OS defines a specific "SEM_VALUE_MAX"
-     * The OSAL should define this for itself, but it currently does not.
-     *  (This macro is not currently defined in RTEMS)
+     * The intent with this test case is to call OS_CountSemCreate() with an initial
+     * value greater than SEM_VALUE_MAX and confirm it returns OS_INVALID_SEM_VALUE.
+     *
+     * However, none of the currently available test platforms are able to produce
+     * this condition, because SEM_VALUE_MAX is either not defined/exposed or it
+     * is equal to UINT32_MAX and thus impossible to pass a value greater than this.
+     *
+     * Therefore a placeholder is here in case a platform in the future does permit
+     * it to be tested.  Note that the check and return value is still tested in the
+     * coverage test for this function.
      */
-#if defined(SEM_VALUE_MAX) && SEM_VALUE_MAX < UINT32_MAX
-    UT_RETVAL(OS_CountSemCreate(&count_sem_ids[0], "CountSem1", ((uint32)SEM_VALUE_MAX) + 1, 0), OS_INVALID_SEM_VALUE,
-              "#4 Initial-count-too-high");
-#else
     UtAssert_NA("#4 Initial-count-too-high");
-#endif
 
     /*-----------------------------------------------------*/
     /* #5 No-free-IDs */

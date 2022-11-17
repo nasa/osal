@@ -137,7 +137,7 @@ int32 OS_GenericSymbolLookup_Impl(void *dl_handle, cpuaddr *SymbolAddress, const
 int32 OS_SymbolLookup_Impl(cpuaddr *SymbolAddress, const char *SymbolName)
 {
     int32            status;
-    int32            local_status = OS_ERROR;
+    int32            local_status;
     OS_object_iter_t iter;
 
     /* First search global table */

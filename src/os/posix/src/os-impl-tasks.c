@@ -114,6 +114,7 @@ static void *OS_PthreadTaskEntry(void *arg)
 {
     OS_VoidPtrValueWrapper_t local_arg;
 
+    /* cppcheck-suppress unreadVariable // intentional use of other union member */
     local_arg.opaque_arg = arg;
     OS_TaskEntryPoint(local_arg.id); /* Never returns */
 
@@ -574,8 +575,10 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
     OS_impl_task_internal_record_t *impl;
     OS_task_internal_record_t *     task;
 
-    arg.opaque_arg = NULL;
-    arg.id         = OS_ObjectIdFromToken(token);
+    memset(&arg, 0, sizeof(arg));
+
+    /* cppcheck-suppress unreadVariable // intentional use of other union member */
+    arg.id = OS_ObjectIdFromToken(token);
 
     task = OS_OBJECT_TABLE_GET(OS_task_table, *token);
     impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
@@ -787,8 +790,10 @@ int32 OS_TaskRegister_Impl(osal_id_t global_task_id)
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &old_state);
     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, &old_type);
 
-    arg.opaque_arg = 0;
-    arg.id         = global_task_id;
+    memset(&arg, 0, sizeof(arg));
+
+    /* cppcheck-suppress unreadVariable // intentional use of other union member */
+    arg.id = global_task_id;
 
     return_code = pthread_setspecific(POSIX_GlobalVars.ThreadKey, arg.opaque_arg);
     if (return_code == 0)
@@ -814,6 +819,7 @@ osal_id_t OS_TaskGetId_Impl(void)
 {
     OS_VoidPtrValueWrapper_t self_record;
 
+    /* cppcheck-suppress unreadVariable // intentional use of other union member */
     self_record.opaque_arg = pthread_getspecific(POSIX_GlobalVars.ThreadKey);
 
     return self_record.id;
