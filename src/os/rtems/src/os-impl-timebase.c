@@ -471,8 +471,10 @@ int32 OS_TimeBaseSet_Impl(const OS_object_token_t *token, uint32 start_time, uin
             */
             OS_UsecsToTicks(start_time, &start_ticks);
 
-            user_data.opaque_arg = NULL;
-            user_data.id         = OS_ObjectIdFromToken(token);
+            memset(&user_data, 0, sizeof(user_data));
+
+            /* cppcheck-suppress unreadVariable // intentional use of other union member */
+            user_data.id = OS_ObjectIdFromToken(token);
 
             status = rtems_timer_fire_after(local->rtems_timer_id, start_ticks, OS_TimeBase_ISR, user_data.opaque_arg);
             if (status != RTEMS_SUCCESSFUL)

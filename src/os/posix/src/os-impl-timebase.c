@@ -305,8 +305,10 @@ static void *OS_TimeBasePthreadEntry(void *arg)
 {
     OS_VoidPtrValueWrapper_t local_arg;
 
+    /* cppcheck-suppress unreadVariable // intentional use of other union member */
     local_arg.opaque_arg = arg;
     OS_TimeBase_CallbackThread(local_arg.id);
+
     return NULL;
 }
 
@@ -341,9 +343,11 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
      * Note the thread will not actually start running until this function exits and releases
      * the global table lock.
      */
-    arg.opaque_arg = NULL;
-    arg.id         = OS_ObjectIdFromToken(token);
-    return_code    = OS_Posix_InternalTaskCreate_Impl(&local->handler_thread, OSAL_PRIORITY_C(0), 0,
+    memset(&arg, 0, sizeof(arg));
+
+    /* cppcheck-suppress unreadVariable // intentional use of other union member */
+    arg.id      = OS_ObjectIdFromToken(token);
+    return_code = OS_Posix_InternalTaskCreate_Impl(&local->handler_thread, OSAL_PRIORITY_C(0), 0,
                                                    OS_TimeBasePthreadEntry, arg.opaque_arg);
     if (return_code != OS_SUCCESS)
     {
