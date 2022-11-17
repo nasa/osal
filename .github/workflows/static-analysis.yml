@@ -4,10 +4,12 @@ name: Static Analysis
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   static-analysis:
-    name: Run cppcheck
+    name: Run Static Analysis
     uses: nasa/cFS/.github/workflows/static-analysis.yml@main
     with: 
       strict-dir-list: './src/bsp ./src/os'
+      cmake-project-options: -DENABLE_UNIT_TESTS=TRUE -DOSAL_OMIT_DEPRECATED=TRUE -DOSAL_SYSTEM_BSPTYPE=generic-linux
