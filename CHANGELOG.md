@@ -1,5 +1,11 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev161
+- Truncate symbol name if > OS_MAX_SYM_LEN
+- always provide UT stub library
+- cppcheck updates
+- See <https://github.com/nasa/osal/pull/1335>, <https://github.com/nasa/osal/pull/1329>, and <https://github.com/nasa/osal/pull/1336>
+
 ## Development Build: v6.0.0-rc4+dev151
 - add BUGCHECK_VOID macro
 - See <https://github.com/nasa/osal/pull/1323>
