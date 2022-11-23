@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  #Checks for duplicate actions. Skips push actions if there is a matching or duplicate pull-request action. 
+  #Checks for duplicate actions. Skips push actions if there is a matching or duplicate pull-request action.
   check-for-duplicates:
     runs-on: ubuntu-latest
     # Map a step output to a job output
@@ -30,7 +30,7 @@ jobs:
         run: sudo apt-get install lcov -y
 
       - name: Checkout submodule
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up for build
         run: |
@@ -44,9 +44,9 @@ jobs:
       - name: Test
         run: make test
 
-      - name: Calculate coverage 
+      - name: Calculate coverage
         run: make lcov | tee lcov_out.txt
- 
+
       - name: Confirm 100% line coverage
         run: |
           if [[ `grep -A 3 "Overall coverage rate" lcov_out.txt | grep lines` != *"100.0%"* ]]; then
@@ -63,7 +63,7 @@ jobs:
 
           diff=$(echo $coverage_nums | awk '{ print $4 - $3 }')
           if [ $diff -gt $missed_branches ]
-          then 
+          then
             grep -A 3 "Overall coverage rate" lcov_out.txt
             echo "More than $missed_branches branches missed"
             exit -1
