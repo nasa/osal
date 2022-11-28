@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev165
+- Update CI to use Ubuntu 20.04
+- See <https://github.com/nasa/osal/pull/1334>
+
 ## Development Build: v6.0.0-rc4+dev161
 - Truncate symbol name if > OS_MAX_SYM_LEN
 - always provide UT stub library
