@@ -1,5 +1,11 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev173
+- Update action versions
+- add doc-prebuild dependency
+- Update incorrect function header comment
+- See <https://github.com/nasa/osal/pull/1342>, <https://github.com/nasa/osal/pull/1341>, and <https://github.com/nasa/osal/pull/1321>
+
 ## Development Build: v6.0.0-rc4+dev165
 - Update CI to use Ubuntu 20.04
 - See <https://github.com/nasa/osal/pull/1334>
