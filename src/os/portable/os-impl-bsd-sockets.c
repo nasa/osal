@@ -365,8 +365,7 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
 
 /*----------------------------------------------------------------
 
-    Purpose: Connects the socket to a remote address.
-             Socket must be of the STREAM variety.
+    Purpose: Graceful shutdown of a stream socket
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
