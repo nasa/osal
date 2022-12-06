@@ -68,16 +68,24 @@ endif ()
 # Generate the list of actual header files from the directories specified.  This is done
 # as a target that runs a separate script such that generator expressions can be evaluated.
 # This is done as a custom target such that it runs and gets updated every build
-add_custom_target(osal_public_api_headerlist 
+add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/docs/osal-public-api.doxyfile"
     COMMAND ${CMAKE_COMMAND}
         -DINCLUDE_DIRECTORIES="${OSAL_API_INCLUDE_DIRECTORIES}"
         -DCOMPILE_DEFINITIONS="${OSAL_API_COMPILE_DEFINITIONS}"
         -DINPUT_TEMPLATE="${CMAKE_CURRENT_SOURCE_DIR}/osal-public-api.doxyfile.in"
         -DOUTPUT_FILE="${CMAKE_BINARY_DIR}/docs/osal-public-api.doxyfile"
         -P "${CMAKE_CURRENT_SOURCE_DIR}/generate-public-api-doxyfile.cmake"
-    BYPRODUCTS "${CMAKE_BINARY_DIR}/docs/osal-public-api.doxyfile"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
+
+add_custom_target(osal_public_api_headerlist
+    DEPENDS "${CMAKE_BINARY_DIR}/docs/osal-public-api.doxyfile")
+
+# if building as part of CFS, then generate the doxygen header list as part of the prebuild step
+# The "doc-prebuild" target is defined by the CFS build, and thus will not exist if building standalone
+if (TARGET doc-prebuild)
+   add_dependencies(doc-prebuild osal_public_api_headerlist)
+endif ()
 
 file(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/osal-apiguide-warnings.log OSAL_NATIVE_LOGFILE)
 file(TO_NATIVE_PATH ${CMAKE_BINARY_DIR}/docs/osal-common.doxyfile OSAL_NATIVE_COMMON_CFGFILE)

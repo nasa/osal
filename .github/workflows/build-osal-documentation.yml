@@ -41,8 +41,8 @@ jobs:
 
       - name: Build OSAL API Guide
         run: |
-          make osal-apiguide > make_osal-apiguide_stdout.txt 2> make_osal-apiguide_stderr.txt
-          mv build/docs/osal-apiguide-warnings.log osal-apiguide-warnings.log          
+          make osal-apiguide 2>&1 > make_osal-apiguide_stdout.txt | tee make_osal-apiguide_stderr.txt
+          mv build/docs/osal-apiguide-warnings.log osal-apiguide-warnings.log
 
       - name: Archive Osal Guide Build Logs
         uses: actions/upload-artifact@v3
