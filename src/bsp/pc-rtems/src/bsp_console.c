@@ -17,9 +17,8 @@
  ************************************************************************/
 
 /*
- * File:  bsp_console.c
+ * \file
  *
- * Purpose:
  *   OSAL BSP debug console abstraction
  */
 

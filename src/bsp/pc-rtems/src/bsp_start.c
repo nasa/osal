@@ -17,15 +17,15 @@
  ************************************************************************/
 
 /*
- * File:  bsp_start.c
+ * \file
  *
- * Purpose:
  *   OSAL BSP main entry point.
  */
 
 /*
 **  Include Files
 */
+/* TODO clean these */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,30 +41,17 @@
 #include <rtems/ramdisk.h>
 #include <rtems/dosfs.h>
 #include <rtems/fsmount.h>
-#include <rtems/shell.h>
-#include <rtems/rtl/dlfcn-shell.h>
-
-#if defined(OS_RTEMS_4_DEPRECATED) || defined(OS_RTEMS_5)
-#include <rtems/mkrootfs.h>
-#endif
 
 #include "pcrtems_bsp_internal.h"
 
-/*
-**  External Declarations
-*/
-extern rtems_status_code rtems_ide_part_table_initialize(const char *);
-extern int               rtems_rtl_shell_command(int argc, char *argv[]);
+/* TODO add bsp_setupfs.h */
+void OS_BSP_SetupFS(void);
 
-/*
- * Additional shell commands for the RTL functionality
- */
-rtems_shell_cmd_t rtems_shell_RTL_Command = {
-    .name = "rtl", .usage = "rtl COMMAND...", .topic = "misc", .command = rtems_rtl_shell_command};
-rtems_shell_cmd_t rtems_shell_dlopen_Command = {
-    .name = "dlopen", .usage = "dlopen COMMAND...", .topic = "misc", .command = shell_dlopen};
-rtems_shell_cmd_t rtems_shell_dlsym_Command = {
-    .name = "dlsym", .usage = "dlsym COMMAND...", .topic = "misc", .command = shell_dlsym};
+/* TODO add bsp_shell.h */
+void OS_BSP_Shell(void);
+
+/* TODO add bsp_cmdline.h */
+void OS_BSP_CmdLine(void);
 
 /*
 ** Global variables
@@ -73,100 +60,19 @@ OS_BSP_PcRtemsGlobalData_t OS_BSP_PcRtemsGlobal;
 
 void OS_BSP_Setup(void)
 {
-    int         status;
-    struct stat statbuf;
-    const char *cmdlinestr;
-    const char *cmdp;
-    char *      cmdi, *cmdo;
-
-    cmdlinestr = bsp_cmdline();
+    int status;
 
     printf("\n\n*** RTEMS Info ***\n");
     printf("%s", OSAL_BSP_COPYRIGHT_NOTICE);
     printf("%s\n\n", rtems_get_version_string());
     printf(" Stack size=%d\n", (int)rtems_configuration_get_stack_space_size());
     printf(" Workspace size=%d\n", (int)rtems_configuration_get_work_space_size());
-    if (cmdlinestr != NULL)
-    {
-        printf(" Bootloader Command Line: %s\n", cmdlinestr);
-    }
+
+    /* Process command line based on selected implementation */
+    // TODO uncomment    OS_BSP_CmdLine();
 
     printf("\n");
     printf("*** End RTEMS info ***\n\n");
-
-    /*
-     * Parse command line string (passed in from bootloader)
-     *
-     * Known arguments are handled here, and unknown args are
-     * saved for the UT application.
-     *
-     * Batch mode is intended for non-interactive execution.
-     *
-     * It does two things:
-     * - do not start the shell task
-     * - when tests are complete, shutdown the executive
-     *
-     * The BSP should be configured with these options to
-     * make this most useful:
-     *   USE_COM1_AS_CONSOLE=1
-     *   BSP_PRESS_KEY_FOR_RESET=0
-     *   BSP_RESET_BOARD_AT_EXIT=1
-     *
-     * This way all the test output will be sent to COM1
-     * and then immediately resets the CPU when done.
-     *
-     * When running under QEMU the "-no-reboot" flag is
-     * also useful to shutdown QEMU rather than resetting.
-     */
-    if (cmdlinestr != NULL)
-    {
-        cmdp = cmdlinestr;
-        cmdo = NULL;
-        cmdi = NULL;
-
-        while (1)
-        {
-            if (isgraph((int)*cmdp))
-            {
-                if (cmdo == NULL)
-                {
-                    cmdo = OS_BSP_PcRtemsGlobal.UserArgBuffer;
-                }
-                else
-                {
-                    ++cmdo;
-                }
-                if (cmdi == NULL)
-                {
-                    cmdi = cmdo;
-                }
-                *cmdo = *cmdp;
-            }
-            else if (cmdi != NULL)
-            {
-                ++cmdo;
-                *cmdo = 0;
-                if (strcmp(cmdi, "--batch-mode") == 0)
-                {
-                    OS_BSP_PcRtemsGlobal.BatchMode = true;
-                }
-                else if (OS_BSP_Global.ArgC < RTEMS_MAX_USER_OPTIONS)
-                {
-                    /* save other args for app */
-                    OS_BSP_Global.ArgV[OS_BSP_Global.ArgC] = cmdi;
-                    ++OS_BSP_Global.ArgC;
-                }
-                cmdi = NULL;
-            }
-
-            if (*cmdp == 0)
-            {
-                break;
-            }
-
-            ++cmdp;
-        }
-    }
 
     /*
      * Initialize the low level access sem
@@ -179,83 +85,19 @@ void OS_BSP_Setup(void)
         BSP_DEBUG("rtems_semaphore_create: %s\n", rtems_status_text(status));
     }
 
-#if defined(OS_RTEMS_4_DEPRECATED) || defined(OS_RTEMS_5)
-    /*
-    ** Create the RTEMS Root file system
-    */
-    status = rtems_create_root_fs();
-    if (status != RTEMS_SUCCESSFUL)
-    {
-        printf("Creating Root file system failed: %s\n", rtems_status_text(status));
-    }
-#endif
+    /* Set up file system based on selected implementation */
+    // TODO uncomment    OS_BSP_SetupFS();
 
     /*
-     * Create the mountpoint for the general purpose file system
-     */
-    if (stat(RTEMS_USER_FS_MOUNTPOINT, &statbuf) < 0)
-    {
-        status = mkdir(RTEMS_USER_FS_MOUNTPOINT,
-                       S_IFDIR | S_IRWXU | S_IRWXG | S_IRWXO); /* For nonvol filesystem mountpoint */
-        if (status < 0)
-        {
-            printf("mkdir failed: %s\n", strerror(errno));
-        }
-    }
-
-    /*
-     * Register the IDE partition table.
-     */
-    status = rtems_ide_part_table_initialize("/dev/hda");
-    if (status != RTEMS_SUCCESSFUL)
-    {
-        /* note this is not necessarily an error, it just means there
-         * will be no persistent storage in this instance.  The IMFS
-         * is still available. */
-        BSP_DEBUG("warning: /dev/hda partition table not found: %s / %s\n", rtems_status_text(status), strerror(errno));
-        BSP_DEBUG("Persistent storage will NOT be mounted\n");
-    }
-    else
-    {
-        status = mount("/dev/hda1", RTEMS_USER_FS_MOUNTPOINT, RTEMS_FILESYSTEM_TYPE_DOSFS, RTEMS_FILESYSTEM_READ_WRITE,
-                       NULL);
-        if (status < 0)
-        {
-            BSP_DEBUG("mount failed: %s\n", strerror(errno));
-        }
-    }
-
-    /*
-     * Change to the user storage mountpoint dir, which
-     * will be the basis of relative directory refs.
-     * If mounted, it will be persistent, otherwise
-     * it will be an IMFS dir, but should generally work.
-     */
-    chdir(RTEMS_USER_FS_MOUNTPOINT);
-
-    /*
-     * Start the shell now, before any application starts.
+     * Start the shell now based on selected implementation
+     *
      * This way, if there is an issue with the application startup,
      * the shell can still be used to debug the system.
      *
-     * The shell is _NOT_ started if the "--batch-mode" switch is
-     * given (this means to run completely autonomous)
+     * The shell is _NOT_ started if BatchMode global is TRUE
+     * which supports completely autonomous execution
      */
-    if (!OS_BSP_PcRtemsGlobal.BatchMode)
-    {
-        status = rtems_shell_init("SHLL", RTEMS_MINIMUM_STACK_SIZE * 4, RTEMS_SHELL_PRIORITY, "/dev/console", false,
-                                  false, NULL);
-        if (status < 0)
-        {
-            printf("shell init failed: %d / %s\n", status, strerror(errno));
-        }
-
-        /* give a small delay to let the shell start,
-           avoids having the login prompt show up mid-test,
-           and gives a little time for pending output to actually
-           be sent to the console in case of a slow port */
-        rtems_task_wake_after(50);
-    }
+    OS_BSP_Shell();
 
     printf("\n\n");
 }
@@ -346,9 +188,9 @@ void OS_BSP_Shutdown_Impl(void)
 }
 
 /*
- ** A simple entry point to start from the loader
+ ** A simple entry point callable from Init or can be loaded and started within an rki
  */
-rtems_task Init(rtems_task_argument ignored)
+void OS_BSPMain(void)
 {
     /*
      * Initially clear the global object
@@ -382,68 +224,3 @@ rtems_task Init(rtems_task_argument ignored)
      */
     OS_BSP_Shutdown_Impl();
 }
-
-/* configuration information */
-
-/*
-** RTEMS OS Configuration definitions
-*/
-#define TASK_INTLEVEL 0
-#define CONFIGURE_INIT
-#define CONFIGURE_INIT_TASK_ATTRIBUTES \
-    (RTEMS_FLOATING_POINT | RTEMS_PREEMPT | RTEMS_NO_TIMESLICE | RTEMS_ASR | RTEMS_INTERRUPT_LEVEL(TASK_INTLEVEL))
-#define CONFIGURE_INIT_TASK_STACK_SIZE (20 * 1024)
-#define CONFIGURE_INIT_TASK_PRIORITY   10
-
-/*
- * Note that these resources are shared with RTEMS itself (e.g. the init task, the shell)
- * so they should be allocated slightly higher than the user limits in osconfig.h
- *
- * Many RTEMS services use tasks internally, including the idle task, BSWP, ATA driver,
- * low level console I/O, the shell, TCP/IP network stack, and DHCP (if enabled).
- * Many of these also use semaphores for synchronization.
- *
- * Budgeting for additional:
- *   8 internal tasks
- *   2 internal timers
- *   4 internal queues
- *   16 internal semaphores
- *
- */
-#define CONFIGURE_MAXIMUM_TASKS          (OS_MAX_TASKS + 8)
-#define CONFIGURE_MAXIMUM_TIMERS         (OS_MAX_TIMERS + 2)
-#define CONFIGURE_MAXIMUM_SEMAPHORES     (OS_MAX_BIN_SEMAPHORES + OS_MAX_COUNT_SEMAPHORES + OS_MAX_MUTEXES + 16)
-#define CONFIGURE_MAXIMUM_MESSAGE_QUEUES (OS_MAX_QUEUES + 4)
-#define CONFIGURE_MAXIMUM_DRIVERS        10
-#define CONFIGURE_MAXIMUM_POSIX_KEYS     4
-#ifdef OS_RTEMS_4_DEPRECATED
-#define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS (OS_MAX_NUM_OPEN_FILES + 8)
-#else
-#define CONFIGURE_MAXIMUM_FILE_DESCRIPTORS (OS_MAX_NUM_OPEN_FILES + 8)
-#endif
-
-#define CONFIGURE_RTEMS_INIT_TASKS_TABLE
-#define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
-#define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
-#define CONFIGURE_USE_IMFS_AS_BASE_FILESYSTEM
-#define CONFIGURE_FILESYSTEM_RFS
-#define CONFIGURE_FILESYSTEM_IMFS
-#define CONFIGURE_FILESYSTEM_DOSFS
-#define CONFIGURE_FILESYSTEM_DEVFS
-#define CONFIGURE_APPLICATION_NEEDS_LIBBLOCK
-#define CONFIGURE_APPLICATION_NEEDS_IDE_DRIVER
-#define CONFIGURE_APPLICATION_NEEDS_ATA_DRIVER
-
-#define CONFIGURE_EXECUTIVE_RAM_SIZE       (8 * 1024 * 1024)
-#define CONFIGURE_MICROSECONDS_PER_TICK    10000
-#define CONFIGURE_ATA_DRIVER_TASK_PRIORITY 9
-
-#include <rtems/confdefs.h>
-
-#define CONFIGURE_SHELL_COMMANDS_INIT
-#define CONFIGURE_SHELL_COMMANDS_ALL
-#define CONFIGURE_SHELL_MOUNT_MSDOS
-
-#define CONFIGURE_SHELL_USER_COMMANDS &rtems_shell_RTL_Command, &rtems_shell_dlopen_Command, &rtems_shell_dlsym_Command
-
-#include <rtems/shellconfig.h>

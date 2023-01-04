@@ -19,7 +19,6 @@
 /**
  * \file
  *
- * Purpose:
  *   Header file for internal data to the PC-RTEMS BSP
  */
 
