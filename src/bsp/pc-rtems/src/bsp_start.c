@@ -23,8 +23,6 @@
  *   OSAL BSP main entry point.
  */
 
-#define _USING_RTEMS_INCLUDES_
-
 /*
 **  Include Files
 */
