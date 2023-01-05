@@ -347,3 +347,14 @@ set(OSAL_CONFIG_MAX_CMD_LEN             1000
 set(OSAL_CONFIG_QUEUE_MAX_DEPTH         50
     CACHE STRING "Maximum depth of message queue"
 )
+
+# Flags added to all tasks on creation
+#
+# Some OS's use floating point under the hood, this supports
+# adding the floating point flag on creation of all tasks instead of
+# just when OS_FP_ENABLED flag is passed in to OS_TaskCreate
+#
+# Set to 0 to not add any
+set(OSAL_CONFIG_ADD_TASK_FLAGS              0
+    CACHE STRING "Flags added to all tasks"
+)

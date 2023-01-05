@@ -192,6 +192,9 @@ int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry f
         task->entry_function_pointer = function_pointer;
         task->stack_pointer          = stack_pointer;
 
+        /* Add default flags */
+        flags |= OS_ADD_TASK_FLAGS;
+
         /* Now call the OS-specific implementation.  This reads info from the task table. */
         return_code = OS_TaskCreate_Impl(&token, flags);
 

@@ -244,6 +244,15 @@
   */
 #define OS_PRINTF_CONSOLE_NAME          "@OSAL_CONFIG_PRINTF_CONSOLE_NAME@"
 
+ /**
+  * \brief Flags added to all tasks on creation
+  *
+  * Added to the task flags on creation
+  *
+  * Supports adding floating point support for all tasks when the OS requires it
+  */
+#define OS_ADD_TASK_FLAGS               @OSAL_CONFIG_ADD_TASK_FLAGS@
+
 /*
  * OSAL fixed resource limits
  *
