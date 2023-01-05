@@ -1,5 +1,10 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev179
+- Remove obsolete _USING_RTEMS_INCLUDES_
+- Support adding default flags at task creation
+- See <https://github.com/nasa/osal/pull/1348> and <https://github.com/nasa/osal/pull/1347>
+
 ## Development Build: v6.0.0-rc4+dev173
 - Update action versions
 - add doc-prebuild dependency
