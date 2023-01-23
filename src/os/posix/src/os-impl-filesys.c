@@ -43,6 +43,7 @@
 #include "os-posix.h"
 #include "os-shared-filesys.h"
 #include "os-shared-idmap.h"
+#include "os-shared-common.h"
 
 /****************************************************************************************
                                      DEFINES
@@ -84,6 +85,8 @@ int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
     OS_filesys_internal_record_t *local;
     struct stat                   stat_buf;
     const char *                  tmpdir;
+    size_t                        mplen;
+    size_t                        vollen;
     uint32                        i;
     enum
     {
@@ -168,7 +171,24 @@ int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
             return OS_FS_ERR_DRIVE_NOT_CREATED;
         }
 
-        snprintf(local->system_mountpt, sizeof(local->system_mountpt), "%s/osal:%s", tmpdir, local->volume_name);
+        /*
+         * Note - performing the concatenation in a single snprintf() call seems
+         * to trigger a (false) pointer overlap warning, because volume_name should
+         * always be null terminated.  To get around this, calculate the
+         * string size and check that it is within the expected size, and do the
+         * append of volume_name explicitly.
+         */
+        mplen = snprintf(local->system_mountpt, sizeof(local->system_mountpt), "%s/osal:", tmpdir);
+        if (mplen < sizeof(local->system_mountpt))
+        {
+            vollen = OS_strnlen(local->volume_name, sizeof(local->volume_name));
+            if ((vollen + mplen) >= sizeof(local->system_mountpt))
+            {
+                vollen = sizeof(local->system_mountpt) - mplen - 1;
+            }
+            memcpy(&local->system_mountpt[mplen], local->volume_name, vollen);
+            local->system_mountpt[mplen + vollen] = 0;
+        }
     }
 
     return OS_SUCCESS;
