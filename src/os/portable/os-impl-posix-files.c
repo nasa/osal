@@ -126,7 +126,7 @@ int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, i
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
+int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *filestat)
 {
     struct stat     st;
     mode_t          readbits;
@@ -139,7 +139,7 @@ int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
         return OS_ERROR;
     }
 
-    FileStats->FileSize = st.st_size;
+    filestat->FileSize = st.st_size;
 
     /*
      * NOTE: Traditional timestamps are only a whole number of seconds (time_t)
@@ -164,12 +164,12 @@ int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
     filetime.tv_nsec = 0;
 #endif
 
-    FileStats->FileTime = OS_TimeAssembleFromNanoseconds(filetime.tv_sec, filetime.tv_nsec);
+    filestat->FileTime = OS_TimeAssembleFromNanoseconds(filetime.tv_sec, filetime.tv_nsec);
 
     /* note that the "fst_mode" member is already zeroed by the caller */
     if (S_ISDIR(st.st_mode))
     {
-        FileStats->FileModeBits |= OS_FILESTAT_MODE_DIR;
+        filestat->FileModeBits |= OS_FILESTAT_MODE_DIR;
     }
 
     /* always check world bits */
@@ -195,15 +195,15 @@ int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
 
     if (st.st_mode & readbits)
     {
-        FileStats->FileModeBits |= OS_FILESTAT_MODE_READ;
+        filestat->FileModeBits |= OS_FILESTAT_MODE_READ;
     }
     if (st.st_mode & writebits)
     {
-        FileStats->FileModeBits |= OS_FILESTAT_MODE_WRITE;
+        filestat->FileModeBits |= OS_FILESTAT_MODE_WRITE;
     }
     if (st.st_mode & execbits)
     {
-        FileStats->FileModeBits |= OS_FILESTAT_MODE_EXEC;
+        filestat->FileModeBits |= OS_FILESTAT_MODE_EXEC;
     }
 
     return OS_SUCCESS;

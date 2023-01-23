@@ -61,7 +61,7 @@ typedef struct
  * The callback function should be declared according to the OS_TimerCallback_t
  * function pointer type.  The timer_id value is passed to the callback function.
  *
- * @note clock_accuracy comes from the underlying OS tick value.  The nearest integer
+ * @note clock_accuracy comes from the underlying OS tick value. The nearest integer
  *       microsecond value is returned, so may not be exact.
  *
  * @note This configuration API must not be used from the context of a timer callback.

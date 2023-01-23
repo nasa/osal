@@ -59,7 +59,7 @@ void TestTimerAddApi(void)
 {
     /*
      * Test Case For:
-     * int32 OS_TimerAdd(uint32 *timer_id, const char *timer_name, uint32 timebase_ref_id, OS_ArgCallback_t
+     * int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebase_id, OS_ArgCallback_t
      * callback_ptr, void *callback_arg)
      */
 

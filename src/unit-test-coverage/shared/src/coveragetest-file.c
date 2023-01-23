@@ -235,7 +235,7 @@ void Test_OS_rename(void)
 {
     /*
      * Test Case For:
-     * int32 OS_rename (const char *old, const char *new)
+     * int32 OS_rename(const char *old_filename, const char *new_filename)
      */
     OS_UT_SetupIterator(OS_OBJECT_TYPE_OS_STREAM, UT_INDEX_1, 3);
     strncpy(OS_stream_table[1].stream_name, "/cf/file1", sizeof(OS_stream_table[1].stream_name));

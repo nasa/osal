@@ -61,7 +61,7 @@ void Test_OS_TimerAdd(void)
 {
     /*
      * Test Case For:
-     * int32 OS_TimerAdd(uint32 *timer_id, const char *timer_name, uint32 timebase_ref_id, OS_ArgCallback_t
+     * int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebase_id, OS_ArgCallback_t
      * callback_ptr, void *callback_arg)
      */
     osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
@@ -99,7 +99,8 @@ void Test_OS_TimerCreate(void)
 {
     /*
      * Test Case For:
-     * int32 OS_TimerCreate(uint32 *timer_id, const char *timer_name, uint32 *accuracy, OS_TimerCallback_t callback_ptr)
+     * int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *clock_accuracy, OS_TimerCallback_t
+     * callback_ptr)
      */
     osal_id_t    objid    = OS_OBJECT_ID_UNDEFINED;
     osal_index_t local_id = OSAL_INDEX_C(0);

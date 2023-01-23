@@ -188,7 +188,7 @@ int32 OS_ModuleSymbolLookup_Impl(const OS_object_token_t *token, cpuaddr *Symbol
  *  POSIX DL does not provide
  *
  *-----------------------------------------------------------------*/
-int32 OS_SymbolTableDump_Impl(const char *filename, size_t SizeLimit)
+int32 OS_SymbolTableDump_Impl(const char *filename, size_t size_limit)
 {
     /*
      * Limiting strictly to POSIX-defined API means there is no defined

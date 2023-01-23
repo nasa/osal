@@ -342,7 +342,7 @@ int32 OS_remove(const char *path)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_rename(const char *old, const char *new)
+int32 OS_rename(const char *old_filename, const char *new_filename)
 {
     OS_object_iter_t             iter;
     OS_stream_internal_record_t *stream;
@@ -350,10 +350,10 @@ int32 OS_rename(const char *old, const char *new)
     char                         old_path[OS_MAX_LOCAL_PATH_LEN];
     char                         new_path[OS_MAX_LOCAL_PATH_LEN];
 
-    return_code = OS_TranslatePath(old, old_path);
+    return_code = OS_TranslatePath(old_filename, old_path);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_TranslatePath(new, new_path);
+        return_code = OS_TranslatePath(new_filename, new_path);
     }
 
     if (return_code == OS_SUCCESS)
@@ -369,9 +369,9 @@ int32 OS_rename(const char *old, const char *new)
         {
             stream = OS_OBJECT_TABLE_GET(OS_stream_table, iter.token);
 
-            if (stream->socket_domain == OS_SocketDomain_INVALID && strcmp(stream->stream_name, old) == 0)
+            if (stream->socket_domain == OS_SocketDomain_INVALID && strcmp(stream->stream_name, old_filename) == 0)
             {
-                strncpy(stream->stream_name, new, sizeof(stream->stream_name) - 1);
+                strncpy(stream->stream_name, new_filename, sizeof(stream->stream_name) - 1);
                 stream->stream_name[sizeof(stream->stream_name) - 1] = 0;
             }
         }

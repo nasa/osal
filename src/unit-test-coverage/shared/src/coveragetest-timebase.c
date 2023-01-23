@@ -77,7 +77,7 @@ void Test_OS_TimeBaseCreate(void)
 {
     /*
      * Test Case For:
-     * int32 OS_TimeBaseCreate(uint32 *timer_id, const char *timebase_name, OS_TimerSync_t external_sync)
+     * int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_TimerSync_t external_sync)
      */
     osal_id_t objid;
 
@@ -103,7 +103,7 @@ void Test_OS_TimeBaseSet(void)
 {
     /*
      * Test Case For:
-     * int32 OS_TimeBaseSet(uint32 timer_id, uint32 start_time, uint32 interval_time)
+     * int32 OS_TimeBaseSet(osal_id_t timebase_id, uint32 start_time, uint32 interval_time)
      */
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseSet(UT_OBJID_1, 1000, 1000), OS_SUCCESS);
 
@@ -126,7 +126,7 @@ void Test_OS_TimeBaseDelete(void)
 {
     /*
      * Test Case For:
-     * int32 OS_TimeBaseDelete(uint32 timer_id)
+     * int32 OS_TimeBaseDelete(osal_id_t timebase_id)
      */
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseDelete(UT_OBJID_1), OS_SUCCESS);
 
@@ -142,7 +142,7 @@ void Test_OS_TimeBaseGetIdByName(void)
 {
     /*
      * Test Case For:
-     * int32 OS_TimeBaseGetIdByName (uint32 *timer_id, const char *timebase_name)
+     * int32 OS_TimeBaseGetIdByName(osal_id_t *timebase_id, const char *timebase_name)
      */
     osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 

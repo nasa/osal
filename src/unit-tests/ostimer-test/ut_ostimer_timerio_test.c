@@ -94,7 +94,7 @@ void UT_os_reconftimercallback(osal_id_t timerId, void *arg)
 }
 
 /*--------------------------------------------------------------------------------*
-** Syntax: int32 OS_TimerCreate(uint32 *timer_id, const char *timer_name, uint32 *clock_accuracy, OS_TimerCallback_t
+** Syntax: int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *clock_accuracy, OS_TimerCallback_t
 *callback_ptr)
 ** Purpose: Creates a new timer and associates it with a callback routine
 ** Parameters: *timer_id - a pointer that will hold the timer id

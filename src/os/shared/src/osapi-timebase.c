@@ -90,7 +90,7 @@ int32 OS_TimeBaseAPI_Init(void)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseCreate(osal_id_t *timer_id, const char *timebase_name, OS_TimerSync_t external_sync)
+int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_TimerSync_t external_sync)
 {
     int32                          return_code;
     osal_objtype_t                 objtype;
@@ -105,7 +105,7 @@ int32 OS_TimeBaseCreate(osal_id_t *timer_id, const char *timebase_name, OS_Timer
     /*
      ** Check Parameters
      */
-    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_POINTER(timebase_id);
     OS_CHECK_APINAME(timebase_name);
 
     /*
@@ -141,7 +141,7 @@ int32 OS_TimeBaseCreate(osal_id_t *timer_id, const char *timebase_name, OS_Timer
         return_code = OS_TimeBaseCreate_Impl(&token);
 
         /* Check result, finalize record, and unlock global table. */
-        return_code = OS_ObjectIdFinalizeNew(return_code, &token, timer_id);
+        return_code = OS_ObjectIdFinalizeNew(return_code, &token, timebase_id);
     }
 
     return return_code;
@@ -153,7 +153,7 @@ int32 OS_TimeBaseCreate(osal_id_t *timer_id, const char *timebase_name, OS_Timer
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time)
+int32 OS_TimeBaseSet(osal_id_t timebase_id, uint32 start_time, uint32 interval_time)
 {
     int32                          return_code;
     osal_objtype_t                 objtype;
@@ -181,7 +181,7 @@ int32 OS_TimeBaseSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_TIMEBASE, timer_id, &token);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_TIMEBASE, timebase_id, &token);
     if (return_code == OS_SUCCESS)
     {
         timebase = OS_OBJECT_TABLE_GET(OS_timebase_table, token);
@@ -212,7 +212,7 @@ int32 OS_TimeBaseSet(osal_id_t timer_id, uint32 start_time, uint32 interval_time
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseDelete(osal_id_t timer_id)
+int32 OS_TimeBaseDelete(osal_id_t timebase_id)
 {
     int32             return_code;
     osal_objtype_t    objtype;
@@ -228,7 +228,7 @@ int32 OS_TimeBaseDelete(osal_id_t timer_id)
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
 
-    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, OS_OBJECT_TYPE_OS_TIMEBASE, timer_id, &token);
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, OS_OBJECT_TYPE_OS_TIMEBASE, timebase_id, &token);
     if (return_code == OS_SUCCESS)
     {
         return_code = OS_TimeBaseDelete_Impl(&token);
@@ -246,13 +246,13 @@ int32 OS_TimeBaseDelete(osal_id_t timer_id)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimeBaseGetIdByName(osal_id_t *timer_id, const char *timebase_name)
+int32 OS_TimeBaseGetIdByName(osal_id_t *timebase_id, const char *timebase_name)
 {
     int32          return_code;
     osal_objtype_t objtype;
 
     /* Check parameters */
-    OS_CHECK_POINTER(timer_id);
+    OS_CHECK_POINTER(timebase_id);
     OS_CHECK_APINAME(timebase_name);
 
     /*
@@ -265,7 +265,7 @@ int32 OS_TimeBaseGetIdByName(osal_id_t *timer_id, const char *timebase_name)
         return OS_ERR_INCORRECT_OBJ_STATE;
     }
 
-    return_code = OS_ObjectIdFindByName(OS_OBJECT_TYPE_OS_TIMEBASE, timebase_name, timer_id);
+    return_code = OS_ObjectIdFindByName(OS_OBJECT_TYPE_OS_TIMEBASE, timebase_name, timebase_id);
 
     return return_code;
 }

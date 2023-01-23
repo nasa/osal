@@ -170,7 +170,7 @@ int32 OS_ModuleSymbolLookup(osal_id_t module_id, cpuaddr *symbol_address, const 
  * module subsystem does not provide a facility to iterate through the
  * symbol table, then the #OS_ERR_NOT_IMPLEMENTED status code is returned.
  *
- * @param[in] filename  File to write to @nonnull
+ * @param[in] filename   File to write to @nonnull
  * @param[in] size_limit Maximum number of bytes to write
  *
  * @return Execution status, see @ref OSReturnCodes
