@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev187
+- UT assert stub return values
+- See <https://github.com/nasa/osal/pull/1352>
+
 ## Development Build: v6.0.0-rc4+dev184
 - separate append on volume_name to system_mountpt
 - See <https://github.com/nasa/osal/pull/1355>
