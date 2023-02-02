@@ -47,18 +47,24 @@
 #define UT_SUBSYS_MAX_LEN     5
 #define UT_MODEFLAG_ALLOC_BUF 0x1U
 
+/*
+ * Macro to combine a genre and size into a single integer value that can be
+ * used in a switch/case construct
+ */
+#define UT_GENRE_SIZE(g, s) (((size_t)g << 8) | s)
+
 typedef enum
 {
-    UT_ENTRYTYPE_UNUSED,           /**< Unused/available table entries */
-    UT_ENTRYTYPE_COUNTER,          /**< Records a usage count plus most recent return code */
-    UT_ENTRYTYPE_FORCE_FAIL,       /**< Always return a designated code from stub */
-    UT_ENTRYTYPE_DEFERRED_RC,      /**< Return a designated code from stub after "N" calls */
-    UT_ENTRYTYPE_DATA_BUFFER,      /**< Storage for data buffers to simulate read/write or queue ops */
-    UT_ENTRYTYPE_CALLBACK_HOOK,    /**< A custom callback/hook function to be invoked prior to handler */
-    UT_ENTRYTYPE_CALLBACK_CONTEXT, /**< Context data for callback/hook function */
-    UT_ENTRYTYPE_CALL_ONCE,        /**< Records a "call once" directive */
-    UT_ENTRYTYPE_FINAL_HANDLER,    /**< The final handler for the stub */
-    UT_ENTRYTYPE_RETURN_BUFFER,    /**< Storage for return value from stub */
+    UT_ENTRYTYPE_UNUSED,                 /**< Unused/available table entries */
+    UT_ENTRYTYPE_COUNTER,                /**< Records a usage count plus most recent return code */
+    UT_ENTRYTYPE_DATA_BUFFER,            /**< Storage for data buffers to simulate read/write or queue ops */
+    UT_ENTRYTYPE_CALLBACK_HOOK,          /**< A custom callback/hook function to be invoked prior to handler */
+    UT_ENTRYTYPE_CALLBACK_CONTEXT,       /**< Context data for callback/hook function */
+    UT_ENTRYTYPE_CALL_ONCE,              /**< Records a "call once" directive */
+    UT_ENTRYTYPE_FINAL_HANDLER,          /**< The final handler for the stub */
+    UT_ENTRYTYPE_RETURN_BUFFER,          /**< Storage for actual return value from stub */
+    UT_ENTRYTYPE_RETVAL_CONFIG_DEFERRED, /**< Configuration for return value from stub */
+    UT_ENTRYTYPE_RETVAL_CONFIG_CONSTANT, /**< Configuration for return value from stub */
 } UT_EntryType_t;
 
 typedef struct
@@ -67,11 +73,30 @@ typedef struct
     int32  Value;
 } UT_RetcodeEntry_t;
 
+typedef union UT_RetvalBuf
+{
+    uint8          Raw[8];
+    const void *   IndirectPtr;
+    void *         Ptr;
+    UT_IntReturn_t Integer;
+    double         FloatingPt;
+} UT_RetvalBuf_t;
+
 typedef struct
 {
-    size_t Position;
-    size_t TotalSize;
-    uint8 *BasePtr;
+    UT_ValueGenre_t Genre;
+    int32           Counter;
+    UT_RetvalBuf_t  Buf;
+    size_t          ActualSz;
+    const char *    TypeName;
+} UT_RetvalConfigEntry_t;
+
+typedef struct
+{
+    size_t      Position;
+    size_t      TotalSize;
+    uint8 *     BasePtr;
+    const char *ContentTypeStr;
 } UT_BufferEntry_t;
 
 typedef union
@@ -92,10 +117,11 @@ typedef struct
 
 typedef union
 {
-    UT_RetcodeEntry_t  Rc;
-    UT_BufferEntry_t   Buff;
-    UT_CallbackEntry_t Cb;
-    UT_StubContext_t   Context;
+    UT_RetcodeEntry_t      Rc;
+    UT_RetvalConfigEntry_t Rvc;
+    UT_BufferEntry_t       Buff;
+    UT_CallbackEntry_t     Cb;
+    UT_StubContext_t       Context;
 } UT_EntryData_t;
 
 /*
@@ -104,8 +130,8 @@ typedef union
 typedef struct
 {
     UT_EntryType_t EntryType;
-    UT_EntryKey_t  FuncKey;
     uint32         ModeFlags;
+    UT_EntryKey_t  FuncKey;
     UT_EntryData_t Data;
 } UT_StubTableEntry_t;
 
@@ -248,25 +274,150 @@ void UT_Stub_CallOnce(void (*Func)(void))
     }
 }
 
-void UT_SetDeferredRetcode(UT_EntryKey_t FuncKey, int32 Count, int32 Retcode)
+bool UT_StoreRetval(UT_RetvalBuf_t *Buf, const void *ValuePtr, size_t ValueSize, UT_ValueGenre_t ValueGenre)
+{
+    /* Copy the value based on width, so it will be properly extended, if applicable:
+     * - all numeric values need to be aligned per endianness of the host
+     * - signed ints must be sign-extended,
+     * - single-precision floating points will be extended to double-precision
+     *
+     * Pointers must all be the expected size, however.
+     */
+    switch (UT_GENRE_SIZE(ValueGenre, ValueSize))
+    {
+        case UT_GENRE_SIZE(UT_ValueGenre_INTEGER, sizeof(int8)):
+            Buf->Integer = *((int8 const *)ValuePtr);
+            break;
+        case UT_GENRE_SIZE(UT_ValueGenre_INTEGER, sizeof(int16)):
+            Buf->Integer = *((int16 const *)ValuePtr);
+            break;
+        case UT_GENRE_SIZE(UT_ValueGenre_INTEGER, sizeof(int32)):
+            Buf->Integer = *((int32 const *)ValuePtr);
+            break;
+        case UT_GENRE_SIZE(UT_ValueGenre_INTEGER, sizeof(int64)):
+            Buf->Integer = *((int64 const *)ValuePtr);
+            break;
+
+        case UT_GENRE_SIZE(UT_ValueGenre_FLOAT, sizeof(float)):
+            Buf->FloatingPt = *((float const *)ValuePtr);
+            break;
+        case UT_GENRE_SIZE(UT_ValueGenre_FLOAT, sizeof(double)):
+            Buf->FloatingPt = *((double const *)ValuePtr);
+            break;
+
+        case UT_GENRE_SIZE(UT_ValueGenre_POINTER, sizeof(void *)):
+            Buf->Ptr = *((void *const *)ValuePtr);
+            break;
+
+        default:
+            return UtAssert_Failed("Cannot store return value - ValueSize not valid");
+    }
+
+    return true;
+}
+
+bool UT_LoadRetval(void *ValuePtr, size_t ValueSize, const UT_RetvalBuf_t *Buf, UT_ValueGenre_t ValueGenre)
+{
+    switch (UT_GENRE_SIZE(ValueGenre, ValueSize))
+    {
+        case UT_GENRE_SIZE(UT_ValueGenre_INTEGER, sizeof(int8)):
+            *((int8 *)ValuePtr) = Buf->Integer;
+            break;
+        case UT_GENRE_SIZE(UT_ValueGenre_INTEGER, sizeof(int16)):
+            *((int16 *)ValuePtr) = Buf->Integer;
+            break;
+        case UT_GENRE_SIZE(UT_ValueGenre_INTEGER, sizeof(int32)):
+            *((int32 *)ValuePtr) = Buf->Integer;
+            break;
+        case UT_GENRE_SIZE(UT_ValueGenre_INTEGER, sizeof(int64)):
+            *((int64 *)ValuePtr) = Buf->Integer;
+            break;
+
+        case UT_GENRE_SIZE(UT_ValueGenre_FLOAT, sizeof(float)):
+            *((float *)ValuePtr) = Buf->FloatingPt;
+            break;
+        case UT_GENRE_SIZE(UT_ValueGenre_FLOAT, sizeof(double)):
+            *((double *)ValuePtr) = Buf->FloatingPt;
+            break;
+
+        case UT_GENRE_SIZE(UT_ValueGenre_POINTER, sizeof(void *)):
+            *((void **)ValuePtr) = Buf->Ptr;
+            break;
+
+        default:
+            return UtAssert_Failed("Cannot load return value - ValueSize not valid");
+    }
+
+    return true;
+}
+
+void UT_ConfigureGenericStubReturnValue(UT_EntryKey_t FuncKey, const void *ValuePtr, size_t ValueSize,
+                                        UT_ValueGenre_t ValueGenre, int32 Counter, const char *TypeName)
 {
     UT_StubTableEntry_t *StubPtr;
+    UT_EntryType_t       ReqEntryType;
 
-    if (Count > 0)
+    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
+
+    /*
+     * For deferred retval configs, this always adds a new entry.  But
+     * for constant retval configs, it should replace the existing entry if
+     * there is one.
+     */
+    if (Counter > 0)
+    {
+        ReqEntryType = UT_ENTRYTYPE_RETVAL_CONFIG_DEFERRED;
+        StubPtr      = NULL;
+    }
+    else
+    {
+        ReqEntryType = UT_ENTRYTYPE_RETVAL_CONFIG_CONSTANT;
+        StubPtr      = UT_GetStubEntry(FuncKey, ReqEntryType);
+    }
+
+    if (StubPtr == NULL)
     {
         StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
+    }
 
-        if (StubPtr == NULL)
+    if (StubPtr == NULL)
+    {
+        UtAssert_Abort("Cannot configure return value - UT_MAX_FUNC_STUBS too low?");
+    }
+    else
+    {
+        StubPtr->FuncKey = FuncKey;
+
+        StubPtr->EntryType         = ReqEntryType;
+        StubPtr->Data.Rvc.Genre    = ValueGenre;
+        StubPtr->Data.Rvc.Counter  = Counter;
+        StubPtr->Data.Rvc.ActualSz = ValueSize;
+        StubPtr->Data.Rvc.TypeName = TypeName;
+
+        if (ValueGenre == UT_ValueGenre_OPAQUE)
         {
-            UtAssert_Abort("Cannot set retcode - UT_MAX_FUNC_STUBS too low?");
+            /* For "unknown" types the pointer is stored directly - this allows for ANY return type of ANY size,
+             * but requires that the caller maintain the buffer in scope until the test completes */
+            StubPtr->Data.Rvc.Buf.IndirectPtr = ValuePtr;
         }
         else
         {
-            StubPtr->FuncKey       = FuncKey;
-            StubPtr->EntryType     = UT_ENTRYTYPE_DEFERRED_RC;
-            StubPtr->Data.Rc.Count = Count;
-            StubPtr->Data.Rc.Value = Retcode;
+            /* For any of the recognized typical return types, a copy is made and stored in the state buffer */
+            UT_StoreRetval(&StubPtr->Data.Rvc.Buf, ValuePtr, ValueSize, ValueGenre);
         }
+    }
+}
+
+void UT_SetDeferredRetcode(UT_EntryKey_t FuncKey, int32 Count, UT_IntReturn_t Retcode)
+{
+    /* The count should always be a positive integer, if not there is a bug in the test */
+    if (Count <= 0)
+    {
+        UtAssert_Failed("BUG: Invalid Count (%ld) passed to UT_SetDeferredRetcode()", (long)Count);
+    }
+    else
+    {
+        UT_ConfigureGenericStubReturnValue(FuncKey, &Retcode, sizeof(Retcode), UT_ValueGenre_INTEGER, Count, NULL);
     }
 }
 
@@ -276,7 +427,7 @@ void UT_ClearDeferredRetcode(UT_EntryKey_t FuncKey)
 
     while (true)
     {
-        StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_DEFERRED_RC);
+        StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_RETVAL_CONFIG_DEFERRED);
         if (StubPtr == NULL)
         {
             break;
@@ -285,63 +436,16 @@ void UT_ClearDeferredRetcode(UT_EntryKey_t FuncKey)
     }
 }
 
-bool UT_Stub_CheckDeferredRetcode(UT_EntryKey_t FuncKey, int32 *Retcode)
+void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, UT_IntReturn_t Value)
 {
-    bool                 Result = false;
-    UT_StubTableEntry_t *StubPtr;
-
-    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_DEFERRED_RC);
-    if (StubPtr != NULL)
-    {
-        if (StubPtr->Data.Rc.Count > 0)
-        {
-            --StubPtr->Data.Rc.Count;
-        }
-        if (StubPtr->Data.Rc.Count == 0)
-        {
-            Result   = true;
-            *Retcode = StubPtr->Data.Rc.Value;
-
-            /* Once the count has reached zero, void the entry */
-            UT_ClearStubEntry(StubPtr);
-        }
-    }
-
-    return Result;
-}
-
-void UT_SetDefaultReturnValue(UT_EntryKey_t FuncKey, int32 Value)
-{
-    UT_StubTableEntry_t *Rc;
-
-    /*
-     * First find an existing default return value entry for the function.
-     * In case one is already set we do not duplicate (unlike deferred codes)
-     */
-    Rc = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FORCE_FAIL);
-    if (Rc == NULL)
-    {
-        /* Creating default return value entry - repeat search and grab any unused slot */
-        Rc = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
-    }
-
-    if (Rc != NULL)
-    {
-        Rc->FuncKey       = FuncKey;
-        Rc->EntryType     = UT_ENTRYTYPE_FORCE_FAIL;
-        Rc->Data.Rc.Value = Value;
-    }
-    else
-    {
-        UtAssert_Abort("Cannot set retcode - UT_MAX_FUNC_STUBS too low?");
-    }
+    UT_ConfigureGenericStubReturnValue(FuncKey, &Value, sizeof(Value), UT_ValueGenre_INTEGER, 0, NULL);
 }
 
 void UT_ClearDefaultReturnValue(UT_EntryKey_t FuncKey)
 {
     UT_StubTableEntry_t *StubPtr;
 
-    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FORCE_FAIL);
+    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_RETVAL_CONFIG_CONSTANT);
     if (StubPtr != NULL)
     {
         UT_ClearStubEntry(StubPtr);
@@ -386,27 +490,36 @@ uint32 UT_GetStubCount(UT_EntryKey_t FuncKey)
     return Count;
 }
 
-bool UT_Stub_CheckDefaultReturnValue(UT_EntryKey_t FuncKey, int32 *Value)
+bool UT_Stub_IsValueCompatible(const UT_RetvalConfigEntry_t *Rvc, const char *WantTypeName, UT_ValueGenre_t WantGenre)
 {
-    bool                 Result = false;
-    UT_StubTableEntry_t *StubPtr;
+    bool IsCompatible;
 
-    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FORCE_FAIL);
-    if (StubPtr != NULL)
+    /* If the type names were specified on both sides, and they match, then the value is compatible */
+    if (Rvc->TypeName != NULL && WantTypeName != NULL)
     {
-        /* For default return value entries, the count will reflect the number of times it was used */
-        ++StubPtr->Data.Rc.Count;
-        if (Value != NULL)
-        {
-            *Value = StubPtr->Data.Rc.Value;
-        }
-        Result = true;
+        IsCompatible = (strcmp(Rvc->TypeName, WantTypeName) == 0);
+    }
+    else
+    {
+        /* The types are not _directly_ assignable, but it could possibly be coerced */
+        IsCompatible = false;
     }
 
-    return Result;
+    /*
+     * As an alternative/fallback, if the value genre is known for both sides,
+     * check if coercion is a possibility.  For example, this could apply if the
+     * value was int32 on one side and int16 on the other.
+     */
+    if (!IsCompatible && Rvc->Genre != UT_ValueGenre_OPAQUE && Rvc->Genre == WantGenre)
+    {
+        /* Genre match - should be compatible, with a potential size adjustment */
+        IsCompatible = true;
+    }
+
+    return IsCompatible;
 }
 
-void UT_Stub_RegisterReturnType(UT_EntryKey_t FuncKey, size_t ReturnSize)
+void UT_Stub_RegisterReturnType(UT_EntryKey_t FuncKey, size_t ReturnSize, const char *TypeName)
 {
     UT_StubTableEntry_t *StubPtr;
 
@@ -414,17 +527,10 @@ void UT_Stub_RegisterReturnType(UT_EntryKey_t FuncKey, size_t ReturnSize)
     {
         /* Check for existing buffer and re-use if same size (should be!) */
         StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_RETURN_BUFFER);
-        if (StubPtr != NULL)
+        if (StubPtr != NULL && StubPtr->Data.Buff.TotalSize != ReturnSize)
         {
-            if (StubPtr->Data.Buff.TotalSize != ReturnSize)
-            {
-                UT_ClearStubEntry(StubPtr);
-                StubPtr = NULL;
-            }
-            else
-            {
-                StubPtr->Data.Buff.Position = 0;
-            }
+            UT_ClearStubEntry(StubPtr);
+            StubPtr = NULL;
         }
 
         if (StubPtr == NULL)
@@ -450,13 +556,18 @@ void UT_Stub_RegisterReturnType(UT_EntryKey_t FuncKey, size_t ReturnSize)
                 }
 
                 StubPtr->Data.Buff.TotalSize = ReturnSize;
-                StubPtr->Data.Buff.Position  = 0;
             }
+        }
+
+        if (StubPtr != NULL)
+        {
+            StubPtr->Data.Buff.Position       = 0;
+            StubPtr->Data.Buff.ContentTypeStr = TypeName;
         }
     }
 }
 
-void *UT_Stub_GetReturnValuePtr(UT_EntryKey_t FuncKey, size_t ReturnSize)
+void *UT_Stub_GetReturnValuePtr(UT_EntryKey_t FuncKey, size_t ReturnSize, const char *TypeName)
 {
     UT_StubTableEntry_t *StubPtr;
     void *               ReturnPtr;
@@ -464,20 +575,32 @@ void *UT_Stub_GetReturnValuePtr(UT_EntryKey_t FuncKey, size_t ReturnSize)
     ReturnPtr = NULL;
     StubPtr   = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_RETURN_BUFFER);
 
-    /* Sanity check on the size */
-    if (StubPtr != NULL && StubPtr->Data.Buff.TotalSize == ReturnSize)
-    {
-        ReturnPtr = StubPtr->Data.Buff.BasePtr;
-    }
-    else
+    if (StubPtr == NULL)
     {
         /* This shouldn't happen, it means the stub tried to use a
-         * return buffer that does not exist or does not match size.
+         * return buffer that does not exist.
          *
          * It is most likely caused by a mismatch/incompatibility between
          * stub and handler.  Aborting now is better than segfaulting later,
-         * as the errored call should still be on the stack trace */
+         * as the errored call should still be on the stack trace
+         */
         UtAssert_Abort("Return buffer invalid");
+    }
+    else
+    {
+        ReturnPtr = StubPtr->Data.Buff.BasePtr;
+
+        /*
+         * Sanity check on the size and type name.
+         *
+         * In a generated stub these should always match, but if any patches
+         * were done or if a hand-written stub is used, mistakes could be made.
+         */
+        if (StubPtr->Data.Buff.Position != ReturnSize || strcmp(TypeName, StubPtr->Data.Buff.ContentTypeStr) != 0)
+        {
+            UtAssert_Failed("Return value mismatch, expected %s(%lu) got %s(%lu)", TypeName, (unsigned long)ReturnSize,
+                            StubPtr->Data.Buff.ContentTypeStr, (unsigned long)StubPtr->Data.Buff.Position);
+        }
     }
 
     return ReturnPtr;
@@ -864,6 +987,47 @@ void UT_Stub_CopyToReturnValue(UT_EntryKey_t FuncKey, const void *BufferPtr, siz
     }
 }
 
+UT_StubTableEntry_t *UT_Stub_FindRetvalConfig(UT_EntryKey_t FuncKey)
+{
+    UT_StubTableEntry_t *StubEntryPtr;
+
+    StubEntryPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_RETVAL_CONFIG_DEFERRED);
+    if (StubEntryPtr != NULL)
+    {
+        /*
+         * The counter on a deferred retval config indicates the number of times it should
+         * be skipped/not used.   Decrement the counter now, and if it is not yet 0, do not
+         * return this yet, and go to a fallback - which could either be a constant value
+         * configuration, or the default fallback of 0.
+         *
+         * By definition, deferred retvals are only used once and then deleted.
+         */
+        --StubEntryPtr->Data.Rvc.Counter;
+
+        if (StubEntryPtr->Data.Rvc.Counter > 0)
+        {
+            StubEntryPtr = NULL;
+        }
+    }
+
+    if (StubEntryPtr == NULL)
+    {
+        StubEntryPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_RETVAL_CONFIG_CONSTANT);
+        if (StubEntryPtr != NULL)
+        {
+            /*
+             * the counter on a constant retval config will track the number of
+             * times the value was actually used, so it is incremented here.  Unlike
+             * deferred retval configs, these values may be used multiple times during
+             * a test.
+             */
+            ++StubEntryPtr->Data.Rvc.Counter;
+        }
+    }
+
+    return StubEntryPtr;
+}
+
 /**
  * Default implementation for a stub function that should be useful for most cases.
  * Checks first for a deferred retcode, then for a constant retcode, and a default if neither is present.
@@ -874,9 +1038,11 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
     const char *         RetcodeString;
     UT_StubTableEntry_t *StubPtr;
     UT_StubTableEntry_t *ContextTblPtr;
+    UT_StubTableEntry_t *RvcPtr;
     UT_StubContext_t     LocalContext;
     uint32               Counter;
     va_list              ArgListCopy;
+    bool                 GotInt32StatusFromHook;
 
     /*
      * In this implementation a context is _always_ needed.
@@ -900,11 +1066,16 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
         memset(&LocalContext, 0, sizeof(LocalContext));
     }
 
-    LocalContext.Int32StatusIsSet = UT_Stub_CheckDeferredRetcode(FuncKey, &LocalContext.Int32StatusCode);
-    if (!LocalContext.Int32StatusIsSet)
+    RvcPtr = UT_Stub_FindRetvalConfig(FuncKey);
+
+    /* For legacy compatibility, determine the int32 status code (this may or may not be relevent) */
+    if (RvcPtr != NULL && UT_Stub_IsValueCompatible(&RvcPtr->Data.Rvc, "int32", UT_ValueGenre_INTEGER))
     {
-        LocalContext.Int32StatusIsSet = UT_Stub_CheckDefaultReturnValue(FuncKey, &LocalContext.Int32StatusCode);
+        LocalContext.Int32StatusIsSet =
+            UT_LoadRetval(&LocalContext.Int32StatusCode, sizeof(LocalContext.Int32StatusCode), &RvcPtr->Data.Rvc.Buf,
+                          UT_ValueGenre_INTEGER);
     }
+
     if (!LocalContext.Int32StatusIsSet)
     {
         LocalContext.Int32StatusCode = DefaultRc;
@@ -922,7 +1093,7 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
             RetcodeString = "*SPECIAL*";
         }
 
-        UtDebug("%s called (%s,%d)", FunctionName, RetcodeString, (int)LocalContext.Int32StatusCode);
+        UtDebug("%s called (%s,%ld)", FunctionName, RetcodeString, (long)LocalContext.Int32StatusCode);
     }
 
     Counter = 0;
@@ -962,7 +1133,12 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
                 StubPtr->Data.Cb.CallbackArg, LocalContext.Int32StatusCode, Counter, &LocalContext);
         }
 
+        GotInt32StatusFromHook        = true;
         LocalContext.Int32StatusIsSet = true;
+    }
+    else
+    {
+        GotInt32StatusFromHook = false;
     }
 
     StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_FINAL_HANDLER);
@@ -995,25 +1171,66 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
     StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_RETURN_BUFFER);
     if (StubPtr != NULL && StubPtr->Data.Buff.Position == 0)
     {
-        /*
-         * This means that the stub expects the hook to fill the provided return buffer, but the hook did not
-         * actually call UT_Stub_SetReturnValue() to fill that buffer.  To mimic the old behavior where the hook
-         * return code was "passed through", attempt to copy the value now.  This works because for the majority
-         * of functions, the return type is actually int32, so it is compatible.
-         *
-         * But if the size is different, then this shouldn't be done, and generate a failure message
-         * to indicate the test case or stub/hook needs to be fixed.
-         */
-        if (StubPtr->Data.Buff.TotalSize == sizeof(LocalContext.Int32StatusCode))
+        /* If a hook function was used, it is expected that this will override any configured retval */
+        if (GotInt32StatusFromHook && StubPtr->Data.Buff.TotalSize == sizeof(LocalContext.Int32StatusCode))
         {
-            memcpy(StubPtr->Data.Buff.BasePtr, &LocalContext.Int32StatusCode, sizeof(LocalContext.Int32StatusCode));
+            memcpy(StubPtr->Data.Buff.BasePtr, &LocalContext.Int32StatusCode, StubPtr->Data.Buff.TotalSize);
+            StubPtr->Data.Buff.Position = StubPtr->Data.Buff.TotalSize;
         }
-        else
+        else if (RvcPtr != NULL)
         {
-            /* cannot copy - generate a "failure" message to indicate the problem */
-            UtAssert_Failed("Stub %s w/return size=%lu, value cannot be auto-translated from int32", FunctionName,
-                            (unsigned long)StubPtr->Data.Buff.TotalSize);
+            /*
+             * Opaque values allow for arbitrarily large return values, but size must match exactly
+             * to what is expected, it cannot be truncated or expanded if there is a mismatch
+             * between the test and the stub.  Conversely, numeric values can be size-adjusted
+             * if the test supplied one size but the stub needs a different size, such as 32-bit
+             * to 16-bit or 64-bit ints.  Note that historically UT assert only supported 32-bit
+             * integer return values to be directly configured, so older test cases are likely to
+             * set a 32-bit value even if the return value is a different size.
+             */
+            if (RvcPtr->Data.Rvc.Genre == UT_ValueGenre_OPAQUE)
+            {
+                if (StubPtr->Data.Rvc.ActualSz != StubPtr->Data.Buff.TotalSize)
+                {
+                    UtAssert_Failed("Stub %s opaque return size mismatch, expected %lu, got %lu, type=%s", FunctionName,
+                                    (unsigned long)StubPtr->Data.Buff.TotalSize,
+                                    (unsigned long)StubPtr->Data.Rvc.ActualSz, StubPtr->Data.Buff.ContentTypeStr);
+                }
+                else
+                {
+                    memcpy(StubPtr->Data.Buff.BasePtr, StubPtr->Data.Rvc.Buf.IndirectPtr, StubPtr->Data.Buff.TotalSize);
+                    StubPtr->Data.Buff.Position = StubPtr->Data.Buff.TotalSize;
+                }
+            }
+            else if (UT_LoadRetval(StubPtr->Data.Buff.BasePtr, StubPtr->Data.Buff.TotalSize, &RvcPtr->Data.Rvc.Buf,
+                                   RvcPtr->Data.Rvc.Genre))
+            {
+                StubPtr->Data.Buff.Position = StubPtr->Data.Buff.TotalSize;
+            }
         }
+
+        if (StubPtr->Data.Buff.Position == 0)
+        {
+            /*
+             * This means that no suitable return value was configured for this call.
+             * The final fallback in this case is to zero-fill it.
+             *
+             * For logical values this should become "false", for pointers it is "NULL", and for any numeric
+             * value - signed, unsigned, or float - it should become 0.
+             */
+            memset(StubPtr->Data.Buff.BasePtr, 0, StubPtr->Data.Buff.TotalSize);
+            StubPtr->Data.Buff.Position = StubPtr->Data.Buff.TotalSize;
+        }
+    }
+
+    /*
+     * Deferred retval configs should be expunged after they are used, so the next call will
+     * get the next config (if applicable).  Constant return values are NOT cleared, they may
+     * be re-used if the same stub is invoked again.
+     */
+    if (RvcPtr != NULL && RvcPtr->EntryType == UT_ENTRYTYPE_RETVAL_CONFIG_DEFERRED)
+    {
+        UT_ClearStubEntry(RvcPtr);
     }
 
     return LocalContext.Int32StatusCode;

@@ -40,7 +40,7 @@
  * \param ReturnType The type of return value
  */
 #define UT_GenStub_SetupReturnBuffer(FuncName, ReturnType) \
-    UT_Stub_RegisterReturnType(UT_KEY(FuncName), sizeof(ReturnType))
+    UT_Stub_RegisterReturnType(UT_KEY(FuncName), sizeof(ReturnType), #ReturnType)
 
 /**
  * Helper macro to get the return value from the handler
@@ -51,7 +51,7 @@
  * \param ReturnType The type of return value
  */
 #define UT_GenStub_GetReturnValue(FuncName, ReturnType) \
-    (*(ReturnType *)UT_Stub_GetReturnValuePtr(UT_KEY(FuncName), sizeof(ReturnType)))
+    (*(ReturnType *)UT_Stub_GetReturnValuePtr(UT_KEY(FuncName), sizeof(ReturnType), #ReturnType))
 
 /**
  * Helper macro to add a local parameter to the current context
