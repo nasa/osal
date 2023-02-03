@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev191
+- add doxygen for UT_ConfigureGenericStubReturnValue
+- See <https://github.com/nasa/osal/pull/1362>
+
 ## Development Build: v6.0.0-rc4+dev187
 - UT assert stub return values
 - See <https://github.com/nasa/osal/pull/1352>
