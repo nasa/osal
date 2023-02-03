@@ -196,7 +196,39 @@ void UT_ResetState(UT_EntryKey_t FuncKey);
 void UT_SetDeferredRetcode(UT_EntryKey_t FuncKey, int32 Count, UT_IntReturn_t Retcode);
 
 /**
- * \param FuncKey The stub function to add the return code to.
+ * Add a type-agnostic return code entry for the given stub function
+ *
+ * This allocates a return value entry in the UT Assert state table and associates it with the
+ * specified stub function.  The DeferCount parameter determines how many times the stub must
+ * be invoked before the return value is used.  If this is passed in as 0, the value will be used
+ * for all stub invocations, and will be retained until the state is reset.  For nonzero defer counts,
+ * the value acts as a decrement counter, and will be used once the counter reaches 0.  In these cases,
+ * the value will be discarded/forgotten once it has been used by the stub.
+ *
+ * The handling of the value depends on the ValueGenre:
+ *
+ *   #UT_ValueGenre_OPAQUE -  The object will be used directly as the return value from the stub, and no
+ *                            conversion of any type will be attempted.
+ *   #UT_ValueGenre_INTEGER - The object is an integer, and thus may be converted to numbers of other sizes/types
+ *                            using integer value semantics.
+ *   #UT_ValueGenre_FLOAT   - The object is a floating point, and thus may be converted to numbers of other
+ *                            sizes/types using floating point value semantics.
+ *   #UT_ValueGenre_POINTER - The object is a pointer, no conversions will be attempted, and the size must be
+ *                            equal to sizeof(void*)
+ *
+ * \note for OPAQUE values, the passed-in pointer value is held directly, and will be dereferenced at the
+ * time when the called stub returns the value.  Notably, the content is NOT cached in the UtAssert internal
+ * storage structures, so the caller must ensure that the pointed-to object remains valid and does not go
+ * out of scope for the remainder of the test case, or until UT_ResetState is called.  Conversely, for INTEGER,
+ * FLOAT, or POINTER value genres, the content will be copied into the internal storage structures, so in
+ * these cases, the pointed-to value may be immediately reused or freed by the caller.
+ *
+ * \param FuncKey    The stub function to add the return code to.
+ * \param ValuePtr   Pointer to the value to return
+ * \param ValueSize  Size of the object referred to by ValuePtr
+ * \param ValueGenre Genre of the object referred to by ValuePtr
+ * \param DeferCount Number of times the stub needs to be called until this value is used
+ * \param TypeName   Data type as an ASCII string, for possible type matching (may be set from a preprocessor macro)
  */
 void UT_ConfigureGenericStubReturnValue(UT_EntryKey_t FuncKey, const void *ValuePtr, size_t ValueSize,
                                         UT_ValueGenre_t ValueGenre, int32 DeferCount, const char *TypeName);
