@@ -459,30 +459,6 @@ size_t UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, siz
                                         sizeof(Parameter))
 
 /**
- * Set a stub return value from the handler function
- *
- * This sets/copies the specified value to the buffer that will be
- * returned from the original stub call back to the caller.  This
- * provides the actual return value and it will override/replace
- * any assumed or default return value.
- *
- * The passed-in buffer should be a pointer to the same data type
- * that the stub returns.  Any type mismatch is considered an error.
- *
- * The handler function must call this routine for any stub which
- * returns a data type other than int32.
- *
- * @note If there is no handler function or the handler does not call
- * this routine to set a return value, the implementation will use the
- * "Int32StatusCode" value as a return if the size matches sizeof(int32).
- *
- * \param FuncKey    The stub function associated with the buffer
- * \param BufferPtr  Pointer to the local return value
- * \param BufferSize Size of the local return value
- */
-void UT_Stub_SetReturnValue(UT_EntryKey_t FuncKey, const void *BufferPtr, size_t BufferSize);
-
-/**
  * Creates a buffer to hold the return value for the stub
  *
  * \param FuncKey    The stub function associated with the buffer

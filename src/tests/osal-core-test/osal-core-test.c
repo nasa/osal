@@ -552,7 +552,7 @@ void TestGetInfos(void)
     OS_bin_sem_prop_t bin_prop;
     OS_mut_sem_prop_t mut_prop;
 
-    /* first step is to create an object to to get the properties of */
+    /* first step is to create an object to get the properties of */
 
     status = OS_TaskCreate(&task_0_id, "Task 0", task_generic_no_exit, OSAL_STACKPTR_C(task_0_stack),
                            sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0);
