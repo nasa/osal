@@ -10,7 +10,7 @@ defaults:
 
 env:
   allowed_ncov_lines: 0
-  allowed_ncov_branches: 4
+  allowed_ncov_branches: 2
   allowed_ncov_functions: 0
 
 jobs:
