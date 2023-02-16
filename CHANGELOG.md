@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev195
+- removed cast that hid bug at compile time
+- See <https://github.com/nasa/osal/pull/1367>
+
 ## Development Build: v6.0.0-rc4+dev191
 - add doxygen for UT_ConfigureGenericStubReturnValue
 - See <https://github.com/nasa/osal/pull/1362>
