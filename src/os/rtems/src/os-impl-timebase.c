@@ -389,9 +389,9 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
         else
         {
             /* will place the task in 'ready for scheduling' state */
-            rtems_sc = rtems_task_start(local->handler_task,                               /*rtems task id*/
-                                        (rtems_task_entry)OS_TimeBase_CallbackThreadEntry, /* task entry point */
-                                        (rtems_task_argument)r_name);                      /* passed argument  */
+            rtems_sc = rtems_task_start(local->handler_task,             /* rtems task id */
+                                        OS_TimeBase_CallbackThreadEntry, /* task entry point */
+                                        (rtems_task_argument)r_name);    /* passed argument  */
 
             if (rtems_sc != RTEMS_SUCCESSFUL)
             {
