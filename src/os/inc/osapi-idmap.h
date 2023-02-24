@@ -102,10 +102,12 @@ static inline unsigned long OS_ObjectIdToInteger(osal_id_t object_id)
 static inline osal_id_t OS_ObjectIdFromInteger(unsigned long value)
 {
 #ifdef OSAL_OMIT_DEPRECATED
-    return (osal_id_t) {value};
+    osal_id_t idv = {(uint32)value};
 #else
-    return (osal_id_t)value;
+    osal_id_t idv = (osal_id_t)value;
 #endif
+
+    return idv;
 }
 
 /*-------------------------------------------------------------------------------------*/

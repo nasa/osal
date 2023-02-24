@@ -106,7 +106,7 @@ typedef enum
 {
     OS_FILE_FLAG_NONE     = 0x00,
     OS_FILE_FLAG_CREATE   = 0x01,
-    OS_FILE_FLAG_TRUNCATE = 0x02,
+    OS_FILE_FLAG_TRUNCATE = 0x02
 } OS_file_flag_t;
 
 /*
