@@ -1,0 +1,4 @@
+#include "@HDR@"
+
+/* A no-op function so this compilation unit is not empty */
+void CheckHeader_@HDR_ID@(void) {}

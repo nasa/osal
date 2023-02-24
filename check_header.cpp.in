@@ -1,0 +1,7 @@
+extern "C"
+{
+#include "@HDR@"
+}
+
+/* An empty class */
+class CheckHeader_@HDR_ID@ {};
