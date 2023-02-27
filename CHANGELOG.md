@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev199
+- Modify unreachable branch in OS_ObjectIdAllocateNew
+- See <https://github.com/nasa/osal/pull/1327>
+
 ## Development Build: v6.0.0-rc4+dev195
 - removed cast that hid bug at compile time
 - See <https://github.com/nasa/osal/pull/1367>
