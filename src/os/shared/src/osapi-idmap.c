@@ -1191,8 +1191,7 @@ int32 OS_ObjectIdAllocateNew(osal_objtype_t idtype, const char *name, OS_object_
         OS_ObjectIdTransactionCancel(token);
         return return_code;
     }
-
-    if (return_code == OS_SUCCESS)
+    else
     {
         return_code = OS_NotifyEvent(OS_EVENT_RESOURCE_ALLOCATED, token->obj_id, NULL);
     }
