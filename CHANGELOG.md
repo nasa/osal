@@ -1,5 +1,10 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev205
+- fixup API headers for C++
+- workflow to validate OSAL API
+- See <https://github.com/nasa/osal/pull/1371> and <https://github.com/nasa/osal/pull/1372>
+
 ## Development Build: v6.0.0-rc4+dev199
 - Modify unreachable branch in OS_ObjectIdAllocateNew
 - See <https://github.com/nasa/osal/pull/1327>
