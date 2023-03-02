@@ -97,7 +97,15 @@ if (CMAKE_VERSION VERSION_GREATER 3.13)
     cmake_policy(SET CMP0079 NEW)
 endif()
 
-project(OSAL C)
+option(OSAL_VALIDATE_API "Validate the OSAL API headers as part of the build" OFF)
+
+# If validation is selected, this requires a C++ compiler
+set(OSAL_LANG C)
+if (OSAL_VALIDATE_API)
+    list(APPEND OSAL_LANG CXX)
+endif()
+
+project(OSAL ${OSAL_LANG})
 
 # define a custom property to track relationship between BSP and OS
 # this should be set on BSP "impl" targets to indicate the correct OS impl to go with it
@@ -476,5 +484,44 @@ if (OSAL_INSTALL_LIBRARIES)
           "${CMAKE_CURRENT_BINARY_DIR}/NasaOsalConfig.cmake"
         DESTINATION lib/cmake
     )
+
+endif()
+
+if (OSAL_VALIDATE_API)
+
+    # Validate the API header files individually
+    file(GLOB OSAL_API_HEADERS ${OSAL_SOURCE_DIR}/src/os/inc/*.h)
+    set(OSAL_APICHECK_SOURCES)
+    set(OSAL_APICHECK_DIR "${CMAKE_CURRENT_BINARY_DIR}/apicheck")
+
+    foreach(HDR_FILE ${OSAL_API_HEADERS})
+        get_filename_component(HDR "${HDR_FILE}" NAME)
+        string(MAKE_C_IDENTIFIER "${HDR}" HDR_ID)
+        configure_file(${OSAL_SOURCE_DIR}/check_header.c.in ${OSAL_APICHECK_DIR}/check_${HDR_ID}.c)
+        list(APPEND OSAL_APICHECK_SOURCES_C ${OSAL_APICHECK_DIR}/check_${HDR_ID}.c)
+        configure_file(${OSAL_SOURCE_DIR}/check_header.cpp.in ${OSAL_APICHECK_DIR}/check_${HDR_ID}.cpp)
+        list(APPEND OSAL_APICHECK_SOURCES_CXX ${OSAL_APICHECK_DIR}/check_${HDR_ID}.cpp)
+    endforeach(HDR_FILE ${OSAL_API_HEADERS})
+    add_library(osal_apicheck_C STATIC EXCLUDE_FROM_ALL ${OSAL_APICHECK_SOURCES_C})
+    add_library(osal_apicheck_CXX STATIC EXCLUDE_FROM_ALL ${OSAL_APICHECK_SOURCES_CXX})
+    if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+        target_compile_options(osal_apicheck_C PUBLIC -std=c99 -pedantic -Wall -Werror)
+    endif()
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        target_compile_options(osal_apicheck_CXX PUBLIC -std=c++03 -pedantic -Wall -Werror)
+    endif()
+
+    # This causes the check to compile with the same set of defines and include dirs as specified
+    # in the "INTERFACE" properties of the actual module
+    target_link_libraries(osal_apicheck_C PUBLIC
+        osal_public_api
+    )
+    target_link_libraries(osal_apicheck_CXX PUBLIC
+        osal_public_api
+    )
+
+    add_custom_target(osal_apicheck)
+    add_dependencies(osal_apicheck osal_apicheck_C)
+    add_dependencies(osal_apicheck osal_apicheck_CXX)
 
 endif()

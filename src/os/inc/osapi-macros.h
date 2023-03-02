@@ -32,6 +32,15 @@
 #include "osconfig.h"
 #include "common_types.h"
 
+/*
+ * C++ does not support variadic macros until C++11
+ * These macros should only be used from C code, not headers
+ * or inline functions.  This ifdef prevents the C++ compiler
+ * from throwing an error about these definitions - as a result
+ * these macros are NOT available in C++ source files.
+ */
+#ifndef __cplusplus
+
 #ifdef OSAL_CONFIG_BUGCHECK_DISABLE
 
 /**
@@ -144,5 +153,7 @@
  * second argument (errcode) is intentionally left blank.
  */
 #define BUGCHECK_VOID(cond) BUGCHECK(cond, )
+
+#endif /* __cplusplus */
 
 #endif /* OSAPI_MACROS_H */

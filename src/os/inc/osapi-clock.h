@@ -147,7 +147,8 @@ static inline int64 OS_TimeGetTotalSeconds(OS_time_t tm)
  */
 static inline OS_time_t OS_TimeFromTotalSeconds(int64 tm)
 {
-    return (OS_time_t) {.ticks = (tm * OS_TIME_TICKS_PER_SECOND)};
+    OS_time_t ostm = {tm * OS_TIME_TICKS_PER_SECOND};
+    return ostm;
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -180,7 +181,8 @@ static inline int64 OS_TimeGetTotalMilliseconds(OS_time_t tm)
  */
 static inline OS_time_t OS_TimeFromTotalMilliseconds(int64 tm)
 {
-    return (OS_time_t) {.ticks = (tm * OS_TIME_TICKS_PER_MSEC)};
+    OS_time_t ostm = {tm * OS_TIME_TICKS_PER_MSEC};
+    return ostm;
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -213,7 +215,8 @@ static inline int64 OS_TimeGetTotalMicroseconds(OS_time_t tm)
  */
 static inline OS_time_t OS_TimeFromTotalMicroseconds(int64 tm)
 {
-    return (OS_time_t) {.ticks = (tm * OS_TIME_TICKS_PER_USEC)};
+    OS_time_t ostm = {tm * OS_TIME_TICKS_PER_USEC};
+    return ostm;
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -250,7 +253,8 @@ static inline int64 OS_TimeGetTotalNanoseconds(OS_time_t tm)
  */
 static inline OS_time_t OS_TimeFromTotalNanoseconds(int64 tm)
 {
-    return (OS_time_t) {.ticks = (tm / OS_TIME_TICK_RESOLUTION_NS)};
+    OS_time_t ostm = {tm / OS_TIME_TICK_RESOLUTION_NS};
+    return ostm;
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -462,7 +466,8 @@ static inline OS_time_t OS_TimeAssembleFromSubseconds(int64 seconds, uint32 subs
  */
 static inline OS_time_t OS_TimeAdd(OS_time_t time1, OS_time_t time2)
 {
-    return ((OS_time_t) {time1.ticks + time2.ticks});
+    OS_time_t ostm = {time1.ticks + time2.ticks};
+    return ostm;
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -476,7 +481,8 @@ static inline OS_time_t OS_TimeAdd(OS_time_t time1, OS_time_t time2)
  */
 static inline OS_time_t OS_TimeSubtract(OS_time_t time1, OS_time_t time2)
 {
-    return ((OS_time_t) {time1.ticks - time2.ticks});
+    OS_time_t ostm = {time1.ticks - time2.ticks};
+    return ostm;
 }
 
 /**@}*/
