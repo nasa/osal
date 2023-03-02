@@ -1,0 +1,57 @@
+name: Check Coverage Results
+description: 'Extracts a summary of the code coverage results'
+
+inputs:
+  binary-dir:
+    description: 'Directory containing binary files'
+    required: true
+  source-dir:
+    description: 'Directory containing source code files'
+    default: ./source
+
+outputs:
+  ncov_lines:
+    description: 'Actual number of uncovered lines'
+    value: ${{ steps.stats.outputs.ncov_lines }}
+  ncov_functions:
+    description: 'Actual number of uncovered functions'
+    value: ${{ steps.stats.outputs.ncov_functions }}
+  ncov_branches:
+    description: 'Actual number of uncovered branches'
+    value: ${{ steps.stats.outputs.ncov_branches }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Capture Results
+      shell: bash
+      run: lcov
+        --capture --rc lcov_branch_coverage=1
+        --include '${{ github.workspace }}/*'
+        --directory '${{ inputs.binary-dir }}'
+        --output-file '${{ inputs.binary-dir }}/coverage.info' |
+        tee '${{ inputs.binary-dir }}/lcov_out.txt'
+
+    - name: Generate HTML
+      shell: bash
+      run: genhtml
+        '${{ inputs.binary-dir }}/coverage.info'
+        --branch-coverage
+        --output-directory '${{ inputs.binary-dir }}/lcov-html' |
+        tee '${{ inputs.binary-dir }}/genhtml_out.txt'
+
+    - name: Extract Overall Summary
+      shell: bash
+      run: xsltproc --html
+        '${{ inputs.source-dir }}/.github/actions/check-coverage/lcov-output.xslt'
+        '${{ inputs.binary-dir }}/lcov-html/index.html' |
+        tee '${{ inputs.binary-dir }}/lcov-summary.xml'
+
+    - name: Extract Stats
+      id: stats
+      shell: bash
+      run: grep -A 3 "Overall coverage rate" '${{ inputs.binary-dir }}/genhtml_out.txt' |
+        grep -oP '\([0-9]+ of [0-9]+.*\)' |
+        tr -d '()' |
+        awk '{print "ncov_" $4 "=" $3 - $1}' |
+        tee -a $GITHUB_OUTPUT

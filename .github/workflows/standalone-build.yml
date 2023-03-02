@@ -1,0 +1,120 @@
+name: Build and Test Standalone OSAL package
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  allowed_ncov_lines: 0
+  allowed_ncov_branches: 4
+  allowed_ncov_functions: 0
+
+jobs:
+
+  build-and-test:
+    name: Build and Execute Tests
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [Debug, Release]
+        base-os: [ubuntu-22.04, ubuntu-20.04]
+
+    runs-on: ${{ matrix.base-os }}
+
+    steps:
+
+      - name: Checkout OSAL
+        uses: actions/checkout@v3
+        with:
+          path: source
+
+      - name: Install Coverage Analysis Tools
+        if: ${{ matrix.build-type == 'Debug' && matrix.base-os == 'ubuntu-20.04' }}
+        run: sudo apt-get install -y lcov xsltproc && echo "run_lcov=TRUE" >> $GITHUB_ENV
+
+      - name: Set up debug environment
+        if: ${{ matrix.build-type == 'Debug' }}
+        run: |
+          echo "is_debug=TRUE" >> $GITHUB_ENV
+          echo "is_release=FALSE" >> $GITHUB_ENV
+          echo "build_tgt=all" >> $GITHUB_ENV
+          echo "DESTDIR=${{ github.workspace }}/staging-debug" >> $GITHUB_ENV
+
+      - name: Set up release environment
+        if: ${{ matrix.build-type == 'Release' }}
+        run: |
+          echo "is_debug=FALSE" >> $GITHUB_ENV
+          echo "is_release=TRUE" >> $GITHUB_ENV
+          echo "build_tgt=install" >> $GITHUB_ENV
+          echo "DESTDIR=${{ github.workspace }}/staging-release" >> $GITHUB_ENV
+
+      - name: Set up build
+        run: cmake
+          -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+          -DENABLE_UNIT_TESTS=${{ env.is_debug }}
+          -DOSAL_OMIT_DEPRECATED=${{ env.is_debug }}
+          -DOSAL_VALIDATE_API=${{ env.is_release }}
+          -DOSAL_INSTALL_LIBRARIES=${{ env.is_release }}
+          -DOSAL_CONFIG_DEBUG_PERMISSIVE_MODE=${{ env.is_debug }}
+          -DOSAL_SYSTEM_BSPTYPE=generic-linux
+          -DCMAKE_PREFIX_PATH=/usr/lib/cmake
+          -DCMAKE_INSTALL_PREFIX=/usr
+          -S source
+          -B build
+
+      - name: Build OSAL
+        working-directory: build
+        run: make ${{ env.build_tgt }} -j2
+
+      - name: Validate API
+        if: ${{ matrix.build-type == 'Release' }}
+        working-directory: build
+        run: make osal_apicheck
+
+      - name: Execute Tests
+        if: ${{ matrix.build-type == 'Debug' }}
+        working-directory: build
+        run: ctest --output-on-failure -j4 2>&1 | tee ../ctest.log
+
+      - name: Check Coverage
+        id: stats
+        if: ${{ env.run_lcov == 'TRUE' }}
+        uses: ./source/.github/actions/check-coverage
+        with:
+          binary-dir: build
+
+      - name: Enforce coverage function minimum
+        if: ${{ always() && steps.stats.outputs.ncov_functions > env.allowed_ncov_functions }}
+        run: |
+          echo "::error::Too many uncovered functions (${{ steps.stats.outputs.ncov_functions }})"
+          /bin/false
+
+      - name: Enforce coverage line minimum
+        if: ${{ always() && steps.stats.outputs.ncov_lines > env.allowed_ncov_lines }}
+        run: |
+          echo "::error::Too many uncovered lines (${{ steps.stats.outputs.ncov_lines }})"
+          /bin/false
+
+      - name: Enforce coverage branch minimum
+        if: ${{ always() && steps.stats.outputs.ncov_branches > env.allowed_ncov_branches }}
+        run: |
+          echo "::error::Too many uncovered branches (${{ steps.stats.outputs.ncov_branches }})"
+          /bin/false
+
+      - name: Assemble Results
+        if: ${{ always() }}
+        run: |
+          if [ -s ctest.log ]; then
+            echo '<h2>CTest Execution</h2>' >> $GITHUB_STEP_SUMMARY
+            echo '<pre>' >> $GITHUB_STEP_SUMMARY
+            cat ctest.log >> $GITHUB_STEP_SUMMARY
+            echo '</pre>' >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -s 'build/lcov-summary.xml' ]; then
+            cat 'build/lcov-summary.xml' >> $GITHUB_STEP_SUMMARY
+          fi
