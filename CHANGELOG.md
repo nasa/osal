@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev209
+- add assert macros for other data types
+- See <https://github.com/nasa/osal/pull/1375>
+
 ## Development Build: v6.0.0-rc4+dev205
 - fixup API headers for C++
 - workflow to validate OSAL API
