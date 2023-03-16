@@ -27,6 +27,7 @@
  */
 #include <stdlib.h>
 #include <stdarg.h>
+#include <ctype.h>
 
 #include "common_types.h"
 #include "utassert.h"
@@ -41,6 +42,14 @@ UtAssert_CaseType_t    DefaultContext     = UTASSERT_CASETYPE_FAILURE;
 UtAssert_TestCounter_t UT_SegmentCounters = {0};
 UtAssert_TestCounter_t UT_TotalCounters   = {0};
 static char            CurrentSegment[64];
+
+typedef union
+{
+    intmax_t  s; /**< If value is signed */
+    uintmax_t u; /**< If value is unsigned */
+} UtAssert_IntBuf_t;
+
+#define UT_COMPARE_TYPE(t, s) (((t) << 1) | (s))
 
 /*
  * Function Definitions
@@ -352,106 +361,204 @@ bool UtAssert_GenericUnsignedCompare(unsigned long ActualValue, UtAssert_Compare
                                      unsigned long ReferenceValue, UtAssert_Radix_t RadixType, const char *File,
                                      uint32 Line, const char *Desc, const char *ActualText, const char *ReferenceText)
 {
-    bool        Result;
-    const char *FormatStr;
-
-    switch (CompareType)
-    {
-        case UtAssert_Compare_EQ: /* actual equals reference value */
-            Result = (ActualValue == ReferenceValue);
-            break;
-        case UtAssert_Compare_NEQ: /* actual does not non equal reference value */
-            Result = (ActualValue != ReferenceValue);
-            break;
-        case UtAssert_Compare_LT: /* actual less than reference (exclusive) */
-            Result = (ActualValue < ReferenceValue);
-            break;
-        case UtAssert_Compare_GT: /* actual greater than reference (exclusive)  */
-            Result = (ActualValue > ReferenceValue);
-            break;
-        case UtAssert_Compare_LTEQ: /* actual less than or equal to reference (inclusive) */
-            Result = (ActualValue <= ReferenceValue);
-            break;
-        case UtAssert_Compare_GTEQ: /* actual greater than reference (inclusive) */
-            Result = (ActualValue >= ReferenceValue);
-            break;
-        case UtAssert_Compare_BITMASK_SET: /* bit(s) in reference are set in actual */
-            Result = (ActualValue & ReferenceValue) == ReferenceValue;
-            break;
-        case UtAssert_Compare_BITMASK_UNSET: /* bit(s) in reference are not set in actual */
-            Result = (ActualValue & ReferenceValue) == 0;
-            break;
-        default: /* should never happen */
-            Result = false;
-            break;
-    }
-
-    switch (RadixType)
-    {
-        case UtAssert_Radix_OCTAL:
-            FormatStr = "%s%s (0%lo) %s %s (0%lo)";
-            break;
-        case UtAssert_Radix_DECIMAL:
-            FormatStr = "%s%s (%lu) %s %s (%lu)";
-            break;
-        default:
-            /* for unsigned, default is hex */
-            FormatStr = "%s%s (0x%lx) %s %s (0x%lx)";
-            break;
-    }
-
-    return UtAssertEx(Result, UTASSERT_CASETYPE_FAILURE, File, Line, FormatStr, Desc, ActualText, ActualValue,
-                      UtAssert_GetOpText(CompareType), ReferenceText, ReferenceValue);
+    return UtAssert_GenericIntegerCompare(true, ActualValue, CompareType, ReferenceValue, File, Line, RadixType, Desc,
+                                          ActualText, ReferenceText);
 }
 
 bool UtAssert_GenericSignedCompare(long ActualValue, UtAssert_Compare_t CompareType, long ReferenceValue,
                                    UtAssert_Radix_t RadixType, const char *File, uint32 Line, const char *Desc,
                                    const char *ActualText, const char *ReferenceText)
 {
-    bool        Result;
-    const char *FormatStr;
+    return UtAssert_GenericIntegerCompare(false, ActualValue, CompareType, ReferenceValue, File, Line, RadixType, Desc,
+                                          ActualText, ReferenceText);
+}
 
-    switch (CompareType)
+static const char *UtAssert_GetValueText(char *TempBuf, size_t TempSz, UT_IntCheck_t InValue, bool IsUnsigned,
+                                         UtAssert_Radix_t RadixType)
+{
+    if (RadixType == UtAssert_Radix_BOOLEAN)
     {
-        case UtAssert_Compare_EQ: /* actual equals reference value */
-            Result = (ActualValue == ReferenceValue);
+        if (InValue != 0)
+        {
+            snprintf(TempBuf, TempSz, "true");
+        }
+        else
+        {
+            snprintf(TempBuf, TempSz, "false");
+        }
+    }
+    else if (RadixType == UtAssert_Radix_OCTAL)
+    {
+        snprintf(TempBuf, TempSz, "0%lo", (unsigned long)InValue);
+    }
+    else if (RadixType == UtAssert_Radix_HEX)
+    {
+        snprintf(TempBuf, TempSz, "0x%lx", (unsigned long)InValue);
+    }
+    else if (IsUnsigned)
+    {
+        snprintf(TempBuf, TempSz, "%lu", (unsigned long)InValue);
+    }
+    else
+    {
+        snprintf(TempBuf, TempSz, "%ld", (long)InValue);
+    }
+
+    return TempBuf;
+}
+
+static bool UtAssert_DoCompare(intmax_t ActualValueIn, UtAssert_Compare_t CompareType, UT_IntCheck_t ReferenceValueIn,
+                               bool IsUnsigned)
+{
+    bool              Result;
+    UtAssert_IntBuf_t ActualValue;
+    UtAssert_IntBuf_t ReferenceValue;
+
+    if (IsUnsigned)
+    {
+        ActualValue.u    = ActualValueIn;
+        ReferenceValue.u = ReferenceValueIn;
+    }
+    else
+    {
+        ActualValue.s    = ActualValueIn;
+        ReferenceValue.s = ReferenceValueIn;
+    }
+
+    switch (UT_COMPARE_TYPE(CompareType, IsUnsigned))
+    {
+        case UT_COMPARE_TYPE(UtAssert_Compare_EQ, true): /* actual equals reference value */
+            Result = (ActualValue.u == ReferenceValue.u);
             break;
-        case UtAssert_Compare_NEQ: /* actual does not non equal reference value */
-            Result = (ActualValue != ReferenceValue);
+        case UT_COMPARE_TYPE(UtAssert_Compare_EQ, false): /* actual equals reference value */
+            Result = (ActualValue.s == ReferenceValue.s);
             break;
-        case UtAssert_Compare_LT: /* actual less than reference (exclusive) */
-            Result = (ActualValue < ReferenceValue);
+        case UT_COMPARE_TYPE(UtAssert_Compare_NEQ, true): /* actual does not non equal reference value */
+            Result = (ActualValue.u != ReferenceValue.u);
             break;
-        case UtAssert_Compare_GT: /* actual greater than reference (exclusive)  */
-            Result = (ActualValue > ReferenceValue);
+        case UT_COMPARE_TYPE(UtAssert_Compare_NEQ, false): /* actual does not non equal reference value */
+            Result = (ActualValue.s != ReferenceValue.s);
             break;
-        case UtAssert_Compare_LTEQ: /* actual less than or equal to reference (inclusive) */
-            Result = (ActualValue <= ReferenceValue);
+        case UT_COMPARE_TYPE(UtAssert_Compare_LT, true): /* actual less than reference (exclusive) */
+            Result = (ActualValue.u < ReferenceValue.u);
             break;
-        case UtAssert_Compare_GTEQ: /* actual greater than reference (inclusive) */
-            Result = (ActualValue >= ReferenceValue);
+        case UT_COMPARE_TYPE(UtAssert_Compare_LT, false): /* actual less than reference (exclusive) */
+            Result = (ActualValue.s < ReferenceValue.s);
+            break;
+        case UT_COMPARE_TYPE(UtAssert_Compare_GT, true): /* actual greater than reference (exclusive)  */
+            Result = (ActualValue.u > ReferenceValue.u);
+            break;
+        case UT_COMPARE_TYPE(UtAssert_Compare_GT, false): /* actual greater than reference (exclusive)  */
+            Result = (ActualValue.s > ReferenceValue.s);
+            break;
+        case UT_COMPARE_TYPE(UtAssert_Compare_LTEQ, true): /* actual less than reference (inclusive) */
+            Result = (ActualValue.u <= ReferenceValue.u);
+            break;
+        case UT_COMPARE_TYPE(UtAssert_Compare_LTEQ, false): /* actual less than reference (inclusive) */
+            Result = (ActualValue.s <= ReferenceValue.s);
+            break;
+        case UT_COMPARE_TYPE(UtAssert_Compare_GTEQ, true): /* actual greater than reference (inclusive) */
+            Result = (ActualValue.u >= ReferenceValue.u);
+            break;
+        case UT_COMPARE_TYPE(UtAssert_Compare_GTEQ, false): /* actual greater than reference (inclusive) */
+            Result = (ActualValue.s >= ReferenceValue.s);
+            break;
+        case UT_COMPARE_TYPE(UtAssert_Compare_BITMASK_SET, true): /* bit(s) in reference are set in actual */
+            Result = (ActualValue.u & ReferenceValue.u) == ReferenceValue.u;
+            break;
+        case UT_COMPARE_TYPE(UtAssert_Compare_BITMASK_SET, false): /* bit(s) in reference are set in actual */
+            Result = (ActualValue.s & ReferenceValue.s) == ReferenceValue.s;
+            break;
+        case UT_COMPARE_TYPE(UtAssert_Compare_BITMASK_UNSET, true): /* bit(s) in reference are not set in actual */
+            Result = (ActualValue.u & ReferenceValue.u) == 0;
+            break;
+        case UT_COMPARE_TYPE(UtAssert_Compare_BITMASK_UNSET, false): /* bit(s) in reference are not set in actual */
+            Result = (ActualValue.s & ReferenceValue.s) == 0;
             break;
         default: /* should never happen */
             Result = false;
             break;
     }
 
-    switch (RadixType)
+    return Result;
+}
+
+/*
+ * -------------------------------------------------------------------------------------
+ * Implementation of UtAssert_GenericIntegerCompare()
+ *
+ * See declaration for full API information
+ * -------------------------------------------------------------------------------------
+ */
+bool UtAssert_GenericIntegerCompare(bool IsUnsigned, UT_IntCheck_t ActualValue, UtAssert_Compare_t CompareType,
+                                    UT_IntCheck_t RefValue, const char *File, uint32 Line, UtAssert_Radix_t RadixType,
+                                    const char *Typename, const char *ActualText, const char *RefText)
+{
+    static const char UTASSERT_PREFIX[] = "UTASSERT_";
+
+    char ActualStr[32];
+    char RefStr[32];
+    char TagStr[32];
+    int  TagLen;
+
+    /* If the radix type was not specified, then check if the typename appears to be a pointer -
+     * That is, it contains an asterisk.  This is far from foolproof due to typedefs etc but
+     * it should catch most of them (note that "hiding" a pointer via typedef is discouraged by
+     * GSFC coding standards, so this shouldn't be too likely)
+     */
+    if (Typename != NULL && *Typename != 0)
     {
-        case UtAssert_Radix_OCTAL:
-            FormatStr = "%s%s (0%lo) %s %s (0%lo)";
-            break;
-        case UtAssert_Radix_HEX:
-            FormatStr = "%s%s (0x%lx) %s %s (0x%lx)";
-            break;
-        default:
-            /* for signed, default is decimal */
-            FormatStr = "%s%s (%ld) %s %s (%ld)";
-            break;
+        TagLen = snprintf(TagStr, sizeof(TagStr), "%s", Typename);
+        if (TagLen < 0)
+        {
+            TagLen = 0;
+        }
+        else if (TagLen > (sizeof(TagStr) - 3))
+        {
+            TagLen = sizeof(TagStr) - 3;
+        }
+
+        while (TagLen > 0 && (isspace((unsigned char)TagStr[TagLen - 1]) || TagStr[TagLen - 1] == ':'))
+        {
+            --TagLen;
+        }
+
+        if (TagLen > 0)
+        {
+            TagStr[TagLen] = ':';
+            ++TagLen;
+            TagStr[TagLen] = ' ';
+            ++TagLen;
+        }
+
+        TagStr[TagLen] = 0;
+
+        if (RadixType == UtAssert_Radix_DEFAULT && strchr(Typename, '*') != NULL)
+        {
+            /* looks like a pointer type */
+            RadixType = UtAssert_Radix_HEX;
+        }
+    }
+    else
+    {
+        TagStr[0] = 0;
     }
 
-    return UtAssertEx(Result, UTASSERT_CASETYPE_FAILURE, File, Line, FormatStr, Desc, ActualText, ActualValue,
-                      UtAssert_GetOpText(CompareType), ReferenceText, ReferenceValue);
+    /* If either the actual text or the ref text starts with the "UTASSERT_" prefix, then strip it */
+    if (strncmp(ActualText, UTASSERT_PREFIX, sizeof(UTASSERT_PREFIX) - 1) == 0)
+    {
+        ActualText += sizeof(UTASSERT_PREFIX) - 1;
+    }
+    if (strncmp(RefText, UTASSERT_PREFIX, sizeof(UTASSERT_PREFIX) - 1) == 0)
+    {
+        RefText += sizeof(UTASSERT_PREFIX) - 1;
+    }
+
+    return UtAssertEx(UtAssert_DoCompare(ActualValue, CompareType, RefValue, IsUnsigned), UTASSERT_CASETYPE_FAILURE,
+                      File, Line, "%s%s (%s) %s %s (%s)", TagStr, ActualText,
+                      UtAssert_GetValueText(ActualStr, sizeof(ActualStr), ActualValue, IsUnsigned, RadixType),
+                      UtAssert_GetOpText(CompareType), RefText,
+                      UtAssert_GetValueText(RefStr, sizeof(RefStr), RefValue, IsUnsigned, RadixType));
 }
 
 bool UtAssert_StringBufCompare(const char *String1, size_t String1Max, const char *String2, size_t String2Max,
