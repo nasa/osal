@@ -96,17 +96,17 @@ void Test_OS_FileSysStopVolume_Impl(void)
     UT_FileSysTest_SetupFileSysEntry(1, NULL, 1, 4);
     token = UT_TOKEN_1;
     OSAPI_TEST_FUNCTION_RC(OS_FileSysStopVolume_Impl(&token), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_xbdBlkDevDelete)) == 1, "xbdBlkDevDelete() called");
+    UtAssert_STUB_COUNT(OCS_xbdBlkDevDelete, 1);
 
     /* Test alternative branches */
     UT_ResetState(UT_KEY(OCS_xbdBlkDevDelete));
     UT_FileSysTest_SetupFileSysEntry(1, NULL, OCS_NULLDEV, 4);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysStopVolume_Impl(&token), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_xbdBlkDevDelete)) == 0, "xbdBlkDevDelete() not called");
+    UtAssert_STUB_COUNT(OCS_xbdBlkDevDelete, 0);
 
     UT_FileSysTest_SetupFileSysEntry(1, NULL, 1, 0);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysStopVolume_Impl(&token), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_xbdBlkDevDelete)) == 0, "xbdBlkDevDelete() not called");
+    UtAssert_STUB_COUNT(OCS_xbdBlkDevDelete, 0);
 }
 
 void Test_OS_FileSysFormatVolume_Impl(void)
