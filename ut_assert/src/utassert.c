@@ -702,6 +702,6 @@ bool UtAssert_StringBufCompare(const char *String1, size_t String1Max, const cha
     }
     ScrubbedString2[FormatLen2] = 0;
 
-    return UtAssertEx(Result, UTASSERT_CASETYPE_FAILURE, File, Line, "String: \'%s\' == \'%s\'", ScrubbedString1,
-                      ScrubbedString2);
+    return UtAssertEx(Result, UTASSERT_CASETYPE_FAILURE, File, Line, "String:\nReceived: \'%s\'\nExpected: \'%s\'",
+                      ScrubbedString1, ScrubbedString2);
 }
