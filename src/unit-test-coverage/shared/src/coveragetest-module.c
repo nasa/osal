@@ -127,7 +127,7 @@ void Test_OS_SymbolLookup(void)
      * int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
      */
     int32   expected = OS_SUCCESS;
-    int32   actual   = ~OS_SUCCESS;
+    int32   actual;
     cpuaddr testaddr = 0;
     cpuaddr symaddr  = 0;
 
@@ -201,8 +201,8 @@ void Test_OS_StaticSymbolLookup(void)
      * The ability to get line coverage requires a non-empty lookup table, so one is supplied here.
      */
     int32   expected = OS_SUCCESS;
-    int32   actual   = ~OS_SUCCESS;
-    cpuaddr addr     = 0;
+    int32   actual;
+    cpuaddr addr = 0;
 
     /* nominal */
     actual = OS_SymbolLookup_Static(&addr, "UT_staticsym", NULL);
@@ -239,7 +239,7 @@ void Test_OS_StaticSymbolLookup(void)
 void Test_OS_SymbolTableDump(void)
 {
     int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    int32 actual;
 
     actual = OS_SymbolTableDump("test", OSAL_SIZE_C(555));
     UtAssert_True(actual == expected, "OS_SymbolTableDump() (%ld) == OS_SUCCESS", (long)actual);

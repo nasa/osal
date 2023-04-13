@@ -39,7 +39,7 @@
 void UT_DefaultHandler_OS_printf(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context, va_list va)
 {
     const char *string = UT_Hook_GetArgValueByName(Context, "string", const char *);
-    size_t      length = strlen(string);
+    size_t      length;
     char        str[128];
     va_list     va_debugcopy;
     int32       status;

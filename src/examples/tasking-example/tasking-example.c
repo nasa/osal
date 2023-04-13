@@ -65,8 +65,11 @@ void task_3(void);
 
 #define MUTEX_ID 1
 
-uint32 task_1_id, task_2_id, task_3_id;
-uint32 mutex_id, msgq_id;
+uint32  task_1_id;
+uint32  task_2_id;
+uint32  task_3_id;
+uint32  mutex_id;
+msgq_id msgq_id;
 
 /* Global Data */
 

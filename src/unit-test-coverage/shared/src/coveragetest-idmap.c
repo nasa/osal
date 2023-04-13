@@ -358,8 +358,8 @@ void Test_OS_GetMaxForObjectType(void)
      * uint32 OS_GetMaxForObjectType(uint32 idtype);
      */
     osal_objtype_t idtype;
-    uint32         expected = 0xFFFFFFFF;
-    uint32         max      = 0;
+    uint32         expected;
+    uint32         max;
 
     for (idtype = 0; idtype < OS_OBJECT_TYPE_USER; ++idtype)
     {
@@ -391,8 +391,8 @@ void Test_OS_GetBaseForObjectType(void)
      * uint32 OS_GetBaseForObjectType(uint32 idtype);
      */
     osal_objtype_t idtype;
-    uint32         expected = 0xFFFFFFFF;
-    uint32         max      = 0;
+    uint32         expected;
+    uint32         max;
 
     for (idtype = 0; idtype < OS_OBJECT_TYPE_USER; ++idtype)
     {
@@ -430,7 +430,7 @@ void Test_OS_ObjectIdToArrayIndex(void)
     osal_id_t    objid;
     osal_index_t local_idx = OSAL_INDEX_C(0);
     int32        expected  = OS_SUCCESS;
-    int32        actual    = ~OS_SUCCESS;
+    int32        actual;
 
     /* need to get a "valid" objid for the nominal case */
     OS_ObjectIdCompose_Impl(OS_OBJECT_TYPE_OS_TASK, 1, &objid);
@@ -506,7 +506,7 @@ void Test_OS_ObjectIdGetById(void)
      * *token);
      *
      */
-    int32               actual   = ~OS_SUCCESS;
+    int32               actual;
     int32               expected = OS_SUCCESS;
     osal_id_t           refobjid;
     osal_index_t        local_idx = OSAL_INDEX_C(0);
@@ -734,7 +734,7 @@ void Test_OS_ObjectIdAllocateNew(void)
      * This test case mainly focuses on additional error checking
      */
     int32             expected = OS_SUCCESS;
-    int32             actual   = ~OS_SUCCESS;
+    int32             actual;
     OS_object_token_t token;
 
     memset(&token, 0, sizeof(token));

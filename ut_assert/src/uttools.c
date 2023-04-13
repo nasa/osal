@@ -55,7 +55,9 @@ bool UtMem2BinFile(const void *Memory, const char *Filename, uint32 Length)
 {
     FILE *fp;
 
-    if ((fp = fopen(Filename, "w")))
+    fp = fopen(Filename, "w");
+
+    if (fp)
     {
         fwrite(Memory, Length, 1, fp);
         fclose(fp);
@@ -97,7 +99,9 @@ bool UtMem2HexFile(const void *Memory, const char *Filename, uint32 Length)
     uint32 i;
     uint32 j;
 
-    if ((fp = fopen(Filename, "w")))
+    fp = fopen(Filename, "w");
+
+    if (fp)
     {
         for (i = 0; i < Length; i += 16)
         {
@@ -105,15 +109,21 @@ bool UtMem2HexFile(const void *Memory, const char *Filename, uint32 Length)
             for (j = 0; j < 16; j++)
             {
                 if ((i + j) < Length)
+                {
                     fprintf(fp, "%02X ", ((uint8 *)Memory)[i + j]);
+                }
                 else
+                {
                     fprintf(fp, "   ");
+                }
             }
             fprintf(fp, " ");
             for (j = 0; j < 16; j++)
             {
                 if ((i + j) < Length)
+                {
                     fprintf(fp, "%c", isprint(((uint8 *)Memory)[i + j]) ? ((uint8 *)Memory)[i + j] : '.');
+                }
             }
             fprintf(fp, "\n");
         }
@@ -159,7 +169,9 @@ char *UtSprintf(const char *Spec, ...)
 
     ++TextIndex;
     if (TextIndex >= UT_SNPRINTF_MAX_BUFS)
+    {
         TextIndex = 0;
+    }
 
     va_start(Args, Spec);
     vsnprintf(Buf[TextIndex].Text, sizeof(Buf[TextIndex].Text), Spec, Args);
@@ -231,7 +243,9 @@ bool UtMem2BinFileCmp(const void *Memory, const char *Filename)
     uint32       i;
 
     Success = true;
-    if ((fp = fopen(Filename, "r")))
+    fp      = fopen(Filename, "r");
+
+    if (fp)
     {
         for (i = 0; (FileByte = fgetc(fp)) != EOF; i++)
         {

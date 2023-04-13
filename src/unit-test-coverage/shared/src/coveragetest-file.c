@@ -77,8 +77,7 @@ void Test_OS_OpenCreate(void)
 
     /* Test failure to convert path */
     UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
-    expected = OS_ERROR;
-    actual   = OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, OS_READ_WRITE);
+    actual = OS_OpenCreate(&filedes, "/cf/file", OS_FILE_FLAG_NONE, OS_READ_WRITE);
     UtAssert_True(actual == OS_ERROR, "OS_OpenCreate() (%ld) == OS_ERROR (bad path)", (long)actual);
     UT_ClearDefaultReturnValue(UT_KEY(OS_TranslatePath));
 }
