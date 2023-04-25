@@ -1,0 +1,74 @@
+name: Integration Candidate Bundle Generation
+
+# Generate Integration Candidate branch for this repository.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_nums:
+        description: 'The pull request numbers to include (Comma separated)'
+        required: true
+        type: string
+
+jobs:
+  generate-ic-bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y w3m
+      - name: Checkout IC Branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+          ref: main
+      - name: Rebase IC Branch
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "cfs-program@list.nasa.gov"
+          git pull
+          git checkout integration-candidate
+          git rebase main
+      - name: Merge each PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          prs=$(echo ${{ inputs.pr_nums }} | tr "," "\n")
+          for pr in $prs
+          do
+            src_branch=$(hub pr show -f %H $pr)
+            pr_title=$(hub pr show -f %t $pr)
+            commit_msg=$'Merge pull request #'"${pr}"$' from '"${src_branch}"$'\n\n'"${pr_title}"
+            git fetch origin pull/$pr/head:origin/pull/$pr/head
+            git merge origin/pull/$pr/head --no-ff -m "$commit_msg"
+          done
+      - name: Update Changelog and Version.h files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          rev_num=$(git rev-list v6.0.0-rc4.. --count)
+          changelog_entry=$'# Changelog\\n\\n## Development Build: v6.0.0-rc4+dev'${rev_num}
+          prs=$(echo ${{ inputs.pr_nums }} | tr "," "\n")
+          see_entry=$'\-\ See:'
+          for pr in $prs
+          do
+            pr_title=$(hub pr show -f %t $pr)
+            changelog_entry="${changelog_entry}"$'\\n- '"${pr_title@Q}"
+            see_entry="${see_entry}"$' <https://github.com/nasa/cFE/pull/'${pr}$'>'
+          done
+          changelog_entry="${changelog_entry}\n${see_entry}\n"
+          echo "s|# Changelog|$changelog_entry|"
+          sed -ir "s|Changelog|$changelog_entry|" CHANGELOG.md
+          
+          buildnumber_entry=$'#define OS_BUILD_NUMBER   '${rev_num}
+          sed -ir "s|define OS_BUILD_NUMBER.*|$buildnumber_entry|" src/os/inc/osapi-version.h
+      - name: Commit and Push Updates to IC Branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          rev_num=$(git rev-list v6.0.0-rc4.. --count)
+          git add CHANGELOG.md
+          git add src/os/inc/osapi-version.h
+          git commit -m "Updating documentation and version numbers for v6.0.0-rc4+dev${rev_num}"
+          git push -v origin integration-candidate
