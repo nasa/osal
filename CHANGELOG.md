@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev213
+- Create Workflow for IC Bundle Generation
+- See <https://github.com/nasa/osal/pull/1383>
+
 ## Development Build: v6.0.0-rc4+dev209
 - add assert macros for other data types
 - See <https://github.com/nasa/osal/pull/1375>
