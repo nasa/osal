@@ -197,9 +197,7 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
     osal_index_t        idx;
     pthread_mutexattr_t mutex_attr;
     struct timespec     clock_resolution;
-    int32               return_code;
-
-    return_code = OS_SUCCESS;
+    int32               return_code = OS_ERROR;
 
     do
     {
@@ -215,7 +213,6 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
         if (status != 0)
         {
             OS_DEBUG("failed in clock_getres: %s\n", strerror(errno));
-            return_code = OS_ERROR;
             break;
         }
 
@@ -242,7 +239,6 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
         if (status != 0)
         {
             OS_DEBUG("Error: pthread_mutexattr_init failed: %s\n", strerror(status));
-            return_code = OS_ERROR;
             break;
         }
 
@@ -253,7 +249,6 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
         if (status != 0)
         {
             OS_DEBUG("Error: pthread_mutexattr_setprotocol failed: %s\n", strerror(status));
-            return_code = OS_ERROR;
             break;
         }
 
@@ -268,7 +263,6 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
             if (status != 0)
             {
                 OS_DEBUG("Error: Mutex could not be created: %s\n", strerror(status));
-                return_code = OS_ERROR;
                 break;
             }
         }
@@ -280,7 +274,6 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
         if (OS_SharedGlobalVars.TicksPerSecond <= 0)
         {
             OS_DEBUG("Error: Unable to determine OS ticks per second: %s\n", strerror(errno));
-            return_code = OS_ERROR;
             break;
         }
 
@@ -292,6 +285,8 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
          */
         OS_SharedGlobalVars.MicroSecPerTick =
             (1000000 + (OS_SharedGlobalVars.TicksPerSecond / 2)) / OS_SharedGlobalVars.TicksPerSecond;
+
+        return_code = OS_SUCCESS;
     } while (0);
 
     return return_code;

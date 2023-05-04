@@ -121,7 +121,7 @@ int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 initial_value,
     int                               attr_created;
     int                               mutex_created;
     int                               cond_created;
-    int32                             return_code;
+    int32                             return_code = OS_SEM_FAILURE;
     pthread_mutexattr_t               mutex_attr;
     OS_impl_binsem_internal_record_t *sem;
 
@@ -150,7 +150,6 @@ int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 initial_value,
         if (ret != 0)
         {
             OS_DEBUG("Error: pthread_mutexattr_init failed: %s\n", strerror(ret));
-            return_code = OS_SEM_FAILURE;
             break;
         }
 
@@ -164,7 +163,6 @@ int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 initial_value,
         if (ret != 0)
         {
             OS_DEBUG("Error: pthread_mutexattr_setprotocol failed: %s\n", strerror(ret));
-            return_code = OS_SEM_FAILURE;
             break;
         }
 
@@ -175,7 +173,6 @@ int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 initial_value,
         if (ret != 0)
         {
             OS_DEBUG("Error: pthread_mutex_init failed: %s\n", strerror(ret));
-            return_code = OS_SEM_FAILURE;
             break;
         }
 
@@ -188,7 +185,6 @@ int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 initial_value,
         if (ret != 0)
         {
             OS_DEBUG("Error: pthread_cond_init failed: %s\n", strerror(ret));
-            return_code = OS_SEM_FAILURE;
             break;
         }
 
@@ -201,7 +197,6 @@ int32 OS_BinSemCreate_Impl(const OS_object_token_t *token, uint32 initial_value,
         if (ret != 0)
         {
             OS_DEBUG("Error: initial pthread_cond_signal failed: %s\n", strerror(ret));
-            return_code = OS_SEM_FAILURE;
             break;
         }
 

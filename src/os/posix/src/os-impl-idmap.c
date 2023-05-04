@@ -181,7 +181,7 @@ void OS_WaitForStateChange_Impl(osal_objtype_t idtype, uint32 attempts)
 int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype)
 {
     int                     ret;
-    int32                   return_code = OS_SUCCESS;
+    int32                   return_code = OS_ERROR;
     pthread_mutexattr_t     mutex_attr;
     OS_impl_objtype_lock_t *impl;
 
@@ -200,7 +200,6 @@ int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype)
         if (ret != 0)
         {
             OS_DEBUG("Error: pthread_mutexattr_init failed: %s\n", strerror(ret));
-            return_code = OS_ERROR;
             break;
         }
 
@@ -211,7 +210,6 @@ int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype)
         if (ret != 0)
         {
             OS_DEBUG("Error: pthread_mutexattr_setprotocol failed: %s\n", strerror(ret));
-            return_code = OS_ERROR;
             break;
         }
 
@@ -223,7 +221,6 @@ int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype)
         if (ret != 0)
         {
             OS_DEBUG("Error: pthread_mutexattr_settype failed: %s\n", strerror(ret));
-            return_code = OS_ERROR;
             break;
         }
 
@@ -231,7 +228,6 @@ int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype)
         if (ret != 0)
         {
             OS_DEBUG("Error: pthread_mutex_init failed: %s\n", strerror(ret));
-            return_code = OS_ERROR;
             break;
         }
 
@@ -241,9 +237,10 @@ int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype)
         if (ret != 0)
         {
             OS_DEBUG("Error: pthread_cond_init failed: %s\n", strerror(ret));
-            return_code = OS_ERROR;
             break;
         }
+
+        return_code = OS_SUCCESS;
     } while (0);
 
     return return_code;
