@@ -231,6 +231,8 @@ void TestDatagramNetworkApi(void)
     uint32           Buf2  = 0;
     uint32           Buf3  = 222;
     uint32           Buf4  = 0;
+    uint32           Buf5  = 333;
+    uint32           Buf6  = 0;
     osal_id_t        objid = OS_OBJECT_ID_UNDEFINED;
     osal_id_t        invalid_fd;
     uint16           PortNum = 0;
@@ -326,6 +328,11 @@ void TestDatagramNetworkApi(void)
     UtAssert_INT32_EQ(OS_SocketAddrToString(AddrBuffer4, sizeof(AddrBuffer4), &l_addr), OS_SUCCESS);
     UtAssert_True(strcmp(AddrBuffer3, AddrBuffer4) == 0, "AddrBuffer3 (%s) == AddrBuffer4 (%s)", AddrBuffer3,
                   AddrBuffer4);
+
+    /* Send and receive data from peer 1 to peer 2 using a NULL RemoteAddr parameter for OS_SocketRecvFrom */
+    UtAssert_INT32_EQ(OS_SocketSendTo(p1_socket_id, &Buf5, sizeof(Buf5), &p2_addr), sizeof(Buf5));
+    UtAssert_INT32_EQ(OS_SocketRecvFrom(p2_socket_id, &Buf6, sizeof(Buf6), NULL, UT_TIMEOUT), sizeof(Buf6));
+    UtAssert_True(Buf5 == Buf6, "Buf5 (%ld) == Buf6 (%ld)", (long)Buf5, (long)Buf6);
 
     /* Get port from incoming address and verify */
     UtAssert_INT32_EQ(OS_SocketAddrGetPort(&PortNum, &p2_addr), OS_SUCCESS);
