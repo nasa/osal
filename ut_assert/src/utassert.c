@@ -86,14 +86,24 @@ void UtAssert_DoTestSegmentReport(const char *SegmentName, const UtAssert_TestCo
     char ReportBuffer[144];
 
     snprintf(ReportBuffer, sizeof(ReportBuffer),
-             "%02u %-20s TOTAL::%-4u  PASS::%-4u  FAIL::%-4u  MIR::%-4u  TSF::%-4u  TTF::%-4u  WARN::%-4u\n",
+             "%-22s ABORT::%-4u  WARN::%-4u  FLOW::%-4u  DEBUG::%-4u  N/A::%-4u",
+             "",
+             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_ABORT],
+             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_WARN],
+             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_FLOW],
+             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_DEBUG],
+             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_NA]);
+
+    UT_BSP_DoText(UTASSERT_CASETYPE_INFO, ReportBuffer);
+
+    snprintf(ReportBuffer, sizeof(ReportBuffer),
+             "%02u %-20s TOTAL::%-4u  PASS::%-4u  FAIL::%-4u  MIR::%-4u  TSF::%-4u  TTF::%-4u",
              (unsigned int)TestCounters->TestSegmentCount, SegmentName, (unsigned int)TestCounters->TotalTestCases,
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_PASS],
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_FAILURE],
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_MIR],
              (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_TSF],
-             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_TTF],
-             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_WARN]);
+             (unsigned int)TestCounters->CaseCount[UTASSERT_CASETYPE_TTF]);
 
     UT_BSP_DoText(UTASSERT_CASETYPE_END, ReportBuffer);
 }
