@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev217
+- Add additional counters to test summary
+- See <https://github.com/nasa/osal/pull/1393>
+
 ## Development Build: v6.0.0-rc4+dev213
 - Create Workflow for IC Bundle Generation
 - See <https://github.com/nasa/osal/pull/1383>
