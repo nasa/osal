@@ -45,8 +45,8 @@ static char            CurrentSegment[64];
 
 typedef union
 {
-    intmax_t  s; /**< If value is signed */
-    uintmax_t u; /**< If value is unsigned */
+    long          s; /**< If value is signed */
+    unsigned long u; /**< If value is unsigned */
 } UtAssert_IntBuf_t;
 
 #define UT_COMPARE_TYPE(t, s) (((t) << 1) | (s))
@@ -417,7 +417,7 @@ static const char *UtAssert_GetValueText(char *TempBuf, size_t TempSz, UT_IntChe
     return TempBuf;
 }
 
-static bool UtAssert_DoCompare(intmax_t ActualValueIn, UtAssert_Compare_t CompareType, UT_IntCheck_t ReferenceValueIn,
+static bool UtAssert_DoCompare(long ActualValueIn, UtAssert_Compare_t CompareType, UT_IntCheck_t ReferenceValueIn,
                                bool IsUnsigned)
 {
     bool              Result;
