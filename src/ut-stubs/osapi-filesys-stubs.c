@@ -25,11 +25,11 @@
 #include "osapi-filesys.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_FS_GetPhysDriveName(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_FileSysAddFixedMap(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_FileSysStatVolume(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_GetFsInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TranslatePath(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_FS_GetPhysDriveName(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_FileSysAddFixedMap(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_FileSysStatVolume(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_GetFsInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TranslatePath(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------

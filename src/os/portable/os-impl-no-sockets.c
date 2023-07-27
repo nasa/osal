@@ -54,7 +54,17 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
  *
  * See prototype for argument/return detail
  *-----------------------------------------------------------------*/
-int32 OS_SocketBind_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr)
+int32 OS_SocketBindAddress_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr)
+{
+    return OS_ERR_NOT_IMPLEMENTED;
+}
+
+/*----------------------------------------------------------------
+ * Implementation for no network configuration
+ *
+ * See prototype for argument/return detail
+ *-----------------------------------------------------------------*/
+int32 OS_SocketListen_Impl(const OS_object_token_t *token)
 {
     return OS_ERR_NOT_IMPLEMENTED;
 }

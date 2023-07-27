@@ -214,16 +214,14 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketBind_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr)
+int32 OS_SocketBindAddress_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr)
 {
     int                             os_result;
     socklen_t                       addrlen;
     const struct sockaddr *         sa;
     OS_impl_file_internal_record_t *impl;
-    OS_stream_internal_record_t *   stream;
 
-    impl   = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
-    stream = OS_OBJECT_TABLE_GET(OS_stream_table, *token);
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
 
     sa = (const struct sockaddr *)&Addr->AddrData;
 
@@ -254,16 +252,29 @@ int32 OS_SocketBind_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Ad
         return OS_ERROR;
     }
 
-    /* Start listening on the socket (implied for stream sockets) */
-    if (stream->socket_type == OS_SocketType_STREAM)
+    return OS_SUCCESS;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketListen_Impl(const OS_object_token_t *token)
+{
+    int                             os_result;
+    OS_impl_file_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
+
+    os_result = listen(impl->fd, 10);
+    if (os_result < 0)
     {
-        os_result = listen(impl->fd, 10);
-        if (os_result < 0)
-        {
-            OS_DEBUG("listen: %s\n", strerror(errno));
-            return OS_ERROR;
-        }
+        OS_DEBUG("listen: %s\n", strerror(errno));
+        return OS_ERROR;
     }
+
     return OS_SUCCESS;
 }
 

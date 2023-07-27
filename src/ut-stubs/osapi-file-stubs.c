@@ -25,15 +25,15 @@
 #include "osapi-file.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_FDGetInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_OpenCreate(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TimedRead(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TimedWrite(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_close(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_lseek(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_read(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_stat(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_write(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_FDGetInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_OpenCreate(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TimedRead(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TimedWrite(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_close(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_lseek(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_read(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_stat(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_write(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------

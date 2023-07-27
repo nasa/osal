@@ -25,8 +25,8 @@
 #include "osapi-clock.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_GetLocalTime(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_SetLocalTime(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_GetLocalTime(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_SetLocalTime(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------

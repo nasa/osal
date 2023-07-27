@@ -147,19 +147,19 @@ int32 OS_SocketAddrToString_Impl(char *buffer, size_t buflen, const OS_SockAddr_
 
 /*
  * ----------------------------------------------------
- * Generated stub function for OS_SocketBind_Impl()
+ * Generated stub function for OS_SocketBindAddress_Impl()
  * ----------------------------------------------------
  */
-int32 OS_SocketBind_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr)
+int32 OS_SocketBindAddress_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr)
 {
-    UT_GenStub_SetupReturnBuffer(OS_SocketBind_Impl, int32);
+    UT_GenStub_SetupReturnBuffer(OS_SocketBindAddress_Impl, int32);
 
-    UT_GenStub_AddParam(OS_SocketBind_Impl, const OS_object_token_t *, token);
-    UT_GenStub_AddParam(OS_SocketBind_Impl, const OS_SockAddr_t *, Addr);
+    UT_GenStub_AddParam(OS_SocketBindAddress_Impl, const OS_object_token_t *, token);
+    UT_GenStub_AddParam(OS_SocketBindAddress_Impl, const OS_SockAddr_t *, Addr);
 
-    UT_GenStub_Execute(OS_SocketBind_Impl, Basic, NULL);
+    UT_GenStub_Execute(OS_SocketBindAddress_Impl, Basic, NULL);
 
-    return UT_GenStub_GetReturnValue(OS_SocketBind_Impl, int32);
+    return UT_GenStub_GetReturnValue(OS_SocketBindAddress_Impl, int32);
 }
 
 /*
@@ -195,6 +195,22 @@ int32 OS_SocketGetInfo_Impl(const OS_object_token_t *token, OS_socket_prop_t *so
     UT_GenStub_Execute(OS_SocketGetInfo_Impl, Basic, NULL);
 
     return UT_GenStub_GetReturnValue(OS_SocketGetInfo_Impl, int32);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_SocketListen_Impl()
+ * ----------------------------------------------------
+ */
+int32 OS_SocketListen_Impl(const OS_object_token_t *token)
+{
+    UT_GenStub_SetupReturnBuffer(OS_SocketListen_Impl, int32);
+
+    UT_GenStub_AddParam(OS_SocketListen_Impl, const OS_object_token_t *, token);
+
+    UT_GenStub_Execute(OS_SocketListen_Impl, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_SocketListen_Impl, int32);
 }
 
 /*
