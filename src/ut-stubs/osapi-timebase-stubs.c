@@ -25,11 +25,11 @@
 #include "osapi-timebase.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_TimeBaseCreate(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TimeBaseDelete(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TimeBaseGetFreeRun(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TimeBaseGetIdByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TimeBaseGetInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TimeBaseCreate(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TimeBaseDelete(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TimeBaseGetFreeRun(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TimeBaseGetIdByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TimeBaseGetInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------

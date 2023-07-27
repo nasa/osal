@@ -25,11 +25,11 @@
 #include "osapi-module.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_ModuleInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ModuleLoad(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ModuleSymbolLookup(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ModuleUnload(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_SymbolLookup(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ModuleInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ModuleLoad(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ModuleSymbolLookup(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ModuleUnload(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_SymbolLookup(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------

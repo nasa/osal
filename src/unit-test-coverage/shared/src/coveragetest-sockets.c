@@ -117,29 +117,120 @@ void Test_OS_SocketBind(void)
     OS_stream_table[1].socket_domain = OS_SocketDomain_INET;
     memset(&Addr, 0, sizeof(Addr));
 
-    /* Fail implementation */
-    UT_SetDeferredRetcode(UT_KEY(OS_SocketBind_Impl), 1, OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_SocketBind(UT_OBJID_1, &Addr), OS_ERROR);
-
+    /* Non-stream socket (not an error) */
+    OS_stream_table[1].stream_state = 0;
+    OS_stream_table[1].socket_type  = OS_SocketType_DATAGRAM;
     OSAPI_TEST_FUNCTION_RC(OS_SocketBind(UT_OBJID_1, &Addr), OS_SUCCESS);
 
-    OSAPI_TEST_FUNCTION_RC(OS_SocketBind(UT_OBJID_1, NULL), OS_INVALID_POINTER);
+    /* Normal success */
+    OS_stream_table[1].stream_state = 0;
+    OS_stream_table[1].socket_type  = OS_SocketType_STREAM;
+    OSAPI_TEST_FUNCTION_RC(OS_SocketBind(UT_OBJID_1, &Addr), OS_SUCCESS);
 
-    /*
-     * Should fail if not a socket domain
-     */
-    OS_stream_table[1].socket_domain = OS_SocketDomain_INVALID;
-    OSAPI_TEST_FUNCTION_RC(OS_SocketBind(UT_OBJID_1, &Addr), OS_ERR_INCORRECT_OBJ_TYPE);
+    /* Failure of OS_SocketBind() - RC passed thru */
+    OS_stream_table[1].stream_state = 0;
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, -111);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketBind(UT_OBJID_1, &Addr), -111);
 
+    /* Failure of OS_SocketListen() - RC passed thru */
+    OS_stream_table[1].stream_state = 0;
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 2, -112);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketBind(UT_OBJID_1, &Addr), -112);
+}
+
+/*****************************************************************************
+ *
+ * Test case for OS_SocketBindAddress()
+ *
+ *****************************************************************************/
+void Test_OS_SocketBindAddress(void)
+{
     /*
-     * Should fail if already bound
+     * Test Case For:
+     * int32 OS_SocketBindAddress(uint32 sock_id, const OS_SockAddr_t *Addr)
      */
-    OS_stream_table[1].socket_domain = OS_SocketDomain_INET;
-    OS_stream_table[1].stream_state  = OS_STREAM_STATE_BOUND;
+    OS_SockAddr_t                Addr;
+    OS_stream_internal_record_t *stream;
+
+    stream = &OS_stream_table[1];
+
+    stream->socket_type   = OS_SocketType_STREAM;
+    stream->socket_domain = OS_SocketDomain_INET;
+    stream->stream_state  = 0;
+
+    memset(&Addr, 0, sizeof(Addr));
+
+    /* Bad pointer */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketBindAddress(UT_OBJID_1, NULL), OS_INVALID_POINTER);
+
+    /* Invalid object ID */
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketBindAddress(UT_OBJID_1, &Addr), OS_ERR_INVALID_ID);
+
+    /* Fail implementation */
+    UT_SetDeferredRetcode(UT_KEY(OS_SocketBindAddress_Impl), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketBindAddress(UT_OBJID_1, &Addr), OS_ERROR);
+    UtAssert_BITMASK_UNSET(stream->stream_state, OS_STREAM_STATE_BOUND);
+
+    /* Nominal success */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketBindAddress(UT_OBJID_1, &Addr), OS_SUCCESS);
+    UtAssert_BITMASK_SET(stream->stream_state, OS_STREAM_STATE_BOUND);
+
+    /* Should fail if already bound */
     OSAPI_TEST_FUNCTION_RC(OS_SocketBind(UT_OBJID_1, &Addr), OS_ERR_INCORRECT_OBJ_STATE);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_SocketBind(UT_OBJID_1, &Addr), OS_ERROR);
+    /* Should fail if not a socket domain */
+    stream->socket_domain = OS_SocketDomain_INVALID;
+    OSAPI_TEST_FUNCTION_RC(OS_SocketBind(UT_OBJID_1, &Addr), OS_ERR_INCORRECT_OBJ_TYPE);
+}
+
+/*****************************************************************************
+ *
+ * Test case for OS_SocketListen()
+ *
+ *****************************************************************************/
+void Test_OS_SocketListen(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_SocketListen(uint32 sock_id)
+     */
+    OS_stream_internal_record_t *stream;
+
+    stream = &OS_stream_table[1];
+
+    stream->socket_type   = OS_SocketType_INVALID;
+    stream->socket_domain = OS_SocketDomain_INVALID;
+    stream->stream_state  = 0;
+
+    /* Invalid object ID */
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketListen(UT_OBJID_1), OS_ERR_INVALID_ID);
+
+    /* Should fail if not a stream */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketListen(UT_OBJID_1), OS_ERR_INCORRECT_OBJ_TYPE);
+
+    /* Should fail if not a socket domain */
+    stream->socket_type = OS_SocketType_STREAM;
+    OSAPI_TEST_FUNCTION_RC(OS_SocketListen(UT_OBJID_1), OS_ERR_INCORRECT_OBJ_TYPE);
+
+    /* Should fail if not bound */
+    stream->socket_domain = OS_SocketDomain_INET;
+    OSAPI_TEST_FUNCTION_RC(OS_SocketListen(UT_OBJID_1), OS_ERR_INCORRECT_OBJ_STATE);
+
+    /* Fail implementation (does not set listenting state) */
+    stream->stream_state = OS_STREAM_STATE_BOUND;
+    UT_SetDeferredRetcode(UT_KEY(OS_SocketListen_Impl), 1, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketListen(UT_OBJID_1), OS_ERROR);
+    UtAssert_BITMASK_SET(stream->stream_state, OS_STREAM_STATE_BOUND);
+    UtAssert_BITMASK_UNSET(stream->stream_state, OS_STREAM_STATE_LISTENING);
+
+    /* Nominal success */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketListen(UT_OBJID_1), OS_SUCCESS);
+    UtAssert_BITMASK_SET(stream->stream_state, OS_STREAM_STATE_LISTENING);
+
+    /* Should fail if already listening */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketListen(UT_OBJID_1), OS_ERR_INCORRECT_OBJ_STATE);
 }
 
 /*****************************************************************************
@@ -521,6 +612,8 @@ void UtTest_Setup(void)
     ADD_TEST(OS_SocketAddr);
     ADD_TEST(OS_SocketOpen);
     ADD_TEST(OS_SocketBind);
+    ADD_TEST(OS_SocketBindAddress);
+    ADD_TEST(OS_SocketListen);
     ADD_TEST(OS_SocketAccept);
     ADD_TEST(OS_SocketConnect);
     ADD_TEST(OS_SocketRecvFrom);

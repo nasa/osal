@@ -25,12 +25,12 @@
 #include "osapi-task.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_TaskCreate(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TaskDelete(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TaskFindIdBySystemData(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TaskGetId(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TaskGetIdByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_TaskGetInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TaskCreate(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TaskDelete(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TaskFindIdBySystemData(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TaskGetId(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TaskGetIdByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_TaskGetInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------
@@ -94,6 +94,7 @@ int32 OS_TaskDelete(osal_id_t task_id)
  */
 void OS_TaskExit(void)
 {
+
     UT_GenStub_Execute(OS_TaskExit, Basic, NULL);
 }
 

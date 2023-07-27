@@ -25,12 +25,12 @@
 #include "osapi-queue.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_QueueCreate(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_QueueDelete(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_QueueGet(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_QueueGetIdByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_QueueGetInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_QueuePut(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_QueueCreate(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_QueueDelete(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_QueueGet(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_QueueGetIdByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_QueueGetInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_QueuePut(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------

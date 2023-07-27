@@ -25,12 +25,12 @@
 #include "osapi-idmap.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_ConvertToArrayIndex(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ForEachObject(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ForEachObjectOfType(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_GetResourceName(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_IdentifyObject(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_ObjectIdToArrayIndex(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ConvertToArrayIndex(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ForEachObject(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ForEachObjectOfType(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_GetResourceName(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_IdentifyObject(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_ObjectIdToArrayIndex(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------

@@ -25,9 +25,9 @@
 #include "osapi-dir.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_DirectoryClose(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_DirectoryOpen(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_DirectoryRead(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_DirectoryClose(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_DirectoryOpen(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_DirectoryRead(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------

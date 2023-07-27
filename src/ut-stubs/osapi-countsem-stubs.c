@@ -25,10 +25,10 @@
 #include "osapi-countsem.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_CountSemCreate(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_CountSemDelete(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_CountSemGetIdByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_CountSemGetInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_CountSemCreate(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_CountSemDelete(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_CountSemGetIdByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_CountSemGetInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------

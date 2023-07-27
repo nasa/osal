@@ -25,8 +25,8 @@
 #include "osapi-version.h"
 #include "utgenstub.h"
 
-extern void UT_DefaultHandler_OS_GetVersionCodeName(void *, UT_EntryKey_t, const UT_StubContext_t *);
-extern void UT_DefaultHandler_OS_GetVersionString(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_GetVersionCodeName(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_GetVersionString(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------
@@ -63,6 +63,7 @@ const char *OS_GetVersionCodeName(void)
  */
 void OS_GetVersionNumber(uint8 VersionNumbers[4])
 {
+
     UT_GenStub_Execute(OS_GetVersionNumber, Basic, NULL);
 }
 
