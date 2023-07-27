@@ -1,5 +1,11 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev223
+- 'Fix #1396, do not use intmax_t/uintmax_t types'
+- 'Fix #1398, separate bind and listen calls for streams'
+- See: <https://github.com/nasa/cFE/pull/1397> <https://github.com/nasa/cFE/pull/1399>
+
+
 ## Development Build: v6.0.0-rc4+dev217
 - Add additional counters to test summary
 - See <https://github.com/nasa/osal/pull/1393>
