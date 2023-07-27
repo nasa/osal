@@ -56,7 +56,15 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token);
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SocketBind_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr);
+int32 OS_SocketBindAddress_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr);
+
+/*----------------------------------------------------------------
+
+   Purpose: Binds the indicated socket table entry to the passed-in address
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_SocketListen_Impl(const OS_object_token_t *token);
 
 /*----------------------------------------------------------------
 

@@ -151,8 +151,87 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
  *  Purpose: Implemented per public OSAL API
  *           See description in API and header file for detail
  *
+ * This is now just a convenience/shorthand routine handling both bind
+ * and listen, preserved for backward compatibility.
+ *
  *-----------------------------------------------------------------*/
 int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr)
+{
+    int32 return_code;
+
+    return_code = OS_SocketBindAddress(sock_id, Addr);
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_SocketListen(sock_id);
+        if (return_code == OS_ERR_INCORRECT_OBJ_TYPE)
+        {
+            /* This one is OK, it happens if the socket is a datagram/connectionless
+             * type that does not need to listen().  For backward compatibility, report
+             * success to the caller.
+             */
+            return_code = OS_SUCCESS;
+        }
+    }
+
+    return return_code;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketListen(osal_id_t sock_id)
+{
+    OS_stream_internal_record_t *stream;
+    OS_object_token_t            token;
+    int32                        return_code;
+
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_EXCLUSIVE, LOCAL_OBJID_TYPE, sock_id, &token);
+    if (return_code == OS_SUCCESS)
+    {
+        stream = OS_OBJECT_TABLE_GET(OS_stream_table, token);
+
+        /* This call is only applicable to stream sockets */
+        if (stream->socket_domain == OS_SocketDomain_INVALID || stream->socket_type != OS_SocketType_STREAM)
+        {
+            /* Not a stream socket */
+            return_code = OS_ERR_INCORRECT_OBJ_TYPE;
+        }
+        else if ((stream->stream_state & OS_STREAM_STATE_BOUND) == 0)
+        {
+            /* Socket must be bound to an address already */
+            return_code = OS_ERR_INCORRECT_OBJ_STATE;
+        }
+        else if ((stream->stream_state & (OS_STREAM_STATE_LISTENING | OS_STREAM_STATE_CONNECTED)) != 0)
+        {
+            /* Socket must be neither listening nor connected */
+            return_code = OS_ERR_INCORRECT_OBJ_STATE;
+        }
+        else
+        {
+            return_code = OS_SocketListen_Impl(&token);
+
+            if (return_code == OS_SUCCESS)
+            {
+                stream->stream_state |= OS_STREAM_STATE_LISTENING;
+            }
+        }
+
+        OS_ObjectIdRelease(&token);
+    }
+
+    return return_code;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketBindAddress(osal_id_t sock_id, const OS_SockAddr_t *Addr)
 {
     OS_common_record_t *         record;
     OS_stream_internal_record_t *stream;
@@ -180,7 +259,7 @@ int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr)
         }
         else
         {
-            return_code = OS_SocketBind_Impl(&token, Addr);
+            return_code = OS_SocketBindAddress_Impl(&token, Addr);
 
             if (return_code == OS_SUCCESS)
             {

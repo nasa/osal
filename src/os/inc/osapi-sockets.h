@@ -274,14 +274,13 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
 
 /*-------------------------------------------------------------------------------------*/
 /**
- * @brief Binds a socket to a given local address.
+ * @brief Binds a socket to a given local address and enter listening (server) mode.
  *
- * The specified socket will be bound to the local address and port, if available.
+ * This is a convenience/compatibility routine to perform both OS_SocketBindAddress() and
+ * OS_SocketListen() operations in a single call, intended to simplify the setup for a server
+ * role.
  *
  * If the socket is connectionless, then it only binds to the local address.
- *
- * If the socket is connection-oriented (stream), then this will also put the
- * socket into a listening state for incoming connections at the local address.
  *
  * @param[in]   sock_id  The socket ID
  * @param[in]   Addr     The local address to bind to @nonnull
@@ -294,6 +293,47 @@ int32 OS_SocketOpen(osal_id_t *sock_id, OS_SocketDomain_t Domain, OS_SocketType_
  * @retval #OS_ERR_INCORRECT_OBJ_TYPE if the handle is not a socket
  */
 int32 OS_SocketBind(osal_id_t sock_id, const OS_SockAddr_t *Addr);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Places the specified socket into a listening state.
+ *
+ * This function only applies to connection-oriented (stream) sockets that are intended
+ * to be used in a server-side role. This places the socket into a state where it can
+ * accept incoming connections from clients.
+ *
+ * @param[in]   sock_id  The socket ID
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_ERR_INVALID_ID if the sock_id parameter is not valid
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if the socket is already listening
+ * @retval #OS_ERR_INCORRECT_OBJ_TYPE if the handle is not a stream socket
+ */
+int32 OS_SocketListen(osal_id_t sock_id);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Binds a socket to a given local address.
+ *
+ * The specified socket will be bound to the local address and port, if available.
+ * This controls the source address reflected in network traffic transmitted via this
+ * socket.
+ *
+ * After binding to the address, a stream socket may be followed by a call to either
+ * OS_SocketListen() for a server role or to OS_SocketConnect() for a client role.
+ *
+ * @param[in]   sock_id  The socket ID
+ * @param[in]   Addr     The local address to bind to @nonnull
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_ERR_INVALID_ID if the sock_id parameter is not valid
+ * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if the socket is already bound
+ * @retval #OS_ERR_INCORRECT_OBJ_TYPE if the handle is not a socket
+ */
+int32 OS_SocketBindAddress(osal_id_t sock_id, const OS_SockAddr_t *Addr);
 
 /*-------------------------------------------------------------------------------------*/
 /**
