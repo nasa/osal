@@ -366,6 +366,20 @@ void CondVarTest_Ops(void)
     }
 }
 
+bool CondVarTest_CheckImpl(void)
+{
+    int32_t   status;
+    osal_id_t cvid;
+
+    status = OS_CondVarCreate(&cvid, "ut", 0);
+    if (status == OS_SUCCESS)
+    {
+        OS_CondVarDelete(cvid);
+    }
+
+    return (status != OS_ERR_NOT_IMPLEMENTED);
+}
+
 void UtTest_Setup(void)
 {
     if (OS_API_Init() != OS_SUCCESS)
@@ -376,10 +390,17 @@ void UtTest_Setup(void)
     /* the test should call OS_API_Teardown() before exiting */
     UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
-    /*
-     * Register the test setup and check routines in UT assert
-     */
-    UtTest_Add(CondVarTest_Ops, NULL, NULL, "CondVarOps");
-    UtTest_Add(CondVarTest_Execute, CondVarTest_Setup, CondVarTest_Teardown, "CondVarBasic");
-    UtTest_Add(CondVarTimedWait_Execute, CondVarTimedWait_Setup, CondVarTimedWait_Teardown, "CondVarTimed");
+    if (CondVarTest_CheckImpl())
+    {
+        /*
+         * Register the test setup and check routines in UT assert
+         */
+        UtTest_Add(CondVarTest_Ops, NULL, NULL, "CondVarOps");
+        UtTest_Add(CondVarTest_Execute, CondVarTest_Setup, CondVarTest_Teardown, "CondVarBasic");
+        UtTest_Add(CondVarTimedWait_Execute, CondVarTimedWait_Setup, CondVarTimedWait_Teardown, "CondVarTimed");
+    }
+    else
+    {
+        UtAssert_MIR("Condition variables not implemented; skipping tests");
+    }
 }
