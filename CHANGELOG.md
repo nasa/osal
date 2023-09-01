@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-4c4+dev229
+- Fixes errors in IC Bundle workflow file
+- See <https://github.com/nasa/osal/pull/1403>
+
 ## Development Build: v6.0.0-rc4+dev223
 - 'Fix #1396, do not use intmax_t/uintmax_t types'
 - 'Fix #1398, separate bind and listen calls for streams'
