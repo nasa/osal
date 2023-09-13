@@ -1,6 +1,11 @@
 # Changelog
 
-## Development Build: v6.0.0-4c4+dev229
+## Development Build: v6.0.0-rc4+dev235
+- Set RTEMS task name for cpuuse
+- Squash RTEMS sem take timeout bug
+- See <https://github.com/nasa/osal/pull/1407> and <https://github.com/nasa/osal/pull/1408>
+
+## Development Build: v6.0.0-rc4+dev229
 - Fixes errors in IC Bundle workflow file
 - See <https://github.com/nasa/osal/pull/1403>
 
