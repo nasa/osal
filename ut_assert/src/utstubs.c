@@ -1068,7 +1068,7 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
 
     RvcPtr = UT_Stub_FindRetvalConfig(FuncKey);
 
-    /* For legacy compatibility, determine the int32 status code (this may or may not be relevent) */
+    /* For legacy compatibility, determine the int32 status code (this may or may not be relevant) */
     if (RvcPtr != NULL && UT_Stub_IsValueCompatible(&RvcPtr->Data.Rvc, "int32", UT_ValueGenre_INTEGER))
     {
         LocalContext.Int32StatusIsSet =
