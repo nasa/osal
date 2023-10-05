@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev239
+- Add RTEMS console and timebase posix task names
+- See <https://github.com/nasa/osal/pull/1422>
+
 ## Development Build: v6.0.0-rc4+dev235
 - Set RTEMS task name for cpuuse
 - Squash RTEMS sem take timeout bug
