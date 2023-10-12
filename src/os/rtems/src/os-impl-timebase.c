@@ -26,6 +26,9 @@
 /****************************************************************************************
                                     INCLUDE FILES
  ***************************************************************************************/
+#define _GNU_SOURCE
+#include <pthread.h>
+
 #include "os-rtems.h"
 
 #include "os-shared-common.h"
@@ -388,6 +391,8 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
         }
         else
         {
+            pthread_setname_np(local->handler_task, "OS_TIMEBASE");
+
             /* will place the task in 'ready for scheduling' state */
             rtems_sc = rtems_task_start(local->handler_task,             /* rtems task id */
                                         OS_TimeBase_CallbackThreadEntry, /* task entry point */
