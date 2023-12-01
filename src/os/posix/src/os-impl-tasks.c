@@ -37,10 +37,26 @@
 #include "os-shared-idmap.h"
 
 /*
- * Defines
+ * Extra Stack Space for overhead -
+ *
+ * glibc pthreads implicitly puts its TCB/TLS structures at the base of the stack.
+ * The actual size of these structures is highly system and configuration dependent.
+ * Experimentation/measurement on an x64-64 system with glibc shows this to consume
+ * between 9-10kB of stack space off the top.
+ *
+ * There does not seem to be a reliable/standardized way of determining how large this
+ * is going to be, but PTHREAD_STACK_MIN (if defined) should include adequate space for it.
+ * If this is not defined, then just assume 1 page.
+ *
+ * Importantly - when the user passes a stack size to OS_TaskCreate() - the expectation is
+ * that there will be at least this amount of real _usable_ space for the task.  If 10kB
+ * is used before the entry point is even called, this needs to be accounted for, or else
+ * the stack might end up being too small.
  */
-#ifndef PTHREAD_STACK_MIN
-#define PTHREAD_STACK_MIN (8 * 1024)
+#ifdef PTHREAD_STACK_MIN
+#define OS_IMPL_STACK_EXTRA PTHREAD_STACK_MIN
+#else
+#define OS_IMPL_STACK_EXTRA POSIX_GlobalVars.PageSize
 #endif
 
 /* Tables where the OS object information is stored */
@@ -451,20 +467,9 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
     }
 
     /*
-     * Adjust the stack size parameter.
-     *
-     * POSIX has additional restrictions/limitations on the stack size of tasks that
-     * other RTOS environments may not have.  Specifically POSIX says that the stack
-     * size must be at least PTHREAD_STACK_MIN and may also need to be a multiple of the
-     * system page size.
-     *
-     * Rounding up means the user might get a bigger stack than they requested, but
-     * that should not break anything aside from consuming extra memory.
+     * Adjust the stack size parameter, add budget for TCB/TLS overhead.
      */
-    if (stacksz < PTHREAD_STACK_MIN)
-    {
-        stacksz = PTHREAD_STACK_MIN;
-    }
+    stacksz += OS_IMPL_STACK_EXTRA;
 
     stacksz += POSIX_GlobalVars.PageSize - 1;
     stacksz -= stacksz % POSIX_GlobalVars.PageSize;
