@@ -1,5 +1,9 @@
 # Changelog
 
+##Development Build: v6.0.0-rc4+dev243
+- Wrong memory alignment calculation
+- See <https://github.com/nasa/osal/pull/1413>
+
 ## Development Build: v6.0.0-rc4+dev239
 - Add RTEMS console and timebase posix task names
 - See <https://github.com/nasa/osal/pull/1422>
