@@ -1,6 +1,10 @@
 # Changelog
 
-##Development Build: v6.0.0-rc4+dev243
+## Development Build: v6.0.0-rc4+dev247
+- adjust pthread stack to account for TCB+TLS
+- See <https://github.com/nasa/osal/pull/1430>
+
+## Development Build: v6.0.0-rc4+dev243
 - Wrong memory alignment calculation
 - See <https://github.com/nasa/osal/pull/1413>
 
