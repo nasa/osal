@@ -34,15 +34,22 @@
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER   247
-#define OS_BUILD_BASELINE "v6.0.0-rc4"
+#define OS_BUILD_NUMBER     247
+#define OS_BUILD_BASELINE   "equuleus-rc1"
+#define OS_BUILD_DEV_CYCLE  "equuleus-rc2" /**< @brief Development: Release name for current development cycle */
+#define OS_BUILD_CODENAME   "Equuleus" /**< @brief: Development: Code name for the current build */
 
 /*
  * Version Macros, see \ref cfsversions for definitions.
  */
 #define OS_MAJOR_VERSION 5  /*!< @brief Major version number */
 #define OS_MINOR_VERSION 0  /*!< @brief Minor version number */
-#define OS_REVISION      99 /*!< @brief Revision version number. Value of 99 indicates a development version.*/
+#define OS_REVISION      0  /*!< @brief Revision version number. Value of 99 indicates a development version.*/
+
+/**
+ * @brief Last official release.
+ */
+#define OS_LAST_OFFICIAL "v5.0.0"
 
 /*!
  * @brief Mission revision.
@@ -63,20 +70,6 @@
  * @details Baseline git tag + Number of commits since baseline. @n
  */
 #define OS_VERSION OS_BUILD_BASELINE "+dev" OS_STR(OS_BUILD_NUMBER)
-
-/*! @brief Version code name
- * All modular components which are tested/validated together should share the same code name
- */
-#define OS_VERSION_CODENAME "Draco"
-
-/*! @brief Development Build Version String.
- * @details Reports the current development build's baseline, number, and name. Also includes a note about the latest
- * official version.
- */
-#define OS_VERSION_STRING                                                                          \
-    " OSAL Development Build\n"                                                                    \
-    " " OS_VERSION " (Codename: " OS_VERSION_CODENAME ")\n" /* Codename for current development */ \
-    " Latest Official Version: osal v5.0.0"                 /* For full support please use official release version */
 
 /*! @brief Combines the revision components into a single value
  * @details Applications can check against this number @n
@@ -151,5 +144,13 @@ void OS_GetVersionNumber(uint8 VersionNumbers[4]);
  * \returns The OSAL library build number
  */
 uint32 OS_GetBuildNumber(void);
+
+/**
+ * @brief Max Version String length.
+ * 
+ * Maximum length that an OSAL version string can be.
+ * 
+ */
+#define OS_CFG_MAX_VERSION_STR_LEN 256
 
 #endif /* OSAPI_VERSION_H */
