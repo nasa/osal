@@ -34,7 +34,7 @@
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER   247
+#define OS_BUILD_NUMBER   251
 #define OS_BUILD_BASELINE "v6.0.0-rc4"
 
 /*
