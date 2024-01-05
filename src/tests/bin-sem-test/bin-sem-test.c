@@ -16,170 +16,202 @@
  * limitations under the License.
  ************************************************************************/
 
-/*
-** Binary semaphore Producer/Consumer test
-*/
-#include <stdio.h>
-#include <stdlib.h>
-#include "common_types.h"
+/**
+ * @file Binary semaphore test
+ */
 #include "osapi.h"
 #include "utassert.h"
 #include "uttest.h"
-#include "utbsp.h"
 
-/* Define setup and check functions for UT assert */
-void BinSemSetup(void);
-void BinSemCheck(void);
+#define TASK_STACK_SIZE 1024
 
-/* Task 1 */
-#define TASK_1_ID         1
-#define TASK_1_STACK_SIZE 1024
-#define TASK_1_PRIORITY   101
-#define TASK_2_STACK_SIZE 1024
-#define TASK_2_PRIORITY   50
+uint32 task_counter[3];
 
-#define TIMER_ENTRY 0x001
-#define TIMER_EXIT  0x002
-#define TASK_ENTRY  0x003
-#define TASK_EXIT   0x004
-
-uint32    task_1_stack[TASK_1_STACK_SIZE];
-osal_id_t task_1_id;
-uint32    task_1_failures;
-uint32    task_2_stack[TASK_2_STACK_SIZE];
-osal_id_t task_2_id;
-uint32    timer_failures;
-
-osal_id_t bin_sem_id;
-
-uint32    timer_counter;
-osal_id_t timer_id;
-uint32    timer_start    = 1000;
-uint32    timer_interval = 10000; /* 1000 = 1000 hz, 10000 == 100 hz */
-uint32    timer_accuracy;
-
-int counter = 0;
-
-/*
- * Note that we should not call "printf" or anything
- * like that during a timer callback routine (may be ISR context)
- *
- * On RTEMS even a call to BinSemGetInfo has very ill effects.
- */
-void TimerFunction(osal_id_t local_timer_id)
+void Test_BinSem_Task0(void)
 {
-    int32             status;
-    OS_bin_sem_prop_t bin_sem_prop;
+    osal_id_t sem_id;
+    uint8     i;
 
-    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
+    UtAssert_INT32_EQ(OS_BinSemGetIdByName(&sem_id, "Test_Sem"), OS_SUCCESS);
 
-    timer_counter++;
-
-    status = OS_BinSemGive(bin_sem_id);
-    if (status != OS_SUCCESS)
+    for (i = 0; i < 3; i++)
     {
-        ++timer_failures;
-    }
-
-    {
-        status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
-        if (status != OS_SUCCESS)
-        {
-            ++timer_failures;
-        }
-        else if (bin_sem_prop.value > 1)
-        {
-            ++timer_failures;
-        }
-        else if (bin_sem_prop.value < -1)
-        {
-            ++timer_failures;
-        }
+        UtAssert_INT32_EQ(OS_BinSemTake(sem_id), OS_SUCCESS);
+        task_counter[0]++;
     }
 }
 
-void task_1(void)
+void Test_BinSem_Task1(void)
 {
-    uint32            status;
-    OS_bin_sem_prop_t bin_sem_prop;
-    int               printf_counter = 0;
+    osal_id_t sem_id;
+    uint8     i;
 
-    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
+    UtAssert_INT32_EQ(OS_BinSemGetIdByName(&sem_id, "Test_Sem"), OS_SUCCESS);
 
-    OS_printf("Starting task 1\n");
-
-    OS_printf("Delay for 1 second before starting\n");
-    OS_TaskDelay(1000);
-
-    /* if failures occur, do not loop endlessly */
-    while (task_1_failures < 20)
+    for (i = 0; i < 3; i++)
     {
-        status = OS_BinSemTake(bin_sem_id);
-        if (status != OS_SUCCESS)
-        {
-            OS_printf("TASK 1:Error calling OS_BinSemTake\n");
-            ++task_1_failures;
-            OS_TaskDelay(10);
-        }
-        else
-        {
-            printf_counter++;
-            counter++;
-
-            if (printf_counter > 100)
-            {
-                OS_printf("TASK 1: counter:%d timer_counter:%d\n", (int)counter, (int)timer_counter);
-                printf_counter = 0;
-            }
-            status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
-            if (status != OS_SUCCESS)
-            {
-                OS_printf("TASK 1:Error calling OS_BinSemGetInfo\n");
-                ++task_1_failures;
-            }
-            else if (bin_sem_prop.value > 1)
-            {
-                OS_printf("Error: Binary sem value > 1 ( in task):%d !\n", (int)bin_sem_prop.value);
-                ++task_1_failures;
-            }
-            else if (bin_sem_prop.value < -1)
-            {
-                OS_printf("Error: Binary sem value < -1 ( in task):%d !\n", (int)bin_sem_prop.value);
-                ++task_1_failures;
-            }
-        }
+        UtAssert_INT32_EQ(OS_BinSemTake(sem_id), OS_SUCCESS);
+        task_counter[1]++;
     }
 }
 
-void BinSemCheck(void)
+void Test_BinSem_Task2(void)
 {
-    uint32            status;
-    OS_bin_sem_prop_t bin_sem_prop;
+    osal_id_t sem_id;
+    uint8     i;
 
-    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
+    UtAssert_INT32_EQ(OS_BinSemGetIdByName(&sem_id, "Test_Sem"), OS_SUCCESS);
 
-    /* Delete the task, which should be pending in OS_BinSemTake() */
-    status = OS_TaskDelete(task_1_id);
-    UtAssert_True(status == OS_SUCCESS, "OS_TaskDelete Rc=%d", (int)status);
+    for (i = 0; i < 3; i++)
+    {
+        UtAssert_INT32_EQ(OS_BinSemTimedWait(sem_id, 1000), OS_SUCCESS);
+        task_counter[2]++;
+    }
+}
 
-    status = OS_TimerDelete(timer_id);
-    UtAssert_True(status == OS_SUCCESS, "OS_TimerDelete Rc=%d", (int)status);
+void Test_BinSem(void)
+{
 
+    osal_id_t         sem_id[2];
+    osal_id_t         task_id[3];
+    char              long_name[OS_MAX_API_NAME + 1];
+    OS_bin_sem_prop_t sem_prop;
+    uint32            test_val;
+    bool              get_info_implemented;
+
+    memset(&sem_prop, 0, sizeof(sem_prop));
+    memset(task_counter, 0, sizeof(task_counter));
+
+    /* Invalid id checks */
+    UtAssert_INT32_EQ(OS_BinSemGetInfo(OS_OBJECT_ID_UNDEFINED, &sem_prop), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_BinSemFlush(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_BinSemGive(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_BinSemTake(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_BinSemTimedWait(OS_OBJECT_ID_UNDEFINED, 0), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_BinSemDelete(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
+
+    /* Null checks */
+    UtAssert_INT32_EQ(OS_BinSemCreate(NULL, "Test_Sem", 0, 0), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_BinSemCreate(&sem_id[0], NULL, 0, 0), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[0], NULL), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_BinSemGetIdByName(NULL, "Test_Sem"), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_BinSemGetIdByName(&sem_id[0], NULL), OS_INVALID_POINTER);
+
+    /* Name too long */
+    memset(long_name, 'a', sizeof(long_name));
+    UtAssert_INT32_EQ(OS_BinSemCreate(&sem_id[0], long_name, 0, 0), OS_ERR_NAME_TOO_LONG);
+    UtAssert_INT32_EQ(OS_BinSemGetIdByName(&sem_id[0], long_name), OS_ERR_NAME_TOO_LONG);
+
+    /* Valid create and name taken */
+    UtAssert_INT32_EQ(OS_BinSemCreate(&sem_id[0], "Test_Sem", 0, 0), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_BinSemCreate(&sem_id[1], "Test_Sem", 0, 0), OS_ERR_NAME_TAKEN);
+
+    /* Nonzero create */
+    UtAssert_INT32_EQ(OS_BinSemCreate(&sem_id[1], "Test_Sem_Nonzero", 1, 0), OS_SUCCESS);
+
+    /* Check get info implementation */
+    get_info_implemented = (OS_BinSemGetInfo(sem_id[0], &sem_prop) != OS_ERR_NOT_IMPLEMENTED);
+
+    /* Validate values */
+    if (get_info_implemented)
+    {
+        UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[0], &sem_prop), OS_SUCCESS);
+        UtAssert_INT32_EQ(sem_prop.value, 0);
+        UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[1], &sem_prop), OS_SUCCESS);
+        UtAssert_INT32_EQ(sem_prop.value, 1);
+    }
+
+    /* Poll and wait timeouts on sem initialized to zero */
+    UtAssert_INT32_EQ(OS_BinSemTimedWait(sem_id[0], 0), OS_SEM_TIMEOUT);
+    UtAssert_INT32_EQ(OS_BinSemTimedWait(sem_id[0], 1), OS_SEM_TIMEOUT);
+
+    /* Give twice and take and poll to confirm binary nature (second give response unspecified) */
+    UtAssert_INT32_EQ(OS_BinSemGive(sem_id[0]), OS_SUCCESS);
+    OS_BinSemGive(sem_id[0]);
+    UtAssert_INT32_EQ(OS_BinSemTake(sem_id[0]), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_BinSemTimedWait(sem_id[0], 0), OS_SEM_TIMEOUT);
+
+    /* Successful poll and timed wait */
+    UtAssert_INT32_EQ(OS_BinSemGive(sem_id[0]), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_BinSemTimedWait(sem_id[0], 0), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_BinSemGive(sem_id[0]), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_BinSemTimedWait(sem_id[0], 1), OS_SUCCESS);
+
+    /* Successful poll on sem initialized to nonzero */
+    UtAssert_INT32_EQ(OS_BinSemTimedWait(sem_id[1], 0), OS_SUCCESS);
+
+    /* Validate zeros */
+    if (get_info_implemented)
+    {
+        UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[0], &sem_prop), OS_SUCCESS);
+        UtAssert_INT32_EQ(sem_prop.value, 0);
+        UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[1], &sem_prop), OS_SUCCESS);
+        UtAssert_INT32_EQ(sem_prop.value, 0);
+    }
+    else
+    {
+        UtAssert_INT32_EQ(OS_BinSemTimedWait(sem_id[0], 0), OS_SEM_TIMEOUT);
+        UtAssert_INT32_EQ(OS_BinSemTimedWait(sem_id[1], 0), OS_SEM_TIMEOUT);
+    }
+
+    /* Start child task, confirm waiting, delete task, and get sem info to confirm still valid (heritage test) */
+    UtAssert_INT32_EQ(
+        OS_TaskCreate(&task_id[0], "Task_0", Test_BinSem_Task0, NULL, TASK_STACK_SIZE, OSAL_PRIORITY_C(100), 0),
+        OS_SUCCESS);
     OS_TaskDelay(100);
+    UtAssert_INT32_EQ(OS_TaskDelete(task_id[0]), OS_SUCCESS);
+    UtAssert_UINT32_EQ(task_counter[0], 0);
 
-    /* Confirm that the semaphore itself is still operational after task deletion */
-    status = OS_BinSemGive(bin_sem_id);
-    UtAssert_True(status == OS_SUCCESS, "BinSem give Rc=%d", (int)status);
-    status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
-    UtAssert_True(status == OS_SUCCESS, "BinSem value=%d Rc=%d", (int)bin_sem_prop.value, (int)status);
-    status = OS_BinSemTake(bin_sem_id);
-    UtAssert_True(status == OS_SUCCESS, "BinSem take Rc=%d", (int)status);
-    status = OS_BinSemDelete(bin_sem_id);
-    UtAssert_True(status == OS_SUCCESS, "BinSem delete Rc=%d", (int)status);
+    if (get_info_implemented)
+    {
+        UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[0], &sem_prop), OS_SUCCESS);
+        UtAssert_INT32_EQ(sem_prop.value, 0);
+    }
+    else
+    {
+        UtAssert_INT32_EQ(OS_BinSemTimedWait(sem_id[0], 0), OS_SEM_TIMEOUT);
+    }
 
-    UtAssert_True(counter < timer_counter, "Task counter (%d) < timer counter (%d)", (int)counter, (int)timer_counter);
-    UtAssert_True(task_1_failures == 0, "Task 1 failures = %u", (unsigned int)task_1_failures);
-    UtAssert_True(timer_failures == 0, "Timer failures = %u", (unsigned int)timer_failures);
+    /* Start 3 child tasks, give and confirm highest priority task increments, flush and confirm all three */
+    UtAssert_INT32_EQ(
+        OS_TaskCreate(&task_id[0], "Task_0", Test_BinSem_Task0, NULL, TASK_STACK_SIZE, OSAL_PRIORITY_C(100), 0),
+        OS_SUCCESS);
+    UtAssert_INT32_EQ(
+        OS_TaskCreate(&task_id[1], "Task_1", Test_BinSem_Task1, NULL, TASK_STACK_SIZE, OSAL_PRIORITY_C(200), 0),
+        OS_SUCCESS);
+    UtAssert_INT32_EQ(
+        OS_TaskCreate(&task_id[2], "Task_2", Test_BinSem_Task2, NULL, TASK_STACK_SIZE, OSAL_PRIORITY_C(250), 0),
+        OS_SUCCESS);
+    OS_TaskDelay(100);
+    UtAssert_UINT32_EQ(task_counter[0] + task_counter[1] + task_counter[2], 0);
+    UtAssert_INT32_EQ(OS_BinSemGive(sem_id[0]), OS_SUCCESS);
+    OS_TaskDelay(100);
+    UtAssert_UINT32_EQ(task_counter[0], 1);
+    UtAssert_UINT32_EQ(task_counter[1] + task_counter[2], 0);
+    UtAssert_INT32_EQ(OS_BinSemFlush(sem_id[0]), OS_SUCCESS);
+    OS_TaskDelay(100);
+    UtAssert_UINT32_EQ(task_counter[0], 2);
+    UtAssert_UINT32_EQ(task_counter[1], 1);
+    UtAssert_UINT32_EQ(task_counter[2], 1);
+
+    /* Give loop for tasks to complete */
+    test_val = 4;
+    while (test_val < 9)
+    {
+        test_val++;
+        UtAssert_INT32_EQ(OS_BinSemGive(sem_id[0]), OS_SUCCESS);
+        OS_TaskDelay(100);
+        UtAssert_UINT32_EQ(task_counter[0] + task_counter[1] + task_counter[2], test_val);
+    }
+
+    /* One more give and confirm nothing increments */
+    UtAssert_INT32_EQ(OS_BinSemGive(sem_id[0]), OS_SUCCESS);
+    OS_TaskDelay(100);
+    UtAssert_UINT32_EQ(task_counter[0] + task_counter[1] + task_counter[2], test_val);
+
+    /* Confirm successful delete of zero and nonzero sem */
+    UtAssert_INT32_EQ(OS_BinSemDelete(sem_id[0]), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_BinSemDelete(sem_id[1]), OS_SUCCESS);
 }
 
 void UtTest_Setup(void)
@@ -195,63 +227,5 @@ void UtTest_Setup(void)
     /*
      * Register the test setup and check routines in UT assert
      */
-    UtTest_Add(BinSemCheck, BinSemSetup, NULL, "BinSemTest");
-}
-
-void BinSemSetup(void)
-{
-    uint32            status;
-    uint32            accuracy = 0;
-    OS_bin_sem_prop_t bin_sem_prop;
-
-    memset(&bin_sem_prop, 0, sizeof(bin_sem_prop));
-
-    /* separate task failure counter because ut-assert is not reentrant */
-    task_1_failures = 0;
-    timer_failures  = 0;
-
-    /*
-    ** Create the binary semaphore
-    */
-    status = OS_BinSemCreate(&bin_sem_id, "BinSem1", 1, 0);
-    UtAssert_True(status == OS_SUCCESS, "BinSem1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(bin_sem_id), (int)status);
-
-    status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
-    UtAssert_True(status == OS_SUCCESS, "BinSem1 value=%d Rc=%d", (int)bin_sem_prop.value, (int)status);
-
-    /*
-    ** Take the semaphore so the value is 0 and the next SemTake call should block
-    */
-    status = OS_BinSemTake(bin_sem_id);
-    UtAssert_True(status == OS_SUCCESS, "BinSem1 take Rc=%d", (int)status);
-    status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
-    UtAssert_True(status == OS_SUCCESS, "BinSem1 value=%d Rc=%d", (int)bin_sem_prop.value, (int)status);
-
-    /*
-    ** Create the "consumer" task.
-    */
-    status = OS_TaskCreate(&task_1_id, "Task 1", task_1, OSAL_STACKPTR_C(task_1_stack), sizeof(task_1_stack),
-                           OSAL_PRIORITY_C(TASK_1_PRIORITY), 0);
-    UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_1_id), (int)status);
-
-    /*
-    ** Create a timer
-    */
-    status = OS_TimerCreate(&timer_id, "Timer 1", &accuracy, &(TimerFunction));
-    UtAssert_True(status == OS_SUCCESS, "Timer 1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(timer_id), (int)status);
-    UtPrintf("Timer Accuracy = %u microseconds \n", (unsigned int)accuracy);
-
-    /*
-    ** Start the timer
-    */
-    status = OS_TimerSet(timer_id, timer_start, timer_interval);
-    UtAssert_True(status == OS_SUCCESS, "Timer 1 set Rc=%d", (int)status);
-
-    /*
-     * Give the task some time to run
-     */
-    while (timer_counter < 1000)
-    {
-        OS_TaskDelay(100);
-    }
+    UtTest_Add(Test_BinSem, NULL, NULL, "Test_BinSem");
 }

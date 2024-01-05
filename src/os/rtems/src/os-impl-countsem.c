@@ -216,7 +216,7 @@ int32 OS_CountSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
 
     status = rtems_semaphore_obtain(impl->id, option_set, TimeInTicks);
 
-    if (status == RTEMS_TIMEOUT)
+    if (status == RTEMS_TIMEOUT || (option_set == RTEMS_NO_WAIT && status == RTEMS_UNSATISFIED))
     {
         return OS_SEM_TIMEOUT;
     }
@@ -239,5 +239,5 @@ int32 OS_CountSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
 int32 OS_CountSemGetInfo_Impl(const OS_object_token_t *token, OS_count_sem_prop_t *count_prop)
 {
     /* RTEMS does not provide an API to get the value */
-    return OS_SUCCESS;
+    return OS_ERR_NOT_IMPLEMENTED;
 }

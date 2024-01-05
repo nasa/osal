@@ -193,6 +193,7 @@ int32 OS_BinSemGetIdByName(osal_id_t *sem_id, const char *sem_name);
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
  * @retval #OS_INVALID_POINTER if the bin_prop pointer is null
+ * @retval #OS_ERR_NOT_IMPLEMENTED @copybrief OS_ERR_NOT_IMPLEMENTED
  */
 int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop);
 
