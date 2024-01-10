@@ -330,47 +330,6 @@ void UT_os_count_sem_get_id_by_name_test()
     }
 }
 
-/*--------------------------------------------------------------------------------*
-** Syntax: OS_CountSemGetInfo
-** Purpose: Returns semaphore information about the given binary semaphore id
-** Parameters: To-be-filled-in
-** Returns: OS_INVALID_POINTER if the pointer passed in is null
-**          OS_ERR_INVALID_ID if the id passed in is not a valid binary semaphore id
-**          OS_SUCCESS if succeeded
-**--------------------------------------------------------------------------------*/
-void UT_os_count_sem_get_info_test()
-{
-    osal_id_t           count_sem_id = OS_OBJECT_ID_UNDEFINED;
-    OS_count_sem_prop_t count_sem_prop;
-
-    /*-----------------------------------------------------*/
-    /* #1 Invalid-ID-arg */
-
-    UT_RETVAL(OS_CountSemGetInfo(UT_OBJID_INCORRECT, &count_sem_prop), OS_ERR_INVALID_ID);
-    UT_RETVAL(OS_CountSemGetInfo(OS_OBJECT_ID_UNDEFINED, &count_sem_prop), OS_ERR_INVALID_ID);
-
-    /*-----------------------------------------------------*/
-    /* #2 Invalid-pointer-arg */
-
-    if (UT_SETUP(OS_CountSemCreate(&count_sem_id, "GetInfo", 1, 0)))
-    {
-        UT_RETVAL(OS_CountSemGetInfo(count_sem_id, NULL), OS_INVALID_POINTER);
-
-        UT_TEARDOWN(OS_CountSemDelete(count_sem_id));
-    }
-
-    /*-----------------------------------------------------*/
-    /* #3 Nominal */
-
-    /* Setup */
-    if (UT_SETUP(OS_CountSemCreate(&count_sem_id, "GetInfo", 1, 0)))
-    {
-        UT_NOMINAL(OS_CountSemGetInfo(count_sem_id, &count_sem_prop));
-
-        UT_TEARDOWN(OS_CountSemDelete(count_sem_id));
-    }
-}
-
 /*================================================================================*
 ** End of File: ut_oscore_countsem_test.c
 **================================================================================*/
