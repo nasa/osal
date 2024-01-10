@@ -60,6 +60,9 @@
 #define OSAL_UNRESOLVED_SYMBOL  rtems_rtl_unresolved_name
 #define OSAL_UNRESOLVED_ITERATE rtems_rtl_unresolved_interate
 
+/* RTEMS 4.x does not implement thread names, so this becomes a no-op */
+#define pthread_setname_np(...)
+
 #else
 
 #define OSAL_HEAP_INFO_BLOCK    Heap_Information_block
