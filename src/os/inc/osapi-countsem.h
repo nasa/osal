@@ -176,6 +176,7 @@ int32 OS_CountSemGetIdByName(osal_id_t *sem_id, const char *sem_name);
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
  * @retval #OS_INVALID_POINTER if the count_prop pointer is null
+ * @retval #OS_ERR_NOT_IMPLEMENTED @copybrief OS_ERR_NOT_IMPLEMENTED
  */
 int32 OS_CountSemGetInfo(osal_id_t sem_id, OS_count_sem_prop_t *count_prop);
 
