@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: v6.0.0-rc4+dev251
+- RTEMS semaphore return bugs and functional test update
+- See <https://github.com/nasa/osal/pull/1438>
+
 ## Development Build: v6.0.0-rc4+dev247
 - adjust pthread stack to account for TCB+TLS
 - See <https://github.com/nasa/osal/pull/1430>

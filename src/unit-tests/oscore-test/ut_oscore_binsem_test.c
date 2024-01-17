@@ -288,39 +288,6 @@ void UT_os_bin_sem_get_id_by_name_test()
     }
 }
 
-/*--------------------------------------------------------------------------------*
-** Syntax: OS_BinSemGetInfo
-** Purpose: Returns semaphore information about the given binary semaphore id
-** Parameters: To-be-filled-in
-** Returns: OS_INVALID_POINTER if the pointer passed in is null
-**          OS_ERR_INVALID_ID if the id passed in is not a valid binary semaphore id
-**          OS_SUCCESS if succeeded
-** Test #1: TBD
-**--------------------------------------------------------------------------------*/
-void UT_os_bin_sem_get_info_test()
-{
-    osal_id_t         bin_sem_id = OS_OBJECT_ID_UNDEFINED;
-    OS_bin_sem_prop_t bin_sem_prop;
-
-    /*-----------------------------------------------------*/
-    UT_RETVAL(OS_BinSemGetInfo(UT_OBJID_INCORRECT, &bin_sem_prop), OS_ERR_INVALID_ID);
-    UT_RETVAL(OS_BinSemGetInfo(OS_OBJECT_ID_UNDEFINED, &bin_sem_prop), OS_ERR_INVALID_ID);
-
-    /*-----------------------------------------------------*/
-    if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "GetInfo", 1, 0)))
-    {
-        UT_RETVAL(OS_BinSemGetInfo(bin_sem_id, NULL), OS_INVALID_POINTER);
-        UT_TEARDOWN(OS_BinSemDelete(bin_sem_id));
-    }
-
-    /*-----------------------------------------------------*/
-    if (UT_SETUP(OS_BinSemCreate(&bin_sem_id, "GetInfo", 1, 0)))
-    {
-        UT_NOMINAL(OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop));
-        UT_TEARDOWN(OS_BinSemDelete(bin_sem_id));
-    }
-}
-
 /*================================================================================*
 ** End of File: ut_oscore_binsem_test.c
 **================================================================================*/

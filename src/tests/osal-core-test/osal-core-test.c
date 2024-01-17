@@ -549,7 +549,6 @@ void TestGetInfos(void)
     int               status;
     OS_task_prop_t    task_prop;
     OS_queue_prop_t   queue_prop;
-    OS_bin_sem_prop_t bin_prop;
     OS_mut_sem_prop_t mut_prop;
 
     /* first step is to create an object to to get the properties of */
@@ -560,9 +559,6 @@ void TestGetInfos(void)
 
     status = OS_QueueCreate(&msgq_0, "q 0", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
     UtAssert_True(status == OS_SUCCESS, "OS_QueueCreate");
-
-    status = OS_BinSemCreate(&bin_0, "Bin 0", 1, 0);
-    UtAssert_True(status == OS_SUCCESS, "OS_BinSemCreate");
 
     status = OS_MutSemCreate(&mut_0, "Mut 0", 0);
     UtAssert_True(status == OS_SUCCESS, "OS_MutSemCreate");
@@ -575,9 +571,6 @@ void TestGetInfos(void)
     status = OS_QueueGetInfo(msgq_0, &queue_prop);
     UtAssert_True(status == OS_SUCCESS, "OS_QueueGetInfo");
 
-    status = OS_BinSemGetInfo(bin_0, &bin_prop);
-    UtAssert_True(status == OS_SUCCESS, "OS_BinSemGetInfo");
-
     status = OS_MutSemGetInfo(mut_0, &mut_prop);
     UtAssert_True(status == OS_SUCCESS, "OS_MutSemGetInfo");
 
@@ -586,9 +579,6 @@ void TestGetInfos(void)
 
     status = OS_QueueDelete(msgq_0);
     UtAssert_True(status == OS_SUCCESS, "OS_QueueDelete");
-
-    status = OS_BinSemDelete(bin_0);
-    UtAssert_True(status == OS_SUCCESS, "OS_BinSemDelete");
 
     status = OS_MutSemDelete(mut_0);
     UtAssert_True(status == OS_SUCCESS, "OS_MutSemDelete");

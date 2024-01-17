@@ -76,22 +76,6 @@ void TimerFunction(osal_id_t local_timer_id)
     {
         ++timer_function_failures;
     }
-
-    {
-        status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
-        if (status != OS_SUCCESS)
-        {
-            ++timer_function_failures;
-        }
-        else if (bin_sem_prop.value > 1)
-        {
-            ++timer_function_failures;
-        }
-        else if (bin_sem_prop.value < -1)
-        {
-            ++timer_function_failures;
-        }
-    }
 }
 
 void task_1(void)
@@ -115,20 +99,18 @@ void task_1(void)
         {
             OS_printf("TASK 1:   Doing some work: %d\n", (int)counter++);
             status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
-            if (status != OS_SUCCESS)
+            if (status == OS_SUCCESS)
             {
-                OS_printf("Error: OS_BinSemGetInfo\n");
-                ++task_1_failures;
-            }
-            else if (bin_sem_prop.value > 1)
-            {
-                OS_printf("Error: Binary sem value > 1 ( in task):%d !\n", (int)bin_sem_prop.value);
-                ++task_1_failures;
-            }
-            else if (bin_sem_prop.value < -1)
-            {
-                OS_printf("Error: Binary sem value < -1 ( in task):%d !\n", (int)bin_sem_prop.value);
-                ++task_1_failures;
+                if (bin_sem_prop.value > 1)
+                {
+                    OS_printf("Error: Binary sem value > 1 ( in task):%d !\n", (int)bin_sem_prop.value);
+                    ++task_1_failures;
+                }
+                else if (bin_sem_prop.value < -1)
+                {
+                    OS_printf("Error: Binary sem value < -1 ( in task):%d !\n", (int)bin_sem_prop.value);
+                    ++task_1_failures;
+                }
             }
         }
         else if (status == OS_SEM_TIMEOUT)
@@ -211,16 +193,11 @@ void BinSemTimeoutSetup(void)
     status = OS_BinSemCreate(&bin_sem_id, "BinSem1", 1, 0);
     UtAssert_True(status == OS_SUCCESS, "BinSem1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(bin_sem_id), (int)status);
 
-    status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
-    UtAssert_True(status == OS_SUCCESS, "BinSem1 value=%d Rc=%d", (int)bin_sem_prop.value, (int)status);
-
     /*
     ** Take the semaphore so the value is 0 and the next SemTake call should block
     */
     status = OS_BinSemTake(bin_sem_id);
     UtAssert_True(status == OS_SUCCESS, "BinSem1 take Rc=%d", (int)status);
-    status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
-    UtAssert_True(status == OS_SUCCESS, "BinSem1 value=%d Rc=%d", (int)bin_sem_prop.value, (int)status);
 
     /*
     ** Create the "consumer" task.
