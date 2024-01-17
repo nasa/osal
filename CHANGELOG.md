@@ -1,5 +1,10 @@
 # Changelog
 
+## Development Build: equuleus-rc1+dev33
+- updating OSAL to use new versioning system
+- patch build for old RTEMS
+- See <https://github.com/nasa/osal/pull/1437> and <https://github.com/nasa/osal/pull/1442>
+
 ## Development Build: v6.0.0-rc4+dev251
 - RTEMS semaphore return bugs and functional test update
 - See <https://github.com/nasa/osal/pull/1438>
