@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: equuleus-rc1+dev37
+- Fix pointer error in OS_GetErrorName
+- See <https://github.com/nasa/osal/pull/1436>
+
 ## Development Build: equuleus-rc1+dev33
 - updating OSAL to use new versioning system
 - patch build for old RTEMS
