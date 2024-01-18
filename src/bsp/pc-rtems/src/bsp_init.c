@@ -30,11 +30,40 @@
 #include "bsp-impl.h"
 #include <rtems.h>
 
+#ifdef RTEMS_INCLUDE_TARFS
+
+#include <rtems/untar.h>
+/*
+** Tar file symbols
+*/
+extern int _binary_tarfile_start;
+extern int _binary_tarfile_size;
+#define TARFILE_START _binary_tarfile_start
+#define TARFILE_SIZE _binary_tarfile_size
+
+#endif
+
 /*
  ** A simple entry point to start from the loader
  */
 rtems_task Init(rtems_task_argument ignored)
 {
+
+#ifdef RTEMS_INCLUDE_TARFS
+   /*
+   ** Initialize the file system
+   */
+   printf("Populating Root file system from TAR file.\n");
+   int status = Untar_FromMemory(
+                (unsigned char *)(&TARFILE_START),
+                (unsigned long)&TARFILE_SIZE);
+    if (status != RTEMS_SUCCESSFUL)
+    {
+        printf("Error while untaring from memory\n");
+    }
+
+#endif
+
     OS_BSPMain();
 }
 
@@ -95,4 +124,29 @@ rtems_task Init(rtems_task_argument ignored)
 #define CONFIGURE_MICROSECONDS_PER_TICK    10000
 #define CONFIGURE_ATA_DRIVER_TASK_PRIORITY 9
 
+/*
+** This include file must be AFTER the
+** configuration data.
+*/
 #include <rtems/confdefs.h>
+
+/* TODO Enablibg the GRETH driver is a platform specific setting. This is supposed to be a "generic" rtems psp. */
+#ifdef RTEMS_INCLUDE_TARFS /* TODO Is there a better networking-related define? */
+
+#include <drvmgr/drvmgr.h>
+
+/* Configure Driver manager */
+#if defined(RTEMS_DRVMGR_STARTUP) && defined(LEON3) /* if --drvmgr was given to configure */
+ /* Add Timer and UART Driver for this example */
+ #ifdef CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
+  #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GPTIMER
+ #endif
+ #ifdef CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
+  #define CONFIGURE_DRIVER_AMBAPP_GAISLER_APBUART
+ #endif
+#endif
+#define CONFIGURE_DRIVER_AMBAPP_GAISLER_GRETH
+
+#include <drvmgr/drvmgr_confdefs.h>
+
+#endif

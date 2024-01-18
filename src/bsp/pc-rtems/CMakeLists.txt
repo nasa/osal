@@ -10,6 +10,15 @@ set(OS_BSP_SRCLIST
     src/bsp_start.c
 )
 
+# If dynamic loading but also using TARFS, we use our Init to untar and
+# set up file system based on tarfile contents
+if (RTEMS_DYNAMIC_LOAD AND RTEMS_INCLUDE_TARFS)
+    list(APPEND OS_BSP_SRCLIST
+        src/bsp_init.c
+        src/bsp_setupfs.c # TODO move to only if enabled
+    )
+endif ()
+
 # If not dynamic loading, include Init and config
 if (NOT RTEMS_DYNAMIC_LOAD)
     list(APPEND OS_BSP_SRCLIST
