@@ -48,7 +48,7 @@ const char *OS_GetVersionString(void)
  *-----------------------------------------------------------------*/
 const char *OS_GetVersionCodeName(void)
 {
-    return OS_VERSION_CODENAME;
+    return OS_BUILD_CODENAME;
 }
 
 /*----------------------------------------------------------------
