@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: equuleus-rc1+dev41
+- Remove unreachable branch (superfluous if condition)
+- See <https://github.com/nasa/osal/pull/1368>
+
 ## Development Build: equuleus-rc1+dev37
 - Fix pointer error in OS_GetErrorName
 - See <https://github.com/nasa/osal/pull/1436>
