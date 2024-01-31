@@ -172,9 +172,8 @@ int32 OS_FileSys_Initialize(char *address, const char *fsdevname, const char *fs
          * contains the string "RAM" then it is a RAM disk. Otherwise
          * leave the type as UNKNOWN and let the implementation decide.
          */
-        if (filesys->fstype == OS_FILESYS_TYPE_UNKNOWN &&
-            (filesys->address != NULL || strncmp(filesys->volume_name, OS_FILESYS_RAMDISK_VOLNAME_PREFIX,
-                                                 sizeof(OS_FILESYS_RAMDISK_VOLNAME_PREFIX) - 1) == 0))
+        if (filesys->address != NULL || strncmp(filesys->volume_name, OS_FILESYS_RAMDISK_VOLNAME_PREFIX,
+                                                sizeof(OS_FILESYS_RAMDISK_VOLNAME_PREFIX) - 1) == 0)
         {
             filesys->fstype = OS_FILESYS_TYPE_VOLATILE_DISK;
         }
