@@ -57,8 +57,13 @@ void Test_OS_FileSysStartVolume_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(&token), OS_SUCCESS);
 
     /* Emulate a VOLATILE_DISK entry (ramdisk) */
+    /* Without a volumne name specified, this should fail  */
     OS_filesys_table[1].fstype = OS_FILESYS_TYPE_VOLATILE_DISK;
     token.obj_idx              = UT_INDEX_1;
+    OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(&token), OS_FS_ERR_DRIVE_NOT_CREATED);
+
+    /* Filling the volume name should permit success (nominal)  */
+    strncpy(OS_filesys_table[1].volume_name, "UT", sizeof(OS_filesys_table[1].volume_name));
     OSAPI_TEST_FUNCTION_RC(OS_FileSysStartVolume_Impl(&token), OS_SUCCESS);
 
     /* Emulate a NORMAL_DISK entry (ATA) */

@@ -140,6 +140,12 @@ int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
             OS_DEBUG("OSAL: Error creating low level block device\n");
             return_code = OS_FS_ERR_DRIVE_NOT_CREATED;
         }
+        else if (local->volume_name[0] == 0)
+        {
+            /* this requires that the user has specified the volume name to mount */
+            OS_DEBUG("OSAL: No volume name specified to mount\n");
+            return_code = OS_FS_ERR_DRIVE_NOT_CREATED;
+        }
         else
         {
             /*
