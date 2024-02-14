@@ -32,9 +32,9 @@ void BinSemTimeoutSetup(void);
 void BinSemTimeoutCheck(void);
 
 /* Task 1 */
-#define TASK_1_STACK_SIZE 1024
+#define TASK_1_STACK_SIZE 4096
 #define TASK_1_PRIORITY   101
-#define TASK_2_STACK_SIZE 1024
+#define TASK_2_STACK_SIZE 4096
 #define TASK_2_PRIORITY   50
 
 uint32    task_1_stack[TASK_1_STACK_SIZE];

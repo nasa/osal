@@ -119,11 +119,27 @@ void task_generic_no_exit(void)
 
 void task_generic_with_exit(void) {}
 
+void task_test_stackptr_0(void)
+{
+    int32   LocalVar;
+    cpuaddr VarAddress;
+    cpuaddr StackAddress;
+
+    OS_TaskDelay(10);
+
+    VarAddress   = (cpuaddr)&LocalVar;
+    StackAddress = (cpuaddr)OSAL_STACKPTR_C(task_0_stack);
+
+    UtAssert_GT(cpuaddr, VarAddress, StackAddress);
+    UtAssert_LT(cpuaddr, VarAddress, StackAddress + sizeof(task_0_stack));
+}
+
 typedef struct
 {
     osal_id_t task_id;
     uint32    task_stack[TASK_0_STACK_SIZE];
 } TestTaskData;
+
 /* ********************************************** TASKS******************************* */
 void TestTasks(void)
 {
@@ -252,6 +268,24 @@ void TestTasks(void)
     UtAssert_True(OS_TaskDelete(task_1_id) != OS_SUCCESS, "OS_TaskDelete, Task 1");
     UtAssert_True(OS_TaskDelete(task_2_id) == OS_SUCCESS, "OS_TaskDelete, Task 2");
     UtAssert_True(OS_TaskDelete(task_3_id) == OS_SUCCESS, "OS_TaskDelete, Task 3");
+
+    /*
+     * Validate that the user-specified stack pointer parameter is implemented correctly.
+     * Addresses of local variables within the task should be within the given stack range
+     */
+    UtAssert_INT32_EQ(OS_TaskCreate(&task_0_id, "Task 0", task_test_stackptr_0, OSAL_STACKPTR_C(task_0_stack),
+                                    sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0),
+                      OS_SUCCESS);
+
+    /* Looping delay in parent task to wait for child task to exit */
+    loopcnt = 0;
+    while ((OS_TaskGetInfo(task_0_id, &taskprop) == OS_SUCCESS) && (loopcnt < UT_EXIT_LOOP_MAX))
+    {
+        OS_TaskDelay(25);
+        loopcnt++;
+    }
+
+    UtAssert_INT32_LT(loopcnt, UT_EXIT_LOOP_MAX);
 }
 
 /* ************************************************************************************ */

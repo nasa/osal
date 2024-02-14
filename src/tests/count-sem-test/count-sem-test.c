@@ -23,7 +23,7 @@
 #include "utassert.h"
 #include "uttest.h"
 
-#define TASK_STACK_SIZE 1024
+#define TASK_STACK_SIZE 4096
 
 uint32 task_counter[3];
 

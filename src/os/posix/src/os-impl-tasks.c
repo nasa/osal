@@ -447,8 +447,8 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
  *  Purpose: Local helper routine, not part of OSAL API.
  *
  *-----------------------------------------------------------------*/
-int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority, size_t stacksz,
-                                       PthreadFuncPtr_t entry, void *entry_arg)
+int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority, osal_stackptr_t stackptr,
+                                       size_t stacksz, PthreadFuncPtr_t entry, void *entry_arg)
 {
     int                return_code = 0;
     pthread_attr_t     custom_attr;
@@ -467,20 +467,30 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
     }
 
     /*
-     * Adjust the stack size parameter, add budget for TCB/TLS overhead.
-     */
-    stacksz += OS_IMPL_STACK_EXTRA;
-
-    stacksz += POSIX_GlobalVars.PageSize - 1;
-    stacksz -= stacksz % POSIX_GlobalVars.PageSize;
-
-    /*
-    ** Set the Stack Size
+    ** Set the Stack Pointer and/or Size
     */
-    return_code = pthread_attr_setstacksize(&custom_attr, stacksz);
+    if (stackptr != OSAL_TASK_STACK_ALLOCATE)
+    {
+        return_code = pthread_attr_setstack(&custom_attr, stackptr, stacksz);
+    }
+    else
+    {
+        /*
+         * Adjust the stack size parameter, add budget for TCB/TLS overhead.
+         * Note that this budget can only be added when allocating the stack here,
+         * if the caller passed in a stack, they take responsibility for adding this.
+         */
+        stacksz += OS_IMPL_STACK_EXTRA;
+
+        stacksz += POSIX_GlobalVars.PageSize - 1;
+        stacksz -= stacksz % POSIX_GlobalVars.PageSize;
+
+        return_code = pthread_attr_setstacksize(&custom_attr, stacksz);
+    }
+
     if (return_code != 0)
     {
-        OS_DEBUG("pthread_attr_setstacksize error in OS_TaskCreate: %s\n", strerror(return_code));
+        OS_DEBUG("Error configuring stack in OS_TaskCreate: %s\n", strerror(return_code));
         return OS_ERROR;
     }
 
@@ -588,8 +598,8 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
     task = OS_OBJECT_TABLE_GET(OS_task_table, *token);
     impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
 
-    return_code = OS_Posix_InternalTaskCreate_Impl(&impl->id, task->priority, task->stack_size, OS_PthreadTaskEntry,
-                                                   arg.opaque_arg);
+    return_code = OS_Posix_InternalTaskCreate_Impl(&impl->id, task->priority, task->stack_pointer, task->stack_size,
+                                                   OS_PthreadTaskEntry, arg.opaque_arg);
 
     return return_code;
 }

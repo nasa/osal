@@ -128,8 +128,9 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
             {
                 /* cppcheck-suppress unreadVariable // intentional use of other union member */
                 local_arg.id = OS_ObjectIdFromToken(token);
-                return_code  = OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, 0,
-                                                               OS_ConsoleTask_Entry, local_arg.opaque_arg);
+                return_code =
+                    OS_Posix_InternalTaskCreate_Impl(&consoletask, OS_CONSOLE_TASK_PRIORITY, OSAL_TASK_STACK_ALLOCATE,
+                                                     PTHREAD_STACK_MIN, OS_ConsoleTask_Entry, local_arg.opaque_arg);
 
                 if (return_code != OS_SUCCESS)
                 {

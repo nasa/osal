@@ -30,7 +30,7 @@
 /* Task 1 */
 
 #define TASK_1_ID         1
-#define TASK_1_STACK_SIZE 1024
+#define TASK_1_STACK_SIZE 4096
 #define TASK_1_PRIORITY   101
 
 uint32 task_1_stack[TASK_1_STACK_SIZE];
@@ -40,7 +40,7 @@ void task_1(void);
 /* Task 2 */
 
 #define TASK_2_ID         2
-#define TASK_2_STACK_SIZE 1024
+#define TASK_2_STACK_SIZE 4096
 #define TASK_2_PRIORITY   102
 
 uint32 task_2_stack[TASK_2_STACK_SIZE];
@@ -50,7 +50,7 @@ void task_2(void);
 /* Task 3 */
 
 #define TASK_3_ID         3
-#define TASK_3_STACK_SIZE 1024
+#define TASK_3_STACK_SIZE 4096
 #define TASK_3_PRIORITY   103
 
 uint32 task_3_stack[TASK_3_STACK_SIZE];
