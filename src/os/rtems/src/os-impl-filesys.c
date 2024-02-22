@@ -187,11 +187,12 @@ int32 OS_FileSysStartVolume_Impl(const OS_object_token_t *token)
      *
      * The path will be simply /<VOLNAME>
      */
-    if (return_code == OS_SUCCESS && local->system_mountpt[0] == 0)
+    if (return_code == OS_SUCCESS && local->system_mountpt[0] == 0 && local->volume_name[0] != 0)
     {
-        local->system_mountpt[0]                                 = '/';
-        local->system_mountpt[sizeof(local->system_mountpt) - 1] = 0;
+        local->system_mountpt[0] = '/';
         strncpy(&local->system_mountpt[1], local->volume_name, sizeof(local->system_mountpt) - 2);
+        local->system_mountpt[sizeof(local->system_mountpt) - 1] = 0;
+
         OS_DEBUG("OSAL: using mount point %s for %s\n", local->system_mountpt, local->volume_name);
     }
 

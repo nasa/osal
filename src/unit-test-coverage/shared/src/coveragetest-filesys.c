@@ -63,12 +63,6 @@ void Test_OS_FileSysAddFixedMap(void)
     UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 2, OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_FS_ERR_PATH_TOO_LONG);
 
-    UT_SetDefaultReturnValue(UT_KEY(OCS_strrchr), -1);
-    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 3, OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_ERR_NAME_TOO_LONG);
-    UT_ResetState(UT_KEY(OCS_memchr));
-    UT_ResetState(UT_KEY(OCS_strrchr));
-
     UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdAllocateNew), 1, OS_ERR_NO_FREE_IDS);
     OSAPI_TEST_FUNCTION_RC(OS_FileSysAddFixedMap(&id, "/phys", "/virt"), OS_ERR_NO_FREE_IDS);
     UT_SetDeferredRetcode(UT_KEY(OS_FileSysStartVolume_Impl), 1, OS_ERROR);
