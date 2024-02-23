@@ -137,7 +137,7 @@ void OS_Unlock_Global_Impl(osal_objtype_t idtype)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_WaitForStateChange_Impl(osal_objtype_t idtype, uint32 attempts)
+void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts)
 {
     int wait_ticks;
 
@@ -150,9 +150,9 @@ void OS_WaitForStateChange_Impl(osal_objtype_t idtype, uint32 attempts)
         wait_ticks = 100;
     }
 
-    OS_Unlock_Global_Impl(idtype);
+    OS_Unlock_Global_Impl(objtype);
     taskDelay(wait_ticks);
-    OS_Lock_Global_Impl(idtype);
+    OS_Lock_Global_Impl(objtype);
 }
 
 /****************************************************************************************

@@ -59,7 +59,7 @@ void Test_OS_FileStat_Impl(void)
 {
     /*
      * Test Case For:
-     * int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *FileStats)
+     * int32 OS_FileStat_Impl(const char *local_path, os_fstat_t *filestat)
      */
     os_fstat_t      FileStats;
     struct OCS_stat RefStat;

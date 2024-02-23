@@ -1024,10 +1024,10 @@ void UT_os_removefile_test()
 }
 
 /*--------------------------------------------------------------------------------*
-** Syntax: int32 OS_rename(const char *old, const char *new)
+** Syntax: int32 OS_rename(const char *old_filename, const char *new_filename)
 ** Purpose: Renames the given file name to the new file name
-** Parameters: *old - pointer to the path/name of the file to be renamed
-**             *new - pointer to the new path/name of the file
+** Parameters: *old_filename - pointer to the path/name of the file to be renamed
+**             *new_filename - pointer to the new path/name of the file
 ** Returns: OS_INVALID_POINTER if any of the pointers passed in is null
 **          OS_FS_ERR_PATH_TOO_LONG if the path name is too long
 **          OS_FS_ERR_NAME_TOO_LONG if the name is too long

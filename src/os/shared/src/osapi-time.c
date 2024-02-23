@@ -197,10 +197,10 @@ static int32 OS_DoTimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebase_ref_id, OS_ArgCallback_t callback_ptr,
+int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebase_id, OS_ArgCallback_t callback_ptr,
                   void *callback_arg)
 {
-    return (OS_DoTimerAdd(timer_id, timer_name, timebase_ref_id, callback_ptr, callback_arg, 0));
+    return (OS_DoTimerAdd(timer_id, timer_name, timebase_id, callback_ptr, callback_arg, 0));
 }
 
 /*----------------------------------------------------------------
@@ -226,7 +226,8 @@ static void OS_Timer_NoArgCallback(osal_id_t objid, void *arg)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *accuracy, OS_TimerCallback_t callback_ptr)
+int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *clock_accuracy,
+                     OS_TimerCallback_t callback_ptr)
 {
     int32                 return_code;
     osal_id_t             timebase_ref_id;
@@ -239,7 +240,7 @@ int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *accura
     */
     OS_CHECK_POINTER(timer_id);
     OS_CHECK_APINAME(timer_name);
-    OS_CHECK_POINTER(accuracy);
+    OS_CHECK_POINTER(clock_accuracy);
     OS_CHECK_POINTER(callback_ptr);
 
     /*
@@ -277,7 +278,7 @@ int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *accura
     }
     else
     {
-        *accuracy = OS_SharedGlobalVars.MicroSecPerTick;
+        *clock_accuracy = OS_SharedGlobalVars.MicroSecPerTick;
     }
 
     return return_code;

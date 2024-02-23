@@ -88,7 +88,7 @@ void Test_OS_WaitForStateChange_Impl(void)
 {
     /*
      * Test Case For:
-     * void OS_WaitForStateChange_Impl(osal_objtype_t idtype, uint32 attempts)
+     * void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts)
      */
 
     /*

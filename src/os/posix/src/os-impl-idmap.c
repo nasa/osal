@@ -134,12 +134,12 @@ void OS_Unlock_Global_Impl(osal_objtype_t idtype)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_WaitForStateChange_Impl(osal_objtype_t idtype, uint32 attempts)
+void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts)
 {
     OS_impl_objtype_lock_t *impl;
     struct timespec         ts;
 
-    impl = OS_impl_objtype_lock_table[idtype];
+    impl = OS_impl_objtype_lock_table[objtype];
 
     /*
      * because pthread_cond_timedwait() is also a cancellation point,

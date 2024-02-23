@@ -77,7 +77,7 @@ void TestTimeBaseApi(void)
 
     /*
      * Test Case For:
-     * int32 OS_TimeBaseCreate(uint32 *timer_id, const char *timebase_name, OS_TimerSync_t external_sync)
+     * int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_TimerSync_t external_sync)
      */
 
     /* Test for invalid inputs */
@@ -123,7 +123,7 @@ void TestTimeBaseApi(void)
 
     /*
      * Test Case For:
-     * int32 OS_TimeBaseSet(uint32 timer_id, uint32 start_time, uint32 interval_time)
+     * int32 OS_TimeBaseSet(osal_id_t timebase_id, uint32 start_time, uint32 interval_time)
      */
 
     /* Test for nominal inputs */
@@ -144,7 +144,7 @@ void TestTimeBaseApi(void)
 
     /*
      * Test Case For:
-     * int32 OS_TimeBaseDelete(uint32 timer_id)
+     * int32 OS_TimeBaseDelete(osal_id_t timebase_id)
      */
 
     /* Test for nominal inputs */
@@ -156,7 +156,7 @@ void TestTimeBaseApi(void)
 
     /*
      * Test Case For:
-     * int32 OS_TimeBaseGetIdByName (uint32 *timer_id, const char *timebase_name)
+     * int32 OS_TimeBaseGetIdByName(osal_id_t *timebase_id, const char *timebase_name)
      */
 
     /* Test for nominal inputs */
