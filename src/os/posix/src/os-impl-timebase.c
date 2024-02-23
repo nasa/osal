@@ -355,7 +355,6 @@ int32 OS_TimeBaseCreate_Impl(const OS_object_token_t *token)
     }
 
     local->assigned_signal = 0;
-    clock_gettime(OS_PREFERRED_CLOCK, &local->softsleep);
 
     /*
      * Set up the necessary OS constructs
