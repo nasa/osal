@@ -98,7 +98,7 @@ static int32 UT_symEachHook(void *UserObj, int32 StubRetcode, uint32 CallCount, 
 void Test_OS_SymbolTableDump_Impl(void)
 {
     /* Test Case For:
-     * int32 OS_SymbolTableDump_Impl ( const char *filename, uint32 SizeLimit )
+     * int32 OS_SymbolTableDump_Impl(const char *filename, uint32 size_limit)
      */
 
     /* With no action in symEach(), this will yield an empty file, which is an error */

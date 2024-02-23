@@ -74,10 +74,11 @@ void TestTimeBaseApi(void)
     osal_id_t          tb_id[OS_MAX_TIMEBASES];
     char               timebase_name[OS_MAX_API_NAME + 5];
     OS_timebase_prop_t timebase_prop;
+    int                i;
 
     /*
      * Test Case For:
-     * int32 OS_TimeBaseCreate(uint32 *timer_id, const char *timebase_name, OS_TimerSync_t external_sync)
+     * int32 OS_TimeBaseCreate(osal_id_t *timebase_id, const char *timebase_name, OS_TimerSync_t external_sync)
      */
 
     /* Test for invalid inputs */
@@ -89,7 +90,7 @@ void TestTimeBaseApi(void)
     UtAssert_INT32_EQ(OS_TimeBaseCreate(&time_base_id, timebase_name, 0), OS_ERR_NAME_TOO_LONG);
 
     /* Checking for OS_MAX_TIMEBASES */
-    for (int i = 0; i < OS_MAX_TIMEBASES; i++)
+    for (i = 0; i < OS_MAX_TIMEBASES; i++)
     {
         /* On the final setup pass, while there is still one free slot,
          * check attempting to create a duplicate name (index 0) - this
@@ -123,7 +124,7 @@ void TestTimeBaseApi(void)
 
     /*
      * Test Case For:
-     * int32 OS_TimeBaseSet(uint32 timer_id, uint32 start_time, uint32 interval_time)
+     * int32 OS_TimeBaseSet(osal_id_t timebase_id, uint32 start_time, uint32 interval_time)
      */
 
     /* Test for nominal inputs */
@@ -144,7 +145,7 @@ void TestTimeBaseApi(void)
 
     /*
      * Test Case For:
-     * int32 OS_TimeBaseDelete(uint32 timer_id)
+     * int32 OS_TimeBaseDelete(osal_id_t timebase_id)
      */
 
     /* Test for nominal inputs */
@@ -156,7 +157,7 @@ void TestTimeBaseApi(void)
 
     /*
      * Test Case For:
-     * int32 OS_TimeBaseGetIdByName (uint32 *timer_id, const char *timebase_name)
+     * int32 OS_TimeBaseGetIdByName(osal_id_t *timebase_id, const char *timebase_name)
      */
 
     /* Test for nominal inputs */

@@ -1,5 +1,13 @@
 # Changelog
 
+## Development Build: equuleus-rc1+dev53
+- use virtual path as name for FS_BASED maps
+- Remove softsleep, as a dead store.
+- Remove stray remaining 'goto' in OSAL test code
+- Align mismatched function prototype/implem. parameter names
+- Move variables declared mid-function to the top
+- See <https://github.com/nasa/osal/pull/1448>, <https://github.com/nasa/osal/issues/1452>, <https://github.com/nasa/osal/pull/1357>, <https://github.com/nasa/osal/pull/1354>, and <https://github.com/nasa/osal/pull/1331>
+
 ## Development Build: equuleus-rc1+dev41
 - Remove unreachable branch (superfluous if condition)
 - See <https://github.com/nasa/osal/pull/1368>

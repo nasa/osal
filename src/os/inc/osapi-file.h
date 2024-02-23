@@ -377,7 +377,7 @@ int32 OS_remove(const char *path);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERROR if the file could not be opened or renamed.
- * @retval #OS_INVALID_POINTER if old or new are NULL
+ * @retval #OS_INVALID_POINTER if old_filename or new_filename are NULL
  * @retval #OS_FS_ERR_PATH_INVALID if path cannot be parsed
  * @retval #OS_FS_ERR_PATH_TOO_LONG if the paths given are too long to be stored locally
  * @retval #OS_FS_ERR_NAME_TOO_LONG if the new name is too long to be stored locally

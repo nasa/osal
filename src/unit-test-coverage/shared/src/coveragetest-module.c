@@ -124,7 +124,7 @@ void Test_OS_SymbolLookup(void)
 {
     /*
      * Test Case For:
-     * int32 OS_SymbolLookup(cpuaddr *SymbolAddress, const char *SymbolName)
+     * int32 OS_SymbolLookup(cpuaddr *symbol_address, const char *SymbolName)
      */
     int32   expected = OS_SUCCESS;
     int32   actual   = ~OS_SUCCESS;
@@ -264,7 +264,7 @@ void Test_OS_ModuleGetInfo(void)
 {
     /*
      * Test Case For:
-     * int32 OS_ModuleInfo ( uint32 module_id, OS_module_prop_t *module_prop )
+     * int32 OS_ModuleInfo(uint32 module_id, OS_module_prop_t *module_info)
      */
     OS_module_prop_t module_prop;
 
