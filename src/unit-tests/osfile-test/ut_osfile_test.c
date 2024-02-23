@@ -78,18 +78,17 @@ int32 UT_os_setup_fs()
     if (res != OS_SUCCESS)
     {
         UtPrintf("OS_mkfs() returns %d\n", (int)res);
-        goto UT_os_setup_fs_exit_tag;
     }
-
-    res = OS_mount(g_devName, g_mntName);
-    if (res != OS_SUCCESS)
+    else
     {
-        UtPrintf("OS_mount() returns %d\n", (int)res);
-        OS_rmfs(g_devName);
-        goto UT_os_setup_fs_exit_tag;
+        res = OS_mount(g_devName, g_mntName);
+        if (res != OS_SUCCESS)
+        {
+            UtPrintf("OS_mount() returns %d\n", (int)res);
+            OS_rmfs(g_devName);
+        }
     }
 
-UT_os_setup_fs_exit_tag:
     return res;
 }
 
