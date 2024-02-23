@@ -74,6 +74,7 @@ void TestTimeBaseApi(void)
     osal_id_t          tb_id[OS_MAX_TIMEBASES];
     char               timebase_name[OS_MAX_API_NAME + 5];
     OS_timebase_prop_t timebase_prop;
+    int                i;
 
     /*
      * Test Case For:
@@ -89,7 +90,7 @@ void TestTimeBaseApi(void)
     UtAssert_INT32_EQ(OS_TimeBaseCreate(&time_base_id, timebase_name, 0), OS_ERR_NAME_TOO_LONG);
 
     /* Checking for OS_MAX_TIMEBASES */
-    for (int i = 0; i < OS_MAX_TIMEBASES; i++)
+    for (i = 0; i < OS_MAX_TIMEBASES; i++)
     {
         /* On the final setup pass, while there is still one free slot,
          * check attempting to create a duplicate name (index 0) - this

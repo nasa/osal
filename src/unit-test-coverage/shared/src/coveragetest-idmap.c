@@ -1157,6 +1157,8 @@ void Test_OS_ObjectIDInteger(void)
     int32             recordscount = 0;
     osal_objtype_t    idtype;
     char              str[OS_MAX_API_NAME];
+    int               i;
+    int               j;
 
     memset(&token, 0, sizeof(token));
 
@@ -1181,11 +1183,11 @@ void Test_OS_ObjectIDInteger(void)
 
     UtAssert_True(recordscount < OS_MAX_TOTAL_RECORDS, "All Id types checked");
 
-    for (int i = 0; i < recordscount; i++)
+    for (i = 0; i < recordscount; i++)
     {
         UtAssert_True(OS_ObjectIdDefined(typesI[i]), "%lu Is defined", OS_ObjectIdToInteger(typesI[i]));
 
-        for (int j = 0; j < recordscount; j++)
+        for (j = 0; j < recordscount; j++)
         {
             if (i == j)
             {
