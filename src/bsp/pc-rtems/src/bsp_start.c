@@ -25,7 +25,6 @@
 /*
 **  Include Files
 */
-/* TODO clean these */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,24 +33,22 @@
 #include <bsp.h>
 #include <rtems.h>
 #include <rtems/bdbuf.h>
-#include <rtems/blkdev.h>
-#include <rtems/diskdevs.h>
-#include <rtems/bdpart.h>
 #include <rtems/error.h>
-#include <rtems/ramdisk.h>
-#include <rtems/dosfs.h>
-#include <rtems/fsmount.h>
 
 #include "pcrtems_bsp_internal.h"
 
-/* TODO add bsp_setupfs.h */
-void OS_BSP_SetupFS(void);
+#include "bsp_setupfs.h"
+#include "bsp_shell.h"
+#include "bsp_cmdline.h"
 
-/* TODO add bsp_shell.h */
-void OS_BSP_Shell(void);
-
-/* TODO add bsp_cmdline.h */
-void OS_BSP_CmdLine(void);
+/*
+ * Handle the differences between RTEMS 5 and 4.11 copyright notice
+ */
+#ifdef OS_RTEMS_4_DEPRECATED
+#define OSAL_BSP_COPYRIGHT_NOTICE _Copyright_Notice
+#else
+#define OSAL_BSP_COPYRIGHT_NOTICE rtems_get_copyright_notice()
+#endif
 
 /*
 ** Global variables
@@ -63,13 +60,13 @@ void OS_BSP_Setup(void)
     int status;
 
     printf("\n\n*** RTEMS Info ***\n");
-    printf("%s", OSAL_BSP_COPYRIGHT_NOTICE);
+    printf("%s\n", OSAL_BSP_COPYRIGHT_NOTICE);
     printf("%s\n\n", rtems_get_version_string());
     printf(" Stack size=%d\n", (int)rtems_configuration_get_stack_space_size());
     printf(" Workspace size=%d\n", (int)rtems_configuration_get_work_space_size());
 
     /* Process command line based on selected implementation */
-    // TODO uncomment    OS_BSP_CmdLine();
+    OS_BSP_CmdLine();
 
     printf("\n");
     printf("*** End RTEMS info ***\n\n");
@@ -86,7 +83,7 @@ void OS_BSP_Setup(void)
     }
 
     /* Set up file system based on selected implementation */
-    // TODO uncomment    OS_BSP_SetupFS();
+    OS_BSP_SetupFS();
 
     /*
      * Start the shell now based on selected implementation

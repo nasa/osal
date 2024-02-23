@@ -16,16 +16,17 @@
  * limitations under the License.
  ************************************************************************/
 
-/**
+/*
  * \file
  *
- * Purpose:
- *   Header file for bsp start
+ *   OSAL BSP no command line implementation
  */
 
-#ifndef BSP_START_H
-#define BSP_START_H
+#include <stdio.h>
 
-void OS_BSPMain(void);
+#include "bsp_cmdline.h"
 
-#endif
+void OS_BSP_CmdLine(void)
+{
+    printf("RTEMS_NO_CMDLINE:TRUE, command line not implemented");
+}

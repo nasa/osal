@@ -25,7 +25,6 @@
 /*
 **  Include Files
 */
-/* TODO clean these */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,21 +32,18 @@
 #include <ctype.h>
 #include <bsp.h>
 #include <rtems.h>
-#include <rtems/bdbuf.h>
-#include <rtems/blkdev.h>
-#include <rtems/diskdevs.h>
-#include <rtems/bdpart.h>
-#include <rtems/error.h>
-#include <rtems/ramdisk.h>
-#include <rtems/dosfs.h>
-#include <rtems/fsmount.h>
 #include <rtems/shell.h>
 #include <rtems/rtl/dlfcn-shell.h>
 
-/* TODO needs the global, but may want to split this up */
 #include "pcrtems_bsp_internal.h"
 
-/* TODO add bsp_shell.h */
+#include "bsp_shell.h"
+
+/*
+ * By default put the shell at the same priority
+ * as the utility task which handles OS_printf()
+ */
+#define RTEMS_SHELL_PRIORITY OS_UTILITYTASK_PRIORITY
 
 /*
 **  External Declarations

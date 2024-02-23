@@ -16,16 +16,28 @@
  * limitations under the License.
  ************************************************************************/
 
-/**
+/*
  * \file
  *
- * Purpose:
- *   Header file for bsp start
+ *   OSAL BSP set up file system with tarfs
  */
+#include <stdio.h>
+#include <rtems/untar.h>
+#include "bsp_setupfs.h"
 
-#ifndef BSP_START_H
-#define BSP_START_H
+/* Tar file symbols */
+extern int _binary_tarfile_start;
+extern int _binary_tarfile_size;
 
-void OS_BSPMain(void);
+void OS_BSP_SetupFS(void)
+{
+    int status;
 
-#endif
+    /* Initialize the file system using tarfs */
+    printf("Populating Root file system from TAR file.\n");
+    status = Untar_FromMemory((unsigned char *)(&_binary_tarfile_start), (unsigned long)&_binary_tarfile_size);
+    if (status != UNTAR_SUCCESSFUL)
+    {
+        printf("Error while untaring from memory\n");
+    }
+}

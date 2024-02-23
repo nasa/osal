@@ -23,11 +23,8 @@
  */
 
 #include <stdio.h>
-
-/* TODO needs the global, but may want to split this up */
 #include "pcrtems_bsp_internal.h"
-
-/* TODO add bsp_shell.h */
+#include "bsp_shell.h"
 
 void OS_BSP_Shell(void)
 {

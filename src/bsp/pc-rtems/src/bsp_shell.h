@@ -20,12 +20,12 @@
  * \file
  *
  * Purpose:
- *   Header file for bsp start
+ *   Header file for bsp shell
  */
 
-#ifndef BSP_START_H
-#define BSP_START_H
+#ifndef BSP_SHELL_H
+#define BSP_SHELL_H
 
-void OS_BSPMain(void);
+void OS_BSP_Shell(void);
 
 #endif

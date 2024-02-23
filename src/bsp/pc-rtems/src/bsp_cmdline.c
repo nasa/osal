@@ -25,7 +25,6 @@
 /*
 **  Include Files
 */
-/* TODO clean these */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,20 +32,18 @@
 #include <ctype.h>
 #include <bsp.h>
 #include <rtems.h>
-#include <rtems/bdbuf.h>
-#include <rtems/blkdev.h>
-#include <rtems/diskdevs.h>
-#include <rtems/bdpart.h>
-#include <rtems/error.h>
-#include <rtems/ramdisk.h>
-#include <rtems/dosfs.h>
-#include <rtems/fsmount.h>
 
-/* TODO remove or refactor? Still needs global */
 #include "pcrtems_bsp_internal.h"
+
+/*
+ * BSP compile-time tuning
+ */
+#define RTEMS_MAX_USER_OPTIONS 4
+#define RTEMS_MAX_CMDLINE      256
 
 void OS_BSP_CmdLine(void)
 {
+    char        userargbuffer[RTEMS_MAX_CMDLINE];
     const char *cmdlinestr;
     const char *cmdp;
     char *      cmdi, *cmdo;
@@ -91,7 +88,7 @@ void OS_BSP_CmdLine(void)
             {
                 if (cmdo == NULL)
                 {
-                    cmdo = OS_BSP_PcRtemsGlobal.UserArgBuffer;
+                    cmdo = userargbuffer;
                 }
                 else
                 {

@@ -19,13 +19,12 @@
 /*
  * \file
  *
- *   OSAL BSP set up file system
+ *   OSAL BSP set up file system with user mount
  */
 
 /*
 **  Include Files
 */
-/* TODO clean these */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,8 +44,13 @@
 #include <rtems/mkrootfs.h>
 #endif
 
-/* TODO break up and if there's config move to inc dir supporting overrides */
-#include "pcrtems_bsp_internal.h"
+#include "bsp-impl.h"
+#include "bsp_setupfs.h"
+
+/*
+ * The location which the general purpose file system will be mounted
+ */
+#define RTEMS_USER_FS_MOUNTPOINT "/mnt"
 
 /*
 **  External Declarations

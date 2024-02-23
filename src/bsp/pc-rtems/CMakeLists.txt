@@ -7,28 +7,24 @@
 # Basic set of files
 set(OS_BSP_SRCLIST
     src/bsp_console.c
+    src/bsp_init.c
     src/bsp_start.c
 )
 
-# If dynamic loading but also using TARFS, we use our Init to untar and
-# set up file system based on tarfile contents
-if (RTEMS_DYNAMIC_LOAD AND RTEMS_INCLUDE_TARFS)
+# Source select file system setup implementation
+if (RTEMS_INCLUDE_TARFS)
     list(APPEND OS_BSP_SRCLIST
-        src/bsp_init.c
-        src/bsp_setupfs.c # TODO move to only if enabled
+        src/bsp_tarfs_setupfs.c
+    )
+else ()
+    # NOTE: rtems config needs to define supporting configuration (FILESYSTEM and DRIVERs)
+    list(APPEND OS_BSP_SRCLIST
+        src/bsp_mount_setupfs.c
     )
 endif ()
 
-# If not dynamic loading, include Init and config
+# Link rtemscpu to osal public api if not dynamic loading
 if (NOT RTEMS_DYNAMIC_LOAD)
-    list(APPEND OS_BSP_SRCLIST
-        src/bsp_init.c
-        src/bsp_setupfs.c # TODO move to only if enabled
-    )
-
-    # TODO could add the two flags for FS support vs adding from include
-
-    # Link the RTEMS BSP with the "rtemscpu" system library
     target_link_libraries(osal_public_api INTERFACE
           rtemscpu
     )
@@ -44,7 +40,15 @@ else ()
     )
 endif ()
 
-# TODO add the cmdline if not RTEMS_NO_CMDLINE
+if (RTEMS_NO_CMDLINE)
+    list(APPEND OS_BSP_SRCLIST
+        src/bsp_no_cmdline.c
+    )
+else ()
+    list(APPEND OS_BSP_SRCLIST
+        src/bsp_cmdline.c
+    )
+endif ()
 
 add_library(osal_pc-rtems_impl OBJECT
     ${OS_BSP_SRCLIST}
@@ -58,3 +62,24 @@ target_compile_definitions(osal_public_api INTERFACE
 )
 
 set_property(TARGET osal_pc-rtems_impl PROPERTY OSAL_EXPECTED_OSTYPE "rtems")
+
+# The list of header files that control configuration
+set(BSP_RTEMS_CONFIG_FILE_LIST
+  bsp_rtems_cfg.h
+)
+
+# Create wrappers around all the config header files
+# This makes them individually overridable by the missions, without modifying
+# the distribution default copies
+foreach(BSP_RTEMS_CFGFILE ${BSP_RTEMS_CONFIG_FILE_LIST})
+  get_filename_component(CFGKEY "${BSP_RTEMS_CFGFILE}" NAME_WE)
+  if (DEFINED BSP_RTEMS_CFGFILE_SRC_${CFGKEY})
+    set(DEFAULT_SOURCE GENERATED_FILE "${BSP_RTEMS_CFGFILE_SRC_${CFGKEY}}")
+  else()
+    set(DEFAULT_SOURCE FALLBACK_FILE "${CMAKE_CURRENT_LIST_DIR}/config/default_${BSP_RTEMS_CFGFILE}")
+  endif()
+  generate_config_includefile(
+    FILE_NAME           "${BSP_RTEMS_CFGFILE}"
+    ${DEFAULT_SOURCE}
+  )
+endforeach()
