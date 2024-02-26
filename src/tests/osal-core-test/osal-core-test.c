@@ -39,6 +39,7 @@ typedef struct
 } TestCallbackState_t;
 
 void TestTasks(void);
+void TestTaskWithStackPtr(void);
 void InitializeTaskIds(void);
 void InitializeQIds(void);
 void InitializeBinIds(void);
@@ -98,6 +99,16 @@ void UtTest_Setup(void)
     UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     UtTest_Add(TestTasks, NULL, NULL, "TASK");
+
+    /*
+     * NOTE: The current RTEMS implementation does not adhere to passed-in stack pointers.
+     * The facility to create a task with a user-specified stack pointer is not available
+     * until RTEMS 6.x (development version at the time of this writing).  This test will
+     * fail on currently-released RTEMS versions, so it is skipped.
+     */
+#ifndef _RTEMS_OS_
+    UtTest_Add(TestTaskWithStackPtr, NULL, NULL, "TASKSTACK");
+#endif
     UtTest_Add(TestQueues, NULL, NULL, "MSGQ");
     UtTest_Add(TestBinaries, NULL, NULL, "BSEM");
     UtTest_Add(TestMutexes, NULL, NULL, "MSEM");
@@ -268,6 +279,12 @@ void TestTasks(void)
     UtAssert_True(OS_TaskDelete(task_1_id) != OS_SUCCESS, "OS_TaskDelete, Task 1");
     UtAssert_True(OS_TaskDelete(task_2_id) == OS_SUCCESS, "OS_TaskDelete, Task 2");
     UtAssert_True(OS_TaskDelete(task_3_id) == OS_SUCCESS, "OS_TaskDelete, Task 3");
+}
+
+void TestTaskWithStackPtr(void)
+{
+    OS_task_prop_t      taskprop;
+    int                 loopcnt;
 
     /*
      * Validate that the user-specified stack pointer parameter is implemented correctly.
