@@ -39,6 +39,7 @@ typedef struct
 } TestCallbackState_t;
 
 void TestTasks(void);
+void TestTaskWithStackPtr(void);
 void InitializeTaskIds(void);
 void InitializeQIds(void);
 void InitializeBinIds(void);
@@ -98,6 +99,16 @@ void UtTest_Setup(void)
     UtTest_AddTeardown(OS_API_Teardown, "Cleanup");
 
     UtTest_Add(TestTasks, NULL, NULL, "TASK");
+
+    /*
+     * NOTE: The current RTEMS implementation does not adhere to passed-in stack pointers.
+     * The facility to create a task with a user-specified stack pointer is not available
+     * until RTEMS 6.x (development version at the time of this writing).  This test will
+     * fail on currently-released RTEMS versions, so it is skipped.
+     */
+#ifndef _RTEMS_OS_
+    UtTest_Add(TestTaskWithStackPtr, NULL, NULL, "TASKSTACK");
+#endif
     UtTest_Add(TestQueues, NULL, NULL, "MSGQ");
     UtTest_Add(TestBinaries, NULL, NULL, "BSEM");
     UtTest_Add(TestMutexes, NULL, NULL, "MSEM");
@@ -119,11 +130,27 @@ void task_generic_no_exit(void)
 
 void task_generic_with_exit(void) {}
 
+void task_test_stackptr_0(void)
+{
+    int32   LocalVar;
+    cpuaddr VarAddress;
+    cpuaddr StackAddress;
+
+    OS_TaskDelay(10);
+
+    VarAddress   = (cpuaddr)&LocalVar;
+    StackAddress = (cpuaddr)OSAL_STACKPTR_C(task_0_stack);
+
+    UtAssert_GT(cpuaddr, VarAddress, StackAddress);
+    UtAssert_LT(cpuaddr, VarAddress, StackAddress + sizeof(task_0_stack));
+}
+
 typedef struct
 {
     osal_id_t task_id;
     uint32    task_stack[TASK_0_STACK_SIZE];
 } TestTaskData;
+
 /* ********************************************** TASKS******************************* */
 void TestTasks(void)
 {
@@ -252,6 +279,30 @@ void TestTasks(void)
     UtAssert_True(OS_TaskDelete(task_1_id) != OS_SUCCESS, "OS_TaskDelete, Task 1");
     UtAssert_True(OS_TaskDelete(task_2_id) == OS_SUCCESS, "OS_TaskDelete, Task 2");
     UtAssert_True(OS_TaskDelete(task_3_id) == OS_SUCCESS, "OS_TaskDelete, Task 3");
+}
+
+void TestTaskWithStackPtr(void)
+{
+    OS_task_prop_t      taskprop;
+    int                 loopcnt;
+
+    /*
+     * Validate that the user-specified stack pointer parameter is implemented correctly.
+     * Addresses of local variables within the task should be within the given stack range
+     */
+    UtAssert_INT32_EQ(OS_TaskCreate(&task_0_id, "Task 0", task_test_stackptr_0, OSAL_STACKPTR_C(task_0_stack),
+                                    sizeof(task_0_stack), OSAL_PRIORITY_C(TASK_0_PRIORITY), 0),
+                      OS_SUCCESS);
+
+    /* Looping delay in parent task to wait for child task to exit */
+    loopcnt = 0;
+    while ((OS_TaskGetInfo(task_0_id, &taskprop) == OS_SUCCESS) && (loopcnt < UT_EXIT_LOOP_MAX))
+    {
+        OS_TaskDelay(25);
+        loopcnt++;
+    }
+
+    UtAssert_INT32_LT(loopcnt, UT_EXIT_LOOP_MAX);
 }
 
 /* ************************************************************************************ */
