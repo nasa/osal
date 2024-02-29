@@ -27,7 +27,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include "pcrtems_bsp_internal.h"
+#include "genericrtems_bsp_internal.h"
 #include "bsp-impl.h"
 
 /****************************************************************************************

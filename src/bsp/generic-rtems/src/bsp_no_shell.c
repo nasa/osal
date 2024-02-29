@@ -23,11 +23,11 @@
  */
 
 #include <stdio.h>
-#include "pcrtems_bsp_internal.h"
+#include "genericrtems_bsp_internal.h"
 #include "bsp_shell.h"
 
 void OS_BSP_Shell(void)
 {
     printf("RTEMS_NO_SHELL:TRUE, shell not implemented");
-    OS_BSP_PcRtemsGlobal.BatchMode = true;
+    OS_BSP_GenericRtemsGlobal.BatchMode = true;
 }

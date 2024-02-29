@@ -1,6 +1,6 @@
 ######################################################################
 #
-# CMAKE build recipe for PC-RTEMS Board Support Package (BSP)
+# CMAKE build recipe for GENERIC-RTEMS Board Support Package (BSP)
 #
 ######################################################################
 
@@ -50,7 +50,7 @@ else ()
     )
 endif ()
 
-add_library(osal_pc-rtems_impl OBJECT
+add_library(osal_generic-rtems_impl OBJECT
     ${OS_BSP_SRCLIST}
 )
 
@@ -61,7 +61,7 @@ target_compile_definitions(osal_public_api INTERFACE
    _BSD_SOURCE
 )
 
-set_property(TARGET osal_pc-rtems_impl PROPERTY OSAL_EXPECTED_OSTYPE "rtems")
+set_property(TARGET osal_generic-rtems_impl PROPERTY OSAL_EXPECTED_OSTYPE "rtems")
 
 # The list of header files that control configuration
 set(BSP_RTEMS_CONFIG_FILE_LIST

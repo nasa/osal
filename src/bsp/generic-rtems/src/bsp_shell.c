@@ -35,7 +35,7 @@
 #include <rtems/shell.h>
 #include <rtems/rtl/dlfcn-shell.h>
 
-#include "pcrtems_bsp_internal.h"
+#include "genericrtems_bsp_internal.h"
 
 #include "bsp_shell.h"
 
@@ -65,7 +65,7 @@ void OS_BSP_Shell(void)
     int status;
 
     /* Supports command line enable/disable of batch mode */
-    if (!OS_BSP_PcRtemsGlobal.BatchMode)
+    if (!OS_BSP_GenericRtemsGlobal.BatchMode)
     {
         printf("RTEMS_NO_SHELL:FALSE, BatchMode:FALSE, shell implemented and initialized");
 

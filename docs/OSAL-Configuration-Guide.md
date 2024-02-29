@@ -608,13 +608,13 @@ OS_BSPMain)
 
 OSAL supports the RTEMS OS, which can be easily tested without any specific
 hardware using the QEMU hypervisor/virtualization software.  This relies
-on using the "pc-rtems" BSP.
+on using the "generic-rtems" BSP.
 
 Like VxWorks, this requires use of a cross compile toolchain to build
 applications for this target.  Example toolchains can also be found in the
 NASA cFS project(s).
 
-In particular the OS_SYSTEM_BSPTYPE should be set to "pc-rtems" by the toolchain
+In particular the OS_SYSTEM_BSPTYPE should be set to "generic-rtems" by the toolchain
 to enable this BSP/OS abstraction layer.
 
 ### How to run the OSAL Applications on QEMU with RTEMS 4.11 - 5.x

@@ -19,11 +19,11 @@
 /**
  * \file
  *
- *   Header file for internal data to the PC-RTEMS BSP
+ *   Header file for internal data to the GENERIC-RTEMS BSP
  */
 
-#ifndef PCRTEMS_BSP_INTERNAL_H
-#define PCRTEMS_BSP_INTERNAL_H
+#ifndef GENERICRTEMS_BSP_INTERNAL_H
+#define GENERICRTEMS_BSP_INTERNAL_H
 
 #include "bsp-impl.h"
 #include <rtems.h>
@@ -35,11 +35,11 @@ typedef struct
 {
     bool     BatchMode;
     rtems_id AccessMutex;
-} OS_BSP_PcRtemsGlobalData_t;
+} OS_BSP_GenericRtemsGlobalData_t;
 
 /*
  * Global Data object
  */
-extern OS_BSP_PcRtemsGlobalData_t OS_BSP_PcRtemsGlobal;
+extern OS_BSP_GenericRtemsGlobalData_t OS_BSP_GenericRtemsGlobal;
 
 #endif

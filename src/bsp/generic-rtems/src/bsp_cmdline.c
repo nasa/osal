@@ -33,7 +33,7 @@
 #include <bsp.h>
 #include <rtems.h>
 
-#include "pcrtems_bsp_internal.h"
+#include "genericrtems_bsp_internal.h"
 
 /*
  * BSP compile-time tuning
@@ -106,7 +106,7 @@ void OS_BSP_CmdLine(void)
                 *cmdo = 0;
                 if (strcmp(cmdi, "--batch-mode") == 0)
                 {
-                    OS_BSP_PcRtemsGlobal.BatchMode = true;
+                    OS_BSP_GenericRtemsGlobal.BatchMode = true;
                 }
                 else if (OS_BSP_Global.ArgC < RTEMS_MAX_USER_OPTIONS)
                 {

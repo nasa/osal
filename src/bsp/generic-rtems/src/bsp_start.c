@@ -35,7 +35,7 @@
 #include <rtems/bdbuf.h>
 #include <rtems/error.h>
 
-#include "pcrtems_bsp_internal.h"
+#include "genericrtems_bsp_internal.h"
 
 #include "bsp_setupfs.h"
 #include "bsp_shell.h"
@@ -53,7 +53,7 @@
 /*
 ** Global variables
 */
-OS_BSP_PcRtemsGlobalData_t OS_BSP_PcRtemsGlobal;
+OS_BSP_GenericRtemsGlobalData_t OS_BSP_GenericRtemsGlobal;
 
 void OS_BSP_Setup(void)
 {
@@ -76,7 +76,7 @@ void OS_BSP_Setup(void)
      */
     status = rtems_semaphore_create(rtems_build_name('B', 'S', 'P', '\0'), 1,
                                     RTEMS_PRIORITY | RTEMS_BINARY_SEMAPHORE | RTEMS_INHERIT_PRIORITY, 0,
-                                    &OS_BSP_PcRtemsGlobal.AccessMutex);
+                                    &OS_BSP_GenericRtemsGlobal.AccessMutex);
     if (status != RTEMS_SUCCESSFUL)
     {
         BSP_DEBUG("rtems_semaphore_create: %s\n", rtems_status_text(status));
@@ -106,7 +106,7 @@ void OS_BSP_Setup(void)
 void OS_BSP_Lock_Impl(void)
 {
     rtems_status_code status;
-    status = rtems_semaphore_obtain(OS_BSP_PcRtemsGlobal.AccessMutex, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
+    status = rtems_semaphore_obtain(OS_BSP_GenericRtemsGlobal.AccessMutex, RTEMS_WAIT, RTEMS_NO_TIMEOUT);
     if (status != RTEMS_SUCCESSFUL)
     {
         BSP_DEBUG("rtems_semaphore_obtain: %s\n", rtems_status_text(status));
@@ -120,7 +120,7 @@ void OS_BSP_Lock_Impl(void)
 void OS_BSP_Unlock_Impl(void)
 {
     rtems_status_code status;
-    status = rtems_semaphore_release(OS_BSP_PcRtemsGlobal.AccessMutex);
+    status = rtems_semaphore_release(OS_BSP_GenericRtemsGlobal.AccessMutex);
     if (status != RTEMS_SUCCESSFUL)
     {
         BSP_DEBUG("rtems_semaphore_release: %s\n", rtems_status_text(status));
@@ -175,7 +175,7 @@ void OS_BSP_Shutdown_Impl(void)
      * shell thread will still be active so the user can poke around, read results,
      * then use a shell command to reboot when ready.
      */
-    while (!OS_BSP_PcRtemsGlobal.BatchMode)
+    while (!OS_BSP_GenericRtemsGlobal.BatchMode)
     {
         printf("\n\nInit thread idle.\nPress <enter> for shell or reset machine...\n\n");
         rtems_task_suspend(rtems_task_self());
@@ -193,7 +193,7 @@ void OS_BSPMain(void)
      * Initially clear the global object
      */
     memset(&OS_BSP_Global, 0, sizeof(OS_BSP_Global));
-    memset(&OS_BSP_PcRtemsGlobal, 0, sizeof(OS_BSP_PcRtemsGlobal));
+    memset(&OS_BSP_GenericRtemsGlobal, 0, sizeof(OS_BSP_GenericRtemsGlobal));
 
     /*
      * Perform BSP setup -
