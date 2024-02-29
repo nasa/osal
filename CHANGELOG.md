@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: equuleus-rc1:dev58
+- POSIX implementation honors stack pointer
+- See <https://github.com/nasa/osal/pull/1450>
+
 ## Development Build: equuleus-rc1+dev53
 - use virtual path as name for FS_BASED maps
 - Remove softsleep, as a dead store.
