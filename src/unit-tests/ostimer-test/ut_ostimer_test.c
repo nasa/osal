@@ -72,11 +72,13 @@ void UT_os_setup_timerset_test(void);
 
 void UT_os_timercallback(osal_id_t timerId)
 {
-    int              deltaTime = 0;
-    static int32     loopCnt = 0, res = 0;
+    int              deltaTime;
+    static int32     loopCnt          = 0;
+    static int32     res              = 0;
     static uint32    prevIntervalTime = 0;
     static uint32    currIntervalTime = 0;
-    static OS_time_t currTime = {0}, endTime = {0};
+    static OS_time_t currTime         = {0};
+    static OS_time_t endTime          = {0};
 
     if (OS_ObjectIdEqual(timerId, g_timerId))
     {
@@ -95,12 +97,18 @@ void UT_os_timercallback(osal_id_t timerId)
         currIntervalTime = OS_TimeGetTotalMicroseconds(OS_TimeSubtract(endTime, currTime));
 
         if (currIntervalTime >= prevIntervalTime)
+        {
             deltaTime = currIntervalTime - prevIntervalTime;
+        }
         else
+        {
             deltaTime = prevIntervalTime - currIntervalTime;
+        }
 
         if ((deltaTime > g_toleranceVal) && (loopCnt > 1))
+        {
             res = -1;
+        }
 
         loopCnt++;
         currTime         = endTime;

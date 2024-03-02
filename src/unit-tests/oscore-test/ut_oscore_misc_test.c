@@ -244,7 +244,7 @@ void UT_os_printfdisable_test()
 void UT_os_getlocaltime_test()
 {
     OS_time_t time_struct;
-    int32     i = 0;
+    int32     i;
 
     memset(&time_struct, 0, sizeof(time_struct));
 
@@ -310,7 +310,7 @@ void UT_os_getlocaltime_test()
 void UT_os_setlocaltime_test()
 {
     OS_time_t time_struct;
-    int32     i = 0;
+    int32     i;
 
     memset(&time_struct, 0, sizeof(time_struct));
 
