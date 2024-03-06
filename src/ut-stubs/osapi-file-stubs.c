@@ -37,6 +37,44 @@ void UT_DefaultHandler_OS_write(void *, UT_EntryKey_t, const UT_StubContext_t *)
 
 /*
  * ----------------------------------------------------
+ * Generated stub function for OS_TimedReadAbs()
+ * ----------------------------------------------------
+ */
+int32 OS_TimedReadAbs(osal_id_t filedes, void *buffer, size_t nbytes, OS_time_t abstime)
+{
+    UT_GenStub_SetupReturnBuffer(OS_TimedReadAbs, int32);
+
+    UT_GenStub_AddParam(OS_TimedReadAbs, osal_id_t, filedes);
+    UT_GenStub_AddParam(OS_TimedReadAbs, void *, buffer);
+    UT_GenStub_AddParam(OS_TimedReadAbs, size_t, nbytes);
+    UT_GenStub_AddParam(OS_TimedReadAbs, OS_time_t, abstime);
+
+    UT_GenStub_Execute(OS_TimedReadAbs, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_TimedReadAbs, int32);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_TimedWriteAbs()
+ * ----------------------------------------------------
+ */
+int32 OS_TimedWriteAbs(osal_id_t filedes, const void *buffer, size_t nbytes, OS_time_t abstime)
+{
+    UT_GenStub_SetupReturnBuffer(OS_TimedWriteAbs, int32);
+
+    UT_GenStub_AddParam(OS_TimedWriteAbs, osal_id_t, filedes);
+    UT_GenStub_AddParam(OS_TimedWriteAbs, const void *, buffer);
+    UT_GenStub_AddParam(OS_TimedWriteAbs, size_t, nbytes);
+    UT_GenStub_AddParam(OS_TimedWriteAbs, OS_time_t, abstime);
+
+    UT_GenStub_Execute(OS_TimedWriteAbs, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_TimedWriteAbs, int32);
+}
+
+/*
+ * ----------------------------------------------------
  * Generated stub function for OS_CloseAllFiles()
  * ----------------------------------------------------
  */

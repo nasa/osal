@@ -281,7 +281,7 @@ int32 OS_SocketBindAddress(osal_id_t sock_id, const OS_SockAddr_t *Addr)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *Addr, int32 timeout)
+int32 OS_SocketAcceptAbs(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *Addr, OS_time_t abs_timeout)
 {
     OS_common_record_t *         sock_record;
     OS_common_record_t *         conn_record;
@@ -342,7 +342,7 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
 
                 OS_SocketAddrInit_Impl(Addr, sock->socket_domain);
 
-                return_code = OS_SocketAccept_Impl(&sock_token, &conn_token, Addr, timeout);
+                return_code = OS_SocketAccept_Impl(&sock_token, &conn_token, Addr, abs_timeout);
 
                 if (return_code == OS_SUCCESS)
                 {
@@ -368,7 +368,18 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeout)
+int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *Addr, int32 timeout)
+{
+    return OS_SocketAcceptAbs(sock_id, connsock_id, Addr, OS_TimeFromRelativeMilliseconds(timeout));
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketConnectAbs(osal_id_t sock_id, const OS_SockAddr_t *Addr, OS_time_t abs_timeout)
 {
     OS_stream_internal_record_t *stream;
     OS_object_token_t            token;
@@ -393,7 +404,7 @@ int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 Timeo
         }
         else
         {
-            return_code = OS_SocketConnect_Impl(&token, Addr, Timeout);
+            return_code = OS_SocketConnect_Impl(&token, Addr, abs_timeout);
 
             if (return_code == OS_SUCCESS)
             {
@@ -467,7 +478,19 @@ int32 OS_SocketShutdown(osal_id_t sock_id, OS_SocketShutdownMode_t Mode)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
+int32 OS_SocketConnect(osal_id_t sock_id, const OS_SockAddr_t *Addr, int32 timeout)
+{
+    return OS_SocketConnectAbs(sock_id, Addr, OS_TimeFromRelativeMilliseconds(timeout));
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketRecvFromAbs(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr,
+                           OS_time_t abs_timeout)
 {
     OS_stream_internal_record_t *stream;
     OS_object_token_t            token;
@@ -497,13 +520,24 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockA
         }
         else
         {
-            return_code = OS_SocketRecvFrom_Impl(&token, buffer, buflen, RemoteAddr, timeout);
+            return_code = OS_SocketRecvFrom_Impl(&token, buffer, buflen, RemoteAddr, abs_timeout);
         }
 
         OS_ObjectIdRelease(&token);
     }
 
     return return_code;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr, int32 timeout)
+{
+    return OS_SocketRecvFromAbs(sock_id, buffer, buflen, RemoteAddr, OS_TimeFromRelativeMilliseconds(timeout));
 }
 
 /*----------------------------------------------------------------

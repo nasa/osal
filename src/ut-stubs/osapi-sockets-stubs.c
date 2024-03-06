@@ -282,6 +282,27 @@ int32 OS_SocketRecvFrom(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockA
 
 /*
  * ----------------------------------------------------
+ * Generated stub function for OS_SocketRecvFromAbs()
+ * ----------------------------------------------------
+ */
+int32 OS_SocketRecvFromAbs(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr,
+                           OS_time_t abs_timeout)
+{
+    UT_GenStub_SetupReturnBuffer(OS_SocketRecvFromAbs, int32);
+
+    UT_GenStub_AddParam(OS_SocketRecvFromAbs, osal_id_t, sock_id);
+    UT_GenStub_AddParam(OS_SocketRecvFromAbs, void *, buffer);
+    UT_GenStub_AddParam(OS_SocketRecvFromAbs, size_t, buflen);
+    UT_GenStub_AddParam(OS_SocketRecvFromAbs, OS_SockAddr_t *, RemoteAddr);
+    UT_GenStub_AddParam(OS_SocketRecvFromAbs, OS_time_t, abs_timeout);
+
+    UT_GenStub_Execute(OS_SocketRecvFromAbs, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_SocketRecvFromAbs, int32);
+}
+
+/*
+ * ----------------------------------------------------
  * Generated stub function for OS_SocketSendTo()
  * ----------------------------------------------------
  */
