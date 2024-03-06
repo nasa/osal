@@ -82,6 +82,29 @@ int32 OS_FileIteratorClose(osal_id_t filedes, void *arg)
     return OS_close(filedes);
 }
 
+/*----------------------------------------------------------------
+ *
+ * Helper function to convert a relative timeout to absolute time
+ *
+ *-----------------------------------------------------------------*/
+OS_time_t OS_TimeFromRelative(int32 relative_msec)
+{
+    OS_time_t AbsTime;
+
+    if (relative_msec > 0)
+    {
+        OS_GetLocalTime(&AbsTime);
+        OS_TimeAdd(AbsTime, OS_TimeFromTotalMilliseconds(relative_msec));
+    }
+    else
+    {
+        AbsTime = OS_TIME_MAX;
+    }
+
+    return AbsTime;
+}
+
+
 /****************************************************************************************
                                   FILE API
  ***************************************************************************************/
@@ -182,7 +205,7 @@ int32 OS_close(osal_id_t filedes)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout)
+int32 OS_AbsTimedRead(osal_id_t filedes, void *buffer, size_t nbytes, OS_time_t abstime)
 {
     OS_object_token_t token;
     int32             return_code;
@@ -208,7 +231,18 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 timeout)
+int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout)
+{
+    return OS_AbsTimedRead(filedes, buffer, nbytes, OS_TimeFromRelative(timeout));
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_AbsTimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, OS_time_t abstime)
 {
     OS_object_token_t token;
     int32             return_code;
@@ -225,6 +259,17 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
     }
 
     return return_code;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 timeout)
+{
+    return OS_AbsTimedWrite(filedes, buffer, nbytes, OS_TimeFromRelative(timeout));
 }
 
 /*----------------------------------------------------------------
