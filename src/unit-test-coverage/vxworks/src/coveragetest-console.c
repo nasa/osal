@@ -44,7 +44,7 @@ void Test_OS_ConsoleWakeup_Impl(void)
 
     /* this just gives the sem, only called in async mode */
     OS_ConsoleWakeup_Impl(&token);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_semGive)) == 1, "semGive() called in async mode");
+    UtAssert_STUB_COUNT(OCS_semGive, 1);
 
     /* Failure only causes a debug message to be generated, no error handling here */
     UT_SetDefaultReturnValue(UT_KEY(OCS_semGive), -1);

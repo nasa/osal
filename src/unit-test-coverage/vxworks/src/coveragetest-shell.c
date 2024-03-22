@@ -44,7 +44,7 @@ void Test_OS_ShellOutputToFile_Impl(void)
      */
     UT_SetDeferredRetcode(UT_KEY(OCS_taskNameToId), 2, -1);
     OSAPI_TEST_FUNCTION_RC(OS_ShellOutputToFile_Impl(&token, "TestCmd"), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_shellGenericInit)) == 1, "shellGenericInit() called");
+    UtAssert_STUB_COUNT(OCS_shellGenericInit, 1);
 
     /* failure to open the output file */
     UT_SetDeferredRetcode(UT_KEY(OS_OpenCreate), 1, OS_ERROR);
