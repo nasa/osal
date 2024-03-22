@@ -57,7 +57,7 @@ void Test_OS_ShellOutputToFile_Impl(void)
     /* ID failure */
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERROR);
     UT_SetDefaultReturnValue(UT_KEY(OCS_taskNameToId), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_ShellOutputToFile_Impl(&token, "TestCmd"), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_ShellOutputToFile_Impl(&token, "TestCmd"), OS_ERROR);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
