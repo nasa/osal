@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: equuleus-rc1+dev62
+- Break up pc-rtems to support generic configuration and add tarfs support
+- See <https://github.com/nasa/osal/pull/1350>
+
 ## Development Build: equuleus-rc1:dev58
 - POSIX implementation honors stack pointer
 - See <https://github.com/nasa/osal/pull/1450>
