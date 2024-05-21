@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: equuleus-rc1+dev66
+- Adds node20 compatible github actions
+- See <https://github.com/nasa/osal/pull/1460>
+
 ## Development Build: equuleus-rc1+dev62
 - Break up pc-rtems to support generic configuration and add tarfs support
 - See <https://github.com/nasa/osal/pull/1350>
