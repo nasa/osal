@@ -29,6 +29,8 @@
 #include "os-shared-idmap.h"
 #include "os-shared-timebase.h"
 
+#include "os-impl-taskstack.h"
+
 #include "OCS_stdlib.h"
 
 /*
@@ -63,47 +65,33 @@ void Test_OS_TaskCreate_Impl(void)
      * int32 OS_TaskCreate_Impl (uint32 task_id, uint32 flags)
      */
     OS_object_token_t token = UT_TOKEN_0;
+    OS_impl_task_stack_mblock_t blk;
     char              userstack[500];
 
-    UT_SetDataBuffer(UT_KEY(OCS_malloc), TestHeap, sizeof(TestHeap), false);
-    UT_SetDataBuffer(UT_KEY(OCS_free), TestHeap, sizeof(TestHeap), false);
+    /* nominal, default stack aquired from pool */
+    OS_task_table[0].stack_pointer = NULL;
+    OS_task_table[0].stack_size    = sizeof(userstack);
+    blk.block_ptr = userstack;
+    blk.block_size = sizeof(userstack);
+    UT_SetDataBuffer(UT_KEY(OS_VxWorks_TaskAPI_AcquireStackBlock), &blk, sizeof(blk), false);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, 0), OS_SUCCESS);
 
-    /* create task with stack size of 250 - this should invoke malloc() to get the stack.
-     * The first call checks the failure path and ensures that a malloc failure gets handled */
-    OS_task_table[0].stack_size = 250;
-    UT_SetDefaultReturnValue(UT_KEY(OCS_malloc), OS_ERROR);
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, 0), OS_ERROR);
+    /* nominal, but skip the pool realloc */
+    OS_task_table[0].stack_pointer = NULL;
+    OS_task_table[0].stack_size    = sizeof(userstack) / 2;
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, 0), OS_SUCCESS);
 
-    UT_ClearDefaultReturnValue(UT_KEY(OCS_malloc));
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 2, "malloc() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 0, "free() not called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 1, "taskInit() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskActivate)) == 1, "taskActivate() called");
-
-    /* create again with smaller stack - this should re-use existing buffer */
-    OS_task_table[0].stack_size = 100;
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 2, "malloc() not called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 0, "free() not called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 2, "taskInit() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskActivate)) == 2, "taskActivate() called");
-
-    /* create again with larger stack - this should free existing and malloc() new buffer */
-    OS_task_table[0].stack_size = 400;
-    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 3, "malloc() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 1, "free() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 3, "taskInit() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskActivate)) == 3, "taskActivate() called");
-
-    /* create again with nonzero userstackbase */
+    /* nominal, user-supplied stack */
     OS_task_table[0].stack_pointer = userstack;
     OS_task_table[0].stack_size    = sizeof(userstack);
     OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 3, "malloc() not called");
 
-    /* other failure modes */
+    /* nominal, user-supplied stack */
+    OS_task_table[0].stack_pointer = userstack;
+    OS_task_table[0].stack_size    = sizeof(userstack);
+    OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
+
+    /* failure of taskInit() */
     UT_SetDefaultReturnValue(UT_KEY(OCS_taskInit), -1);
     OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, 0), OS_ERROR);
 }

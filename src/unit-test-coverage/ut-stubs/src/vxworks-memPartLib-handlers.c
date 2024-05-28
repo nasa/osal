@@ -18,32 +18,32 @@
 
 /**
  * \file
- * \ingroup ut-stubs
+ * \author   joseph.p.hickey@nasa.gov
  *
- * OSAL coverage stub replacement for memPartLib.h
+ * Stub implementations for the functions defined in the OSAL API
+ *
+ * The stub implementation can be used for unit testing applications built
+ * on top of OSAL.  The stubs do not do any real function, but allow
+ * the return code to be crafted such that error paths in the application
+ * can be executed.
  */
 
-#ifndef OVERRIDE_MEMPARTLIB_H
-#define OVERRIDE_MEMPARTLIB_H
-
 #include "OCS_memPartLib.h"
-#include <vxWorks.h>
+#include "utstubs.h"
 
-/* ----------------------------------------- */
-/* mappings for declarations in memPartLib.h */
-/* ----------------------------------------- */
-#define PART_ID        OCS_PART_ID
-#define MEM_PART_STATS OCS_MEM_PART_STATS
+#include <string.h>
 
-#define memAddToPool        OCS_memAddToPool
-#define memPartAddToPool    OCS_memPartAddToPool
-#define memPartAlignedAlloc OCS_memPartAlignedAlloc
-#define memPartAlloc        OCS_memPartAlloc
-#define memPartCreate       OCS_memPartCreate
-#define memPartFree         OCS_memPartFree
-#define memPartInfoGet      OCS_memPartInfoGet
-#define memPartShow         OCS_memPartShow
+/* instance of the global (OK here for now, may need to move to a separate unit) */
+OCS_PART_ID OCS_memSysPartId;
 
-#define memSysPartId OCS_memSysPartId
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OCS_memPartInfoGet' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OCS_memPartInfoGet(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
+{
+    OCS_MEM_PART_STATS *ppartStats = UT_Hook_GetArgValueByName(Context, "ppartStats", OCS_MEM_PART_STATS *);
 
-#endif /* OVERRIDE_MEMPARTLIB_H */
+    memset(ppartStats, 0, sizeof(*ppartStats));
+}

@@ -74,6 +74,11 @@ else()
     )
 endif ()
 
+# User-selectable mempool impl for task stack blocks
+list(APPEND VXWORKS_IMPL_SRCLIST
+    src/os-impl-taskstack-default.c
+)
+
 # Defines an OBJECT target named "osal_vxworks_impl" with selected source files
 add_library(osal_vxworks_impl OBJECT
     ${VXWORKS_BASE_SRCLIST}

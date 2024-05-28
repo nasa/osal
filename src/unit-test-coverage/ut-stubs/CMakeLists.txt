@@ -71,6 +71,7 @@ add_library(ut_libc_stubs STATIC EXCLUDE_FROM_ALL
     src/vxworks-hostLib-stubs.c
     src/vxworks-intLib-stubs.c
     src/vxworks-loadLib-stubs.c
+    src/vxworks-memPartLib-handlers.c
     src/vxworks-memPartLib-stubs.c
     src/vxworks-moduleLib-stubs.c
     src/vxworks-msgQLib-stubs.c
