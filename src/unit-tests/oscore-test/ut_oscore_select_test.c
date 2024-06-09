@@ -160,7 +160,8 @@ void UT_os_select_single_test(void)
 **--------------------------------------------------------------------------------*/
 void UT_os_select_multi_test(void)
 {
-    OS_FdSet ReadSet, WriteSet;
+    OS_FdSet ReadSet;
+    OS_FdSet WriteSet;
 
     UT_SETUP(OS_SelectFdZero(&WriteSet));
     UT_SETUP(OS_SelectFdAdd(&WriteSet, selecttest_fd));

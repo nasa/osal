@@ -104,7 +104,7 @@ void generic_test_task(void)
 **--------------------------------------------------------------------------------*/
 void UT_os_task_create_test()
 {
-    int32 i = 0;
+    int32 i;
     char  task_name[UT_OS_NAME_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
