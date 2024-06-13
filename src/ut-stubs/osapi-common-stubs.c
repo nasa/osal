@@ -111,3 +111,20 @@ int32 OS_RegisterEventHandler(OS_EventHandler_t handler)
 
     return UT_GenStub_GetReturnValue(OS_RegisterEventHandler, int32);
 }
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_strnlen()
+ * ----------------------------------------------------
+ */
+size_t OS_strnlen(const char *s, size_t maxlen)
+{
+    UT_GenStub_SetupReturnBuffer(OS_strnlen, size_t);
+
+    UT_GenStub_AddParam(OS_strnlen, const char *, s);
+    UT_GenStub_AddParam(OS_strnlen, size_t, maxlen);
+
+    UT_GenStub_Execute(OS_strnlen, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_strnlen, size_t);
+}

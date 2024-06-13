@@ -215,6 +215,7 @@ static inline int64 OS_TimeGetTotalMicroseconds(OS_time_t tm)
  */
 static inline OS_time_t OS_TimeFromTotalMicroseconds(int64 tm)
 {
+    /* SAD: Overflow is not considered a concern because tm would need to be over 29,227 years in microseconds */
     OS_time_t ostm = {tm * OS_TIME_TICKS_PER_USEC};
     return ostm;
 }

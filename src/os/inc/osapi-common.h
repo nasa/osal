@@ -233,6 +233,21 @@ void OS_ApplicationExit(int32 Status);
  */
 int32 OS_RegisterEventHandler(OS_EventHandler_t handler);
 
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief get string length
+ *
+ * Provides an OSAL routine to get the functionality
+ * of the (non-C99) "strnlen()" function, via the
+ * C89/C99 standard "memchr()" function instead.
+ *
+ * @param[in]    s       The input string
+ * @param[in]    maxlen  Maximum length to check
+ * @retval Length of the string or maxlen, whichever is smaller.
+
+ */
+size_t OS_strnlen(const char *s, size_t maxlen);
+
 /**@}*/
 
 #endif /* OSAPI_COMMON_H */
