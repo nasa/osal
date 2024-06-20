@@ -102,7 +102,7 @@ typedef struct
      * for each resource type.  Flags are all platform-defined, and not every platform uses this
      * feature.
      */
-    uint32 ResoureConfig[OS_OBJECT_TYPE_USER];
+    uint32 ResourceConfig[OS_OBJECT_TYPE_USER];
 } OS_BSP_GlobalData_t;
 
 /*

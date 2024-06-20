@@ -63,7 +63,7 @@ if (OSAL_CONFIG_INCLUDE_NETWORK)
         ../portable/os-impl-bsd-select.c
     )
 
-    # In RTEMS 6+ the networking subsystem is not included with the defualt libs,
+    # In RTEMS 6+ the networking subsystem is not included with the default libs,
     # it needs to be explicitly added to the final link.  Note the "VERSION_GREATER_EQUAL"
     # operation was not added until CMake 3.7, so this uses not "VERSION_LESS" instead.
     if(NOT CMAKE_SYSTEM_VERSION VERSION_LESS 6.0)
