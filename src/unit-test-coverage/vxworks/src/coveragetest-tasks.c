@@ -53,7 +53,7 @@ void Test_OS_VxWorksEntry(void)
      * static int OS_VxWorksEntry(int arg)
      */
     OSAPI_TEST_FUNCTION_RC(UT_TaskTest_CallEntryPoint(OS_OBJECT_ID_UNDEFINED), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OS_TaskEntryPoint)) == 1, "OS_TaskEntryPoint() called");
+    UtAssert_STUB_COUNT(OS_TaskEntryPoint, 1);
 }
 
 void Test_OS_TaskCreate_Impl(void)
@@ -76,32 +76,32 @@ void Test_OS_TaskCreate_Impl(void)
 
     UT_ClearDefaultReturnValue(UT_KEY(OCS_malloc));
     OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 2, "malloc() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 0, "free() not called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 1, "taskInit() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskActivate)) == 1, "taskActivate() called");
+    UtAssert_STUB_COUNT(OCS_malloc, 2);
+    UtAssert_STUB_COUNT(OCS_free, 0);
+    UtAssert_STUB_COUNT(OCS_taskInit, 1);
+    UtAssert_STUB_COUNT(OCS_taskActivate, 1);
 
     /* create again with smaller stack - this should re-use existing buffer */
     OS_task_table[0].stack_size = 100;
     OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 2, "malloc() not called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 0, "free() not called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 2, "taskInit() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskActivate)) == 2, "taskActivate() called");
+    UtAssert_STUB_COUNT(OCS_malloc, 2);
+    UtAssert_STUB_COUNT(OCS_free, 0);
+    UtAssert_STUB_COUNT(OCS_taskInit, 2);
+    UtAssert_STUB_COUNT(OCS_taskActivate, 2);
 
     /* create again with larger stack - this should free existing and malloc() new buffer */
     OS_task_table[0].stack_size = 400;
     OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 3, "malloc() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_free)) == 1, "free() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskInit)) == 3, "taskInit() called");
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_taskActivate)) == 3, "taskActivate() called");
+    UtAssert_STUB_COUNT(OCS_malloc, 3);
+    UtAssert_STUB_COUNT(OCS_free, 1);
+    UtAssert_STUB_COUNT(OCS_taskInit, 3);
+    UtAssert_STUB_COUNT(OCS_taskActivate, 3);
 
     /* create again with nonzero userstackbase */
     OS_task_table[0].stack_pointer = userstack;
     OS_task_table[0].stack_size    = sizeof(userstack);
     OSAPI_TEST_FUNCTION_RC(OS_TaskCreate_Impl(&token, OS_FP_ENABLED), OS_SUCCESS);
-    UtAssert_True(UT_GetStubCount(UT_KEY(OCS_malloc)) == 3, "malloc() not called");
+    UtAssert_STUB_COUNT(OCS_malloc, 3);
 
     /* other failure modes */
     UT_SetDefaultReturnValue(UT_KEY(OCS_taskInit), -1);
