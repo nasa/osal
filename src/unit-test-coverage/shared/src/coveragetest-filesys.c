@@ -410,7 +410,6 @@ void Test_OS_TranslatePath(void)
      * int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
      */
     char  LocalBuffer[OS_MAX_PATH_LEN];
-    char  DoubleBuffer[2 * OS_MAX_PATH_LEN];
     int32 expected = OS_SUCCESS;
     int32 actual   = ~OS_SUCCESS;
 
@@ -422,98 +421,55 @@ void Test_OS_TranslatePath(void)
     strcpy(OS_filesys_table[1].virtual_mountpt, "/cf");
     strcpy(OS_filesys_table[1].system_mountpt, "/mnt/cf");
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen("/cf/test"));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, strlen(OS_filesys_table[1].system_mountpt));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 3, strlen(OS_filesys_table[1].virtual_mountpt));
     actual = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath(/cf/test) (%ld) == OS_SUCCESS", (long)actual);
     UtAssert_True(strcmp(LocalBuffer, "/mnt/cf/test") == 0, "OS_TranslatePath(/cf/test) (%s)  == /mnt/cf/test",
                   LocalBuffer);
 
-    /* VirtPathLen >= OS_MAX_PATH_LEN */
-    memset(DoubleBuffer, 0xFF, sizeof(DoubleBuffer) - 1);
-    DoubleBuffer[sizeof(DoubleBuffer) - 1] = '\0';
-    UT_ResetState(UT_KEY(OS_strnlen));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen(DoubleBuffer));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, strlen(OS_filesys_table[1].system_mountpt));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 3, strlen(OS_filesys_table[1].virtual_mountpt));
-    OSAPI_TEST_FUNCTION_RC(OS_TranslatePath(DoubleBuffer, LocalBuffer), OS_FS_ERR_PATH_TOO_LONG);
-
     /* Check various error paths */
     UtAssert_INT32_EQ(OS_TranslatePath("/cf/test", NULL), OS_INVALID_POINTER);
     UtAssert_INT32_EQ(OS_TranslatePath(NULL, LocalBuffer), OS_INVALID_POINTER);
 
-    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     expected = OS_FS_ERR_PATH_TOO_LONG;
-    UT_ResetState(UT_KEY(OS_strnlen));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen("/cf/test"));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, strlen(OS_filesys_table[1].system_mountpt));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 3, strlen(OS_filesys_table[1].virtual_mountpt));
-    actual   = OS_TranslatePath("/cf/test", LocalBuffer);
+    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 1, OS_MAX_PATH_LEN + 1);
+    actual = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
+    UT_ResetState(UT_KEY(OS_strnlen));
 
     /* Invalid no '/' */
     expected = OS_FS_ERR_PATH_INVALID;
-    UT_ResetState(UT_KEY(OS_strnlen));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen("invalid/"));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, strlen(OS_filesys_table[1].system_mountpt));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 3, strlen(OS_filesys_table[1].virtual_mountpt));
     actual   = OS_TranslatePath("invalid", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
 
-    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 2, OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
     expected = OS_FS_ERR_NAME_TOO_LONG;
-    UT_ResetState(UT_KEY(OS_strnlen));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen("/cf/test"));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, strlen(OS_filesys_table[1].system_mountpt));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 3, strlen(OS_filesys_table[1].virtual_mountpt));
     actual   = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath(/cf/test) (%ld) == OS_FS_ERR_NAME_TOO_LONG", (long)actual);
 
     /* Invalid no leading '/' */
     expected = OS_FS_ERR_PATH_INVALID;
-    UT_ResetState(UT_KEY(OS_strnlen));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen("invalid/"));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, strlen(OS_filesys_table[1].system_mountpt));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 3, strlen(OS_filesys_table[1].virtual_mountpt));
     actual   = OS_TranslatePath("invalid/", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
 
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch), OS_ERR_NAME_NOT_FOUND);
-    UT_ResetState(UT_KEY(OS_strnlen));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen("/cf/test"));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, strlen(OS_filesys_table[1].system_mountpt));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 3, strlen(OS_filesys_table[1].virtual_mountpt));
     actual = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
     UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch));
 
     /* VirtPathLen < VirtPathBegin */
-    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 4, OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 1, 1);
     expected = OS_FS_ERR_PATH_INVALID;
-    UT_ResetState(UT_KEY(OS_strnlen));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen("/cf/test"));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, strlen(OS_filesys_table[1].system_mountpt));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 3, strlen(OS_filesys_table[1].virtual_mountpt));
     actual   = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath(/cf/test) (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
 
     /* (SysMountPointLen + VirtPathLen) > OS_MAX_LOCAL_PATH_LEN */
-    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 3, OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, OS_MAX_LOCAL_PATH_LEN + 1);
     expected = OS_FS_ERR_PATH_TOO_LONG;
-    UT_ResetState(UT_KEY(OS_strnlen));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen("/cf/test"));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, strlen(OS_filesys_table[1].system_mountpt));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 3, strlen(OS_filesys_table[1].virtual_mountpt));
     actual   = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath(/cf/test) (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
 
     OS_filesys_table[1].flags = 0;
     expected                  = OS_ERR_INCORRECT_OBJ_STATE;
-    UT_ResetState(UT_KEY(OS_strnlen));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen("/cf/test"));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, strlen(OS_filesys_table[1].system_mountpt));
-    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 3, strlen(OS_filesys_table[1].virtual_mountpt));
     actual                    = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath(/cf/test) (%ld) == OS_ERR_INCORRECT_OBJ_STATE", (long)actual);
 }
@@ -541,20 +497,17 @@ void Test_OS_FileSys_FindVirtMountPoint(void)
     OS_filesys_table[1].flags              = 0;
     OS_filesys_table[1].virtual_mountpt[0] = 0;
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen(OS_filesys_table[1].virtual_mountpt));
     result = OS_FileSys_FindVirtMountPoint((void *)refstr, &token, &refobj);
     UtAssert_True(!result, "OS_FileSys_FindVirtMountPoint(%s) (unmounted) == false", refstr);
 
     OS_filesys_table[1].flags = OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
 
     /* Branch coverage for mismatches */
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen(OS_filesys_table[1].virtual_mountpt));
     result = OS_FileSys_FindVirtMountPoint((void *)refstr, &token, &refobj);
     UtAssert_True(!result, "OS_FileSys_FindVirtMountPoint(%s) (mountpt=%s) == false", refstr,
                   OS_filesys_table[1].virtual_mountpt);
 
     memset(OS_filesys_table[1].virtual_mountpt, 'a', sizeof(OS_filesys_table[1].virtual_mountpt));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen(OS_filesys_table[1].virtual_mountpt));
     result = OS_FileSys_FindVirtMountPoint((void *)refstr, &token, &refobj);
     UtAssert_True(!result, "OS_FileSys_FindVirtMountPoint(%s) (mountpt=%s) == false", refstr,
                   OS_filesys_table[1].virtual_mountpt);
@@ -562,25 +515,21 @@ void Test_OS_FileSys_FindVirtMountPoint(void)
     /* Verify cases where one is a substring of the other -
      * these should also return false */
     strncpy(OS_filesys_table[1].virtual_mountpt, "/ut11", sizeof(OS_filesys_table[1].virtual_mountpt));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen(OS_filesys_table[1].virtual_mountpt));
     result = OS_FileSys_FindVirtMountPoint((void *)refstr, &token, &refobj);
     UtAssert_True(!result, "OS_FileSys_FindVirtMountPoint(%s) (mountpt=%s) == false", refstr,
                   OS_filesys_table[1].virtual_mountpt);
 
     strncpy(OS_filesys_table[1].virtual_mountpt, "/u", sizeof(OS_filesys_table[1].virtual_mountpt));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen(OS_filesys_table[1].virtual_mountpt));
     result = OS_FileSys_FindVirtMountPoint((void *)refstr, &token, &refobj);
     UtAssert_True(!result, "OS_FileSys_FindVirtMountPoint(%s) (mountpt=%s) == false", refstr,
                   OS_filesys_table[1].virtual_mountpt);
 
     strncpy(OS_filesys_table[1].virtual_mountpt, "/ut", sizeof(OS_filesys_table[1].virtual_mountpt));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen(OS_filesys_table[1].virtual_mountpt));
     result = OS_FileSys_FindVirtMountPoint((void *)refstr, &token, &refobj);
     UtAssert_True(result, "OS_FileSys_FindVirtMountPoint(%s) (nominal) == true", refstr);
 
     /* Passing case with reference ending in "/" */
     strncpy(OS_filesys_table[1].virtual_mountpt, "/ut", sizeof(OS_filesys_table[1].virtual_mountpt));
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen(OS_filesys_table[1].virtual_mountpt));
     result = OS_FileSys_FindVirtMountPoint((void *)refstr1, &token, &refobj);
     UtAssert_True(result, "OS_FileSys_FindVirtMountPoint(%s) (nominal) == true", refstr);
 }

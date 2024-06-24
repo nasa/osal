@@ -345,7 +345,6 @@ void Test_OS_strnlen(void)
 
     UtAssert_INT32_EQ(result, sizeof(str));
 
-
     /* Test case where null character is found */
     str[OS_MAX_FILE_NAME - 1] = '\0';
 

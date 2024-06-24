@@ -25,6 +25,8 @@
 #include "osapi-common.h"
 #include "utgenstub.h"
 
+void UT_DefaultHandler_OS_strnlen(void *, UT_EntryKey_t, const UT_StubContext_t *);
+
 /*
  * ----------------------------------------------------
  * Generated stub function for OS_API_Init()
@@ -124,7 +126,7 @@ size_t OS_strnlen(const char *s, size_t maxlen)
     UT_GenStub_AddParam(OS_strnlen, const char *, s);
     UT_GenStub_AddParam(OS_strnlen, size_t, maxlen);
 
-    UT_GenStub_Execute(OS_strnlen, Basic, NULL);
+    UT_GenStub_Execute(OS_strnlen, Basic, UT_DefaultHandler_OS_strnlen);
 
     return UT_GenStub_GetReturnValue(OS_strnlen, size_t);
 }

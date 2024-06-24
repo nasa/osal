@@ -1087,7 +1087,6 @@ void Test_OS_GetResourceName(void)
     OSAPI_TEST_FUNCTION_RC(OS_GetResourceName(token.obj_id, NameBuffer, sizeof(NameBuffer)), OS_SUCCESS);
     UtAssert_True(strcmp(NameBuffer, "UTTask") == 0, "NameBuffer (%s) == UTTask", NameBuffer);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_strnlen), strlen(rptr->name_entry));
     OSAPI_TEST_FUNCTION_RC(OS_GetResourceName(token.obj_id, NameBuffer, OSAL_SIZE_C(2)), OS_ERR_NAME_TOO_LONG);
 
     /* Null entry */
