@@ -121,12 +121,12 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
     int32                              return_code;
     OS_console_internal_record_t *     console;
 
-    local   = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
-    console = OS_OBJECT_TABLE_GET(OS_console_table, *token);
-
     if (OS_ObjectIndexFromToken(token) == 0)
     {
         return_code = OS_SUCCESS;
+
+        local   = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);
+        console = OS_OBJECT_TABLE_GET(OS_console_table, *token);
 
         if (console->IsAsync)
         {
