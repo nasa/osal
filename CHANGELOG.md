@@ -1,5 +1,10 @@
 # Changelog
 
+## Development Build: equuleus-rc1+dev73
+- High-res timed stream ops
+- Moves OS_strnlen to public API and adds static analysis comments
+- See <https://github.com/nasa/osal/pull/1456> and <https://github.com/nasa/osal/pull/1465>
+
 ## Development Build: equuleus-rc1+dev66
 - Adds node20 compatible github actions
 - See <https://github.com/nasa/osal/pull/1460>
