@@ -85,7 +85,7 @@ int32 OS_GenericSeek_Impl(const OS_object_token_t *token, int32 offset, uint32 w
 
     Returns: Number of bytes read (non-negative) on success, or relevant error code (negative)
  ------------------------------------------------------------------*/
-int32 OS_GenericRead_Impl(const OS_object_token_t *token, void *buffer, size_t nbytes, int32 timeout);
+int32 OS_GenericRead_Impl(const OS_object_token_t *token, void *buffer, size_t nbytes, OS_time_t abs_timeout);
 
 /*----------------------------------------------------------------
 
@@ -94,7 +94,7 @@ int32 OS_GenericRead_Impl(const OS_object_token_t *token, void *buffer, size_t n
 
     Returns: Number of bytes written (non-negative) on success, or relevant error code (negative)
  ------------------------------------------------------------------*/
-int32 OS_GenericWrite_Impl(const OS_object_token_t *token, const void *buffer, size_t nbytes, int32 timeout);
+int32 OS_GenericWrite_Impl(const OS_object_token_t *token, const void *buffer, size_t nbytes, OS_time_t abs_timeout);
 
 /*----------------------------------------------------------------
 

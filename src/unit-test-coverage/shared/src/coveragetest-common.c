@@ -332,6 +332,27 @@ void Test_OS_NotifyEvent(void)
     OS_SharedGlobalVars.EventHandler = NULL;
 }
 
+void Test_OS_strnlen(void)
+{
+
+    size_t result;
+    char   str[OS_MAX_FILE_NAME];
+
+    memset(str, 0xFF, sizeof(str));
+
+    /* Test case where null character is not found */
+    result = OS_strnlen(str, sizeof(str));
+
+    UtAssert_INT32_EQ(result, sizeof(str));
+
+    /* Test case where null character is found */
+    str[OS_MAX_FILE_NAME - 1] = '\0';
+
+    result = OS_strnlen(str, sizeof(str));
+
+    UtAssert_INT32_EQ(result, sizeof(str) - 1);
+}
+
 /* ------------------- End of test cases --------------------------------------*/
 
 /* Osapi_Test_Setup
@@ -364,4 +385,5 @@ void UtTest_Setup(void)
     ADD_TEST(OS_ApplicationExit);
     ADD_TEST(OS_NotifyEvent);
     ADD_TEST(OS_API_Teardown);
+    ADD_TEST(OS_strnlen);
 }

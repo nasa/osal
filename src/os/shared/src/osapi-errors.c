@@ -110,6 +110,7 @@ char *OS_StatusToString(osal_status_t status, os_status_string_t *status_string)
 
     if (status_string != NULL)
     {
+        // SAD: No need to check snprintf return; OS_STATUS_STRING_LENGTH (12) is ample for all status values
         snprintf(*status_string, sizeof(*status_string), "%ld", OS_StatusToInteger(status));
         string = *status_string;
     }
@@ -149,7 +150,7 @@ int32 OS_GetErrorName(int32 error_num, os_err_name_t *err_name)
     {
         strncpy(*err_name, Error->Name, sizeof(*err_name) - 1);
         (*err_name)[sizeof(*err_name) - 1] = 0;
-        return_code                      = OS_SUCCESS;
+        return_code                        = OS_SUCCESS;
     }
     else
     {

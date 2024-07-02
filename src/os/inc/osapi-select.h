@@ -27,6 +27,7 @@
 
 #include "osconfig.h"
 #include "common_types.h"
+#include "osapi-clock.h"
 
 /**
  * @brief An abstract structure capable of holding several OSAL IDs
@@ -83,6 +84,52 @@ typedef enum
  * If the timeout occurs this returns an error code and all output sets
  * should be empty.
  *
+ * This API is identical to OS_SelectMultiple() except for the timeout parameter.  In
+ * this call, timeout is expressed as an absolute value of the OS clock, in the same
+ * time domain as obtained via OS_GetLocalTime().  This allows for a more precise
+ * timeout than what is possible via the normal OS_SelectMultiple().
+ *
+ * @note This does not lock or otherwise protect the file handles in the
+ * given sets.  If a filehandle supplied via one of the FdSet arguments
+ * is closed or modified by another while this function is in progress,
+ * the results are undefined.  Because of this limitation, it is recommended
+ * to use OS_SelectSingle() whenever possible.
+ *
+ * @param[in,out] ReadSet     Set of handles to check/wait to become readable
+ * @param[in,out] WriteSet    Set of handles to check/wait to become writable
+ * @param[in]     abs_timeout The absolute time that the call may block until
+ *
+ * @sa OS_SelectMultiple()
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS If any handle in the ReadSet or WriteSet is readable or writable, respectively
+ * @retval #OS_ERROR_TIMEOUT If no handles in the ReadSet or WriteSet became readable or writable within the timeout
+ * @retval #OS_ERR_OPERATION_NOT_SUPPORTED if a specified handle does not support select
+ * @retval #OS_ERR_INVALID_ID if no valid handles were contained in the ReadSet/WriteSet
+ */
+int32 OS_SelectMultipleAbs(OS_FdSet *ReadSet, OS_FdSet *WriteSet, OS_time_t abs_timeout);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Wait for events across multiple file handles
+ *
+ * Wait for any of the given sets of IDs to become readable or writable
+ *
+ * This function will block until any of the following occurs:
+ *  - At least one OSAL ID in the ReadSet is readable
+ *  - At least one OSAL ID in the WriteSet is writable
+ *  - The timeout has elapsed
+ *
+ * The sets are input/output parameters.  On entry, these indicate the
+ * file handle(s) to wait for.  On exit, these are set to the actual
+ * file handle(s) that have activity.
+ *
+ * If the timeout occurs this returns an error code and all output sets
+ * should be empty.
+ *
+ * The timeout is expressed in milliseconds, relative to the time that the API was
+ * invoked.  Use OS_SelectMultipleAbs() for higher timing precision.
+ *
  * @note This does not lock or otherwise protect the file handles in the
  * given sets.  If a filehandle supplied via one of the FdSet arguments
  * is closed or modified by another while this function is in progress,
@@ -93,6 +140,8 @@ typedef enum
  * @param[in,out] WriteSet Set of handles to check/wait to become writable
  * @param[in] msecs Indicates the timeout. Positive values will wait up to that many milliseconds. Zero will not wait
  * (poll). Negative values will wait forever (pend)
+ *
+ * @sa OS_SelectMultipleAbs()
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS If any handle in the ReadSet or WriteSet is readable or writable, respectively
@@ -123,10 +172,55 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs);
  * To mitigate this risk the application may prefer to use
  * the OS_TimedRead/OS_TimedWrite calls.
  *
+ * This API is identical to OS_SelectSingle() except for the timeout parameter.  In
+ * this call, timeout is expressed as an absolute value of the OS clock, in the same
+ * time domain as obtained via OS_GetLocalTime().  This allows for a more precise
+ * timeout than what is possible via the normal OS_SelectSingle().
+ *
+ * @param[in] objid The handle ID to select on
+ * @param[in,out] StateFlags State flag(s) (readable or writable) @nonnull
+ * @param[in] abs_timeout The absolute time that the call may block until
+ *
+ * @sa OS_SelectSingle()
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS If the handle is readable and/or writable, as requested
+ * @retval #OS_ERROR_TIMEOUT If the handle did not become readable or writable within the timeout
+ * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_ID if the objid is not a valid handle
+ */
+int32 OS_SelectSingleAbs(osal_id_t objid, uint32 *StateFlags, OS_time_t abs_timeout);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Wait for events on a single file handle
+ *
+ * Wait for a single OSAL filehandle to change state
+ *
+ * This function can be used to wait for a single OSAL stream ID
+ * to become readable or writable.   On entry, the "StateFlags"
+ * parameter should be set to the desired state (OS_STREAM_STATE_READABLE
+ * and/or OS_STREAM_STATE_WRITABLE) and upon return the flags
+ * will be set to the state actually detected.
+ *
+ * As this operates on a single ID, the filehandle is protected
+ * during this call, such that another thread accessing the same
+ * handle will return an error.  However, it is important to note that
+ * once the call returns then other threads may then also read/write
+ * and affect the state before the current thread can service it.
+ *
+ * To mitigate this risk the application may prefer to use
+ * the OS_TimedRead/OS_TimedWrite calls.
+ *
+ * The timeout is expressed in milliseconds, relative to the time that the API was
+ * invoked.  Use OS_SelectSingleAbs() for higher timing precision.
+ *
  * @param[in] objid The handle ID to select on
  * @param[in,out] StateFlags State flag(s) (readable or writable) @nonnull
  * @param[in] msecs Indicates the timeout. Positive values will wait up to that many milliseconds. Zero will not wait
  * (poll). Negative values will wait forever (pend)
+ *
+ * @sa OS_SelectSingleAbs()
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS If the handle is readable and/or writable, as requested

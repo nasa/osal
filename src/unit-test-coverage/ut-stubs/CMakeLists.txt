@@ -21,7 +21,7 @@ add_library(ut_osapi_stub_headers INTERFACE)
 target_include_directories(ut_osapi_stub_headers INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/inc
 )
-target_link_libraries(ut_osapi_stub_headers INTERFACE 
+target_link_libraries(ut_osapi_stub_headers INTERFACE
     ut_assert
 )
 
@@ -163,6 +163,7 @@ add_custom_target(generate_osal_coverage_stubs
 # and are not public API calls.   This is only compiled if used.
 add_library(ut_osapi_impl_stubs STATIC EXCLUDE_FROM_ALL
     src/os-shared-binsem-impl-stubs.c
+    src/os-shared-clock-impl-handlers.c
     src/os-shared-clock-impl-stubs.c
     src/os-shared-common-impl-stubs.c
     src/os-shared-condvar-impl-stubs.c
@@ -275,4 +276,3 @@ add_library(ut_bsp_impl_stubs STATIC EXCLUDE_FROM_ALL
 target_link_libraries(ut_bsp_impl_stubs PUBLIC
     ut_osapi_stub_headers
 )
-

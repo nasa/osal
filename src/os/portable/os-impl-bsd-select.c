@@ -41,6 +41,7 @@
 #include <time.h>
 
 #include "os-impl-select.h"
+#include "os-shared-clock.h"
 #include "os-shared-select.h"
 #include "os-shared-idmap.h"
 
@@ -163,68 +164,52 @@ static void OS_FdSet_ConvertOut_Impl(fd_set *OS_set, OS_FdSet *OSAL_set)
  *          Actual implementation of select() call
  *          Used by SelectSingle and SelectMultiple implementations (below)
  *-----------------------------------------------------------------*/
-static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, int32 msecs)
+static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, OS_time_t abs_timeout)
 {
     int             os_status;
     int32           return_code;
     struct timeval  tv;
     struct timeval *tvptr;
-    struct timespec ts_now;
-    struct timespec ts_end;
+    OS_time_t       curr_time;
 
-    if (msecs > 0)
+    /* Implementations may pass OS_TIME_MAX to mean wait forever */
+    if (OS_TimeEqual(abs_timeout, OS_TIME_MAX))
     {
-        clock_gettime(CLOCK_MONOTONIC, &ts_now);
-        ts_end.tv_sec  = ts_now.tv_sec + (msecs / 1000);
-        ts_end.tv_nsec = ts_now.tv_nsec + (1000000 * (msecs % 1000));
-        if (ts_end.tv_nsec >= 1000000000)
-        {
-            ++ts_end.tv_sec;
-            ts_end.tv_nsec -= 1000000000;
-        }
+        tvptr = NULL;
     }
     else
     {
-        /* Zero for consistency and to avoid possible confusion if not cleared */
-        memset(&ts_end, 0, sizeof(ts_end));
+        /* Not waiting forever, some form of timeout will be calculated */
+        tvptr = &tv;
     }
+
+    curr_time = abs_timeout;
 
     do
     {
-        if (msecs < 0)
+        if (tvptr != NULL)
         {
-            tvptr = NULL;
-        }
-        else if (msecs == 0)
-        {
-            tvptr      = &tv;
-            tv.tv_sec  = 0;
-            tv.tv_usec = 0;
-        }
-        else
-        {
-            tvptr = &tv;
-
-            clock_gettime(CLOCK_MONOTONIC, &ts_now);
-
-            /* note that the tv_sec and tv_usec/tv_nsec values are all signed longs, so OK to subtract */
-            tv.tv_sec  = ts_end.tv_sec - ts_now.tv_sec;
-            tv.tv_usec = (ts_end.tv_nsec - ts_now.tv_nsec) / 1000;
-
-            if (tv.tv_sec < 0 || (tv.tv_sec == 0 && tv.tv_usec < 0))
+            if (OS_TimeGetSign(abs_timeout) > 0)
             {
-                os_status = 0;
-                break;
+                OS_GetLocalTime_Impl(&curr_time);
+                curr_time = OS_TimeSubtract(abs_timeout, curr_time);
             }
-
-            if (tv.tv_usec < 0)
+            if (OS_TimeGetSign(curr_time) <= 0)
             {
-                tv.tv_usec += 1000000;
-                --tv.tv_sec;
+                /* timeout has already passed - this will still poll, but not block */
+                tv.tv_sec  = 0;
+                tv.tv_usec = 0;
+            }
+            else
+            {
+                /* timeout is in the future */
+                tv.tv_sec  = OS_TimeGetTotalSeconds(curr_time);
+                tv.tv_usec = OS_TimeGetMicrosecondsPart(curr_time);
             }
         }
 
         os_status = select(maxfd + 1, rd_set, wr_set, NULL, tvptr);
+
     } while (os_status < 0 && (errno == EINTR || errno == EAGAIN));
 
     if (os_status < 0)
@@ -253,7 +238,7 @@ static int32 OS_DoSelect(int maxfd, fd_set *rd_set, fd_set *wr_set, int32 msecs)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, int32 msecs)
+int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, OS_time_t abs_timeout)
 {
     int32                           return_code;
     fd_set                          wr_set;
@@ -290,7 +275,7 @@ int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, 
             FD_SET(impl->fd, &wr_set);
         }
 
-        return_code = OS_DoSelect(impl->fd, &rd_set, &wr_set, msecs);
+        return_code = OS_DoSelect(impl->fd, &rd_set, &wr_set, abs_timeout);
 
         if (return_code == OS_SUCCESS)
         {
@@ -323,7 +308,7 @@ int32 OS_SelectSingle_Impl(const OS_object_token_t *token, uint32 *SelectFlags, 
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
+int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, OS_time_t abs_timeout)
 {
     fd_set wr_set;
     fd_set rd_set;
@@ -352,7 +337,7 @@ int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
 
     if (maxfd >= 0)
     {
-        return_code = OS_DoSelect(maxfd, &rd_set, &wr_set, msecs);
+        return_code = OS_DoSelect(maxfd, &rd_set, &wr_set, abs_timeout);
     }
     else
     {

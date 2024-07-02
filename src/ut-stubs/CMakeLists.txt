@@ -60,6 +60,7 @@ add_library(ut_osapi_stubs STATIC
     osapi-clock-stubs.c
     osapi-clock-handlers.c
     osapi-common-stubs.c
+    osapi-common-handlers.c
     osapi-condvar-stubs.c
     osapi-countsem-stubs.c
     osapi-countsem-handlers.c

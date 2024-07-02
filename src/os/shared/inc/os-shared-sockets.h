@@ -75,7 +75,7 @@ int32 OS_SocketListen_Impl(const OS_object_token_t *token);
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
 int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_token_t *conn_token,
-                           OS_SockAddr_t *Addr, int32 timeout);
+                           OS_SockAddr_t *Addr, OS_time_t abs_timeout);
 
 /*----------------------------------------------------------------
 
@@ -84,7 +84,7 @@ int32 OS_SocketAccept_Impl(const OS_object_token_t *sock_token, const OS_object_
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr, int32 timeout);
+int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr, OS_time_t abs_timeout);
 
 /*----------------------------------------------------------------
 
@@ -105,7 +105,7 @@ int32 OS_SocketShutdown_Impl(const OS_object_token_t *token, OS_SocketShutdownMo
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
 int32 OS_SocketRecvFrom_Impl(const OS_object_token_t *token, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr,
-                             int32 timeout);
+                             OS_time_t abs_timeout);
 
 /*----------------------------------------------------------------
 

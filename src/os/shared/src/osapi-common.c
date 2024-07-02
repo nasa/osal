@@ -423,3 +423,20 @@ void OS_ApplicationShutdown(uint8 flag)
      */
     OS_ApplicationShutdown_Impl();
 }
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+size_t OS_strnlen(const char *s, size_t maxlen)
+{
+    const char *end = (const char *)memchr(s, 0, maxlen);
+    if (end != NULL)
+    {
+        /* actual length of string is difference */
+        maxlen = end - s;
+    }
+    return maxlen;
+}

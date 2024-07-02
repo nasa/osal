@@ -25,6 +25,8 @@
 #include "os-shared-clock.h"
 #include "utgenstub.h"
 
+void UT_DefaultHandler_OS_GetLocalTime_Impl(void *, UT_EntryKey_t, const UT_StubContext_t *);
+
 /*
  * ----------------------------------------------------
  * Generated stub function for OS_GetLocalTime_Impl()
@@ -36,7 +38,7 @@ int32 OS_GetLocalTime_Impl(OS_time_t *time_struct)
 
     UT_GenStub_AddParam(OS_GetLocalTime_Impl, OS_time_t *, time_struct);
 
-    UT_GenStub_Execute(OS_GetLocalTime_Impl, Basic, NULL);
+    UT_GenStub_Execute(OS_GetLocalTime_Impl, Basic, UT_DefaultHandler_OS_GetLocalTime_Impl);
 
     return UT_GenStub_GetReturnValue(OS_GetLocalTime_Impl, int32);
 }

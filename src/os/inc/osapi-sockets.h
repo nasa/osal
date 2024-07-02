@@ -28,6 +28,7 @@
 /* NOTE - osconfig.h may optionally specify the value for OS_SOCADDR_MAX_LEN */
 #include "osconfig.h"
 #include "common_types.h"
+#include "osapi-clock.h"
 
 /*
  * The absolute maximum size of a network address
@@ -343,9 +344,42 @@ int32 OS_SocketBindAddress(osal_id_t sock_id, const OS_SockAddr_t *Addr);
  * This only applies to stream-oriented sockets.  Calling this on a datagram
  * socket will return an error (these sockets should use SendTo/RecvFrom).
  *
+ * This API is identical to OS_SocketConnect() except for the timeout parameter.  In
+ * this call, timeout is expressed as an absolute value of the OS clock, in the same
+ * time domain as obtained via OS_GetLocalTime().  This allows for a more precise
+ * timeout than what is possible via the normal OS_SocketConnect().
+ *
+ * @param[in]   sock_id     The socket ID
+ * @param[in]   Addr        The remote address to connect to @nonnull
+ * @param[in]   abs_timeout The absolute time that the call may block until
+ *
+ * @sa OS_SocketConnect()
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if the socket is already connected
+ * @retval #OS_ERR_INVALID_ID if the sock_id parameter is not valid
+ * @retval #OS_ERR_INCORRECT_OBJ_TYPE if the handle is not a socket
+ * @retval #OS_INVALID_POINTER if Addr argument is NULL
+ */
+int32 OS_SocketConnectAbs(osal_id_t sock_id, const OS_SockAddr_t *Addr, OS_time_t abs_timeout);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Connects a socket to a given remote address.
+ *
+ * The socket will be connected to the remote address and port, if available.
+ * This only applies to stream-oriented sockets.  Calling this on a datagram
+ * socket will return an error (these sockets should use SendTo/RecvFrom).
+ *
+ * The timeout is expressed in milliseconds, relative to the time that the API was
+ * invoked.  Use OS_SocketConnectAbs() for higher timing precision.
+ *
  * @param[in]   sock_id  The socket ID
  * @param[in]   Addr     The remote address to connect to @nonnull
  * @param[in]   timeout  The maximum amount of time to wait, or OS_PEND to wait forever
+ *
+ * @sa OS_SocketConnectAbs()
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -387,10 +421,48 @@ int32 OS_SocketShutdown(osal_id_t sock_id, OS_SocketShutdownMode_t Mode);
  * The new stream connection is then returned to the caller and the original
  * server socket ID can be reused for the next connection.
  *
+ * This API is identical to OS_SocketAccept() except for the timeout parameter.  In
+ * this call, timeout is expressed as an absolute value of the OS clock, in the same
+ * time domain as obtained via OS_GetLocalTime().  This allows for a more precise
+ * timeout than what is possible via the normal OS_SocketAccept().
+ *
+ * @param[in]   sock_id      The server socket ID, previously bound using OS_SocketBind()
+ * @param[out]  connsock_id  The connection socket, a new ID that can be read/written @nonnull
+ * @param[in]   Addr         The remote address of the incoming connection @nonnull
+ * @param[in]   abs_timeout  The absolute time that the call may block until
+ *
+ * @sa OS_SocketAccept()
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_ID if the sock_id parameter is not valid
+ * @retval #OS_ERR_INCORRECT_OBJ_TYPE if the handle is not a socket
+ * @retval #OS_ERR_INCORRECT_OBJ_STATE if the socket is not bound or already connected
+ */
+int32 OS_SocketAcceptAbs(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *Addr, OS_time_t abs_timeout);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Waits for and accept the next incoming connection on the given socket
+ *
+ * This is used for sockets operating in a "server" role.  The socket must be
+ * a stream type (connection-oriented) and previously bound to a local address
+ * using OS_SocketBind().  This will block the caller up to the given timeout
+ * or until an incoming connection request occurs, whichever happens first.
+ *
+ * The new stream connection is then returned to the caller and the original
+ * server socket ID can be reused for the next connection.
+ *
+ * The timeout is expressed in milliseconds, relative to the time that the API was
+ * invoked.  Use OS_SocketAcceptAbs() for higher timing precision.
+ *
  * @param[in]   sock_id      The server socket ID, previously bound using OS_SocketBind()
  * @param[out]  connsock_id  The connection socket, a new ID that can be read/written @nonnull
  * @param[in]   Addr         The remote address of the incoming connection @nonnull
  * @param[in]   timeout      The maximum amount of time to wait, or OS_PEND to wait forever
+ *
+ * @sa OS_SocketAcceptAbs()
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -408,11 +480,43 @@ int32 OS_SocketAccept(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_t *
  * If a message is already available on the socket, this should immediately return
  * that data without blocking.  Otherwise, it may block up to the given timeout.
  *
+ * This API is identical to OS_SocketRecvFrom() except for the timeout parameter.  In
+ * this call, timeout is expressed as an absolute value of the OS clock, in the same
+ * time domain as obtained via OS_GetLocalTime().  This allows for a more precise
+ * timeout than what is possible via the normal OS_SocketRecvFrom().
+ *
  * @param[in]   sock_id      The socket ID, previously bound using OS_SocketBind()
  * @param[out]  buffer       Pointer to message data receive buffer @nonnull
  * @param[in]   buflen       The maximum length of the message data to receive @nonzero
  * @param[out]  RemoteAddr   Buffer to store the remote network address (may be NULL)
- * @param[in]   timeout      The maximum amount of time to wait, or OS_PEND to wait forever
+ * @param[in]   abs_timeout  The absolute time at which the call should return if nothing received
+ *
+ * @return Count of actual bytes received or error status, see @ref OSReturnCodes
+ * @retval #OS_INVALID_POINTER if argument is NULL
+ * @retval #OS_ERR_INVALID_SIZE if passed-in buflen is not valid
+ * @retval #OS_ERR_INVALID_ID if the sock_id parameter is not valid
+ * @retval #OS_ERR_INCORRECT_OBJ_TYPE if the handle is not a socket
+ */
+int32 OS_SocketRecvFromAbs(osal_id_t sock_id, void *buffer, size_t buflen, OS_SockAddr_t *RemoteAddr,
+                           OS_time_t abs_timeout);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Reads data from a message-oriented (datagram) socket
+ *
+ * If a message is already available on the socket, this should immediately return
+ * that data without blocking.  Otherwise, it may block up to the given timeout.
+ *
+ * The timeout is expressed in milliseconds, relative to the time that the API was
+ * invoked.  Use OS_SocketRecvFromAbs() for higher timing precision.
+ *
+ * @param[in]   sock_id      The socket ID, previously bound using OS_SocketBind()
+ * @param[out]  buffer       Pointer to message data receive buffer @nonnull
+ * @param[in]   buflen       The maximum length of the message data to receive @nonzero
+ * @param[out]  RemoteAddr   Buffer to store the remote network address (may be NULL)
+ * @param[in]   timeout      The maximum amount of time to wait or OS_PEND to wait forever
+ *
+ * @sa OS_SocketRecvFromAbs()
  *
  * @return Count of actual bytes received or error status, see @ref OSReturnCodes
  * @retval #OS_INVALID_POINTER if argument is NULL
