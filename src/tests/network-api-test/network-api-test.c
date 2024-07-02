@@ -378,6 +378,8 @@ void Server_Fn(void)
         ServerFn_AcceptStatus = OS_SocketAccept(s_socket_id, &connsock_id, &addr, OS_PEND);
         if (ServerFn_AcceptStatus != OS_SUCCESS)
         {
+            snprintf(ServerFn_ErrorString, sizeof(ServerFn_ErrorString), "OS_SocketAccept() iter=%u, return code=%d",
+                     (unsigned int)iter, (int)Status);
             break;
         }
 

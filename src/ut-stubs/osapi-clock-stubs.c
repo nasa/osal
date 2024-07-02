@@ -59,3 +59,35 @@ int32 OS_SetLocalTime(const OS_time_t *time_struct)
 
     return UT_GenStub_GetReturnValue(OS_SetLocalTime, int32);
 }
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_TimeFromRelativeMilliseconds()
+ * ----------------------------------------------------
+ */
+OS_time_t OS_TimeFromRelativeMilliseconds(int32 relative_msec)
+{
+    UT_GenStub_SetupReturnBuffer(OS_TimeFromRelativeMilliseconds, OS_time_t);
+
+    UT_GenStub_AddParam(OS_TimeFromRelativeMilliseconds, int32, relative_msec);
+
+    UT_GenStub_Execute(OS_TimeFromRelativeMilliseconds, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_TimeFromRelativeMilliseconds, OS_time_t);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_TimeToRelativeMilliseconds()
+ * ----------------------------------------------------
+ */
+int32 OS_TimeToRelativeMilliseconds(OS_time_t time)
+{
+    UT_GenStub_SetupReturnBuffer(OS_TimeToRelativeMilliseconds, int32);
+
+    UT_GenStub_AddParam(OS_TimeToRelativeMilliseconds, OS_time_t, time);
+
+    UT_GenStub_Execute(OS_TimeToRelativeMilliseconds, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_TimeToRelativeMilliseconds, int32);
+}

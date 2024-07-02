@@ -54,7 +54,7 @@
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
+int32 OS_SelectSingleAbs(osal_id_t objid, uint32 *StateFlags, OS_time_t abs_timeout)
 {
     int32             return_code;
     OS_object_token_t token;
@@ -65,7 +65,7 @@ int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_STREAM, objid, &token);
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_SelectSingle_Impl(&token, StateFlags, msecs);
+        return_code = OS_SelectSingle_Impl(&token, StateFlags, abs_timeout);
 
         OS_ObjectIdRelease(&token);
     }
@@ -79,7 +79,18 @@ int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
+int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
+{
+    return OS_SelectSingleAbs(objid, StateFlags, OS_TimeFromRelativeMilliseconds(msecs));
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SelectMultipleAbs(OS_FdSet *ReadSet, OS_FdSet *WriteSet, OS_time_t abs_timeout)
 {
     int32 return_code;
 
@@ -94,9 +105,20 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
      * That means a file/socket can be closed while actively inside a
      * OS_SelectMultiple() call in another thread.
      */
-    return_code = OS_SelectMultiple_Impl(ReadSet, WriteSet, msecs);
+    return_code = OS_SelectMultiple_Impl(ReadSet, WriteSet, abs_timeout);
 
     return return_code;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
+{
+    return OS_SelectMultipleAbs(ReadSet, WriteSet, OS_TimeFromRelativeMilliseconds(msecs));
 }
 
 /*----------------------------------------------------------------

@@ -115,30 +115,30 @@ void Test_OS_GenericRead_Impl(void)
 
     UT_SetDataBuffer(UT_KEY(OCS_read), SrcData, sizeof(SrcData), false);
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, false);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), sizeof(DestData));
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), OS_TIME_MIN), sizeof(DestData));
     UtAssert_MemCmp(SrcData, DestData, sizeof(SrcData), "read() data Valid");
 
     /* test invocation of select() in nonblocking mode */
     UT_ResetState(UT_KEY(OCS_read));
     UT_SetDataBuffer(UT_KEY(OCS_read), SrcData, sizeof(SrcData), false);
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), sizeof(DestData));
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), OS_TIME_MIN), sizeof(DestData));
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_SelectSingle_Impl)) == 1, "OS_SelectSingle() called");
 
     /* Read 0 bytes */
-    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, 0, 0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, 0, OS_TIME_MIN), OS_SUCCESS);
 
     /* read() failure */
     UT_SetDefaultReturnValue(UT_KEY(OCS_read), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), OS_TIME_MIN), OS_ERROR);
 
     /* Fail select */
     UT_SetDeferredRetcode(UT_KEY(OS_SelectSingle_Impl), 1, OS_ERROR_TIMEOUT);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), OS_ERROR_TIMEOUT);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), OS_TIME_MIN), OS_ERROR_TIMEOUT);
 
     /* Not readable */
     UT_SetHookFunction(UT_KEY(OS_SelectSingle_Impl), UT_Hook_OS_SelectSingle_Impl, NULL);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), 0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericRead_Impl, (&token, DestData, sizeof(DestData), OS_TIME_MIN), OS_SUCCESS);
     UT_SetHookFunction(UT_KEY(OS_SelectSingle_Impl), NULL, NULL);
 }
 
@@ -156,30 +156,30 @@ void Test_OS_GenericWrite_Impl(void)
 
     UT_SetDataBuffer(UT_KEY(OCS_write), DestData, sizeof(DestData), false);
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, false);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), 0), sizeof(SrcData));
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), OS_TIME_MIN), sizeof(SrcData));
     UtAssert_MemCmp(SrcData, DestData, sizeof(SrcData), "write() data valid");
 
     /* test invocation of select() in nonblocking mode */
     UT_ResetState(UT_KEY(OCS_write));
     UT_SetDataBuffer(UT_KEY(OCS_write), DestData, sizeof(DestData), false);
     UT_PortablePosixIOTest_Set_Selectable(UT_INDEX_0, true);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), 0), sizeof(SrcData));
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), OS_TIME_MIN), sizeof(SrcData));
     UtAssert_True(UT_GetStubCount(UT_KEY(OS_SelectSingle_Impl)) == 1, "OS_SelectSingle() called");
 
     /* Fail select */
     UT_SetDeferredRetcode(UT_KEY(OS_SelectSingle_Impl), 1, OS_ERROR_TIMEOUT);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), 0), OS_ERROR_TIMEOUT);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), OS_TIME_MIN), OS_ERROR_TIMEOUT);
 
     /* Write 0 bytes */
-    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, 0, 0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, 0, OS_TIME_MIN), OS_SUCCESS);
 
     /* write() failure */
     UT_SetDefaultReturnValue(UT_KEY(OCS_write), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, DestData, sizeof(DestData), 0), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, DestData, sizeof(DestData), OS_TIME_MIN), OS_ERROR);
 
     /* Not writeable */
     UT_SetHookFunction(UT_KEY(OS_SelectSingle_Impl), UT_Hook_OS_SelectSingle_Impl, NULL);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), 0), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericWrite_Impl, (&token, SrcData, sizeof(SrcData), OS_TIME_MIN), OS_SUCCESS);
     UT_SetHookFunction(UT_KEY(OS_SelectSingle_Impl), NULL, NULL);
 }
 

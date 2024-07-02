@@ -135,14 +135,14 @@ int32 OS_GenericClose_Impl(const OS_object_token_t *token)
  * Generated stub function for OS_GenericRead_Impl()
  * ----------------------------------------------------
  */
-int32 OS_GenericRead_Impl(const OS_object_token_t *token, void *buffer, size_t nbytes, int32 timeout)
+int32 OS_GenericRead_Impl(const OS_object_token_t *token, void *buffer, size_t nbytes, OS_time_t abs_timeout)
 {
     UT_GenStub_SetupReturnBuffer(OS_GenericRead_Impl, int32);
 
     UT_GenStub_AddParam(OS_GenericRead_Impl, const OS_object_token_t *, token);
     UT_GenStub_AddParam(OS_GenericRead_Impl, void *, buffer);
     UT_GenStub_AddParam(OS_GenericRead_Impl, size_t, nbytes);
-    UT_GenStub_AddParam(OS_GenericRead_Impl, int32, timeout);
+    UT_GenStub_AddParam(OS_GenericRead_Impl, OS_time_t, abs_timeout);
 
     UT_GenStub_Execute(OS_GenericRead_Impl, Basic, UT_DefaultHandler_OS_GenericRead_Impl);
 
@@ -172,14 +172,14 @@ int32 OS_GenericSeek_Impl(const OS_object_token_t *token, int32 offset, uint32 w
  * Generated stub function for OS_GenericWrite_Impl()
  * ----------------------------------------------------
  */
-int32 OS_GenericWrite_Impl(const OS_object_token_t *token, const void *buffer, size_t nbytes, int32 timeout)
+int32 OS_GenericWrite_Impl(const OS_object_token_t *token, const void *buffer, size_t nbytes, OS_time_t abs_timeout)
 {
     UT_GenStub_SetupReturnBuffer(OS_GenericWrite_Impl, int32);
 
     UT_GenStub_AddParam(OS_GenericWrite_Impl, const OS_object_token_t *, token);
     UT_GenStub_AddParam(OS_GenericWrite_Impl, const void *, buffer);
     UT_GenStub_AddParam(OS_GenericWrite_Impl, size_t, nbytes);
-    UT_GenStub_AddParam(OS_GenericWrite_Impl, int32, timeout);
+    UT_GenStub_AddParam(OS_GenericWrite_Impl, OS_time_t, abs_timeout);
 
     UT_GenStub_Execute(OS_GenericWrite_Impl, Basic, UT_DefaultHandler_OS_GenericWrite_Impl);
 

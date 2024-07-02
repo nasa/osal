@@ -171,6 +171,31 @@ void Test_OS_TimeAccessConversions(void)
     UtAssert_UINT32_EQ(OS_TimeGetTotalNanoseconds(OS_TimeFromTotalNanoseconds(347230000)), 347230000);
 }
 
+void Test_OS_TimeFromRelativeMilliseconds(void)
+{
+    /*
+     * Test Case For:
+     * OS_time_t OS_TimeFromRelativeMilliseconds(int32 relative_msec)
+     */
+
+    UtAssert_BOOL_TRUE(OS_TimeEqual(OS_TimeFromRelativeMilliseconds(1000), OS_TimeFromTotalSeconds(1)));
+    UtAssert_BOOL_TRUE(OS_TimeEqual(OS_TimeFromRelativeMilliseconds(OS_CHECK), OS_TIME_ZERO));
+    UtAssert_BOOL_TRUE(OS_TimeEqual(OS_TimeFromRelativeMilliseconds(OS_PEND), OS_TIME_MAX));
+}
+
+void Test_OS_TimeToRelativeMilliseconds(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_TimeToRelativeMilliseconds(OS_time_t time)
+     */
+
+    UtAssert_INT32_EQ(OS_TimeToRelativeMilliseconds(OS_TIME_MAX), OS_PEND);
+    UtAssert_INT32_EQ(OS_TimeToRelativeMilliseconds(OS_TIME_ZERO), OS_CHECK);
+    UtAssert_INT32_EQ(OS_TimeToRelativeMilliseconds(OS_TIME_MIN), OS_CHECK);
+    UtAssert_INT32_EQ(OS_TimeToRelativeMilliseconds(OS_TimeFromTotalSeconds(1)), 1000);
+}
+
 /* Osapi_Test_Setup
  *
  * Purpose:
@@ -197,4 +222,6 @@ void UtTest_Setup(void)
     ADD_TEST(OS_GetLocalTime);
     ADD_TEST(OS_SetLocalTime);
     ADD_TEST(OS_TimeAccessConversions);
+    ADD_TEST(OS_TimeFromRelativeMilliseconds);
+    ADD_TEST(OS_TimeToRelativeMilliseconds);
 }
