@@ -66,6 +66,7 @@ OS_condvar_internal_record_t OS_condvar_table[OS_MAX_CONDVARS];
  *-----------------------------------------------------------------*/
 int32 OS_CondVarAPI_Init(void)
 {
+    // SAD: Using memset as sizeof(OS_condvar_table) ensures correct array size
     memset(OS_condvar_table, 0, sizeof(OS_condvar_table));
     return OS_SUCCESS;
 }
@@ -291,6 +292,7 @@ int32 OS_CondVarGetInfo(osal_id_t var_id, OS_condvar_prop_t *condvar_prop)
     /* Check parameters */
     OS_CHECK_POINTER(condvar_prop);
 
+    // SAD: Using memset as sizeof(OS_condvar_prop_t) ensures correct array size
     memset(condvar_prop, 0, sizeof(OS_condvar_prop_t));
 
     return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, OS_OBJECT_TYPE_OS_CONDVAR, var_id, &token);
@@ -298,7 +300,7 @@ int32 OS_CondVarGetInfo(osal_id_t var_id, OS_condvar_prop_t *condvar_prop)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_condvar_table, token);
 
-        strncpy(condvar_prop->name, record->name_entry, sizeof(condvar_prop->name) - 1);
+        snprintf(condvar_prop->name, sizeof(condvar_prop->name), "%s", record->name_entry);
         condvar_prop->creator = record->creator;
 
         return_code = OS_CondVarGetInfo_Impl(&token, condvar_prop);

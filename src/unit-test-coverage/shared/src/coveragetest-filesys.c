@@ -430,18 +430,18 @@ void Test_OS_TranslatePath(void)
     UtAssert_INT32_EQ(OS_TranslatePath("/cf/test", NULL), OS_INVALID_POINTER);
     UtAssert_INT32_EQ(OS_TranslatePath(NULL, LocalBuffer), OS_INVALID_POINTER);
 
-    UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     expected = OS_FS_ERR_PATH_TOO_LONG;
-    actual   = OS_TranslatePath("/cf/test", LocalBuffer);
+    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 1, OS_MAX_PATH_LEN + 1);
+    actual = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
-    UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
+    UT_ResetState(UT_KEY(OS_strnlen));
 
     /* Invalid no '/' */
     expected = OS_FS_ERR_PATH_INVALID;
     actual   = OS_TranslatePath("invalid", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
 
-    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 2, OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 1, OS_ERROR);
     expected = OS_FS_ERR_NAME_TOO_LONG;
     actual   = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath(/cf/test) (%ld) == OS_FS_ERR_NAME_TOO_LONG", (long)actual);
@@ -457,13 +457,13 @@ void Test_OS_TranslatePath(void)
     UT_ClearDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch));
 
     /* VirtPathLen < VirtPathBegin */
-    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 4, OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 1, 1);
     expected = OS_FS_ERR_PATH_INVALID;
     actual   = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath(/cf/test) (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
 
     /* (SysMountPointLen + VirtPathLen) > OS_MAX_LOCAL_PATH_LEN */
-    UT_SetDeferredRetcode(UT_KEY(OCS_memchr), 3, OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OS_strnlen), 2, OS_MAX_LOCAL_PATH_LEN + 1);
     expected = OS_FS_ERR_PATH_TOO_LONG;
     actual   = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath(/cf/test) (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
