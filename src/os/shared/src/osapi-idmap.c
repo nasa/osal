@@ -597,7 +597,6 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
 
     base_id       = OS_GetBaseForObjectType(token->obj_type);
     max_id        = OS_GetMaxForObjectType(token->obj_type);
-    objtype_state = &OS_objtype_state[token->obj_type];
 
     if (max_id == 0)
     {
@@ -610,8 +609,9 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
     }
     else
     {
-        return_code = OS_ERR_NO_FREE_IDS;
-        serial      = OS_ObjectIdToSerialNumber_Impl(objtype_state->last_id_issued);
+        return_code   = OS_ERR_NO_FREE_IDS;
+        objtype_state = &OS_objtype_state[token->obj_type];
+        serial        = OS_ObjectIdToSerialNumber_Impl(objtype_state->last_id_issued);
     }
 
     for (i = 0; i < max_id; ++i)
