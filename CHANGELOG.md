@@ -1,5 +1,10 @@
 # Changelog
 
+## Development Build: equuleus-rc1:dev81
+- Fix Address Sanitizer issue in vxworks-console-testrunner
+- f-sanitizer issue in coverage-shared-idma
+- See <https://github.com/nasa/osal/pull/1467> and <https://github.com/nasa/osal/pull/1470>
+
 ## Development Build: equuleus-rc1+dev73
 - High-res timed stream ops
 - Moves OS_strnlen to public API and adds static analysis comments
