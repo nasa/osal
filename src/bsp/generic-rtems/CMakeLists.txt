@@ -79,6 +79,7 @@ foreach(BSP_RTEMS_CFGFILE ${BSP_RTEMS_CONFIG_FILE_LIST})
     set(DEFAULT_SOURCE FALLBACK_FILE "${CMAKE_CURRENT_LIST_DIR}/config/default_${BSP_RTEMS_CFGFILE}")
   endif()
   generate_config_includefile(
+    OUTPUT_DIRECTORY    "${CMAKE_CURRENT_BINARY_DIR}/../inc"
     FILE_NAME           "${BSP_RTEMS_CFGFILE}"
     ${DEFAULT_SOURCE}
   )

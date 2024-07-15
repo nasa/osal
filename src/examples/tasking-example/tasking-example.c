@@ -60,7 +60,7 @@ void task_3(void);
 /* OS Constructs */
 
 #define MSGQ_ID    1
-#define MSGQ_DEPTH 50
+#define MSGQ_DEPTH 10
 #define MSGQ_SIZE  4
 
 #define MUTEX_ID 1
@@ -208,7 +208,7 @@ void task_2(void)
 void task_3(void)
 {
     uint32 data_received;
-    uint32 data_size;
+    size_t data_size;
     uint32 status;
 
     OS_printf("Starting task 3\n");
