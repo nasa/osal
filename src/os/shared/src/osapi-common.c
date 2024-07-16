@@ -102,7 +102,7 @@ int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data)
  *-----------------------------------------------------------------*/
 int32 OS_API_Init(void)
 {
-    int32          return_code = OS_SUCCESS;
+    int32          return_code;
     osal_objtype_t idtype;
     uint32         microSecPerSec;
 

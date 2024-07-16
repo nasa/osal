@@ -118,8 +118,8 @@ void Test_OS_CountSemGetIdByName(void)
      * int32 OS_CountSemGetIdByName (uint32 *sem_id, const char *sem_name)
      */
     int32     expected = OS_SUCCESS;
-    int32     actual   = ~OS_SUCCESS;
-    osal_id_t objid    = OS_OBJECT_ID_UNDEFINED;
+    int32     actual;
+    osal_id_t objid = OS_OBJECT_ID_UNDEFINED;
 
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdFindByName), OS_SUCCESS);
     actual = OS_CountSemGetIdByName(&objid, "UT");
@@ -142,7 +142,7 @@ void Test_OS_CountSemGetInfo(void)
      * int32 OS_CountSemGetInfo (uint32 sem_id, OS_count_sem_prop_t *count_prop)
      */
     int32               expected = OS_SUCCESS;
-    int32               actual   = ~OS_SUCCESS;
+    int32               actual;
     OS_count_sem_prop_t prop;
 
     memset(&prop, 0, sizeof(prop));

@@ -170,7 +170,8 @@ void UT_os_reconftimercallback(osal_id_t timerId, void *arg)
 **--------------------------------------------------------------------------------*/
 void UT_os_timercreate_test()
 {
-    int32 i = 0, j = 0;
+    int32 i;
+    int32 j;
     char  tmpStr[UT_OS_NAME_BUFF_SIZE];
 
     /*-----------------------------------------------------*/
@@ -401,7 +402,8 @@ void UT_os_timerdelete_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_timerset_test()
 {
-    uint32 startTime = 0, intervalTime = 0;
+    uint32 startTime;
+    uint32 intervalTime;
 
     /*-----------------------------------------------------*/
     /* #1 Invalid-id-arg */

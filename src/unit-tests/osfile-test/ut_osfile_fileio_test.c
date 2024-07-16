@@ -167,7 +167,8 @@ void UT_os_initfs_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_createfile_test()
 {
-    int32     i = 0, j = 0;
+    int32     i;
+    int32     j;
     osal_id_t fd;
 
     /*-----------------------------------------------------*/
@@ -304,7 +305,8 @@ void UT_os_createfile_test()
 **--------------------------------------------------------------------------------*/
 void UT_os_openfile_test()
 {
-    int32     i = 0, j = 0;
+    int32     i;
+    int32     j;
     osal_id_t fd;
 
     /*-----------------------------------------------------*/
@@ -742,7 +744,9 @@ void UT_os_writefile_test()
 void UT_os_lseekfile_test()
 {
     size_t buffLen;
-    int32  pos1 = 0, pos2 = 0, pos3 = 0;
+    int32  pos1;
+    int32  pos2;
+    int32  pos3;
 
     UT_RETVAL(OS_lseek(UT_OBJID_INCORRECT, 0, OS_SEEK_SET), OS_ERR_INVALID_ID);
     UT_RETVAL(OS_lseek(OS_OBJECT_ID_UNDEFINED, 0, OS_SEEK_SET), OS_ERR_INVALID_ID);

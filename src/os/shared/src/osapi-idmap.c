@@ -616,7 +616,8 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
 
     for (i = 0; i < max_id; ++i)
     {
-        local_id = (++serial) % max_id;
+        serial++;
+        local_id = serial % max_id;
         if (serial >= OS_OBJECT_INDEX_MASK)
         {
             /* reset to beginning of ID space */

@@ -8,6 +8,6 @@ jobs:
   codeql:
     name: CodeQl Analysis
     uses: nasa/cFS/.github/workflows/codeql-reusable.yml@main
-    with: 
+    with:
       component-path: osal
       make: 'make -C build/native/default_cpu1/osal'
