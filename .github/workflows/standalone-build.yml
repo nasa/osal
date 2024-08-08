@@ -34,7 +34,7 @@ jobs:
           path: source
 
       - name: Install Coverage Analysis Tools
-        if: ${{ matrix.build-type == 'Debug' && matrix.base-os == 'ubuntu-20.04' }}
+        if: ${{ matrix.build-type == 'Debug' }}
         run: sudo apt-get install -y lcov xsltproc && echo "run_lcov=TRUE" >> $GITHUB_ENV
 
       - name: Set up debug environment
@@ -89,21 +89,42 @@ jobs:
           binary-dir: build
 
       - name: Enforce coverage function minimum
-        if: ${{ always() && steps.stats.outputs.ncov_functions > env.allowed_ncov_functions }}
+        if: ${{ env.run_lcov == 'TRUE' && always() && steps.stats.outputs.ncov_functions > env.allowed_ncov_functions }}
         run: |
           echo "::error::Too many uncovered functions (${{ steps.stats.outputs.ncov_functions }})"
           /bin/false
 
       - name: Enforce coverage line minimum
-        if: ${{ always() && steps.stats.outputs.ncov_lines > env.allowed_ncov_lines }}
+        if: ${{ env.run_lcov == 'TRUE' && always() && steps.stats.outputs.ncov_lines > env.allowed_ncov_lines }}
         run: |
           echo "::error::Too many uncovered lines (${{ steps.stats.outputs.ncov_lines }})"
           /bin/false
 
       - name: Enforce coverage branch minimum
-        if: ${{ always() && steps.stats.outputs.ncov_branches > env.allowed_ncov_branches }}
+        if: ${{ env.run_lcov == 'TRUE' && always() && steps.stats.outputs.ncov_branches > env.allowed_ncov_branches }}
         run: |
           echo "::error::Too many uncovered branches (${{ steps.stats.outputs.ncov_branches }})"
+          /bin/false
+
+      - name: Enforce keeping coverage function minimum up-to-date
+        if: ${{ env.run_lcov == 'TRUE' && always() && steps.stats.outputs.ncov_functions < env.allowed_ncov_functions }}
+        run: |
+          echo "::error::${{ steps.stats.outputs.ncov_functions }} uncovered function${{ steps.stats.outputs.ncov_functions == 1 && '' || 's' }} reported, but ${{ env.allowed_ncov_functions }} ${{ env.allowed_ncov_functions == 1 && 'is' || 'are' }} allowed."
+          echo "::error::Please update the 'allowed_ncov_functions' variable to ${{ steps.stats.outputs.ncov_functions }} in order to match the new coverage level."
+          /bin/false
+
+      - name: Enforce keeping coverage line minimum up-to-date
+        if: ${{ env.run_lcov == 'TRUE' && always() && steps.stats.outputs.ncov_lines < env.allowed_ncov_lines }}
+        run: |
+          echo "::error::${{ steps.stats.outputs.ncov_lines }} uncovered line${{ steps.stats.outputs.ncov_lines == 1 && '' || 's' }} reported, but ${{ env.allowed_ncov_lines }} ${{ env.allowed_ncov_lines == 1 && 'is' || 'are' }} allowed."
+          echo "::error::Please update the 'allowed_ncov_lines' variable to ${{ steps.stats.outputs.ncov_lines }} in order to match the new coverage level."
+          /bin/false
+
+      - name: Enforce keeping coverage branch minimum up-to-date
+        if: ${{ env.run_lcov == 'TRUE' && always() && steps.stats.outputs.ncov_branches < env.allowed_ncov_branches }}
+        run: |
+          echo "::error::${{ steps.stats.outputs.ncov_branches }} uncovered branch${{ steps.stats.outputs.ncov_branches == 1 && '' || 'es' }} reported, but ${{ env.allowed_ncov_branches }} ${{ env.allowed_ncov_branches == 1 && 'is' || 'are' }} allowed."
+          echo "::error::Please update the 'allowed_ncov_branches' variable to ${{ steps.stats.outputs.ncov_branches }} in order to match the new coverage level."
           /bin/false
 
       - name: Assemble Results
