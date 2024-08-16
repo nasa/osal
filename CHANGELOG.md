@@ -1,6 +1,10 @@
 # Changelog
 
-## Development Build: equuleus-rc1:dev81
+## Development Build: equuleus-rc1+dev85
+- Fix workflow bug and enforce updating of coverage minimums
+- See <https://github.com/nasa/osal/pull/1419>
+
+## Development Build: equuleus-rc1+dev81
 - Fix Address Sanitizer issue in vxworks-console-testrunner
 - f-sanitizer issue in coverage-shared-idma
 - See <https://github.com/nasa/osal/pull/1467> and <https://github.com/nasa/osal/pull/1470>
