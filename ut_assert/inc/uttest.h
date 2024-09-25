@@ -117,4 +117,32 @@ void UtTest_Run(void);
  */
 void UtTest_Setup(void);
 
+
+typedef void (*UTTestFunction)(void);
+
+typedef struct UtTestRecord{
+    int marker;
+    const char * testSuite;
+    const char * functionName;
+    const char * fileName;
+    const char * testName;
+    int lineNumber;
+    UTTestFunction functionPointer;
+    int padding; /* Size needs to be 64 bytes long for some reason */
+}UtTestRecord; 
+
+#define UTEST(suiteName, uTtestName)                                      \
+    static void suiteName##_##uTtestName(void);                           \
+    static UtTestRecord Record_##suiteName##_##uTtestName                 \
+        __attribute__((section(".utest_records"), used)) = {            \
+        .marker = 0xDeadBeaf, \
+            .testSuite = #suiteName,                                    \
+            .functionName = #uTtestName,                                  \
+            .testName = #suiteName #uTtestName,                          \
+            .fileName = __FILE__,                                       \
+            .lineNumber = __LINE__,                                     \
+            .functionPointer = suiteName##_##uTtestName                   \
+    };                                                                  \
+    static void suiteName##_##uTtestName(void)
+
 #endif /* UTTEST_H */

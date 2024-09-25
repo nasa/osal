@@ -69,7 +69,8 @@ void Test_BinSem_Task2(void)
     }
 }
 
-void Test_BinSem(void)
+//void Test_BinSem(void)
+UTEST(BinSem, Test)
 {
 
     osal_id_t         sem_id[2];
@@ -214,6 +215,16 @@ void Test_BinSem(void)
     UtAssert_INT32_EQ(OS_BinSemDelete(sem_id[1]), OS_SUCCESS);
 }
 
+UTEST(BinSem, Test2)
+{
+    printf("A");
+}
+
+UTEST(BinSem, Test3)
+{
+        printf("B");
+}
+
 void UtTest_Setup(void)
 {
     if (OS_API_Init() != OS_SUCCESS)
@@ -227,5 +238,5 @@ void UtTest_Setup(void)
     /*
      * Register the test setup and check routines in UT assert
      */
-    UtTest_Add(Test_BinSem, NULL, NULL, "Test_BinSem");
+    //UtTest_Add(Test_BinSem, NULL, NULL, "Test_BinSem");
 }

@@ -1,0 +1,16 @@
+/* Include the default linker script */
+INCLUDE "@DEFAULT_LD_PATH@"
+
+
+SECTIONS
+{
+
+    /* Define the .utest_records section */
+    .utest_records : 
+    {
+        __start_utest_records = .;
+        KEEP(*(.utest_records));
+        __stop_utest_records = .;
+    }
+}
+

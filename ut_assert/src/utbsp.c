@@ -230,6 +230,10 @@ void OS_Application_Run(void)
     UtTest_Run();
 }
 
+/* Defined in linker script */
+extern UtTestRecord __start_utest_records;
+extern UtTestRecord __stop_utest_records;
+
 /*
  * Entry point from the BSP.
  * When linking with UT-Assert, the test framework (this library) serves
@@ -242,11 +246,24 @@ void OS_Application_Startup(void)
     UtTest_EarlyInit();
     UT_BSP_Setup();
 
+
     /*
      * Wrap the UtTest_Setup() function in a UT segment called "SETUP"
      * This allows any assert calls to be used and recorded during setup
      */
     UtAssert_BeginTest("SETUP");
+
+    /* TODO PROBALBY a better spot for this */
+    UtTestRecord *test = &__start_utest_records;
+    // printf("Size of record is %d\n", sizeof(*test));
+    int num_records = (&__stop_utest_records - &__start_utest_records)/ sizeof(*test);
+    // printf("Num records is %d \n",num_records);
+    while (test < &__stop_utest_records) {
+        // printf(" Adding test %s\n", test->functionName);
+        UtTest_Add(test->functionPointer, NULL, NULL, test->functionName);
+        test++;
+    }
+
     UtTest_Setup();
     UtAssert_EndTest();
 }

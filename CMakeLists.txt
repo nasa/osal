@@ -410,12 +410,50 @@ if (ENABLE_UNIT_TESTS)
 
     enable_testing()
 
+    # Set the output paths
+    set(DEFAULT_LD_FULL_PATH "${CMAKE_CURRENT_BINARY_DIR}/default_full.ld")
+    set(DEFAULT_LD_PATH "${CMAKE_CURRENT_BINARY_DIR}/default.ld")
+    set(DEFAULT_LD_PATH_ESCAPED "${DEFAULT_LD_PATH}")
+    string(REPLACE "\\" "/" DEFAULT_LD_PATH_ESCAPED "${DEFAULT_LD_PATH_ESCAPED}")
+    set(DEFAULT_LD_PATH_ESCAPED "${DEFAULT_LD_PATH_ESCAPED}")
+
+    # Add a custom command to generate the default linker script
+    add_custom_command(
+        OUTPUT ${DEFAULT_LD_PATH}
+        COMMAND ${CMAKE_LINKER} --verbose > ${DEFAULT_LD_FULL_PATH}
+        COMMAND ${CMAKE_COMMAND} -DDEFAULT_LD_FULL_PATH=${DEFAULT_LD_FULL_PATH} -DDEFAULT_LD_PATH=${DEFAULT_LD_PATH} -P ${CMAKE_SOURCE_DIR}/ut_assert/extract_linker_script.cmake
+        COMMENT "Generating default linker script (default.ld)"
+    )
+
+
+    # Configure the custom linker script
+    configure_file(
+        ${CMAKE_SOURCE_DIR}/ut_assert/utest_linker.ld.in
+        ${CMAKE_BINARY_DIR}/utest_linker.ld
+        @ONLY
+    )
+    
+    add_custom_target(
+        generate_linker_scripts
+        DEPENDS ${DEFAULT_LD_PATH} ${CMAKE_BINARY_DIR}/utest_linker.ld
+    )
+
     # Generic function for consistent definition of a unit testing target
     # This is defined here in the top-level OSAL CMakeLists so it can be used
     # in both the "tests" and "unit-tests" subdirectories.
     function(add_osal_ut_exe TGTNAME)
 
       add_executable(${TGTNAME} ${ARGN})
+      add_dependencies(${TGTNAME} generate_linker_scripts)
+
+      # Specify the path to your custom linker script
+      set(LINKER_SCRIPT "${CMAKE_BINARY_DIR}/utest_linker.ld")
+  
+      # Pass the linker script to the linker via linker flags
+      target_link_options(${TGTNAME} PRIVATE
+          "-Wl,-T${LINKER_SCRIPT}"
+      )
+
       target_link_libraries(${TGTNAME} PUBLIC ut_assert osal)
       add_test(${TGTNAME} ${TGTNAME})
       foreach(TGT ${INSTALL_TARGET_LIST})
