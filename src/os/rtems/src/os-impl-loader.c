@@ -107,7 +107,7 @@ static bool OS_rtems_rtl_check_unresolved(OSAL_UNRESOLV_REC_TYPE *rec, void *dat
  *-----------------------------------------------------------------*/
 int32 OS_ModuleLoad_Impl(const OS_object_token_t *token, const char *translated_path)
 {
-    int32                             status = OS_ERROR;
+    int32                             status;
     int                               unresolved;
     void *                            dl_handle;
     OS_impl_module_internal_record_t *impl;

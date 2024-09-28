@@ -194,7 +194,7 @@ void QueueMessageSetup(void)
     int32  status;
     uint32 accuracy = 0;
     int    i;
-    uint32 Data     = 0;
+    uint32 Data;
     task_1_failures = 0;
     task_1_messages = 0;
     task_1_timeouts = 0;
@@ -229,7 +229,9 @@ void QueueMessageSetup(void)
     for (i = 0; i < MSGQ_TOTAL; i++)
     {
         if (i > MSGQ_BURST)
+        {
             OS_TaskDelay(400);
+        }
 
         Data   = i;
         status = OS_QueuePut(msgq_id, (void *)&Data, sizeof(Data), 0);
