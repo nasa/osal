@@ -28,7 +28,8 @@
 void UT_DefaultHandler_OS_BinSemCreate(void *, UT_EntryKey_t, const UT_StubContext_t *);
 void UT_DefaultHandler_OS_BinSemDelete(void *, UT_EntryKey_t, const UT_StubContext_t *);
 void UT_DefaultHandler_OS_BinSemGetIdByName(void *, UT_EntryKey_t, const UT_StubContext_t *);
-void UT_DefaultHandler_OS_BinSemGetInfo(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_BinSemGetName(void *, UT_EntryKey_t, const UT_StubContext_t *);
+void UT_DefaultHandler_OS_BinSemGetCreator(void *, UT_EntryKey_t, const UT_StubContext_t *);
 
 /*
  * ----------------------------------------------------
@@ -100,19 +101,36 @@ int32 OS_BinSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
 
 /*
  * ----------------------------------------------------
- * Generated stub function for OS_BinSemGetInfo()
+ * Generated stub function for OS_BinSemGetName()
  * ----------------------------------------------------
  */
-int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
+int32 OS_BinSemGetName(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
 {
-    UT_GenStub_SetupReturnBuffer(OS_BinSemGetInfo, int32);
+    UT_GenStub_SetupReturnBuffer(OS_BinSemGetName, int32);
 
-    UT_GenStub_AddParam(OS_BinSemGetInfo, osal_id_t, sem_id);
-    UT_GenStub_AddParam(OS_BinSemGetInfo, OS_bin_sem_prop_t *, bin_prop);
+    UT_GenStub_AddParam(OS_BinSemGetName, osal_id_t, sem_id);
+    UT_GenStub_AddParam(OS_BinSemGetName, OS_bin_sem_prop_t *, bin_prop);
 
-    UT_GenStub_Execute(OS_BinSemGetInfo, Basic, UT_DefaultHandler_OS_BinSemGetInfo);
+    UT_GenStub_Execute(OS_BinSemGetName, Basic, UT_DefaultHandler_OS_BinSemGetName);
 
-    return UT_GenStub_GetReturnValue(OS_BinSemGetInfo, int32);
+    return UT_GenStub_GetReturnValue(OS_BinSemGetName, int32);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_BinSemGetCreator()
+ * ----------------------------------------------------
+ */
+int32 OS_BinSemGetCreator(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
+{
+    UT_GenStub_SetupReturnBuffer(OS_BinSemGetCreator, int32);
+
+    UT_GenStub_AddParam(OS_BinSemGetCreator, osal_id_t, sem_id);
+    UT_GenStub_AddParam(OS_BinSemGetCreator, OS_bin_sem_prop_t *, bin_prop);
+
+    UT_GenStub_Execute(OS_BinSemGetCreator, Basic, UT_DefaultHandler_OS_BinSemGetCreator);
+
+    return UT_GenStub_GetReturnValue(OS_BinSemGetCreator, int32);
 }
 
 /*

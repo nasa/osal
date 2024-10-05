@@ -147,11 +147,11 @@ void Test_OS_BinSemGetIdByName(void)
     OSAPI_TEST_FUNCTION_RC(OS_BinSemGetIdByName(&objid, NULL), OS_INVALID_POINTER);
 }
 
-void Test_OS_BinSemGetInfo(void)
+void Test_OS_BinSemGetName(void)
 {
     /*
      * Test Case For:
-     * int32 OS_BinSemGetInfo (uint32 sem_id, OS_bin_sem_prop_t *bin_prop)
+     * int32 OS_BinSemGetName (osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
      */
     int32             expected = OS_SUCCESS;
     int32             actual   = ~OS_SUCCESS;
@@ -161,16 +161,64 @@ void Test_OS_BinSemGetInfo(void)
 
     OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_BINSEM, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
 
-    actual = OS_BinSemGetInfo(UT_OBJID_1, &prop);
+    actual = OS_BinSemGetName(UT_OBJID_1, &prop);
 
-    UtAssert_True(actual == expected, "OS_BinSemGetInfo() (%ld) == OS_SUCCESS", (long)actual);
-    OSAPI_TEST_OBJID(prop.creator, ==, UT_OBJID_OTHER);
+    UtAssert_True(actual == expected, "OS_BinSemGetName() (%ld) == OS_SUCCESS", (long)actual);
     UtAssert_True(strcmp(prop.name, "ABC") == 0, "prop.name (%s) == ABC", prop.name);
 
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo(UT_OBJID_1, NULL), OS_INVALID_POINTER);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetName(UT_OBJID_1, NULL), OS_INVALID_POINTER);
 
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo(UT_OBJID_1, &prop), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetName(UT_OBJID_1, &prop), OS_ERR_INVALID_ID);
+}
+
+void Test_OS_BinSemGetCreator(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_BinSemGetCreator (osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
+     */
+    int32             expected = OS_SUCCESS;
+    int32             actual   = ~OS_SUCCESS;
+    OS_bin_sem_prop_t prop;
+
+    memset(&prop, 0, sizeof(prop));
+
+    OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_BINSEM, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
+
+    actual = OS_BinSemGetCreator(UT_OBJID_1, &prop);
+
+    UtAssert_True(actual == expected, "OS_BinSemGetCreator() (%ld) == OS_SUCCESS", (long)actual);
+    OSAPI_TEST_OBJID(prop.creator, ==, UT_OBJID_OTHER);
+
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetCreator(UT_OBJID_1, NULL), OS_INVALID_POINTER);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetCreator(UT_OBJID_1, &prop), OS_ERR_INVALID_ID);
+}
+
+void Test_OS_BinSemGetValue(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_BinSemGetValue (osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
+     */
+    int32             expected = OS_SUCCESS;
+    int32             actual   = ~OS_SUCCESS;
+    OS_bin_sem_prop_t prop;
+
+    memset(&prop, 0, sizeof(prop));
+
+    OS_UT_SetupBasicInfoTest(OS_OBJECT_TYPE_OS_BINSEM, UT_INDEX_1, "ABC", UT_OBJID_OTHER);
+
+    actual = OS_BinSemGetValue(UT_OBJID_1, &prop);
+
+    UtAssert_True(actual == expected, "OS_BinSemGetValue() (%ld) == OS_SUCCESS", (long)actual);
+
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetValue(UT_OBJID_1, NULL), OS_INVALID_POINTER);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetValue(UT_OBJID_1, &prop), OS_ERR_INVALID_ID);
 }
 
 /* Osapi_Test_Setup
@@ -204,5 +252,7 @@ void UtTest_Setup(void)
     ADD_TEST(OS_BinSemFlush);
     ADD_TEST(OS_BinSemTimedWait);
     ADD_TEST(OS_BinSemGetIdByName);
-    ADD_TEST(OS_BinSemGetInfo);
+    ADD_TEST(OS_BinSemGetName);
+    ADD_TEST(OS_BinSemGetCreator);
+    ADD_TEST(OS_BinSemGetValue);
 }

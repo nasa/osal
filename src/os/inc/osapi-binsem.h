@@ -178,6 +178,8 @@ int32 OS_BinSemDelete(osal_id_t sem_id);
  */
 int32 OS_BinSemGetIdByName(osal_id_t *sem_id, const char *sem_name);
 
+#ifdef OSAL_OMIT_DEPRECATED
+#else
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Fill a property object buffer with details regarding the resource
@@ -196,6 +198,56 @@ int32 OS_BinSemGetIdByName(osal_id_t *sem_id, const char *sem_name);
  * @retval #OS_ERR_NOT_IMPLEMENTED @copybrief OS_ERR_NOT_IMPLEMENTED
  */
 int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop);
+#endif
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Get the name of the binary semaphore
+ *
+ * This function retrieves the name of the specified binary semaphore.
+ *
+ * @param[in] sem_id The object ID to operate on
+ * @param[out] bin_prop The property object buffer to fill @nonnull
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
+ * @retval #OS_INVALID_POINTER if the bin_prop pointer is null
+ */
+int32 OS_BinSemGetName(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Get the creator of the binary semaphore
+ *
+ * This function retrieves the creator of the specified binary semaphore.
+ *
+ * @param[in] sem_id The object ID to operate on
+ * @param[out] bin_prop The property object buffer to fill @nonnull
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
+ * @retval #OS_INVALID_POINTER if the bin_prop pointer is null
+ */
+int32 OS_BinSemGetCreator(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Get the value of the binary semaphore
+ *
+ * This function retrieves the value of the specified binary semaphore.
+ *
+ * @param[in] sem_id The object ID to operate on
+ * @param[out] bin_prop The property object buffer to fill @nonnull
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
+ * @retval #OS_INVALID_POINTER if the bin_prop pointer is null
+ * @retval #OS_ERR_NOT_IMPLEMENTED @copybrief OS_ERR_NOT_IMPLEMENTED
+ */
+int32 OS_BinSemGetValue(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop);
 
 /**@}*/
 
