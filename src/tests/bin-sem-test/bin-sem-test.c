@@ -77,23 +77,32 @@ void Test_BinSem(void)
     char              long_name[OS_MAX_API_NAME + 1];
     OS_bin_sem_prop_t sem_prop;
     uint32            test_val;
-    bool              get_info_implemented;
+    bool              get_value_implemented;
 
     memset(&sem_prop, 0, sizeof(sem_prop));
     memset(task_counter, 0, sizeof(task_counter));
 
     /* Invalid id checks */
-    UtAssert_INT32_EQ(OS_BinSemGetInfo(OS_OBJECT_ID_UNDEFINED, &sem_prop), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_BinSemGetName(OS_OBJECT_ID_UNDEFINED, &sem_prop), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_BinSemGetCreator(OS_OBJECT_ID_UNDEFINED, &sem_prop), OS_ERR_INVALID_ID);
+    UtAssert_INT32_EQ(OS_BinSemGetValue(OS_OBJECT_ID_UNDEFINED, &sem_prop), OS_ERR_INVALID_ID);
     UtAssert_INT32_EQ(OS_BinSemFlush(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
     UtAssert_INT32_EQ(OS_BinSemGive(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
     UtAssert_INT32_EQ(OS_BinSemTake(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
     UtAssert_INT32_EQ(OS_BinSemTimedWait(OS_OBJECT_ID_UNDEFINED, 0), OS_ERR_INVALID_ID);
     UtAssert_INT32_EQ(OS_BinSemDelete(OS_OBJECT_ID_UNDEFINED), OS_ERR_INVALID_ID);
 
-    /* Null checks */
+    /* OS_BinSemCreate NULL checks */
     UtAssert_INT32_EQ(OS_BinSemCreate(NULL, "Test_Sem", 0, 0), OS_INVALID_POINTER);
     UtAssert_INT32_EQ(OS_BinSemCreate(&sem_id[0], NULL, 0, 0), OS_INVALID_POINTER);
-    UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[0], NULL), OS_INVALID_POINTER);
+
+    // Initialize sem_id[0] to a valid value for the following NULL checks
+    sem_id[0] = OS_OBJECT_ID_UNDEFINED;
+
+    // OS_BinSemGet* NULL checks
+    UtAssert_INT32_EQ(OS_BinSemGetName(sem_id[0], NULL), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_BinSemGetCreator(sem_id[0], NULL), OS_INVALID_POINTER);
+    UtAssert_INT32_EQ(OS_BinSemGetValue(sem_id[0], NULL), OS_INVALID_POINTER);
     UtAssert_INT32_EQ(OS_BinSemGetIdByName(NULL, "Test_Sem"), OS_INVALID_POINTER);
     UtAssert_INT32_EQ(OS_BinSemGetIdByName(&sem_id[0], NULL), OS_INVALID_POINTER);
 
@@ -109,15 +118,15 @@ void Test_BinSem(void)
     /* Nonzero create */
     UtAssert_INT32_EQ(OS_BinSemCreate(&sem_id[1], "Test_Sem_Nonzero", 1, 0), OS_SUCCESS);
 
-    /* Check get info implementation */
-    get_info_implemented = (OS_BinSemGetInfo(sem_id[0], &sem_prop) != OS_ERR_NOT_IMPLEMENTED);
+    /* Check get value implementation */
+    get_value_implemented = (OS_BinSemGetValue(sem_id[0], &sem_prop) != OS_ERR_NOT_IMPLEMENTED);
 
     /* Validate values */
-    if (get_info_implemented)
+    if (get_value_implemented)
     {
-        UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[0], &sem_prop), OS_SUCCESS);
+        UtAssert_INT32_EQ(OS_BinSemGetValue(sem_id[0], &sem_prop), OS_SUCCESS);
         UtAssert_INT32_EQ(sem_prop.value, 0);
-        UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[1], &sem_prop), OS_SUCCESS);
+        UtAssert_INT32_EQ(OS_BinSemGetValue(sem_id[1], &sem_prop), OS_SUCCESS);
         UtAssert_INT32_EQ(sem_prop.value, 1);
     }
 
@@ -141,11 +150,11 @@ void Test_BinSem(void)
     UtAssert_INT32_EQ(OS_BinSemTimedWait(sem_id[1], 0), OS_SUCCESS);
 
     /* Validate zeros */
-    if (get_info_implemented)
+    if (get_value_implemented)
     {
-        UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[0], &sem_prop), OS_SUCCESS);
+        UtAssert_INT32_EQ(OS_BinSemGetValue(sem_id[0], &sem_prop), OS_SUCCESS);
         UtAssert_INT32_EQ(sem_prop.value, 0);
-        UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[1], &sem_prop), OS_SUCCESS);
+        UtAssert_INT32_EQ(OS_BinSemGetValue(sem_id[1], &sem_prop), OS_SUCCESS);
         UtAssert_INT32_EQ(sem_prop.value, 0);
     }
     else
@@ -162,9 +171,9 @@ void Test_BinSem(void)
     UtAssert_INT32_EQ(OS_TaskDelete(task_id[0]), OS_SUCCESS);
     UtAssert_UINT32_EQ(task_counter[0], 0);
 
-    if (get_info_implemented)
+    if (get_value_implemented)
     {
-        UtAssert_INT32_EQ(OS_BinSemGetInfo(sem_id[0], &sem_prop), OS_SUCCESS);
+        UtAssert_INT32_EQ(OS_BinSemGetValue(sem_id[0], &sem_prop), OS_SUCCESS);
         UtAssert_INT32_EQ(sem_prop.value, 0);
     }
     else

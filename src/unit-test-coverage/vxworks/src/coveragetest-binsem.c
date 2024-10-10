@@ -123,17 +123,17 @@ void Test_OS_BinSemTimedWait_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_BinSemTimedWait_Impl(&token, 100), OS_ERROR);
 }
 
-void Test_OS_BinSemGetInfo_Impl(void)
+void Test_OS_BinSemGetValue_Impl(void)
 {
     /*
      * Test Case For:
-     * int32 OS_BinSemGetInfo_Impl (uint32 sem_id, OS_bin_sem_prop_t *sem_prop)
+     * int32 OS_BinSemGetValue_Impl (uint32 sem_id, OS_bin_sem_prop_t *sem_prop)
      */
     OS_bin_sem_prop_t sem_prop;
     OS_object_token_t token = UT_TOKEN_0;
 
     memset(&sem_prop, 0xEE, sizeof(sem_prop));
-    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetInfo_Impl(&token, &sem_prop), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_BinSemGetValue_Impl(&token, &sem_prop), OS_ERR_NOT_IMPLEMENTED);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
@@ -175,5 +175,5 @@ void UtTest_Setup(void)
     ADD_TEST(OS_BinSemFlush_Impl);
     ADD_TEST(OS_BinSemTake_Impl);
     ADD_TEST(OS_BinSemTimedWait_Impl);
-    ADD_TEST(OS_BinSemGetInfo_Impl);
+    ADD_TEST(OS_BinSemGetValue_Impl);
 }

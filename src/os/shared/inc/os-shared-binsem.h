@@ -105,6 +105,9 @@ int32 OS_BinSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs);
  ------------------------------------------------------------------*/
 int32 OS_BinSemDelete_Impl(const OS_object_token_t *token);
 
+
+#ifdef OSAL_OMIT_DEPRECATED
+#else
 /*----------------------------------------------------------------
 
     Purpose: Obtain OS-specific information about the semaphore
@@ -112,5 +115,14 @@ int32 OS_BinSemDelete_Impl(const OS_object_token_t *token);
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
 int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop);
+#endif
+
+/*----------------------------------------------------------------
+
+    Purpose: Obtain the value of a semaphore (if possible/implemented in the relevent OS)
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_BinSemGetValue_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop);
 
 #endif /* OS_SHARED_BINSEM_H */

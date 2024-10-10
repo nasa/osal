@@ -73,7 +73,7 @@ void BinSemSetup(void)
     UtAssert_INT32_EQ(OS_BinSemCreate(&bin_sem_id, "BinSem1", 0, 0), OS_SUCCESS);
     UtAssert_True(OS_ObjectIdDefined(bin_sem_id), "bin_sem_id (%lu) != UNDEFINED", OS_ObjectIdToInteger(bin_sem_id));
 
-    UtAssert_INT32_EQ(OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_BinSemGetValue(bin_sem_id, &bin_sem_prop), OS_SUCCESS);
     UtPrintf("BinSem1 value=%d", (int)bin_sem_prop.value);
 }
 
