@@ -34,7 +34,7 @@
 
 /*
  * In VxWorks 6.x the system mkdir() function only has a path argument
- * In VxWorks 7 it is now POSIX compilant and adds a mode argument
+ * In VxWorks 7 it is now POSIX-compliant and adds a mode argument
  *
  * This macro simply discards the second argument, allowing code to use
  * mkdir() in a consistent, POSIX compliant fashion.

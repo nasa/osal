@@ -34,7 +34,7 @@
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER     85
+#define OS_BUILD_NUMBER     89
 #define OS_BUILD_BASELINE   "equuleus-rc1"
 #define OS_BUILD_DEV_CYCLE  "equuleus-rc2" /**< @brief Development: Release name for current development cycle */
 #define OS_BUILD_CODENAME   "Equuleus" /**< @brief: Development: Code name for the current build */

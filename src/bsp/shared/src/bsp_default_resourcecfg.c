@@ -37,7 +37,7 @@ void OS_BSP_SetResourceTypeConfig(uint32 ResourceType, uint32 ConfigOptionValue)
 {
     if (ResourceType < OS_OBJECT_TYPE_USER)
     {
-        OS_BSP_Global.ResoureConfig[ResourceType] = ConfigOptionValue;
+        OS_BSP_Global.ResourceConfig[ResourceType] = ConfigOptionValue;
     }
 }
 
@@ -52,7 +52,7 @@ uint32 OS_BSP_GetResourceTypeConfig(uint32 ResourceType)
 
     if (ResourceType < OS_OBJECT_TYPE_USER)
     {
-        ConfigOptionValue = OS_BSP_Global.ResoureConfig[ResourceType];
+        ConfigOptionValue = OS_BSP_Global.ResourceConfig[ResourceType];
     }
     else
     {
