@@ -104,6 +104,8 @@ static void OS_ConsoleTask_Entry(rtems_task_argument arg)
     OS_object_token_t                  token;
     OS_impl_console_internal_record_t *local;
 
+    pthread_setname_np(pthread_self(), "OS_CONSOLE");
+
     if (OS_ObjectIdGetById(OS_LOCK_MODE_REFCOUNT, OS_OBJECT_TYPE_OS_CONSOLE, OS_ObjectIdFromInteger(arg), &token) ==
         OS_SUCCESS)
     {
@@ -172,8 +174,6 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
                 }
                 else
                 {
-                    pthread_setname_np(r_task_id, "OS_CONSOLE");
-
                     /* will place the task in 'ready for scheduling' state */
                     status = rtems_task_start(r_task_id,                    /*rtems task id*/
                                               OS_ConsoleTask_Entry,         /* task entry point */
