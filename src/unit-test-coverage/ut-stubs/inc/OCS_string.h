@@ -50,6 +50,7 @@ extern int    OCS_strncmp(const char *s1, const char *s2, size_t n);
 extern char * OCS_strncpy(char *dest, const char *src, size_t n);
 extern char * OCS_strchr(const char *s, int c);
 extern char * OCS_strrchr(const char *s, int c);
+extern char * OCS_strstr(const char *haystack, const char *needle);
 extern char * OCS_strcat(char *dest, const char *src);
 extern char * OCS_strncat(char *dest, const char *src, size_t n);
 extern char * OCS_strerror(int errnum);
