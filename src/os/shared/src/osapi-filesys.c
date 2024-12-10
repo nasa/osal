@@ -656,6 +656,7 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     OS_object_token_t             token;
     int32                         return_code;
     const char *                  name_ptr;
+    char *                        result;
     OS_filesys_internal_record_t *filesys;
     size_t                        SysMountPointLen;
     size_t                        VirtPathLen;
@@ -698,6 +699,15 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     ** All valid Virtual paths must start with a '/' character
     */
     if (VirtualPath[0] != '/')
+    {
+        return OS_FS_ERR_PATH_INVALID;
+    }
+
+    /*
+    ** Preventing backing out of the virtual mount point
+    */
+    result = strstr(VirtualPath, "..");
+    if (result)
     {
         return OS_FS_ERR_PATH_INVALID;
     }

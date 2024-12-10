@@ -41,6 +41,7 @@
 #define strncpy  OCS_strncpy
 #define strchr   OCS_strchr
 #define strrchr  OCS_strrchr
+#define strstr   OCS_strstr
 #define strcat   OCS_strcat
 #define strncat  OCS_strncat
 #define strerror OCS_strerror

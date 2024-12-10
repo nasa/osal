@@ -451,6 +451,11 @@ void Test_OS_TranslatePath(void)
     actual   = OS_TranslatePath("invalid/", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
 
+    /* Invalid has '..' */
+    expected = OS_FS_ERR_PATH_INVALID;
+    actual   = OS_TranslatePath("/cf/../test", LocalBuffer);
+    UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
+
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetBySearch), OS_ERR_NAME_NOT_FOUND);
     actual = OS_TranslatePath("/cf/test", LocalBuffer);
     UtAssert_True(actual == expected, "OS_TranslatePath() (%ld) == OS_FS_ERR_PATH_INVALID", (long)actual);
