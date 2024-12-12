@@ -148,8 +148,8 @@ int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebas
  * zero to indicate the timer is not to be automatically reset.
  *
  * @note The resolution of the times specified is limited to the clock accuracy
- *       returned in the OS_TimerCreate call. If the times specified in the start_msec
- *       or interval_msec parameters are less than the accuracy, they will be rounded
+ *       returned in the OS_TimerCreate call. If the times specified in the start_time
+ *       or interval_time parameters are less than the accuracy, they will be rounded
  *       up to the accuracy of the timer.
  *
  * @note This configuration API must not be used from the context of a timer callback.
@@ -159,7 +159,7 @@ int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebas
  * @param[in] start_time    Time in microseconds to the first expiration
  * @param[in] interval_time Time in microseconds between subsequent intervals, value
  *                          of zero will only call the user callback function once
- *                          after the start_msec time.
+ *                          after the start_time time.
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS

@@ -71,7 +71,7 @@ void OS_BSP_Shell(void)
 
         status = rtems_shell_init("SHLL", RTEMS_MINIMUM_STACK_SIZE * 4, RTEMS_SHELL_PRIORITY, "/dev/console", false,
                                   false, NULL);
-        if (status < 0)
+        if (status != RTEMS_SUCCESSFUL)
         {
             printf("shell init failed: %d / %s\n", status, strerror(errno));
         }
