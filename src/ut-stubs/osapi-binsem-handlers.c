@@ -55,10 +55,10 @@ void UT_DefaultHandler_OS_BinSemCreate(void *UserObj, UT_EntryKey_t FuncKey, con
 
 /*
  * -----------------------------------------------------------------
- * Default handler implementation for 'OS_BinSemGetInfo' stub
+ * Default handler implementation for 'OS_BinSemGetName' stub
  * -----------------------------------------------------------------
  */
-void UT_DefaultHandler_OS_BinSemGetInfo(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
+void UT_DefaultHandler_OS_BinSemGetName(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
 {
     OS_bin_sem_prop_t *bin_prop = UT_Hook_GetArgValueByName(Context, "bin_prop", OS_bin_sem_prop_t *);
     int32              status;
@@ -66,11 +66,29 @@ void UT_DefaultHandler_OS_BinSemGetInfo(void *UserObj, UT_EntryKey_t FuncKey, co
     UT_Stub_GetInt32StatusCode(Context, &status);
 
     if (status == OS_SUCCESS &&
-        UT_Stub_CopyToLocal(UT_KEY(OS_BinSemGetInfo), bin_prop, sizeof(*bin_prop)) < sizeof(*bin_prop))
+        UT_Stub_CopyToLocal(UT_KEY(OS_BinSemGetName), bin_prop, sizeof(*bin_prop)) < sizeof(*bin_prop))
     {
-        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &bin_prop->creator);
         strncpy(bin_prop->name, "Name", sizeof(bin_prop->name) - 1);
         bin_prop->name[sizeof(bin_prop->name) - 1] = '\0';
+    }
+}
+
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_BinSemGetCreator' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OS_BinSemGetCreator(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
+{
+    OS_bin_sem_prop_t *bin_prop = UT_Hook_GetArgValueByName(Context, "bin_prop", OS_bin_sem_prop_t *);
+    int32              status;
+
+    UT_Stub_GetInt32StatusCode(Context, &status);
+
+    if (status == OS_SUCCESS &&
+        UT_Stub_CopyToLocal(UT_KEY(OS_BinSemGetCreator), bin_prop, sizeof(*bin_prop)) < sizeof(*bin_prop))
+    {
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &bin_prop->creator);
     }
 }
 
