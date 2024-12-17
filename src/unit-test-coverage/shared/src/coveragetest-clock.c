@@ -160,7 +160,7 @@ void Test_OS_TimeAccessConversions(void)
     /*
      * Confirm reciprocity of the Get/From unit conversions.
      * Note there is no (easy) way to directly compare a OS_time_t here,
-     * so this uses both conversions an just confirms the result, subject
+     * so this uses both conversions and just confirms the result, subject
      * to rounding from the conversion.  In the default configuration the
      * tick units are 100ns and so the numbers here are chosen such that
      * the result will not lose precision, and also not overflow a uint32.

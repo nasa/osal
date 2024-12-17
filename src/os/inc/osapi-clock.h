@@ -231,7 +231,7 @@ static inline int64 OS_TimeGetTotalMilliseconds(OS_time_t tm)
 
 /*-------------------------------------------------------------------------------------*/
 /**
- * @brief Get an OS_time_t interval object from a integer number of milliseconds
+ * @brief Get an OS_time_t interval object from an integer number of milliseconds
  *
  * This is the inverse operation of OS_TimeGetTotalMilliseconds(), converting the
  * total number of milliseconds into an OS_time_t value.
@@ -265,7 +265,7 @@ static inline int64 OS_TimeGetTotalMicroseconds(OS_time_t tm)
 
 /*-------------------------------------------------------------------------------------*/
 /**
- * @brief Get an OS_time_t interval object from a integer number of microseconds
+ * @brief Get an OS_time_t interval object from an integer number of microseconds
  *
  * This is the inverse operation of OS_TimeGetTotalMicroseconds(), converting the
  * total number of microseconds into an OS_time_t value.
@@ -304,7 +304,7 @@ static inline int64 OS_TimeGetTotalNanoseconds(OS_time_t tm)
 
 /*-------------------------------------------------------------------------------------*/
 /**
- * @brief Get an OS_time_t interval object from a integer number of nanoseconds
+ * @brief Get an OS_time_t interval object from an integer number of nanoseconds
  *
  * This is the inverse operation of OS_TimeGetTotalNanoseconds(), converting the
  * total number of nanoseconds into an OS_time_t value.
