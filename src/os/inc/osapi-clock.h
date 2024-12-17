@@ -295,7 +295,7 @@ static inline OS_time_t OS_TimeFromTotalMicroseconds(int64 tm)
  * @sa OS_TimeFromTotalNanoseconds
  *
  * @param[in] tm    Time interval value
- * @returns   Whole number of microseconds in time interval
+ * @returns   Whole number of nanoseconds in time interval
  */
 static inline int64 OS_TimeGetTotalNanoseconds(OS_time_t tm)
 {
