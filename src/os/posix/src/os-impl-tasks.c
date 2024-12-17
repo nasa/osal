@@ -450,7 +450,7 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
 int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority, osal_stackptr_t stackptr,
                                        size_t stacksz, PthreadFuncPtr_t entry, void *entry_arg)
 {
-    int                return_code = 0;
+    int                return_code;
     pthread_attr_t     custom_attr;
     struct sched_param priority_holder;
 

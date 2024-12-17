@@ -137,7 +137,7 @@ void Test_OS_rmfs(void)
      * int32 OS_rmfs (const char *devname)
      */
     int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    int32 actual;
 
     actual = OS_rmfs("/ramdev5");
     UtAssert_True(actual == expected, "OS_rmfs() (%ld) == OS_SUCCESS", (long)actual);
@@ -366,7 +366,7 @@ void Test_OS_GetFsInfo(void)
      * int32 OS_GetFsInfo(OS_FsInfo_t  *filesys_info)
      */
     int32              expected = OS_SUCCESS;
-    int32              actual   = ~OS_SUCCESS;
+    int32              actual;
     os_fsinfo_t        filesys_info;
     OS_common_record_t rec;
 
@@ -411,7 +411,7 @@ void Test_OS_TranslatePath(void)
      */
     char  LocalBuffer[OS_MAX_PATH_LEN];
     int32 expected = OS_SUCCESS;
-    int32 actual   = ~OS_SUCCESS;
+    int32 actual;
 
     memset(LocalBuffer, 0, sizeof(LocalBuffer));
 

@@ -77,7 +77,8 @@ void OS_BSP_Setup(void)
     struct stat statbuf;
     const char *cmdlinestr;
     const char *cmdp;
-    char *      cmdi, *cmdo;
+    char *      cmdi;
+    char *      cmdo;
 
     cmdlinestr = bsp_cmdline();
 

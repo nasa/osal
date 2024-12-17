@@ -67,7 +67,7 @@ void OCS_abort(void)
 unsigned long int OCS_strtoul(const char *nptr, char **endptr, int base)
 {
     int32         Status;
-    unsigned long Result = 0;
+    unsigned long Result;
 
     Status = UT_DEFAULT_IMPL_RC(OCS_strtoul, -1);
 

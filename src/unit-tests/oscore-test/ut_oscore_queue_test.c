@@ -69,7 +69,7 @@
 **--------------------------------------------------------------------------------*/
 void UT_os_queue_create_test()
 {
-    int       i         = 0;
+    int       i;
     osal_id_t queue_id  = OS_OBJECT_ID_UNDEFINED;
     osal_id_t queue_id2 = OS_OBJECT_ID_UNDEFINED;
     char      queue_name[UT_OS_NAME_BUFF_SIZE];

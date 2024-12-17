@@ -112,8 +112,7 @@ void task_2(void)
 
     while (1)
     {
-        status = OS_TaskDelay(200);
-
+        OS_TaskDelay(200);
         status = OS_MutSemTake(mut_sem_id);
         if (status != OS_SUCCESS)
         {
@@ -164,7 +163,7 @@ void task_3(void)
 
     while (1)
     {
-        status = OS_TaskDelay(300);
+        OS_TaskDelay(300);
         status = OS_MutSemTake(mut_sem_id);
         if (status != OS_SUCCESS)
         {
