@@ -1,5 +1,9 @@
 # Changelog
 
+## Development Build: equuleus-rc1+dev97
+- Correct README.md OSAL User's Guide links
+- See <https://github.com/nasa/osal/pull/1493>
+
 ## Development Build: equuleus-rc1+dev93
 - Adding a strstr() check
 - See <https://github.com/nasa/osal/pull/1486>
