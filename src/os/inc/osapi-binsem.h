@@ -62,7 +62,7 @@ typedef struct
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_INVALID_POINTER if sen name or sem_id are NULL
+ * @retval #OS_INVALID_POINTER if sem_name or sem_id are NULL
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
  * @retval #OS_ERR_NO_FREE_IDS if all of the semaphore ids are taken
  * @retval #OS_ERR_NAME_TAKEN if this is already the name of a binary semaphore
@@ -90,7 +90,7 @@ int32 OS_BinSemFlush(osal_id_t sem_id);
 /**
  * @brief Increment the semaphore value
  *
- * The function  unlocks the semaphore referenced by sem_id by performing
+ * The function unlocks the semaphore referenced by sem_id by performing
  * a semaphore unlock operation on that semaphore.  If the semaphore value
  * resulting from this operation is positive, then no threads were blocked
  * waiting for the semaphore to become unlocked; the semaphore value is
@@ -109,7 +109,7 @@ int32 OS_BinSemGive(osal_id_t sem_id);
 /**
  * @brief Decrement the semaphore value
  *
- * The locks the semaphore referenced by sem_id by performing a
+ * The function locks the semaphore referenced by sem_id by performing a
  * semaphore lock operation on that semaphore.  If the semaphore value
  * is currently zero, then the calling thread shall not return from
  * the call until it either locks the semaphore or the call is

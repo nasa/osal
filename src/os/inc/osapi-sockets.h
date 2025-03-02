@@ -25,7 +25,7 @@
 #ifndef OSAPI_SOCKETS_H
 #define OSAPI_SOCKETS_H
 
-/* NOTE - osconfig.h may optionally specify the value for OS_SOCADDR_MAX_LEN */
+/* NOTE - osconfig.h may optionally specify the value for OS_SOCKADDR_MAX_LEN */
 #include "osconfig.h"
 #include "common_types.h"
 #include "osapi-clock.h"
@@ -578,7 +578,7 @@ int32 OS_SocketGetIdByName(osal_id_t *sock_id, const char *sock_name);
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
- * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
+ * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid socket
  * @retval #OS_INVALID_POINTER if the count_prop pointer is null
  */
 int32 OS_SocketGetInfo(osal_id_t sock_id, OS_socket_prop_t *sock_prop);
