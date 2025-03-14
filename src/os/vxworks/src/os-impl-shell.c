@@ -53,7 +53,7 @@
  *-----------------------------------------------------------------*/
 int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
 {
-    int32                           ReturnCode = OS_ERROR;
+    int32                           ReturnCode;
     int32                           Result;
     osal_id_t                       fdCmd;
     OS_impl_file_internal_record_t *out_impl;
@@ -64,15 +64,17 @@ int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
     snprintf(localShellName, sizeof(localShellName), "shll_%08lx", OS_ObjectIdToInteger(OS_TaskGetId()));
 
     /* Create a file to write the command to (or write over the old one) */
-    Result =
+    ReturnCode =
         OS_OpenCreate(&fdCmd, OS_SHELL_CMD_INPUT_FILE_NAME, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE);
 
-    if (Result < OS_SUCCESS)
+    if (ReturnCode < OS_SUCCESS)
     {
-        return Result;
+        return ReturnCode;
     }
 
-    if (OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_STREAM, fdCmd, &cmd_token) == OS_SUCCESS)
+    ReturnCode = OS_ObjectIdGetById(OS_LOCK_MODE_NONE, OS_OBJECT_TYPE_OS_STREAM, fdCmd, &cmd_token);
+
+    if (ReturnCode == OS_SUCCESS)
     {
         out_impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
         cmd_impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, cmd_token);
@@ -84,17 +86,19 @@ int32 OS_ShellOutputToFile_Impl(const OS_object_token_t *token, const char *Cmd)
         /* Create a shell task the will run the command in the file, push output to OS_fd */
         Result = shellGenericInit("INTERPRETER=Cmd", 0, localShellName, NULL, false, false, cmd_impl->fd, out_impl->fd,
                                   out_impl->fd);
-    }
 
-    if (Result == OK)
-    {
-        /* Wait for the command to terminate */
-        do
+        if (Result == OK)
         {
-            taskDelay(sysClkRateGet());
-        } while (taskNameToId(localShellName) != ((TASK_ID)ERROR));
-
-        ReturnCode = OS_SUCCESS;
+            /* Wait for the command to terminate */
+            do
+            {
+                taskDelay(sysClkRateGet());
+            } while (taskNameToId(localShellName) != ((TASK_ID)ERROR));
+        }
+        else
+        {
+            ReturnCode = OS_ERROR;
+        }
     }
 
     /* Close the file descriptor */
