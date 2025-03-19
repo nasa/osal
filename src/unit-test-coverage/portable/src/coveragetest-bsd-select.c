@@ -115,7 +115,7 @@ void Test_OS_SelectSingle_Impl(void)
 void Test_OS_SelectMultiple_Impl(void)
 {
     /* Test Case For:
-     * int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
+     * int32 OS_SelectMultiple_Impl(OS_FdSet *ReadSet, OS_FdSet *WriteSet, OS_time_t abs_timeout)
      */
     OS_FdSet ReadSet;
     OS_FdSet WriteSet;
