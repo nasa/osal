@@ -56,10 +56,10 @@ osal_id_t task_1_id;
 osal_id_t task_2_id;
 osal_id_t task_3_id;
 
-uint32 task_0_stack[TASK_0_STACK_SIZE];
-uint32 task_1_stack[TASK_1_STACK_SIZE];
-uint32 task_2_stack[TASK_2_STACK_SIZE];
-uint32 task_3_stack[TASK_3_STACK_SIZE];
+uint8 task_0_stack[TASK_0_STACK_SIZE];
+uint8 task_1_stack[TASK_1_STACK_SIZE];
+uint8 task_2_stack[TASK_2_STACK_SIZE];
+uint8 task_3_stack[TASK_3_STACK_SIZE];
 
 osal_id_t msgq_0;
 osal_id_t msgq_1;
@@ -148,7 +148,7 @@ void task_test_stackptr_0(void)
 typedef struct
 {
     osal_id_t task_id;
-    uint32    task_stack[TASK_0_STACK_SIZE];
+    uint8     task_stack[TASK_0_STACK_SIZE];
 } TestTaskData;
 
 /* ********************************************** TASKS******************************* */
