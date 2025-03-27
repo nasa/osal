@@ -2,7 +2,8 @@
 
 ## Development Build: equuleus-rc1+dev101
 - Update Select functions params
-- See <https://github.com/nasa/osal/pull/1495>
+- update ut_oscore_test.c
+- See <https://github.com/nasa/osal/pull/1495> and <https://github.com/nasa/osal/pull/1499>
 
 ## Development Build: equuleus-rc1+dev97
 - Correct README.md OSAL User's Guide links
