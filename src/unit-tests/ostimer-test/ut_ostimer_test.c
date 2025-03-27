@@ -47,11 +47,9 @@
 const char *g_timerNames[UT_OS_TIMER_LIST_LEN];
 char        g_longTimerName[UT_OS_NAME_BUFF_SIZE];
 
-uint32    g_cbLoopCntMax = 5;
-uint32    g_toleranceVal = 0;
-uint32    g_timerFirst   = 0;
-int32     g_status       = 0;
-osal_id_t g_timerId;
+volatile UT_TimerGlobal_t g_timerGlobal;
+
+int deltatimes[25];
 
 /*--------------------------------------------------------------------------------*
 ** Local function prototypes
@@ -72,50 +70,60 @@ void UT_os_setup_timerset_test(void);
 
 void UT_os_timercallback(osal_id_t timerId)
 {
-    int              deltaTime = 0;
-    static int32     loopCnt = 0, res = 0;
-    static uint32    prevIntervalTime = 0;
-    static uint32    currIntervalTime = 0;
-    static OS_time_t currTime = {0}, endTime = {0};
+    OS_time_t currTime;
+    int64     currIntervalTime;
 
-    if (OS_ObjectIdEqual(timerId, g_timerId))
+    if (OS_ObjectIdEqual(timerId, g_timerGlobal.timerId) && g_timerGlobal.state != UT_TimerState_FINISHED)
     {
-        if (g_timerFirst)
+        OS_GetLocalTime(&currTime);
+
+        if (g_timerGlobal.state == UT_TimerState_INIT)
         {
-            g_timerFirst     = 0;
-            g_status         = 0;
-            prevIntervalTime = 0;
-            res              = 0;
-            loopCnt          = 0;
-            OS_GetLocalTime(&currTime);
+            /* initialization mode, first tick after a new test case starts */
+            g_timerGlobal.callbackCount = 0;
+            g_timerGlobal.status        = 0;
+
+            g_timerGlobal.minDiff = INT32_MAX;
+            g_timerGlobal.maxDiff = INT32_MIN;
+
+            g_timerGlobal.startTime  = currTime;
+            g_timerGlobal.finishTime = currTime;
+            g_timerGlobal.state      = UT_TimerState_ACTIVE;
         }
-
-        OS_GetLocalTime(&endTime);
-
-        currIntervalTime = OS_TimeGetTotalMicroseconds(OS_TimeSubtract(endTime, currTime));
-
-        if (currIntervalTime >= prevIntervalTime)
-            deltaTime = currIntervalTime - prevIntervalTime;
         else
-            deltaTime = prevIntervalTime - currIntervalTime;
-
-        if ((deltaTime > g_toleranceVal) && (loopCnt > 1))
-            res = -1;
-
-        loopCnt++;
-        currTime         = endTime;
-        prevIntervalTime = currIntervalTime;
-
-        if (loopCnt == g_cbLoopCntMax)
         {
-            g_status = (res == 0) ? 1 : -1;
+            /* normal mode (actively monitoring) */
+            currIntervalTime = OS_TimeGetTotalMicroseconds(OS_TimeSubtract(currTime, g_timerGlobal.finishTime));
+
+            if (currIntervalTime < g_timerGlobal.minDiff)
+            {
+                g_timerGlobal.minDiff = currIntervalTime;
+            }
+            if (currIntervalTime > g_timerGlobal.maxDiff)
+            {
+                g_timerGlobal.maxDiff = currIntervalTime;
+            }
+
+            g_timerGlobal.finishTime = currTime;
+
+            if (g_timerGlobal.callbackCount < 25)
+            {
+                deltatimes[g_timerGlobal.callbackCount] = currIntervalTime;
+            }
+
+            ++g_timerGlobal.callbackCount;
+
+            if (g_timerGlobal.callbackCount >= g_timerGlobal.callbackMax)
+            {
+                g_timerGlobal.state = UT_TimerState_FINISHED;
+            }
         }
     }
 }
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_init_timer_misc()
+void UT_os_init_timer_misc(void)
 {
     memset(g_longTimerName, 'Y', sizeof(g_longTimerName));
     g_longTimerName[sizeof(g_longTimerName) - 1] = '\0';
@@ -123,7 +131,7 @@ void UT_os_init_timer_misc()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_setup_timercreate_test()
+void UT_os_setup_timercreate_test(void)
 {
     memset(g_longTimerName, 'Y', sizeof(g_longTimerName));
     g_longTimerName[sizeof(g_longTimerName) - 1] = '\0';
@@ -140,7 +148,7 @@ void UT_os_setup_timercreate_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_setup_timerdelete_test()
+void UT_os_setup_timerdelete_test(void)
 {
     g_timerNames[0] = "Delete_NotImpl";
     g_timerNames[1] = "Delete_InvArg";
@@ -150,7 +158,7 @@ void UT_os_setup_timerdelete_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_setup_timergetidbyname_test()
+void UT_os_setup_timergetidbyname_test(void)
 {
     g_timerNames[0] = "GetId_NotImpl";
     g_timerNames[1] = "GetId_NullPtr";
@@ -161,7 +169,7 @@ void UT_os_setup_timergetidbyname_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_setup_timergetinfo_test()
+void UT_os_setup_timergetinfo_test(void)
 {
     g_timerNames[0] = "GetInfo_NotImpl";
     g_timerNames[1] = "GetInfo_NullPtr";
@@ -171,7 +179,7 @@ void UT_os_setup_timergetinfo_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_setup_timerset_test()
+void UT_os_setup_timerset_test(void)
 {
     g_timerNames[0] = "Set_NotImpl";
     g_timerNames[1] = "Set_InvArg";

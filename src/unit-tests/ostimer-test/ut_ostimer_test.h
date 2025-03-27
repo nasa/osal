@@ -49,11 +49,29 @@
 extern const char *g_timerNames[UT_OS_TIMER_LIST_LEN];
 extern char        g_longTimerName[UT_OS_NAME_BUFF_SIZE];
 
-extern uint32    g_cbLoopCntMax;
-extern uint32    g_toleranceVal;
-extern uint32    g_timerFirst;
-extern int32     g_status;
-extern osal_id_t g_timerId;
+typedef enum UT_TimerState
+{
+    UT_TimerState_INIT,
+    UT_TimerState_ACTIVE,
+    UT_TimerState_FINISHED
+} UT_TimerState_t;
+
+typedef struct UT_TimerGlobal
+{
+    UT_TimerState_t state;
+
+    uint32    callbackCount;
+    uint32    callbackMax;
+    osal_id_t timerId;
+    int32     status;
+    OS_time_t startTime;
+    OS_time_t finishTime;
+    int32     minDiff;
+    int32     maxDiff;
+
+} UT_TimerGlobal_t;
+
+volatile extern UT_TimerGlobal_t g_timerGlobal;
 
 extern int32 TimerCreateRc;
 extern int32 TimerDeleteRc;
