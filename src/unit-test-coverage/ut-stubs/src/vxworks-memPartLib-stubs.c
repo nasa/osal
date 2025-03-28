@@ -16,22 +16,145 @@
  * limitations under the License.
  ************************************************************************/
 
-/* OSAL coverage stub replacement for memPartLib.h */
-#include <string.h>
-#include <stdlib.h>
-#include "utstubs.h"
+/**
+ * @file
+ *
+ * Auto-Generated stub implementations for functions defined in OCS_memPartLib header
+ */
 
 #include "OCS_memPartLib.h"
+#include "utgenstub.h"
 
-OCS_STATUS OCS_memPartShow(OCS_PART_ID partId, int type)
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OCS_memAddToPool()
+ * ----------------------------------------------------
+ */
+void OCS_memAddToPool(char *pPool, unsigned int poolSize)
 {
-    return UT_DEFAULT_IMPL(OCS_memPartShow);
+    UT_GenStub_AddParam(OCS_memAddToPool, char *, pPool);
+    UT_GenStub_AddParam(OCS_memAddToPool, unsigned int, poolSize);
+
+    UT_GenStub_Execute(OCS_memAddToPool, Basic, NULL);
 }
 
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OCS_memPartAddToPool()
+ * ----------------------------------------------------
+ */
+OCS_STATUS OCS_memPartAddToPool(OCS_PART_ID partId, char *pPool, unsigned int poolSize)
+{
+    UT_GenStub_SetupReturnBuffer(OCS_memPartAddToPool, OCS_STATUS);
+
+    UT_GenStub_AddParam(OCS_memPartAddToPool, OCS_PART_ID, partId);
+    UT_GenStub_AddParam(OCS_memPartAddToPool, char *, pPool);
+    UT_GenStub_AddParam(OCS_memPartAddToPool, unsigned int, poolSize);
+
+    UT_GenStub_Execute(OCS_memPartAddToPool, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OCS_memPartAddToPool, OCS_STATUS);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OCS_memPartAlignedAlloc()
+ * ----------------------------------------------------
+ */
+void *OCS_memPartAlignedAlloc(OCS_PART_ID partId, unsigned int nBytes, unsigned int alignment)
+{
+    UT_GenStub_SetupReturnBuffer(OCS_memPartAlignedAlloc, void *);
+
+    UT_GenStub_AddParam(OCS_memPartAlignedAlloc, OCS_PART_ID, partId);
+    UT_GenStub_AddParam(OCS_memPartAlignedAlloc, unsigned int, nBytes);
+    UT_GenStub_AddParam(OCS_memPartAlignedAlloc, unsigned int, alignment);
+
+    UT_GenStub_Execute(OCS_memPartAlignedAlloc, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OCS_memPartAlignedAlloc, void *);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OCS_memPartAlloc()
+ * ----------------------------------------------------
+ */
+void *OCS_memPartAlloc(OCS_PART_ID partId, unsigned int nBytes)
+{
+    UT_GenStub_SetupReturnBuffer(OCS_memPartAlloc, void *);
+
+    UT_GenStub_AddParam(OCS_memPartAlloc, OCS_PART_ID, partId);
+    UT_GenStub_AddParam(OCS_memPartAlloc, unsigned int, nBytes);
+
+    UT_GenStub_Execute(OCS_memPartAlloc, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OCS_memPartAlloc, void *);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OCS_memPartCreate()
+ * ----------------------------------------------------
+ */
+OCS_PART_ID OCS_memPartCreate(char *pPool, unsigned int poolSize)
+{
+    UT_GenStub_SetupReturnBuffer(OCS_memPartCreate, OCS_PART_ID);
+
+    UT_GenStub_AddParam(OCS_memPartCreate, char *, pPool);
+    UT_GenStub_AddParam(OCS_memPartCreate, unsigned int, poolSize);
+
+    UT_GenStub_Execute(OCS_memPartCreate, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OCS_memPartCreate, OCS_PART_ID);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OCS_memPartFree()
+ * ----------------------------------------------------
+ */
+OCS_STATUS OCS_memPartFree(OCS_PART_ID partId, char *pBlock)
+{
+    UT_GenStub_SetupReturnBuffer(OCS_memPartFree, OCS_STATUS);
+
+    UT_GenStub_AddParam(OCS_memPartFree, OCS_PART_ID, partId);
+    UT_GenStub_AddParam(OCS_memPartFree, char *, pBlock);
+
+    UT_GenStub_Execute(OCS_memPartFree, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OCS_memPartFree, OCS_STATUS);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OCS_memPartInfoGet()
+ * ----------------------------------------------------
+ */
 OCS_STATUS OCS_memPartInfoGet(OCS_PART_ID partId, OCS_MEM_PART_STATS *ppartStats)
 {
-    memset(ppartStats, 0, sizeof(*ppartStats));
-    return UT_DEFAULT_IMPL(OCS_memPartInfoGet);
+    UT_GenStub_SetupReturnBuffer(OCS_memPartInfoGet, OCS_STATUS);
+
+    UT_GenStub_AddParam(OCS_memPartInfoGet, OCS_PART_ID, partId);
+    UT_GenStub_AddParam(OCS_memPartInfoGet, OCS_MEM_PART_STATS *, ppartStats);
+
+    UT_GenStub_Execute(OCS_memPartInfoGet, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OCS_memPartInfoGet, OCS_STATUS);
 }
 
-OCS_PART_ID OCS_memSysPartId;
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OCS_memPartShow()
+ * ----------------------------------------------------
+ */
+OCS_STATUS OCS_memPartShow(OCS_PART_ID partId, int type)
+{
+    UT_GenStub_SetupReturnBuffer(OCS_memPartShow, OCS_STATUS);
+
+    UT_GenStub_AddParam(OCS_memPartShow, OCS_PART_ID, partId);
+    UT_GenStub_AddParam(OCS_memPartShow, int, type);
+
+    UT_GenStub_Execute(OCS_memPartShow, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OCS_memPartShow, OCS_STATUS);
+}
