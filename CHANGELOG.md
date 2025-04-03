@@ -1,5 +1,10 @@
 # Changelog
 
+## Development Build: equuleus-rc1+dev113
+- 'Fix #1496, Update malloc stub'
+- See: <https://github.com/nasa/osal/pull/1497>
+
+
 ## Development Build: equuleus-rc1+dev101
 - Update Select functions params
 - update ut_oscore_test.c
