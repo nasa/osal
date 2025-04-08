@@ -28,6 +28,7 @@
 
 #include "os-vxworks.h"
 #include "os-impl-tasks.h"
+#include "os-impl-taskstack.h"
 
 #include "os-shared-task.h"
 #include "os-shared-idmap.h"
@@ -112,10 +113,7 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
 {
     STATUS                          status;
     int                             vxflags;
-    int                             vxpri;
-    size_t                          actualsz;
-    unsigned long                   userstackbase;
-    unsigned long                   actualstackbase;
+    OS_impl_task_stack_addr_t       stack;
     OS_impl_task_internal_record_t *lrec;
     OS_task_internal_record_t *     task;
 
@@ -134,14 +132,6 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
     }
 
     /*
-     * Get priority/stack specs from main struct
-     * priority should be a direct passthru
-     */
-    vxpri         = task->priority;
-    actualsz      = task->stack_size;
-    userstackbase = (unsigned long)task->stack_pointer;
-
-    /*
      * NOTE: Using taskInit() here rather than taskSpawn() allows us
      * to specify a specific statically-allocated WIND_TCB instance.
      *
@@ -150,90 +140,45 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
      * in turn provides an index into OSAL local data structures.  With
      * this we can have the equivalent of a taskVar that works on both
      * UMP and SMP deployments.
-     *
-     * The difficulty with taskInit() is that we must also manually
-     * allocate the stack as well (there is no API that allows
-     * a specific WIND_TCB but automatically allocates the stack).
-     * Furthermore, VxWorks uses this pointer directly as the CPU
-     * stack pointer register, so we need to manually adjust it for
-     * downward-growing stacks.
-     *
-     * NOTE: Allocation of the stack requires a malloc() of some form.
-     * This is what taskSpawn() effectively does internally to create
-     * stack.  If the system malloc() is unacceptable here then this
-     * could be replaced with a locally scoped statically allocated buffer.
-     *
-     * ALSO NOTE: The stack-rounding macros are normally supplied from
-     * vxWorks.h on relevant platforms.  If not provided then it is
-     * assumed that no specific alignment is needed on this platform.
      */
 
-    if (userstackbase == 0)
+    if (task->stack_pointer == NULL)
     {
-        /* add a little extra in case the base address needs alignment too.
-         * this helps ensure that the final aligned stack is not less
-         * than what was originally requested (but might be a bit more)  */
-        actualsz += VX_IMPL_STACK_ALIGN_SIZE;
-        actualsz = VX_IMPL_STACK_ROUND_UP(actualsz);
-
         /*
          * VxWorks does not provide a way to deallocate
          * a taskInit-provided stack when a task exits.
          *
-         * So in this case we will find the leftover heap
+         * So in this case we will find the leftover stack
          * buffer when OSAL reuses this local record block.
          *
-         * If that leftover heap buffer is big enough it
+         * If that leftover stack buffer is big enough it
          * can be used directly.  Otherwise it needs to be
          * re-created.
          */
-        if (lrec->heap_block_size < actualsz)
+        if (lrec->stack.block_size < task->stack_size)
         {
-            if (lrec->heap_block != NULL)
-            {
-                /* release the old block */
-                free(lrec->heap_block);
-                lrec->heap_block_size = 0;
-            }
+            /* release the old block, if any */
+            OS_VxWorks_TaskAPI_ReleaseStackBlock(&lrec->stack);
 
             /* allocate a new heap block to use for a stack */
-            lrec->heap_block = malloc(actualsz);
-
-            if (lrec->heap_block != NULL)
-            {
-                lrec->heap_block_size = actualsz;
-            }
+            OS_VxWorks_TaskAPI_AcquireStackBlock(&lrec->stack, task->stack_size);
         }
 
-        userstackbase = (unsigned long)lrec->heap_block;
+        /* convert block pointer to values suitable for kernel */
+        OS_VxWorks_TaskAPI_StackBlockToAddr(&stack, lrec->stack.block_ptr, lrec->stack.block_size);
     }
-
-    if (userstackbase == 0)
+    else
     {
-        /* no stack - cannot create task */
-        return OS_ERROR;
+        /* convert user-supplied block to values suitable for kernel */
+        OS_VxWorks_TaskAPI_StackBlockToAddr(&stack, task->stack_pointer, task->stack_size);
     }
-
-    actualstackbase = userstackbase;
-
-    /* also round the base address */
-    actualstackbase = VX_IMPL_STACK_ROUND_UP(actualstackbase);
-    actualsz -= (actualstackbase - userstackbase);
-    actualsz = VX_IMPL_STACK_ROUND_DOWN(actualsz);
-
-    /*
-     * On most CPUs the stack grows downward, so assume that to be
-     * the case in the event that _STACK_DIR is not defined/known
-     */
-#if !defined(_STACK_DIR) || (_STACK_DIR != _STACK_GROWS_UP)
-    actualstackbase += actualsz; /* move to last byte of stack block */
-#endif
 
     status = taskInit((WIND_TCB *)&lrec->tcb,                            /* address of new task's TCB */
-                      (char *)task->task_name, vxpri,                    /* priority of new task */
+                      (char *)task->task_name,                           /* name of task */
+                      task->priority,                                    /* priority of new task */
                       vxflags,                                           /* task option word */
-                      (char *)actualstackbase,                           /* base of new task's stack */
-                      actualsz,                                          /* size (bytes) of stack needed */
+                      (char *)stack.stackaddr,                           /* actual stack pointer (SP) reg value */
+                      stack.usable_size,                                 /* actual usable size (bytes) of SP */
                       (FUNCPTR)OS_VxWorks_TaskEntry,                     /* entry point of new task */
                       OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)), /* 1st arg is ID */
                       0, 0, 0, 0, 0, 0, 0, 0, 0);
