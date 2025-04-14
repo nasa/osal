@@ -98,7 +98,7 @@ void task_1(void)
         if (status == OS_SUCCESS)
         {
             OS_printf("TASK 1:   Doing some work: %d\n", (int)counter++);
-            status = OS_BinSemGetInfo(bin_sem_id, &bin_sem_prop);
+            status = OS_BinSemGetValue(bin_sem_id, &bin_sem_prop);
             if (status == OS_SUCCESS)
             {
                 if (bin_sem_prop.value > 1)
