@@ -56,6 +56,32 @@ extern OCS_STATUS OCS_memPartShow(OCS_PART_ID partId, /* partition ID */
 extern OCS_STATUS OCS_memPartInfoGet(OCS_PART_ID         partId, /* partition ID */
                                      OCS_MEM_PART_STATS *ppartStats /* partition stats structure */);
 
+extern OCS_PART_ID OCS_memPartCreate(char *       pPool,   /* pointer to memory area */
+                                     unsigned int poolSize /* size in bytes */
+);
+
+extern OCS_STATUS OCS_memPartAddToPool(OCS_PART_ID  partId,  /* partition to initialize */
+                                       char *       pPool,   /* pointer to memory block */
+                                       unsigned int poolSize /* block size in bytes */
+);
+
+extern void *OCS_memPartAlignedAlloc(OCS_PART_ID  partId,   /* memory partition to allocate from */
+                                     unsigned int nBytes,   /* number of bytes to allocate */
+                                     unsigned int alignment /* boundary to align to */
+);
+
+extern void *OCS_memPartAlloc(OCS_PART_ID  partId, /* memory partition to allocate from */
+                              unsigned int nBytes  /* number of bytes to allocate */
+);
+
+extern OCS_STATUS OCS_memPartFree(OCS_PART_ID partId, /* memory partition to add block to */
+                                  char *      pBlock  /* pointer to block of memory to free */
+);
+
+extern void OCS_memAddToPool(char *       pPool,   /* pointer to memory block */
+                             unsigned int poolSize /* block size in bytes */
+);
+
 extern OCS_PART_ID OCS_memSysPartId;
 
 #endif /* OCS_MEMPARTLIB_H */
