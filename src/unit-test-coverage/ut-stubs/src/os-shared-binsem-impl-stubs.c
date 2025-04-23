@@ -77,19 +77,19 @@ int32 OS_BinSemFlush_Impl(const OS_object_token_t *token)
 
 /*
  * ----------------------------------------------------
- * Generated stub function for OS_BinSemGetInfo_Impl()
+ * Generated stub function for OS_BinSemGetValue_Impl()
  * ----------------------------------------------------
  */
-int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop)
+int32 OS_BinSemGetValue_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop)
 {
-    UT_GenStub_SetupReturnBuffer(OS_BinSemGetInfo_Impl, int32);
+    UT_GenStub_SetupReturnBuffer(OS_BinSemGetValue_Impl, int32);
 
-    UT_GenStub_AddParam(OS_BinSemGetInfo_Impl, const OS_object_token_t *, token);
-    UT_GenStub_AddParam(OS_BinSemGetInfo_Impl, OS_bin_sem_prop_t *, bin_prop);
+    UT_GenStub_AddParam(OS_BinSemGetValue_Impl, const OS_object_token_t *, token);
+    UT_GenStub_AddParam(OS_BinSemGetValue_Impl, OS_bin_sem_prop_t *, bin_prop);
 
-    UT_GenStub_Execute(OS_BinSemGetInfo_Impl, Basic, NULL);
+    UT_GenStub_Execute(OS_BinSemGetValue_Impl, Basic, NULL);
 
-    return UT_GenStub_GetReturnValue(OS_BinSemGetInfo_Impl, int32);
+    return UT_GenStub_GetReturnValue(OS_BinSemGetValue_Impl, int32);
 }
 
 /*

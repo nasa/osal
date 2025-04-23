@@ -466,6 +466,8 @@ int32 OS_BinSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
     return (OS_GenericBinSemTake_Impl(token, &ts));
 }
 
+#ifdef OSAL_OMIT_DEPRECATED
+#else
 /*----------------------------------------------------------------
  *
  *  Purpose: Implemented per internal OSAL API
@@ -473,6 +475,24 @@ int32 OS_BinSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
  *
  *-----------------------------------------------------------------*/
 int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *sem_prop)
+{
+    OS_impl_binsem_internal_record_t *sem;
+
+    sem = OS_OBJECT_TABLE_GET(OS_impl_bin_sem_table, *token);
+
+    /* put the info into the structure */
+    sem_prop->value = sem->current_value;
+    return OS_SUCCESS;
+}
+#endif
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_BinSemGetValue_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *sem_prop)
 {
     OS_impl_binsem_internal_record_t *sem;
 
