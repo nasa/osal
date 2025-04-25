@@ -167,7 +167,7 @@ int32 OS_CondVarBroadcast(osal_id_t var_id);
  * The underlying mutex associated with the condition variable must be locked and
  * owned by the calling task at the time this function is invoked.  As part of this
  * call, the mutex will be unlocked as the task blocks.  This is done in such a way
- * that there is no possibility that another task could aquire the mutex before the
+ * that there is no possibility that another task could acquire the mutex before the
  * calling task has actually blocked.
  *
  * This atomicity with respect to blocking the task and unlocking the mutex is a
@@ -250,7 +250,7 @@ int32 OS_CondVarGetIdByName(osal_id_t *var_id, const char *var_name);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the id passed in is not a valid semaphore
- * @retval #OS_INVALID_POINTER if the mut_prop pointer is null
+ * @retval #OS_INVALID_POINTER if the condvar_prop pointer is null
  */
 int32 OS_CondVarGetInfo(osal_id_t var_id, OS_condvar_prop_t *condvar_prop);
 /**@}*/
