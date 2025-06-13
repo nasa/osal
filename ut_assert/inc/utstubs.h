@@ -317,12 +317,14 @@ void UT_SetHookFunction(UT_EntryKey_t FuncKey, UT_HookFunc_t HookFunc, void *Use
  *
  * This allows the user to completely replace the handler for a given function.
  *
+ * If both a handler and a hook function are set, the hook is called first, then the handler.
+ *
  * The handler assumes all responsibility for the final behavior of the stub,
  * including translating return values, and any outputs/side effects the stub
  * function should have.  The default handler for the stub is NOT used.
  *
  * \param FuncKey  The stub function to add the hook to.
- * \param HandlerFunc User defined hook function.  Set NULL to delete/clear an entry.
+ * \param HandlerFunc User defined handler function.  Set NULL to delete/clear an entry.
  * \param UserObj  Arbitrary user data object to pass to the hook function
  */
 void UT_SetHandlerFunction(UT_EntryKey_t FuncKey, UT_HandlerFunc_t HandlerFunc, void *UserObj);
