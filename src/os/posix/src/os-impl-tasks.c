@@ -412,7 +412,8 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
              */
             POSIX_GlobalVars.SelectedRtScheduler  = sched_policy;
             POSIX_GlobalVars.EnableTaskPriorities = true;
-        } while (0);
+        }
+        while (0);
     }
     else
     {
@@ -549,7 +550,6 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t *pthr, osal_priority_t priority
             OS_DEBUG("pthread_attr_setschedparam error in OS_TaskCreate: %s\n", strerror(return_code));
             return OS_ERROR;
         }
-
     } /* End if user is root */
 
     /*
@@ -597,6 +597,12 @@ int32 OS_TaskCreate_Impl(const OS_object_token_t *token, uint32 flags)
 
     task = OS_OBJECT_TABLE_GET(OS_task_table, *token);
     impl = OS_OBJECT_TABLE_GET(OS_impl_task_table, *token);
+
+    /* If task priorities are not enabled then override the user-supplied priority value */
+    if (!POSIX_GlobalVars.EnableTaskPriorities)
+    {
+        task->priority = OS_MAX_TASK_PRIORITY;
+    }
 
     return_code = OS_Posix_InternalTaskCreate_Impl(&impl->id, task->priority, task->stack_pointer, task->stack_size,
                                                    OS_PthreadTaskEntry, arg.opaque_arg);
@@ -736,7 +742,8 @@ int32 OS_TaskDelay_Impl(uint32 millisecond)
     do
     {
         status = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &sleep_end, NULL);
-    } while (status == EINTR);
+    }
+    while (status == EINTR);
 
     if (status != 0)
     {
