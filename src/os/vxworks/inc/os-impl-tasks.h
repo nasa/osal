@@ -46,7 +46,7 @@ typedef struct
 {
     OS_VxWorks_TCB_t tcb; /* Must be first */
     TASK_ID          vxid;
-    void *           heap_block; /* set non-null if the stack was obtained with malloc() */
+    void            *heap_block; /* set non-null if the stack was obtained with malloc() */
     size_t           heap_block_size;
 } OS_impl_task_internal_record_t;
 

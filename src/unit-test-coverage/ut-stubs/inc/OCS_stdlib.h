@@ -47,7 +47,7 @@ extern void              OCS_abort(void);
 extern void              OCS_exit(int status);
 extern unsigned long int OCS_strtoul(const char *nptr, char **endptr, int base);
 extern int               OCS_system(const char *command);
-extern void *            OCS_malloc(size_t sz);
+extern void             *OCS_malloc(size_t sz);
 extern void              OCS_free(void *ptr);
 
 #endif /* OCS_STDLIB_H */

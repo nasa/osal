@@ -45,7 +45,7 @@ typedef struct
 {
     char device_name[OS_MAX_API_NAME];
 
-    char *          BufBase;        /**< Start of the buffer memory */
+    char           *BufBase;        /**< Start of the buffer memory */
     size_t          BufSize;        /**< Total size of the buffer */
     volatile size_t ReadPos;        /**< Offset of next byte to read */
     volatile size_t WritePos;       /**< Offset of next byte to write */

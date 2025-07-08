@@ -102,7 +102,7 @@ static inline unsigned long OS_ObjectIdToInteger(osal_id_t object_id)
 static inline osal_id_t OS_ObjectIdFromInteger(unsigned long value)
 {
 #ifdef OSAL_OMIT_DEPRECATED
-    osal_id_t idv = {(uint32)value};
+    osal_id_t idv = { (uint32)value };
 #else
     osal_id_t idv = (osal_id_t)value;
 #endif
@@ -270,8 +270,10 @@ void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void 
  * @param[in]  callback_ptr Function to invoke for each matching object ID
  * @param[in]  callback_arg Opaque Argument to pass to callback function (may be NULL)
  */
-void OS_ForEachObjectOfType(osal_objtype_t objtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr,
-                            void *callback_arg);
+void OS_ForEachObjectOfType(osal_objtype_t   objtype,
+                            osal_id_t        creator_id,
+                            OS_ArgCallback_t callback_ptr,
+                            void            *callback_arg);
 
 /**@}*/
 

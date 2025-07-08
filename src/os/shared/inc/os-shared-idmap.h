@@ -29,7 +29,7 @@
 #include "osapi-idmap.h"
 #include "os-shared-globaldefs.h"
 
-#define OS_OBJECT_ID_RESERVED ((osal_id_t) {0xFFFFFFFF})
+#define OS_OBJECT_ID_RESERVED ((osal_id_t) { 0xFFFFFFFF })
 
 /*
  * This supplies a non-abstract definition of "OS_common_record_t"
@@ -131,9 +131,9 @@ typedef int32 (*OS_ObjectIdIteratorProcessFunc_t)(osal_id_t, void *);
  */
 typedef struct
 {
-    OS_common_record_t * base;
+    OS_common_record_t  *base;
     OS_ObjectMatchFunc_t match;
-    void *               arg;
+    void                *arg;
     osal_index_t         limit;
     OS_object_token_t    token;
 } OS_object_iter_t;
@@ -395,8 +395,11 @@ int32 OS_ObjectIdFindByName(osal_objtype_t idtype, const char *name, osal_id_t *
 
    Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdGetBySearch(OS_lock_mode_t lock_mode, osal_objtype_t idtype, OS_ObjectMatchFunc_t MatchFunc, void *arg,
-                             OS_object_token_t *token);
+int32 OS_ObjectIdGetBySearch(OS_lock_mode_t       lock_mode,
+                             osal_objtype_t       idtype,
+                             OS_ObjectMatchFunc_t MatchFunc,
+                             void                *arg,
+                             OS_object_token_t   *token);
 
 /*----------------------------------------------------------------
 
@@ -475,8 +478,10 @@ int32 OS_ObjectIdFinalizeDelete(int32 operation_status, OS_object_token_t *token
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
-int32 OS_ObjectIdIteratorInit(OS_ObjectMatchFunc_t matchfunc, void *matcharg, osal_objtype_t objtype,
-                              OS_object_iter_t *iter);
+int32 OS_ObjectIdIteratorInit(OS_ObjectMatchFunc_t matchfunc,
+                              void                *matcharg,
+                              osal_objtype_t       objtype,
+                              OS_object_iter_t    *iter);
 
 /*----------------------------------------------------------------
 

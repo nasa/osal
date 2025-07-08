@@ -50,7 +50,7 @@
 /*
  * A constant to use in stubs where no other value is applicable
  */
-#define UT_STUB_FAKE_OBJECT_ID ((osal_id_t) {0xDEADBEEFU})
+#define UT_STUB_FAKE_OBJECT_ID ((osal_id_t) { 0xDEADBEEFU })
 
 /*
  * Size of the bitmask for the OSAL fake object ID validity table

@@ -91,7 +91,10 @@ void UtTest_AddTeardown(void (*Teardown)(void), const char *SequenceName);
  * \param GroupName Name of group for logging purposes
  * \param TestName Name of test for logging purposes
  */
-void UtTest_AddSubTest(void (*Test)(void), void (*Setup)(void), void (*Teardown)(void), const char *GroupName,
+void UtTest_AddSubTest(void (*Test)(void),
+                       void (*Setup)(void),
+                       void (*Teardown)(void),
+                       const char *GroupName,
                        const char *TestName);
 
 /**

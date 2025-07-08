@@ -59,7 +59,7 @@ typedef ptrdiff_t UT_IntReturn_t;
 /**
  * Macro to obtain a UT_EntryKey_t value from any function name
  */
-#define UT_KEY(Func) ((UT_EntryKey_t)&Func)
+#define UT_KEY(Func) ((UT_EntryKey_t) & Func)
 
 /**
  * Maximum size of a callback hook context list
@@ -97,7 +97,7 @@ typedef enum UT_ValueGenre
 typedef struct
 {
     UT_StubContext_Arg_Type_t Type;
-    const char *              Name;
+    const char               *Name;
     size_t                    Size;
 } UT_StubArgMetaData_t;
 
@@ -109,7 +109,7 @@ typedef struct
     int32                Int32StatusCode;
     bool                 Int32StatusIsSet;
     uint32               ArgCount;
-    const void *         ArgPtr[UT_STUBCONTEXT_MAXSIZE];
+    const void          *ArgPtr[UT_STUBCONTEXT_MAXSIZE];
     UT_StubArgMetaData_t Meta[UT_STUBCONTEXT_MAXSIZE];
 } UT_StubContext_t;
 
@@ -129,8 +129,8 @@ typedef int32 (*UT_HookFunc_t)(void *UserObj, int32 StubRetcode, uint32 CallCoun
  *
  * \copydoc UT_HookFunc_t
  */
-typedef int32 (*UT_VaHookFunc_t)(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context,
-                                 va_list va);
+typedef int32 (
+    *UT_VaHookFunc_t)(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context, va_list va);
 
 /**
  * Function pointer for user-specified stub handlers
@@ -230,8 +230,12 @@ void UT_SetDeferredRetcode(UT_EntryKey_t FuncKey, int32 Count, UT_IntReturn_t Re
  * \param DeferCount Number of times the stub needs to be called until this value is used
  * \param TypeName   Data type as an ASCII string, for possible type matching (may be set from a preprocessor macro)
  */
-void UT_ConfigureGenericStubReturnValue(UT_EntryKey_t FuncKey, const void *ValuePtr, size_t ValueSize,
-                                        UT_ValueGenre_t ValueGenre, int32 DeferCount, const char *TypeName);
+void UT_ConfigureGenericStubReturnValue(UT_EntryKey_t   FuncKey,
+                                        const void     *ValuePtr,
+                                        size_t          ValueSize,
+                                        UT_ValueGenre_t ValueGenre,
+                                        int32           DeferCount,
+                                        const char     *TypeName);
 
 /**
  * Add a data buffer for a given stub function
@@ -454,8 +458,11 @@ size_t UT_Stub_CopyFromLocal(UT_EntryKey_t FuncKey, const void *LocalBuffer, siz
  * A pointer to the stack value is actually stored into the context,
  * which can be dereferenced in the hook.
  */
-#define UT_Stub_RegisterContextGenericArg(FuncKey, Parameter)                                              \
-    UT_Stub_RegisterContextWithMetaData(FuncKey, #Parameter, UT_STUBCONTEXT_ARG_TYPE_INDIRECT, &Parameter, \
+#define UT_Stub_RegisterContextGenericArg(FuncKey, Parameter)             \
+    UT_Stub_RegisterContextWithMetaData(FuncKey,                          \
+                                        #Parameter,                       \
+                                        UT_STUBCONTEXT_ARG_TYPE_INDIRECT, \
+                                        &Parameter,                       \
                                         sizeof(Parameter))
 
 /**
@@ -568,8 +575,11 @@ bool UT_Stub_GetInt32StatusCode(const UT_StubContext_t *Context, int32 *StatusCo
  * \param ParamPtr  Pointer to argument data
  * \param ParamSize The size of the object pointed to, or zero if not known
  */
-void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t FuncKey, const char *Name, UT_StubContext_Arg_Type_t ParamType,
-                                         const void *ParamPtr, size_t ParamSize);
+void UT_Stub_RegisterContextWithMetaData(UT_EntryKey_t             FuncKey,
+                                         const char               *Name,
+                                         UT_StubContext_Arg_Type_t ParamType,
+                                         const void               *ParamPtr,
+                                         size_t                    ParamSize);
 
 /**
  * Retrieve a context argument value by name
@@ -640,8 +650,10 @@ int32 UT_DefaultStubImplWithArgs(const char *FunctionName, UT_EntryKey_t FuncKey
  * \param DefaultHandler The default handler
  * \param VaList         Argument list
  */
-void UT_ExecuteVaHandler(UT_EntryKey_t FuncKey, const char *FunctionName, UT_VaHandlerFunc_t DefaultHandler,
-                         va_list VaList);
+void UT_ExecuteVaHandler(UT_EntryKey_t      FuncKey,
+                         const char        *FunctionName,
+                         UT_VaHandlerFunc_t DefaultHandler,
+                         va_list            VaList);
 
 /**
  * Default implementation for a stub function that should be useful for most cases.

@@ -37,7 +37,7 @@
 /**
  * @brief Initializer for the osal_id_t type which will not match any valid value
  */
-#define OS_OBJECT_ID_UNDEFINED ((osal_id_t) {0})
+#define OS_OBJECT_ID_UNDEFINED ((osal_id_t) { 0 })
 
 /**
  * @brief Constant that may be passed to OS_ForEachObject()/OS_ForEachObjectOfType() to match any

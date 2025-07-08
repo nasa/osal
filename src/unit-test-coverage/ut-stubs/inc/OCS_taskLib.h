@@ -73,13 +73,39 @@ extern OCS_STATUS  OCS_taskDeleteForce(OCS_TASK_ID tid);
 extern OCS_STATUS  OCS_taskSuspend(OCS_TASK_ID tid);
 extern OCS_STATUS  OCS_taskResume(OCS_TASK_ID tid);
 extern OCS_STATUS  OCS_taskPrioritySet(OCS_TASK_ID tid, int newPriority);
-extern OCS_TASK_ID OCS_taskSpawn(char *name, int priority, int options, int stackSize, OCS_FUNCPTR entryPt, int arg1,
-                                 int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9,
-                                 int arg10);
+extern OCS_TASK_ID OCS_taskSpawn(char       *name,
+                                 int         priority,
+                                 int         options,
+                                 int         stackSize,
+                                 OCS_FUNCPTR entryPt,
+                                 int         arg1,
+                                 int         arg2,
+                                 int         arg3,
+                                 int         arg4,
+                                 int         arg5,
+                                 int         arg6,
+                                 int         arg7,
+                                 int         arg8,
+                                 int         arg9,
+                                 int         arg10);
 
-OCS_STATUS OCS_taskInit(OCS_WIND_TCB *pTcb, char *name, int priority, int options, char *pStackBase, int stackSize,
-                        OCS_FUNCPTR entryPt, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
-                        int arg8, int arg9, int arg10);
+OCS_STATUS OCS_taskInit(OCS_WIND_TCB *pTcb,
+                        char         *name,
+                        int           priority,
+                        int           options,
+                        char         *pStackBase,
+                        int           stackSize,
+                        OCS_FUNCPTR   entryPt,
+                        int           arg1,
+                        int           arg2,
+                        int           arg3,
+                        int           arg4,
+                        int           arg5,
+                        int           arg6,
+                        int           arg7,
+                        int           arg8,
+                        int           arg9,
+                        int           arg10);
 
 OCS_WIND_TCB *OCS_taskTcb(OCS_TASK_ID tid);
 
