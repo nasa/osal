@@ -70,7 +70,7 @@ typedef struct OS_object_token OS_object_token_t;
  */
 typedef union
 {
-    void *           opaque_arg;
+    void            *opaque_arg;
     OS_ArgCallback_t arg_callback_func;
     osal_id_t        id;
     osal_index_t     idx;

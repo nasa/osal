@@ -64,8 +64,11 @@ typedef struct
  * @retval #OS_QUEUE_INVALID_SIZE if the queue depth exceeds the limit
  * @retval #OS_ERROR if the OS create call fails
  */
-int32 OS_QueueCreate(osal_id_t *queue_id, const char *queue_name, osal_blockcount_t queue_depth, size_t data_size,
-                     uint32 flags);
+int32 OS_QueueCreate(osal_id_t        *queue_id,
+                     const char       *queue_name,
+                     osal_blockcount_t queue_depth,
+                     size_t            data_size,
+                     uint32            flags);
 
 /*-------------------------------------------------------------------------------------*/
 /**

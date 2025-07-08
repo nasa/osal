@@ -85,7 +85,9 @@ typedef struct
  * @retval #OS_ERR_INCORRECT_OBJ_STATE if invoked from a timer context
  * @retval #OS_TIMER_ERR_INTERNAL if there was an error programming the OS timer @covtest
  */
-int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *clock_accuracy,
+int32 OS_TimerCreate(osal_id_t         *timer_id,
+                     const char        *timer_name,
+                     uint32            *clock_accuracy,
                      OS_TimerCallback_t callback_ptr);
 
 /*-------------------------------------------------------------------------------------*/
@@ -130,8 +132,11 @@ int32 OS_TimerCreate(osal_id_t *timer_id, const char *timer_name, uint32 *clock_
  * @retval #OS_ERR_INCORRECT_OBJ_STATE if invoked from a timer context
  * @retval #OS_TIMER_ERR_INTERNAL if there was an error programming the OS timer @covtest
  */
-int32 OS_TimerAdd(osal_id_t *timer_id, const char *timer_name, osal_id_t timebase_id, OS_ArgCallback_t callback_ptr,
-                  void *callback_arg);
+int32 OS_TimerAdd(osal_id_t       *timer_id,
+                  const char      *timer_name,
+                  osal_id_t        timebase_id,
+                  OS_ArgCallback_t callback_ptr,
+                  void            *callback_arg);
 
 /*-------------------------------------------------------------------------------------*/
 /**

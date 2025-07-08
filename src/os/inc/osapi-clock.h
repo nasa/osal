@@ -53,14 +53,14 @@ typedef struct
  * This is the largest positive (future) time that is representable
  * in an OS_time_t value.
  */
-#define OS_TIME_MAX ((OS_time_t) {INT64_MAX})
+#define OS_TIME_MAX ((OS_time_t) { INT64_MAX })
 
 /**
  * @brief The zero value for OS_time_t
  *
  * This is a reasonable initializer/placeholder value for an OS_time_t
  */
-#define OS_TIME_ZERO ((OS_time_t) {0})
+#define OS_TIME_ZERO ((OS_time_t) { 0 })
 
 /**
  * @brief The minimum value for OS_time_t
@@ -68,7 +68,7 @@ typedef struct
  * This is the largest negative (past) time that is representable
  * in an OS_time_t value.
  */
-#define OS_TIME_MIN ((OS_time_t) {INT64_MIN})
+#define OS_TIME_MIN ((OS_time_t) { INT64_MIN })
 
 /**
  * @brief Multipliers/divisors to convert ticks into standardized units
@@ -209,7 +209,7 @@ static inline int64 OS_TimeGetTotalSeconds(OS_time_t tm)
  */
 static inline OS_time_t OS_TimeFromTotalSeconds(int64 tm)
 {
-    OS_time_t ostm = {tm * OS_TIME_TICKS_PER_SECOND};
+    OS_time_t ostm = { tm * OS_TIME_TICKS_PER_SECOND };
     return ostm;
 }
 
@@ -243,7 +243,7 @@ static inline int64 OS_TimeGetTotalMilliseconds(OS_time_t tm)
  */
 static inline OS_time_t OS_TimeFromTotalMilliseconds(int64 tm)
 {
-    OS_time_t ostm = {tm * OS_TIME_TICKS_PER_MSEC};
+    OS_time_t ostm = { tm * OS_TIME_TICKS_PER_MSEC };
     return ostm;
 }
 
@@ -278,7 +278,7 @@ static inline int64 OS_TimeGetTotalMicroseconds(OS_time_t tm)
 static inline OS_time_t OS_TimeFromTotalMicroseconds(int64 tm)
 {
     /* SAD: Overflow is not considered a concern because tm would need to be over 29,227 years in microseconds */
-    OS_time_t ostm = {tm * OS_TIME_TICKS_PER_USEC};
+    OS_time_t ostm = { tm * OS_TIME_TICKS_PER_USEC };
     return ostm;
 }
 
@@ -316,7 +316,7 @@ static inline int64 OS_TimeGetTotalNanoseconds(OS_time_t tm)
  */
 static inline OS_time_t OS_TimeFromTotalNanoseconds(int64 tm)
 {
-    OS_time_t ostm = {tm / OS_TIME_TICK_RESOLUTION_NS};
+    OS_time_t ostm = { tm / OS_TIME_TICK_RESOLUTION_NS };
     return ostm;
 }
 
@@ -441,7 +441,7 @@ static inline uint32 OS_TimeGetNanosecondsPart(OS_time_t tm)
 static inline OS_time_t OS_TimeAssembleFromNanoseconds(int64 seconds, uint32 nanoseconds)
 {
     OS_time_t result;
-    result.ticks = seconds * OS_TIME_TICKS_PER_SECOND;
+    result.ticks  = seconds * OS_TIME_TICKS_PER_SECOND;
     result.ticks += nanoseconds / OS_TIME_TICK_RESOLUTION_NS;
     return result;
 }
@@ -465,7 +465,7 @@ static inline OS_time_t OS_TimeAssembleFromNanoseconds(int64 seconds, uint32 nan
 static inline OS_time_t OS_TimeAssembleFromMicroseconds(int64 seconds, uint32 microseconds)
 {
     OS_time_t result;
-    result.ticks = seconds * OS_TIME_TICKS_PER_SECOND;
+    result.ticks  = seconds * OS_TIME_TICKS_PER_SECOND;
     result.ticks += microseconds * OS_TIME_TICKS_PER_USEC;
     return result;
 }
@@ -489,7 +489,7 @@ static inline OS_time_t OS_TimeAssembleFromMicroseconds(int64 seconds, uint32 mi
 static inline OS_time_t OS_TimeAssembleFromMilliseconds(int64 seconds, uint32 milliseconds)
 {
     OS_time_t result;
-    result.ticks = seconds * OS_TIME_TICKS_PER_SECOND;
+    result.ticks  = seconds * OS_TIME_TICKS_PER_SECOND;
     result.ticks += milliseconds * OS_TIME_TICKS_PER_MSEC;
     return result;
 }
@@ -512,7 +512,7 @@ static inline OS_time_t OS_TimeAssembleFromMilliseconds(int64 seconds, uint32 mi
 static inline OS_time_t OS_TimeAssembleFromSubseconds(int64 seconds, uint32 subseconds)
 {
     OS_time_t result;
-    result.ticks = seconds * OS_TIME_TICKS_PER_SECOND;
+    result.ticks  = seconds * OS_TIME_TICKS_PER_SECOND;
     /* this should not round in any way, as the 32-bit input value has higher precision */
     result.ticks += ((int64)subseconds * (OS_TIME_TICKS_PER_SECOND >> 2)) >> 30;
     return result;
@@ -529,7 +529,7 @@ static inline OS_time_t OS_TimeAssembleFromSubseconds(int64 seconds, uint32 subs
  */
 static inline OS_time_t OS_TimeAdd(OS_time_t time1, OS_time_t time2)
 {
-    OS_time_t ostm = {time1.ticks + time2.ticks};
+    OS_time_t ostm = { time1.ticks + time2.ticks };
     return ostm;
 }
 
@@ -544,7 +544,7 @@ static inline OS_time_t OS_TimeAdd(OS_time_t time1, OS_time_t time2)
  */
 static inline OS_time_t OS_TimeSubtract(OS_time_t time1, OS_time_t time2)
 {
-    OS_time_t ostm = {time1.ticks - time2.ticks};
+    OS_time_t ostm = { time1.ticks - time2.ticks };
     return ostm;
 }
 

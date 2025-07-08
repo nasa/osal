@@ -266,10 +266,17 @@ typedef struct
  * \par Assumptions, External Events, and Notes:
  *        None
  */
-#define UtAssert_INTVAL(type, actual, op, ref, radix)                                                                \
-    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), (UT_IntCheck_t)(type)(actual), UtAssert_Compare_##op, \
-                                   (UT_IntCheck_t)(type)(ref), __FILE__, __LINE__, UtAssert_Radix_##radix, #type,    \
-                                   #actual, #ref)
+#define UtAssert_INTVAL(type, actual, op, ref, radix)             \
+    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)),    \
+                                   (UT_IntCheck_t)(type)(actual), \
+                                   UtAssert_Compare_##op,         \
+                                   (UT_IntCheck_t)(type)(ref),    \
+                                   __FILE__,                      \
+                                   __LINE__,                      \
+                                   UtAssert_Radix_##radix,        \
+                                   #type,                         \
+                                   #actual,                       \
+                                   #ref)
 
 /**
  * \brief Asserts the expression/function evaluates as logically true
@@ -282,9 +289,16 @@ typedef struct
  * \par Assumptions, External Events, and Notes:
  *        None
  */
-#define UtAssert_BOOL_TRUE(expr)                                                                               \
-    UtAssert_GenericUnsignedCompare((bool)(expr), UtAssert_Compare_EQ, true, UtAssert_Radix_DECIMAL, __FILE__, \
-                                    __LINE__, "", #expr, "true")
+#define UtAssert_BOOL_TRUE(expr)                            \
+    UtAssert_GenericUnsignedCompare((bool)(expr),           \
+                                    UtAssert_Compare_EQ,    \
+                                    true,                   \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "",                     \
+                                    #expr,                  \
+                                    "true")
 
 /**
  * \brief Asserts the expression/function evaluates as logically false
@@ -298,9 +312,16 @@ typedef struct
  *        None
  *
  */
-#define UtAssert_BOOL_FALSE(expr)                                                                               \
-    UtAssert_GenericUnsignedCompare((bool)(expr), UtAssert_Compare_EQ, false, UtAssert_Radix_DECIMAL, __FILE__, \
-                                    __LINE__, "", #expr, "false")
+#define UtAssert_BOOL_FALSE(expr)                           \
+    UtAssert_GenericUnsignedCompare((bool)(expr),           \
+                                    UtAssert_Compare_EQ,    \
+                                    false,                  \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "",                     \
+                                    #expr,                  \
+                                    "false")
 
 /**
  * \brief Compare two values for equality with an auto-generated description message
@@ -312,9 +333,17 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_EQ(type, actual, ref)                                                                           \
-    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), (type)(actual), UtAssert_Compare_EQ, (type)(ref), \
-                                   __FILE__, __LINE__, UtAssert_Radix_DECIMAL, #type, #actual, #ref)
+#define UtAssert_EQ(type, actual, ref)                         \
+    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), \
+                                   (type)(actual),             \
+                                   UtAssert_Compare_EQ,        \
+                                   (type)(ref),                \
+                                   __FILE__,                   \
+                                   __LINE__,                   \
+                                   UtAssert_Radix_DECIMAL,     \
+                                   #type,                      \
+                                   #actual,                    \
+                                   #ref)
 
 /**
  * \brief Compare two values for inequality with an auto-generated description message
@@ -326,9 +355,17 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_NEQ(type, actual, ref)                                                                           \
-    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), (type)(actual), UtAssert_Compare_NEQ, (type)(ref), \
-                                   __FILE__, __LINE__, UtAssert_Radix_DECIMAL, #type, #actual, #ref)
+#define UtAssert_NEQ(type, actual, ref)                        \
+    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), \
+                                   (type)(actual),             \
+                                   UtAssert_Compare_NEQ,       \
+                                   (type)(ref),                \
+                                   __FILE__,                   \
+                                   __LINE__,                   \
+                                   UtAssert_Radix_DECIMAL,     \
+                                   #type,                      \
+                                   #actual,                    \
+                                   #ref)
 
 /**
  * \brief Asserts the minimum value of a given function or expression
@@ -340,9 +377,17 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_GTEQ(type, actual, ref)                                                                           \
-    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), (type)(actual), UtAssert_Compare_GTEQ, (type)(ref), \
-                                   __FILE__, __LINE__, UtAssert_Radix_DECIMAL, #type, #actual, #ref)
+#define UtAssert_GTEQ(type, actual, ref)                       \
+    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), \
+                                   (type)(actual),             \
+                                   UtAssert_Compare_GTEQ,      \
+                                   (type)(ref),                \
+                                   __FILE__,                   \
+                                   __LINE__,                   \
+                                   UtAssert_Radix_DECIMAL,     \
+                                   #type,                      \
+                                   #actual,                    \
+                                   #ref)
 
 /**
  * \brief Asserts the maximum value of a given function or expression
@@ -354,9 +399,17 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_LTEQ(type, actual, ref)                                                                           \
-    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), (type)(actual), UtAssert_Compare_LTEQ, (type)(ref), \
-                                   __FILE__, __LINE__, UtAssert_Radix_DECIMAL, #type, #actual, #ref)
+#define UtAssert_LTEQ(type, actual, ref)                       \
+    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), \
+                                   (type)(actual),             \
+                                   UtAssert_Compare_LTEQ,      \
+                                   (type)(ref),                \
+                                   __FILE__,                   \
+                                   __LINE__,                   \
+                                   UtAssert_Radix_DECIMAL,     \
+                                   #type,                      \
+                                   #actual,                    \
+                                   #ref)
 
 /**
  * \brief Asserts the value of a given function or expression is less than the reference value
@@ -368,9 +421,17 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_LT(type, actual, ref)                                                                           \
-    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), (type)(actual), UtAssert_Compare_LT, (type)(ref), \
-                                   __FILE__, __LINE__, UtAssert_Radix_DECIMAL, #type, #actual, #ref)
+#define UtAssert_LT(type, actual, ref)                         \
+    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), \
+                                   (type)(actual),             \
+                                   UtAssert_Compare_LT,        \
+                                   (type)(ref),                \
+                                   __FILE__,                   \
+                                   __LINE__,                   \
+                                   UtAssert_Radix_DECIMAL,     \
+                                   #type,                      \
+                                   #actual,                    \
+                                   #ref)
 
 /**
  * \brief Asserts the value of a given function or expression is greater than the reference value
@@ -382,9 +443,17 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_GT(type, actual, ref)                                                                           \
-    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), (type)(actual), UtAssert_Compare_GT, (type)(ref), \
-                                   __FILE__, __LINE__, UtAssert_Radix_DECIMAL, #type, #actual, #ref)
+#define UtAssert_GT(type, actual, ref)                         \
+    UtAssert_GenericIntegerCompare(((type)(-1)) > ((type)(0)), \
+                                   (type)(actual),             \
+                                   UtAssert_Compare_GT,        \
+                                   (type)(ref),                \
+                                   __FILE__,                   \
+                                   __LINE__,                   \
+                                   UtAssert_Radix_DECIMAL,     \
+                                   #type,                      \
+                                   #actual,                    \
+                                   #ref)
 
 /**
  * \brief Compare two values for equality with an auto-generated description message
@@ -396,9 +465,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_INT32_EQ(actual, ref)                                                                        \
-    UtAssert_GenericSignedCompare((int32)(actual), UtAssert_Compare_EQ, (int32)(ref), UtAssert_Radix_DECIMAL, \
-                                  __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_INT32_EQ(actual, ref)                    \
+    UtAssert_GenericSignedCompare((int32)(actual),        \
+                                  UtAssert_Compare_EQ,    \
+                                  (int32)(ref),           \
+                                  UtAssert_Radix_DECIMAL, \
+                                  __FILE__,               \
+                                  __LINE__,               \
+                                  "",                     \
+                                  #actual,                \
+                                  #ref)
 
 /**
  * \brief Compare two values for inequality with an auto-generated description message
@@ -410,9 +486,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_INT32_NEQ(actual, ref)                                                                        \
-    UtAssert_GenericSignedCompare((int32)(actual), UtAssert_Compare_NEQ, (int32)(ref), UtAssert_Radix_DECIMAL, \
-                                  __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_INT32_NEQ(actual, ref)                   \
+    UtAssert_GenericSignedCompare((int32)(actual),        \
+                                  UtAssert_Compare_NEQ,   \
+                                  (int32)(ref),           \
+                                  UtAssert_Radix_DECIMAL, \
+                                  __FILE__,               \
+                                  __LINE__,               \
+                                  "",                     \
+                                  #actual,                \
+                                  #ref)
 
 /**
  * \brief Asserts the minimum value of a given function or expression
@@ -424,9 +507,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_INT32_GTEQ(actual, ref)                                                                        \
-    UtAssert_GenericSignedCompare((int32)(actual), UtAssert_Compare_GTEQ, (int32)(ref), UtAssert_Radix_DECIMAL, \
-                                  __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_INT32_GTEQ(actual, ref)                  \
+    UtAssert_GenericSignedCompare((int32)(actual),        \
+                                  UtAssert_Compare_GTEQ,  \
+                                  (int32)(ref),           \
+                                  UtAssert_Radix_DECIMAL, \
+                                  __FILE__,               \
+                                  __LINE__,               \
+                                  "",                     \
+                                  #actual,                \
+                                  #ref)
 
 /**
  * \brief Asserts the maximum value of a given function or expression
@@ -438,9 +528,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_INT32_LTEQ(actual, ref)                                                                        \
-    UtAssert_GenericSignedCompare((int32)(actual), UtAssert_Compare_LTEQ, (int32)(ref), UtAssert_Radix_DECIMAL, \
-                                  __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_INT32_LTEQ(actual, ref)                  \
+    UtAssert_GenericSignedCompare((int32)(actual),        \
+                                  UtAssert_Compare_LTEQ,  \
+                                  (int32)(ref),           \
+                                  UtAssert_Radix_DECIMAL, \
+                                  __FILE__,               \
+                                  __LINE__,               \
+                                  "",                     \
+                                  #actual,                \
+                                  #ref)
 
 /**
  * \brief Asserts the value of a given function or expression is less than the reference value
@@ -452,9 +549,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_INT32_LT(actual, ref)                                                                        \
-    UtAssert_GenericSignedCompare((int32)(actual), UtAssert_Compare_LT, (int32)(ref), UtAssert_Radix_DECIMAL, \
-                                  __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_INT32_LT(actual, ref)                    \
+    UtAssert_GenericSignedCompare((int32)(actual),        \
+                                  UtAssert_Compare_LT,    \
+                                  (int32)(ref),           \
+                                  UtAssert_Radix_DECIMAL, \
+                                  __FILE__,               \
+                                  __LINE__,               \
+                                  "",                     \
+                                  #actual,                \
+                                  #ref)
 
 /**
  * \brief Asserts the value of a given function or expression is greater than the reference value
@@ -466,9 +570,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_INT32_GT(actual, ref)                                                                        \
-    UtAssert_GenericSignedCompare((int32)(actual), UtAssert_Compare_GT, (int32)(ref), UtAssert_Radix_DECIMAL, \
-                                  __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_INT32_GT(actual, ref)                    \
+    UtAssert_GenericSignedCompare((int32)(actual),        \
+                                  UtAssert_Compare_GT,    \
+                                  (int32)(ref),           \
+                                  UtAssert_Radix_DECIMAL, \
+                                  __FILE__,               \
+                                  __LINE__,               \
+                                  "",                     \
+                                  #actual,                \
+                                  #ref)
 
 /**
  * \brief Compare two values for equality with an auto-generated description message
@@ -480,9 +591,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT32_EQ(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint32)(actual), UtAssert_Compare_EQ, (uint32)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_UINT32_EQ(actual, ref)                     \
+    UtAssert_GenericUnsignedCompare((uint32)(actual),       \
+                                    UtAssert_Compare_EQ,    \
+                                    (uint32)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "",                     \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Compare two values for inequality with an auto-generated description message
@@ -494,9 +612,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT32_NEQ(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint32)(actual), UtAssert_Compare_NEQ, (uint32)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_UINT32_NEQ(actual, ref)                    \
+    UtAssert_GenericUnsignedCompare((uint32)(actual),       \
+                                    UtAssert_Compare_NEQ,   \
+                                    (uint32)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "",                     \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the minimum value of a given function or expression
@@ -507,9 +632,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT32_GTEQ(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint32)(actual), UtAssert_Compare_GTEQ, (uint32)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_UINT32_GTEQ(actual, ref)                   \
+    UtAssert_GenericUnsignedCompare((uint32)(actual),       \
+                                    UtAssert_Compare_GTEQ,  \
+                                    (uint32)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "",                     \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the maximum value of a given function or expression
@@ -520,9 +652,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT32_LTEQ(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint32)(actual), UtAssert_Compare_LTEQ, (uint32)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_UINT32_LTEQ(actual, ref)                   \
+    UtAssert_GenericUnsignedCompare((uint32)(actual),       \
+                                    UtAssert_Compare_LTEQ,  \
+                                    (uint32)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "",                     \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the value of a given function or expression is less than the reference value
@@ -533,9 +672,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT32_LT(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint32)(actual), UtAssert_Compare_LT, (uint32)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_UINT32_LT(actual, ref)                     \
+    UtAssert_GenericUnsignedCompare((uint32)(actual),       \
+                                    UtAssert_Compare_LT,    \
+                                    (uint32)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "",                     \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the value of a given function or expression is greater than the reference value
@@ -546,9 +692,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT32_GT(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint32)(actual), UtAssert_Compare_GT, (uint32)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "", #actual, #ref)
+#define UtAssert_UINT32_GT(actual, ref)                     \
+    UtAssert_GenericUnsignedCompare((uint32)(actual),       \
+                                    UtAssert_Compare_GT,    \
+                                    (uint32)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "",                     \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Compare two 16-bit values for equality with an auto-generated description message
@@ -560,9 +713,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT16_EQ(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint16)(actual), UtAssert_Compare_EQ, (uint16)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint16", #actual, #ref)
+#define UtAssert_UINT16_EQ(actual, ref)                     \
+    UtAssert_GenericUnsignedCompare((uint16)(actual),       \
+                                    UtAssert_Compare_EQ,    \
+                                    (uint16)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint16",               \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Compare two 16-bit values for inequality with an auto-generated description message
@@ -574,9 +734,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT16_NEQ(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint16)(actual), UtAssert_Compare_NEQ, (uint16)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint16", #actual, #ref)
+#define UtAssert_UINT16_NEQ(actual, ref)                    \
+    UtAssert_GenericUnsignedCompare((uint16)(actual),       \
+                                    UtAssert_Compare_NEQ,   \
+                                    (uint16)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint16",               \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the minimum 16-bit value of a given function or expression
@@ -587,9 +754,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT16_GTEQ(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint16)(actual), UtAssert_Compare_GTEQ, (uint16)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint16", #actual, #ref)
+#define UtAssert_UINT16_GTEQ(actual, ref)                   \
+    UtAssert_GenericUnsignedCompare((uint16)(actual),       \
+                                    UtAssert_Compare_GTEQ,  \
+                                    (uint16)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint16",               \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the maximum 16-bit value of a given function or expression
@@ -600,9 +774,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT16_LTEQ(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint16)(actual), UtAssert_Compare_LTEQ, (uint16)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint16", #actual, #ref)
+#define UtAssert_UINT16_LTEQ(actual, ref)                   \
+    UtAssert_GenericUnsignedCompare((uint16)(actual),       \
+                                    UtAssert_Compare_LTEQ,  \
+                                    (uint16)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint16",               \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the 16-bit value of a given function or expression is less than the 16-bit reference value
@@ -613,9 +794,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT16_LT(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint16)(actual), UtAssert_Compare_LT, (uint16)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint16", #actual, #ref)
+#define UtAssert_UINT16_LT(actual, ref)                     \
+    UtAssert_GenericUnsignedCompare((uint16)(actual),       \
+                                    UtAssert_Compare_LT,    \
+                                    (uint16)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint16",               \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the 16-bit value of a given function or expression is greater than the 16-bit reference value
@@ -626,9 +814,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT16_GT(actual, ref)                                                                           \
-    UtAssert_GenericUnsignedCompare((uint16)(actual), UtAssert_Compare_GT, (uint16)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint16", #actual, #ref)
+#define UtAssert_UINT16_GT(actual, ref)                     \
+    UtAssert_GenericUnsignedCompare((uint16)(actual),       \
+                                    UtAssert_Compare_GT,    \
+                                    (uint16)(ref),          \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint16",               \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Compare two 8-bit values for equality with an auto-generated description message
@@ -640,9 +835,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT8_EQ(actual, ref)                                                                          \
-    UtAssert_GenericUnsignedCompare((uint8)(actual), UtAssert_Compare_EQ, (uint8)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint8", #actual, #ref)
+#define UtAssert_UINT8_EQ(actual, ref)                      \
+    UtAssert_GenericUnsignedCompare((uint8)(actual),        \
+                                    UtAssert_Compare_EQ,    \
+                                    (uint8)(ref),           \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint8",                \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Compare two 8-bit values for inequality with an auto-generated description message
@@ -654,9 +856,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT8_NEQ(actual, ref)                                                                          \
-    UtAssert_GenericUnsignedCompare((uint8)(actual), UtAssert_Compare_NEQ, (uint8)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint8", #actual, #ref)
+#define UtAssert_UINT8_NEQ(actual, ref)                     \
+    UtAssert_GenericUnsignedCompare((uint8)(actual),        \
+                                    UtAssert_Compare_NEQ,   \
+                                    (uint8)(ref),           \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint8",                \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the minimum 8-bit value of a given function or expression
@@ -667,9 +876,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT8_GTEQ(actual, ref)                                                                          \
-    UtAssert_GenericUnsignedCompare((uint8)(actual), UtAssert_Compare_GTEQ, (uint8)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint8", #actual, #ref)
+#define UtAssert_UINT8_GTEQ(actual, ref)                    \
+    UtAssert_GenericUnsignedCompare((uint8)(actual),        \
+                                    UtAssert_Compare_GTEQ,  \
+                                    (uint8)(ref),           \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint8",                \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the maximum 8-bit value of a given function or expression
@@ -680,9 +896,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT8_LTEQ(actual, ref)                                                                          \
-    UtAssert_GenericUnsignedCompare((uint8)(actual), UtAssert_Compare_LTEQ, (uint8)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint8", #actual, #ref)
+#define UtAssert_UINT8_LTEQ(actual, ref)                    \
+    UtAssert_GenericUnsignedCompare((uint8)(actual),        \
+                                    UtAssert_Compare_LTEQ,  \
+                                    (uint8)(ref),           \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint8",                \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the 8-bit value of a given function or expression is less than the 8-bit reference value
@@ -693,9 +916,16 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT8_LT(actual, ref)                                                                          \
-    UtAssert_GenericUnsignedCompare((uint8)(actual), UtAssert_Compare_LT, (uint8)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint8", #actual, #ref)
+#define UtAssert_UINT8_LT(actual, ref)                      \
+    UtAssert_GenericUnsignedCompare((uint8)(actual),        \
+                                    UtAssert_Compare_LT,    \
+                                    (uint8)(ref),           \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint8",                \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Asserts the 8-bit value of a given function or expression is greater than the 8-bit reference value
@@ -706,27 +936,48 @@ typedef struct
  * \param actual The value from the unit under test
  * \param ref    The expected value from the unit under test
  */
-#define UtAssert_UINT8_GT(actual, ref)                                                                          \
-    UtAssert_GenericUnsignedCompare((uint8)(actual), UtAssert_Compare_GT, (uint8)(ref), UtAssert_Radix_DECIMAL, \
-                                    __FILE__, __LINE__, "uint8", #actual, #ref)
+#define UtAssert_UINT8_GT(actual, ref)                      \
+    UtAssert_GenericUnsignedCompare((uint8)(actual),        \
+                                    UtAssert_Compare_GT,    \
+                                    (uint8)(ref),           \
+                                    UtAssert_Radix_DECIMAL, \
+                                    __FILE__,               \
+                                    __LINE__,               \
+                                    "uint8",                \
+                                    #actual,                \
+                                    #ref)
 
 /**
  * \brief Macro for checking that bits in a bit field are set
  *
  * Test Passes if all the bits specified in "mask" are set in "rawval"
  */
-#define UtAssert_BITMASK_SET(rawval, mask)                                                          \
-    UtAssert_GenericUnsignedCompare((uint32)(rawval), UtAssert_Compare_BITMASK_SET, (uint32)(mask), \
-                                    UtAssert_Radix_HEX, __FILE__, __LINE__, "", #rawval, #mask)
+#define UtAssert_BITMASK_SET(rawval, mask)                        \
+    UtAssert_GenericUnsignedCompare((uint32)(rawval),             \
+                                    UtAssert_Compare_BITMASK_SET, \
+                                    (uint32)(mask),               \
+                                    UtAssert_Radix_HEX,           \
+                                    __FILE__,                     \
+                                    __LINE__,                     \
+                                    "",                           \
+                                    #rawval,                      \
+                                    #mask)
 
 /**
  * \brief Macro for checking that bits in a bit field are unset
  *
  * Test Passes if none of the bits specified in "mask" are set in "rawval"
  */
-#define UtAssert_BITMASK_UNSET(rawval, mask)                                                          \
-    UtAssert_GenericUnsignedCompare((uint32)(rawval), UtAssert_Compare_BITMASK_UNSET, (uint32)(mask), \
-                                    UtAssert_Radix_HEX, __FILE__, __LINE__, "", #rawval, #mask)
+#define UtAssert_BITMASK_UNSET(rawval, mask)                        \
+    UtAssert_GenericUnsignedCompare((uint32)(rawval),               \
+                                    UtAssert_Compare_BITMASK_UNSET, \
+                                    (uint32)(mask),                 \
+                                    UtAssert_Radix_HEX,             \
+                                    __FILE__,                       \
+                                    __LINE__,                       \
+                                    "",                             \
+                                    #rawval,                        \
+                                    #mask)
 
 /**
  * \brief Macro for logging calls to a "void" function
@@ -766,45 +1017,86 @@ typedef struct
 /**
  * \brief Compare addresses for equality with an auto-generated description message
  */
-#define UtAssert_ADDRESS_EQ(actual, expect)                                                                      \
-    UtAssert_GenericUnsignedCompare((unsigned long)(void *)(actual), UtAssert_Compare_EQ,                        \
-                                    (unsigned long)(void *)(expect), UtAssert_Radix_HEX, __FILE__, __LINE__, "", \
-                                    #actual, #expect)
+#define UtAssert_ADDRESS_EQ(actual, expect)                          \
+    UtAssert_GenericUnsignedCompare((unsigned long)(void *)(actual), \
+                                    UtAssert_Compare_EQ,             \
+                                    (unsigned long)(void *)(expect), \
+                                    UtAssert_Radix_HEX,              \
+                                    __FILE__,                        \
+                                    __LINE__,                        \
+                                    "",                              \
+                                    #actual,                         \
+                                    #expect)
 
 /**
  * \brief Confirm a pointer value is not NULL
  */
-#define UtAssert_NOT_NULL(actual)                                                                                 \
-    UtAssert_GenericUnsignedCompare((unsigned long)(void *)(actual), UtAssert_Compare_NEQ, 0, UtAssert_Radix_HEX, \
-                                    __FILE__, __LINE__, "", #actual, "NULL")
+#define UtAssert_NOT_NULL(actual)                                    \
+    UtAssert_GenericUnsignedCompare((unsigned long)(void *)(actual), \
+                                    UtAssert_Compare_NEQ,            \
+                                    0,                               \
+                                    UtAssert_Radix_HEX,              \
+                                    __FILE__,                        \
+                                    __LINE__,                        \
+                                    "",                              \
+                                    #actual,                         \
+                                    "NULL")
 
 /**
  * \brief Confirm a pointer value is NULL
  */
-#define UtAssert_NULL(actual)                                                                                    \
-    UtAssert_GenericUnsignedCompare((unsigned long)(void *)(actual), UtAssert_Compare_EQ, 0, UtAssert_Radix_HEX, \
-                                    __FILE__, __LINE__, "", #actual, "NULL")
+#define UtAssert_NULL(actual)                                        \
+    UtAssert_GenericUnsignedCompare((unsigned long)(void *)(actual), \
+                                    UtAssert_Compare_EQ,             \
+                                    0,                               \
+                                    UtAssert_Radix_HEX,              \
+                                    __FILE__,                        \
+                                    __LINE__,                        \
+                                    "",                              \
+                                    #actual,                         \
+                                    "NULL")
 
 /**
  * \brief Confirm an integer value is nonzero
  */
-#define UtAssert_NONZERO(actual)                                                                                   \
-    UtAssert_GenericSignedCompare(actual, UtAssert_Compare_NEQ, 0, UtAssert_Radix_DECIMAL, __FILE__, __LINE__, "", \
-                                  #actual, "ZERO")
+#define UtAssert_NONZERO(actual)                          \
+    UtAssert_GenericSignedCompare(actual,                 \
+                                  UtAssert_Compare_NEQ,   \
+                                  0,                      \
+                                  UtAssert_Radix_DECIMAL, \
+                                  __FILE__,               \
+                                  __LINE__,               \
+                                  "",                     \
+                                  #actual,                \
+                                  "ZERO")
 
 /**
  * \brief Confirm an integer value is zero
  */
-#define UtAssert_ZERO(actual)                                                                                     \
-    UtAssert_GenericSignedCompare(actual, UtAssert_Compare_EQ, 0, UtAssert_Radix_DECIMAL, __FILE__, __LINE__, "", \
-                                  #actual, "ZERO")
+#define UtAssert_ZERO(actual)                             \
+    UtAssert_GenericSignedCompare(actual,                 \
+                                  UtAssert_Compare_EQ,    \
+                                  0,                      \
+                                  UtAssert_Radix_DECIMAL, \
+                                  __FILE__,               \
+                                  __LINE__,               \
+                                  "",                     \
+                                  #actual,                \
+                                  "ZERO")
 
 /**
  * \brief Confirm that a stub function has been invoked the expected number of times
  */
-#define UtAssert_STUB_COUNT(stub, expected)                                                     \
-    UtAssert_GenericSignedCompare(UT_GetStubCount(UT_KEY(stub)), UtAssert_Compare_EQ, expected, \
-                                  UtAssert_Radix_DECIMAL, __FILE__, __LINE__, "CallCount", #stub "()", #expected)
+#define UtAssert_STUB_COUNT(stub, expected)                      \
+    UtAssert_GenericSignedCompare(UT_GetStubCount(UT_KEY(stub)), \
+                                  UtAssert_Compare_EQ,           \
+                                  expected,                      \
+                                  UtAssert_Radix_DECIMAL,        \
+                                  __FILE__,                      \
+                                  __LINE__,                      \
+                                  "CallCount",                   \
+                                  #stub "()",                    \
+                                  #expected)
 
 /*
  * Exported Functions
@@ -908,7 +1200,11 @@ bool UtAssert(bool Expression, const char *Description, const char *File, uint32
  * \param Line          The source line number in which the test case appears
  * \param MessageFormat a free form printf-style format string describing the test case
  */
-bool UtAssertEx(bool Expression, UtAssert_CaseType_t CaseType, const char *File, uint32 Line, const char *MessageFormat,
+bool UtAssertEx(bool                Expression,
+                UtAssert_CaseType_t CaseType,
+                const char         *File,
+                uint32              Line,
+                const char         *MessageFormat,
                 ...) OS_PRINTF(5, 6);
 
 /**
@@ -970,8 +1266,13 @@ void UtAssert_Message(uint8 MessageType, const char *File, uint32 Line, const ch
  * \param SegmentNum   Sequence among the overall/global test Segments
  * \param SegmentSeq   Sequence within the current test Segment
  */
-void UtAssert_DoReport(const char *File, uint32 LineNum, uint32 SegmentNum, uint32 SegmentSeq, uint8 MessageType,
-                       const char *SubsysName, const char *ShortDesc);
+void UtAssert_DoReport(const char *File,
+                       uint32      LineNum,
+                       uint32      SegmentNum,
+                       uint32      SegmentSeq,
+                       uint8       MessageType,
+                       const char *SubsysName,
+                       const char *ShortDesc);
 
 /**
  * The BSP overall test reporting function.
@@ -1001,8 +1302,13 @@ void UtAssert_DoTestSegmentReport(const char *SegmentName, const UtAssert_TestCo
  * \returns Test pass status, returns true if status was successful, false if it failed.
  *
  */
-bool UtAssert_StringBufCompare(const char *String1, size_t String1Max, const char *String2, size_t String2Max,
-                               UtAssert_Compare_t CompareType, const char *File, uint32 Line);
+bool UtAssert_StringBufCompare(const char        *String1,
+                               size_t             String1Max,
+                               const char        *String2,
+                               size_t             String2Max,
+                               UtAssert_Compare_t CompareType,
+                               const char        *File,
+                               uint32             Line);
 
 /**
  * \brief Helper function for generic integer value checks
@@ -1030,10 +1336,16 @@ bool UtAssert_StringBufCompare(const char *String1, size_t String1Max, const cha
  * \returns Test pass status, returns true if status was successful, false if it failed.
  *
  */
-bool UtAssert_GenericIntegerCompare(bool IsUnsigned, UT_IntCheck_t ActualValue, UtAssert_Compare_t CompareType,
-                                    UT_IntCheck_t ReferenceValue, const char *File, uint32 Line,
-                                    UtAssert_Radix_t RadixType, const char *Typename, const char *ActualText,
-                                    const char *ReferenceText);
+bool UtAssert_GenericIntegerCompare(bool               IsUnsigned,
+                                    UT_IntCheck_t      ActualValue,
+                                    UtAssert_Compare_t CompareType,
+                                    UT_IntCheck_t      ReferenceValue,
+                                    const char        *File,
+                                    uint32             Line,
+                                    UtAssert_Radix_t   RadixType,
+                                    const char        *Typename,
+                                    const char        *ActualText,
+                                    const char        *ReferenceText);
 
 /**
  * \brief Helper function for generic unsigned integer value checks
@@ -1050,9 +1362,15 @@ bool UtAssert_GenericIntegerCompare(bool IsUnsigned, UT_IntCheck_t ActualValue, 
  * \returns Test pass status, returns true if status was successful, false if it failed.
  *
  */
-bool UtAssert_GenericUnsignedCompare(unsigned long ActualValue, UtAssert_Compare_t CompareType,
-                                     unsigned long ReferenceValue, UtAssert_Radix_t RadixType, const char *File,
-                                     uint32 Line, const char *Desc, const char *ActualText, const char *ReferenceText);
+bool UtAssert_GenericUnsignedCompare(unsigned long      ActualValue,
+                                     UtAssert_Compare_t CompareType,
+                                     unsigned long      ReferenceValue,
+                                     UtAssert_Radix_t   RadixType,
+                                     const char        *File,
+                                     uint32             Line,
+                                     const char        *Desc,
+                                     const char        *ActualText,
+                                     const char        *ReferenceText);
 
 /**
  * \brief Helper function for generic signed integer value checks
@@ -1069,8 +1387,14 @@ bool UtAssert_GenericUnsignedCompare(unsigned long ActualValue, UtAssert_Compare
  * \returns Test pass status, returns true if status was successful, false if it failed.
  *
  */
-bool UtAssert_GenericSignedCompare(long ActualValue, UtAssert_Compare_t CompareType, long ReferenceValue,
-                                   UtAssert_Radix_t RadixType, const char *File, uint32 Line, const char *Desc,
-                                   const char *ActualText, const char *ReferenceText);
+bool UtAssert_GenericSignedCompare(long               ActualValue,
+                                   UtAssert_Compare_t CompareType,
+                                   long               ReferenceValue,
+                                   UtAssert_Radix_t   RadixType,
+                                   const char        *File,
+                                   uint32             Line,
+                                   const char        *Desc,
+                                   const char        *ActualText,
+                                   const char        *ReferenceText);
 
 #endif /* UTASSERT_H */

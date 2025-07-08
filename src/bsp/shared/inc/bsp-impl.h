@@ -64,7 +64,7 @@
 #define OS_BSP_CONSOLEMODE_BLUE      0x4 /**< Blue text, if terminal supports color */
 #define OS_BSP_CONSOLEMODE_HIGHLIGHT 0x8 /**< Highlighted/Emphasis text, if terminal supports it */
 
-#define OS_BSP_CONSOLEMODE_TO_ANSICOLOR(x) ((x)&0x07)
+#define OS_BSP_CONSOLEMODE_TO_ANSICOLOR(x) ((x) & 0x07)
 
 /*
  * Macro for BSP debug messages, similar to OS_DEBUG in OSAL code.
@@ -93,7 +93,7 @@
 typedef struct
 {
     uint32            ArgC;          /* number of boot/startup parameters in ArgV */
-    char **           ArgV;          /* strings for boot/startup parameters */
+    char            **ArgV;          /* strings for boot/startup parameters */
     int32             AppStatus;     /* value which can be returned to the OS (0=nominal) */
     osal_blockcount_t MaxQueueDepth; /* Queue depth limit supported by BSP (0=no limit) */
 

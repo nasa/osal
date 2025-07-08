@@ -27,8 +27,7 @@
 #define OSAPI_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /*
@@ -86,7 +85,7 @@ extern "C"
 #include "osapi-timebase.h"
 #include "osapi-timer.h"
 
-    /*
+/*
      ******************************************************************************
      * Items below here are internal OSAL-use definitions and are not part of the
      * OSAL API

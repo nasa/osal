@@ -51,7 +51,7 @@ typedef OCS_SYMBOL *OCS_SYMBOL_ID;
 typedef struct OCS_SYMBOL_DESC
 {
     unsigned int  mask;
-    char *        name;
+    char         *name;
     OCS_SYM_VALUE value;
 } OCS_SYMBOL_DESC;
 

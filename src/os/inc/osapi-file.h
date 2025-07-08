@@ -85,19 +85,19 @@ enum
 };
 
 /** @brief Access file stat mode bits */
-#define OS_FILESTAT_MODE(x) ((x).FileModeBits)
+#define OS_FILESTAT_MODE(x)  ((x).FileModeBits)
 /** @brief File stat is directory logical */
 #define OS_FILESTAT_ISDIR(x) ((x).FileModeBits & OS_FILESTAT_MODE_DIR)
 /** @brief File stat is executable logical */
-#define OS_FILESTAT_EXEC(x) ((x).FileModeBits & OS_FILESTAT_MODE_EXEC)
+#define OS_FILESTAT_EXEC(x)  ((x).FileModeBits & OS_FILESTAT_MODE_EXEC)
 /** @brief File stat is write enabled logical */
 #define OS_FILESTAT_WRITE(x) ((x).FileModeBits & OS_FILESTAT_MODE_WRITE)
 /** @brief File stat is read enabled logical */
-#define OS_FILESTAT_READ(x) ((x).FileModeBits & OS_FILESTAT_MODE_READ)
+#define OS_FILESTAT_READ(x)  ((x).FileModeBits & OS_FILESTAT_MODE_READ)
 /** @brief Access file stat size field */
-#define OS_FILESTAT_SIZE(x) ((x).FileSize)
+#define OS_FILESTAT_SIZE(x)  ((x).FileSize)
 /** @brief Access file stat time field as a whole number of seconds */
-#define OS_FILESTAT_TIME(x) (OS_TimeGetTotalSeconds((x).FileTime))
+#define OS_FILESTAT_TIME(x)  (OS_TimeGetTotalSeconds((x).FileTime))
 
 /**
  * @brief Flags that can be used with opening of a file (bitmask)

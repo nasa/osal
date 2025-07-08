@@ -47,7 +47,10 @@ typedef struct
 /* prototypes normally declared in sys/select.h */
 /* ----------------------------------------- */
 
-extern int OCS_select(int nfds, OCS_fd_set *readfds, OCS_fd_set *writefds, OCS_fd_set *exceptfds,
+extern int OCS_select(int                 nfds,
+                      OCS_fd_set         *readfds,
+                      OCS_fd_set         *writefds,
+                      OCS_fd_set         *exceptfds,
                       struct OCS_timeval *timeout);
 
 extern void OCS_FD_SET(int fd, OCS_fd_set *set);

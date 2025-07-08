@@ -30,8 +30,7 @@
 #define COMMON_TYPES_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /*
@@ -71,34 +70,34 @@ extern "C"
 #include <stddef.h>
 #include <stdbool.h>
 
-    /*
+/*
      * NOTE - NOT DEFINING STRUCT_LOW_BIT_FIRST or STRUCT_HIGH_BIT_FIRST
      * We should not make assumptions about the bit order here
      */
 
-    typedef int8_t    int8;
-    typedef int16_t   int16;
-    typedef int32_t   int32;
-    typedef int64_t   int64;
-    typedef uint8_t   uint8;
-    typedef uint16_t  uint16;
-    typedef uint32_t  uint32;
-    typedef uint64_t  uint64;
-    typedef intptr_t  intptr;
-    typedef uintptr_t cpuaddr;
-    typedef size_t    cpusize;
-    typedef ptrdiff_t cpudiff;
+typedef int8_t    int8;
+typedef int16_t   int16;
+typedef int32_t   int32;
+typedef int64_t   int64;
+typedef uint8_t   uint8;
+typedef uint16_t  uint16;
+typedef uint32_t  uint32;
+typedef uint64_t  uint64;
+typedef intptr_t  intptr;
+typedef uintptr_t cpuaddr;
+typedef size_t    cpusize;
+typedef ptrdiff_t cpudiff;
 
 #ifdef OSAL_OMIT_DEPRECATED
-    /**
+/**
      * A type to be used for OSAL resource identifiers.
      * This is a type-safe ID, and cannot be implicitly converted to an integer.
      * Use the provided inline functions in osapi-idmap.h to interpret ID values.
      */
-    typedef struct
-    {
-        uint32_t v;
-    } osal_id_t;
+typedef struct
+{
+    uint32_t v;
+} osal_id_t;
 #else
 
 /**
@@ -108,14 +107,14 @@ extern "C"
 typedef uint32 osal_id_t;
 #endif
 
-    /**
+/**
      * A type used to represent a number of blocks or buffers
      *
      * This is used with file system and queue implementations.
      */
-    typedef size_t osal_blockcount_t;
+typedef size_t osal_blockcount_t;
 
-    /**
+/**
      * A type used to represent an index into a table structure
      *
      * This is used when referring directly to a table index as
@@ -123,37 +122,37 @@ typedef uint32 osal_id_t;
      * internal use, but is also output from public APIs such as
      * OS_ObjectIdToArrayIndex().
      */
-    typedef uint32 osal_index_t;
+typedef uint32 osal_index_t;
 
-    /**
+/**
      * A type used to represent the runtime type or category of an OSAL object
      */
-    typedef uint32 osal_objtype_t;
+typedef uint32 osal_objtype_t;
 
-    /**
+/**
      * The preferred type to represent OSAL status codes defined in osapi-error.h
      */
-    typedef int32 osal_status_t;
+typedef int32 osal_status_t;
 
-    /**
+/**
      * @brief General purpose OSAL callback function
      *
      * This may be used by multiple APIS
      */
-    typedef void (*OS_ArgCallback_t)(osal_id_t object_id, void *arg);
+typedef void (*OS_ArgCallback_t)(osal_id_t object_id, void *arg);
 
-    /*
+/*
     ** Check Sizes
     */
-    CompileTimeAssert(sizeof(uint8) == 1, TypeUint8WrongSize);
-    CompileTimeAssert(sizeof(uint16) == 2, TypeUint16WrongSize);
-    CompileTimeAssert(sizeof(uint32) == 4, TypeUint32WrongSize);
-    CompileTimeAssert(sizeof(uint64) == 8, TypeUint64WrongSize);
-    CompileTimeAssert(sizeof(int8) == 1, Typeint8WrongSize);
-    CompileTimeAssert(sizeof(int16) == 2, Typeint16WrongSize);
-    CompileTimeAssert(sizeof(int32) == 4, Typeint32WrongSize);
-    CompileTimeAssert(sizeof(int64) == 8, Typeint64WrongSize);
-    CompileTimeAssert(sizeof(cpuaddr) >= sizeof(void *), TypePtrWrongSize);
+CompileTimeAssert(sizeof(uint8) == 1, TypeUint8WrongSize);
+CompileTimeAssert(sizeof(uint16) == 2, TypeUint16WrongSize);
+CompileTimeAssert(sizeof(uint32) == 4, TypeUint32WrongSize);
+CompileTimeAssert(sizeof(uint64) == 8, TypeUint64WrongSize);
+CompileTimeAssert(sizeof(int8) == 1, Typeint8WrongSize);
+CompileTimeAssert(sizeof(int16) == 2, Typeint16WrongSize);
+CompileTimeAssert(sizeof(int32) == 4, Typeint32WrongSize);
+CompileTimeAssert(sizeof(int64) == 8, Typeint64WrongSize);
+CompileTimeAssert(sizeof(cpuaddr) >= sizeof(void *), TypePtrWrongSize);
 
 #ifdef __cplusplus
 }

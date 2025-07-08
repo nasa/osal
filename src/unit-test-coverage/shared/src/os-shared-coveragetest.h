@@ -54,12 +54,17 @@ typedef union
     uint32    val;
 } UT_idbuf_t;
 
-#define OSAPI_TEST_OBJID(act, op, exp)                                                              \
-    {                                                                                               \
-        UT_idbuf_t idexp = {.id = exp};                                                             \
-        UT_idbuf_t idact = {.id = act};                                                             \
-        UtAssert_True(memcmp(&idexp, &idact, sizeof(osal_id_t)) op 0, "%s (%lu) %s %s (%lu)", #act, \
-                      (unsigned long)idact.val, #op, #exp, (unsigned long)idexp.val);               \
+#define OSAPI_TEST_OBJID(act, op, exp)                                \
+    {                                                                 \
+        UT_idbuf_t idexp = { .id = exp };                             \
+        UT_idbuf_t idact = { .id = act };                             \
+        UtAssert_True(memcmp(&idexp, &idact, sizeof(osal_id_t)) op 0, \
+                      "%s (%lu) %s %s (%lu)",                         \
+                      #act,                                           \
+                      (unsigned long)idact.val,                       \
+                      #op,                                            \
+                      #exp,                                           \
+                      (unsigned long)idexp.val);                      \
     }
 
 /*
@@ -67,10 +72,10 @@ typedef union
  */
 #define ADD_TEST(test) UtTest_Add((Test_##test), Osapi_Test_Setup, Osapi_Test_Teardown, #test)
 
-#define UT_OBJID_1     ((osal_id_t) {1})
-#define UT_OBJID_2     ((osal_id_t) {2})
-#define UT_OBJID_OTHER ((osal_id_t) {0x12345})
-#define UT_OBJID_MAX   ((osal_id_t) {0xFFFFFFFF})
+#define UT_OBJID_1     ((osal_id_t) { 1 })
+#define UT_OBJID_2     ((osal_id_t) { 2 })
+#define UT_OBJID_OTHER ((osal_id_t) { 0x12345 })
+#define UT_OBJID_MAX   ((osal_id_t) { 0xFFFFFFFF })
 
 #define UT_INDEX_0 OSAL_INDEX_C(0)
 #define UT_INDEX_1 OSAL_INDEX_C(1)

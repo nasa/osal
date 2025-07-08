@@ -45,21 +45,9 @@
 #define UT_INDEX_1 OSAL_INDEX_C(1)
 #define UT_INDEX_2 OSAL_INDEX_C(2)
 
-#define UT_TOKEN_0                                    \
-    (OS_object_token_t)                               \
-    {                                                 \
-        .obj_id = (osal_id_t) {0x10000}, .obj_idx = 0 \
-    }
-#define UT_TOKEN_1                                    \
-    (OS_object_token_t)                               \
-    {                                                 \
-        .obj_id = (osal_id_t) {0x10001}, .obj_idx = 1 \
-    }
-#define UT_TOKEN_2                                    \
-    (OS_object_token_t)                               \
-    {                                                 \
-        .obj_id = (osal_id_t) {0x10002}, .obj_idx = 2 \
-    }
+#define UT_TOKEN_0 (OS_object_token_t) { .obj_id = (osal_id_t) { 0x10000 }, .obj_idx = 0 }
+#define UT_TOKEN_1 (OS_object_token_t) { .obj_id = (osal_id_t) { 0x10001 }, .obj_idx = 1 }
+#define UT_TOKEN_2 (OS_object_token_t) { .obj_id = (osal_id_t) { 0x10002 }, .obj_idx = 2 }
 
 /* Osapi_Test_Setup
  *

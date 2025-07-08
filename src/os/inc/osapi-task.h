@@ -43,14 +43,14 @@
  */
 typedef uint8_t osal_priority_t;
 
-#define OSAL_PRIORITY_C(X) ((osal_priority_t) {X})
+#define OSAL_PRIORITY_C(X) ((osal_priority_t) { X })
 
 /**
  * @brief Type to be used for OSAL stack pointer.
  */
 typedef void *osal_stackptr_t;
 
-#define OSAL_STACKPTR_C(X)       ((osal_stackptr_t) {X})
+#define OSAL_STACKPTR_C(X)       ((osal_stackptr_t) { X })
 #define OSAL_TASK_STACK_ALLOCATE OSAL_STACKPTR_C(NULL)
 
 /** @brief OSAL task properties */
@@ -108,8 +108,13 @@ typedef osal_task((*osal_task_entry)(void)); /**< @brief For task entry point */
  * @retval #OS_ERR_NAME_TAKEN if the name specified is already used by a task
  * @retval #OS_ERROR if an unspecified/other error occurs @covtest
  */
-int32 OS_TaskCreate(osal_id_t *task_id, const char *task_name, osal_task_entry function_pointer,
-                    osal_stackptr_t stack_pointer, size_t stack_size, osal_priority_t priority, uint32 flags);
+int32 OS_TaskCreate(osal_id_t      *task_id,
+                    const char     *task_name,
+                    osal_task_entry function_pointer,
+                    osal_stackptr_t stack_pointer,
+                    size_t          stack_size,
+                    osal_priority_t priority,
+                    uint32          flags);
 
 /*-------------------------------------------------------------------------------------*/
 /**

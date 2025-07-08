@@ -59,8 +59,14 @@
  */
 #define UT_OS_IO_BUFF_SIZE 128
 
-static inline bool UtOsalRetVal(int32 Fn, int32 Exp, bool NotImplAllowed, UtAssert_CaseType_t casetype,
-                                const char *File, uint32 Line, const char *FnTxt, const char *ExpTxt)
+static inline bool UtOsalRetVal(int32               Fn,
+                                int32               Exp,
+                                bool                NotImplAllowed,
+                                UtAssert_CaseType_t casetype,
+                                const char         *File,
+                                uint32              Line,
+                                const char         *FnTxt,
+                                const char         *ExpTxt)
 {
     /* If "not implemented" is acceptable, override the casetype to be N/A */
     if (NotImplAllowed && (Fn == OS_ERR_NOT_IMPLEMENTED || Fn == OS_ERR_OPERATION_NOT_SUPPORTED))
@@ -71,8 +77,11 @@ static inline bool UtOsalRetVal(int32 Fn, int32 Exp, bool NotImplAllowed, UtAsse
     return UtAssertEx(Fn == Exp, casetype, File, Line, "%s (%d) == %s (%d)", FnTxt, (int)Fn, ExpTxt, (int)Exp);
 }
 
-static inline bool UtOsalNotSuccess(int32 Fn, UtAssert_CaseType_t casetype, const char *File, uint32 Line,
-                                    const char *FnTxt)
+static inline bool UtOsalNotSuccess(int32               Fn,
+                                    UtAssert_CaseType_t casetype,
+                                    const char         *File,
+                                    uint32              Line,
+                                    const char         *FnTxt)
 {
     /* Check result is negative to support APIs that return nonzero on success (e.g. read/write) */
     return UtAssertEx(Fn < 0, casetype, File, Line, "%s (%d) not successful", FnTxt, (int)Fn);
@@ -139,7 +148,7 @@ static inline bool UtOsalImplemented(int32 Fn, const char *File, uint32 Line)
  *
  * This is used to test for proper rejection of bad ID values.
  */
-#define UT_OBJID_INCORRECT ((osal_id_t) {0xDEADBEEF})
+#define UT_OBJID_INCORRECT ((osal_id_t) { 0xDEADBEEF })
 
 /*--------------------------------------------------------------------------------*
 ** Data types

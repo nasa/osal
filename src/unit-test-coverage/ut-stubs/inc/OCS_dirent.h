@@ -48,7 +48,7 @@ struct OCS_dirent
 /* ----------------------------------------- */
 
 extern int                OCS_closedir(OCS_DIR *dirp);
-extern OCS_DIR *          OCS_opendir(const char *name);
+extern OCS_DIR           *OCS_opendir(const char *name);
 extern struct OCS_dirent *OCS_readdir(OCS_DIR *dirp);
 extern void               OCS_rewinddir(OCS_DIR *dirp);
 

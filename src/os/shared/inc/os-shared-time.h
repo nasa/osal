@@ -44,7 +44,7 @@ typedef struct
     int32             wait_time;
     int32             interval_time;
     OS_ArgCallback_t  callback_ptr;
-    void *            callback_arg;
+    void             *callback_arg;
 } OS_timecb_internal_record_t;
 
 /*

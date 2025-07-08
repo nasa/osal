@@ -89,28 +89,31 @@ typedef struct OCS_pthread_key       OCS_pthread_key_t;
 /* prototypes normally declared in pthread.h */
 /* ----------------------------------------- */
 
-extern int  OCS_pthread_attr_destroy(OCS_pthread_attr_t *attr);
-extern int  OCS_pthread_attr_getschedparam(const OCS_pthread_attr_t *attr, struct OCS_sched_param *param);
-extern int  OCS_pthread_attr_init(OCS_pthread_attr_t *attr);
-extern int  OCS_pthread_attr_setinheritsched(OCS_pthread_attr_t *attr, int inherit);
-extern int  OCS_pthread_attr_setschedparam(OCS_pthread_attr_t *attr, const struct OCS_sched_param *param);
-extern int  OCS_pthread_attr_setschedpolicy(OCS_pthread_attr_t *attr, int policy);
-extern int  OCS_pthread_attr_setstacksize(OCS_pthread_attr_t *attr, size_t stacksize);
-extern int  OCS_pthread_cancel(OCS_pthread_t th);
-extern int  OCS_pthread_cond_broadcast(OCS_pthread_cond_t *cond);
-extern int  OCS_pthread_cond_destroy(OCS_pthread_cond_t *cond);
-extern int  OCS_pthread_cond_init(OCS_pthread_cond_t *cond, const OCS_pthread_condattr_t *cond_attr);
-extern int  OCS_pthread_cond_signal(OCS_pthread_cond_t *cond);
-extern int  OCS_pthread_cond_timedwait(OCS_pthread_cond_t *cond, OCS_pthread_mutex_t *mutex,
-                                       const struct OCS_timespec *abstime);
-extern int  OCS_pthread_cond_wait(OCS_pthread_cond_t *cond, OCS_pthread_mutex_t *mutex);
-extern int  OCS_pthread_create(OCS_pthread_t *newthread, const OCS_pthread_attr_t *attr, void *(*start_routine)(void *),
-                               void *arg);
-extern int  OCS_pthread_detach(OCS_pthread_t th);
-extern int  OCS_pthread_equal(OCS_pthread_t thread1, OCS_pthread_t thread2);
-extern void OCS_pthread_exit(void *retval);
-extern int  OCS_pthread_getschedparam(OCS_pthread_t target_thread, int *policy, struct OCS_sched_param *param);
-extern void *        OCS_pthread_getspecific(OCS_pthread_key_t key);
+extern int           OCS_pthread_attr_destroy(OCS_pthread_attr_t *attr);
+extern int           OCS_pthread_attr_getschedparam(const OCS_pthread_attr_t *attr, struct OCS_sched_param *param);
+extern int           OCS_pthread_attr_init(OCS_pthread_attr_t *attr);
+extern int           OCS_pthread_attr_setinheritsched(OCS_pthread_attr_t *attr, int inherit);
+extern int           OCS_pthread_attr_setschedparam(OCS_pthread_attr_t *attr, const struct OCS_sched_param *param);
+extern int           OCS_pthread_attr_setschedpolicy(OCS_pthread_attr_t *attr, int policy);
+extern int           OCS_pthread_attr_setstacksize(OCS_pthread_attr_t *attr, size_t stacksize);
+extern int           OCS_pthread_cancel(OCS_pthread_t th);
+extern int           OCS_pthread_cond_broadcast(OCS_pthread_cond_t *cond);
+extern int           OCS_pthread_cond_destroy(OCS_pthread_cond_t *cond);
+extern int           OCS_pthread_cond_init(OCS_pthread_cond_t *cond, const OCS_pthread_condattr_t *cond_attr);
+extern int           OCS_pthread_cond_signal(OCS_pthread_cond_t *cond);
+extern int           OCS_pthread_cond_timedwait(OCS_pthread_cond_t        *cond,
+                                                OCS_pthread_mutex_t       *mutex,
+                                                const struct OCS_timespec *abstime);
+extern int           OCS_pthread_cond_wait(OCS_pthread_cond_t *cond, OCS_pthread_mutex_t *mutex);
+extern int           OCS_pthread_create(OCS_pthread_t            *newthread,
+                                        const OCS_pthread_attr_t *attr,
+                                        void *(*start_routine)(void *),
+                                        void *arg);
+extern int           OCS_pthread_detach(OCS_pthread_t th);
+extern int           OCS_pthread_equal(OCS_pthread_t thread1, OCS_pthread_t thread2);
+extern void          OCS_pthread_exit(void *retval);
+extern int           OCS_pthread_getschedparam(OCS_pthread_t target_thread, int *policy, struct OCS_sched_param *param);
+extern void         *OCS_pthread_getspecific(OCS_pthread_key_t key);
 extern int           OCS_pthread_key_create(OCS_pthread_key_t *key, void (*destr_function)(void *));
 extern int           OCS_pthread_mutexattr_destroy(OCS_pthread_mutexattr_t *attr);
 extern int           OCS_pthread_mutexattr_init(OCS_pthread_mutexattr_t *attr);

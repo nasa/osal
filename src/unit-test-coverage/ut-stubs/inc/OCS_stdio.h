@@ -43,7 +43,7 @@ typedef struct OCS_FILE OCS_FILE;
 /* ----------------------------------------- */
 
 extern int       OCS_fclose(OCS_FILE *stream);
-extern char *    OCS_fgets(char *s, int n, OCS_FILE *stream);
+extern char     *OCS_fgets(char *s, int n, OCS_FILE *stream);
 extern OCS_FILE *OCS_fopen(const char *filename, const char *modes);
 extern int       OCS_fputs(const char *s, OCS_FILE *stream);
 extern int       OCS_remove(const char *filename);

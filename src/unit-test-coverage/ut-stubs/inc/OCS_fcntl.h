@@ -59,7 +59,7 @@
 #define OCS_S_IWUSR 0x0040
 
 #define OCS_S_IFDIR    0x0001
-#define OCS_S_ISDIR(x) (((x)&OCS_S_IFDIR) == OCS_S_IFDIR)
+#define OCS_S_ISDIR(x) (((x) & OCS_S_IFDIR) == OCS_S_IFDIR)
 
 #define OCS_O_RDONLY   0x1501
 #define OCS_O_WRONLY   0x1502

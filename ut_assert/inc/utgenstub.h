@@ -62,8 +62,11 @@
  * \param ParamType  The type of the parameter
  * \param ParamName  The name of the parameter
  */
-#define UT_GenStub_AddParam(FuncName, ParamType, ParamName)                                                           \
-    UT_Stub_RegisterContextWithMetaData(UT_KEY(FuncName), #ParamName, UT_STUBCONTEXT_ARG_TYPE_INDIRECT, &(ParamName), \
+#define UT_GenStub_AddParam(FuncName, ParamType, ParamName)               \
+    UT_Stub_RegisterContextWithMetaData(UT_KEY(FuncName),                 \
+                                        #ParamName,                       \
+                                        UT_STUBCONTEXT_ARG_TYPE_INDIRECT, \
+                                        &(ParamName),                     \
                                         sizeof(ParamType))
 
 /**

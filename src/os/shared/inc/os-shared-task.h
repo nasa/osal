@@ -37,7 +37,7 @@ typedef struct
     osal_priority_t priority;
     osal_task_entry entry_function_pointer;
     osal_task_entry delete_hook_pointer;
-    void *          entry_arg;
+    void           *entry_arg;
     osal_stackptr_t stack_pointer;
 } OS_task_internal_record_t;
 

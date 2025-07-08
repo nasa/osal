@@ -56,7 +56,7 @@ typedef struct UtListNodeTag
 {
     struct UtListNodeTag *Next;
     struct UtListNodeTag *Prev;
-    void *                Data;
+    void                 *Data;
     uint32                DataSize;
     uint32                Tag;
 } UtListNode_t;

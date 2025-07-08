@@ -34,17 +34,17 @@
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER     117
-#define OS_BUILD_BASELINE   "equuleus-rc1"
-#define OS_BUILD_DEV_CYCLE  "equuleus-rc2" /**< @brief Development: Release name for current development cycle */
-#define OS_BUILD_CODENAME   "Equuleus" /**< @brief: Development: Code name for the current build */
+#define OS_BUILD_NUMBER    117
+#define OS_BUILD_BASELINE  "equuleus-rc1"
+#define OS_BUILD_DEV_CYCLE "equuleus-rc2" /**< @brief Development: Release name for current development cycle */
+#define OS_BUILD_CODENAME  "Equuleus"     /**< @brief: Development: Code name for the current build */
 
 /*
  * Version Macros, see \ref cfsversions for definitions.
  */
-#define OS_MAJOR_VERSION 5  /*!< @brief Major version number */
-#define OS_MINOR_VERSION 0  /*!< @brief Minor version number */
-#define OS_REVISION      0  /*!< @brief Revision version number. Value of 99 indicates a development version.*/
+#define OS_MAJOR_VERSION 5 /*!< @brief Major version number */
+#define OS_MINOR_VERSION 0 /*!< @brief Minor version number */
+#define OS_REVISION      0 /*!< @brief Revision version number. Value of 99 indicates a development version.*/
 
 /**
  * @brief Last official release.
