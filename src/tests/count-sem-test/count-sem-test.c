@@ -76,6 +76,7 @@ void Test_CountSem(void)
     osal_id_t           task_id[3];
     char                long_name[OS_MAX_API_NAME + 1];
     OS_count_sem_prop_t sem_prop;
+    OS_task_prop_t      task_prop;
     uint32              test_val;
     bool                get_info_implemented;
 
@@ -176,23 +177,38 @@ void Test_CountSem(void)
 
     /* Start 3 child tasks, give and confirm highest priority task increments, flush and confirm all three */
     UtAssert_INT32_EQ(
-        OS_TaskCreate(&task_id[0], "Task_0", Test_CountSem_Task0, NULL, TASK_STACK_SIZE, OSAL_PRIORITY_C(100), 0),
+        OS_TaskCreate(&task_id[0], "Task_0", Test_CountSem_Task0, NULL, TASK_STACK_SIZE, OSAL_PRIORITY_C(200), 0),
         OS_SUCCESS);
+    OS_TaskDelay(50);
     UtAssert_INT32_EQ(
-        OS_TaskCreate(&task_id[1], "Task_1", Test_CountSem_Task1, NULL, TASK_STACK_SIZE, OSAL_PRIORITY_C(200), 0),
+        OS_TaskCreate(&task_id[1], "Task_1", Test_CountSem_Task1, NULL, TASK_STACK_SIZE, OSAL_PRIORITY_C(100), 0),
         OS_SUCCESS);
     UtAssert_INT32_EQ(
         OS_TaskCreate(&task_id[2], "Task_2", Test_CountSem_Task2, NULL, TASK_STACK_SIZE, OSAL_PRIORITY_C(250), 0),
         OS_SUCCESS);
-    OS_TaskDelay(100);
+    OS_TaskDelay(50);
     UtAssert_UINT32_EQ(task_counter[0] + task_counter[1] + task_counter[2], 0);
-    UtAssert_INT32_EQ(OS_CountSemGive(sem_id[0]), OS_SUCCESS);
-    OS_TaskDelay(100);
-    UtAssert_UINT32_EQ(task_counter[0], 1);
-    UtAssert_UINT32_EQ(task_counter[1] + task_counter[2], 0);
+    test_val = 0;
+
+    /* In permissive mode, priorities are not enforced, and thus there is no
+     * guarantee of which task will run first.  If priorities are enabled then
+     * it should be guaranteed that Task_1 will get the sem first.  By getting the
+     * task properties we can check if the priority is in effect */
+    UtAssert_INT32_EQ(OS_TaskGetInfo(task_id[1], &task_prop), OS_SUCCESS);
+    if (task_prop.priority == OSAL_PRIORITY_C(100))
+    {
+        UtAssert_INT32_EQ(OS_CountSemGive(sem_id[0]), OS_SUCCESS);
+        OS_TaskDelay(100);
+        UtAssert_UINT32_EQ(task_counter[1], 1);
+        UtAssert_UINT32_EQ(task_counter[0] + task_counter[2], 0);
+        ++test_val;
+    }
+    else
+    {
+        UtPrintf("Task Priorities not in effect, skipping sem priority test");
+    }
 
     /* Give loop for tasks to complete */
-    test_val = 1;
     while (test_val < 9)
     {
         test_val++;
