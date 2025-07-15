@@ -1,5 +1,10 @@
 # Changelog
 
+## Development Build: equuleus-rc1+dev123
+- 'Fix #1445, add conditional around priority sem test'
+- See: <https://github.com/nasa/osal/pull/1509>
+
+
 ## Development Build: equuleus-rc1+dev117
 - 'Fix nasa/cFS#839, Update Workflows to Ubuntu 22.04'
 - See: <https://github.com/nasa/osal/pull/1506>
