@@ -1,5 +1,5 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as �~@~\core Flight System: Bootes�~@~]
+ * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
  *
  * Copyright (c) 2020 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.

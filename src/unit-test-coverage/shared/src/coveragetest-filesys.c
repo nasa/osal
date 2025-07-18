@@ -319,12 +319,12 @@ void Test_OS_chkfs(void)
 
     expected = OS_INVALID_POINTER;
     actual   = OS_chkfs(NULL, false);
-    UtAssert_True(actual == expected, "OS_fsBytesFree() (%ld) == OS_INVALID_POINTER", (long)actual);
+    UtAssert_True(actual == expected, "OS_chkfs() (%ld) == OS_INVALID_POINTER", (long)actual);
 
     UT_SetDefaultReturnValue(UT_KEY(OCS_memchr), OS_ERROR);
     expected = OS_FS_ERR_PATH_TOO_LONG;
     actual   = OS_chkfs("/cf", false);
-    UtAssert_True(actual == expected, "OS_fsBytesFree() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
+    UtAssert_True(actual == expected, "OS_chkfs() (%ld) == OS_FS_ERR_PATH_TOO_LONG", (long)actual);
     UT_ClearDefaultReturnValue(UT_KEY(OCS_memchr));
 
     /* Test Fail due to no matching VolTab entry */

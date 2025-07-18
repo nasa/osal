@@ -323,13 +323,13 @@ void Test_OS_ForEachObject(void)
 
     /* Verify Outputs */
     UtAssert_True(Count.TaskCount == 0, "OS_ForEachObject() TaskCount (%lu) == 0", (unsigned long)Count.TaskCount);
-    UtAssert_True(Count.QueueCount == 0, "OS_ForEachObject() QueueCount (%lu) == 1", (unsigned long)Count.QueueCount);
-    UtAssert_True(Count.CountSemCount == 0, "OS_ForEachObject() CountSemCount (%lu) == 1",
+    UtAssert_True(Count.QueueCount == 0, "OS_ForEachObject() QueueCount (%lu) == 0", (unsigned long)Count.QueueCount);
+    UtAssert_True(Count.CountSemCount == 0, "OS_ForEachObject() CountSemCount (%lu) == 0",
                   (unsigned long)Count.CountSemCount);
-    UtAssert_True(Count.BinSemCount == 0, "OS_ForEachObject() BinSemCount (%lu) == 2",
+    UtAssert_True(Count.BinSemCount == 0, "OS_ForEachObject() BinSemCount (%lu) == 0",
                   (unsigned long)Count.BinSemCount);
     UtAssert_True(Count.MutexCount == 3, "OS_ForEachObject() MutexCount (%lu) == 3", (unsigned long)Count.MutexCount);
-    UtAssert_True(Count.TimeBaseCount == 0, "OS_ForEachObject() TimeBaseCount (%lu) == 1",
+    UtAssert_True(Count.TimeBaseCount == 0, "OS_ForEachObject() TimeBaseCount (%lu) == 0",
                   (unsigned long)Count.TimeBaseCount);
 
     /*

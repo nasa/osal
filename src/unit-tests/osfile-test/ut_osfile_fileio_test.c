@@ -1350,7 +1350,7 @@ void UT_os_movefile_test()
     /* #6 Nominal */
 
     memset(g_fNames[0], '\0', sizeof(g_fNames[0]));
-    memset(g_fNames[0], '\0', sizeof(g_fNames[1]));
+    memset(g_fNames[1], '\0', sizeof(g_fNames[1]));
     UT_os_sprintf(g_fNames[0], "%s/Mv_Nom_Old.txt", g_mntName);
     UT_os_sprintf(g_fNames[1], "%s/Mv_Nom_New.txt", g_mntName);
 
