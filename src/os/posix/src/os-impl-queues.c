@@ -41,6 +41,63 @@ OS_impl_queue_internal_record_t OS_impl_queue_table[OS_MAX_QUEUES];
                                 MESSAGE QUEUE API
  ***************************************************************************************/
 
+void OS_Posix_CompAbsDelayTimeMonotonic(uint32_t msecs, struct timespec *ts) {
+    clock_gettime(CLOCK_MONOTONIC, ts);
+
+    ts->tv_sec += msecs/1000;
+    ts->tv_nsec += (msecs%1000)*1000000L;
+
+    if (ts->tv_nsec >= 1000000000L) {
+        ts->tv_nsec++;
+        ts->tv_nsec -= 1000000000L;
+    }
+} 
+
+ssize_t mq_timedreceive_monotonic(mqd_t mqd, char *buf, size_t len, unsigned *prio, const struct timespec *deadline)  {
+    struct timespec now;
+    
+    clock_gettime(CLOCK_MONOTONIC, &now);
+
+    /*
+     * If we’re already at or past the monotonic deadline, report a timeout immediately.
+    */
+    if ((now.tv_sec > deadline->tv_sec) || (now.tv_sec == deadline->tv_sec && now.tv_nsec >= deadline->tv_nsec)) {
+        errno = ETIMEDOUT;
+        return -1;
+    }
+
+    int64_t rem_sec = deadline->tv_sec - now.tv_sec;
+    int64_t rem_nsec = deadline->tv_nsec - now.tv_nsec;
+    int timeout = (int)(rem_sec*1000 + rem_nsec / 1000000);
+
+    struct pollfd p = 
+    {
+        .fd = (int) mqd, 
+        .events = POLLIN,
+    };
+    
+    int rc = poll(&p, 1, timeout);
+    
+    bool has_event_ocurred = false;
+    if (p.revents & POLLIN) {
+        has_event_ocurred = true;
+    }
+
+    if (rc > 0 && has_event_ocurred) {
+        return mq_receive(mqd, buf, len, prio);
+    }
+
+    if (rc == 0) {
+        errno = ETIMEDOUT;
+        struct timespec realtime_clock_timeval, monotonic_clock_timeval;
+        clock_gettime(CLOCK_REALTIME, &realtime_clock_timeval);
+        clock_gettime(CLOCK_MONOTONIC, &monotonic_clock_timeval);
+        printf("[mq_timedreceive_monotonic] timeout -> CLOCK_REALTIME=%ld.%09ld | CLOCK_MONOTONIC=%lld.%09ld\n", realtime_clock_timeval.tv_sec, realtime_clock_timeval.tv_nsec, (long long)monotonic_clock_timeval.tv_sec, monotonic_clock_timeval.tv_nsec);
+        return -1;
+    }
+    return -1;
+}
+
 /*---------------------------------------------------------------------------------------
    Name: OS_Posix_QueueAPI_Impl_Init
 
@@ -226,16 +283,19 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
         }
         else
         {
-            OS_Posix_CompAbsDelayTime(timeout, &ts);
+            OS_Posix_CompAbsDelayTimeMonotonic(timeout, &ts); // Get future monotonic time calculated from timeout input. Monotonic time is inmune to REALTIME_CLOCK jumps (https://github.com/nasa/osal/issues/1401).
         }
 
         /*
-         ** If the mq_timedreceive call is interrupted by a system call or signal,
+         ** If the mq_timedreceive_monotonic call is interrupted by a system call or signal,
          ** call it again.
          */
         do
         {
-            sizeCopied = mq_timedreceive(impl->id, data, size, NULL, &ts);
+            /*
+            * mq_timedreceive_monotonic is does not suffer a premature timeout because it does not depend on REALTIME_CLOCK.
+            */
+            sizeCopied = mq_timedreceive_monotonic(impl->id, data, size, NULL, &ts);
         } while (timeout != OS_CHECK && sizeCopied < 0 && errno == EINTR);
 
     } /* END timeout */

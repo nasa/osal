@@ -1,2 +1,5 @@
 build
 Makefile
+build_osal/
+build_osal_test/
+.vscode/

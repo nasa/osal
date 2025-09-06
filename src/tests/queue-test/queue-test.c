@@ -20,6 +20,10 @@
 ** Queue read timeout test
 */
 #include <stdio.h>
+#include <errno.h>
+#include <time.h>
+#include <sys/time.h>
+#include <string.h> 
 #include "common_types.h"
 #include "osapi.h"
 #include "utassert.h"
@@ -34,6 +38,9 @@ void QueueTimeoutCheck(void);
 #define MSGQ_SIZE  sizeof(uint32)
 #define MSGQ_TOTAL 10
 #define MSGQ_BURST 3
+
+#define TIMEJUMP_SECONDS 10
+#define TIMEJUMP_INTERVAL_SECONDS 5
 
 /* Task 1 */
 #define TASK_1_STACK_SIZE 4096
@@ -100,6 +107,27 @@ void task_1(void)
     }
 }
 
+void task2(void) 
+{
+    /*
+    * Every TIMEJUMP_INTERVAL_SECONDS jump REALTIME_CLOCK TIMEJUMP_SECONDS.
+    */
+    while (1) 
+    {
+        OS_TaskDelay(TIMEJUMP_INTERVAL_SECONDS*1000);
+
+        struct timespec realtime_clock_timeval;
+        clock_gettime(CLOCK_REALTIME, &realtime_clock_timeval);
+        realtime_clock_timeval.tv_sec += TIMEJUMP_SECONDS;
+
+        if (clock_settime(CLOCK_REALTIME, &realtime_clock_timeval) != 0) {
+            OS_printf("[task2] clock_settime failed.%s\n", strerror(errno));
+        } else {
+            OS_printf("[task2] CLOCK_REALTIME jumped +%d s\n", TIMEJUMP_SECONDS);
+        }
+    }
+}
+
 void QueueTimeoutCheck(void)
 {
     int32  status;
@@ -109,6 +137,8 @@ void QueueTimeoutCheck(void)
     UtAssert_True(status == OS_SUCCESS, "Timer delete Rc=%d", (int)status);
     status = OS_TaskDelete(task_1_id);
     UtAssert_True(status == OS_SUCCESS, "Task 1 delete Rc=%d", (int)status);
+    status = OS_TaskDelete(task_2_id);
+    UtAssert_True(status == OS_SUCCESS, "Task 2 delete Rc=%d", (int)status);
     status = OS_QueueDelete(msgq_id);
     UtAssert_True(status == OS_SUCCESS, "Queue 1 delete Rc=%d", (int)status);
 
@@ -148,6 +178,13 @@ void QueueTimeoutSetup(void)
     status = OS_TaskCreate(&task_1_id, "Task 1", task_1, OSAL_STACKPTR_C(task_1_stack), sizeof(task_1_stack),
                            OSAL_PRIORITY_C(TASK_1_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_1_id), (int)status);
+
+    /*
+    ** Create the time jumper task.
+    */
+    status = OS_TaskCreate(&task_2_id, "Task 2", task2, OSAL_STACKPTR_C(task_2_stack), sizeof(task_2_stack),
+                        OSAL_PRIORITY_C(TASK_2_PRIORITY), 0);
+    UtAssert_True(status == OS_SUCCESS, "Task 2 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_2_id), (int)status);
 
     /*
     ** Create a timer

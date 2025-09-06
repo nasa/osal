@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "*.go": "go",
+        "os-shared-common.h": "c",
+        "utbsp.h": "c",
+        "os-shared-idmap.h": "c",
+        "os-shared-queue.h": "c",
+        "osapi-queue.h": "c",
+        "os-posix.h": "c",
+        "os-impl-queues.h": "c",
+        "common_types.h": "c",
+        "bsp-impl.h": "c",
+        "os-shared-globaldefs.h": "c",
+        "types.h": "c",
+        "signal.h": "c",
+        "osapi.h": "c",
+        "osconfig.h": "c"
+    }
+}

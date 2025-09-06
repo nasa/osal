@@ -39,10 +39,12 @@
 #include <limits.h>
 #include <signal.h>
 #include <time.h>
+#include <poll.h>
 #include <errno.h>
 #include <pthread.h>
 #include <mqueue.h>
 #include <fcntl.h>
+#include <stdint.h>
 #include <semaphore.h>
 #include <sys/types.h>
 #include <sys/signal.h>
@@ -91,6 +93,8 @@ extern POSIX_GlobalVars_t POSIX_GlobalVars;
                        POSIX IMPLEMENTATION FUNCTION PROTOTYPES
  ***************************************************************************************/
 
+ssize_t mq_timedreceive_monotonic(mqd_t mqd, char *buf, size_t len, unsigned *prio, const struct timespec *deadline);
+
 int32 OS_Posix_TaskAPI_Impl_Init(void);
 int32 OS_Posix_QueueAPI_Impl_Init(void);
 int32 OS_Posix_BinSemAPI_Impl_Init(void);
@@ -106,5 +110,6 @@ int32 OS_Posix_FileSysAPI_Impl_Init(void);
 int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype);
 
 void OS_Posix_CompAbsDelayTime(uint32 msecs, struct timespec *tm);
+void OS_Posix_CompAbsDelayTimeMonotonic(uint32 msecs, struct timespec *tm);
 
 #endif /* OS_POSIX_H */
