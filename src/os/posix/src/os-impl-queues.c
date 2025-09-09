@@ -41,7 +41,14 @@ OS_impl_queue_internal_record_t OS_impl_queue_table[OS_MAX_QUEUES];
                                 MESSAGE QUEUE API
  ***************************************************************************************/
 
-void OS_Posix_CompAbsDelayTimeMonotonic(uint32_t msecs, struct timespec *ts) {
+/*---------------------------------------------------------------------------------------
+   Name: OS_Posix_CompAbsDelayTimeMonotonic
+
+   Purpose: Compute an absolute time based on the MONOTONIC clock for a delay interval
+            specified in milliseconds
+
+ ----------------------------------------------------------------------------------------*/
+static void OS_Posix_CompAbsDelayTimeMonotonic(uint32_t msecs, struct timespec *ts) {
     clock_gettime(CLOCK_MONOTONIC, ts);
 
     ts->tv_sec += msecs/1000;
@@ -53,7 +60,13 @@ void OS_Posix_CompAbsDelayTimeMonotonic(uint32_t msecs, struct timespec *ts) {
     }
 } 
 
-ssize_t mq_timedreceive_monotonic(mqd_t mqd, char *buf, size_t len, unsigned *prio, const struct timespec *deadline)  {
+/*---------------------------------------------------------------------------------------
+   Name: OS_Posix_MqReceiveUntilMonotonicDeadline
+
+   Purpose: This function is similar to mq_timedreceive but it uses a deadline based on the MONOTONIC clock
+
+ ----------------------------------------------------------------------------------------*/
+static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, size_t len, unsigned *prio, const struct timespec *deadline)  {
     struct timespec now;
     
     clock_gettime(CLOCK_MONOTONIC, &now);
@@ -92,7 +105,7 @@ ssize_t mq_timedreceive_monotonic(mqd_t mqd, char *buf, size_t len, unsigned *pr
         struct timespec realtime_clock_timeval, monotonic_clock_timeval;
         clock_gettime(CLOCK_REALTIME, &realtime_clock_timeval);
         clock_gettime(CLOCK_MONOTONIC, &monotonic_clock_timeval);
-        printf("[mq_timedreceive_monotonic] timeout -> CLOCK_REALTIME=%ld.%09ld | CLOCK_MONOTONIC=%lld.%09ld\n", realtime_clock_timeval.tv_sec, realtime_clock_timeval.tv_nsec, (long long)monotonic_clock_timeval.tv_sec, monotonic_clock_timeval.tv_nsec);
+        printf("[OS_Posix_MqReceiveUntilMonotonicDeadline] timeout -> CLOCK_REALTIME=%ld.%09ld | CLOCK_MONOTONIC=%lld.%09ld\n", realtime_clock_timeval.tv_sec, realtime_clock_timeval.tv_nsec, (long long)monotonic_clock_timeval.tv_sec, monotonic_clock_timeval.tv_nsec);
         return -1;
     }
     return -1;
@@ -287,15 +300,15 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
         }
 
         /*
-         ** If the mq_timedreceive_monotonic call is interrupted by a system call or signal,
+         ** If the OS_Posix_MqReceiveUntilMonotonicDeadline call is interrupted by a system call or signal,
          ** call it again.
          */
         do
         {
             /*
-            * mq_timedreceive_monotonic is does not suffer a premature timeout because it does not depend on REALTIME_CLOCK.
+            * OS_Posix_MqReceiveUntilMonotonicDeadline is does not suffer a premature timeout because it does not depend on REALTIME_CLOCK.
             */
-            sizeCopied = mq_timedreceive_monotonic(impl->id, data, size, NULL, &ts);
+            sizeCopied = OS_Posix_MqReceiveUntilMonotonicDeadline(impl->id, data, size, NULL, &ts);
         } while (timeout != OS_CHECK && sizeCopied < 0 && errno == EINTR);
 
     } /* END timeout */
