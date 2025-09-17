@@ -68,7 +68,7 @@ static void OS_Posix_CompAbsDelayTimeMonotonic(uint32_t msecs, struct timespec *
  ----------------------------------------------------------------------------------------*/
 static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, size_t len, unsigned *prio, const struct timespec *deadline)  {
     struct timespec now;
-    
+
     clock_gettime(CLOCK_MONOTONIC, &now);
 
     /*
@@ -76,7 +76,7 @@ static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, si
     */
     if ((now.tv_sec > deadline->tv_sec) || (now.tv_sec == deadline->tv_sec && now.tv_nsec >= deadline->tv_nsec)) {
         errno = ETIMEDOUT;
-        return -1;
+        return OS_ERROR;
     }
 
     int64_t rem_sec = deadline->tv_sec - now.tv_sec;
@@ -102,13 +102,18 @@ static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, si
 
     if (rc == 0) {
         errno = ETIMEDOUT;
-        struct timespec realtime_clock_timeval, monotonic_clock_timeval;
-        clock_gettime(CLOCK_REALTIME, &realtime_clock_timeval);
-        clock_gettime(CLOCK_MONOTONIC, &monotonic_clock_timeval);
-        printf("[OS_Posix_MqReceiveUntilMonotonicDeadline] timeout -> CLOCK_REALTIME=%ld.%09ld | CLOCK_MONOTONIC=%lld.%09ld\n", realtime_clock_timeval.tv_sec, realtime_clock_timeval.tv_nsec, (long long)monotonic_clock_timeval.tv_sec, monotonic_clock_timeval.tv_nsec);
-        return -1;
+        clock_gettime(CLOCK_MONOTONIC, &now);
+        OS_DEBUG("OS_Posix_MqReceiveUntilMonotonicDeadline timeout (deadline=%ld.%09ld, now=%ld.%09ld)\n",
+                 (long)deadline->tv_sec, (long)deadline->tv_nsec, (long)now.tv_sec, (long)now.tv_nsec);
+        return OS_ERROR;
     }
-    return -1;
+
+    if (rc < 0)
+    {
+        OS_DEBUG("OS_Posix_MqReceiveUntilMonotonicDeadline poll error rc=%d errno=%d (%s)\n", rc, errno, strerror(errno));
+    }
+
+    return OS_ERROR;
 }
 
 /*---------------------------------------------------------------------------------------

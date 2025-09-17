@@ -176,7 +176,7 @@ set(OSAL_CONFIG_DEBUG_PERMISSIVE_MODE           FALSE
 # If set TRUE, all the "OS_DEBUG" statements will be compiled in and displayed
 # on the debug console.  The statements may still be suppressed at runtime.
 #
-set(OSAL_CONFIG_DEBUG_PRINTF                    FALSE
+set(OSAL_CONFIG_DEBUG_PRINTF                    TRUE
     CACHE BOOL "Controls inclusion of OS_DEBUG statements in the code"
 )
 
