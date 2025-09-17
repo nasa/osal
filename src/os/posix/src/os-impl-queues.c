@@ -54,8 +54,8 @@ static void OS_Posix_CompAbsDelayTimeMonotonic(uint32_t msecs, struct timespec *
     ts->tv_sec += msecs/1000;
     ts->tv_nsec += (msecs%1000)*1000000L;
 
-    if (ts->tv_nsec >= 1000000000L) {
-        ts->tv_nsec++;
+     if (ts->tv_nsec >= 1000000000L) {
+        ts->tv_sec++;
         ts->tv_nsec -= 1000000000L;
     }
 } 
