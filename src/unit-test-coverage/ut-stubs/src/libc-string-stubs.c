@@ -240,3 +240,20 @@ char *OCS_strerror(int errnum)
     snprintf(str, sizeof(str), "UT_ERR_%d", errnum);
     return str;
 }
+
+char *OCS_strerror_r(int errnum, char *buf, size_t buflen)
+{
+    static char str[16];
+    int32       Status;
+
+    Status = UT_DEFAULT_IMPL(OCS_strerror_r);
+
+    if (Status != 0)
+    {
+        return NULL;
+    }
+
+    /* "nominal" response */
+    snprintf(str, sizeof(str), "UT_ERR_%d", errnum);
+    return str;
+}

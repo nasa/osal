@@ -54,5 +54,6 @@ extern char * OCS_strstr(const char *haystack, const char *needle);
 extern char * OCS_strcat(char *dest, const char *src);
 extern char * OCS_strncat(char *dest, const char *src, size_t n);
 extern char * OCS_strerror(int errnum);
+extern char * OCS_strerror_r(int errnum, char *buf, size_t buflen);
 
 #endif /* OCS_STRING_H */
