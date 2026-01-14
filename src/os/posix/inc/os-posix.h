@@ -39,12 +39,10 @@
 #include <limits.h>
 #include <signal.h>
 #include <time.h>
-#include <poll.h>
 #include <errno.h>
 #include <pthread.h>
 #include <mqueue.h>
 #include <fcntl.h>
-#include <stdint.h>
 #include <semaphore.h>
 #include <sys/types.h>
 #include <sys/signal.h>

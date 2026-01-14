@@ -30,6 +30,9 @@
 #include "os-posix.h"
 #include "bsp-impl.h"
 
+#include <poll.h>
+#include <stdint.h>
+
 #include "os-impl-queues.h"
 #include "os-shared-queue.h"
 #include "os-shared-idmap.h"
@@ -41,79 +44,124 @@ OS_impl_queue_internal_record_t OS_impl_queue_table[OS_MAX_QUEUES];
                                 MESSAGE QUEUE API
  ***************************************************************************************/
 
-/*---------------------------------------------------------------------------------------
-   Name: OS_Posix_CompAbsDelayTimeMonotonic
+/*----------------------------------------------------------------
+ *
+ * Purpose:  Local helper function
+ *
+ * This function accept time interval, msecs, as an input and
+ * computes the absolute time at which this time interval will expire.
+ * The absolute time is programmed into a struct.
+ *
+ *-----------------------------------------------------------------*/
+static void OS_Posix_CompAbsDelayTimeMonotonic(uint32 msecs, struct timespec *tm)
+{
+    clock_gettime(CLOCK_MONOTONIC, tm);
 
-   Purpose: Compute an absolute time based on the MONOTONIC clock for a delay interval
-            specified in milliseconds
+    /* add the delay to the current time */
+    tm->tv_sec += (time_t)(msecs / 1000);
+    /* convert residue ( msecs )  to nanoseconds */
+    tm->tv_nsec += (msecs % 1000) * 1000000L;
 
- ----------------------------------------------------------------------------------------*/
-static void OS_Posix_CompAbsDelayTimeMonotonic(uint32_t msecs, struct timespec *ts) {
-    clock_gettime(CLOCK_MONOTONIC, ts);
-
-    ts->tv_sec += msecs/1000;
-    ts->tv_nsec += (msecs%1000)*1000000L;
-
-     if (ts->tv_nsec >= 1000000000L) {
-        ts->tv_sec++;
-        ts->tv_nsec -= 1000000000L;
+    if (tm->tv_nsec >= 1000000000L)
+    {
+        tm->tv_nsec -= 1000000000L;
+        tm->tv_sec++;
     }
-} 
+}
 
 /*---------------------------------------------------------------------------------------
    Name: OS_Posix_MqReceiveUntilMonotonicDeadline
 
    Purpose: This function is similar to mq_timedreceive but it uses a deadline based on the MONOTONIC clock
+            and avoids changing shared queue flags.
 
  ----------------------------------------------------------------------------------------*/
-static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, size_t len, unsigned *prio, const struct timespec *deadline)  {
+static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, size_t len, unsigned *prio,
+                                                        const struct timespec *deadline)
+{
     struct timespec now;
+    struct timespec immediate_ts = {0, 0};
+    struct pollfd   pfd;
 
-    clock_gettime(CLOCK_MONOTONIC, &now);
+    pfd.fd     = (int)mqd;
+    pfd.events = POLLIN;
 
-    /*
-     * If we’re already at or past the monotonic deadline, report a timeout immediately.
-    */
-    if ((now.tv_sec > deadline->tv_sec) || (now.tv_sec == deadline->tv_sec && now.tv_nsec >= deadline->tv_nsec)) {
-        errno = ETIMEDOUT;
-        return OS_ERROR;
-    }
-
-    int64_t rem_sec = deadline->tv_sec - now.tv_sec;
-    int64_t rem_nsec = deadline->tv_nsec - now.tv_nsec;
-    int timeout = (int)(rem_sec*1000 + rem_nsec / 1000000);
-
-    struct pollfd p = 
+    while (1)
     {
-        .fd = (int) mqd, 
-        .events = POLLIN,
-    };
-    
-    int rc = poll(&p, 1, timeout);
-    
-    bool has_event_ocurred = false;
-    if (p.revents & POLLIN) {
-        has_event_ocurred = true;
-    }
+        int64_t rem_sec;
+        int64_t rem_nsec;
+        int64_t rem_ms;
+        int     timeout_ms;
+        int     rc;
+        ssize_t size;
 
-    if (rc > 0 && has_event_ocurred) {
-        return mq_receive(mqd, buf, len, prio);
-    }
-
-    if (rc == 0) {
-        errno = ETIMEDOUT;
         clock_gettime(CLOCK_MONOTONIC, &now);
-        OS_DEBUG("OS_Posix_MqReceiveUntilMonotonicDeadline timeout (deadline=%ld.%09ld, now=%ld.%09ld)\n",
-                 (long)deadline->tv_sec, (long)deadline->tv_nsec, (long)now.tv_sec, (long)now.tv_nsec);
+
+        if ((now.tv_sec > deadline->tv_sec) || (now.tv_sec == deadline->tv_sec && now.tv_nsec >= deadline->tv_nsec))
+        {
+            errno = ETIMEDOUT;
+            return OS_ERROR;
+        }
+
+        rem_sec  = deadline->tv_sec - now.tv_sec;
+        rem_nsec = deadline->tv_nsec - now.tv_nsec;
+        if (rem_nsec < 0)
+        {
+            --rem_sec;
+            rem_nsec += 1000000000L;
+        }
+
+        rem_ms = (rem_sec * 1000) + (rem_nsec + 999999) / 1000000;
+        if (rem_ms > INT_MAX)
+        {
+            timeout_ms = INT_MAX;
+        }
+        else if (rem_ms < 0)
+        {
+            timeout_ms = 0;
+        }
+        else
+        {
+            timeout_ms = (int)rem_ms;
+        }
+
+        rc = poll(&pfd, 1, timeout_ms);
+        if (rc < 0)
+        {
+            if (errno == EINTR)
+            {
+                continue;
+            }
+
+            return OS_ERROR;
+        }
+
+        if (rc == 0)
+        {
+            clock_gettime(CLOCK_MONOTONIC, &now);
+            if ((now.tv_sec > deadline->tv_sec) ||
+                (now.tv_sec == deadline->tv_sec && now.tv_nsec >= deadline->tv_nsec))
+            {
+                errno = ETIMEDOUT;
+                return OS_ERROR;
+            }
+
+            continue;
+        }
+
+        size = mq_timedreceive(mqd, buf, len, prio, &immediate_ts);
+        if (size >= 0)
+        {
+            return size;
+        }
+
+        if (errno == EINTR || errno == EAGAIN || errno == ETIMEDOUT)
+        {
+            continue;
+        }
+
         return OS_ERROR;
     }
-
-    if (rc < 0)
-    {
-        OS_DEBUG("OS_Posix_MqReceiveUntilMonotonicDeadline poll error rc=%d errno=%d (%s)\n", rc, errno, strerror(errno));
-    }
-
-    return OS_ERROR;
 }
 
 /*---------------------------------------------------------------------------------------
@@ -265,6 +313,7 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     int32                            return_code;
     ssize_t                          sizeCopied;
     struct timespec                  ts;
+    struct timespec                  monotonic_deadline;
     OS_impl_queue_internal_record_t *impl;
 
     impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
@@ -286,34 +335,38 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     }
     else
     {
-        /*
-         * NOTE - a prior implementation of OS_CHECK would check the mq_attr for a nonzero depth
-         * and then call mq_receive().  This is insufficient since another thread might do the same
-         * thing at the same time in which case one thread will read and the other will block.
-         *
-         * Calling mq_timedreceive with a zero timeout effectively does the same thing in the typical
-         * case, but for the case where two threads do a simultaneous read, one will get the message
-         * while the other will NOT block (as expected).
-         */
         if (timeout == OS_CHECK)
         {
+            /*
+             * NOTE - a prior implementation of OS_CHECK would check the mq_attr for a nonzero depth
+             * and then call mq_receive().  This is insufficient since another thread might do the same
+             * thing at the same time in which case one thread will read and the other will block.
+             *
+             * Calling mq_timedreceive with a zero timeout effectively does the same thing in the typical
+             * case, but for the case where two threads do a simultaneous read, one will get the message
+             * while the other will NOT block (as expected).
+             */
             memset(&ts, 0, sizeof(ts));
         }
         else
         {
-            OS_Posix_CompAbsDelayTimeMonotonic(timeout, &ts); // Get future monotonic time calculated from timeout input. Monotonic time is inmune to REALTIME_CLOCK jumps (https://github.com/nasa/osal/issues/1401).
+            OS_Posix_CompAbsDelayTimeMonotonic(timeout, &monotonic_deadline);
         }
 
         /*
-         ** If the OS_Posix_MqReceiveUntilMonotonicDeadline call is interrupted by a system call or signal,
-         ** call it again.
+         ** If the receive call is interrupted by a system call or signal,
+         ** call it again (same structure as legacy implementation).
          */
         do
         {
-            /*
-            * OS_Posix_MqReceiveUntilMonotonicDeadline is does not suffer a premature timeout because it does not depend on REALTIME_CLOCK.
-            */
-            sizeCopied = OS_Posix_MqReceiveUntilMonotonicDeadline(impl->id, data, size, NULL, &ts);
+            if (timeout == OS_CHECK)
+            {
+                sizeCopied = mq_timedreceive(impl->id, data, size, NULL, &ts);
+            }
+            else
+            {
+                sizeCopied = OS_Posix_MqReceiveUntilMonotonicDeadline(impl->id, data, size, NULL, &monotonic_deadline);
+            }
         } while (timeout != OS_CHECK && sizeCopied < 0 && errno == EINTR);
 
     } /* END timeout */
