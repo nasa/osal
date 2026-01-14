@@ -30,8 +30,10 @@
 #include "os-posix.h"
 #include "bsp-impl.h"
 
+#ifdef __linux__
 #include <poll.h>
 #include <stdint.h>
+#endif
 
 #include "os-impl-queues.h"
 #include "os-shared-queue.h"
@@ -44,6 +46,7 @@ OS_impl_queue_internal_record_t OS_impl_queue_table[OS_MAX_QUEUES];
                                 MESSAGE QUEUE API
  ***************************************************************************************/
 
+#ifdef __linux__
 /*----------------------------------------------------------------
  *
  * Purpose:  Local helper function
@@ -68,6 +71,7 @@ static void OS_Posix_CompAbsDelayTimeMonotonic(uint32 msecs, struct timespec *tm
         tm->tv_sec++;
     }
 }
+#endif
 
 /*---------------------------------------------------------------------------------------
    Name: OS_Posix_MqReceiveUntilMonotonicDeadline
@@ -76,6 +80,7 @@ static void OS_Posix_CompAbsDelayTimeMonotonic(uint32 msecs, struct timespec *tm
             and avoids changing shared queue flags.
 
  ----------------------------------------------------------------------------------------*/
+#ifdef __linux__
 static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, size_t len, unsigned *prio,
                                                         const struct timespec *deadline)
 {
@@ -163,6 +168,7 @@ static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, si
         return OS_ERROR;
     }
 }
+#endif
 
 /*---------------------------------------------------------------------------------------
    Name: OS_Posix_QueueAPI_Impl_Init
@@ -313,7 +319,9 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     int32                            return_code;
     ssize_t                          sizeCopied;
     struct timespec                  ts;
+#ifdef __linux__
     struct timespec                  monotonic_deadline;
+#endif
     OS_impl_queue_internal_record_t *impl;
 
     impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
@@ -335,6 +343,7 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     }
     else
     {
+#ifdef __linux__
         if (timeout == OS_CHECK)
         {
             /*
@@ -365,9 +374,38 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
             }
             else
             {
-                sizeCopied = OS_Posix_MqReceiveUntilMonotonicDeadline(impl->id, data, size, NULL, &monotonic_deadline);
+                sizeCopied = OS_Posix_MqReceiveUntilMonotonicDeadline(impl->id, data, size, NULL,
+                                                                     &monotonic_deadline);
             }
         } while (timeout != OS_CHECK && sizeCopied < 0 && errno == EINTR);
+#else
+        /*
+         * NOTE - a prior implementation of OS_CHECK would check the mq_attr for a nonzero depth
+         * and then call mq_receive().  This is insufficient since another thread might do the same
+         * thing at the same time in which case one thread will read and the other will block.
+         *
+         * Calling mq_timedreceive with a zero timeout effectively does the same thing in the typical
+         * case, but for the case where two threads do a simultaneous read, one will get the message
+         * while the other will NOT block (as expected).
+         */
+        if (timeout == OS_CHECK)
+        {
+            memset(&ts, 0, sizeof(ts));
+        }
+        else
+        {
+            OS_Posix_CompAbsDelayTime(timeout, &ts);
+        }
+
+        /*
+         ** If the mq_timedreceive call is interrupted by a system call or signal,
+         ** call it again.
+         */
+        do
+        {
+            sizeCopied = mq_timedreceive(impl->id, data, size, NULL, &ts);
+        } while (timeout != OS_CHECK && sizeCopied < 0 && errno == EINTR);
+#endif
 
     } /* END timeout */
 
