@@ -85,12 +85,22 @@ static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, si
                                                         const struct timespec *deadline)
 {
     struct timespec now;
-    struct timespec immediate_ts = {0, 0};
+    struct timespec immediate_ts = {0, 0}; /* zero timeout so mq_timedreceive is non-blocking */
     struct pollfd   pfd;
 
     pfd.fd     = (int)mqd;
     pfd.events = POLLIN;
 
+    /*
+     * Emulates mq_timedreceive() with a CLOCK_MONOTONIC deadline:
+     * mq_timedreceive() blocks until a message arrives or the absolute timeout
+     * (CLOCK_REALTIME) is reached; if the timeout is already in the past it
+     * returns immediately, and EINTR can interrupt the wait.
+     * Here, if the monotonic deadline is already in the past, return ETIMEDOUT
+     * immediately (no blocking), otherwise block here until a message arrives or
+     * the deadline expires. OS_QueueGet_Impl maps ETIMEDOUT to OS_QUEUE_TIMEOUT.
+     */
+    /* Loop until success, deadline, or non-retryable error; blocking stays bounded to this call site. */
     while (1)
     {
         int64_t rem_sec;
@@ -102,12 +112,14 @@ static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, si
 
         clock_gettime(CLOCK_MONOTONIC, &now);
 
+        /* If we're past the monotonic deadline, report timeout immediately. */
         if ((now.tv_sec > deadline->tv_sec) || (now.tv_sec == deadline->tv_sec && now.tv_nsec >= deadline->tv_nsec))
         {
             errno = ETIMEDOUT;
             return OS_ERROR;
         }
 
+        /* Convert remaining time to a bounded poll() timeout in milliseconds. */
         rem_sec  = deadline->tv_sec - now.tv_sec;
         rem_nsec = deadline->tv_nsec - now.tv_nsec;
         if (rem_nsec < 0)
@@ -135,12 +147,16 @@ static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, si
         {
             if (errno == EINTR)
             {
+                /* poll() was interrupted by a signal; retry until deadline. */
                 continue;
             }
 
             return OS_ERROR;
         }
 
+        /*
+         * poll() timed out; recheck the monotonic deadline (ms granularity can return early).
+         */
         if (rc == 0)
         {
             clock_gettime(CLOCK_MONOTONIC, &now);
@@ -154,6 +170,10 @@ static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, si
             continue;
         }
 
+        /*
+         * poll() reported data ready; use an immediate timeout so we don't block
+         * if another reader consumes the message first.
+         */
         size = mq_timedreceive(mqd, buf, len, prio, &immediate_ts);
         if (size >= 0)
         {
@@ -162,6 +182,7 @@ static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, si
 
         if (errno == EINTR || errno == EAGAIN || errno == ETIMEDOUT)
         {
+            /* EINTR/EAGAIN/ETIMEDOUT are retryable here; continue until deadline. */
             continue;
         }
 
