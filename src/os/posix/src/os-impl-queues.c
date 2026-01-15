@@ -120,6 +120,7 @@ static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, si
         }
 
         /* Convert remaining time to a bounded poll() timeout in milliseconds. */
+        /* Compute remaining time as (sec,nsec), borrowing if nsec underflows. */
         rem_sec  = deadline->tv_sec - now.tv_sec;
         rem_nsec = deadline->tv_nsec - now.tv_nsec;
         if (rem_nsec < 0)
@@ -128,6 +129,7 @@ static ssize_t OS_Posix_MqReceiveUntilMonotonicDeadline(mqd_t mqd, char *buf, si
             rem_nsec += 1000000000L;
         }
 
+        /* Convert to ms, rounding up to avoid undersleeping, then clamp for poll(). */
         rem_ms = (rem_sec * 1000) + (rem_nsec + 999999) / 1000000;
         if (rem_ms > INT_MAX)
         {
