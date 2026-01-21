@@ -283,6 +283,7 @@ void Test_OS_ModuleGetInfo(void)
     OSAPI_TEST_FUNCTION_RC(OS_ModuleInfo(OS_OBJECT_ID_UNDEFINED, &module_prop), OS_ERROR);
 }
 
+
 /* Osapi_Test_Setup
  *
  * Purpose:
