@@ -56,6 +56,7 @@ add_library(ut_libc_stubs STATIC EXCLUDE_FROM_ALL
     src/posix-fcntl-stubs.c
     src/posix-ioctl-stubs.c
     src/posix-mqueue-stubs.c
+    src/posix-netdb-stubs.c
     src/posix-pthread-stubs.c
     src/posix-sched-stubs.c
     src/posix-semaphore-stubs.c
@@ -126,6 +127,7 @@ set(OSAL_SHARED_IMPL_HEADERS
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-network.h
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-printf.h
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-queue.h
+    ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-rwlock.h
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-select.h
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-shell.h
     ${OSAL_SOURCE_DIR}/src/os/shared/inc/os-shared-sockets.h
@@ -183,6 +185,7 @@ add_library(ut_osapi_impl_stubs STATIC EXCLUDE_FROM_ALL
     src/os-shared-network-impl-stubs.c
     src/os-shared-printf-impl-stubs.c
     src/os-shared-queue-impl-stubs.c
+    src/os-shared-rwlock-impl-stubs.c
     src/os-shared-select-impl-stubs.c
     src/os-shared-shell-impl-stubs.c
     src/os-shared-sockets-impl-handlers.c
@@ -210,6 +213,7 @@ add_library(ut_osapi_init_stubs STATIC EXCLUDE_FROM_ALL
     src/os-shared-module-init-stubs.c
     src/os-shared-mutex-init-stubs.c
     src/os-shared-network-init-stubs.c
+    src/os-shared-queue-init-stubs.c
     src/os-shared-queue-init-stubs.c
     src/os-shared-sockets-init-stubs.c
     src/os-shared-task-init-stubs.c
@@ -259,6 +263,7 @@ add_library(ut_osapi_table_stubs STATIC EXCLUDE_FROM_ALL
     src/osapi-shared-module-table-stubs.c
     src/osapi-shared-mutex-table-stubs.c
     src/osapi-shared-queue-table-stubs.c
+    src/osapi-shared-rwlock-table-stubs.c
     src/osapi-shared-stream-table-stubs.c
     src/osapi-shared-task-table-stubs.c
     src/osapi-shared-timebase-table-stubs.c

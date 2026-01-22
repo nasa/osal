@@ -71,6 +71,13 @@
   */
 #define OS_MAX_MUTEXES                  @OSAL_CONFIG_MAX_MUTEXES@
 
+ /**
+  * \brief The maximum number of rwlocks to support
+  *
+  * Based on the OSAL_CONFIG_MAX_RWLOCKS configuration option
+  */
+#define OS_MAX_RWLOCKS                  @OSAL_CONFIG_MAX_RWLOCKS@
+
 /**
   * \brief The maximum number of condition variables to support
   *

@@ -7,27 +7,31 @@
 # Basic set of files
 set(OS_BSP_SRCLIST
     src/bsp_console.c
-    src/bsp_init.c
     src/bsp_start.c
-)
+)   
 
-# Source select file system setup implementation
-if (RTEMS_INCLUDE_TARFS)
+if (RTEMS_EXTERNAL_KERNEL)
+    # No File System setup implemented when building cFS image using external RTEMS Kernel (e.g. RKI)
     list(APPEND OS_BSP_SRCLIST
-        src/bsp_tarfs_setupfs.c
+        src/bsp_no_setupfs.c
     )
 else ()
-    # NOTE: rtems config needs to define supporting configuration (FILESYSTEM and DRIVERs)
+    # Include these files when NOT building cFS image using external RTEMS Kernel (e.g. RKI)
     list(APPEND OS_BSP_SRCLIST
-        src/bsp_mount_setupfs.c
+        src/bsp_init.c
     )
-endif ()
-
-# Link rtemscpu to osal public api if not dynamic loading
-if (NOT RTEMS_DYNAMIC_LOAD)
-    target_link_libraries(osal_public_api INTERFACE
-          rtemscpu
-    )
+    
+    # Source select file system setup implementation
+    if (RTEMS_INCLUDE_TARFS)
+        list(APPEND OS_BSP_SRCLIST
+            src/bsp_tarfs_setupfs.c
+        )
+    else ()
+        # NOTE: rtems config needs to define supporting configuration (FILESYSTEM and DRIVERs)
+        list(APPEND OS_BSP_SRCLIST
+            src/bsp_mount_setupfs.c
+        )
+    endif ()
 endif ()
 
 if (RTEMS_NO_SHELL)

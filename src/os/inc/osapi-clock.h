@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -92,6 +92,38 @@ enum
 /** @defgroup OSAPIClock OSAL Real Time Clock APIs
  * @{
  */
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Get the monotonic time
+ *
+ * This function gets the monotonic time from the underlying OS.
+ *
+ * Monotonic time differs from local or real (wall-clock) time in that it cannot be set.
+ * As a result, the time is always guaranteed to be increasing, and never moves
+ * backwards or has discontinuities (with some exceptions - see POSIX documentation).
+ *
+ * The Epoch is undefined- In many implementations, the epoch is the system boot time,
+ * and the clock increases indefinitely so long as the system remains powered on.
+ *
+ * @note Sometimes a monotonic clock is implemented in the operating system and sometimes
+ * it is implemented in platform-specific hardware.
+ *
+ * If the operating system does not provide a monotonic clock, then this function may
+ * return #OS_ERR_NOT_IMPLEMENTED.  However, a platform-specific monotonic clock may
+ * still exist, in the form of a CPU register or external oscillator.  This API only
+ * accesses a monotonic clock if one is provided by the operating system.
+ *
+ * To read a platform-specific monotonic clock in CFE, see CFE_PSP_GetTime().
+ *
+ * @param[out]  time_struct An OS_time_t that will be set to the monotonic time @nonnull
+ *
+ * @return Get monotonic time status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_INVALID_POINTER if time_struct is null
+ * @retval #OS_ERR_NOT_IMPLEMENTED if operating system does not implement a monotonic clock
+ */
+int32 OS_GetMonotonicTime(OS_time_t *time_struct);
 
 /*-------------------------------------------------------------------------------------*/
 /**

@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -41,6 +41,7 @@ OS_common_record_t OS_stub_timecb_table[OS_MAX_TIMERS];
 OS_common_record_t OS_stub_stream_table[OS_MAX_NUM_OPEN_FILES];
 OS_common_record_t OS_stub_dir_table[OS_MAX_NUM_OPEN_DIRS];
 OS_common_record_t OS_stub_condvar_table[OS_MAX_CONDVARS];
+OS_common_record_t OS_stub_rwlock_table[OS_MAX_RWLOCKS];
 
 OS_common_record_t *const OS_global_task_table      = OS_stub_task_table;
 OS_common_record_t *const OS_global_queue_table     = OS_stub_queue_table;
@@ -55,3 +56,4 @@ OS_common_record_t *const OS_global_module_table    = OS_stub_module_table;
 OS_common_record_t *const OS_global_filesys_table   = OS_stub_filesys_table;
 OS_common_record_t *const OS_global_console_table   = OS_stub_console_table;
 OS_common_record_t *const OS_global_condvar_table   = OS_stub_condvar_table;
+OS_common_record_t *const OS_global_rwlock_table    = OS_stub_rwlock_table;

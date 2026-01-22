@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -40,6 +40,8 @@ void Test_No_Sockets(void)
     OSAPI_TEST_FUNCTION_RC(OS_SocketAddrFromString_Impl, (NULL, NULL), OS_ERR_NOT_IMPLEMENTED);
     OSAPI_TEST_FUNCTION_RC(OS_SocketAddrGetPort_Impl, (NULL, NULL), OS_ERR_NOT_IMPLEMENTED);
     OSAPI_TEST_FUNCTION_RC(OS_SocketAddrSetPort_Impl, (NULL, 0), OS_ERR_NOT_IMPLEMENTED);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketGetOption_Impl, (NULL, 0, NULL), OS_ERR_NOT_IMPLEMENTED);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketSetOption_Impl, (NULL, 0, NULL), OS_ERR_NOT_IMPLEMENTED);
 }
 
 /* ------------------- End of test cases --------------------------------------*/

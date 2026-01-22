@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -76,7 +76,7 @@
 **        (a) OS_ERR_NOT_IMPLEMENTED __or__
 **        (b) host id of value greater than 0
 **--------------------------------------------------------------------------------*/
-void UT_os_networkgetid_test()
+void UT_os_networkgetid_test(void)
 {
     /*-----------------------------------------------------*/
     /* API Not implemented */
@@ -133,7 +133,7 @@ void UT_os_networkgetid_test()
 **       (a) OS_SUCCESS, _and_
 **       (b) the returned buffer to be non-empty
 **--------------------------------------------------------------------------------*/
-void UT_os_networkgethostname_test()
+void UT_os_networkgethostname_test(void)
 {
     char buffer[UT_OS_IO_BUFF_SIZE];
 

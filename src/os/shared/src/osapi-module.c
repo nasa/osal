@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -101,7 +101,15 @@ int32 OS_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName, con
              * Return "OS_ERROR" to indicate that an actual search was done
              * with a not-found result, vs. not searching at all. */
             return_code = OS_ERROR;
-            break;
+            /* note: instead of including a regular break statement here, we
+             * do this so that we can get full coverage on the MC/DC tests. The
+             * two lines below in terms of behavior for this function are equivalent.
+             * Because for coverage purposes we only need to execute each branch
+             * and/or condition at least once, the other break statement in this
+             * while loop is left as is, since the break statement is more clear
+             * about what its purpose is rather than the two lines below. */
+            StaticSym = NULL;
+            continue;
         }
         if (strcmp(StaticSym->Name, SymbolName) == 0 &&
             (ModuleName == NULL || strcmp(StaticSym->Module, ModuleName) == 0))
@@ -134,7 +142,10 @@ int32 OS_ModuleLoad_Static(const char *ModuleName)
         if (StaticSym->Name == NULL)
         {
             /* end of list  */
-            break;
+            /* see comment in OS_SymbolLookup_Static regarding similar 
+             * statement @author lukas.n.kebuladze@nasa.gov */
+            StaticSym = NULL;
+            continue;
         }
         if (StaticSym->Module != NULL && strcmp(StaticSym->Module, ModuleName) == 0)
         {

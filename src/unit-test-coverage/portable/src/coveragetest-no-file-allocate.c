@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -17,17 +17,21 @@
  ************************************************************************/
 
 /**
- * \brief Coverage test for no network implementation
+ * \file
  * \ingroup  portable
+ * \author   joseph.p.hickey@nasa.gov
+ *
  */
 
 #include "os-portable-coveragetest.h"
-#include "os-shared-network.h"
+#include "os-shared-file.h"
 
-void Test_No_Network(void)
+void Test_OS_FileAllocate_Impl(void)
 {
-    OSAPI_TEST_FUNCTION_RC(OS_NetworkGetID_Impl, (NULL), OS_ERR_NOT_IMPLEMENTED);
-    OSAPI_TEST_FUNCTION_RC(OS_NetworkGetHostName_Impl, (NULL, 0), OS_ERR_NOT_IMPLEMENTED);
+    /* Test Case For:
+     * int32 OS_FileAllocate_Impl(uint32 stream_id, const char* Cmd)
+     */
+    OSAPI_TEST_FUNCTION_RC(OS_FileAllocate_Impl, (NULL, 0, 0), OS_ERR_NOT_IMPLEMENTED);
 }
 
 /* ------------------- End of test cases --------------------------------------*/
@@ -57,5 +61,5 @@ void Osapi_Test_Teardown(void) {}
  */
 void UtTest_Setup(void)
 {
-    ADD_TEST(No_Network);
+    ADD_TEST(OS_FileAllocate_Impl);
 }
