@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -63,7 +63,7 @@
 **          OS_SEM_FAILURE if the OS call failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_bin_sem_create_test()
+void UT_os_bin_sem_create_test(void)
 {
     int       i;
     char      sem_name[UT_OS_NAME_BUFF_SIZE];
@@ -128,7 +128,7 @@ void UT_os_bin_sem_create_test()
 **          OS_SEM_FAILURE if the OS call failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_bin_sem_delete_test()
+void UT_os_bin_sem_delete_test(void)
 {
     osal_id_t bin_sem_id = OS_OBJECT_ID_UNDEFINED;
 
@@ -152,7 +152,7 @@ void UT_os_bin_sem_delete_test()
 **                         array of semaphores defined by the system
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_bin_sem_flush_test()
+void UT_os_bin_sem_flush_test(void)
 {
     osal_id_t bin_sem_id = OS_OBJECT_ID_UNDEFINED;
 
@@ -177,7 +177,7 @@ void UT_os_bin_sem_flush_test()
 **                         array of semaphores defined by the system
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_bin_sem_give_test()
+void UT_os_bin_sem_give_test(void)
 {
     osal_id_t bin_sem_id = OS_OBJECT_ID_UNDEFINED;
 
@@ -203,7 +203,7 @@ void UT_os_bin_sem_give_test()
 **          OS_SEM_FAILURE if the OS call failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_bin_sem_take_test()
+void UT_os_bin_sem_take_test(void)
 {
     osal_id_t bin_sem_id = OS_OBJECT_ID_UNDEFINED;
 
@@ -228,7 +228,7 @@ void UT_os_bin_sem_take_test()
 **          OS_SEM_TIMEOUT if the semaphore was not relinquished in time
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_bin_sem_timed_wait_test()
+void UT_os_bin_sem_timed_wait_test(void)
 {
     osal_id_t bin_sem_id = OS_OBJECT_ID_UNDEFINED;
 
@@ -261,7 +261,7 @@ void UT_os_bin_sem_timed_wait_test()
 **                                semaphore table
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_bin_sem_get_id_by_name_test()
+void UT_os_bin_sem_get_id_by_name_test(void)
 {
     osal_id_t bin_sem_id = OS_OBJECT_ID_UNDEFINED;
     char      long_sem_name[UT_OS_NAME_BUFF_SIZE];

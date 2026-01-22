@@ -28,11 +28,14 @@ set(RTEMS_BASE_SRCLIST
 # Use portable blocks for basic I/O
 set(RTEMS_IMPL_SRCLIST
     ../portable/os-impl-posix-gettime.c
+    ../portable/os-impl-posix-gettime-monotonic.c
     ../portable/os-impl-console-bsp.c
     ../portable/os-impl-posix-io.c
     ../portable/os-impl-posix-files.c
     ../portable/os-impl-posix-dirs.c
     ../portable/os-impl-no-condvar.c
+    ../portable/os-impl-no-rwlock.c
+    ../portable/os-impl-no-file-allocate.c
 )
 
 # Currently the "shell output to file" for RTEMS is not implemented
@@ -60,6 +63,7 @@ if (OSAL_CONFIG_INCLUDE_NETWORK)
     list(APPEND RTEMS_IMPL_SRCLIST
         src/os-impl-network.c
         ../portable/os-impl-bsd-sockets.c
+        ../portable/os-impl-bsd-sockets-no-dns.c   # Use functions that do not require DNS
         ../portable/os-impl-bsd-select.c
     )
 
@@ -73,7 +77,8 @@ if (OSAL_CONFIG_INCLUDE_NETWORK)
     endif()
 else()
     list(APPEND RTEMS_IMPL_SRCLIST
-        ../portable/os-impl-no-network.c
+        ../portable/os-impl-no-network-gethostid.c
+        ../portable/os-impl-no-network-gethostname.c
         ../portable/os-impl-no-sockets.c
         ../portable/os-impl-no-select.c
     )

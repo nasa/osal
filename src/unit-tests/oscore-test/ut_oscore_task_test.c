@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -102,7 +102,7 @@ void generic_test_task(void)
 **          OS_ERROR if the OS call failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_task_create_test()
+void UT_os_task_create_test(void)
 {
     int32 i = 0;
     char  task_name[UT_OS_NAME_BUFF_SIZE];
@@ -217,7 +217,7 @@ void UT_os_task_create_test()
 **          OS_ERROR if the OS call failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_task_delete_test()
+void UT_os_task_delete_test(void)
 {
     /*-----------------------------------------------------*/
     /* #1 Invalid-ID-arg */
@@ -390,7 +390,7 @@ void UT_os_task_exit_test(void)
 ** Returns: OS_ERROR if sleep failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_task_delay_test()
+void UT_os_task_delay_test(void)
 {
     OS_time_t before_time;
     OS_time_t after_time;
@@ -434,7 +434,7 @@ void UT_os_task_delay_test()
 **          OS_ERROR if the OS call failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_task_set_priority_test()
+void UT_os_task_set_priority_test(void)
 {
     /*-----------------------------------------------------*/
     /* #1 Invalid-ID-arg */
@@ -481,7 +481,7 @@ void getid_test_task(void)
 ** Parameters: To-be-filled-in
 ** Returns: Task id of the task that calls this routine
 **--------------------------------------------------------------------------------*/
-void UT_os_task_get_id_test()
+void UT_os_task_get_id_test(void)
 {
     /*
      * Note this function does not return a normal status code,
@@ -512,7 +512,7 @@ void UT_os_task_get_id_test()
 **          OS_ERR_NAME_NOT_FOUND if the name passed in is not in the task table
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_task_get_id_by_name_test()
+void UT_os_task_get_id_by_name_test(void)
 {
     /*-----------------------------------------------------*/
     /* #1 Invalid-pointer-arg-1 */
@@ -559,7 +559,7 @@ void UT_os_task_get_id_by_name_test()
 **          OS_ERR_INVALID_ID if the id passed in is not a valid task id
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_task_get_info_test()
+void UT_os_task_get_info_test(void)
 {
     OS_task_prop_t task_prop;
 
@@ -605,7 +605,7 @@ void UT_os_task_get_info_test()
 ** Syntax: OS_TaskFindIdBySystemData
 ** Purpose: Finds the abstract OSAL task ID from the system ID data
 **--------------------------------------------------------------------------------*/
-void UT_os_task_getid_by_sysdata_test()
+void UT_os_task_getid_by_sysdata_test(void)
 {
     uint8     sysdata = 0;
     osal_id_t task_id;

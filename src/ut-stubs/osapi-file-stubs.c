@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -34,44 +34,6 @@ void UT_DefaultHandler_OS_lseek(void *, UT_EntryKey_t, const UT_StubContext_t *)
 void UT_DefaultHandler_OS_read(void *, UT_EntryKey_t, const UT_StubContext_t *);
 void UT_DefaultHandler_OS_stat(void *, UT_EntryKey_t, const UT_StubContext_t *);
 void UT_DefaultHandler_OS_write(void *, UT_EntryKey_t, const UT_StubContext_t *);
-
-/*
- * ----------------------------------------------------
- * Generated stub function for OS_TimedReadAbs()
- * ----------------------------------------------------
- */
-int32 OS_TimedReadAbs(osal_id_t filedes, void *buffer, size_t nbytes, OS_time_t abstime)
-{
-    UT_GenStub_SetupReturnBuffer(OS_TimedReadAbs, int32);
-
-    UT_GenStub_AddParam(OS_TimedReadAbs, osal_id_t, filedes);
-    UT_GenStub_AddParam(OS_TimedReadAbs, void *, buffer);
-    UT_GenStub_AddParam(OS_TimedReadAbs, size_t, nbytes);
-    UT_GenStub_AddParam(OS_TimedReadAbs, OS_time_t, abstime);
-
-    UT_GenStub_Execute(OS_TimedReadAbs, Basic, NULL);
-
-    return UT_GenStub_GetReturnValue(OS_TimedReadAbs, int32);
-}
-
-/*
- * ----------------------------------------------------
- * Generated stub function for OS_TimedWriteAbs()
- * ----------------------------------------------------
- */
-int32 OS_TimedWriteAbs(osal_id_t filedes, const void *buffer, size_t nbytes, OS_time_t abstime)
-{
-    UT_GenStub_SetupReturnBuffer(OS_TimedWriteAbs, int32);
-
-    UT_GenStub_AddParam(OS_TimedWriteAbs, osal_id_t, filedes);
-    UT_GenStub_AddParam(OS_TimedWriteAbs, const void *, buffer);
-    UT_GenStub_AddParam(OS_TimedWriteAbs, size_t, nbytes);
-    UT_GenStub_AddParam(OS_TimedWriteAbs, OS_time_t, abstime);
-
-    UT_GenStub_Execute(OS_TimedWriteAbs, Basic, NULL);
-
-    return UT_GenStub_GetReturnValue(OS_TimedWriteAbs, int32);
-}
 
 /*
  * ----------------------------------------------------
@@ -122,6 +84,24 @@ int32 OS_FDGetInfo(osal_id_t filedes, OS_file_prop_t *fd_prop)
 
 /*
  * ----------------------------------------------------
+ * Generated stub function for OS_FileAllocate()
+ * ----------------------------------------------------
+ */
+int32 OS_FileAllocate(osal_id_t filedes, osal_offset_t offset, osal_offset_t len)
+{
+    UT_GenStub_SetupReturnBuffer(OS_FileAllocate, int32);
+
+    UT_GenStub_AddParam(OS_FileAllocate, osal_id_t, filedes);
+    UT_GenStub_AddParam(OS_FileAllocate, osal_offset_t, offset);
+    UT_GenStub_AddParam(OS_FileAllocate, osal_offset_t, len);
+
+    UT_GenStub_Execute(OS_FileAllocate, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_FileAllocate, int32);
+}
+
+/*
+ * ----------------------------------------------------
  * Generated stub function for OS_FileOpenCheck()
  * ----------------------------------------------------
  */
@@ -134,6 +114,23 @@ int32 OS_FileOpenCheck(const char *Filename)
     UT_GenStub_Execute(OS_FileOpenCheck, Basic, NULL);
 
     return UT_GenStub_GetReturnValue(OS_FileOpenCheck, int32);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_FileTruncate()
+ * ----------------------------------------------------
+ */
+int32 OS_FileTruncate(osal_id_t filedes, osal_offset_t len)
+{
+    UT_GenStub_SetupReturnBuffer(OS_FileTruncate, int32);
+
+    UT_GenStub_AddParam(OS_FileTruncate, osal_id_t, filedes);
+    UT_GenStub_AddParam(OS_FileTruncate, osal_offset_t, len);
+
+    UT_GenStub_Execute(OS_FileTruncate, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_FileTruncate, int32);
 }
 
 /*
@@ -176,6 +173,25 @@ int32 OS_TimedRead(osal_id_t filedes, void *buffer, size_t nbytes, int32 timeout
 
 /*
  * ----------------------------------------------------
+ * Generated stub function for OS_TimedReadAbs()
+ * ----------------------------------------------------
+ */
+int32 OS_TimedReadAbs(osal_id_t filedes, void *buffer, size_t nbytes, OS_time_t abstime)
+{
+    UT_GenStub_SetupReturnBuffer(OS_TimedReadAbs, int32);
+
+    UT_GenStub_AddParam(OS_TimedReadAbs, osal_id_t, filedes);
+    UT_GenStub_AddParam(OS_TimedReadAbs, void *, buffer);
+    UT_GenStub_AddParam(OS_TimedReadAbs, size_t, nbytes);
+    UT_GenStub_AddParam(OS_TimedReadAbs, OS_time_t, abstime);
+
+    UT_GenStub_Execute(OS_TimedReadAbs, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_TimedReadAbs, int32);
+}
+
+/*
+ * ----------------------------------------------------
  * Generated stub function for OS_TimedWrite()
  * ----------------------------------------------------
  */
@@ -191,6 +207,25 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
     UT_GenStub_Execute(OS_TimedWrite, Basic, UT_DefaultHandler_OS_TimedWrite);
 
     return UT_GenStub_GetReturnValue(OS_TimedWrite, int32);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_TimedWriteAbs()
+ * ----------------------------------------------------
+ */
+int32 OS_TimedWriteAbs(osal_id_t filedes, const void *buffer, size_t nbytes, OS_time_t abstime)
+{
+    UT_GenStub_SetupReturnBuffer(OS_TimedWriteAbs, int32);
+
+    UT_GenStub_AddParam(OS_TimedWriteAbs, osal_id_t, filedes);
+    UT_GenStub_AddParam(OS_TimedWriteAbs, const void *, buffer);
+    UT_GenStub_AddParam(OS_TimedWriteAbs, size_t, nbytes);
+    UT_GenStub_AddParam(OS_TimedWriteAbs, OS_time_t, abstime);
+
+    UT_GenStub_Execute(OS_TimedWriteAbs, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_TimedWriteAbs, int32);
 }
 
 /*
@@ -248,12 +283,12 @@ int32 OS_cp(const char *src, const char *dest)
  * Generated stub function for OS_lseek()
  * ----------------------------------------------------
  */
-int32 OS_lseek(osal_id_t filedes, int32 offset, uint32 whence)
+int32 OS_lseek(osal_id_t filedes, osal_offset_t offset, uint32 whence)
 {
     UT_GenStub_SetupReturnBuffer(OS_lseek, int32);
 
     UT_GenStub_AddParam(OS_lseek, osal_id_t, filedes);
-    UT_GenStub_AddParam(OS_lseek, int32, offset);
+    UT_GenStub_AddParam(OS_lseek, osal_offset_t, offset);
     UT_GenStub_AddParam(OS_lseek, uint32, whence);
 
     UT_GenStub_Execute(OS_lseek, Basic, UT_DefaultHandler_OS_lseek);

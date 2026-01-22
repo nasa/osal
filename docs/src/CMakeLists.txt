@@ -28,7 +28,6 @@
 # in a standalone build environment.
 #
 
-cmake_minimum_required(VERSION 3.5)
 project(OSAL_DOCS NONE)
 
 # List of dox files to include -

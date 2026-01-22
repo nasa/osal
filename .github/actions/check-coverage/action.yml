@@ -27,7 +27,6 @@ runs:
       shell: bash
       run: lcov
         --capture --rc lcov_branch_coverage=1
-        --include '${{ github.workspace }}/*'
         --directory '${{ inputs.binary-dir }}'
         --output-file '${{ inputs.binary-dir }}/coverage.info' |
         tee '${{ inputs.binary-dir }}/lcov_out.txt'

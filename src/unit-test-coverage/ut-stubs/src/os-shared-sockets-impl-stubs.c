@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -199,6 +199,24 @@ int32 OS_SocketGetInfo_Impl(const OS_object_token_t *token, OS_socket_prop_t *so
 
 /*
  * ----------------------------------------------------
+ * Generated stub function for OS_SocketGetOption_Impl()
+ * ----------------------------------------------------
+ */
+int32 OS_SocketGetOption_Impl(const OS_object_token_t *token, OS_socket_option_t opt_id, OS_socket_optval_t *optval)
+{
+    UT_GenStub_SetupReturnBuffer(OS_SocketGetOption_Impl, int32);
+
+    UT_GenStub_AddParam(OS_SocketGetOption_Impl, const OS_object_token_t *, token);
+    UT_GenStub_AddParam(OS_SocketGetOption_Impl, OS_socket_option_t, opt_id);
+    UT_GenStub_AddParam(OS_SocketGetOption_Impl, OS_socket_optval_t *, optval);
+
+    UT_GenStub_Execute(OS_SocketGetOption_Impl, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_SocketGetOption_Impl, int32);
+}
+
+/*
+ * ----------------------------------------------------
  * Generated stub function for OS_SocketListen_Impl()
  * ----------------------------------------------------
  */
@@ -268,6 +286,25 @@ int32 OS_SocketSendTo_Impl(const OS_object_token_t *token, const void *buffer, s
     UT_GenStub_Execute(OS_SocketSendTo_Impl, Basic, NULL);
 
     return UT_GenStub_GetReturnValue(OS_SocketSendTo_Impl, int32);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_SocketSetOption_Impl()
+ * ----------------------------------------------------
+ */
+int32 OS_SocketSetOption_Impl(const OS_object_token_t *token, OS_socket_option_t opt_id,
+                              const OS_socket_optval_t *optval)
+{
+    UT_GenStub_SetupReturnBuffer(OS_SocketSetOption_Impl, int32);
+
+    UT_GenStub_AddParam(OS_SocketSetOption_Impl, const OS_object_token_t *, token);
+    UT_GenStub_AddParam(OS_SocketSetOption_Impl, OS_socket_option_t, opt_id);
+    UT_GenStub_AddParam(OS_SocketSetOption_Impl, const OS_socket_optval_t *, optval);
+
+    UT_GenStub_Execute(OS_SocketSetOption_Impl, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_SocketSetOption_Impl, int32);
 }
 
 /*

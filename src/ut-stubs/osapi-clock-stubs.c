@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -42,6 +42,22 @@ int32 OS_GetLocalTime(OS_time_t *time_struct)
     UT_GenStub_Execute(OS_GetLocalTime, Basic, UT_DefaultHandler_OS_GetLocalTime);
 
     return UT_GenStub_GetReturnValue(OS_GetLocalTime, int32);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_GetMonotonicTime()
+ * ----------------------------------------------------
+ */
+int32 OS_GetMonotonicTime(OS_time_t *time_struct)
+{
+    UT_GenStub_SetupReturnBuffer(OS_GetMonotonicTime, int32);
+
+    UT_GenStub_AddParam(OS_GetMonotonicTime, OS_time_t *, time_struct);
+
+    UT_GenStub_Execute(OS_GetMonotonicTime, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_GetMonotonicTime, int32);
 }
 
 /*

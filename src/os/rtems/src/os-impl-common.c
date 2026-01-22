@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -106,7 +106,7 @@ int32 OS_API_Impl_Init(osal_objtype_t idtype)
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_IdleLoop_Impl()
+void OS_IdleLoop_Impl(void)
 {
     RTEMS_GlobalVars.IdleTaskId = rtems_task_self();
     rtems_task_suspend(RTEMS_SELF);
@@ -118,7 +118,7 @@ void OS_IdleLoop_Impl()
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
-void OS_ApplicationShutdown_Impl()
+void OS_ApplicationShutdown_Impl(void)
 {
     /* Note that setting the IdleTaskId and suspending
      * the idle task is not an atomic operation, so there

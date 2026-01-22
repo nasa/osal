@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -39,6 +39,8 @@ void TestRename(void);
 void TestStat(void);
 void TestOpenFileAPI(void);
 void TestUnmountRemount(void);
+void TestTruncate(void);
+void TestAllocate(void);
 
 os_err_name_t errname;
 
@@ -83,6 +85,8 @@ void UtTest_Setup(void)
     UtTest_Add(TestOpenReadCloseDir, NULL, NULL, "TestOpenReadCloseDir");
     UtTest_Add(TestStat, NULL, NULL, "TestStat");
     UtTest_Add(TestOpenFileAPI, NULL, NULL, "TestOpenFileAPI");
+    UtTest_Add(TestTruncate, NULL, NULL, "TestTruncate");
+    UtTest_Add(TestAllocate, NULL, NULL, "TestAllocate");
     UtTest_Add(TestUnmountRemount, NULL, NULL, "TestUnmountRemount");
     UtTest_Add(TestRename, NULL, NULL, "TestRename");
 }
@@ -967,4 +971,77 @@ void TestOpenFileAPI(void)
     UtAssert_True(status == OS_SUCCESS, "status after remove filename2 = %d", (int)status);
     status = OS_remove(filename3);
     UtAssert_True(status == OS_SUCCESS, "status after remove filename3 = %d", (int)status);
+}
+
+/*---------------------------------------------------------------------------------------
+ *  Name: TestTruncate
+---------------------------------------------------------------------------------------*/
+void TestTruncate(void)
+{
+    char       filename1[OS_MAX_PATH_LEN];
+    int32      status;
+    osal_id_t  fd;
+    os_fstat_t StatBuff;
+
+    strcpy(filename1, "/drive0/fntrunc");
+
+    UtAssert_INT32_EQ(OS_OpenCreate(&fd, filename1, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE),
+                      OS_SUCCESS);
+
+    /* Checking if FileTruncate is available */
+    status = OS_FileTruncate(fd, 0);
+    if (status != OS_ERR_NOT_IMPLEMENTED && status != OS_ERR_OPERATION_NOT_SUPPORTED)
+    {
+        UtAssert_INT32_EQ(OS_FileTruncate(fd, 32), OS_SUCCESS);
+        UtAssert_INT32_EQ(OS_stat(filename1, &StatBuff), OS_SUCCESS);
+        UtAssert_EQ(size_t, StatBuff.FileSize, 32);
+
+        /* FileTruncate this should not have changed the file position */
+        UtAssert_INT32_EQ(OS_write(fd, "x", 1), 1);
+        UtAssert_INT32_EQ(OS_stat(filename1, &StatBuff), OS_SUCCESS);
+        UtAssert_EQ(size_t, StatBuff.FileSize, 32);
+
+        UtAssert_INT32_EQ(OS_FileTruncate(fd, 0), OS_SUCCESS);
+        UtAssert_INT32_EQ(OS_stat(filename1, &StatBuff), OS_SUCCESS);
+        UtAssert_EQ(size_t, StatBuff.FileSize, 0);
+    }
+
+    UtAssert_INT32_EQ(OS_close(fd), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_remove(filename1), OS_SUCCESS);
+}
+
+/*---------------------------------------------------------------------------------------
+ *  Name: TestAllocate
+---------------------------------------------------------------------------------------*/
+void TestAllocate(void)
+{
+    char       filename1[OS_MAX_PATH_LEN];
+    int        status;
+    osal_id_t  fd;
+    os_fstat_t StatBuff;
+
+    strcpy(filename1, "/drive0/fntrunc");
+
+    UtAssert_INT32_EQ(OS_OpenCreate(&fd, filename1, OS_FILE_FLAG_CREATE | OS_FILE_FLAG_TRUNCATE, OS_READ_WRITE),
+                      OS_SUCCESS);
+
+    status = OS_FileAllocate(fd, 0, 0);
+    if (status != OS_ERR_NOT_IMPLEMENTED && status != OS_ERR_OPERATION_NOT_SUPPORTED)
+    {
+        UtAssert_INT32_EQ(OS_FileAllocate(fd, 0, 32), OS_SUCCESS);
+        UtAssert_INT32_EQ(OS_stat(filename1, &StatBuff), OS_SUCCESS);
+        UtAssert_EQ(size_t, StatBuff.FileSize, 32);
+
+        /* FileTruncate this should not have changed the file position */
+        UtAssert_INT32_EQ(OS_write(fd, "x", 1), 1);
+        UtAssert_INT32_EQ(OS_stat(filename1, &StatBuff), OS_SUCCESS);
+        UtAssert_EQ(size_t, StatBuff.FileSize, 32);
+
+        UtAssert_INT32_EQ(OS_FileAllocate(fd, 32, 32), OS_SUCCESS);
+        UtAssert_INT32_EQ(OS_stat(filename1, &StatBuff), OS_SUCCESS);
+        UtAssert_EQ(size_t, StatBuff.FileSize, 64);
+    }
+
+    UtAssert_INT32_EQ(OS_close(fd), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_remove(filename1), OS_SUCCESS);
 }

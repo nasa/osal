@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -358,6 +358,77 @@ void Test_OS_SocketGetInfo_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_SocketGetInfo_Impl, (NULL, NULL), OS_SUCCESS);
 }
 
+/*****************************************************************************
+ *
+ * Test case for OS_SocketGetOption_Impl()
+ *
+ *****************************************************************************/
+void Test_OS_SocketGetOption_Impl(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_SocketGetOption_Impl(const OS_object_token_t *token, OS_socket_option_t opt_id, OS_socket_optval_t
+     * *optval)
+     */
+    OS_object_token_t  token = {0};
+    OS_socket_optval_t optval;
+
+    /* Set up token */
+    token.obj_idx = UT_INDEX_0;
+
+    memset(&optval, 0, sizeof(optval));
+
+    /* nominal */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketGetOption_Impl, (&token, OS_socket_option_UNDEFINED, &optval), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OCS_getsockopt, 0);
+
+    OSAPI_TEST_FUNCTION_RC(OS_SocketGetOption_Impl, (&token, OS_socket_option_IP_DSCP, &optval), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OCS_getsockopt, 1);
+
+    /* error cases */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketGetOption_Impl, (&token, OS_socket_option_MAX, &optval),
+                           OS_ERR_OPERATION_NOT_SUPPORTED);
+
+    UT_SetDeferredRetcode(UT_KEY(OCS_getsockopt), 1, -1);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketGetOption_Impl, (&token, OS_socket_option_IP_DSCP, &optval), OS_ERROR);
+}
+
+/*****************************************************************************
+ *
+ * Test case for OS_SocketSetOption_Impl()
+ *
+ *****************************************************************************/
+void Test_OS_SocketSetOption_Impl(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_SocketSetOption_Impl(const OS_object_token_t *token, OS_socket_option_t opt_id, const OS_socket_optval_t
+     * *optval)
+     */
+    OS_object_token_t  token = {0};
+    OS_socket_optval_t optval;
+
+    /* Set up token */
+    token.obj_idx = UT_INDEX_0;
+
+    memset(&optval, 0, sizeof(optval));
+
+    /* nominal */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketSetOption_Impl, (&token, OS_socket_option_UNDEFINED, &optval), OS_SUCCESS);
+    UtAssert_STUB_COUNT(OCS_setsockopt, 0);
+
+    OSAPI_TEST_FUNCTION_RC(OS_SocketSetOption_Impl, (&token, OS_socket_option_IP_DSCP, &optval), OS_SUCCESS);
+
+    /* error cases */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketSetOption_Impl, (&token, OS_socket_option_MAX, &optval),
+                           OS_ERR_OPERATION_NOT_SUPPORTED);
+
+    UT_SetDeferredRetcode(UT_KEY(OCS_setsockopt), 1, -1);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketSetOption_Impl, (&token, OS_socket_option_IP_DSCP, &optval), OS_ERROR);
+    UT_SetDeferredRetcode(UT_KEY(OCS_getsockopt), 1, -1);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketSetOption_Impl, (&token, OS_socket_option_IP_DSCP, &optval), OS_ERROR);
+}
+
 void Test_OS_SocketAddrInit_Impl(void)
 {
     OS_SockAddr_t        addr = {0};
@@ -382,51 +453,6 @@ void Test_OS_SocketAddrInit_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_SocketAddrInit_Impl, (&addr, OS_SocketDomain_INET6), OS_SUCCESS);
     UtAssert_INT32_EQ(sa->sa_family, OCS_AF_INET6);
     UtAssert_INT32_EQ(addr.ActualLength, sizeof(struct OCS_sockaddr_in6));
-}
-
-void Test_OS_SocketAddrToString_Impl(void)
-{
-    char                 buffer[UT_BUFFER_SIZE];
-    OS_SockAddr_t        addr = {0};
-    struct OCS_sockaddr *sa   = (struct OCS_sockaddr *)&addr.AddrData;
-
-    /* Bad family */
-    sa->sa_family = -1;
-    OSAPI_TEST_FUNCTION_RC(OS_SocketAddrToString_Impl, (buffer, sizeof(buffer), &addr), OS_ERR_BAD_ADDRESS);
-
-    /* AF_INET6 failed inet_ntop */
-    sa->sa_family = OCS_AF_INET6;
-    UT_SetDeferredRetcode(UT_KEY(OCS_inet_ntop), 1, -1);
-    OSAPI_TEST_FUNCTION_RC(OS_SocketAddrToString_Impl, (buffer, sizeof(buffer), &addr), OS_ERROR);
-
-    /* AF_INET, success */
-    sa->sa_family = OCS_AF_INET;
-    OSAPI_TEST_FUNCTION_RC(OS_SocketAddrToString_Impl, (buffer, sizeof(buffer), &addr), OS_SUCCESS);
-}
-
-void Test_OS_SocketAddrFromString_Impl(void)
-{
-    const char           buffer[UT_BUFFER_SIZE] = "UT";
-    OS_SockAddr_t        addr                   = {0};
-    struct OCS_sockaddr *sa                     = (struct OCS_sockaddr *)&addr.AddrData;
-
-    /* Bad family */
-    sa->sa_family = -1;
-    OSAPI_TEST_FUNCTION_RC(OS_SocketAddrFromString_Impl, (&addr, buffer), OS_ERR_BAD_ADDRESS);
-
-    /* AF_INET6 failed inet_ntop */
-    sa->sa_family = OCS_AF_INET6;
-    UT_SetDeferredRetcode(UT_KEY(OCS_inet_pton), 1, -1);
-    OSAPI_TEST_FUNCTION_RC(OS_SocketAddrFromString_Impl, (&addr, buffer), OS_ERROR);
-
-    /* AF_INET, unable to convert (note inet_pton returns 0 if it failed) */
-    sa->sa_family = OCS_AF_INET;
-    UT_SetDeferredRetcode(UT_KEY(OCS_inet_pton), 1, 0);
-    OSAPI_TEST_FUNCTION_RC(OS_SocketAddrFromString_Impl, (&addr, buffer), OS_ERROR);
-
-    /* AF_INET, success */
-    UT_SetDeferredRetcode(UT_KEY(OCS_inet_pton), 1, 1);
-    OSAPI_TEST_FUNCTION_RC(OS_SocketAddrFromString_Impl, (&addr, buffer), OS_SUCCESS);
 }
 
 void Test_OS_SocketAddrGetPort_Impl(void)
@@ -506,8 +532,8 @@ void UtTest_Setup(void)
     ADD_TEST(OS_SocketSendTo_Impl);
     ADD_TEST(OS_SocketGetInfo_Impl);
     ADD_TEST(OS_SocketAddrInit_Impl);
-    ADD_TEST(OS_SocketAddrToString_Impl);
-    ADD_TEST(OS_SocketAddrFromString_Impl);
     ADD_TEST(OS_SocketAddrGetPort_Impl);
     ADD_TEST(OS_SocketAddrSetPort_Impl);
+    ADD_TEST(OS_SocketGetOption_Impl);
+    ADD_TEST(OS_SocketSetOption_Impl);
 }

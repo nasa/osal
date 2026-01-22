@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -94,6 +94,7 @@ OS_common_record_t *const OS_global_queue_table     = &OS_common_table[OS_QUEUE_
 OS_common_record_t *const OS_global_bin_sem_table   = &OS_common_table[OS_BINSEM_BASE];
 OS_common_record_t *const OS_global_count_sem_table = &OS_common_table[OS_COUNTSEM_BASE];
 OS_common_record_t *const OS_global_mutex_table     = &OS_common_table[OS_MUTEX_BASE];
+OS_common_record_t *const OS_global_rwlock_table    = &OS_common_table[OS_RWLOCK_BASE];
 OS_common_record_t *const OS_global_stream_table    = &OS_common_table[OS_STREAM_BASE];
 OS_common_record_t *const OS_global_dir_table       = &OS_common_table[OS_DIR_BASE];
 OS_common_record_t *const OS_global_timebase_table  = &OS_common_table[OS_TIMEBASE_BASE];
@@ -141,6 +142,8 @@ uint32 OS_GetMaxForObjectType(osal_objtype_t idtype)
             return OS_MAX_COUNT_SEMAPHORES;
         case OS_OBJECT_TYPE_OS_MUTEX:
             return OS_MAX_MUTEXES;
+        case OS_OBJECT_TYPE_OS_RWLOCK:
+            return OS_MAX_RWLOCKS;
         case OS_OBJECT_TYPE_OS_STREAM:
             return OS_MAX_NUM_OPEN_FILES;
         case OS_OBJECT_TYPE_OS_DIR:
@@ -181,6 +184,8 @@ uint32 OS_GetBaseForObjectType(osal_objtype_t idtype)
             return OS_COUNTSEM_BASE;
         case OS_OBJECT_TYPE_OS_MUTEX:
             return OS_MUTEX_BASE;
+        case OS_OBJECT_TYPE_OS_RWLOCK:
+            return OS_RWLOCK_BASE;
         case OS_OBJECT_TYPE_OS_STREAM:
             return OS_STREAM_BASE;
         case OS_OBJECT_TYPE_OS_DIR:
@@ -595,8 +600,8 @@ int32 OS_ObjectIdFindNextFree(OS_object_token_t *token)
     OS_common_record_t *obj = NULL;
     OS_objtype_state_t *objtype_state;
 
-    base_id       = OS_GetBaseForObjectType(token->obj_type);
-    max_id        = OS_GetMaxForObjectType(token->obj_type);
+    base_id = OS_GetBaseForObjectType(token->obj_type);
+    max_id  = OS_GetMaxForObjectType(token->obj_type);
 
     if (max_id == 0)
     {
@@ -1285,7 +1290,8 @@ bool OS_ObjectIdIteratorGetNext(OS_object_iter_t *iter)
             iter->token.obj_id = record->active_id;
             got_next           = true;
         }
-    } while (!got_next);
+    }
+    while (!got_next);
 
     return got_next;
 }

@@ -19,6 +19,7 @@ set(MODULE_LIST
     network
     printf
     queue
+    rwlock
     select
     sockets
     task

@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -112,6 +112,24 @@ int32 OS_SelectMultiple(OS_FdSet *ReadSet, OS_FdSet *WriteSet, int32 msecs)
 
 /*
  * ----------------------------------------------------
+ * Generated stub function for OS_SelectMultipleAbs()
+ * ----------------------------------------------------
+ */
+int32 OS_SelectMultipleAbs(OS_FdSet *ReadSet, OS_FdSet *WriteSet, OS_time_t abs_timeout)
+{
+    UT_GenStub_SetupReturnBuffer(OS_SelectMultipleAbs, int32);
+
+    UT_GenStub_AddParam(OS_SelectMultipleAbs, OS_FdSet *, ReadSet);
+    UT_GenStub_AddParam(OS_SelectMultipleAbs, OS_FdSet *, WriteSet);
+    UT_GenStub_AddParam(OS_SelectMultipleAbs, OS_time_t, abs_timeout);
+
+    UT_GenStub_Execute(OS_SelectMultipleAbs, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_SelectMultipleAbs, int32);
+}
+
+/*
+ * ----------------------------------------------------
  * Generated stub function for OS_SelectSingle()
  * ----------------------------------------------------
  */
@@ -126,4 +144,22 @@ int32 OS_SelectSingle(osal_id_t objid, uint32 *StateFlags, int32 msecs)
     UT_GenStub_Execute(OS_SelectSingle, Basic, NULL);
 
     return UT_GenStub_GetReturnValue(OS_SelectSingle, int32);
+}
+
+/*
+ * ----------------------------------------------------
+ * Generated stub function for OS_SelectSingleAbs()
+ * ----------------------------------------------------
+ */
+int32 OS_SelectSingleAbs(osal_id_t objid, uint32 *StateFlags, OS_time_t abs_timeout)
+{
+    UT_GenStub_SetupReturnBuffer(OS_SelectSingleAbs, int32);
+
+    UT_GenStub_AddParam(OS_SelectSingleAbs, osal_id_t, objid);
+    UT_GenStub_AddParam(OS_SelectSingleAbs, uint32 *, StateFlags);
+    UT_GenStub_AddParam(OS_SelectSingleAbs, OS_time_t, abs_timeout);
+
+    UT_GenStub_Execute(OS_SelectSingleAbs, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_SelectSingleAbs, int32);
 }
