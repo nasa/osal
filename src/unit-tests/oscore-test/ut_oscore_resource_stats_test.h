@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
+ * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
  *
- * Copyright (c) 2023 United States Government as represented by the
+ * Copyright (c) 2020 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -19,47 +19,25 @@
 /**
  * \file
  *
- * Owner: Tam Ngo/Alan Cudmore
- * Date:  May 2013
+ * Owner: Codex
+ * Date:  September 2025
  */
 
-#ifndef UT_OSCORE_TEST_H
-#define UT_OSCORE_TEST_H
+#ifndef UT_OSCORE_RESOURCE_STATS_TEST_H
+#define UT_OSCORE_RESOURCE_STATS_TEST_H
 
 /*--------------------------------------------------------------------------------*
 ** Includes
 **--------------------------------------------------------------------------------*/
 
 #include "ut_os_support.h"
-#include "ut_oscore_misc_test.h"
-#include "ut_oscore_binsem_test.h"
-#include "ut_oscore_countsem_test.h"
-#include "ut_oscore_mutex_test.h"
-#include "ut_oscore_queue_test.h"
-#include "ut_oscore_resource_stats_test.h"
-#include "ut_oscore_select_test.h"
-#include "ut_oscore_task_test.h"
-
-/*--------------------------------------------------------------------------------*
-** Macros
-**--------------------------------------------------------------------------------*/
-
-/*--------------------------------------------------------------------------------*
-** Data types
-**--------------------------------------------------------------------------------*/
-
-/*--------------------------------------------------------------------------------*
-** External global variables
-**--------------------------------------------------------------------------------*/
-
-/*--------------------------------------------------------------------------------*
-** Global variables
-**--------------------------------------------------------------------------------*/
 
 /*--------------------------------------------------------------------------------*
 ** Function prototypes
 **--------------------------------------------------------------------------------*/
 
+void UT_os_resource_stats_test(void);
+
 /*--------------------------------------------------------------------------------*/
 
-#endif /* UT_OSCORE_TEST_H */
+#endif /* UT_OSCORE_RESOURCE_STATS_TEST_H */

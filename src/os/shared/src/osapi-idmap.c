@@ -165,6 +165,33 @@ uint32 OS_GetMaxForObjectType(osal_objtype_t idtype)
     }
 }
 
+static uint32 OS_CountActiveForObjectType(osal_objtype_t idtype)
+{
+    OS_object_iter_t iter;
+    uint32           count = 0;
+    uint32           max_count;
+    int32            status;
+
+    status    = OS_ObjectIdIterateActive(idtype, &iter);
+    max_count = OS_GetMaxForObjectType(idtype);
+    if (status == OS_SUCCESS)
+    {
+        for (uint32 i = 0; i < max_count; ++i)
+        {
+            bool has_next = OS_ObjectIdIteratorGetNext(&iter);
+            if (!has_next)
+            {
+                break;
+            }
+            ++count;
+        }
+
+        OS_ObjectIdIteratorDestroy(&iter);
+    }
+
+    return count;
+}
+
 /*----------------------------------------------------------------
  *
  *  Purpose: Local helper routine, not part of OSAL API.
@@ -1383,6 +1410,46 @@ void OS_ForEachObjectOfType(osal_objtype_t objtype, osal_id_t creator_id, OS_Arg
 
         OS_ObjectIdIteratorDestroy(&iter);
     }
+}
+
+int32 OS_GetResourceStats(OS_resource_stats_t *stats)
+{
+    if (stats == NULL)
+    {
+        return OS_INVALID_POINTER;
+    }
+
+    memset(stats, 0, sizeof(*stats));
+
+    stats->tasks.total           = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_TASK);
+    stats->queues.total          = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_QUEUE);
+    stats->bin_semaphores.total  = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_BINSEM);
+    stats->count_semaphores.total = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_COUNTSEM);
+    stats->mutexes.total         = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_MUTEX);
+    stats->streams.total         = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_STREAM);
+    stats->dirs.total            = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_DIR);
+    stats->timebases.total       = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_TIMEBASE);
+    stats->timers.total          = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_TIMECB);
+    stats->modules.total         = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_MODULE);
+    stats->filesystems.total     = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_FILESYS);
+    stats->consoles.total        = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_CONSOLE);
+    stats->condvars.total        = OS_GetMaxForObjectType(OS_OBJECT_TYPE_OS_CONDVAR);
+
+    stats->tasks.used            = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_TASK);
+    stats->queues.used           = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_QUEUE);
+    stats->bin_semaphores.used   = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_BINSEM);
+    stats->count_semaphores.used = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_COUNTSEM);
+    stats->mutexes.used          = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_MUTEX);
+    stats->streams.used          = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_STREAM);
+    stats->dirs.used             = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_DIR);
+    stats->timebases.used        = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_TIMEBASE);
+    stats->timers.used           = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_TIMECB);
+    stats->modules.used          = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_MODULE);
+    stats->filesystems.used      = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_FILESYS);
+    stats->consoles.used         = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_CONSOLE);
+    stats->condvars.used         = OS_CountActiveForObjectType(OS_OBJECT_TYPE_OS_CONDVAR);
+
+    return OS_SUCCESS;
 }
 
 /*----------------------------------------------------------------

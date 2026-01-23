@@ -1143,6 +1143,36 @@ void Test_OS_ObjectIdIterator(void)
     UtAssert_STUB_COUNT(OS_Unlock_Global_Impl, 2);
 }
 
+void Test_OS_GetResourceStats(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_GetResourceStats(OS_resource_stats_t *stats)
+     */
+    OS_resource_stats_t stats;
+    OS_object_token_t   token;
+    OS_common_record_t *record;
+    uint32              saved_state;
+
+    OSAPI_TEST_FUNCTION_RC(OS_GetResourceStats(NULL), OS_INVALID_POINTER);
+
+    memset(&token, 0, sizeof(token));
+    token.obj_type = OS_OBJECT_TYPE_OS_MUTEX;
+    OS_ObjectIdFindNextFree(&token);
+    record            = OS_OBJECT_TABLE_GET(OS_global_mutex_table, token);
+    record->active_id = token.obj_id;
+
+    OSAPI_TEST_FUNCTION_RC(OS_GetResourceStats(&stats), OS_SUCCESS);
+    UtAssert_True(stats.mutexes.used > 0, "mutexes used > 0");
+    UtAssert_True(stats.mutexes.total == OS_MAX_MUTEXES, "mutexes total == OS_MAX_MUTEXES");
+
+    saved_state                       = OS_SharedGlobalVars.GlobalState;
+    OS_SharedGlobalVars.GlobalState   = 0;
+    OSAPI_TEST_FUNCTION_RC(OS_GetResourceStats(&stats), OS_SUCCESS);
+    UtAssert_True(stats.mutexes.used == 0, "mutexes used == 0 with invalid state");
+    OS_SharedGlobalVars.GlobalState = saved_state;
+}
+
 void Test_OS_ObjectIDInteger(void)
 {
     /*
@@ -1267,6 +1297,7 @@ void UtTest_Setup(void)
     ADD_TEST(OS_GetBaseForObjectType);
     ADD_TEST(OS_GetResourceName);
     ADD_TEST(OS_ObjectIdIterator);
+    ADD_TEST(OS_GetResourceStats);
     ADD_TEST(OS_ObjectIDInteger);
     ADD_TEST(OS_ObjectIDUndefined);
 }

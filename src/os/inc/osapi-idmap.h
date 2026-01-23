@@ -274,6 +274,51 @@ void OS_ForEachObject(osal_id_t creator_id, OS_ArgCallback_t callback_ptr, void 
 void OS_ForEachObjectOfType(osal_objtype_t objtype, osal_id_t creator_id, OS_ArgCallback_t callback_ptr,
                             void *callback_arg);
 
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Tracks total and in-use counts for a resource type.
+ */
+typedef struct
+{
+    uint32 total;
+    uint32 used;
+} OS_resource_count_t;
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Global counts for all OSAL resource types.
+ *
+ * Streams include files, sockets, pipes, and other stream-based objects.
+ */
+typedef struct
+{
+    OS_resource_count_t tasks;
+    OS_resource_count_t queues;
+    OS_resource_count_t bin_semaphores;
+    OS_resource_count_t count_semaphores;
+    OS_resource_count_t mutexes;
+    OS_resource_count_t streams;
+    OS_resource_count_t dirs;
+    OS_resource_count_t timebases;
+    OS_resource_count_t timers;
+    OS_resource_count_t modules;
+    OS_resource_count_t filesystems;
+    OS_resource_count_t consoles;
+    OS_resource_count_t condvars;
+} OS_resource_stats_t;
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Returns global totals and in-use counts for OSAL resources.
+ *
+ * @param[out] stats Output structure to populate @nonnull
+ *
+ * @returns Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_INVALID_POINTER if stats is NULL
+ */
+int32 OS_GetResourceStats(OS_resource_stats_t *stats);
+
 /**@}*/
 
 #endif /* OSAPI_IDMAP_H */
