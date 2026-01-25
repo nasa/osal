@@ -184,6 +184,8 @@ int32 OS_BinSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
     return status;
 }
 
+#ifdef OSAL_OMIT_DEPRECATED
+#else
 /*----------------------------------------------------------------
  *
  *  Purpose: Implemented per internal OSAL API
@@ -193,5 +195,18 @@ int32 OS_BinSemTimedWait_Impl(const OS_object_token_t *token, uint32 msecs)
 int32 OS_BinSemGetInfo_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop)
 {
     /* VxWorks has no API for obtaining the current value of a semaphore */
-    return OS_SUCCESS;
+    return OS_ERR_NOT_IMPLEMENTED;
+}
+#endif
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_BinSemGetValue_Impl(const OS_object_token_t *token, OS_bin_sem_prop_t *bin_prop)
+{
+    /* VxWorks has no API for obtaining the current value of a semaphore */
+    return OS_ERR_NOT_IMPLEMENTED;
 }

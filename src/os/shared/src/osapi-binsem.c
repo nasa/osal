@@ -243,6 +243,8 @@ int32 OS_BinSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
     return return_code;
 }
 
+#ifdef OSAL_OMIT_DEPRECATED
+#else
 /*----------------------------------------------------------------
  *
  *  Purpose: Implemented per public OSAL API
@@ -250,6 +252,36 @@ int32 OS_BinSemGetIdByName(osal_id_t *sem_id, const char *sem_name)
  *
  *-----------------------------------------------------------------*/
 int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
+{
+    OS_common_record_t *record;
+    OS_object_token_t   token;
+    int32               return_code;
+    /* Check parameters */
+    OS_CHECK_POINTER(bin_prop);
+    memset(bin_prop, 0, sizeof(OS_bin_sem_prop_t));
+    /* Check Parameters */
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sem_id, &token);
+    if (return_code == OS_SUCCESS)
+    {
+        record = OS_OBJECT_TABLE_GET(OS_global_bin_sem_table, token);
+
+        strncpy(bin_prop->name, record->name_entry, sizeof(bin_prop->name) - 1);
+        bin_prop->creator = record->creator;
+        return_code       = OS_BinSemGetInfo_Impl(&token, bin_prop);
+
+        OS_ObjectIdRelease(&token);
+    }
+    return return_code;
+}
+#endif
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_BinSemGetName(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
 {
     OS_common_record_t *record;
     OS_object_token_t   token;
@@ -267,8 +299,66 @@ int32 OS_BinSemGetInfo(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
         record = OS_OBJECT_TABLE_GET(OS_global_bin_sem_table, token);
 
         strncpy(bin_prop->name, record->name_entry, sizeof(bin_prop->name) - 1);
+        bin_prop->name[sizeof(bin_prop->name) - 1] = '\0'; /* Ensure null termination */
+
+        OS_ObjectIdRelease(&token);
+    }
+
+    return return_code;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_BinSemGetCreator(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
+{
+    OS_common_record_t *record;
+    OS_object_token_t   token;
+    int32               return_code;
+
+    /* Check parameters */
+    OS_CHECK_POINTER(bin_prop);
+
+    memset(bin_prop, 0, sizeof(OS_bin_sem_prop_t));
+
+    /* Check Parameters */
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sem_id, &token);
+    if (return_code == OS_SUCCESS)
+    {
+        record = OS_OBJECT_TABLE_GET(OS_global_bin_sem_table, token);
+
         bin_prop->creator = record->creator;
-        return_code       = OS_BinSemGetInfo_Impl(&token, bin_prop);
+
+        OS_ObjectIdRelease(&token);
+    }
+
+    return return_code;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_BinSemGetValue(osal_id_t sem_id, OS_bin_sem_prop_t *bin_prop)
+{
+    OS_object_token_t token;
+    int32             return_code;
+
+    /* Check parameters */
+    OS_CHECK_POINTER(bin_prop);
+
+    memset(bin_prop, 0, sizeof(OS_bin_sem_prop_t));
+
+    /* Check Parameters */
+    return_code = OS_ObjectIdGetById(OS_LOCK_MODE_GLOBAL, LOCAL_OBJID_TYPE, sem_id, &token);
+    if (return_code == OS_SUCCESS)
+    {
+        return_code = OS_BinSemGetValue_Impl(&token, bin_prop);
 
         OS_ObjectIdRelease(&token);
     }
