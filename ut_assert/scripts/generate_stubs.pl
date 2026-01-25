@@ -101,7 +101,7 @@ unless (defined $stubpath && -d $stubpath) {
 
 foreach my $hdr (@hdrlist)
 {
-    next unless open(HDR, "$hdr") || die "Cannot open: $hdr for reading\n";
+    next unless open(HDR, '<', $hdr) || die "Cannot open: $hdr for reading\n";
 
     my $fileapi = {};
     my @lines = ();

@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -45,7 +45,6 @@
 #include <fcntl.h>
 #include <semaphore.h>
 #include <sys/types.h>
-#include <sys/signal.h>
 
 /*
  * Use the global definitions from the shared layer
@@ -96,6 +95,7 @@ int32 OS_Posix_QueueAPI_Impl_Init(void);
 int32 OS_Posix_BinSemAPI_Impl_Init(void);
 int32 OS_Posix_CountSemAPI_Impl_Init(void);
 int32 OS_Posix_MutexAPI_Impl_Init(void);
+int32 OS_Posix_RwLockAPI_Impl_Init(void);
 int32 OS_Posix_CondVarAPI_Impl_Init(void);
 int32 OS_Posix_ModuleAPI_Impl_Init(void);
 int32 OS_Posix_TimeBaseAPI_Impl_Init(void);

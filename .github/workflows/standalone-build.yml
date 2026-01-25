@@ -1,8 +1,16 @@
 name: Build and Test Standalone OSAL package
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - dev
+      - main
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  workflow_dispatch:
 
 defaults:
   run:
@@ -10,7 +18,7 @@ defaults:
 
 env:
   allowed_ncov_lines: 0
-  allowed_ncov_branches: 2
+  allowed_ncov_branches: 0
   allowed_ncov_functions: 0
 
 jobs:

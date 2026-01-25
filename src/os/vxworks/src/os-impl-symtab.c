@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -174,7 +174,6 @@ BOOL OS_SymTableIterator_Impl(char *name, SYM_VALUE val, SYM_TYPE type, _Vx_usr_
     {
         symRecord.SymbolName[sizeof(symRecord.SymbolName) - 2] = '*';
         OS_DEBUG("%s(): symbol name too long\n", __func__);
-        state->StatusCode = OS_ERR_NAME_TOO_LONG;
     }
 
     /*

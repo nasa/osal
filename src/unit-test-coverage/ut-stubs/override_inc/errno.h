@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -31,16 +31,23 @@
 /* ----------------------------------------- */
 /* mappings for declarations in errno.h */
 /* ----------------------------------------- */
-#define EINTR     OCS_EINTR
-#define EAGAIN    OCS_EAGAIN
-#define EINVAL    OCS_EINVAL
-#define EEXIST    OCS_EEXIST
-#define EMSGSIZE  OCS_EMSGSIZE
-#define ETIMEDOUT OCS_ETIMEDOUT
-#define ESPIPE    OCS_ESPIPE
-#define ENOTSUP   OCS_ENOTSUP
-#define ENOSYS    OCS_ENOSYS
-#define EROFS     OCS_EROFS
+#define EAGAIN     OCS_EAGAIN
+#define EACCES     OCS_EACCES
+#define EEXIST     OCS_EEXIST
+#define EFBIG      OCS_EFBIG
+#define EINTR      OCS_EINTR
+#define EINVAL     OCS_EINVAL
+#define EMSGSIZE   OCS_EMSGSIZE
+#define ENODEV     OCS_ENODEV
+#define ENOSPC     OCS_ENOSPC
+#define ENOSYS     OCS_ENOSYS
+#define ENOTSUP    OCS_ENOTSUP
+#define EOPNOTSUPP OCS_EOPNOTSUPP
+#define EPERM      OCS_EPERM
+#define EROFS      OCS_EROFS
+#define ESPIPE     OCS_ESPIPE
+#define ETIMEDOUT  OCS_ETIMEDOUT
+#define ETXTBSY    OCS_ETXTBSY
 
 #define errno OCS_errno
 

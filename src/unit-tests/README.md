@@ -20,7 +20,7 @@ Use the following structure for your unit test cases:
 **          OS_SEM_FAILURE if the OS call failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_somethingcreate()
+void UT_os_somethingcreate(void)
 {
     int i;
     char  name[UT_OS_NAME_BUFF_SIZE];
