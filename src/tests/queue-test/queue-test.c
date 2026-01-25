@@ -19,7 +19,11 @@
 /*
 ** Queue read timeout test
 */
+#include <errno.h>
 #include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
 #include "common_types.h"
 #include "osapi.h"
 #include "utassert.h"
@@ -29,11 +33,15 @@
 /* Define setup and check functions for UT assert */
 void QueueTimeoutSetup(void);
 void QueueTimeoutCheck(void);
+void QueueTimeoutTimeJumpSetup(void);
 
 #define MSGQ_DEPTH 50
 #define MSGQ_SIZE  sizeof(uint32)
 #define MSGQ_TOTAL 10
 #define MSGQ_BURST 3
+
+#define TIMEJUMP_SECONDS          10
+#define TIMEJUMP_INTERVAL_SECONDS 5
 
 /* Task 1 */
 #define TASK_1_STACK_SIZE 4096
@@ -49,6 +57,9 @@ uint32    task_1_messages;
 uint32    task_2_stack[TASK_2_STACK_SIZE];
 osal_id_t task_2_id;
 osal_id_t msgq_id;
+
+static bool queue_test_timejump_created;
+static bool queue_test_timejump_skip;
 
 uint32    timer_counter;
 osal_id_t timer_id;
@@ -100,15 +111,50 @@ void task_1(void)
     }
 }
 
-void QueueTimeoutCheck(void)
+void task2(void)
+{
+    /*
+     * Every TIMEJUMP_INTERVAL_SECONDS jump REALTIME_CLOCK TIMEJUMP_SECONDS.
+     */
+    while (1)
+    {
+        struct timespec realtime_clock_timeval;
+
+        OS_TaskDelay(TIMEJUMP_INTERVAL_SECONDS * 1000);
+
+        clock_gettime(CLOCK_REALTIME, &realtime_clock_timeval);
+        realtime_clock_timeval.tv_sec += TIMEJUMP_SECONDS;
+
+        if (clock_settime(CLOCK_REALTIME, &realtime_clock_timeval) != 0)
+        {
+            OS_printf("[task2] clock_settime failed: %s\n", strerror(errno));
+        }
+        else
+        {
+            OS_printf("[task2] CLOCK_REALTIME jumped +%d s\n", TIMEJUMP_SECONDS);
+        }
+    }
+}
+
+static void QueueTimeoutCheckInternal(void)
 {
     int32  status;
     uint32 limit;
+
+    if (queue_test_timejump_skip)
+    {
+        return;
+    }
 
     status = OS_TimerDelete(timer_id);
     UtAssert_True(status == OS_SUCCESS, "Timer delete Rc=%d", (int)status);
     status = OS_TaskDelete(task_1_id);
     UtAssert_True(status == OS_SUCCESS, "Task 1 delete Rc=%d", (int)status);
+    if (queue_test_timejump_created)
+    {
+        status = OS_TaskDelete(task_2_id);
+        UtAssert_True(status == OS_SUCCESS, "Task 2 delete Rc=%d", (int)status);
+    }
     status = OS_QueueDelete(msgq_id);
     UtAssert_True(status == OS_SUCCESS, "Queue 1 delete Rc=%d", (int)status);
 
@@ -130,7 +176,7 @@ void QueueTimeoutCheck(void)
                   (unsigned int)limit);
 }
 
-void QueueTimeoutSetup(void)
+static void QueueTimeoutSetupInternal(bool enable_timejump)
 {
     int32  status;
     uint32 accuracy = 0;
@@ -138,6 +184,16 @@ void QueueTimeoutSetup(void)
     task_1_failures = 0;
     task_1_messages = 0;
     task_1_timeouts = 0;
+    queue_test_timejump_created = false;
+    queue_test_timejump_skip    = false;
+    timer_counter               = 0;
+
+    if (enable_timejump && geteuid() != 0)
+    {
+        queue_test_timejump_skip = true;
+        UtAssert_WARN("Timejump test skipped: requires root");
+        return;
+    }
 
     status = OS_QueueCreate(&msgq_id, "MsgQ", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
     UtAssert_True(status == OS_SUCCESS, "MsgQ create Id=%lx Rc=%d", OS_ObjectIdToInteger(msgq_id), (int)status);
@@ -148,6 +204,21 @@ void QueueTimeoutSetup(void)
     status = OS_TaskCreate(&task_1_id, "Task 1", task_1, OSAL_STACKPTR_C(task_1_stack), sizeof(task_1_stack),
                            OSAL_PRIORITY_C(TASK_1_PRIORITY), 0);
     UtAssert_True(status == OS_SUCCESS, "Task 1 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_1_id), (int)status);
+
+    if (enable_timejump)
+    {
+        /*
+        ** Create the time jumper task.
+        */
+        status = OS_TaskCreate(&task_2_id, "Task 2", task2, OSAL_STACKPTR_C(task_2_stack), sizeof(task_2_stack),
+                               OSAL_PRIORITY_C(TASK_2_PRIORITY), 0);
+        UtAssert_True(status == OS_SUCCESS, "Task 2 create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_2_id),
+                      (int)status);
+        if (status == OS_SUCCESS)
+        {
+            queue_test_timejump_created = true;
+        }
+    }
 
     /*
     ** Create a timer
@@ -167,6 +238,21 @@ void QueueTimeoutSetup(void)
     {
         OS_TaskDelay(100);
     }
+}
+
+void QueueTimeoutSetup(void)
+{
+    QueueTimeoutSetupInternal(false);
+}
+
+void QueueTimeoutTimeJumpSetup(void)
+{
+    QueueTimeoutSetupInternal(true);
+}
+
+void QueueTimeoutCheck(void)
+{
+    QueueTimeoutCheckInternal();
 }
 
 void QueueMessageCheck(void)
@@ -251,5 +337,6 @@ void UtTest_Setup(void)
      * Register the test setup and check routines in UT assert
      */
     UtTest_Add(QueueTimeoutCheck, QueueTimeoutSetup, NULL, "QueueTimeoutTest");
+    UtTest_Add(QueueTimeoutCheck, QueueTimeoutTimeJumpSetup, NULL, "QueueTimeoutTimeJumpTest");
     UtTest_Add(QueueMessageCheck, QueueMessageSetup, NULL, "QueueMessageCheck");
 }

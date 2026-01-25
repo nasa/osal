@@ -1,6 +1,5 @@
 build
 Makefile
-
 # Ignore macOS generated files types
 .DS_Store
 .DS_Store?
@@ -10,4 +9,3 @@ Makefile
 ehthumbs.db
 Thumbs.db
 .fuse_hidden*
-
