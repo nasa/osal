@@ -1,4 +1,7 @@
 add_library(ut_vxworks_impl_stubs
+    src/os-impl-taskstack-handlers.c
+    src/os-impl-taskstack-stubs.c
+
     src/vxworks-os-impl-binsem-stubs.c
     src/vxworks-os-impl-common-stubs.c
     src/vxworks-os-impl-countsem-stubs.c
@@ -13,6 +16,6 @@ add_library(ut_vxworks_impl_stubs
     src/vxworks-os-impl-timer-stubs.c
 )
 
-target_link_libraries(ut_vxworks_impl_stubs PUBLIC 
+target_link_libraries(ut_vxworks_impl_stubs PUBLIC
     ut_osapi_stub_headers
 )
