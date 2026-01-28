@@ -61,7 +61,8 @@ endif ()
 # Leverage the "standard" BSD socket code if network is enabled
 if (OSAL_CONFIG_INCLUDE_NETWORK)
     list(APPEND RTEMS_IMPL_SRCLIST
-        src/os-impl-network.c
+        ../portable/os-impl-no-network-gethostid.c
+        ../portable/os-impl-no-network-gethostname.c
         ../portable/os-impl-bsd-sockets.c
         ../portable/os-impl-bsd-sockets-no-dns.c   # Use functions that do not require DNS
         ../portable/os-impl-bsd-select.c
