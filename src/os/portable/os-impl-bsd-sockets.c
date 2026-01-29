@@ -247,22 +247,14 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
 
 /*----------------------------------------------------------------
  *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
+ * Internal helper routine only, not part of API.
  *
  *-----------------------------------------------------------------*/
-int32 OS_SocketBindAddress_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr)
+static inline socklen_t OS_GetAddrLen(sa_family_t sa_family)
 {
-    int                             os_result;
-    socklen_t                       addrlen;
-    const struct sockaddr *         sa;
-    OS_impl_file_internal_record_t *impl;
+    socklen_t addrlen;
 
-    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
-
-    sa = (const struct sockaddr *)&Addr->AddrData;
-
-    switch (sa->sa_family)
+    switch (sa_family)
     {
         case AF_INET:
             addrlen = sizeof(struct sockaddr_in);
@@ -276,6 +268,27 @@ int32 OS_SocketBindAddress_Impl(const OS_object_token_t *token, const OS_SockAdd
             addrlen = 0;
             break;
     }
+
+    return addrlen;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketBindAddress_Impl(const OS_object_token_t *token, const OS_SockAddr_t *Addr)
+{
+    int                             os_result;
+    socklen_t                       addrlen;
+    const struct sockaddr *         sa;
+    OS_impl_file_internal_record_t *impl;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
+
+    sa      = (const struct sockaddr *)&Addr->AddrData;
+    addrlen = OS_GetAddrLen(sa->sa_family);
 
     if (addrlen == 0)
     {
@@ -333,21 +346,8 @@ int32 OS_SocketConnect_Impl(const OS_object_token_t *token, const OS_SockAddr_t 
 
     impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
 
-    sa = (const struct sockaddr *)&Addr->AddrData;
-    switch (sa->sa_family)
-    {
-        case AF_INET:
-            slen = sizeof(struct sockaddr_in);
-            break;
-#ifdef OS_NETWORK_SUPPORTS_IPV6
-        case AF_INET6:
-            slen = sizeof(struct sockaddr_in6);
-            break;
-#endif
-        default:
-            slen = 0;
-            break;
-    }
+    sa   = (const struct sockaddr *)&Addr->AddrData;
+    slen = OS_GetAddrLen(sa->sa_family);
 
     if (slen != Addr->ActualLength)
     {
@@ -613,21 +613,8 @@ int32 OS_SocketSendTo_Impl(const OS_object_token_t *token, const void *buffer, s
 
     impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
 
-    sa = (const struct sockaddr *)&RemoteAddr->AddrData;
-    switch (sa->sa_family)
-    {
-        case AF_INET:
-            addrlen = sizeof(struct sockaddr_in);
-            break;
-#ifdef OS_NETWORK_SUPPORTS_IPV6
-        case AF_INET6:
-            addrlen = sizeof(struct sockaddr_in6);
-            break;
-#endif
-        default:
-            addrlen = 0;
-            break;
-    }
+    sa      = (const struct sockaddr *)&RemoteAddr->AddrData;
+    addrlen = OS_GetAddrLen(sa->sa_family);
 
     if (addrlen != RemoteAddr->ActualLength)
     {
