@@ -103,7 +103,7 @@ typedef osal_task((*osal_task_entry)(void)); /**< @brief For task entry point */
  * @retval #OS_INVALID_POINTER if any of the necessary pointers are NULL
  * @retval #OS_ERR_INVALID_SIZE if the stack_size argument is zero
  * @retval #OS_ERR_NAME_TOO_LONG name length including null terminator greater than #OS_MAX_API_NAME
- * @retval #OS_ERR_INVALID_PRIORITY if the priority is bad @covtest
+ * @retval #OS_ERR_INVALID_PRIORITY if the initial priority is invalid @covtest
  * @retval #OS_ERR_NO_FREE_IDS if there can be no more tasks created
  * @retval #OS_ERR_NAME_TAKEN if the name specified is already used by a task
  * @retval #OS_ERROR if an unspecified/other error occurs @covtest
@@ -176,7 +176,7 @@ int32 OS_TaskDelay(uint32 millisecond);
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_ERR_INVALID_ID if the ID passed to it is invalid
- * @retval #OS_ERR_INVALID_PRIORITY if the priority is greater than the max allowed @covtest
+ * @retval #OS_ERR_INVALID_PRIORITY if the new priority is invalid @covtest
  * @retval #OS_ERROR if an unspecified/other error occurs @covtest
  */
 int32 OS_TaskSetPriority(osal_id_t task_id, osal_priority_t new_priority);
