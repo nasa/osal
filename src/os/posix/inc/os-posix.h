@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -39,15 +39,12 @@
 #include <limits.h>
 #include <signal.h>
 #include <time.h>
-#include <poll.h>
 #include <errno.h>
 #include <pthread.h>
 #include <mqueue.h>
 #include <fcntl.h>
-#include <stdint.h>
 #include <semaphore.h>
 #include <sys/types.h>
-#include <sys/signal.h>
 
 /*
  * Use the global definitions from the shared layer
@@ -93,13 +90,12 @@ extern POSIX_GlobalVars_t POSIX_GlobalVars;
                        POSIX IMPLEMENTATION FUNCTION PROTOTYPES
  ***************************************************************************************/
 
-ssize_t mq_timedreceive_monotonic(mqd_t mqd, char *buf, size_t len, unsigned *prio, const struct timespec *deadline);
-
 int32 OS_Posix_TaskAPI_Impl_Init(void);
 int32 OS_Posix_QueueAPI_Impl_Init(void);
 int32 OS_Posix_BinSemAPI_Impl_Init(void);
 int32 OS_Posix_CountSemAPI_Impl_Init(void);
 int32 OS_Posix_MutexAPI_Impl_Init(void);
+int32 OS_Posix_RwLockAPI_Impl_Init(void);
 int32 OS_Posix_CondVarAPI_Impl_Init(void);
 int32 OS_Posix_ModuleAPI_Impl_Init(void);
 int32 OS_Posix_TimeBaseAPI_Impl_Init(void);
@@ -110,6 +106,5 @@ int32 OS_Posix_FileSysAPI_Impl_Init(void);
 int32 OS_Posix_TableMutex_Init(osal_objtype_t idtype);
 
 void OS_Posix_CompAbsDelayTime(uint32 msecs, struct timespec *tm);
-void OS_Posix_CompAbsDelayTimeMonotonic(uint32 msecs, struct timespec *tm);
 
 #endif /* OS_POSIX_H */

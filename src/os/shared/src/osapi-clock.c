@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -37,6 +37,20 @@
  * User defined include files
  */
 #include "os-shared-clock.h"
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_GetMonotonicTime(OS_time_t *time_struct)
+{
+    /* Check parameters */
+    OS_CHECK_POINTER(time_struct);
+
+    return OS_GetMonotonicTime_Impl(time_struct);
+}
 
 /*----------------------------------------------------------------
  *

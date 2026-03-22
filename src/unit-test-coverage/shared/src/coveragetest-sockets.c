@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -548,6 +548,60 @@ void Test_OS_SocketGetInfo(void)
     OSAPI_TEST_FUNCTION_RC(OS_SocketGetInfo(UT_OBJID_1, &prop), OS_ERR_INVALID_ID);
 }
 
+/*****************************************************************************
+ *
+ * Test case for OS_SocketGetOption()
+ *
+ *****************************************************************************/
+void Test_OS_SocketGetOption(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_SocketGetOption(osal_id_t sock_id, OS_socket_option_t opt_id, OS_socket_optval_t *optval)
+     */
+    OS_socket_optval_t optval;
+
+    memset(&optval, 0, sizeof(optval));
+
+    /* nominal */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketGetOption(UT_OBJID_1, OS_socket_option_UNDEFINED, &optval), OS_SUCCESS);
+
+    /* error cases */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketGetOption(UT_OBJID_1, -1, &optval), OS_ERR_INVALID_ARGUMENT);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketGetOption(UT_OBJID_1, OS_socket_option_MAX, &optval), OS_ERR_INVALID_ARGUMENT);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketGetOption(UT_OBJID_1, OS_socket_option_UNDEFINED, NULL), OS_INVALID_POINTER);
+
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketGetOption(UT_OBJID_1, OS_socket_option_UNDEFINED, &optval), OS_ERR_INVALID_ID);
+}
+
+/*****************************************************************************
+ *
+ * Test case for OS_SocketSetOption()
+ *
+ *****************************************************************************/
+void Test_OS_SocketSetOption(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_SocketSetOption(osal_id_t sock_id, OS_socket_option_t opt_id, const OS_socket_optval_t *optval)
+     */
+    OS_socket_optval_t optval;
+
+    memset(&optval, 0, sizeof(optval));
+
+    /* nominal */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketSetOption(UT_OBJID_1, OS_socket_option_UNDEFINED, &optval), OS_SUCCESS);
+
+    /* error cases */
+    OSAPI_TEST_FUNCTION_RC(OS_SocketSetOption(UT_OBJID_1, -1, &optval), OS_ERR_INVALID_ARGUMENT);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketSetOption(UT_OBJID_1, OS_socket_option_MAX, &optval), OS_ERR_INVALID_ARGUMENT);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketSetOption(UT_OBJID_1, OS_socket_option_UNDEFINED, NULL), OS_INVALID_POINTER);
+
+    UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_SocketSetOption(UT_OBJID_1, OS_socket_option_UNDEFINED, &optval), OS_ERR_INVALID_ID);
+}
+
 void Test_OS_SocketAddr(void)
 {
     /*
@@ -622,4 +676,6 @@ void UtTest_Setup(void)
     ADD_TEST(OS_SocketGetIdByName);
     ADD_TEST(OS_SocketGetInfo);
     ADD_TEST(OS_CreateSocketName);
+    ADD_TEST(OS_SocketGetOption);
+    ADD_TEST(OS_SocketSetOption);
 }

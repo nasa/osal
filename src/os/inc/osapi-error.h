@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -129,6 +129,8 @@ typedef char os_status_string_t[OS_STATUS_STRING_LENGTH];
 #define OS_ERR_INVALID_SIZE            (-40) /**< @brief Invalid Size */
 #define OS_ERR_OUTPUT_TOO_LARGE        (-41) /**< @brief Size of output exceeds limit  */
 #define OS_ERR_INVALID_ARGUMENT        (-42) /**< @brief Invalid argument value (other than ID or size) */
+#define OS_ERR_TRY_AGAIN               (-43) /**< @brief Failure is temporary in nature, call may be repeated */
+#define OS_ERR_EMPTY_SET               (-44) /**< @brief Address or name lookup returned no results */
 
 /*
 ** Defines for File System Calls

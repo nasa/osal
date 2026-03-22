@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -39,7 +39,7 @@
  * This must be large enough to actually accommodate all of the symbols
  * in the target system.
  */
-#define UT_SYMTABLE_SIZE_LIMIT 1048576
+#define UT_SYMTABLE_SIZE_LIMIT (1024 * 1024 * 5)
 
 /*--------------------------------------------------------------------------------*
 ** Data types
@@ -70,7 +70,7 @@
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
 
-void UT_os_symbol_lookup_test()
+void UT_os_symbol_lookup_test(void)
 {
     cpuaddr   symbol_addr;
     osal_id_t module_id = OS_OBJECT_ID_UNDEFINED;
@@ -134,7 +134,7 @@ void UT_os_symbol_lookup_test()
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
 
-void UT_os_module_symbol_lookup_test()
+void UT_os_module_symbol_lookup_test(void)
 {
     cpuaddr   symbol_addr;
     osal_id_t module_id = OS_OBJECT_ID_UNDEFINED;
@@ -186,7 +186,7 @@ void UT_os_module_symbol_lookup_test()
 **          OS_ERROR if there was any problem writing the symbol table to the file
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_symbol_table_dump_test()
+void UT_os_symbol_table_dump_test(void)
 {
     int32 status;
     /*
@@ -213,23 +213,23 @@ void UT_os_symbol_table_dump_test()
     {
         UtAssert_NA("OS_SymbolTableDump API not implemented");
     }
-    else if (status == OS_ERR_OUTPUT_TOO_LARGE)
-    {
-        UtAssert_MIR("UT_SYMTABLE_SIZE_LIMIT too small for OS_SymbolTableDump");
-    }
-    else if (status == OS_ERR_NAME_TOO_LONG)
-    {
-        UtAssert_MIR("OSAL_CONFIG_MAX_SYM_LEN too small for OS_SymbolTableDump");
-    }
     else
     {
-        UtAssert_True(status == OS_SUCCESS, "status after 128k OS_SymbolTableDump = %d", (int)status);
+        UtAssert_INT32_EQ(status, OS_SUCCESS);
+        if (status == OS_SUCCESS)
+        {
+            UT_RETVAL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolZero.dat", 0), OS_ERR_OUTPUT_TOO_LARGE); 
+        }
+        else if (status == OS_ERR_OUTPUT_TOO_LARGE)
+        {
+            UtPrintf("Failed OS_SymbolTableDump, UT_SYMTABLE_SIZE_LIMIT too small for OS_SymbolTableDump\n");
+        }
+        else if (status == OS_ERR_NAME_TOO_LONG)
+        {
+            UtPrintf("OS_SymbolTableDump name to long, consider increasing OSAL_CONFIG_MAX_SYM_LEN\n");
+        }
     }
 
-    if (status == OS_SUCCESS)
-    {
-        UT_RETVAL(OS_SymbolTableDump(UT_OS_GENERIC_MODULE_DIR "SymbolZero.dat", 0), OS_ERR_OUTPUT_TOO_LARGE);
-    }
 }
 
 /*================================================================================*

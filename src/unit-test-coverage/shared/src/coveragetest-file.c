@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -320,6 +320,38 @@ void Test_OS_FDGetInfo(void)
     OSAPI_TEST_FUNCTION_RC(OS_FDGetInfo(UT_OBJID_1, &file_prop), OS_ERR_INVALID_ID);
 }
 
+void Test_OS_FileAllocate(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_FileAllocate(osal_id_t filedes, osal_offset_t offset, osal_offset_t len)
+     */
+
+    OSAPI_TEST_FUNCTION_RC(OS_FileAllocate(UT_OBJID_1, 0, 0), OS_SUCCESS);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_FileAllocate_Impl), OS_ERR_OUTPUT_TOO_LARGE);
+    OSAPI_TEST_FUNCTION_RC(OS_FileAllocate(UT_OBJID_1, 0, 0), OS_ERR_OUTPUT_TOO_LARGE);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_FileAllocate(UT_OBJID_1, 0, 0), OS_ERR_INVALID_ID);
+}
+
+void Test_OS_FileTruncate(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_FileTruncate(osal_id_t filedes, osal_offset_t len);
+     */
+
+    OSAPI_TEST_FUNCTION_RC(OS_FileTruncate(UT_OBJID_1, 0), OS_SUCCESS);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_FileTruncate_Impl), OS_ERR_OUTPUT_TOO_LARGE);
+    OSAPI_TEST_FUNCTION_RC(OS_FileTruncate(UT_OBJID_1, 0), OS_ERR_OUTPUT_TOO_LARGE);
+
+    UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
+    OSAPI_TEST_FUNCTION_RC(OS_FileTruncate(UT_OBJID_1, 0), OS_ERR_INVALID_ID);
+}
+
 void Test_OS_FileOpenCheck(void)
 {
     /*
@@ -411,6 +443,8 @@ void UtTest_Setup(void)
     ADD_TEST(OS_TimedWrite);
     ADD_TEST(OS_read);
     ADD_TEST(OS_write);
+    ADD_TEST(OS_FileTruncate);
+    ADD_TEST(OS_FileAllocate);
     ADD_TEST(OS_chmod);
     ADD_TEST(OS_stat);
     ADD_TEST(OS_lseek);

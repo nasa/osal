@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -27,17 +27,39 @@
 #define OCS_NETDB_H
 
 #include "OCS_basetypes.h"
+#include "OCS_sys_socket.h"
 
 /* ----------------------------------------- */
 /* constants normally defined in netdb.h */
 /* ----------------------------------------- */
 
+#define OCS_EAI_AGAIN  0x1a1a
+#define OCS_EAI_NONAME 0x1a1b
+
 /* ----------------------------------------- */
 /* types normally defined in netdb.h */
 /* ----------------------------------------- */
 
+struct OCS_addrinfo
+{
+    int                  ai_flags;
+    int                  ai_family;
+    int                  ai_socktype;
+    int                  ai_protocol;
+    OCS_socklen_t        ai_addrlen;
+    struct OCS_sockaddr *ai_addr;
+    char *               ai_canonname;
+    struct OCS_addrinfo *ai_next;
+};
+
 /* ----------------------------------------- */
 /* prototypes normally declared in netdb.h */
 /* ----------------------------------------- */
+int OCS_getnameinfo(const struct OCS_sockaddr *addr, OCS_socklen_t addrlen, char *host, OCS_socklen_t hostlen,
+                    char *serv, OCS_socklen_t servlen, int flags);
+
+int OCS_getaddrinfo(const char *node, const char *service, const struct OCS_addrinfo *hints, struct OCS_addrinfo **res);
+
+void OCS_freeaddrinfo(struct OCS_addrinfo *res);
 
 #endif /* OCS_NETDB_H */

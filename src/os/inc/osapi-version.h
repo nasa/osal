@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -34,22 +34,22 @@
 /*
  * Development Build Macro Definitions
  */
-#define OS_BUILD_NUMBER     123
-#define OS_BUILD_BASELINE   "equuleus-rc1"
-#define OS_BUILD_DEV_CYCLE  "equuleus-rc2" /**< @brief Development: Release name for current development cycle */
-#define OS_BUILD_CODENAME   "Equuleus" /**< @brief: Development: Code name for the current build */
+#define OS_BUILD_NUMBER    0
+#define OS_BUILD_BASELINE  "v7.0.0"
+#define OS_BUILD_DEV_CYCLE "v7.0.0" /**< @brief Development: Release name for current development cycle */
+#define OS_BUILD_CODENAME  "Draco"     /**< @brief: Development: Code name for the current build */
 
 /*
  * Version Macros, see \ref cfsversions for definitions.
  */
-#define OS_MAJOR_VERSION 5  /*!< @brief Major version number */
-#define OS_MINOR_VERSION 0  /*!< @brief Minor version number */
-#define OS_REVISION      0  /*!< @brief Revision version number. Value of 99 indicates a development version.*/
+#define OS_MAJOR_VERSION 7 /*!< @brief Major version number */
+#define OS_MINOR_VERSION 0 /*!< @brief Minor version number */
+#define OS_REVISION      0 /*!< @brief Revision version number. Value of 99 indicates a development version.*/
 
 /**
  * @brief Last official release.
  */
-#define OS_LAST_OFFICIAL "v5.0.0"
+#define OS_LAST_OFFICIAL "v7.0.0"
 
 /*!
  * @brief Mission revision.
@@ -58,7 +58,7 @@
  * Values 1-254 are reserved for mission use to denote patches/customizations as needed. NOTE: Reserving 0 and 0xFF for
  * cFS open-source development use (pending resolution of nasa/cFS#440)
  */
-#define OS_MISSION_REV 0xFF
+#define OS_MISSION_REV 0x0
 
 /*
  * Tools to construct version string
@@ -147,9 +147,9 @@ uint32 OS_GetBuildNumber(void);
 
 /**
  * @brief Max Version String length.
- * 
+ *
  * Maximum length that an OSAL version string can be.
- * 
+ *
  */
 #define OS_CFG_MAX_VERSION_STR_LEN 256
 

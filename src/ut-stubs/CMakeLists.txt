@@ -29,6 +29,7 @@ set(OSAL_PUBLIC_API_HEADERS
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-network.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-printf.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-queue.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-rwlock.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-select.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-shell.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-sockets.h
@@ -86,6 +87,8 @@ add_library(ut_osapi_stubs STATIC
     osapi-printf-handlers.c
     osapi-queue-stubs.c
     osapi-queue-handlers.c
+    osapi-rwlock-stubs.c
+    osapi-rwlock-handlers.c
     osapi-select-stubs.c
     osapi-shell-stubs.c
     osapi-sockets-stubs.c

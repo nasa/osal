@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -24,6 +24,19 @@
  */
 #include "os-shared-coveragetest.h"
 #include "os-shared-clock.h"
+
+void Test_OS_GetMonotonicTime(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_GetMonotonicTime(OS_time_t *time_struct)
+     */
+    OS_time_t time_struct;
+
+    UtAssert_INT32_EQ(OS_GetMonotonicTime(&time_struct), OS_SUCCESS);
+    UtAssert_NONZERO(OS_TimeGetTotalMilliseconds(time_struct));
+    UtAssert_INT32_EQ(OS_GetMonotonicTime(NULL), OS_INVALID_POINTER);
+}
 
 void Test_OS_GetLocalTime(void)
 {
@@ -220,6 +233,7 @@ void Osapi_Test_Teardown(void) {}
 void UtTest_Setup(void)
 {
     ADD_TEST(OS_GetLocalTime);
+    ADD_TEST(OS_GetMonotonicTime);
     ADD_TEST(OS_SetLocalTime);
     ADD_TEST(OS_TimeAccessConversions);
     ADD_TEST(OS_TimeFromRelativeMilliseconds);

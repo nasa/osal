@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -49,7 +49,8 @@ typedef enum
     OS_BINSEM_BASE       = OS_QUEUE_BASE + OS_MAX_QUEUES,
     OS_COUNTSEM_BASE     = OS_BINSEM_BASE + OS_MAX_BIN_SEMAPHORES,
     OS_MUTEX_BASE        = OS_COUNTSEM_BASE + OS_MAX_COUNT_SEMAPHORES,
-    OS_STREAM_BASE       = OS_MUTEX_BASE + OS_MAX_MUTEXES,
+    OS_RWLOCK_BASE       = OS_MUTEX_BASE + OS_MAX_MUTEXES,
+    OS_STREAM_BASE       = OS_RWLOCK_BASE + OS_MAX_RWLOCKS,
     OS_DIR_BASE          = OS_STREAM_BASE + OS_MAX_NUM_OPEN_FILES,
     OS_TIMEBASE_BASE     = OS_DIR_BASE + OS_MAX_NUM_OPEN_DIRS,
     OS_TIMECB_BASE       = OS_TIMEBASE_BASE + OS_MAX_TIMEBASES,
@@ -147,6 +148,7 @@ extern OS_common_record_t *const OS_global_queue_table;
 extern OS_common_record_t *const OS_global_bin_sem_table;
 extern OS_common_record_t *const OS_global_count_sem_table;
 extern OS_common_record_t *const OS_global_mutex_table;
+extern OS_common_record_t *const OS_global_rwlock_table;
 extern OS_common_record_t *const OS_global_stream_table;
 extern OS_common_record_t *const OS_global_dir_table;
 extern OS_common_record_t *const OS_global_timebase_table;

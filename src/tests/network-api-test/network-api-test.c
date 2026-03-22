@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -54,6 +54,7 @@ enum
     UT_STREAM_CONNECTION_READ_SHUTDOWN,  /* Third pass confirms that read shutdown works correctly */
     UT_STREAM_CONNECTION_WRITE_SHUTDOWN, /* Fourth pass confirms that write shutdown works correctly */
     UT_STREAM_CONNECTION_RDWR_SHUTDOWN,  /* Fifth pass confirms that read/write shutdown works correctly */
+    UT_STREAM_CONNECTION_DSCP_QOS,       /* This pass confirms that the DSCP field can be set */
     UT_STREAM_CONNECTION_MAX
 };
 
@@ -110,7 +111,9 @@ void TestNetworkApiBadArgs(void)
     /* OS_SocketAddrFromString */
     UtAssert_INT32_EQ(OS_SocketAddrFromString(NULL, "127.0.0.1"), OS_INVALID_POINTER);
     UtAssert_INT32_EQ(OS_SocketAddrFromString(&addr, NULL), OS_INVALID_POINTER);
-    UtAssert_INT32_EQ(OS_SocketAddrFromString(&addr, "invalid"), OS_ERROR);
+    /* Note that if DNS is enabled, there is no guarantee of what the return value
+     * of this API call will be. It could be OS_ERROR, OS_ERR_EMPTY_SET, or even OS_SUCCESS */
+    UtAssert_VOIDCALL(OS_SocketAddrFromString(&addr, "invalid"));
 
     /* OS_SocketAddrToString */
     UtAssert_INT32_EQ(OS_SocketAddrToString(addr_string, 0, &addr), OS_ERR_INVALID_SIZE);
@@ -334,9 +337,18 @@ void TestDatagramNetworkApi(void)
     /* Get socket info and verify */
     UtAssert_INT32_EQ(OS_SocketGetInfo(p1_socket_id, &prop), OS_SUCCESS);
     UtAssert_True(!OS_ObjectIdDefined(prop.creator), "prop.creator (%lu) == 0", OS_ObjectIdToInteger(prop.creator));
-    UtAssert_True(strcmp(prop.name, "127.0.0.1:9999") == 0, "prop.name (%s) == 127.0.0.1:9999", prop.name);
 
-    UtAssert_INT32_EQ(OS_SocketGetIdByName(&objid, "127.0.0.1:9999"), OS_SUCCESS);
+    /* Depending on whether the target is using the DNS version, it may resolve to "localhost" */
+    if (strncmp(prop.name, "127", 3) == 0)
+    {
+        UtAssert_STRINGBUF_EQ(prop.name, sizeof(prop.name), "127.0.0.1:9999", -1);
+    }
+    else
+    {
+        UtAssert_STRINGBUF_EQ(prop.name, sizeof(prop.name), "localhost:9999", -1);
+    }
+
+    UtAssert_INT32_EQ(OS_SocketGetIdByName(&objid, prop.name), OS_SUCCESS);
     UtAssert_True(OS_ObjectIdEqual(objid, p1_socket_id), "objid (%lu) == p1_socket_id", OS_ObjectIdToInteger(objid));
 }
 
@@ -453,18 +465,19 @@ void Server_Fn(void)
  *****************************************************************************/
 void TestStreamNetworkApi(void)
 {
-    int32          status;
-    int32          expected;
-    int32          actual;
-    uint32         iter;
-    uint32         loopcnt;
-    osal_id_t      temp_id;
-    osal_id_t      invalid_fd;
-    OS_SockAddr_t  temp_addr;
-    OS_task_prop_t taskprop;
-    char           Buf_rcv_c[4]           = {0};
-    char           Buf_send_c[4]          = {0};
-    uint8          Buf_each_char_rcv[256] = {0};
+    int32              status;
+    int32              expected;
+    int32              actual;
+    uint32             iter;
+    uint32             loopcnt;
+    osal_id_t          temp_id;
+    osal_id_t          invalid_fd;
+    OS_SockAddr_t      temp_addr;
+    OS_task_prop_t     taskprop;
+    OS_socket_optval_t optval                 = {0};
+    char               Buf_rcv_c[4]           = {0};
+    char               Buf_send_c[4]          = {0};
+    uint8              Buf_each_char_rcv[256] = {0};
 
     /*
      * NOTE: The server cannot directly use UtAssert because the library is not thread-safe
@@ -618,6 +631,20 @@ void TestStreamNetworkApi(void)
                 UtAssert_INT32_EQ(OS_SocketConnect(regular_file_id, &s_addr, UT_TIMEOUT), OS_ERR_INCORRECT_OBJ_TYPE);
                 UtAssert_INT32_EQ(OS_SocketConnect(c_socket_id, NULL, UT_TIMEOUT), OS_INVALID_POINTER);
                 UtAssert_INT32_EQ(OS_SocketConnect(c_socket_id, &s_addr, 0), OS_ERR_INCORRECT_OBJ_STATE);
+
+                /* OS_SocketGet/SetOption */
+                UtAssert_INT32_EQ(OS_SocketGetOption(invalid_fd, OS_socket_option_UNDEFINED, &optval),
+                                  OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_SocketSetOption(invalid_fd, OS_socket_option_UNDEFINED, &optval),
+                                  OS_ERR_INVALID_ID);
+                UtAssert_INT32_EQ(OS_SocketGetOption(c_socket_id, OS_socket_option_MAX, &optval),
+                                  OS_ERR_INVALID_ARGUMENT);
+                UtAssert_INT32_EQ(OS_SocketSetOption(c_socket_id, OS_socket_option_MAX, &optval),
+                                  OS_ERR_INVALID_ARGUMENT);
+                UtAssert_INT32_EQ(OS_SocketGetOption(c_socket_id, OS_socket_option_UNDEFINED, NULL),
+                                  OS_INVALID_POINTER);
+                UtAssert_INT32_EQ(OS_SocketSetOption(c_socket_id, OS_socket_option_UNDEFINED, NULL),
+                                  OS_INVALID_POINTER);
             }
 
             /*
@@ -625,6 +652,16 @@ void TestStreamNetworkApi(void)
              * server and client, transfer data
              */
             snprintf(Buf_send_c, sizeof(Buf_send_c), "%03x", (unsigned int)((iter + 0xabc) & 0xfff));
+
+            if (iter == UT_STREAM_CONNECTION_DSCP_QOS)
+            {
+                optval.IntVal = 0x04;
+                UtAssert_INT32_EQ(OS_SocketSetOption(c_socket_id, OS_socket_option_IP_DSCP, &optval), OS_SUCCESS);
+
+                optval.IntVal = 0xFF;
+                UtAssert_INT32_EQ(OS_SocketGetOption(c_socket_id, OS_socket_option_IP_DSCP, &optval), OS_SUCCESS);
+                UtAssert_INT32_EQ(optval.IntVal, 0x04);
+            }
 
             /*
              * On designated iterations, use "shutdown" to indicate this is the end of the read data

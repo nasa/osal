@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -121,7 +121,7 @@ extern char g_mntNames[UT_OS_FILESYS_LIST_LEN][UT_OS_FILE_BUFF_SIZE];
 **   5) Expect the returned value to be
 **        (a) OS_SUCCESS
 **--------------------------------------------------------------------------------*/
-void UT_os_initfs_test()
+void UT_os_initfs_test(void)
 {
     int32 i = 0, j = 0;
 
@@ -236,7 +236,7 @@ void UT_os_initfs_test()
 **   5) Expect the returned value to be
 **        (a) OS_SUCCESS
 **--------------------------------------------------------------------------------*/
-void UT_os_makefs_test()
+void UT_os_makefs_test(void)
 {
     int32 i = 0, j = 0;
 
@@ -333,7 +333,7 @@ void UT_os_makefs_test()
 **   6) Expect the returned value to be
 **        (a) OS_SUCCESS
 **--------------------------------------------------------------------------------*/
-void UT_os_removefs_test()
+void UT_os_removefs_test(void)
 {
     /*-----------------------------------------------------*/
     /* API not implemented */
@@ -409,7 +409,7 @@ void UT_os_removefs_test()
 **   8) Expect the returned value to be
 **        (a) OS_SUCCESS
 **--------------------------------------------------------------------------------*/
-void UT_os_mount_test()
+void UT_os_mount_test(void)
 {
     /*-----------------------------------------------------*/
     /* API not implemented */
@@ -494,7 +494,7 @@ void UT_os_mount_test()
 **   8) Expect the returned value to be
 **        (a) OS_ERR_NAME_NOT_FOUND
 **--------------------------------------------------------------------------------*/
-void UT_os_unmount_test()
+void UT_os_unmount_test(void)
 {
     /*-----------------------------------------------------*/
     /* API not implemented */
@@ -581,7 +581,7 @@ void UT_os_unmount_test()
 **   6) Expect the returned value to be
 **        (a) OS_SUCCESS
 ** --------------------------------------------------------------------------------*/
-void UT_os_getphysdrivename_test()
+void UT_os_getphysdrivename_test(void)
 {
     char physDevName[UT_OS_PHYS_NAME_BUFF_SIZE];
 
@@ -721,7 +721,7 @@ void UT_os_getfsinfo_test(void)
 **        (a) OS_SUCCESS __and__
 **        (b) the returned local path to be ?
 ** --------------------------------------------------------------------------------*/
-void UT_os_translatepath_test()
+void UT_os_translatepath_test(void)
 {
     char localPath[UT_OS_LOCAL_PATH_BUFF_SIZE];
     char virtPath[OS_MAX_PATH_LEN];
@@ -807,7 +807,7 @@ void UT_os_translatepath_test()
 ** Test #4: Nominal condition
 **   1) Currently only applicable to vxworks platform
 ** --------------------------------------------------------------------------------*/
-void UT_os_checkfs_test()
+void UT_os_checkfs_test(void)
 {
     char driveName[UT_OS_PATH_BUFF_SIZE];
 

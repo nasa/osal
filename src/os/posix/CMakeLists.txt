@@ -25,14 +25,15 @@ set(POSIX_BASE_SRCLIST
     src/os-impl-timebase.c
 )
 
-
 # Use portable blocks for basic I/O
 set(POSIX_IMPL_SRCLIST
     ../portable/os-impl-posix-gettime.c
+    ../portable/os-impl-posix-gettime-monotonic.c
     ../portable/os-impl-console-bsp.c
     ../portable/os-impl-bsd-select.c
     ../portable/os-impl-posix-io.c
     ../portable/os-impl-posix-files.c
+    ../portable/os-impl-posix-file-allocate.c
     ../portable/os-impl-posix-dirs.c
 )
 
@@ -65,12 +66,25 @@ endif ()
 if (OSAL_CONFIG_INCLUDE_NETWORK)
     list(APPEND POSIX_IMPL_SRCLIST
         ../portable/os-impl-bsd-sockets.c   # Use BSD socket layer implementation
-        ../portable/os-impl-posix-network.c # Use POSIX-defined hostname/id implementation
+        ../portable/os-impl-bsd-sockets-dns.c   # Use functions that invoke DNS
+        ../portable/os-impl-posix-network-gethostname.c # Use POSIX-defined hostname implementation
+        ../portable/os-impl-posix-network-gethostid.c # Use POSIX-defined hostid implementation
     )
 else()
     list(APPEND POSIX_IMPL_SRCLIST
-        ../portable/os-impl-no-network.c    # non-implemented versions of all network APIs
+        ../portable/os-impl-no-network-gethostname.c    # non-implemented versions of gethostname API
+        ../portable/os-impl-no-network-gethostid.c    # non-implemented versions of gethostid  API
         ../portable/os-impl-no-sockets.c    # non-implemented versions of all socket APIs
+    )
+endif ()
+
+if (OSAL_CONFIG_RWLOCK)
+    list(APPEND POSIX_IMPL_SRCLIST
+       src/os-impl-rwlock.c
+    )
+else ()
+    list(APPEND POSIX_IMPL_SRCLIST
+       ../portable/os-impl-no-rwlock.c
     )
 endif ()
 

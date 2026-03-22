@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -32,78 +32,56 @@ void TestSymbolApi(void)
 {
     int32   status;
     cpuaddr SymAddress = 0;
+    uint32  size; 
+    char    fileName[128]; 
 
     /* Make the file system */
-    status = OS_mkfs(0, "/ramdev0", "RAM", 512, 2048);
+    status = OS_mkfs(0, "/ramdev1", "RAM", 512, 10240);
     UtAssert_True(status == OS_SUCCESS, "status after mkfs = %d", (int)status);
 
-    status = OS_mount("/ramdev0", "/ram");
+    status = OS_mount("/ramdev1", "/ram");
     UtAssert_True(status == OS_SUCCESS, "status after mount = %d", (int)status);
 
     /*
-    ** dump the symbol table with a 32768 byte limit
+    ** dump the symbol table with a small limit to cause it to fail
     */
-    UtPrintf("Dumping symbol table with a limit of 32768 bytes\n");
-    status = OS_SymbolTableDump("/ram/SymbolTable32k.dat", 32768);
+    size = 10;
+    UtPrintf("Dumping symbol table with a limit of %d bytes\n", size);
+    snprintf(fileName, sizeof(fileName), "/ram/SymbolTable%d.dat", size);
+
+    status = OS_SymbolTableDump(fileName, size);
     if (status == OS_ERR_NOT_IMPLEMENTED)
     {
         UtAssert_NA("OS_SymbolTableDump API not implemented");
     }
-    else if (status == OS_ERR_OUTPUT_TOO_LARGE)
-    {
-        UtAssert_MIR("32k too small for OS_SymbolTableDump");
-    }
-    else if (status == OS_ERR_NAME_TOO_LONG)
-    {
-        UtAssert_MIR("OS_SymbolTableDump name to long, consider increasing OSAL_CONFIG_MAX_SYM_LEN");
-    }
     else
     {
-        UtAssert_True(status == OS_SUCCESS, "status after 32k OS_SymbolTableDump = %d", (int)status);
+        UtAssert_INT32_EQ(status, OS_ERR_OUTPUT_TOO_LARGE);
     }
 
     /*
-    ** dump the symbol table with a 128k byte limit
+    ** dump the symbol table with a high limit to pass
     */
-    UtPrintf("Dumping symbol table with a limit of 131072 bytes\n");
-    status = OS_SymbolTableDump("/ram/SymbolTable128k.dat", 131072);
-    if (status == OS_ERR_NOT_IMPLEMENTED)
-    {
-        UtAssert_NA("OS_SymbolTableDump API not implemented");
-    }
-    else if (status == OS_ERR_OUTPUT_TOO_LARGE)
-    {
-        UtAssert_MIR("128k too small for OS_SymbolTableDump");
-    }
-    else if (status == OS_ERR_NAME_TOO_LONG)
-    {
-        UtAssert_MIR("OS_SymbolTableDump name to long, consider increasing OSAL_CONFIG_MAX_SYM_LEN");
-    }
-    else
-    {
-        UtAssert_True(status == OS_SUCCESS, "status after 128k OS_SymbolTableDump = %d", (int)status);
-    }
+    size = 1024 * 1024 * 5;
+    UtPrintf("Dumping symbol table with a limit of %d bytes\n", size);
+    snprintf(fileName, sizeof(fileName), "/ram/SymbolTable5MiB.dat");
 
-    /*
-    ** dump the symbol table with a 512k byte limit
-    */
-    UtPrintf("Dumping symbol table with a limit of 524288 bytes\n");
-    status = OS_SymbolTableDump("/ram/SymbolTable512k.dat", 524288);
+    status = OS_SymbolTableDump(fileName, size);
     if (status == OS_ERR_NOT_IMPLEMENTED)
     {
         UtAssert_NA("OS_SymbolTableDump API not implemented");
     }
-    else if (status == OS_ERR_OUTPUT_TOO_LARGE)
-    {
-        UtAssert_MIR("512k too small for OS_SymbolTableDump");
-    }
-    else if (status == OS_ERR_NAME_TOO_LONG)
-    {
-        UtAssert_MIR("OS_SymbolTableDump name to long, consider increasing OSAL_CONFIG_MAX_SYM_LEN");
-    }
     else
     {
-        UtAssert_True(status == OS_SUCCESS, "status after 512k OS_SymbolTableDump = %d", (int)status);
+        UtAssert_INT32_EQ(status, OS_SUCCESS);
+        if (status == OS_ERR_OUTPUT_TOO_LARGE)
+        {
+            UtPrintf("Symbol Table bigger than %d bytes. Consider increasing dump size\n", size);
+        }
+        else if (status == OS_ERR_NAME_TOO_LONG)
+        {
+            UtPrintf("OS_SymbolTableDump name to long, consider increasing OSAL_CONFIG_MAX_SYM_LEN\n");
+        }
     }
 
     /*

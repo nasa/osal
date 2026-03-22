@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -101,7 +101,7 @@ char g_writeBuff[UT_OS_IO_BUFF_SIZE];
 **   4) Expect the returned value from those routines to be
 **       (a) OS_SUCCESS
 *--------------------------------------------------------------------------------*/
-void UT_os_initfs_test()
+void UT_os_initfs_test(void)
 {
     UT_NOMINAL(OS_API_Init());
 }
@@ -165,7 +165,7 @@ void UT_os_initfs_test()
 **   6) Expect both returned values to be
 **        (a) OS_SUCCESS
 **--------------------------------------------------------------------------------*/
-void UT_os_createfile_test()
+void UT_os_createfile_test(void)
 {
     int32     i = 0, j = 0;
     osal_id_t fd;
@@ -302,7 +302,7 @@ void UT_os_createfile_test()
 **   6) Expect both returned values to be
 **        (a) OS_SUCCESS
 **--------------------------------------------------------------------------------*/
-void UT_os_openfile_test()
+void UT_os_openfile_test(void)
 {
     int32     i = 0, j = 0;
     osal_id_t fd;
@@ -445,7 +445,7 @@ void UT_os_openfile_test()
 **   6) Expect both returned value to be
 **        (a) OS_ERR_INVALID_ID
 **--------------------------------------------------------------------------------*/
-void UT_os_closefile_test()
+void UT_os_closefile_test(void)
 {
     char tmpBuff[UT_OS_IO_BUFF_SIZE];
 
@@ -526,7 +526,7 @@ void UT_os_closefile_test()
 **        (a) the number of bytes read that is equal to the number of bytes written in #3 __and__
 **        (b) the read buffer content is the same as the write buffer content in #3
 **--------------------------------------------------------------------------------*/
-void UT_os_readfile_test()
+void UT_os_readfile_test(void)
 {
     size_t expected_len;
 
@@ -634,7 +634,7 @@ void UT_os_readfile_test()
 **        (a) the number of bytes read that is equal to the number of bytes written in #3 __and__
 **        (b) the read buffer content is the same as the write buffer content in #3
 **--------------------------------------------------------------------------------*/
-void UT_os_writefile_test()
+void UT_os_writefile_test(void)
 {
     size_t expected_len;
 
@@ -739,7 +739,7 @@ void UT_os_writefile_test()
 **   6) Expect the returned value each time to be
 **        (a) the expected file position value given the arguments
 **--------------------------------------------------------------------------------*/
-void UT_os_lseekfile_test()
+void UT_os_lseekfile_test(void)
 {
     size_t buffLen;
     int32  pos1 = 0, pos2 = 0, pos3 = 0;
@@ -797,7 +797,7 @@ void UT_os_lseekfile_test()
 **   2) If the returned value is OS_ERR_NOT_IMPLEMENTED, then exit test
 **   3) Otherwise, continue
 **--------------------------------------------------------------------------------*/
-void UT_os_chmodfile_test()
+void UT_os_chmodfile_test(void)
 {
     UT_RETVAL(OS_chmod(NULL, OS_READ_WRITE), OS_INVALID_POINTER);
 
@@ -876,7 +876,7 @@ void UT_os_chmodfile_test()
 **        (a) OS_SUCCESS __and__
 **        (b) fstats1 returned in #3 and fstats2 returned in #9 to be not equal
 **--------------------------------------------------------------------------------*/
-void UT_os_statfile_test()
+void UT_os_statfile_test(void)
 {
     os_fstat_t fstats1;
     os_fstat_t fstats2;
@@ -980,7 +980,7 @@ void UT_os_statfile_test()
 **   6) Expect the returned values to be
 **        (a) OS_ERROR
 **--------------------------------------------------------------------------------*/
-void UT_os_removefile_test()
+void UT_os_removefile_test(void)
 {
     os_fstat_t fstats;
 
@@ -1077,7 +1077,7 @@ void UT_os_removefile_test()
 **   6) Expect the returned values to be
 **        (a) OS_ERROR
 **--------------------------------------------------------------------------------*/
-void UT_os_renamefile_test()
+void UT_os_renamefile_test(void)
 {
     os_fstat_t fstats;
 
@@ -1192,7 +1192,7 @@ void UT_os_renamefile_test()
 **   8) Expect the returned value to be
 **        (a) OS_SUCCESS
 **--------------------------------------------------------------------------------*/
-void UT_os_copyfile_test()
+void UT_os_copyfile_test(void)
 {
     os_fstat_t fstats;
 
@@ -1316,7 +1316,7 @@ void UT_os_copyfile_test()
 **  10) Expect the returned value to be
 **        (a) not OS_SUCCESS
 **--------------------------------------------------------------------------------*/
-void UT_os_movefile_test()
+void UT_os_movefile_test(void)
 {
     os_fstat_t fstats;
 
@@ -1428,7 +1428,7 @@ void UT_os_movefile_test()
 **        (a) number of bytes greater than 0 __and__
 **        (b) the read string is the same as the string returned from getevn("HOME") call
 **--------------------------------------------------------------------------------*/
-void UT_os_outputtofile_test()
+void UT_os_outputtofile_test(void)
 {
     /*-----------------------------------------------------*/
     /* #2 Invalid-file-desc-arg */
@@ -1521,7 +1521,7 @@ void UT_os_outputtofile_test()
 **   8) Expect the returned value to be
 **        (a) OS_ERR_INVALID_ID
 **--------------------------------------------------------------------------------*/
-void UT_os_getfdinfo_test()
+void UT_os_getfdinfo_test(void)
 {
     OS_file_prop_t fdProps;
     const char *   fileName = "GetInfo_Nom.txt";
@@ -1594,7 +1594,7 @@ void UT_os_getfdinfo_test()
 **   4) Expect the returned value to be
 **        (a) OS_SUCCESS
 **--------------------------------------------------------------------------------*/
-void UT_os_checkfileopen_test()
+void UT_os_checkfileopen_test(void)
 {
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */
@@ -1655,7 +1655,7 @@ void UT_os_checkfileopen_test()
 **   6) Expect all returned values to be
 **        (a) OS_ERROR
 **--------------------------------------------------------------------------------*/
-void UT_os_closeallfiles_test()
+void UT_os_closeallfiles_test(void)
 {
     /*-----------------------------------------------------*/
     /* #2 Nominal */
@@ -1731,7 +1731,7 @@ void UT_os_closeallfiles_test()
 **   6) Expect the returned value to be
 **        (a) OS_ERROR
 **--------------------------------------------------------------------------------*/
-void UT_os_closefilebyname_test()
+void UT_os_closefilebyname_test(void)
 {
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */

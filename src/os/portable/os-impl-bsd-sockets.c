@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -51,42 +51,14 @@
 #include <string.h>
 #include <errno.h>
 
-#include "os-impl-sockets.h"
+#include "os-impl-bsd-sockets-common.h"
 #include "os-shared-clock.h"
 #include "os-shared-file.h"
 #include "os-shared-select.h"
-#include "os-shared-sockets.h"
-#include "os-shared-idmap.h"
 
 /****************************************************************************************
                                      DEFINES
 ****************************************************************************************/
-
-/*
- * The OS layer may define a macro to set the proper flags on newly-opened sockets.
- * If not set, then a default implementation is used, which uses fcntl() to set O_NONBLOCK
- */
-#ifndef OS_IMPL_SOCKET_FLAGS
-#ifdef O_NONBLOCK
-#define OS_IMPL_SOCKET_FLAGS O_NONBLOCK
-#else
-#define OS_IMPL_SOCKET_FLAGS 0 /* do not set any flags */
-#endif
-#endif
-
-#ifndef OS_IMPL_SET_SOCKET_FLAGS
-#define OS_IMPL_SET_SOCKET_FLAGS(tok) OS_SetSocketDefaultFlags_Impl(tok)
-#endif
-
-typedef union
-{
-    char               data[OS_SOCKADDR_MAX_LEN];
-    struct sockaddr    sa;
-    struct sockaddr_in sa_in;
-#ifdef OS_NETWORK_SUPPORTS_IPV6
-    struct sockaddr_in6 sa_in6;
-#endif
-} OS_SockAddr_Accessor_t;
 
 /*
  * Confirm that the abstract socket address buffer size (OS_SOCKADDR_MAX_LEN) is
@@ -126,6 +98,70 @@ void OS_SetSocketDefaultFlags_Impl(const OS_object_token_t *token)
     }
 
     impl->selectable = true;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Helper function to get the IP DSCP value
+ *  Local function only, not part of API
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketGetDSCP_Impl(const OS_object_token_t *token, OS_socket_optval_t *optval)
+{
+    OS_impl_file_internal_record_t *impl;
+    int                             os_flags;
+    socklen_t                       optlen;
+
+    /* The DSCP value lives in the upper 6 bits of the IPv4 ToS field */
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
+
+    optlen = sizeof(os_flags);
+    if (getsockopt(impl->fd, IPPROTO_IP, IP_TOS, &os_flags, &optlen) < 0)
+    {
+        /* No recourse if getsockopt() fails - just report the error and move on. */
+        OS_DEBUG("getsockopt(IP_TOS): %s\n", strerror(errno));
+        return OS_ERROR;
+    }
+
+    optval->IntVal = (os_flags >> 2) & 0x3F;
+
+    return OS_SUCCESS;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Helper function to set the IP DSCP value
+ *  Local function only, not part of API
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketSetDSCP_Impl(const OS_object_token_t *token, const OS_socket_optval_t *optval)
+{
+    OS_impl_file_internal_record_t *impl;
+    int                             os_flags;
+    socklen_t                       optlen;
+
+    /* The DSCP value lives in the upper 6 bits of the IPv4 ToS field */
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
+
+    /* Preserve the setting of the lower two bits (ECN) by reading ToS first */
+    optlen = sizeof(os_flags);
+    if (getsockopt(impl->fd, IPPROTO_IP, IP_TOS, &os_flags, &optlen) < 0)
+    {
+        /* No recourse if getsockopt() fails - just report the error and move on. */
+        OS_DEBUG("getsockopt(IP_TOS): %s\n", strerror(errno));
+        return OS_ERROR;
+    }
+
+    os_flags = (os_flags & 0x03) | ((optval->IntVal << 2) & 0xFC);
+
+    if (setsockopt(impl->fd, IPPROTO_IP, IP_TOS, &os_flags, sizeof(os_flags)) < 0)
+    {
+        /* No recourse if setsockopt() fails - just report the error and move on. */
+        OS_DEBUG("setsockopt(IP_TOS): %s\n", strerror(errno));
+        return OS_ERROR;
+    }
+
+    return OS_SUCCESS;
 }
 
 /****************************************************************************************
@@ -625,6 +661,65 @@ int32 OS_SocketGetInfo_Impl(const OS_object_token_t *token, OS_socket_prop_t *so
  *           See prototype for argument/return detail
  *
  *-----------------------------------------------------------------*/
+int32 OS_SocketGetOption_Impl(const OS_object_token_t *token, OS_socket_option_t opt_id, OS_socket_optval_t *optval)
+{
+    int32 return_code;
+
+    return_code = OS_ERR_OPERATION_NOT_SUPPORTED;
+
+    switch (opt_id)
+    {
+        case OS_socket_option_UNDEFINED:
+            return_code = OS_SUCCESS;
+            break;
+
+        case OS_socket_option_IP_DSCP:
+            return_code = OS_SocketGetDSCP_Impl(token, optval);
+            break;
+
+        default:
+            break;
+    }
+
+    return return_code;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_SocketSetOption_Impl(const OS_object_token_t *token, OS_socket_option_t opt_id,
+                              const OS_socket_optval_t *optval)
+{
+    int32 return_code;
+
+    return_code = OS_ERR_OPERATION_NOT_SUPPORTED;
+
+    switch (opt_id)
+    {
+        case OS_socket_option_UNDEFINED:
+            return_code = OS_SUCCESS;
+            break;
+
+        case OS_socket_option_IP_DSCP:
+            return_code = OS_SocketSetDSCP_Impl(token, optval);
+            break;
+
+        default:
+            break;
+    }
+
+    return return_code;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
 {
     sa_family_t             sa_family;
@@ -659,79 +754,6 @@ int32 OS_SocketAddrInit_Impl(OS_SockAddr_t *Addr, OS_SocketDomain_t Domain)
 
     Addr->ActualLength     = OSAL_SIZE_C(addrlen);
     Accessor->sa.sa_family = sa_family;
-
-    return OS_SUCCESS;
-}
-
-/*----------------------------------------------------------------
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_SocketAddrToString_Impl(char *buffer, size_t buflen, const OS_SockAddr_t *Addr)
-{
-    const void *                  addrbuffer;
-    const OS_SockAddr_Accessor_t *Accessor;
-
-    Accessor = (const OS_SockAddr_Accessor_t *)&Addr->AddrData;
-
-    switch (Accessor->sa.sa_family)
-    {
-        case AF_INET:
-            addrbuffer = &Accessor->sa_in.sin_addr;
-            break;
-#ifdef OS_NETWORK_SUPPORTS_IPV6
-        case AF_INET6:
-            addrbuffer = &Accessor->sa_in6.sin6_addr;
-            break;
-#endif
-        default:
-            return OS_ERR_BAD_ADDRESS;
-            break;
-    }
-
-    if (inet_ntop(Accessor->sa.sa_family, addrbuffer, buffer, buflen) == NULL)
-    {
-        return OS_ERROR;
-    }
-
-    return OS_SUCCESS;
-}
-
-/*----------------------------------------------------------------
- *
- *  Purpose: Implemented per internal OSAL API
- *           See prototype for argument/return detail
- *
- *-----------------------------------------------------------------*/
-int32 OS_SocketAddrFromString_Impl(OS_SockAddr_t *Addr, const char *string)
-{
-    void *                  addrbuffer;
-    OS_SockAddr_Accessor_t *Accessor;
-
-    Accessor = (OS_SockAddr_Accessor_t *)&Addr->AddrData;
-
-    switch (Accessor->sa.sa_family)
-    {
-        case AF_INET:
-            addrbuffer = &Accessor->sa_in.sin_addr;
-            break;
-#ifdef OS_NETWORK_SUPPORTS_IPV6
-        case AF_INET6:
-            addrbuffer = &Accessor->sa_in6.sin6_addr;
-            break;
-#endif
-        default:
-            return OS_ERR_BAD_ADDRESS;
-            break;
-    }
-
-    /* This function is defined as returning 1 on success, not 0 */
-    if (inet_pton(Accessor->sa.sa_family, string, addrbuffer) != 1)
-    {
-        return OS_ERROR;
-    }
 
     return OS_SUCCESS;
 }

@@ -1,0 +1,111 @@
+/************************************************************************
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
+ *
+ * Copyright (c) 2023 United States Government as represented by the
+ * Administrator of the National Aeronautics and Space Administration.
+ * All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ************************************************************************/
+
+/**
+ * \file
+ *
+ * Stub implementations for the functions defined in the OSAL API
+ *
+ * The stub implementation can be used for unit testing applications built
+ * on top of OSAL.  The stubs do not do any real function, but allow
+ * the return code to be crafted such that error paths in the application
+ * can be executed.
+ */
+
+#include "osapi-rwlock.h" /* OSAL public API for this subsystem */
+#include "utstub-helpers.h"
+
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_RwLockCreate' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OS_RwLockCreate(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
+{
+    osal_id_t *rw_id = UT_Hook_GetArgValueByName(Context, "rw_id", osal_id_t *);
+    int32      status;
+
+    UT_Stub_GetInt32StatusCode(Context, &status);
+
+    if (status == OS_SUCCESS)
+    {
+        *rw_id = UT_AllocStubObjId(OS_OBJECT_TYPE_OS_RWLOCK);
+    }
+    else
+    {
+        *rw_id = UT_STUB_FAKE_OBJECT_ID;
+    }
+}
+
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_RwLockDelete' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OS_RwLockDelete(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
+{
+    osal_id_t rw_id = UT_Hook_GetArgValueByName(Context, "rw_id", osal_id_t);
+    int32     status;
+
+    UT_Stub_GetInt32StatusCode(Context, &status);
+
+    if (status == OS_SUCCESS)
+    {
+        UT_DeleteStubObjId(OS_OBJECT_TYPE_OS_MUTEX, rw_id);
+    }
+}
+
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_RwLockGetIdByName' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OS_RwLockGetIdByName(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
+{
+    osal_id_t *rw_id = UT_Hook_GetArgValueByName(Context, "rw_id", osal_id_t *);
+    int32      status;
+
+    UT_Stub_GetInt32StatusCode(Context, &status);
+
+    if (status == OS_SUCCESS &&
+        UT_Stub_CopyToLocal(UT_KEY(OS_RwLockGetIdByName), rw_id, sizeof(*rw_id)) < sizeof(*rw_id))
+    {
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_RWLOCK, rw_id);
+    }
+}
+
+/*
+ * -----------------------------------------------------------------
+ * Default handler implementation for 'OS_RwLockGetInfo' stub
+ * -----------------------------------------------------------------
+ */
+void UT_DefaultHandler_OS_RwLockGetInfo(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
+{
+    OS_rwlock_prop_t *rw_prop = UT_Hook_GetArgValueByName(Context, "rw_prop", OS_rwlock_prop_t *);
+    int32             status;
+
+    UT_Stub_GetInt32StatusCode(Context, &status);
+
+    if (status == OS_SUCCESS &&
+        UT_Stub_CopyToLocal(UT_KEY(OS_RwLockGetInfo), rw_prop, sizeof(*rw_prop)) < sizeof(*rw_prop))
+    {
+        strncpy(rw_prop->name, "Name", sizeof(rw_prop->name) - 1);
+        rw_prop->name[sizeof(rw_prop->name) - 1] = '\0';
+        UT_ObjIdCompose(1, OS_OBJECT_TYPE_OS_TASK, &rw_prop->creator);
+    }
+}

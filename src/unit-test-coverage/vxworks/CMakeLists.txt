@@ -25,18 +25,23 @@ set(VXWORKS_PORTABLE_BLOCK_LIST
     posix-gettime
     posix-io
     posix-files
+    posix-file-allocate
     posix-dirs
 
     console-bsp
     bsd-select
     bsd-sockets
+    bsd-sockets-dns
+    bsd-sockets-no-dns
 
     no-loader
     no-shell
     no-symtab
-    no-network
+    no-network-gethostname
+    no-network-gethostid
     no-sockets
     no-condvar
+    no-file-allocate
 )
 
 
@@ -82,4 +87,10 @@ endforeach(MODNAME ${VXWORKS_PORTABLE_BLOCK_LIST})
 
 # Custom flags for specific tests to be able to cover all code
 set_property(SOURCE ${OSAL_SOURCE_DIR}/src/os/portable/os-impl-bsd-sockets.c
+             APPEND PROPERTY COMPILE_DEFINITIONS OS_NETWORK_SUPPORTS_IPV6)
+
+set_property(SOURCE ${OSAL_SOURCE_DIR}/src/os/portable/os-impl-bsd-sockets-no-dns.c
+             APPEND PROPERTY COMPILE_DEFINITIONS OS_NETWORK_SUPPORTS_IPV6)
+
+set_property(SOURCE ${OSAL_SOURCE_DIR}/src/os/portable/os-impl-bsd-sockets-dns.c
              APPEND PROPERTY COMPILE_DEFINITIONS OS_NETWORK_SUPPORTS_IPV6)

@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -67,7 +67,7 @@
 **          OS_ERROR if the OS create call failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_queue_create_test()
+void UT_os_queue_create_test(void)
 {
     int       i         = 0;
     osal_id_t queue_id  = OS_OBJECT_ID_UNDEFINED;
@@ -151,7 +151,7 @@ void UT_os_queue_create_test()
 **          OS_ERROR if the OS call to delete the queue failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_queue_delete_test()
+void UT_os_queue_delete_test(void)
 {
     osal_id_t queue_id = OS_OBJECT_ID_UNDEFINED;
 
@@ -181,7 +181,7 @@ void UT_os_queue_delete_test()
 **          OS_QUEUE_INVALID_SIZE if the size copied from the queue is incorrect
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_queue_get_test()
+void UT_os_queue_get_test(void)
 {
     osal_id_t queue_id = OS_OBJECT_ID_UNDEFINED;
     uint32    queue_data_out;
@@ -296,7 +296,7 @@ void UT_os_queue_get_test()
 **          OS_ERROR if the OS call failed
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_queue_put_test()
+void UT_os_queue_put_test(void)
 {
     osal_id_t queue_id       = OS_OBJECT_ID_UNDEFINED;
     uint32    queue_data_out = 0;
@@ -362,7 +362,7 @@ void UT_os_queue_put_test()
 **          OS_ERR_NAME_NOT_FOUND if the name was not found in the queue table
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_queue_get_id_by_name_test()
+void UT_os_queue_get_id_by_name_test(void)
 {
     osal_id_t queue_id = OS_OBJECT_ID_UNDEFINED;
     char      long_queue_name[UT_OS_NAME_BUFF_SIZE];
@@ -408,7 +408,7 @@ void UT_os_queue_get_id_by_name_test()
 **          OS_ERR_INVALID_ID if the id passed in does not exist
 **          OS_SUCCESS if succeeded
 **--------------------------------------------------------------------------------*/
-void UT_os_queue_get_info_test()
+void UT_os_queue_get_info_test(void)
 {
     osal_id_t       queue_id = OS_OBJECT_ID_UNDEFINED;
     OS_queue_prop_t queue_prop;

@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -76,7 +76,7 @@ int32 OS_FileAPI_Init(void);
 
     Returns: File position (non-negative) on success, or relevant error code (negative)
  ------------------------------------------------------------------*/
-int32 OS_GenericSeek_Impl(const OS_object_token_t *token, int32 offset, uint32 whence);
+int32 OS_GenericSeek_Impl(const OS_object_token_t *token, osal_offset_t offset, uint32 whence);
 
 /*----------------------------------------------------------------
 
@@ -113,6 +113,22 @@ int32 OS_GenericClose_Impl(const OS_object_token_t *token);
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/
 int32 OS_FileOpen_Impl(const OS_object_token_t *token, const char *local_path, int32 flags, int32 access_mode);
+
+/*----------------------------------------------------------------
+
+    Purpose: Pre-allocates disk space at the specified offset and length
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_FileAllocate_Impl(const OS_object_token_t *token, osal_offset_t offset, osal_offset_t len);
+
+/*----------------------------------------------------------------
+
+    Purpose: Truncates (or expands) file to the specified length
+
+    Returns: OS_SUCCESS on success, or relevant error code
+ ------------------------------------------------------------------*/
+int32 OS_FileTruncate_Impl(const OS_object_token_t *token, osal_offset_t len);
 
 /*----------------------------------------------------------------
 

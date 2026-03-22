@@ -1,0 +1,75 @@
+/************************************************************************
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
+ *
+ * Copyright (c) 2023 United States Government as represented by the
+ * Administrator of the National Aeronautics and Space Administration.
+ * All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ************************************************************************/
+
+/**
+ * \file
+ * \author   joseph.p.hickey@nasa.gov
+ *
+ * This file contains the network functionality for
+ * systems which implement the POSIX-defined network hostname/id functions.
+ */
+
+/****************************************************************************************
+                                    INCLUDE FILES
+ ***************************************************************************************/
+
+/*
+ * Inclusions Defined by OSAL layer.
+ *
+ * This must include whatever is required to get the prototypes of these functions:
+ *
+ *  gethostname()
+ *
+ * Both of these routines should conform to X/Open 5 definition.
+ */
+#include <string.h>
+#include <errno.h>
+
+#include "os-impl-network.h"
+#include "os-shared-network.h"
+
+/****************************************************************************************
+                                    Network API
+ ***************************************************************************************/
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_NetworkGetHostName_Impl(char *host_name, size_t name_len)
+{
+    int32 return_code;
+
+    if (gethostname(host_name, name_len) < 0)
+    {
+        return_code = OS_ERROR;
+    }
+    else
+    {
+        /*
+         * posix does not say that the name is always
+         * null terminated, so its worthwhile to ensure it
+         */
+        host_name[name_len - 1] = 0;
+        return_code             = OS_SUCCESS;
+    }
+
+    return return_code;
+}

@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -160,6 +160,34 @@ void Test_OS_FileChmod_Impl(void)
     OSAPI_TEST_FUNCTION_RC(OS_FileChmod_Impl, ("local", OS_READ_WRITE), OS_SUCCESS);
 }
 
+void Test_OS_FileTruncate_Impl(void)
+{
+    /*
+     * Test Case For:
+     * int32 OS_FileTruncate_Impl(const OS_object_token_t *token, osal_offset_t len);
+     */
+    OS_object_token_t token;
+
+    memset(&token, 0, sizeof(token));
+
+    OSAPI_TEST_FUNCTION_RC(OS_FileTruncate_Impl, (&token, 0), OS_SUCCESS);
+
+    UT_SetDefaultReturnValue(UT_KEY(OCS_ftruncate), -1);
+
+    OCS_errno = OCS_EACCES;
+    OSAPI_TEST_FUNCTION_RC(OS_FileTruncate_Impl, (&token, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+    OCS_errno = OCS_EPERM;
+    OSAPI_TEST_FUNCTION_RC(OS_FileTruncate_Impl, (&token, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+    OCS_errno = OCS_ETXTBSY;
+    OSAPI_TEST_FUNCTION_RC(OS_FileTruncate_Impl, (&token, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+    OCS_errno = OCS_EROFS;
+    OSAPI_TEST_FUNCTION_RC(OS_FileTruncate_Impl, (&token, 0), OS_ERR_OPERATION_NOT_SUPPORTED);
+    OCS_errno = OCS_EFBIG;
+    OSAPI_TEST_FUNCTION_RC(OS_FileTruncate_Impl, (&token, 0), OS_ERR_OUTPUT_TOO_LARGE);
+    OCS_errno = OCS_EINVAL; /* something for the catch all */
+    OSAPI_TEST_FUNCTION_RC(OS_FileTruncate_Impl, (&token, 0), OS_ERROR);
+}
+
 void Test_OS_FileRemove_Impl(void)
 {
     /*
@@ -221,4 +249,5 @@ void UtTest_Setup(void)
     ADD_TEST(OS_FileChmod_Impl);
     ADD_TEST(OS_FileRemove_Impl);
     ADD_TEST(OS_FileRename_Impl);
+    ADD_TEST(OS_FileTruncate_Impl);
 }

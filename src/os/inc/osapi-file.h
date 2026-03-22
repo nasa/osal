@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -362,6 +362,48 @@ int32 OS_TimedWrite(osal_id_t filedes, const void *buffer, size_t nbytes, int32 
 
 /*-------------------------------------------------------------------------------------*/
 /**
+ * @brief Pre-allocates space at the given file location
+ *
+ * Instructs the underlying OS/Filesystem to pre-allocate filesystem blocks
+ * for the given file location and length.  After this, future writes into the
+ * same file area will not fail due to lack of space.
+ *
+ * @param[in] filedes   The handle ID to operate on
+ * @param[in] offset    The offset within the file
+ * @param[in] len       The length of space to pre-allocate
+ *
+ * @note Some file systems do not implement this capability
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS @covtest
+ * @retval #OS_ERR_OUTPUT_TOO_LARGE if this would case the file to be too large
+ * @retval #OS_ERR_OPERATION_NOT_SUPPORTED if the filesystem does not support this
+ */
+int32 OS_FileAllocate(osal_id_t filedes, osal_offset_t offset, osal_offset_t len);
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Changes the size of the file
+ *
+ * This changes the size of the file on disk to the specified value.  It may either
+ * extend or truncate the file.
+ *
+ * @note No data is written to the extended file area when a file is grown using
+ * this API call.  Depending on the file system in use, data blocks may not be
+ * allocated at the same time (a sparse file).  Data blocks are allocated
+ * at the time file data is written into the extended area.
+ *
+ * @param[in] filedes   The handle ID to operate on
+ * @param[in] len       The desired length of the file
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS @covtest
+ * @retval #OS_ERR_OUTPUT_TOO_LARGE if this would case the file to be too large
+ */
+int32 OS_FileTruncate(osal_id_t filedes, osal_offset_t len);
+
+/*-------------------------------------------------------------------------------------*/
+/**
  * @brief Changes the permissions of a file
  *
  * @param[in] path        File to change @nonnull
@@ -411,7 +453,7 @@ int32 OS_stat(const char *path, os_fstat_t *filestats);
  * @retval #OS_ERR_INVALID_ID if the file descriptor passed in is invalid
  * @retval #OS_ERROR if OS call failed @covtest
  */
-int32 OS_lseek(osal_id_t filedes, int32 offset, uint32 whence);
+int32 OS_lseek(osal_id_t filedes, osal_offset_t offset, uint32 whence);
 
 /*-------------------------------------------------------------------------------------*/
 /**

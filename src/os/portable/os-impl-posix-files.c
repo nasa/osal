@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -358,4 +358,37 @@ int32 OS_FileRename_Impl(const char *old_path, const char *new_path)
     }
 
     return OS_SUCCESS;
+}
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per internal OSAL API
+ *           See prototype for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_FileTruncate_Impl(const OS_object_token_t *token, osal_offset_t len)
+{
+    OS_impl_file_internal_record_t *impl;
+    int32                           Status;
+
+    impl = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
+
+    if (ftruncate(impl->fd, len) >= 0)
+    {
+        Status = OS_SUCCESS;
+    }
+    else if (errno == EACCES || errno == EPERM || errno == ETXTBSY || errno == EROFS)
+    {
+        Status = OS_ERR_OPERATION_NOT_SUPPORTED;
+    }
+    else if (errno == EFBIG)
+    {
+        Status = OS_ERR_OUTPUT_TOO_LARGE;
+    }
+    else
+    {
+        Status = OS_ERROR;
+    }
+
+    return Status;
 }

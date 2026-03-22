@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -71,7 +71,7 @@ void UT_os_init_task_get_info_test(void);
 ** Local function definitions
 **--------------------------------------------------------------------------------*/
 
-void UT_os_init_task_misc()
+void UT_os_init_task_misc(void)
 {
     memset(g_long_task_name, 'X', sizeof(g_long_task_name));
     g_long_task_name[sizeof(g_long_task_name) - 1] = '\0';
@@ -79,7 +79,7 @@ void UT_os_init_task_misc()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_init_task_create_test()
+void UT_os_init_task_create_test(void)
 {
     g_task_names[0] = "Create_NotImpl";
     g_task_names[1] = "Create_NullPtr1";
@@ -95,7 +95,7 @@ void UT_os_init_task_create_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_init_task_delete_test()
+void UT_os_init_task_delete_test(void)
 {
     g_task_names[0] = "Delete_NotImpl";
     g_task_names[1] = "Delete_InvArg";
@@ -105,7 +105,7 @@ void UT_os_init_task_delete_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_setup_install_delete_handler_test()
+void UT_os_setup_install_delete_handler_test(void)
 {
     g_task_names[0] = "DelHandler_NotImpl";
     g_task_names[1] = "DelHandler_InvArg";
@@ -114,7 +114,7 @@ void UT_os_setup_install_delete_handler_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_init_task_exit_test()
+void UT_os_init_task_exit_test(void)
 {
     g_task_names[0] = "Exit_NotImpl";
     g_task_names[1] = "Exit_Nominal";
@@ -122,7 +122,7 @@ void UT_os_init_task_exit_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_init_task_delay_test()
+void UT_os_init_task_delay_test(void)
 {
     g_task_names[0] = "Delay_NotImpl";
     g_task_names[1] = "Delay_OsErr";
@@ -131,7 +131,7 @@ void UT_os_init_task_delay_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_init_task_set_priority_test()
+void UT_os_init_task_set_priority_test(void)
 {
     g_task_names[0] = "SetPrio_NotImpl";
     g_task_names[1] = "SetPrio_InvArg";
@@ -142,7 +142,7 @@ void UT_os_init_task_set_priority_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_init_task_register_test()
+void UT_os_init_task_register_test(void)
 {
     g_task_names[0] = "Register_NotImpl";
     g_task_names[1] = "Register_InvArg";
@@ -152,7 +152,7 @@ void UT_os_init_task_register_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_init_task_get_id_test()
+void UT_os_init_task_get_id_test(void)
 {
     g_task_names[0] = "GetId_NotImpl";
     g_task_names[1] = "GetId_Nominal";
@@ -160,7 +160,7 @@ void UT_os_init_task_get_id_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_init_task_get_id_by_name_test()
+void UT_os_init_task_get_id_by_name_test(void)
 {
     g_task_names[0] = "GetIdByName_NotImpl";
     g_task_names[1] = "GetIdByName_InvPtr1";
@@ -172,7 +172,7 @@ void UT_os_init_task_get_id_by_name_test()
 
 /*--------------------------------------------------------------------------------*/
 
-void UT_os_init_task_get_info_test()
+void UT_os_init_task_get_info_test(void)
 {
     g_task_names[0] = "GetInfo_NotImpl";
     g_task_names[1] = "GetInfo_InvId";

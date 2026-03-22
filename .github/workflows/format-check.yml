@@ -2,8 +2,11 @@ name: Format Check
 
 # Run on all push and pull requests
 on:
-  push:
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
 
 jobs:
   format-check:
