@@ -30,6 +30,12 @@
 #include "os-posix.h"
 #include "bsp-impl.h"
 
+#ifdef __linux__
+#include <limits.h>
+#include <poll.h>
+#include <stdint.h>
+#endif
+
 #include "os-impl-queues.h"
 #include "os-shared-queue.h"
 #include "os-shared-idmap.h"
@@ -41,62 +47,160 @@ OS_impl_queue_internal_record_t OS_impl_queue_table[OS_MAX_QUEUES];
                                 MESSAGE QUEUE API
  ***************************************************************************************/
 
-void OS_Posix_CompAbsDelayTimeMonotonic(uint32_t msecs, struct timespec *ts) {
-    clock_gettime(CLOCK_MONOTONIC, ts);
-
-    ts->tv_sec += msecs/1000;
-    ts->tv_nsec += (msecs%1000)*1000000L;
-
-    if (ts->tv_nsec >= 1000000000L) {
-        ts->tv_nsec++;
-        ts->tv_nsec -= 1000000000L;
-    }
-} 
-
-ssize_t mq_timedreceive_monotonic(mqd_t mqd, char *buf, size_t len, unsigned *prio, const struct timespec *deadline)  {
-    struct timespec now;
-    
-    clock_gettime(CLOCK_MONOTONIC, &now);
-
-    /*
-     * If we’re already at or past the monotonic deadline, report a timeout immediately.
-    */
-    if ((now.tv_sec > deadline->tv_sec) || (now.tv_sec == deadline->tv_sec && now.tv_nsec >= deadline->tv_nsec)) {
-        errno = ETIMEDOUT;
-        return -1;
-    }
-
-    int64_t rem_sec = deadline->tv_sec - now.tv_sec;
-    int64_t rem_nsec = deadline->tv_nsec - now.tv_nsec;
-    int timeout = (int)(rem_sec*1000 + rem_nsec / 1000000);
-
-    struct pollfd p = 
+#ifdef __linux__
+/*----------------------------------------------------------------
+ *
+ * Purpose:  Local helper function
+ *
+ * This function accept time interval, msecs, as an input and
+ * computes the absolute time at which this time interval will expire.
+ * The absolute time is programmed into a struct.
+ *
+ *-----------------------------------------------------------------*/
+static int OS_Posix_LinuxMqMonotonicDeadline_Impl(uint32 msecs, struct timespec *tm)
+{
+    if (clock_gettime(CLOCK_MONOTONIC, tm) != 0)
     {
-        .fd = (int) mqd, 
-        .events = POLLIN,
-    };
-    
-    int rc = poll(&p, 1, timeout);
-    
-    bool has_event_ocurred = false;
-    if (p.revents & POLLIN) {
-        has_event_ocurred = true;
-    }
-
-    if (rc > 0 && has_event_ocurred) {
-        return mq_receive(mqd, buf, len, prio);
-    }
-
-    if (rc == 0) {
-        errno = ETIMEDOUT;
-        struct timespec realtime_clock_timeval, monotonic_clock_timeval;
-        clock_gettime(CLOCK_REALTIME, &realtime_clock_timeval);
-        clock_gettime(CLOCK_MONOTONIC, &monotonic_clock_timeval);
-        printf("[mq_timedreceive_monotonic] timeout -> CLOCK_REALTIME=%ld.%09ld | CLOCK_MONOTONIC=%lld.%09ld\n", realtime_clock_timeval.tv_sec, realtime_clock_timeval.tv_nsec, (long long)monotonic_clock_timeval.tv_sec, monotonic_clock_timeval.tv_nsec);
         return -1;
     }
-    return -1;
+
+    /* add the delay to the current time */
+    tm->tv_sec += (time_t)(msecs / 1000);
+    /* convert residue ( msecs )  to nanoseconds */
+    tm->tv_nsec += (msecs % 1000) * 1000000L;
+
+    if (tm->tv_nsec >= 1000000000L)
+    {
+        tm->tv_nsec -= 1000000000L;
+        tm->tv_sec++;
+    }
+
+    return 0;
 }
+#endif
+
+#ifdef __linux__
+/*---------------------------------------------------------------------------------------
+   Name: OS_Posix_LinuxMqReceiveUntilMonotonicDeadline_Impl
+
+   Purpose: Linux-only helper that waits for queue data using a monotonic deadline.
+            Linux documents pollable mqueue descriptors; this is not portable POSIX behavior.
+
+ ----------------------------------------------------------------------------------------*/
+static ssize_t OS_Posix_LinuxMqReceiveUntilMonotonicDeadline_Impl(mqd_t mqd, char *buf, size_t len, unsigned *prio,
+                                                                  const struct timespec *deadline)
+{
+    struct timespec now;
+    struct timespec immediate_ts = {0, 0};
+    struct pollfd   pfd;
+
+    pfd.fd     = (int)mqd;
+    pfd.events = POLLIN;
+    pfd.revents = 0;
+
+    /* Loop until success, timeout, or non-retryable error. */
+    while (1)
+    {
+        int64_t rem_sec;
+        int64_t rem_nsec;
+        int64_t rem_ms;
+        int     timeout_ms;
+        int     rc;
+        ssize_t size;
+
+        if (clock_gettime(CLOCK_MONOTONIC, &now) != 0)
+        {
+            return -1;
+        }
+
+        if ((now.tv_sec > deadline->tv_sec) || (now.tv_sec == deadline->tv_sec && now.tv_nsec >= deadline->tv_nsec))
+        {
+            errno = ETIMEDOUT;
+            return -1;
+        }
+
+        rem_sec  = deadline->tv_sec - now.tv_sec;
+        rem_nsec = deadline->tv_nsec - now.tv_nsec;
+        if (rem_nsec < 0)
+        {
+            --rem_sec;
+            rem_nsec += 1000000000L;
+        }
+
+        /* Round up so poll() does not undersleep. */
+        rem_ms = (rem_sec * 1000) + (rem_nsec + 999999) / 1000000;
+        if (rem_ms > INT_MAX)
+        {
+            timeout_ms = INT_MAX;
+        }
+        else if (rem_ms < 0)
+        {
+            timeout_ms = 0;
+        }
+        else
+        {
+            timeout_ms = (int)rem_ms;
+        }
+
+        rc = poll(&pfd, 1, timeout_ms);
+        if (rc < 0)
+        {
+            if (errno == EINTR)
+            {
+                continue;
+            }
+
+            return -1;
+        }
+
+        /* Recheck the deadline because poll() uses millisecond granularity. */
+        if (rc == 0)
+        {
+            if (clock_gettime(CLOCK_MONOTONIC, &now) != 0)
+            {
+                return -1;
+            }
+
+            if ((now.tv_sec > deadline->tv_sec) ||
+                (now.tv_sec == deadline->tv_sec && now.tv_nsec >= deadline->tv_nsec))
+            {
+                errno = ETIMEDOUT;
+                return -1;
+            }
+
+            continue;
+        }
+
+        if ((pfd.revents & POLLIN) == 0)
+        {
+            if ((pfd.revents & POLLNVAL) != 0)
+            {
+                errno = EBADF;
+            }
+            else
+            {
+                errno = EIO;
+            }
+
+            return -1;
+        }
+
+        /* Use an expired timeout so the receive step cannot block. */
+        size = mq_timedreceive(mqd, buf, len, prio, &immediate_ts);
+        if (size >= 0)
+        {
+            return size;
+        }
+
+        if (errno == EINTR || errno == EAGAIN || errno == ETIMEDOUT)
+        {
+            continue;
+        }
+
+        return -1;
+    }
+}
+#endif
 
 /*---------------------------------------------------------------------------------------
    Name: OS_Posix_QueueAPI_Impl_Init
@@ -247,6 +351,9 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     int32                            return_code;
     ssize_t                          sizeCopied;
     struct timespec                  ts;
+#ifdef __linux__
+    struct timespec                  monotonic_deadline;
+#endif
     OS_impl_queue_internal_record_t *impl;
 
     impl = OS_OBJECT_TABLE_GET(OS_impl_queue_table, *token);
@@ -268,6 +375,27 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     }
     else
     {
+#ifdef __linux__
+        if (timeout == OS_CHECK)
+        {
+            /*
+             * NOTE - a prior implementation of OS_CHECK would check the mq_attr for a nonzero depth
+             * and then call mq_receive().  This is insufficient since another thread might do the same
+             * thing at the same time in which case one thread will read and the other will block.
+             *
+             * Calling mq_timedreceive with a zero timeout effectively does the same thing in the typical
+             * case, but for the case where two threads do a simultaneous read, one will get the message
+             * while the other will NOT block (as expected).
+             */
+            memset(&ts, 0, sizeof(ts));
+            sizeCopied = mq_timedreceive(impl->id, data, size, NULL, &ts);
+        }
+        else if (OS_Posix_LinuxMqMonotonicDeadline_Impl(timeout, &monotonic_deadline) == 0)
+        {
+            sizeCopied = OS_Posix_LinuxMqReceiveUntilMonotonicDeadline_Impl(impl->id, data, size, NULL,
+                                                                            &monotonic_deadline);
+        }
+#else
         /*
          * NOTE - a prior implementation of OS_CHECK would check the mq_attr for a nonzero depth
          * and then call mq_receive().  This is insufficient since another thread might do the same
@@ -283,20 +411,18 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
         }
         else
         {
-            OS_Posix_CompAbsDelayTimeMonotonic(timeout, &ts); // Get future monotonic time calculated from timeout input. Monotonic time is inmune to REALTIME_CLOCK jumps (https://github.com/nasa/osal/issues/1401).
+            OS_Posix_CompAbsDelayTime(timeout, &ts);
         }
 
         /*
-         ** If the mq_timedreceive_monotonic call is interrupted by a system call or signal,
+         ** If the mq_timedreceive call is interrupted by a system call or signal,
          ** call it again.
          */
         do
         {
-            /*
-            * mq_timedreceive_monotonic is does not suffer a premature timeout because it does not depend on REALTIME_CLOCK.
-            */
-            sizeCopied = mq_timedreceive_monotonic(impl->id, data, size, NULL, &ts);
+            sizeCopied = mq_timedreceive(impl->id, data, size, NULL, &ts);
         } while (timeout != OS_CHECK && sizeCopied < 0 && errno == EINTR);
+#endif
 
     } /* END timeout */
 
