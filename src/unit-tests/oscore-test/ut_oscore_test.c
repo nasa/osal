@@ -195,6 +195,7 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_printf_test, NULL, NULL, "OS_printf");
     UtTest_Add(UT_os_printfenable_test, NULL, NULL, "OS_printf_enable");
     UtTest_Add(UT_os_printfdisable_test, NULL, NULL, "OS_printf_disable");
+    UtTest_Add(UT_os_resource_stats_test, NULL, NULL, "OS_GetResourceStats");
 
     UtTest_Add(UT_os_bin_sem_create_test, NULL, NULL, "OS_BinSemCreate");
     UtTest_Add(UT_os_bin_sem_delete_test, NULL, NULL, "OS_BinSemDelete");
