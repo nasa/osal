@@ -407,7 +407,7 @@ int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *re
     }
     else
     {
-        result->block_size   = stat_buf.f_bsize;
+        result->block_size   = stat_buf.f_frsize;
         result->blocks_free  = stat_buf.f_bfree;
         result->total_blocks = stat_buf.f_blocks;
 
