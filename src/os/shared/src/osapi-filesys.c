@@ -88,11 +88,32 @@ bool OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, co
 {
     OS_filesys_internal_record_t *filesys;
     const char                   *target = (const char *)ref;
+    const char                   *p;
     size_t                        mplen;
 
     filesys = OS_OBJECT_TABLE_GET(OS_filesys_table, *token);
 
     if ((filesys->flags & OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL) == 0)
+    {
+        return false;
+    }
+
+    /*
+     * Reject any path that contains a ".." component to prevent path
+     * traversal attacks that could escape the virtual mount point (#1516).
+     * Check for "/../", leading "/../", and trailing "/.."
+     */
+    p = target;
+    while (*p != 0)
+    {
+        if (p[0] == '/' && p[1] == '.' && p[2] == '.' && (p[3] == '/' || p[3] == 0))
+        {
+            return false;
+        }
+        ++p;
+    }
+    /* Also reject a path that starts with "../" or is exactly ".." */
+    if (target[0] == '.' && target[1] == '.' && (target[2] == '/' || target[2] == 0))
     {
         return false;
     }

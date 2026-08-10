@@ -758,6 +758,11 @@ bool UtAssert_StringBufCompare(const char        *String1,
     /* Check for a newline within the string, and if present, end the string there instead */
     if (FormatLen1 > 0)
     {
+        /* Clamp to buffer capacity before any memcpy to prevent stack-buffer-overflow (#1550) */
+        if (FormatLen1 > sizeof(ScrubbedString1) - 1)
+        {
+            FormatLen1 = sizeof(ScrubbedString1) - 1;
+        }
         EndPtr1 = memchr(String1, '\n', FormatLen1);
         if (EndPtr1 != NULL)
         {
@@ -769,6 +774,11 @@ bool UtAssert_StringBufCompare(const char        *String1,
 
     if (FormatLen2 > 0)
     {
+        /* Clamp to buffer capacity before any memcpy to prevent stack-buffer-overflow (#1550) */
+        if (FormatLen2 > sizeof(ScrubbedString2) - 1)
+        {
+            FormatLen2 = sizeof(ScrubbedString2) - 1;
+        }
         EndPtr2 = memchr(String2, '\n', FormatLen2);
         if (EndPtr2 != NULL)
         {
