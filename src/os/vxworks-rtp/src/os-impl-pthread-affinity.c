@@ -19,50 +19,42 @@
 /**
  * \file
  *
- * This file Contains all of the api calls for manipulating files
- * in a file system / C library that implements the POSIX-style file API
+ * OSAL Task Affinity Implementation for VxWorks RTP
+ * This bridges the POSIX OSAL task structure with native VxWorks CPU Affinity APIs
  */
 
 /****************************************************************************************
                                     INCLUDE FILES
  ***************************************************************************************/
 
-/*
- * Inclusions Defined by OSAL layer.
- *
- * This must include whatever is required to get the prototypes of these functions:
- *
- *   open()
- *   stat()
- *   chmod()
- *   remove()
- *   rename()
- */
-
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <time.h>
 
+/* POSIX thread support (needed for the OSAL internal records) */
+#include <pthread.h>
+
+/* Native VxWorks headers required for Task Affinity in RTP */
+#include <vxWorks.h>
+#include <cpuset.h>
+#include <taskLib.h>
+#include <vxCpuLib.h>
+#include <errnoLib.h>
+
 #include "os-impl-taskaffinity.h"
 #include "osapi-task-affinity.h"
-
 #include "os-impl-tasks.h"
 #include "os-shared-file.h"
 #include "os-shared-idmap.h"
 
 /****************************************************************************************
-                                     DEFINES
+                                 Task Affinity API
  ***************************************************************************************/
 
-/****************************************************************************************
-                                 Named File API
- ***************************************************************************************/
 /*
  * ----------------------------------------------------------------------
- * The OS_TaskAffinityGetCoresConfigured() is an api call  to obtain information from OS
- * for the number of configured cores
- *
+ * The OS_TaskAffinityGetCoresConfigured_Impl()
  * Returns the number of configured cores
  * ----------------------------------------------------------------------
  */
@@ -70,10 +62,10 @@ uint32 OS_TaskAffinityGetCoresConfigured_Impl(void)
 {
     return OS_TaskAffinity_Proc_Conf();
 }
+
 /*
  * ----------------------------------------------------------------------
- * The OS_TaskAffinitySetAffinity() is an api call to set affinity to a task
- *
+ * The OS_TaskAffinitySetAffinity_Impl()
  * Sets an affinity from cpuset to task with provided task_id
  * ----------------------------------------------------------------------
  */
@@ -84,6 +76,12 @@ int32 OS_TaskAffinitySetAffinity_Impl(const OS_object_token_t *token, const OS_c
     uint32                          i;
     int32                           return_value;
 
+    /* Check if the thread has actually started and recorded its ID yet */
+    if (impl->vxid == 0 || impl->vxid == (TASK_ID)ERROR)
+    {
+        return OS_ERROR;
+    }
+
     CPUSET_ZERO(local_cpuset);
     for (i = 0; (i < OS_MAX_CPUS) && (i < OS_TaskAffinityGetCoresConfigured()); i++)
     {
@@ -93,6 +91,7 @@ int32 OS_TaskAffinitySetAffinity_Impl(const OS_object_token_t *token, const OS_c
         }
     }
 
+    /* Pass the true native TASK_ID to VxWorks */
     return_value = taskCpuAffinitySet(impl->vxid, local_cpuset);
 
     if (return_value == 0)
@@ -118,7 +117,15 @@ int32 OS_TaskAffinityGetAffinity_Impl(const OS_object_token_t *token, OS_cpuset_
     uint32                          i;
     int32                           return_value;
 
+    /* Check if the thread has actually started and recorded its ID yet */
+    if (impl->vxid == 0 || impl->vxid == (TASK_ID)ERROR)
+    {
+        return OS_ERROR;
+    }
+
     CPUSET_ZERO(local_cpuset);
+
+    /* Pass the true native TASK_ID to VxWorks */
     return_value = taskCpuAffinityGet(impl->vxid, &local_cpuset);
 
     if (return_value == 0)
