@@ -1,4 +1,4 @@
-/************************************************************************
+﻿/************************************************************************
  * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
  * Copyright (c) 2023 United States Government as represented by the
@@ -101,6 +101,24 @@ int32 OS_MutSemCreate_Impl(const OS_object_token_t *token, uint32 options)
     }
 
     /*
+    ** Make the mutex robust so that if the owning thread is cancelled
+    ** (e.g. during shutdown) while holding the lock, the next attempt to
+    ** take the mutex returns EOWNERDEAD instead of deadlocking the other
+    ** tasks that pend on it.  See nasa/cFE#2433.
+    ** Note: Robust mutex not supported on RTEMS/FACE, skip if unavailable.
+    */
+#ifdef PTHREAD_MUTEX_ROBUST
+    return_code = pthread_mutexattr_setrobust(&mutex_attr, PTHREAD_MUTEX_ROBUST);
+    if (return_code != 0)
+    {
+        OS_DEBUG("Error: Mutex could not be created. pthread_mutexattr_setrobust failed ID = %lu: %s\n",
+                 OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)),
+                 strerror(return_code));
+        return OS_SEM_FAILURE;
+    }
+#endif
+
+    /*
     ** create the mutex
     ** upon successful initialization, the state of the mutex becomes initialized and unlocked
     */
@@ -181,6 +199,18 @@ int32 OS_MutSemTake_Impl(const OS_object_token_t *token)
     ** Lock the mutex
     */
     status = pthread_mutex_lock(&(impl->id));
+#ifdef EOWNERDEAD
+    if (status == EOWNERDEAD)
+    {
+        /*
+        ** The previous owner terminated while holding the mutex (e.g. thread
+        ** cancellation during shutdown).  Restore it to a consistent state so
+        ** the lock can be safely used.  See nasa/cFE#2433.
+        ** Note: Robust not supported on RTEMS/FACE, guard EOWNERDEAD.
+        */
+        status = pthread_mutex_consistent(&(impl->id));
+    }
+#endif
     if (status != 0)
     {
         return OS_SEM_FAILURE;
@@ -199,3 +229,4 @@ int32 OS_MutSemGetInfo_Impl(const OS_object_token_t *token, OS_mut_sem_prop_t *m
 {
     return OS_SUCCESS;
 }
+
