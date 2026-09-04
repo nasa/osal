@@ -22,7 +22,6 @@ set(POSIX_BASE_SRCLIST
     ../posix/src/os-impl-queues.c
     ../posix/src/os-impl-tasks.c
     ../posix/src/os-impl-timebase.c
-    ../portable/os-impl-pthread-no-affinity-np.c
 )
 
 # Use portable blocks for basic I/O
@@ -98,6 +97,7 @@ endif ()
 set(QNX_IMPL_SRCLIST
     src/os-impl-filesys.c
     ../portable/os-impl-no-network-gethostid.c    # non-implemented versions of gethostid  API
+    src/os-impl-task-affinity.c
 )
 
 # Defines an OBJECT target named "osal_qnx_impl" with selected source files
