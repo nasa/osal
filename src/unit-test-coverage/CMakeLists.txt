@@ -29,7 +29,7 @@ enable_testing()
 # code coverage analysis.  Because the actual underlying OS calls are stubbed out, there
 # is no dependency on the actual underlying OS.  Note that RTEMS is not included as the
 # coverage test is not implemented at this time.
-set(OSALCOVERAGE_TARGET_OSTYPE "vxworks;shared" CACHE STRING "OSAL target(s) to build coverage tests for (default=all)")
+set(OSALCOVERAGE_TARGET_OSTYPE "vxworks;shared;posix" CACHE STRING "OSAL target(s) to build coverage tests for (default=all)")
 
 # Check that coverage has been implemented for this OSTYPE
 foreach(OSTYPE ${OSALCOVERAGE_TARGET_OSTYPE})

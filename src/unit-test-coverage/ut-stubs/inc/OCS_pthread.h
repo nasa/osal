@@ -37,6 +37,7 @@
 #define OCS_PTHREAD_PRIO_INHERIT    0x1000
 #define OCS_PTHREAD_MUTEX_RECURSIVE 0x1001
 #define OCS_PTHREAD_EXPLICIT_SCHED  0x1002
+#define OCS_PTHREAD_MUTEX_NORMAL    0x1003
 
 /* ----------------------------------------- */
 /* types normally defined in pthread.h */
@@ -88,6 +89,9 @@ typedef struct OCS_pthread_key       OCS_pthread_key_t;
 /* ----------------------------------------- */
 /* prototypes normally declared in pthread.h */
 /* ----------------------------------------- */
+
+extern void OCS_pthread_cleanup_push(void (*routine)(void *), void *arg);
+extern void OCS_pthread_cleanup_pop(int execute);
 
 extern int OCS_pthread_attr_destroy(OCS_pthread_attr_t *attr);
 extern int OCS_pthread_attr_getschedparam(const OCS_pthread_attr_t *attr, struct OCS_sched_param *param);

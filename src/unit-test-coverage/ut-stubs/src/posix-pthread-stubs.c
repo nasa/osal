@@ -134,6 +134,10 @@ int OCS_pthread_cond_timedwait(OCS_pthread_cond_t *cond, OCS_pthread_mutex_t *mu
 {
     int32 Status;
 
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_pthread_cond_timedwait), cond);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_pthread_cond_timedwait), mutex);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_pthread_cond_timedwait), abstime);
+
     Status = UT_DEFAULT_IMPL(OCS_pthread_cond_timedwait);
 
     return Status;
@@ -336,4 +340,17 @@ int OCS_pthread_sigmask(int how, const OCS_sigset_t *set, OCS_sigset_t *oldset)
     Status = UT_DEFAULT_IMPL(OCS_pthread_sigmask);
 
     return Status;
+}
+
+void OCS_pthread_cleanup_push(void (*routine)(void *), void *arg)
+{
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_pthread_cleanup_push), routine);
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_pthread_cleanup_push), arg);
+    UT_DEFAULT_IMPL(OCS_pthread_cleanup_push);
+}
+
+void OCS_pthread_cleanup_pop(int execute)
+{
+    UT_Stub_RegisterContextGenericArg(UT_KEY(OCS_pthread_cleanup_pop), execute);
+    UT_DEFAULT_IMPL(OCS_pthread_cleanup_pop);
 }
