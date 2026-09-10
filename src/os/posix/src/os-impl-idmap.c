@@ -112,6 +112,8 @@ void OS_Unlock_Global_Impl(osal_objtype_t idtype)
 
     if (impl != NULL)
     {
+        ++impl->change_count;
+
         /* Notify any waiting threads that the state _may_ have changed */
         ret = pthread_cond_broadcast(&impl->cond);
         if (ret != 0)
@@ -138,6 +140,8 @@ void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts)
 {
     OS_impl_objtype_lock_t *impl;
     struct timespec         ts;
+    uint32                  change_count;
+    int                     wait_status;
 
     impl = OS_impl_objtype_lock_table[objtype];
 
@@ -166,7 +170,14 @@ void OS_WaitForStateChange_Impl(osal_objtype_t objtype, uint32 attempts)
         ++ts.tv_sec;
     }
 
-    pthread_cond_timedwait(&impl->cond, &impl->mutex, &ts);
+    /* A wake-up alone is not evidence that a table owner released the lock.
+     * Keep the original deadline across spurious wakes so the retry backoff
+     * neither expires early nor grows indefinitely. */
+    change_count = impl->change_count;
+    do
+    {
+        wait_status = pthread_cond_timedwait(&impl->cond, &impl->mutex, &ts);
+    } while (wait_status == 0 && impl->change_count == change_count);
 
     pthread_cleanup_pop(false);
 }

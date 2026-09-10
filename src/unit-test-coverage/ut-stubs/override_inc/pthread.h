@@ -36,6 +36,7 @@
 #define PTHREAD_PRIO_INHERIT    OCS_PTHREAD_PRIO_INHERIT
 #define PTHREAD_MUTEX_RECURSIVE OCS_PTHREAD_MUTEX_RECURSIVE
 #define PTHREAD_EXPLICIT_SCHED  OCS_PTHREAD_EXPLICIT_SCHED
+#define PTHREAD_MUTEX_NORMAL    OCS_PTHREAD_MUTEX_NORMAL
 
 #define pthread_t           OCS_pthread_t
 #define pthread_attr_t      OCS_pthread_attr_t
@@ -44,6 +45,9 @@
 #define pthread_cond_t      OCS_pthread_cond_t
 #define pthread_condattr_t  OCS_pthread_condattr_t
 #define pthread_key_t       OCS_pthread_key_t
+
+#define pthread_cleanup_push OCS_pthread_cleanup_push
+#define pthread_cleanup_pop  OCS_pthread_cleanup_pop
 
 #define pthread_attr_destroy          OCS_pthread_attr_destroy
 #define pthread_attr_getschedparam    OCS_pthread_attr_getschedparam

@@ -34,6 +34,7 @@ typedef struct
 {
     pthread_mutex_t mutex;
     pthread_cond_t  cond;
+    uint32          change_count; /* Updated with the mutex held before notifying waiters. */
 } OS_impl_objtype_lock_t;
 
 /* Tables where the lock state information is stored */
