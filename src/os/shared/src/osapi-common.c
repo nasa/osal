@@ -61,7 +61,7 @@ OS_SharedGlobalVars_t OS_SharedGlobalVars = {
     .PrintfEnabled   = false,
     .MicroSecPerTick = 0, /* invalid, _must_ be set by implementation init */
     .TicksPerSecond  = 0, /* invalid, _must_ be set by implementation init */
-    .EventHandler    = NULL,
+    .EventHandler    = { NULL },
 #if defined(OSAL_CONFIG_DEBUG_PRINTF)
     .DebugLevel = 1,
 #endif
@@ -75,18 +75,23 @@ OS_SharedGlobalVars_t OS_SharedGlobalVars = {
  *-----------------------------------------------------------------*/
 int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data)
 {
-    int32 status;
+    int32 Status = OS_SUCCESS;
+    int32 ReturnCode;
+    int   i;
 
-    if (OS_SharedGlobalVars.EventHandler != NULL)
+    for (i = 0; i < OS_MAX_EVENT_HANDLER; i++)
     {
-        status = OS_SharedGlobalVars.EventHandler(event, object_id, data);
-    }
-    else
-    {
-        status = OS_SUCCESS;
+        if (OS_SharedGlobalVars.EventHandler[i] != NULL)
+        {
+            ReturnCode = OS_SharedGlobalVars.EventHandler[i](event, object_id, data);
+            if (ReturnCode != OS_SUCCESS)
+            {
+                Status = OS_ERROR;
+            }
+        }
     }
 
-    return status;
+    return Status;
 }
 
 /*
@@ -274,10 +279,21 @@ void OS_API_Teardown(void)
  *-----------------------------------------------------------------*/
 int32 OS_RegisterEventHandler(OS_EventHandler_t handler)
 {
+    int   i;
+    int32 Status = OS_ERROR;
+
     OS_CHECK_POINTER(handler);
 
-    OS_SharedGlobalVars.EventHandler = handler;
-    return OS_SUCCESS;
+    for (i = 0; i < OS_MAX_EVENT_HANDLER; i++)
+    {
+        if (OS_SharedGlobalVars.EventHandler[i] == NULL)
+        {
+            OS_SharedGlobalVars.EventHandler[i] = handler;
+            Status                              = OS_SUCCESS;
+            break;
+        }
+    }
+    return Status;
 }
 
 /*----------------------------------------------------------------
