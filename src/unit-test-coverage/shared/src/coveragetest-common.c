@@ -90,6 +90,16 @@ static int32 TestEventHandlerHook(OS_Event_t event, osal_id_t object_id, void *d
     return UT_DEFAULT_IMPL(TestEventHandlerHook);
 }
 
+void ResetEventHandler(void)
+{
+    int i;
+
+    for (i = 0; i < OS_MAX_EVENT_HANDLER; i++)
+    {
+        OS_SharedGlobalVars.EventHandler[i] = NULL;
+    }
+}
+
 /*
 **********************************************************************************
 **          PUBLIC API FUNCTIONS
@@ -312,8 +322,9 @@ void Test_OS_NotifyEvent(void)
      * int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data)
      * int32 OS_RegisterEventHandler(OS_EventHandler_t handler)
      */
+    int i;
 
-    OS_SharedGlobalVars.EventHandler = NULL;
+    ResetEventHandler();
 
     /* With no hook function registered OS_NotifyEvent() should return success */
     OSAPI_TEST_FUNCTION_RC(OS_NotifyEvent(OS_EVENT_RESERVED, OS_OBJECT_ID_UNDEFINED, NULL), OS_SUCCESS);
@@ -330,10 +341,25 @@ void Test_OS_NotifyEvent(void)
 
     /* Should also return whatever the hook returned */
     UT_SetDefaultReturnValue(UT_KEY(TestEventHandlerHook), -12345);
-    OSAPI_TEST_FUNCTION_RC(OS_NotifyEvent(OS_EVENT_RESERVED, OS_OBJECT_ID_UNDEFINED, NULL), -12345);
+    OSAPI_TEST_FUNCTION_RC(OS_NotifyEvent(OS_EVENT_RESERVED, OS_OBJECT_ID_UNDEFINED, NULL), OS_ERROR);
     UtAssert_STUB_COUNT(TestEventHandlerHook, 2);
 
-    OS_SharedGlobalVars.EventHandler = NULL;
+    /* Fill all event handle, up to max value */
+    ResetEventHandler();
+    for (i = 0; i < OS_MAX_EVENT_HANDLER; i++)
+    {
+        OSAPI_TEST_FUNCTION_RC(OS_RegisterEventHandler(TestEventHandlerHook), OS_SUCCESS);
+    }
+
+    /* Call on all event handler */
+    UT_SetDefaultReturnValue(UT_KEY(TestEventHandlerHook), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_NotifyEvent(OS_EVENT_RESERVED, OS_OBJECT_ID_UNDEFINED, NULL), OS_SUCCESS);
+    UtAssert_STUB_COUNT(TestEventHandlerHook, 2 + OS_MAX_EVENT_HANDLER);
+
+    /* Try to register 1 more than  OS_MAX_EVENT_HANDLER valkue */
+    OSAPI_TEST_FUNCTION_RC(OS_RegisterEventHandler(TestEventHandlerHook), OS_ERROR);
+
+    ResetEventHandler();
 }
 
 void Test_OS_strnlen(void)
