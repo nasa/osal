@@ -224,10 +224,13 @@ void OS_ApplicationExit(int32 Status);
  *
  * @note Some events are invoked while the resource is "locked" and therefore
  * application-defined handlers for these events should not block or attempt
- * to access other OSAL resources.
+ * to access other OSAL resources. Multiple callback handlers (up to #OS_MAX_EVENT_HANDLER)
+ * may now be registered and called for system events. Because of this, developers should be
+ * careful as race conditions can occur if not properly synchronized. It is best this
+ * function should be called during initialization before any tasks have started.
  *
  * @param[in] handler The application-provided event handler @nonnull
- * @return Execution status, see @ref OSReturnCodes.
+ * @return #OS_ERROR @copybrief OS_ERROR
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
  * @retval #OS_INVALID_POINTER if handler is NULL
  */

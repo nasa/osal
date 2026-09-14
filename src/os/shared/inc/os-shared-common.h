@@ -34,6 +34,7 @@
  */
 #define OS_INIT_MAGIC_NUMBER     0xBE57C0DE /**< Indicates that OS_API_Init() has been successfully run */
 #define OS_SHUTDOWN_MAGIC_NUMBER 0xABADC0DE /**< Indicates that a system shutdown request is pending */
+#define OS_MAX_EVENT_HANDLER     4
 
 /* Global variables that are common between implementations */
 struct OS_shared_global_vars
@@ -65,7 +66,7 @@ struct OS_shared_global_vars
      * The event handler is an application-defined callback
      * that gets invoked as resources are created/configured/deleted.
      */
-    OS_EventHandler_t EventHandler;
+    OS_EventHandler_t EventHandler[OS_MAX_EVENT_HANDLER];
 
 #ifdef OSAL_CONFIG_DEBUG_PRINTF
     uint8 DebugLevel;
@@ -86,7 +87,7 @@ extern OS_SharedGlobalVars_t OS_SharedGlobalVars;
 
    Purpose: Notify the user application of a change in the state of an OSAL resource
 
-   returns: OS_SUCCESS on success, or relevant error code
+   returns: OS_SUCCESS on success, or OS_ERROR
 ---------------------------------------------------------------------------------------*/
 int32 OS_NotifyEvent(OS_Event_t event, osal_id_t object_id, void *data);
 
