@@ -24,7 +24,7 @@ env:
 jobs:
   build-and-test:
     name: Build and Execute Tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container:
       image: ghcr.io/core-flight-system/cfsbuildenv-linux:latest
       options: --sysctl fs.mqueue.queues_max=512 --sysctl fs.mqueue.msg_max=512
