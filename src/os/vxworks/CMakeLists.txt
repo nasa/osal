@@ -86,6 +86,10 @@ else()
     )
 endif ()
 
+# User-selectable mempool impl for task stack blocks
+list(APPEND VXWORKS_IMPL_SRCLIST
+    src/os-impl-taskstack-default.c
+)
 
 if (OSAL_CONFIG_MAX_CPUS GREATER 1)
     list(APPEND VXWORKS_IMPL_SRCLIST
