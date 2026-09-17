@@ -8,6 +8,12 @@ enable_testing()
 # Each test module is stored within its own subdir
 file(GLOB OSAL_TESTS *-test)
 
+# The mutex robustness test deletes a task that holds a mutex and expects the
+# next take to succeed; without robust mutex support it would block forever
+if (NOT OSAL_SYSTEM_OSTYPE STREQUAL "posix" OR NOT OSAL_CONFIG_POSIX_ROBUST_MUTEX)
+    list(FILTER OSAL_TESTS EXCLUDE REGEX "mutex-robust-test$")
+endif ()
+
 # if using the address sanitizer tool, this can affect some aspects
 # of the test cases - in particular where things appear in memory - 
 # and this can sometimes cause a test to fail, depending on the context.

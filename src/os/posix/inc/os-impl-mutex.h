@@ -38,4 +38,28 @@ typedef struct
 /* Tables where the OS object information is stored */
 extern OS_impl_mutex_internal_record_t OS_impl_mutex_table[OS_MAX_MUTEXES];
 
+/*
+ * Robust mutex support, selected by OSAL_CONFIG_POSIX_ROBUST_MUTEX:
+ * os-impl-posix-mutex-robust.c uses the POSIX.1-2008 robust mutex API,
+ * os-impl-posix-mutex-no-robust.c leaves the mutex as it was.
+ */
+
+/**
+ * Request the robust attribute on a mutex being created
+ *
+ * \param attr  The initialized attribute set the mutex will be created with
+ * \return 0 on success, otherwise the pthread error code
+ */
+int OS_Posix_MutexAttrSetRobust(pthread_mutexattr_t *attr);
+
+/**
+ * Recover a mutex whose previous owner was deleted while holding it
+ *
+ * \param mutex        The mutex just passed to pthread_mutex_lock()
+ * \param lock_status  The value pthread_mutex_lock() returned
+ * \return lock_status unchanged unless it was EOWNERDEAD, in which case the
+ *         result of restoring the mutex to a consistent state (0 on success)
+ */
+int OS_Posix_MutexRecoverOwnerDead(pthread_mutex_t *mutex, int lock_status);
+
 #endif /* OS_IMPL_MUTEX_H */

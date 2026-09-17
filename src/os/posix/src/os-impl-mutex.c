@@ -101,6 +101,19 @@ int32 OS_MutSemCreate_Impl(const OS_object_token_t *token, uint32 options)
     }
 
     /*
+    **  Make the mutex robust where the platform supports it, so a task deleted
+    **  while holding the lock does not deadlock the tasks that pend on it
+    */
+    return_code = OS_Posix_MutexAttrSetRobust(&mutex_attr);
+    if (return_code != 0)
+    {
+        OS_DEBUG("Error: Mutex could not be created. pthread_mutexattr_setrobust failed ID = %lu: %s\n",
+                 OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)),
+                 strerror(return_code));
+        return OS_SEM_FAILURE;
+    }
+
+    /*
     ** create the mutex
     ** upon successful initialization, the state of the mutex becomes initialized and unlocked
     */
@@ -178,9 +191,11 @@ int32 OS_MutSemTake_Impl(const OS_object_token_t *token)
     impl = OS_OBJECT_TABLE_GET(OS_impl_mutex_table, *token);
 
     /*
-    ** Lock the mutex
+    ** Lock the mutex.  If the previous owner was deleted while holding it
+    ** the lock is granted with EOWNERDEAD and must be made consistent
     */
     status = pthread_mutex_lock(&(impl->id));
+    status = OS_Posix_MutexRecoverOwnerDead(&(impl->id), status);
     if (status != 0)
     {
         return OS_SEM_FAILURE;

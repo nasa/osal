@@ -248,6 +248,21 @@ set(OSAL_CONFIG_RWLOCK                          TRUE
     CACHE BOOL "Controls the inclusion of readers-writer lock objects in the code"
 )
 
+# If set TRUE, POSIX mutexes are created with the PTHREAD_MUTEX_ROBUST attribute and a
+# lock that returns EOWNERDEAD (the owning task was deleted while holding the mutex) is
+# restored with pthread_mutex_consistent() instead of deadlocking every task that pends
+# on it (see nasa/cFE#2433).
+#
+# Robust mutexes are part of POSIX.1-2008.  Set this FALSE on platforms whose POSIX
+# layer does not provide pthread_mutexattr_setrobust()/pthread_mutex_consistent(),
+# such as RTEMS or a FACE profile; the mutex then behaves as before.
+#
+# Only used by the "posix" OS type.
+#
+set(OSAL_CONFIG_POSIX_ROBUST_MUTEX              TRUE
+    CACHE BOOL "Make POSIX mutexes robust so a deleted owner cannot deadlock the takers"
+)
+
 #############################################
 # Resource Limits for the OS API
 #############################################
