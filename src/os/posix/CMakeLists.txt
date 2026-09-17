@@ -94,6 +94,23 @@ else ()
     )
 endif ()
 
+if (OSAL_CONFIG_POSIX_ROBUST_MUTEX)
+    list(APPEND POSIX_IMPL_SRCLIST
+        ../portable/os-impl-posix-mutex-robust.c
+    )
+
+    # _GNU_SOURCE exposes the POSIX.1-2008 robust mutex API on glibc,
+    # which the _XOPEN_SOURCE=600 used by the BSP does not
+    set_source_files_properties(
+        ../portable/os-impl-posix-mutex-robust.c
+        PROPERTIES COMPILE_DEFINITIONS "_GNU_SOURCE"
+    )
+else()
+    list(APPEND POSIX_IMPL_SRCLIST
+        ../portable/os-impl-posix-mutex-no-robust.c
+    )
+endif()
+
 # Defines an OBJECT target named "osal_posix_impl" with selected source files
 add_library(osal_posix_impl OBJECT
     ${POSIX_BASE_SRCLIST}
