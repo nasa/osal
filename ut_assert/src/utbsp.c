@@ -46,7 +46,7 @@ typedef struct
     uint32 CurrVerbosity;
 } BSP_UT_GlobalData_t;
 
-BSP_UT_GlobalData_t BSP_UT_Global;
+static BSP_UT_GlobalData_t BSP_UT_Global;
 
 void UT_BSP_Lock(void)
 {
