@@ -99,15 +99,17 @@ enum
 /** @brief Access file stat time field as a whole number of seconds */
 #define OS_FILESTAT_TIME(x)  (OS_TimeGetTotalSeconds((x).FileTime))
 
-/**
+/** @defgroup OSFileFlags OSAL File Open Flags
  * @brief Flags that can be used with opening of a file (bitmask)
+ * @{
  */
-typedef enum
+enum
 {
     OS_FILE_FLAG_NONE     = 0x00,
     OS_FILE_FLAG_CREATE   = 0x01,
     OS_FILE_FLAG_TRUNCATE = 0x02
-} OS_file_flag_t;
+};
+/**@}*/
 
 /*
  * Exported Functions
@@ -127,7 +129,7 @@ typedef enum
  *
  * @param[out] filedes     The handle ID (OS_OBJECT_ID_UNDEFINED on failure) @nonnull
  * @param[in]  path        File name to create or open @nonnull
- * @param[in]  flags       The file permissions - see @ref OS_file_flag_t
+ * @param[in]  flags       The file permissions - see @ref OSFileFlags
  * @param[in]  access_mode Intended access mode - see @ref OSFileAccess
  *
  * @return Execution status, see @ref OSReturnCodes
