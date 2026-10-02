@@ -37,6 +37,9 @@
 **--------------------------------------------------------------------------------*/
 
 void UT_os_resource_stats_test(void);
+void UT_os_resource_stats_used_never_exceeds_total_test(void);
+void UT_os_resource_stats_used_never_underflows_test(void);
+void UT_os_resource_stats_at_limit_test(void);
 
 /*--------------------------------------------------------------------------------*/
 

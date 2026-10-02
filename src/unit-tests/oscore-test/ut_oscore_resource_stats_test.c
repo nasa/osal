@@ -98,3 +98,116 @@ void UT_os_resource_stats_test(void)
     UtAssert_True(stats_after.queues.used == stats_before.queues.used, "queues used restored");
 }
 
+void UT_os_resource_stats_used_never_exceeds_total_test(void)
+{
+    OS_resource_stats_t stats;
+
+    UT_RETVAL(OS_GetResourceStats(&stats), OS_SUCCESS);
+
+    UtAssert_True(stats.tasks.used <= stats.tasks.total, "tasks used <= total");
+    UtAssert_True(stats.queues.used <= stats.queues.total, "queues used <= total");
+    UtAssert_True(stats.bin_semaphores.used <= stats.bin_semaphores.total, "bin semaphores used <= total");
+    UtAssert_True(stats.count_semaphores.used <= stats.count_semaphores.total, "count semaphores used <= total");
+    UtAssert_True(stats.mutexes.used <= stats.mutexes.total, "mutexes used <= total");
+    UtAssert_True(stats.streams.used <= stats.streams.total, "streams used <= total");
+    UtAssert_True(stats.dirs.used <= stats.dirs.total, "dirs used <= total");
+    UtAssert_True(stats.timebases.used <= stats.timebases.total, "timebases used <= total");
+    UtAssert_True(stats.timers.used <= stats.timers.total, "timers used <= total");
+    UtAssert_True(stats.modules.used <= stats.modules.total, "modules used <= total");
+    UtAssert_True(stats.filesystems.used <= stats.filesystems.total, "filesystems used <= total");
+    UtAssert_True(stats.consoles.used <= stats.consoles.total, "consoles used <= total");
+    UtAssert_True(stats.condvars.used <= stats.condvars.total, "condvars used <= total");
+}
+
+void UT_os_resource_stats_used_never_underflows_test(void)
+{
+    OS_resource_stats_t stats_before;
+    OS_resource_stats_t stats_after;
+    osal_id_t           invalid_id = OS_OBJECT_ID_UNDEFINED;
+    int32               result;
+
+    /* Get baseline stats */
+    UT_RETVAL(OS_GetResourceStats(&stats_before), OS_SUCCESS);
+
+    /* Attempt to delete resources that don't exist - should fail gracefully */
+    result = OS_BinSemDelete(invalid_id);
+    UtAssert_True(result != OS_SUCCESS, "delete invalid bin semaphore fails");
+
+    result = OS_CountSemDelete(invalid_id);
+    UtAssert_True(result != OS_SUCCESS, "delete invalid count semaphore fails");
+
+    result = OS_MutSemDelete(invalid_id);
+    UtAssert_True(result != OS_SUCCESS, "delete invalid mutex fails");
+
+    result = OS_QueueDelete(invalid_id);
+    UtAssert_True(result != OS_SUCCESS, "delete invalid queue fails");
+
+    /* Verify stats are unchanged and non-negative after failed deletes */
+    UT_RETVAL(OS_GetResourceStats(&stats_after), OS_SUCCESS);
+
+    UtAssert_True(stats_after.tasks.used == stats_before.tasks.used, "tasks used unchanged");
+    UtAssert_True(stats_after.queues.used == stats_before.queues.used, "queues used unchanged");
+    UtAssert_True(stats_after.bin_semaphores.used == stats_before.bin_semaphores.used, "bin semaphores used unchanged");
+    UtAssert_True(stats_after.count_semaphores.used == stats_before.count_semaphores.used, "count semaphores used unchanged");
+    UtAssert_True(stats_after.mutexes.used == stats_before.mutexes.used, "mutexes used unchanged");
+}
+
+void UT_os_resource_stats_at_limit_test(void)
+{
+    OS_resource_stats_t stats;
+    osal_id_t           sem_ids[OS_MAX_BIN_SEMAPHORES];
+    uint32              created_count = 0;
+    uint32              sem_options   = 0;
+    uint32              sem_init_val  = 1;
+    int32               result;
+
+    /* Get initial stats */
+    UT_RETVAL(OS_GetResourceStats(&stats), OS_SUCCESS);
+    uint32 initial_used = stats.bin_semaphores.used;
+
+    /* Create semaphores until we hit the limit or can't create more */
+    for (uint32 i = 0; i < OS_MAX_BIN_SEMAPHORES; i++)
+    {
+        char name[OS_MAX_API_NAME];
+        /* Use test name prefix to avoid collision with other tests */
+        snprintf(name, sizeof(name), "AtLmt_%u", i);
+
+        result = OS_BinSemCreate(&sem_ids[created_count], name, sem_init_val, sem_options);
+        if (result == OS_SUCCESS)
+        {
+            created_count++;
+        }
+        else if (result == OS_ERR_NO_FREE_IDS)
+        {
+            /* Hit the limit - this is expected */
+            break;
+        }
+        else
+        {
+            /* Other error (name taken, etc) - stop trying */
+            break;
+        }
+    }
+
+    /* Verify we're at or near the limit */
+    UT_RETVAL(OS_GetResourceStats(&stats), OS_SUCCESS);
+    UtAssert_True(stats.bin_semaphores.used == (initial_used + created_count),
+                  "bin semaphores used matches created count");
+    UtAssert_True(stats.bin_semaphores.used <= stats.bin_semaphores.total, "used never exceeds total");
+
+    /* Verify we can still query stats at limit */
+    UT_RETVAL(OS_GetResourceStats(&stats), OS_SUCCESS);
+    UtAssert_True(stats.bin_semaphores.used <= stats.bin_semaphores.total,
+                  "used still <= total at or near limit");
+
+    /* Clean up all created semaphores */
+    for (uint32 i = 0; i < created_count; i++)
+    {
+        UT_RETVAL(OS_BinSemDelete(sem_ids[i]), OS_SUCCESS);
+    }
+
+    /* Verify count returned to baseline */
+    UT_RETVAL(OS_GetResourceStats(&stats), OS_SUCCESS);
+    UtAssert_True(stats.bin_semaphores.used == initial_used, "bin semaphores used returned to baseline");
+}
+

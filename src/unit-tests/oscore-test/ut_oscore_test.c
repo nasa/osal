@@ -196,6 +196,9 @@ void UtTest_Setup(void)
     UtTest_Add(UT_os_printfenable_test, NULL, NULL, "OS_printf_enable");
     UtTest_Add(UT_os_printfdisable_test, NULL, NULL, "OS_printf_disable");
     UtTest_Add(UT_os_resource_stats_test, NULL, NULL, "OS_GetResourceStats");
+    UtTest_Add(UT_os_resource_stats_used_never_exceeds_total_test, NULL, NULL, "OS_GetResourceStats_UsedNeverExceedsTotal");
+    UtTest_Add(UT_os_resource_stats_used_never_underflows_test, NULL, NULL, "OS_GetResourceStats_UsedNeverUnderflows");
+    UtTest_Add(UT_os_resource_stats_at_limit_test, NULL, NULL, "OS_GetResourceStats_AtLimit");
 
     UtTest_Add(UT_os_bin_sem_create_test, NULL, NULL, "OS_BinSemCreate");
     UtTest_Add(UT_os_bin_sem_delete_test, NULL, NULL, "OS_BinSemDelete");
