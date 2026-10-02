@@ -35,8 +35,15 @@
 #define PART_ID        OCS_PART_ID
 #define MEM_PART_STATS OCS_MEM_PART_STATS
 
-#define memPartShow    OCS_memPartShow
-#define memPartInfoGet OCS_memPartInfoGet
-#define memSysPartId   OCS_memSysPartId
+#define memAddToPool        OCS_memAddToPool
+#define memPartAddToPool    OCS_memPartAddToPool
+#define memPartAlignedAlloc OCS_memPartAlignedAlloc
+#define memPartAlloc        OCS_memPartAlloc
+#define memPartCreate       OCS_memPartCreate
+#define memPartFree         OCS_memPartFree
+#define memPartInfoGet      OCS_memPartInfoGet
+#define memPartShow         OCS_memPartShow
+
+#define memSysPartId OCS_memSysPartId
 
 #endif /* OVERRIDE_MEMPARTLIB_H */
