@@ -245,9 +245,10 @@ int32 OS_QueueGetIdByName(osal_id_t *queue_id, const char *queue_name)
  *-----------------------------------------------------------------*/
 int32 OS_QueueGetInfo(osal_id_t queue_id, OS_queue_prop_t *queue_prop)
 {
-    OS_common_record_t *record;
-    int32               return_code;
-    OS_object_token_t   token;
+    OS_common_record_t         *record;
+    OS_queue_internal_record_t *queue;
+    int32                       return_code;
+    OS_object_token_t           token;
 
     /* Check parameters */
     OS_CHECK_POINTER(queue_prop);
@@ -258,9 +259,12 @@ int32 OS_QueueGetInfo(osal_id_t queue_id, OS_queue_prop_t *queue_prop)
     if (return_code == OS_SUCCESS)
     {
         record = OS_OBJECT_TABLE_GET(OS_global_queue_table, token);
+        queue  = OS_OBJECT_TABLE_GET(OS_queue_table, token);
 
         strncpy(queue_prop->name, record->name_entry, sizeof(queue_prop->name) - 1);
-        queue_prop->creator = record->creator;
+        queue_prop->creator     = record->creator;
+        queue_prop->data_size   = queue->max_size;
+        queue_prop->queue_depth = queue->max_depth;
 
         /*
          * Currently there are no additional queue details provided by the impl layer -

@@ -31,8 +31,10 @@
 /** @brief OSAL queue properties */
 typedef struct
 {
-    char      name[OS_MAX_API_NAME];
-    osal_id_t creator;
+    char              name[OS_MAX_API_NAME];
+    osal_id_t         creator;
+    osal_blockcount_t queue_depth;
+    size_t            data_size;
 } OS_queue_prop_t;
 
 /** @defgroup OSAPIMsgQueue OSAL Message Queue APIs
