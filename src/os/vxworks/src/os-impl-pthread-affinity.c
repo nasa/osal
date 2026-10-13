@@ -107,8 +107,7 @@ int32 OS_TaskAffinitySetAffinity_Impl(const OS_object_token_t *token, const OS_c
 
 /*
  * ----------------------------------------------------------------------
- * The OS_TaskAffinityGetAffinity() is an api call to get affinity to a task
- *
+ * The OS_TaskAffinityGetAffinity_Impl() is an api call to get affinity from a task
  * Writes affinity to cpuset from task with provided task_id
  * ----------------------------------------------------------------------
  */
