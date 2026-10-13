@@ -198,7 +198,7 @@ typedef struct
  * \brief Compares two floating point numbers and determines if they are equal within a specified relative tolerance.
  */
 #define UtAssert_DoubleCmpRel(x, y, Ratio, ...) \
-    UtAssertEx((fabs((x) - (y)) / (x) <= (Ratio)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
+    UtAssertEx((fabs(((x) - (y)) / (x)) <= (Ratio)), UtAssert_GetContext(), __FILE__, __LINE__, __VA_ARGS__)
 
 /**
  * \brief  Compares two strings and determines if they are equal.
