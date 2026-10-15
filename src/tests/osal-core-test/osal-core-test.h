@@ -45,7 +45,7 @@
 #define TASK_3_PRIORITY   233
 
 /* Global Data */
-#define MSGQ_DEPTH 50
-#define MSGQ_SIZE  4
+#define MSGQ_DEPTH (OS_QUEUE_MAX_DEPTH / 2)
+#define MSGQ_SIZE  sizeof(uint32)
 
 #endif /* OSAL_CORE_TEST_H */

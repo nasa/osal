@@ -354,6 +354,7 @@ set(OSAL_SRCLIST
     src/os/shared/src/osapi-mutex.c
     src/os/shared/src/osapi-network.c
     src/os/shared/src/osapi-printf.c
+    src/os/shared/src/osapi-task-affinity.c
     src/os/shared/src/osapi-queue.c
     src/os/shared/src/osapi-rwlock.c
     src/os/shared/src/osapi-select.c

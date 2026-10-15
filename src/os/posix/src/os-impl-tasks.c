@@ -34,7 +34,9 @@
 #include "os-impl-tasks.h"
 
 #include "os-shared-task.h"
+#include "os-shared-task-affinity.h"
 #include "os-shared-idmap.h"
+#include "os-shared-common.h"
 
 /*
  * Extra Stack Space for overhead -
@@ -242,6 +244,11 @@ int32 OS_Posix_TaskAPI_Impl_Init(void)
      */
     memset(&sched_fifo_limits, 0, sizeof(sched_fifo_limits));
     memset(&sched_rr_limits, 0, sizeof(sched_rr_limits));
+
+    /*
+     * Get number of configured cores
+     */
+    OS_SharedGlobalVars.CoresConfigured = OS_TaskAffinityGetCoresConfigured_Impl();
 
     /*
      * Create the key used to store OSAL task IDs

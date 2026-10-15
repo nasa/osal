@@ -38,10 +38,10 @@
  * Local Data
  */
 
-UtAssert_CaseType_t    DefaultContext     = UTASSERT_CASETYPE_FAILURE;
-UtAssert_TestCounter_t UT_SegmentCounters = { 0 };
-UtAssert_TestCounter_t UT_TotalCounters   = { 0 };
-static char            CurrentSegment[64];
+static UtAssert_CaseType_t    DefaultContext     = UTASSERT_CASETYPE_FAILURE;
+static UtAssert_TestCounter_t UT_SegmentCounters = { 0 };
+static UtAssert_TestCounter_t UT_TotalCounters   = { 0 };
+static char                   CurrentSegment[64];
 
 typedef union
 {
@@ -183,6 +183,7 @@ void UtAssert_EndTest(void)
         /*
          * note, strcpy is OK because both are fixed size buffers of the same size,
          * and the null termination on CurrentSegment was locally enforced already
+         * SAD: This should be ignored by CodeSonar.
          */
         strcpy(Local_SegmentName, CurrentSegment);
     }

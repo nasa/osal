@@ -23,6 +23,7 @@ set(POSIX_BASE_SRCLIST
     ../posix/src/os-impl-timebase.c
     src/os-impl-filesys.c     # VxWorks RTP specific implementation
     src/os-impl-files.c       # VxWorks RTP specific implementation
+    ../portable/os-impl-pthread-no-affinity-np.c
 )
 
 # Use portable blocks for basic I/O

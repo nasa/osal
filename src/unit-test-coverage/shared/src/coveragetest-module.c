@@ -23,7 +23,6 @@
  *
  */
 #include "os-shared-coveragetest.h"
-#include "ut-adaptor-module.h"
 
 #include "os-shared-module.h"
 

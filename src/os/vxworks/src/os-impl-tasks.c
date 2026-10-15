@@ -28,10 +28,14 @@
 
 #include "os-vxworks.h"
 #include "os-impl-tasks.h"
+#include "osapi-task-affinity.h"
 
 #include "os-shared-task.h"
+#include "os-shared-task-affinity.h"
 #include "os-shared-idmap.h"
 #include "os-shared-timebase.h"
+#include "os-shared-common.h"
+
 #include "osapi-bsp.h"
 
 #include <errnoLib.h>
@@ -90,7 +94,6 @@ int OS_VxWorks_TaskEntry(int arg)
 /****************************************************************************************
                                     TASK API
 ****************************************************************************************/
-
 /*----------------------------------------------------------------
  *
  *  Purpose: Local helper routine, not part of OSAL API.
@@ -99,6 +102,12 @@ int OS_VxWorks_TaskEntry(int arg)
 int32 OS_VxWorks_TaskAPI_Impl_Init(void)
 {
     memset(OS_impl_task_table, 0, sizeof(OS_impl_task_table));
+
+    /*
+     * Get number of configured cores
+     */
+    OS_SharedGlobalVars.CoresConfigured = OS_TaskAffinityGetCoresConfigured_Impl();
+
     return OS_SUCCESS;
 }
 

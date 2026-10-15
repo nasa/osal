@@ -1,6 +1,5 @@
 name: Static Analysis
 
-# Run on all push and pull requests
 on:
   push:
     branches:
@@ -16,7 +15,7 @@ on:
 jobs:
   static-analysis:
     name: Run Static Analysis
-    uses: nasa/cFS/.github/workflows/static-analysis.yml@main
+    uses: nasa/cFS/.github/workflows/static-analysis-reusable.yml@dev
     with:
-      strict-dir-list: './src/bsp ./src/os'
+      strict-dir-list: 'source/src/bsp source/src/os'
       cmake-project-options: -DENABLE_UNIT_TESTS=TRUE -DOSAL_OMIT_DEPRECATED=TRUE -DOSAL_SYSTEM_BSPTYPE=generic-linux

@@ -62,7 +62,6 @@ void UT_os_setup_install_delete_handler_test(void);
 void UT_os_init_task_exit_test(void);
 void UT_os_init_task_delay_test(void);
 void UT_os_init_task_set_priority_test(void);
-void UT_os_init_task_register_test(void);
 void UT_os_init_task_get_id_test(void);
 void UT_os_init_task_get_id_by_name_test(void);
 void UT_os_init_task_get_info_test(void);
@@ -138,16 +137,6 @@ void UT_os_init_task_set_priority_test(void)
     g_task_names[2] = "SetPrio_InvPrio";
     g_task_names[3] = "SetPrio_OsErr";
     g_task_names[4] = "SetPrio_Nominal";
-}
-
-/*--------------------------------------------------------------------------------*/
-
-void UT_os_init_task_register_test(void)
-{
-    g_task_names[0] = "Register_NotImpl";
-    g_task_names[1] = "Register_InvArg";
-    g_task_names[2] = "Register_OsErr";
-    g_task_names[3] = "Register_Nominal";
 }
 
 /*--------------------------------------------------------------------------------*/

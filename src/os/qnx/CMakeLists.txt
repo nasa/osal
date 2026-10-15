@@ -22,6 +22,7 @@ set(POSIX_BASE_SRCLIST
     ../posix/src/os-impl-queues.c
     ../posix/src/os-impl-tasks.c
     ../posix/src/os-impl-timebase.c
+    ../portable/os-impl-pthread-no-affinity-np.c
 )
 
 # Use portable blocks for basic I/O

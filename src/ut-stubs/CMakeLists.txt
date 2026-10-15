@@ -34,6 +34,7 @@ set(OSAL_PUBLIC_API_HEADERS
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-shell.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-sockets.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-task.h
+    ${OSAL_SOURCE_DIR}/src/os/inc/osapi-task-affinity.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-timebase.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-timer.h
     ${OSAL_SOURCE_DIR}/src/os/inc/osapi-version.h
@@ -95,6 +96,8 @@ add_library(ut_osapi_stubs STATIC
     osapi-sockets-handlers.c
     osapi-task-stubs.c
     osapi-task-handlers.c
+    osapi-task-affinity-stubs.c
+    osapi-task-affinity-handlers.c
     osapi-timer-stubs.c
     osapi-timer-handlers.c
     osapi-timebase-stubs.c

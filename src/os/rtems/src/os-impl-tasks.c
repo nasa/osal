@@ -40,8 +40,10 @@
 #include "os-impl-tasks.h"
 
 #include "os-shared-task.h"
+#include "os-shared-task-affinity.h"
 #include "os-shared-idmap.h"
 #include "os-shared-timebase.h"
+#include "os-shared-common.h"
 
 #include "osapi-printf.h"
 
@@ -80,6 +82,12 @@ static rtems_task OS_RtemsEntry(rtems_task_argument arg)
 int32 OS_Rtems_TaskAPI_Impl_Init(void)
 {
     memset(OS_impl_task_table, 0, sizeof(OS_impl_task_table));
+
+    /*
+     * Get number of configured cores
+     */
+    OS_SharedGlobalVars.CoresConfigured = OS_TaskAffinityGetCoresConfigured_Impl();
+
     return OS_SUCCESS;
 }
 

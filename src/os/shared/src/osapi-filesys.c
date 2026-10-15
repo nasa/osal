@@ -675,7 +675,7 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     OS_object_token_t             token;
     int32                         return_code;
     const char                   *name_ptr;
-    char                         *result;
+    const char                   *result;
     OS_filesys_internal_record_t *filesys;
     size_t                        SysMountPointLen;
     size_t                        VirtPathLen;

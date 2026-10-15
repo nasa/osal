@@ -109,7 +109,7 @@ int32 OS_ConsoleCreate_Impl(const OS_object_token_t *token)
     OS_console_internal_record_t      *console;
     pthread_t                          consoletask;
     int32                              return_code;
-    OS_VoidPtrValueWrapper_t           local_arg = { 0 };
+    OS_VoidPtrValueWrapper_t           local_arg = { NULL };
 
     console = OS_OBJECT_TABLE_GET(OS_console_table, *token);
     local   = OS_OBJECT_TABLE_GET(OS_impl_console_table, *token);

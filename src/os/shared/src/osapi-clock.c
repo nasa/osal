@@ -90,7 +90,7 @@ int32 OS_SetLocalTime(const OS_time_t *time_struct)
  *-----------------------------------------------------------------*/
 OS_time_t OS_TimeFromRelativeMilliseconds(int32 relative_msec)
 {
-    OS_time_t abs_time;
+    OS_time_t abs_time = OS_TIME_ZERO;
 
     if (relative_msec == OS_CHECK)
     {
@@ -120,7 +120,7 @@ OS_time_t OS_TimeFromRelativeMilliseconds(int32 relative_msec)
 int32 OS_TimeToRelativeMilliseconds(OS_time_t time)
 {
     int64     relative_msec;
-    OS_time_t curr_time;
+    OS_time_t curr_time = OS_TIME_ZERO;
 
     /*
      * This is an optimization that assumes all negative time values are

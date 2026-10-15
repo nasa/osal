@@ -18,20 +18,27 @@
 
 /**
  * \file
- * \ingroup  adaptors
- * \author   joseph.p.hickey@nasa.gov
+ *
+ * \ingroup  vxworks
  *
  */
-#include "osconfig.h"
-#include "ut-adaptor-module.h"
-#include "os-shared-module.h"
 
-int32 Osapi_Call_SymbolLookup_Static(cpuaddr *SymbolAddress, const char *SymbolName, const char *ModuleName)
+#ifndef OS_IMPL_TASKAFFINITY_H
+#define OS_IMPL_TASKAFFINITY_H
+
+/* VxWorks Native Headers */
+#include <vxWorks.h>
+#include <taskLib.h>
+
+#include "common_types.h"
+
+/* Explicitly declare to avoid implicit declaration warnings */
+extern unsigned int vxCpuConfiguredGet(void);
+
+/* Define the function used by the OSAL initialization */
+static inline uint32 OS_TaskAffinity_Proc_Conf(void)
 {
-    return OS_SymbolLookup_Static(SymbolAddress, SymbolName, ModuleName);
+    return (uint32)vxCpuConfiguredGet();
 }
 
-int32 Osapi_Call_ModuleLoad_Static(const char *ModuleName)
-{
-    return OS_ModuleLoad_Static(ModuleName);
-}
+#endif /* OS_IMPL_TASKAFFINITY_H */

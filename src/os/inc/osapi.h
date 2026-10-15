@@ -84,6 +84,7 @@ extern "C"
 #include "osapi-shell.h"
 #include "osapi-sockets.h"
 #include "osapi-task.h"
+#include "osapi-task-affinity.h"
 #include "osapi-timebase.h"
 #include "osapi-timer.h"
 

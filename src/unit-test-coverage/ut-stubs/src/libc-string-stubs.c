@@ -43,10 +43,10 @@ void *OCS_memset(void *s, int c, size_t n)
     return Result;
 }
 
-void *OCS_memchr(const void *s, int c, size_t n)
+const void *OCS_memchr(const void *s, int c, size_t n)
 {
-    int32 Status;
-    void *Result;
+    int32       Status;
+    const void *Result;
 
     Status = UT_DEFAULT_IMPL(OCS_memchr);
     if (Status == 0)
@@ -80,7 +80,7 @@ void *OCS_memcpy(void *dest, const void *src, size_t n)
     return Result;
 }
 
-char *OCS_strchr(const char *s, int c)
+const char *OCS_strchr(const char *s, int c)
 {
     int32 Status;
 
@@ -99,7 +99,7 @@ char *OCS_strchr(const char *s, int c)
     return (char *)&s[Status - 1];
 }
 
-char *OCS_strrchr(const char *s, int c)
+const char *OCS_strrchr(const char *s, int c)
 {
     int32 Status;
 
@@ -115,10 +115,10 @@ char *OCS_strrchr(const char *s, int c)
         return (char *)0;
     }
 
-    return (char *)&s[Status - 1];
+    return (const char *)&s[Status - 1];
 }
 
-char *OCS_strstr(const char *haystack, const char *needle)
+const char *OCS_strstr(const char *haystack, const char *needle)
 {
     int32 Status;
 

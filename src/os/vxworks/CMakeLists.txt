@@ -86,6 +86,17 @@ else()
     )
 endif ()
 
+
+if (OSAL_CONFIG_MAX_CPUS GREATER 1)
+    list(APPEND VXWORKS_IMPL_SRCLIST
+        src/os-impl-pthread-affinity.c #    use the real affinity code
+    )
+else()
+    list(APPEND VXWORKS_IMPL_SRCLIST
+        ../portable/os-impl-pthread-no-affinity-np.c
+    )
+endif()
+
 # Defines an OBJECT target named "osal_vxworks_impl" with selected source files
 add_library(osal_vxworks_impl OBJECT
     ${VXWORKS_BASE_SRCLIST}

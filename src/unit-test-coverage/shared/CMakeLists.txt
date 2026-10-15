@@ -30,7 +30,6 @@ set(MODULE_LIST
 
 set(SHARED_COVERAGE_LINK_LIST
         os-shared-coverage-support
-        ut-adaptor-shared
         ut_osapi_impl_stubs
         ut_osapi_init_stubs
         ut_osapi_shared_stubs
@@ -46,9 +45,6 @@ add_library(os-shared-coverage-support STATIC
 target_link_libraries(os-shared-coverage-support PUBLIC
 	ut_osapi_stub_headers
 )
-
-add_subdirectory(adaptors)
-
 
 # Add all coverage tests in the src dir
 foreach(MODNAME ${MODULE_LIST})

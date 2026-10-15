@@ -94,6 +94,22 @@ else ()
     )
 endif ()
 
+if (OSAL_CONFIG_MAX_CPUS GREATER 1)
+    list(APPEND POSIX_IMPL_SRCLIST
+        ../portable/os-impl-pthread-affinity-np.c #    use the real affinity code
+    )
+    
+    # _GNU_SOURCE is required for pthread_setaffinity_np and CPU_SET macros
+    set_source_files_properties(
+        ../portable/os-impl-pthread-affinity-np.c 
+        PROPERTIES COMPILE_DEFINITIONS "_GNU_SOURCE"
+    )
+else()
+    list(APPEND POSIX_IMPL_SRCLIST
+        ../portable/os-impl-pthread-no-affinity-np.c
+    )
+endif()
+
 # Defines an OBJECT target named "osal_posix_impl" with selected source files
 add_library(osal_posix_impl OBJECT
     ${POSIX_BASE_SRCLIST}

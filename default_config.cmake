@@ -395,6 +395,11 @@ set(OSAL_CONFIG_QUEUE_MAX_DEPTH         50
     CACHE STRING "Maximum depth of message queue"
 )
 
+# The maximum number of CPUs supported.
+set(OSAL_CONFIG_MAX_CPUS                  1
+    CACHE STRING "Maximum number of CPUs supported"
+)
+
 # Flags added to all tasks on creation
 #
 # Some OS's use floating point under the hood, this supports

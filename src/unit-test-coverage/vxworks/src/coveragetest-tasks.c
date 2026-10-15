@@ -31,6 +31,11 @@
 
 #include "OCS_stdlib.h"
 
+uint32 OS_TaskAffinityGetCoresConfigured_Impl(void)
+{
+    return 1; /* Return a safe default number of cores for the test */
+}
+
 /*
  * A chunk of memory usable as a heap for malloc() emulation
  */

@@ -233,6 +233,13 @@
 #define OS_QUEUE_MAX_DEPTH              @OSAL_CONFIG_QUEUE_MAX_DEPTH@
 
  /**
+  * \brief The maximum number of CPUs to support
+  *
+  * Based on the OSAL_CONFIG_MAX_CPUS configuration option
+  */
+#define OS_MAX_CPUS                     @OSAL_CONFIG_MAX_CPUS@
+
+ /**
   * \brief The name of the temporary file used to store shell commands
   *
   * This configuration is only applicable if shell support is enabled, and

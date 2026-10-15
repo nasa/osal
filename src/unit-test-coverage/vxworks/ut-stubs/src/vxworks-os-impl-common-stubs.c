@@ -29,7 +29,10 @@
 #include "os-shared-common.h"
 #include "OCS_semLib.h"
 
-UT_DEFAULT_STUB(OS_API_Impl_Init, (osal_objtype_t idtype))
+int32 OS_API_Impl_Init(osal_objtype_t idtype)
+{
+    return UT_DEFAULT_IMPL(OS_API_Impl_Init);
+}
 
 int OS_VxWorks_GenericSemTake(OCS_SEM_ID vxid, int sys_ticks)
 {

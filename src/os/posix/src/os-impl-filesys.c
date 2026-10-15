@@ -321,7 +321,13 @@ int32 OS_FileSysStatVolume_Impl(const OS_object_token_t *token, OS_statvfs_t *re
         return OS_ERROR;
     }
 
-    result->block_size   = OSAL_SIZE_C(stat_buf.f_bsize);
+    /*
+     * Per POSIX, the block counts (f_blocks, f_bfree) are expressed in units of
+     * f_frsize, not f_bsize.  f_bsize is only the preferred I/O transfer size and
+     * is not guaranteed to equal f_frsize.  Use f_frsize so that the reported
+     * block_size is consistent with the block counts (e.g. bytes = blocks * block_size).
+     */
+    result->block_size   = OSAL_SIZE_C(stat_buf.f_frsize);
     result->blocks_free  = OSAL_BLOCKCOUNT_C(stat_buf.f_bfree);
     result->total_blocks = OSAL_BLOCKCOUNT_C(stat_buf.f_blocks);
 

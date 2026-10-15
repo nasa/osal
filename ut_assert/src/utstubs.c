@@ -361,8 +361,6 @@ void UT_ConfigureGenericStubReturnValue(UT_EntryKey_t   FuncKey,
     UT_StubTableEntry_t *StubPtr;
     UT_EntryType_t       ReqEntryType;
 
-    StubPtr = UT_GetStubEntry(FuncKey, UT_ENTRYTYPE_UNUSED);
-
     /*
      * For deferred retval configs, this always adds a new entry.  But
      * for constant retval configs, it should replace the existing entry if

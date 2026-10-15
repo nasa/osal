@@ -35,7 +35,7 @@ set(RTEMS_IMPL_SRCLIST
     ../portable/os-impl-posix-dirs.c
     ../portable/os-impl-no-condvar.c
     ../portable/os-impl-no-rwlock.c
-    ../portable/os-impl-no-file-allocate.c
+    ../portable/os-impl-no-file-allocate.c    
 )
 
 # Currently the "shell output to file" for RTEMS is not implemented
@@ -92,6 +92,22 @@ else()
         ../portable/os-impl-no-select.c
     )
 endif ()
+
+if (OSAL_CONFIG_MAX_CPUS GREATER 1)
+    list(APPEND RTEMS_IMPL_SRCLIST
+        ../portable/os-impl-pthread-affinity-np.c #    use the real affinity code
+    )
+    
+    # _GNU_SOURCE is required for pthread_setaffinity_np and CPU_SET macros
+    set_source_files_properties(
+        ../portable/os-impl-pthread-affinity-np.c 
+        PROPERTIES COMPILE_DEFINITIONS "_GNU_SOURCE"
+    )
+else()
+    list(APPEND RTEMS_IMPL_SRCLIST
+        ../portable/os-impl-pthread-no-affinity-np.c
+    )
+endif()
 
 # Defines an OBJECT target named "osal_rtems_impl" with selected source files
 add_library(osal_rtems_impl OBJECT
