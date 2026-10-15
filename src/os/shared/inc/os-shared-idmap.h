@@ -42,7 +42,7 @@ struct OS_common_record
     uint16      refcount;
 };
 
-typedef enum
+enum
 {
     OS_TASK_BASE         = 0,
     OS_QUEUE_BASE        = OS_TASK_BASE + OS_MAX_TASKS,
@@ -59,7 +59,7 @@ typedef enum
     OS_CONSOLE_BASE      = OS_FILESYS_BASE + OS_MAX_FILE_SYSTEMS,
     OS_CONDVAR_BASE      = OS_CONSOLE_BASE + OS_MAX_CONSOLES,
     OS_MAX_TOTAL_RECORDS = OS_CONDVAR_BASE + OS_MAX_CONDVARS
-} OS_ObjectIndex_t;
+};
 
 /*
  * Type of locking that should occur when checking IDs.
