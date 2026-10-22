@@ -468,7 +468,7 @@ int32 OS_Posix_InternalTaskCreate_Impl(pthread_t       *pthr,
                                        PthreadFuncPtr_t entry,
                                        void            *entry_arg)
 {
-    int                return_code = 0;
+    int                return_code;
     pthread_attr_t     custom_attr;
     struct sched_param priority_holder;
 

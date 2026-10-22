@@ -197,7 +197,6 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
     /*
      ** Read the message queue for data
      */
-    sizeCopied = -1;
     if (timeout == OS_PEND)
     {
         /*

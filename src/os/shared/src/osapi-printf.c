@@ -147,7 +147,6 @@ static int32 OS_Console_CopyOut(OS_console_internal_record_t *console, const cha
     size_t      WriteOffset;
     int32       return_code;
 
-    return_code = OS_ERROR;
     pmsg        = Str;
     WriteOffset = *NextWritePos;
     while (true)

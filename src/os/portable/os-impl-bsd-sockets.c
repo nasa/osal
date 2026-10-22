@@ -186,8 +186,6 @@ int32 OS_SocketOpen_Impl(const OS_object_token_t *token)
     impl   = OS_OBJECT_TABLE_GET(OS_impl_filehandle_table, *token);
     stream = OS_OBJECT_TABLE_GET(OS_stream_table, *token);
 
-    os_proto = 0;
-
     switch (stream->socket_type)
     {
         case OS_SocketType_DATAGRAM:
