@@ -295,17 +295,6 @@ int32 OS_SocketAcceptAbs(osal_id_t sock_id, osal_id_t *connsock_id, OS_SockAddr_
     OS_CHECK_POINTER(Addr);
     OS_CHECK_POINTER(connsock_id);
 
-    /*
-     * Note: setting "connrecord" here avoids a false warning
-     * from static analysis tools about the value being
-     * possibly used uninitialized (it cannot be, because
-     * return_code is checked, and return_code is only
-     * set to OS_SUCCESS when connrecord is also initialized)
-     */
-    conn_record = NULL;
-    sock_record = NULL;
-    sock        = NULL;
-    conn        = NULL;
     memset(&sock_token, 0, sizeof(sock_token));
     memset(&conn_token, 0, sizeof(conn_token));
 

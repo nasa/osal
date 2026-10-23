@@ -387,8 +387,8 @@ void OS_ObjectIdTransactionCancel(OS_object_token_t *token)
  *-----------------------------------------------------------------*/
 int32 OS_ObjectIdConvertToken(OS_object_token_t *token)
 {
-    int32               return_code = OS_ERROR;
-    uint32              attempts    = 0;
+    int32               return_code;
+    uint32              attempts = 0;
     OS_common_record_t *obj;
     osal_id_t           expected_id;
 
