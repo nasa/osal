@@ -33,9 +33,9 @@ void QueueTimeoutCheck(void);
 #define MSGQ_DEPTH OS_QUEUE_MAX_DEPTH
 #define MSGQ_SIZE  sizeof(uint32)
 #define MSGQ_TOTAL 10
-#define MSGQ_BURST 3
 #define MSGQ_DELAY 400 /* post-burst inter-message time */
 #define MSGQ_START 100 /* base value for data, to make it distinct from the msg counter */
+#define MSGQ_WAIT  (2 * MSGQ_DELAY)
 
 /* Task 1 */
 #define TASK_STACK_SIZE 4096
@@ -46,6 +46,7 @@ osal_id_t task_id;
 uint32    task_failures;
 uint32    task_timeouts;
 uint32    task_messages;
+uint32    task_expected;
 uint32    task_start_delay;
 
 osal_id_t msgq_id;
@@ -75,15 +76,12 @@ void task_1(void)
     /* if errors occur do not loop endlessly */
     while (task_failures < 20)
     {
-        status = OS_QueueGet(msgq_id, (void *)&data_received, OSAL_SIZE_C(MSGQ_SIZE), &data_size, 1000);
+        status = OS_QueueGet(msgq_id, (void *)&data_received, OSAL_SIZE_C(MSGQ_SIZE), &data_size, MSGQ_WAIT);
 
         if (status == OS_SUCCESS)
         {
             ++task_messages;
-            UtAssert_True(data_received == expected,
-                          "TASK: data_received (%u) == expected (%u)",
-                          (unsigned int)data_received,
-                          (unsigned int)expected);
+            UtAssert_INT32_EQ(data_received, expected);
 
             expected++;
         }
@@ -103,29 +101,22 @@ void task_1(void)
 
 void QueueTimeoutCheck(void)
 {
-    int32  status;
     uint32 limit;
 
-    status = OS_TimerDelete(timer_id);
-    UtAssert_True(status == OS_SUCCESS, "Timer delete Rc=%d", (int)status);
-    status = OS_TaskDelete(task_id);
-    UtAssert_True(status == OS_SUCCESS, "Task delete Rc=%d", (int)status);
-    status = OS_QueueDelete(msgq_id);
-    UtAssert_True(status == OS_SUCCESS, "Queue delete Rc=%d", (int)status);
+    UtAssert_INT32_EQ(OS_TimerDelete(timer_id), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_TaskDelete(task_id), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_QueueDelete(msgq_id), OS_SUCCESS);
 
     /* None of the tasks should have any failures in their own counters */
-    UtAssert_True(task_failures == 0, "Task failures = %u", (unsigned int)task_failures);
+    UtAssert_INT32_EQ(task_failures, 0);
 
-    /*
-     * Since nothing currently sends messages, message count should be zero,
-     * and timer counter =~ 10 + ( 10 x task_timeouts )
-     */
-    UtAssert_True(task_messages == 0, "Task messages = %u", (unsigned int)task_messages);
+    /* Since nothing currently sends messages, message count should be zero */
+    UtAssert_INT32_EQ(task_messages, 0);
 
-    limit = (timer_counter / 10);
+    limit = ((timer_counter + 5) * 100) / MSGQ_WAIT;
     UtAssert_True(task_timeouts <= limit, "Task timeouts %u <= %u", (unsigned int)task_timeouts, (unsigned int)limit);
 
-    limit = ((timer_counter - 20) / 12);
+    limit = ((timer_counter - 5) * 100) / MSGQ_WAIT;
     UtAssert_True(task_timeouts >= limit, "Task timeouts %u >= %u", (unsigned int)task_timeouts, (unsigned int)limit);
 }
 
@@ -137,10 +128,10 @@ void QueueTimeoutSetup(void)
     task_failures    = 0;
     task_messages    = 0;
     task_timeouts    = 0;
-    task_start_delay = 1000;
+    task_start_delay = 1000000 / timer_interval;
 
-    status = OS_QueueCreate(&msgq_id, "MsgQ", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
-    UtAssert_True(status == OS_SUCCESS, "MsgQ create Id=%lx Rc=%d", OS_ObjectIdToInteger(msgq_id), (int)status);
+    UtAssert_INT32_EQ(OS_QueueCreate(&msgq_id, "MsgQ", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0),
+                      OS_SUCCESS);
 
     /*
     ** Create the "consumer" task.
@@ -152,20 +143,18 @@ void QueueTimeoutSetup(void)
                            sizeof(task_stack),
                            OSAL_PRIORITY_C(TASK_PRIORITY),
                            0);
-    UtAssert_True(status == OS_SUCCESS, "Task create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_id), (int)status);
+    UtAssert_INT32_EQ(status, OS_SUCCESS);
 
     /*
     ** Create a timer
     */
-    status = OS_TimerCreate(&timer_id, "Timer", &accuracy, &(TimerFunction));
-    UtAssert_True(status == OS_SUCCESS, "Timer create Id=%lx Rc=%d", OS_ObjectIdToInteger(timer_id), (int)status);
+    UtAssert_INT32_EQ(OS_TimerCreate(&timer_id, "Timer 1", &accuracy, &(TimerFunction)), OS_SUCCESS);
     UtPrintf("Timer Accuracy = %u microseconds \n", (unsigned int)accuracy);
 
     /*
     ** Start the timer
     */
-    status = OS_TimerSet(timer_id, timer_start, timer_interval);
-    UtAssert_True(status == OS_SUCCESS, "Timer set Rc=%d", (int)status);
+    UtAssert_INT32_EQ(OS_TimerSet(timer_id, timer_start, timer_interval), OS_SUCCESS);
 
     /* allow some time for task to run and accrue queue timeouts */
     while (timer_counter < 100)
@@ -176,55 +165,58 @@ void QueueTimeoutSetup(void)
 
 void QueueMessageCheck(void)
 {
-    int32 status;
+    /* this delay is just to ensure the consumer task can empty the queue, plus
+     * enough extra delay to get one (and only one) queue timeout event */
+    UtPrintf("Delay before checking\n");
+    OS_TaskDelay(MSGQ_WAIT - (MSGQ_DELAY / 2));
 
-    OS_printf("Delay for half a second before checking\n");
-    OS_TaskDelay(500);
-
-    status = OS_TimerDelete(timer_id);
-    UtAssert_True(status == OS_SUCCESS, "Timer delete Rc=%d", (int)status);
-    status = OS_TaskDelete(task_id);
-    UtAssert_True(status == OS_SUCCESS, "Task delete Rc=%d", (int)status);
-    status = OS_QueueDelete(msgq_id);
-    UtAssert_True(status == OS_SUCCESS, "Queue delete Rc=%d", (int)status);
+    UtAssert_INT32_EQ(OS_TimerDelete(timer_id), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_TaskDelete(task_id), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_QueueDelete(msgq_id), OS_SUCCESS);
 
     /* None of the tasks should have any failures in their own counters */
-    UtAssert_True(task_failures == 0, "Task failures = %u", (unsigned int)task_failures);
-    UtAssert_True(task_messages == 10, "Task messages = %u", (unsigned int)task_messages);
-    UtAssert_True(task_timeouts == 0, "Task timeouts = %u", (unsigned int)task_timeouts);
+    UtAssert_INT32_EQ(task_failures, 0);
+    UtAssert_INT32_EQ(task_messages, task_expected);
+    UtAssert_INT32_EQ(task_timeouts, 1);
 }
 
 void QueueMessageSetup(void)
 {
-    int32  status;
-    uint32 accuracy = 0;
-    int    i;
-    uint32 Data = 0;
+    int32           status;
+    uint32          accuracy = 0;
+    uint32          put_count;
+    int             i;
+    uint32          Data = 0;
+    OS_queue_prop_t queue_prop;
 
-    task_failures = 0;
-    task_messages = 0;
-    task_timeouts = 0;
+    task_failures    = 0;
+    task_messages    = 0;
+    task_timeouts    = 0;
+    task_start_delay = MSGQ_DELAY;
 
-    /* Have the consumer task start emptying the queue part way through
-     * the steady state (post-burst) write activity */
-    task_start_delay = ((MSGQ_TOTAL - MSGQ_BURST) * MSGQ_DELAY) / 3;
+    UtAssert_INT32_EQ(OS_QueueCreate(&msgq_id, "MsgQ", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0),
+                      OS_SUCCESS);
+
+    UtAssert_INT32_EQ(OS_QueueGetInfo(msgq_id, &queue_prop), OS_SUCCESS);
 
     /* Sometimes if configs have been tuned it can be unclear what the active value is */
-    OS_printf("Starting Test with DEPTH=%u, SIZE=%u, BURST=%u, DELAY=%ums\n",
-              (unsigned int)MSGQ_DEPTH,
-              (unsigned int)MSGQ_SIZE,
-              (unsigned int)MSGQ_BURST,
-              (unsigned int)MSGQ_DELAY);
+    UtPrintf("Starting Test with DEPTH=%u, SIZE=%u, DELAY=%u\n",
+             (unsigned int)queue_prop.queue_depth,
+             (unsigned int)queue_prop.data_size,
+             MSGQ_DELAY);
 
-    /*
-     * Configuration check:
-     * The timeouts in this test are tuned to work with MSGQ_TOTAL messages.
-     * If the MSGQ_DEPTH is less than this, the test may fail in unexpected ways
-     */
-    UtAssert_UINT32_LTEQ(MSGQ_TOTAL, MSGQ_DEPTH);
+    put_count = 0;
 
-    status = OS_QueueCreate(&msgq_id, "MsgQ", OSAL_BLOCKCOUNT_C(MSGQ_DEPTH), OSAL_SIZE_C(MSGQ_SIZE), 0);
-    UtAssert_True(status == OS_SUCCESS, "MsgQ create Id=%lx Rc=%d", OS_ObjectIdToInteger(msgq_id), (int)status);
+    /* pre-fill the queue.  With no reader/consumer running yet, should be able to write up to q depth */
+    for (i = 0; i < queue_prop.queue_depth; ++i)
+    {
+        Data = MSGQ_START + put_count;
+        UtAssert_INT32_EQ(OS_QueuePut(msgq_id, (void *)&Data, sizeof(Data), 0), OS_SUCCESS);
+        ++put_count;
+    }
+
+    Data = MSGQ_START + put_count;
+    UtAssert_INT32_EQ(OS_QueuePut(msgq_id, (void *)&Data, sizeof(Data), 0), OS_QUEUE_FULL);
 
     /*
     ** Create the "consumer" task.
@@ -236,36 +228,33 @@ void QueueMessageSetup(void)
                            sizeof(task_stack),
                            OSAL_PRIORITY_C(TASK_PRIORITY),
                            0);
-    UtAssert_True(status == OS_SUCCESS, "Task create Id=%lx Rc=%d", OS_ObjectIdToInteger(task_id), (int)status);
+    UtAssert_INT32_EQ(status, OS_SUCCESS);
 
     /*
     ** Create a timer
     */
-    status = OS_TimerCreate(&timer_id, "Timer", &accuracy, &(TimerFunction));
-    UtAssert_True(status == OS_SUCCESS, "Timer create Id=%lx Rc=%d", OS_ObjectIdToInteger(timer_id), (int)status);
+    UtAssert_INT32_EQ(OS_TimerCreate(&timer_id, "Timer 1", &accuracy, &(TimerFunction)), OS_SUCCESS);
     UtPrintf("Timer Accuracy = %u microseconds \n", (unsigned int)accuracy);
 
     /*
     ** Start the timer
     */
-    status = OS_TimerSet(timer_id, timer_start, timer_interval);
-    UtAssert_True(status == OS_SUCCESS, "Timer set Rc=%d", (int)status);
+    UtAssert_INT32_EQ(OS_TimerSet(timer_id, timer_start, timer_interval), OS_SUCCESS);
 
     /*
-     * Put 10 messages onto the que with some time in between the later messages
-     * to make sure the que handles both storing and waiting for messages
+     * Put messages onto the que with some time in between the later messages
+     * to make sure the queue handles both storing and waiting for messages
      */
+    OS_TaskDelay(task_start_delay + (MSGQ_DELAY / 4));
     for (i = 0; i < MSGQ_TOTAL; i++)
     {
-        if (i > MSGQ_BURST)
-        {
-            OS_TaskDelay(MSGQ_DELAY);
-        }
-
-        Data   = MSGQ_START + i; /* to make it distinct from the counter */
-        status = OS_QueuePut(msgq_id, (void *)&Data, sizeof(Data), 0);
-        UtAssert_True(status == OS_SUCCESS, "OS Queue Put Rc=%d", (int)status);
+        Data = MSGQ_START + put_count;
+        UtAssert_INT32_EQ(OS_QueuePut(msgq_id, (void *)&Data, sizeof(Data), 0), OS_SUCCESS);
+        ++put_count;
+        OS_TaskDelay(MSGQ_DELAY);
     }
+
+    task_expected = put_count;
 }
 
 void UtTest_Setup(void)

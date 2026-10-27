@@ -102,6 +102,7 @@ int32 OS_QueueCreate_Impl(const OS_object_token_t *token, uint32 flags)
     if (POSIX_GlobalVars.TruncateQueueDepth > 0 && POSIX_GlobalVars.TruncateQueueDepth < queueAttr.mq_maxmsg)
     {
         queueAttr.mq_maxmsg = POSIX_GlobalVars.TruncateQueueDepth;
+        queue->max_depth    = queueAttr.mq_maxmsg;
     }
 
     /*
