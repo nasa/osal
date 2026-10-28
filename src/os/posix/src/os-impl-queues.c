@@ -237,7 +237,7 @@ int32 OS_QueueGet_Impl(const OS_object_token_t *token, void *data, size_t size, 
         do
         {
             sizeCopied = mq_timedreceive(impl->id, data, size, NULL, &ts);
-        } while (timeout != OS_CHECK && sizeCopied < 0 && errno == EINTR);
+        } while (sizeCopied < 0 && errno == EINTR);
 
     } /* END timeout */
 
