@@ -18,6 +18,7 @@ set(VXWORKS_MODULE_LIST
     sockets
     symtab
     tasks
+    taskstack-default
     timebase
 )
 
