@@ -19,11 +19,11 @@ set(POSIX_BASE_SRCLIST
     ../posix/src/os-impl-idmap.c
     ../posix/src/os-impl-mutex.c
     ../posix/src/os-impl-queues.c
-    ../posix/src/os-impl-tasks.c
     ../posix/src/os-impl-timebase.c
-    src/os-impl-filesys.c     # VxWorks RTP specific implementation
-    src/os-impl-files.c       # VxWorks RTP specific implementation
-    ../portable/os-impl-pthread-no-affinity-np.c
+    src/os-impl-tasks.c              # VxWorks RTP specific implementation
+    src/os-impl-filesys.c            # VxWorks RTP specific implementation
+    src/os-impl-files.c              # VxWorks RTP specific implementation
+    ../portable/os-impl-posix-gettime-no-monotonic.c
 )
 
 # Use portable blocks for basic I/O
@@ -99,6 +99,16 @@ else()
     )
 endif ()
 
+if (OSAL_CONFIG_MAX_CPUS GREATER 1)
+    list(APPEND POSIX_IMPL_SRCLIST
+        src/os-impl-pthread-affinity.c #    use the real affinity code
+    )
+else()
+    list(APPEND POSIX_IMPL_SRCLIST
+        ../portable/os-impl-pthread-no-affinity-np.c
+    )
+endif()
+
 # Defines an OBJECT target named "osal_posix_impl" with selected source files
 add_library(osal_vxworks-rtp_impl OBJECT
     ${POSIX_BASE_SRCLIST}
@@ -106,8 +116,8 @@ add_library(osal_vxworks-rtp_impl OBJECT
 )
 
 target_include_directories(osal_vxworks-rtp_impl PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../posix/inc
     ${CMAKE_CURRENT_SOURCE_DIR}/inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../posix/inc
 )
 target_compile_definitions(osal_public_api INTERFACE
     _POSIX_OS_
