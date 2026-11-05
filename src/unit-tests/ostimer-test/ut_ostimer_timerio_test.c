@@ -437,6 +437,11 @@ void       UT_os_timerset_test(void)
          */
         startTime    = g_clkAccuracy * 5;
         intervalTime = 5;
+        if (startTime == 0)
+        {
+            /* A sub-microsecond resolution may round to zero, but a zero start disarms the POSIX timer. */
+            startTime = 1000; /* microseconds */
+        }
 
         UtPrintf("\nOS_TimerSet() - #3 Interval-too-short (clk_accuracy=%d)\n", (int)g_clkAccuracy);
         if (UT_NOMINAL(OS_TimerSet(g_timerIds[3], startTime, intervalTime)))
@@ -473,6 +478,11 @@ void       UT_os_timerset_test(void)
         g_timerGlobal.state       = UT_TimerState_INIT;
 
         startTime = g_clkAccuracy * 5;
+        if (startTime == 0)
+        {
+            /* Keep the callback test armed without imposing a minimum on the reported clock accuracy. */
+            startTime = 1000; /* microseconds */
+        }
 
         intervalTime = 500000;
 

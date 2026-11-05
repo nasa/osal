@@ -23,6 +23,7 @@
  *
  */
 #include "os-shared-coveragetest.h"
+#include "os-shared-common.h"
 #include "os-shared-time.h"
 #include "os-shared-timebase.h"
 #include "os-shared-task.h"
@@ -133,6 +134,37 @@ void Test_OS_TimerCreate(void)
     UT_SetDeferredRetcode(UT_KEY(OS_ObjectIdGetById), 1, OS_ERR_INVALID_ID);
     OSAPI_TEST_FUNCTION_RC(OS_TimerCreate(&objid, "UT", &accuracy, UT_TimerCallback), OS_ERR_INVALID_ID);
     UtAssert_STUB_COUNT(OS_TimeBaseDelete, 1);
+}
+
+void Test_OS_TimerCreate_Accuracy(void)
+{
+    const uint32 accuracies[] = { 0, 1, 1234 }; /* microseconds */
+    osal_id_t    objid;
+    uint32       accuracy;
+    size_t       case_index;
+    size_t       timebase_index;
+
+    for (case_index = 0; case_index < sizeof(accuracies) / sizeof(accuracies[0]); ++case_index)
+    {
+        UT_ResetState(0);
+        memset(OS_timecb_table, 0, sizeof(OS_timecb_table));
+        memset(OS_timebase_table, 0, sizeof(OS_timebase_table));
+        OS_SharedGlobalVars.MicroSecPerTick   = 10000; /* microseconds per tick, deliberately different */
+        OS_SharedGlobalVars.TicksPerSecond    = 100;   /* ticks per second */
+        OS_SharedGlobalVars.TimerAccuracyUsec = accuracies[case_index];
+        for (timebase_index = 0; timebase_index < OS_MAX_TIMEBASES; ++timebase_index)
+        {
+            OS_timebase_table[timebase_index].accuracy_usec = 4321; /* microseconds, unrelated property */
+        }
+
+        objid    = OS_OBJECT_ID_UNDEFINED;
+        accuracy = UINT32_MAX;
+        OSAPI_TEST_FUNCTION_RC(OS_TimerCreate(&objid, "UT", &accuracy, UT_TimerCallback), OS_SUCCESS);
+        UtAssert_UINT32_EQ(accuracy, accuracies[case_index]);
+        UtAssert_UINT32_EQ(OS_SharedGlobalVars.MicroSecPerTick, 10000);
+        UtAssert_UINT32_EQ(OS_SharedGlobalVars.TicksPerSecond, 100);
+        UtAssert_UINT32_EQ(OS_timebase_table[0].accuracy_usec, 4321);
+    }
 }
 
 void Test_OS_TimerSet(void)
@@ -275,6 +307,7 @@ void Test_OS_TimerGetInfo(void)
     OS_timecb_table[1].timebase_token.obj_id   = UT_OBJID_1;
     OS_timecb_table[1].timebase_token.obj_idx  = UT_INDEX_0;
     OS_timebase_table[0].accuracy_usec         = 3333;
+    OS_SharedGlobalVars.TimerAccuracyUsec      = 1111; /* microseconds, separate create report */
 
     OSAPI_TEST_FUNCTION_RC(OS_TimerGetInfo(UT_OBJID_1, &timer_prop), OS_SUCCESS);
     UtAssert_True(strcmp(timer_prop.name, "ABC") == 0, "timer_prop.name (%s) == ABC", timer_prop.name);
@@ -320,6 +353,7 @@ void UtTest_Setup(void)
     ADD_TEST(OS_TimerCbAPI_Init);
     ADD_TEST(OS_TimerAdd);
     ADD_TEST(OS_TimerCreate);
+    ADD_TEST(OS_TimerCreate_Accuracy);
     ADD_TEST(OS_TimerSet);
     ADD_TEST(OS_TimerDelete);
     ADD_TEST(OS_TimerGetIdByName);

@@ -61,8 +61,10 @@ typedef struct
  * The callback function should be declared according to the OS_TimerCallback_t
  * function pointer type.  The timer_id value is passed to the callback function.
  *
- * @note clock_accuracy comes from the underlying OS tick value. The nearest integer
- *       microsecond value is returned, so may not be exact.
+ * @note clock_accuracy reports the resolution of the underlying timer source,
+ *       rounded to the nearest whole microsecond. On POSIX this comes from
+ *       clock_getres(); a resolution below half a microsecond rounds to zero.
+ *       This value does not guarantee the latency of callback execution.
  *
  * @note This configuration API must not be used from the context of a timer callback.
  * Timers should only be configured from the context of normal OSAL tasks.
@@ -72,8 +74,8 @@ typedef struct
  * @param[out]  timer_id        Will be set to the non-zero resource ID of the timer object @nonnull
  * @param[in]   timer_name      Name of the timer object @nonnull
  * @param[out]  clock_accuracy  Expected precision of the timer, in microseconds. This
- *                              is the underlying tick value rounded to the nearest
- *                              microsecond integer. @nonnull
+ *                              is the underlying timer source resolution rounded to
+ *                              the nearest microsecond integer and may be zero. @nonnull
  * @param[in]   callback_ptr    The function pointer of the timer callback @nonnull.
  *
  * @return Execution status, see @ref OSReturnCodes
