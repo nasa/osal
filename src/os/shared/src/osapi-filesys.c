@@ -117,7 +117,40 @@ bool OS_FileSys_FindVirtMountPoint(void *ref, const OS_object_token_t *token, co
      * For instance consider a virtual_mountpt of /mnt/abc and searching
      * for target=/mnt/abcd - this should return false in that case.
      */
-    return (target[mplen] == '/' || target[mplen] == 0);
+    if (!(target[mplen] == '/' || target[mplen] == 0))
+    {
+        return false;
+    }
+
+    /*
+     * SECURITY HARDENING:
+     * Reject any attempts to traverse outside the mount point by using
+     * path components of "." or ".." within the remainder of the path.
+     * Although higher-level APIs also check for "..", this adds defense
+     * in depth so a direct caller of search logic cannot bypass checks.
+     */
+    if (target[mplen] == '/')
+    {
+        const char *remainder = target + mplen; /* starts with '/' or is end */
+        for (const char *p = remainder; *p != 0; ++p)
+        {
+            if (p[0] == '/' && p[1] == '.')
+            {
+                /* Match /./ or /. at end */
+                if (p[2] == '/' || p[2] == 0)
+                {
+                    return false; /* reject single-dot component */
+                }
+                /* Match /../ or /.. at end */
+                if (p[2] == '.' && (p[3] == '/' || p[3] == 0))
+                {
+                    return false; /* reject parent-dir traversal */
+                }
+            }
+        }
+    }
+
+    return true;
 }
 
 /*----------------------------------------------------------------
