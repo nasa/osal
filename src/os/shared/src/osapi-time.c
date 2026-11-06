@@ -291,7 +291,7 @@ int32 OS_TimerCreate(osal_id_t         *timer_id,
     }
     else
     {
-        *clock_accuracy = OS_SharedGlobalVars.MicroSecPerTick;
+        *clock_accuracy = OS_SharedGlobalVars.TimerAccuracyUsec;
     }
 
     return return_code;

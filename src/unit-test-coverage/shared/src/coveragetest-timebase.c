@@ -178,6 +178,7 @@ void Test_OS_TimeBaseGetInfo(void)
     OS_timebase_table[1].nominal_interval_time = 2222;
     OS_timebase_table[1].freerun_time          = 3333;
     OS_timebase_table[1].accuracy_usec         = 4444;
+    OS_SharedGlobalVars.TimerAccuracyUsec      = 1111; /* microseconds, separate create report */
 
     OSAPI_TEST_FUNCTION_RC(OS_TimeBaseGetInfo(UT_OBJID_1, &timebase_prop), OS_SUCCESS);
 
