@@ -161,11 +161,9 @@ int32 OS_TimeBaseGetIdByName(osal_id_t *timebase_id, const char *timebase_name);
 /**
  * @brief Obtain information about a timebase resource
  *
- * Fills the buffer referred to by the timebase_prop parameter with
- * relevant information about the time base resource.
- *
- * This function will pass back a pointer to structure that contains
- * all of the relevant info( name and creator) about the specified timebase.
+ * Fills the timebase_prop buffer with the time base's stored properties.
+ * The accuracy field is in microseconds and can change when the time base is
+ * programmed. It is separate from the clock_accuracy output of OS_TimerCreate().
  *
  * @note This configuration API must not be used from the context of a timer callback.
  * Timers should only be configured from the context of normal OSAL tasks.

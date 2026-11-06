@@ -73,9 +73,7 @@ typedef struct
  *
  * @param[out]  timer_id        Will be set to the non-zero resource ID of the timer object @nonnull
  * @param[in]   timer_name      Name of the timer object @nonnull
- * @param[out]  clock_accuracy  Expected precision of the timer, in microseconds. This
- *                              is the underlying timer source resolution rounded to
- *                              the nearest microsecond integer and may be zero. @nonnull
+ * @param[out]  clock_accuracy  Reported timer resolution in whole microseconds. @nonnull
  * @param[in]   callback_ptr    The function pointer of the timer callback @nonnull.
  *
  * @return Execution status, see @ref OSReturnCodes
@@ -142,31 +140,24 @@ int32 OS_TimerAdd(osal_id_t       *timer_id,
 
 /*-------------------------------------------------------------------------------------*/
 /**
- * @brief Configures a periodic or one shot timer
+ * @brief Configures a periodic or one-shot timer
  *
- * This function programs the timer with a start time and an optional interval time.
- * The start time is the time in microseconds when the user callback function will be
- * called. If the interval time is non-zero, the timer will be reprogrammed with that
- * interval in microseconds to call the user callback function periodically. If the start
- * time and interval time are zero, the function will return an error.
+ * Sets the requested delay before the first expiration and the interval between
+ * later expirations, both in microseconds. Use a zero interval for a one-shot
+ * timer. Passing zero for both parameters is invalid.
  *
- * For a "one-shot" timer, the start_time configures the
- * expiration time, and the interval_time should be passed as
- * zero to indicate the timer is not to be automatically reset.
+ * @note Rounding of the requested times depends on the platform. OS_TimerSet()
+ *       does not use the clock_accuracy output of OS_TimerCreate() as a minimum.
  *
- * @note The resolution of the times specified is limited to the clock accuracy
- *       returned in the OS_TimerCreate call. If the times specified in the start_msec
- *       or interval_msec parameters are less than the accuracy, they will be rounded
- *       up to the accuracy of the timer.
+ * @note On POSIX, passing a zero start_time with a nonzero interval_time disarms
+ *       a timer created by OS_TimerCreate(). Use a nonzero start_time to arm it.
  *
  * @note This configuration API must not be used from the context of a timer callback.
  * Timers should only be configured from the context of normal OSAL tasks.
  *
  * @param[in] timer_id      The timer ID to operate on
- * @param[in] start_time    Time in microseconds to the first expiration
- * @param[in] interval_time Time in microseconds between subsequent intervals, value
- *                          of zero will only call the user callback function once
- *                          after the start_msec time.
+ * @param[in] start_time    Requested delay before the first expiration, in microseconds
+ * @param[in] interval_time Requested interval between expirations, in microseconds
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -222,8 +213,7 @@ int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name);
 /**
  * @brief Gets information about an existing timer
  *
- * This function takes timer_id, and looks it up in the OS table. It puts all of the
- * information known about that timer into a structure pointer to by timer_prop.
+ * Looks up the timer by ID and fills the timer_prop buffer with its properties.
  *
  * @note This configuration API must not be used from the context of a timer callback.
  * Timers should only be configured from the context of normal OSAL tasks.
@@ -232,9 +222,10 @@ int32 OS_TimerGetIdByName(osal_id_t *timer_id, const char *timer_name);
  * @param[out] timer_prop    Buffer containing timer properties @nonnull
  *                           - creator: the OS task ID of the task that created this timer
  *                           - name: the string name of the timer
- *                           - start_time: the start time in microseconds, if any
- *                           - interval_time: the interval time in microseconds, if any
- *                           - accuracy: the accuracy of the timer in microseconds
+ *                           - start_time: not populated; left at zero
+ *                           - interval_time: the stored interval time in microseconds
+ *                           - accuracy: the stored accuracy of the timer's time base, in microseconds.
+ *                             This can differ from the clock_accuracy output of OS_TimerCreate().
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
