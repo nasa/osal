@@ -47,9 +47,10 @@ void TestFileSysAddFixedMapApi(void)
      * Just map /test to a dir of the same name, relative to current dir.
      */
 
-    UtAssert_INT32_EQ(OS_TranslatePath("/test/myfile.txt", translated_path), OS_FS_ERR_PATH_INVALID);
+    UtAssert_INT32_EQ(OS_TranslatePath("/test/myfile.txt", translated_path, sizeof(translated_path)),
+                      OS_FS_ERR_PATH_INVALID);
     UtAssert_INT32_EQ(OS_FileSysAddFixedMap(&fs_id, "./test", "/test"), OS_SUCCESS);
-    UtAssert_INT32_EQ(OS_TranslatePath("/test/myfile.txt", translated_path), OS_SUCCESS);
+    UtAssert_INT32_EQ(OS_TranslatePath("/test/myfile.txt", translated_path, sizeof(translated_path)), OS_SUCCESS);
 
     /* Test for invalid inputs */
     UtAssert_INT32_EQ(OS_FileSysAddFixedMap(NULL, "./test", "/test"), OS_INVALID_POINTER);

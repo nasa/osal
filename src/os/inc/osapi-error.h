@@ -140,11 +140,12 @@ typedef char os_status_string_t[OS_STATUS_STRING_LENGTH];
  * other OSAPI error codes.  They now start at -100
  * to avoid this overlap.
  */
-#define OS_FS_ERR_PATH_TOO_LONG     (-103) /**< @brief FS path too long */
-#define OS_FS_ERR_NAME_TOO_LONG     (-104) /**< @brief FS name too long */
-#define OS_FS_ERR_DRIVE_NOT_CREATED (-106) /**< @brief FS drive not created */
-#define OS_FS_ERR_DEVICE_NOT_FREE   (-107) /**< @brief FS device not free */
-#define OS_FS_ERR_PATH_INVALID      (-108) /**< @brief FS path invalid */
+#define OS_FS_ERR_PATH_TOO_LONG        (-103) /**< @brief FS path too long */
+#define OS_FS_ERR_NAME_TOO_LONG        (-104) /**< @brief FS name too long */
+#define OS_FS_ERR_DRIVE_NOT_CREATED    (-106) /**< @brief FS drive not created */
+#define OS_FS_ERR_DEVICE_NOT_FREE      (-107) /**< @brief FS device not free */
+#define OS_FS_ERR_PATH_INVALID         (-108) /**< @brief FS path invalid */
+#define OS_FS_ERR_LOCAL_PATH_TOO_SHORT (-109) /**< @brief local path buffer too short */
 
 /**@}*/
 

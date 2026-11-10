@@ -277,6 +277,7 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint);
  *
  * @param[in]  VirtualPath      OSAL virtual path name @nonnull
  * @param[out] LocalPath        Buffer to store native/translated path name @nonnull
+ * @param[in]  LocalPathSize    Size of the LocalPath Buffer
  *
  * @return Execution status, see @ref OSReturnCodes
  * @retval #OS_SUCCESS @copybrief OS_SUCCESS
@@ -284,8 +285,9 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint);
  * @retval #OS_FS_ERR_NAME_TOO_LONG if the filename component is too long
  * @retval #OS_FS_ERR_PATH_INVALID if either parameter cannot be interpreted as a path
  * @retval #OS_FS_ERR_PATH_TOO_LONG if either input or output pathnames are too long
+ * @retval #OS_FS_ERR_LOCAL_PATH_TOO_SHORT if local path length is too short
  */
-int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath);
+int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath, size_t LocalPathSize);
 
 /*-------------------------------------------------------------------------------------*/
 /**

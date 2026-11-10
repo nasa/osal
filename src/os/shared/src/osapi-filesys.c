@@ -670,7 +670,7 @@ int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
-int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
+int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath, size_t LocalPathSize)
 {
     OS_object_token_t             token;
     int32                         return_code;
@@ -695,6 +695,11 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
     if (VirtPathLen >= OS_MAX_PATH_LEN)
     {
         return OS_FS_ERR_PATH_TOO_LONG;
+    }
+
+    if (LocalPathSize < OS_MAX_LOCAL_PATH_LEN)
+    {
+        return OS_FS_ERR_LOCAL_PATH_TOO_SHORT;
     }
 
     /* checks to see if there is a '/' somewhere in the path */

@@ -104,12 +104,13 @@ int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
  * Generated stub function for OS_TranslatePath()
  * ----------------------------------------------------
  */
-int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
+int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath, size_t LocalPathSize)
 {
     UT_GenStub_SetupReturnBuffer(OS_TranslatePath, int32);
 
     UT_GenStub_AddParam(OS_TranslatePath, const char *, VirtualPath);
     UT_GenStub_AddParam(OS_TranslatePath, char *, LocalPath);
+    UT_GenStub_AddParam(OS_TranslatePath, size_t, LocalPathSize);
 
     UT_GenStub_Execute(OS_TranslatePath, Basic, UT_DefaultHandler_OS_TranslatePath);
 

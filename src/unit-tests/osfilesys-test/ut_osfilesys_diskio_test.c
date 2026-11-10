@@ -729,25 +729,25 @@ void UT_os_translatepath_test(void)
     /*-----------------------------------------------------*/
     /* #1 Null-pointer-arg */
 
-    UT_RETVAL(OS_TranslatePath(NULL, localPath), OS_INVALID_POINTER);
-    UT_RETVAL(OS_TranslatePath(g_mntNames[1], NULL), OS_INVALID_POINTER);
+    UT_RETVAL(OS_TranslatePath(NULL, localPath, sizeof(localPath)), OS_INVALID_POINTER);
+    UT_RETVAL(OS_TranslatePath(g_mntNames[1], NULL, 0), OS_INVALID_POINTER);
 
     /*-----------------------------------------------------*/
     /* #2 Path-too-long-arg */
 
-    UT_RETVAL(OS_TranslatePath(g_fsLongName, localPath), OS_FS_ERR_PATH_TOO_LONG);
+    UT_RETVAL(OS_TranslatePath(g_fsLongName, localPath, sizeof(localPath)), OS_FS_ERR_PATH_TOO_LONG);
 
     /* create a path where only the name part is too long */
     memset(virtPath, 'z', sizeof(virtPath) - 1);
     virtPath[sizeof(virtPath) - 1] = 0;
     virtPath[0]                    = '/';
-    UT_RETVAL(OS_TranslatePath(virtPath, localPath), OS_FS_ERR_NAME_TOO_LONG);
+    UT_RETVAL(OS_TranslatePath(virtPath, localPath, sizeof(localPath)), OS_FS_ERR_NAME_TOO_LONG);
 
     /*-----------------------------------------------------*/
     /* #3 Invalid-virtual-path-arg */
 
-    UT_RETVAL(OS_TranslatePath("cf", localPath), OS_FS_ERR_PATH_INVALID);
-    UT_RETVAL(OS_TranslatePath("/foobar", localPath), OS_FS_ERR_PATH_INVALID);
+    UT_RETVAL(OS_TranslatePath("cf", localPath, sizeof(localPath)), OS_FS_ERR_PATH_INVALID);
+    UT_RETVAL(OS_TranslatePath("/foobar", localPath, sizeof(localPath)), OS_FS_ERR_PATH_INVALID);
 
     /*-----------------------------------------------------*/
     /* #4 Nominal */
@@ -758,7 +758,7 @@ void UT_os_translatepath_test(void)
         {
             memset(localPath, 0, sizeof(localPath));
 
-            UT_NOMINAL(OS_TranslatePath(g_mntNames[4], localPath));
+            UT_NOMINAL(OS_TranslatePath(g_mntNames[4], localPath, sizeof(localPath)));
 
             /* This just checks that the output string is not empty */
             UtAssert_True(localPath[0] != 0, "localPath (%s)", localPath);
@@ -814,7 +814,7 @@ void UT_os_checkfs_test(void)
     /*-----------------------------------------------------*/
     /* API not implemented */
 
-    if (!UT_IMPL(OS_TranslatePath(NULL, NULL)))
+    if (!UT_IMPL(OS_TranslatePath(NULL, NULL, 0)))
     {
         return;
     }

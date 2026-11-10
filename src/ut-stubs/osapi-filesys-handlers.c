@@ -105,13 +105,14 @@ void UT_DefaultHandler_OS_GetFsInfo(void *UserObj, UT_EntryKey_t FuncKey, const 
  */
 void UT_DefaultHandler_OS_TranslatePath(void *UserObj, UT_EntryKey_t FuncKey, const UT_StubContext_t *Context)
 {
-    const char *VirtualPath = UT_Hook_GetArgValueByName(Context, "VirtualPath", const char *);
-    char       *LocalPath   = UT_Hook_GetArgValueByName(Context, "LocalPath", char *);
+    const char *VirtualPath   = UT_Hook_GetArgValueByName(Context, "VirtualPath", const char *);
+    char       *LocalPath     = UT_Hook_GetArgValueByName(Context, "LocalPath", char *);
+    size_t      LocalPathSize = UT_Hook_GetArgValueByName(Context, "LocalPathSize", size_t);
     int32       status;
 
     UT_Stub_GetInt32StatusCode(Context, &status);
 
-    if (status == OS_SUCCESS && VirtualPath != NULL && LocalPath != NULL
+    if (status == OS_SUCCESS && VirtualPath != NULL && LocalPath != NULL && LocalPathSize == OS_MAX_LOCAL_PATH_LEN
         && UT_Stub_CopyToLocal(UT_KEY(OS_TranslatePath), LocalPath, OS_MAX_LOCAL_PATH_LEN) == 0)
     {
         strncpy(LocalPath, VirtualPath, OS_MAX_LOCAL_PATH_LEN - 1);

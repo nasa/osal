@@ -87,7 +87,7 @@ int32 OS_mkdir(const char *path, uint32 access)
     int32 return_code;
     char  local_path[OS_MAX_LOCAL_PATH_LEN];
 
-    return_code = OS_TranslatePath(path, local_path);
+    return_code = OS_TranslatePath(path, local_path, sizeof(local_path));
     if (return_code == OS_SUCCESS)
     {
         return_code = OS_DirCreate_Impl(local_path, access);
@@ -112,7 +112,7 @@ int32 OS_DirectoryOpen(osal_id_t *dir_id, const char *path)
     /* Check parameters */
     OS_CHECK_POINTER(dir_id);
 
-    return_code = OS_TranslatePath(path, local_path);
+    return_code = OS_TranslatePath(path, local_path, sizeof(local_path));
     if (return_code == OS_SUCCESS)
     {
         /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
@@ -227,7 +227,7 @@ int32 OS_rmdir(const char *path)
     int32 return_code;
     char  local_path[OS_MAX_LOCAL_PATH_LEN];
 
-    return_code = OS_TranslatePath(path, local_path);
+    return_code = OS_TranslatePath(path, local_path, sizeof(local_path));
     if (return_code == OS_SUCCESS)
     {
         return_code = OS_DirRemove_Impl(local_path);

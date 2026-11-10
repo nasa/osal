@@ -208,7 +208,7 @@ int32 OS_ModuleLoad(osal_id_t *module_id, const char *module_name, const char *f
      * The status of this operation is stored separately, because it may or
      * may not be relevant, depending on whether the static module table is enabled.
      */
-    filename_status = OS_TranslatePath(filename, translated_path);
+    filename_status = OS_TranslatePath(filename, translated_path, sizeof(translated_path));
 
     /* Note - the common ObjectIdAllocate routine will lock the object type and leave it locked. */
     return_code = OS_ObjectIdAllocateNew(LOCAL_OBJID_TYPE, module_name, &token);
@@ -443,7 +443,7 @@ int32 OS_SymbolTableDump(const char *filename, size_t size_limit)
     /*
      ** Translate the filename to the Host System
      */
-    return_code = OS_TranslatePath(filename, translated_path);
+    return_code = OS_TranslatePath(filename, translated_path, sizeof(translated_path));
     if (return_code != OS_SUCCESS)
     {
         return return_code;

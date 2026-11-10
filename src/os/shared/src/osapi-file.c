@@ -128,7 +128,7 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
     /*
      * Translate the path
      */
-    return_code = OS_TranslatePath(path, (char *)local_path);
+    return_code = OS_TranslatePath(path, (char *)local_path, sizeof(local_path));
 
     if (return_code == OS_SUCCESS)
     {
@@ -282,7 +282,7 @@ int32 OS_chmod(const char *path, uint32 access_mode)
     char  local_path[OS_MAX_LOCAL_PATH_LEN];
     int32 return_code;
 
-    return_code = OS_TranslatePath(path, local_path);
+    return_code = OS_TranslatePath(path, local_path, sizeof(local_path));
     if (return_code == OS_SUCCESS)
     {
         return_code = OS_FileChmod_Impl(local_path, access_mode);
@@ -307,7 +307,7 @@ int32 OS_stat(const char *path, os_fstat_t *filestats)
 
     memset(filestats, 0, sizeof(*filestats));
 
-    return_code = OS_TranslatePath(path, local_path);
+    return_code = OS_TranslatePath(path, local_path, sizeof(local_path));
     if (return_code == OS_SUCCESS)
     {
         return_code = OS_FileStat_Impl(local_path, filestats);
@@ -398,7 +398,7 @@ int32 OS_remove(const char *path)
     int32 return_code;
     char  local_path[OS_MAX_LOCAL_PATH_LEN];
 
-    return_code = OS_TranslatePath(path, local_path);
+    return_code = OS_TranslatePath(path, local_path, sizeof(local_path));
     if (return_code == OS_SUCCESS)
     {
         return_code = OS_FileRemove_Impl(local_path);
@@ -421,10 +421,10 @@ int32 OS_rename(const char *old_filename, const char *new_filename)
     char                         old_path[OS_MAX_LOCAL_PATH_LEN];
     char                         new_path[OS_MAX_LOCAL_PATH_LEN];
 
-    return_code = OS_TranslatePath(old_filename, old_path);
+    return_code = OS_TranslatePath(old_filename, old_path, sizeof(old_path));
     if (return_code == OS_SUCCESS)
     {
-        return_code = OS_TranslatePath(new_filename, new_path);
+        return_code = OS_TranslatePath(new_filename, new_path, sizeof(new_path));
     }
 
     if (return_code == OS_SUCCESS)
