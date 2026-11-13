@@ -63,6 +63,7 @@ void UT_BSP_Setup(void)
     uint8        UserShift;
     uint32       ArgC;
     char *const *ArgV;
+    const char *EnvStr;
 
     memset(&BSP_UT_Global, 0, sizeof(BSP_UT_Global));
 
@@ -94,9 +95,25 @@ void UT_BSP_Setup(void)
         }
     }
 
+    EnvStr = getenv("VERBOSE");
+    if (EnvStr != NULL)
+    {
+        UserShift = strtoul(EnvStr, NULL, 0);
+        if (UserShift)
+        {
+            /* VERBOSE=1 equivalent to -d */
+            UserShift = UTASSERT_CASETYPE_DEBUG;
+        }
+        else
+        {
+            /* VERBOSE=0 equivalent to -q */
+            UserShift = UTASSERT_CASETYPE_FAILURE;
+        }
+    }
+
     if (UserShift == UTASSERT_CASETYPE_NONE || UserShift >= UTASSERT_CASETYPE_MAX)
     {
-        UserShift = UTASSERT_CASETYPE_PASS;
+        UserShift = UTASSERT_CASETYPE_DEBUG;
     }
 
     BSP_UT_Global.CurrVerbosity = (2 << UserShift) - 1;
