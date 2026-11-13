@@ -670,7 +670,20 @@ int32 OS_GetFsInfo(os_fsinfo_t *filesys_info)
  *           See description in API and header file for detail
  *
  *-----------------------------------------------------------------*/
+#ifndef OSAL_OMIT_DEPRECATED
 int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
+{
+    return OS_TranslatePathWithSize(VirtualPath, LocalPath, OS_MAX_LOCAL_PATH_LEN);
+}
+#endif
+
+/*----------------------------------------------------------------
+ *
+ *  Purpose: Implemented per public OSAL API
+ *           See description in API and header file for detail
+ *
+ *-----------------------------------------------------------------*/
+int32 OS_TranslatePathWithSize(const char *VirtualPath, char *LocalPath, size_t LocalPathSize)
 {
     OS_object_token_t             token;
     int32                         return_code;
@@ -750,7 +763,7 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
         {
             SysMountPointLen = OS_strnlen(filesys->system_mountpt, sizeof(filesys->system_mountpt));
             VirtPathBegin    = OS_strnlen(filesys->virtual_mountpt, sizeof(filesys->virtual_mountpt));
-            if (SysMountPointLen < OS_MAX_LOCAL_PATH_LEN)
+            if (SysMountPointLen < LocalPathSize)
             {
                 memcpy(LocalPath, filesys->system_mountpt, SysMountPointLen);
             }
@@ -772,7 +785,7 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
         else
         {
             VirtPathLen -= VirtPathBegin;
-            if ((SysMountPointLen + VirtPathLen) < OS_MAX_LOCAL_PATH_LEN)
+            if ((SysMountPointLen + VirtPathLen) < LocalPathSize)
             {
                 memcpy(&LocalPath[SysMountPointLen], &VirtualPath[VirtPathBegin], VirtPathLen);
                 LocalPath[SysMountPointLen + VirtPathLen] = 0;
