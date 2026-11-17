@@ -118,6 +118,24 @@ int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
 
 /*
  * ----------------------------------------------------
+ * Generated stub function for OS_TranslatePathWithSize()
+ * ----------------------------------------------------
+ */
+int32 OS_TranslatePathWithSize(const char *VirtualPath, char *LocalPath, size_t LocalPathSize)
+{
+    UT_GenStub_SetupReturnBuffer(OS_TranslatePathWithSize, int32);
+
+    UT_GenStub_AddParam(OS_TranslatePathWithSize, const char *, VirtualPath);
+    UT_GenStub_AddParam(OS_TranslatePathWithSize, char *, LocalPath);
+    UT_GenStub_AddParam(OS_TranslatePathWithSize, size_t, LocalPathSize);
+
+    UT_GenStub_Execute(OS_TranslatePathWithSize, Basic, NULL);
+
+    return UT_GenStub_GetReturnValue(OS_TranslatePathWithSize, int32);
+}
+
+/*
+ * ----------------------------------------------------
  * Generated stub function for OS_chkfs()
  * ----------------------------------------------------
  */

@@ -112,7 +112,7 @@ void UT_DefaultHandler_OS_TranslatePath(void *UserObj, UT_EntryKey_t FuncKey, co
     UT_Stub_GetInt32StatusCode(Context, &status);
 
     if (status == OS_SUCCESS && VirtualPath != NULL && LocalPath != NULL
-        && UT_Stub_CopyToLocal(UT_KEY(OS_TranslatePath), LocalPath, OS_MAX_LOCAL_PATH_LEN) == 0)
+        && UT_Stub_CopyToLocal(UT_KEY(OS_TranslatePathWithSize), LocalPath, OS_MAX_LOCAL_PATH_LEN) == 0)
     {
         strncpy(LocalPath, VirtualPath, OS_MAX_LOCAL_PATH_LEN - 1);
         LocalPath[OS_MAX_LOCAL_PATH_LEN - 1] = 0;

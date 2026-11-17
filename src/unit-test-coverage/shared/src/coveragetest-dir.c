@@ -48,7 +48,7 @@ void Test_OS_mkdir(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_mkdir("Dir", OS_READ_WRITE), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePathWithSize), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_mkdir("Dir", OS_READ_WRITE), OS_ERROR);
 }
 
@@ -67,7 +67,7 @@ void Test_OS_DirectoryOpen(void)
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
     OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(&objid, "Dir"), OS_ERR_NO_FREE_IDS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePathWithSize), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_DirectoryOpen(&objid, "Dir"), OS_ERROR);
 
     /*
@@ -128,7 +128,7 @@ void Test_OS_rmdir(void)
      */
     OSAPI_TEST_FUNCTION_RC(OS_rmdir("Dir"), OS_SUCCESS);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePathWithSize), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_rmdir("Dir"), OS_ERROR);
 }
 
