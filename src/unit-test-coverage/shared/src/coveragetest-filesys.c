@@ -416,7 +416,7 @@ void Test_OS_TranslatePathWithSize(void)
 {
     /*
      * Test Case For:
-     * int32 OS_TranslatePathWithSize(const char *VirtualPath, char *LocalPath)
+     * int32 OS_TranslatePathWithSize(const char *VirtualPath, char *LocalPath, size_t LocalPathSize)
      */
     char  LocalBuffer[OS_MAX_PATH_LEN];
     int32 expected = OS_SUCCESS;
@@ -496,6 +496,34 @@ void Test_OS_TranslatePathWithSize(void)
                   "OS_TranslatePathWithSize(/cf/test) (%ld) == OS_ERR_INCORRECT_OBJ_STATE",
                   (long)actual);
 }
+
+#ifndef OSAL_OMIT_DEPRECATED
+void Test_OS_TranslatePath(void)
+{
+    printf("MYANG HERE!!!!!!");
+    /*
+     * Test Case For:
+     * int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath)
+     */
+    char  LocalBuffer[OS_MAX_PATH_LEN];
+    int32 expected = OS_SUCCESS;
+    int32 actual   = ~OS_SUCCESS;
+
+    memset(LocalBuffer, 0, sizeof(LocalBuffer));
+
+    /* Set up the local record for success */
+    OS_filesys_table[1].flags =
+        OS_FILESYS_FLAG_IS_READY | OS_FILESYS_FLAG_IS_MOUNTED_SYSTEM | OS_FILESYS_FLAG_IS_MOUNTED_VIRTUAL;
+    strcpy(OS_filesys_table[1].virtual_mountpt, "/cf");
+    strcpy(OS_filesys_table[1].system_mountpt, "/mnt/cf");
+
+    actual = OS_TranslatePath("/cf/test", LocalBuffer);
+    UtAssert_True(actual == expected, "OS_TranslatePath(/cf/test) (%ld) == OS_SUCCESS", (long)actual);
+    UtAssert_True(strcmp(LocalBuffer, "/mnt/cf/test") == 0,
+                  "OS_TranslatePath(/cf/test) (%s)  == /mnt/cf/test",
+                  LocalBuffer);
+}
+#endif
 
 void Test_OS_FileSys_FindVirtMountPoint(void)
 {
@@ -602,6 +630,9 @@ void UtTest_Setup(void)
     ADD_TEST(OS_FS_GetPhysDriveName);
     ADD_TEST(OS_GetFsInfo);
     ADD_TEST(OS_TranslatePathWithSize);
+#ifndef OSAL_OMIT_DEPRECATED
+    ADD_TEST(OS_TranslatePath);
+#endif
     ADD_TEST(OS_FileSys_FindVirtMountPoint);
     ADD_TEST(OS_FileSysStatVolume);
 }
