@@ -70,14 +70,39 @@ int32 OS_CondVarCreate_Impl(const OS_object_token_t *token, uint32 options)
     int32                              final_status;
     int                                status;
     OS_impl_condvar_internal_record_t *impl;
+    pthread_mutexattr_t                mutex_attr;
 
     final_status = OS_SUCCESS;
     impl         = OS_OBJECT_TABLE_GET(OS_impl_condvar_table, *token);
 
     /*
+    ** initialize the attribute with default values
+    */
+    status = pthread_mutexattr_init(&mutex_attr);
+    if (status != 0)
+    {
+        OS_DEBUG("Error: CondVar mutex could not be created. ID = %lu: %s\n",
+                 OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)),
+                 strerror(status));
+        return OS_ERROR;
+    }
+
+    /*
+    ** Allow the mutex to use priority inheritance
+    */
+    status = pthread_mutexattr_setprotocol(&mutex_attr, PTHREAD_PRIO_INHERIT);
+    if (status != 0)
+    {
+        OS_DEBUG("Error: CondVar mutex could not be created. ID = %lu: %s\n",
+                 OS_ObjectIdToInteger(OS_ObjectIdFromToken(token)),
+                 strerror(status));
+        return OS_ERROR;
+    }
+
+    /*
     ** create the underlying mutex
     */
-    status = pthread_mutex_init(&impl->mut, NULL);
+    status = pthread_mutex_init(&impl->mut, &mutex_attr);
     if (status != 0)
     {
         OS_DEBUG("Error: CondVar mutex could not be created. ID = %lu: %s\n",
