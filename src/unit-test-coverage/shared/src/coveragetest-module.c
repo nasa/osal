@@ -95,7 +95,7 @@ void Test_OS_ModuleLoad(void)
     OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UTS", "File2", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_ERR_NAME_TOO_LONG);
     UT_ResetState(UT_KEY(OCS_memchr));
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePathWithSize), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_ModuleLoad(&objid, "UT", "FileBad", OS_MODULE_FLAG_GLOBAL_SYMBOLS), OS_ERROR);
 
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdAllocateNew), OS_ERR_NO_FREE_IDS);
@@ -268,12 +268,12 @@ void Test_OS_SymbolTableDump(void)
     actual   = OS_SymbolTableDump(NULL, OSAL_SIZE_C(555));
     UtAssert_True(actual == expected, "OS_SymbolTableDump() (%ld) == OS_INVALID_POINTER", (long)actual);
 
-    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePath), OS_ERROR);
+    UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePathWithSize), OS_ERROR);
     expected = OS_ERROR;
     actual   = OS_SymbolTableDump("test", OSAL_SIZE_C(555));
     UtAssert_True(actual == expected, "OS_SymbolTableDump() (%ld) == OS_ERROR", (long)actual);
 
-    UT_ResetState(UT_KEY(OS_TranslatePath));
+    UT_ResetState(UT_KEY(OS_TranslatePathWithSize));
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdTransactionInit), OS_ERROR);
     expected = OS_ERROR;
     actual   = OS_SymbolTableDump("test", OSAL_SIZE_C(555));

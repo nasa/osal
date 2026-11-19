@@ -266,6 +266,8 @@ int32 OS_chkfs(const char *name, bool repair);
  */
 int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint);
 
+#ifndef OSAL_OMIT_DEPRECATED
+
 /*-------------------------------------------------------------------------------------*/
 /**
  * @brief Translates an OSAL Virtual file system path to a host Local path
@@ -273,7 +275,7 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint);
  * Translates a virtual path to an actual system path name
  *
  * @note The buffer provided in the LocalPath argument is required to be at
- *       least OS_MAX_PATH_LEN characters in length.
+ *       least OS_MAX_LOCAL_PATH_LEN characters in length.
  *
  * @param[in]  VirtualPath      OSAL virtual path name @nonnull
  * @param[out] LocalPath        Buffer to store native/translated path name @nonnull
@@ -286,6 +288,27 @@ int32 OS_FS_GetPhysDriveName(char *PhysDriveName, const char *MountPoint);
  * @retval #OS_FS_ERR_PATH_TOO_LONG if either input or output pathnames are too long
  */
 int32 OS_TranslatePath(const char *VirtualPath, char *LocalPath);
+
+#endif
+
+/*-------------------------------------------------------------------------------------*/
+/**
+ * @brief Translates an OSAL Virtual file system path to a host Local path
+ *
+ * Translates a virtual path to an actual system path name
+ *
+ * @param[in]  VirtualPath      OSAL virtual path name @nonnull
+ * @param[out] LocalPath        Buffer to store native/translated path name @nonnull
+ * @param[out] LocalPathSize    Size of buffer to store native/translated path name @nonnull
+ *
+ * @return Execution status, see @ref OSReturnCodes
+ * @retval #OS_SUCCESS @copybrief OS_SUCCESS
+ * @retval #OS_INVALID_POINTER if either parameter is NULL
+ * @retval #OS_FS_ERR_NAME_TOO_LONG if the filename component is too long
+ * @retval #OS_FS_ERR_PATH_INVALID if either parameter cannot be interpreted as a path
+ * @retval #OS_FS_ERR_PATH_TOO_LONG if either input or output pathnames are too long
+ */
+int32 OS_TranslatePathWithSize(const char *VirtualPath, char *LocalPath, size_t LocalPathSize);
 
 /*-------------------------------------------------------------------------------------*/
 /**
