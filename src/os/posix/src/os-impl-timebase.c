@@ -220,7 +220,7 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
         }
 
         /*
-        ** Convert to microseconds
+        ** Check the clock resolution
         ** Note that the resolution MUST be in the sub-second range, if not then
         ** it looks like the POSIX timer API in the C library is broken.
         ** Note for any flavor of RTOS we would expect <= 1ms.  Even a "desktop"
@@ -232,8 +232,9 @@ int32 OS_Posix_TimeBaseAPI_Impl_Init(void)
             break;
         }
 
-        /* Round to the nearest microsecond */
-        POSIX_GlobalVars.ClockAccuracyNsec = (uint32)(clock_resolution.tv_nsec);
+        /* Retain nanoseconds and separately report the nearest whole microsecond. */
+        POSIX_GlobalVars.ClockAccuracyNsec    = (uint32)(clock_resolution.tv_nsec);
+        OS_SharedGlobalVars.TimerAccuracyUsec = (POSIX_GlobalVars.ClockAccuracyNsec + 500) / 1000;
 
         /*
         ** initialize the attribute with default values

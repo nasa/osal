@@ -26,6 +26,7 @@
 #include "os-vxworks-coveragetest.h"
 #include "ut-adaptor-timebase.h"
 #include "os-shared-timebase.h"
+#include "os-shared-common.h"
 
 #include "OCS_taskLib.h"
 #include "OCS_signal.h"
@@ -39,6 +40,13 @@ void Test_OS_VxWorks_TimeBaseAPI_Impl_Init(void)
      * int32 OS_VxWorks_TimeBaseAPI_Impl_Init(void)
      */
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(), OS_SUCCESS);
+    UtAssert_UINT32_EQ(OS_SharedGlobalVars.TimerAccuracyUsec, OS_SharedGlobalVars.MicroSecPerTick);
+    UT_SetDefaultReturnValue(UT_KEY(OCS_sysClkRateGet), 100); /* ticks per second */
+    OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(), OS_SUCCESS);
+    UtAssert_UINT32_EQ(OS_SharedGlobalVars.TimerAccuracyUsec, 10000); /* microseconds, unchanged report */
+    UT_SetDefaultReturnValue(UT_KEY(OCS_sysClkRateGet), 1024);        /* ticks per second */
+    OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(), OS_SUCCESS);
+    UtAssert_UINT32_EQ(OS_SharedGlobalVars.TimerAccuracyUsec, 977); /* microseconds, unchanged rounding */
     UT_SetDefaultReturnValue(UT_KEY(OCS_sysClkRateGet), -1);
     OSAPI_TEST_FUNCTION_RC(UT_Call_OS_VxWorks_TimeBaseAPI_Impl_Init(), OS_ERROR);
 }

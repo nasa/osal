@@ -75,6 +75,9 @@ struct OS_shared_global_vars
      * The numbers of cores configured recognized by the OS
      */
     uint32 CoresConfigured;
+
+    /* Resolution reported by OS_TimerCreate(), separate from ticks and timebase properties. */
+    uint32 TimerAccuracyUsec;
 };
 
 /*
