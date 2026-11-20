@@ -149,6 +149,9 @@ int32 OS_OpenCreate(osal_id_t *filedes, const char *path, int32 flags, int32 acc
  * This closes regular file handles and any other file-like resource, such as
  * network streams or pipes.
  *
+ * Once the native close is attempted, the OSAL handle is released even if
+ * an error is reported.  Do not retry the close using the same handle.
+ *
  * @param[in] filedes   The handle ID to operate on
  *
  * @return Execution status, see @ref OSReturnCodes

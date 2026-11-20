@@ -28,6 +28,14 @@
 
 #include "OCS_string.h"
 
+static int32 UT_Hook_FinalizeClose(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context)
+{
+    int32 operation_status = UT_Hook_GetArgValueByName(Context, "operation_status", int32);
+
+    UtAssert_INT32_EQ(operation_status, OS_SUCCESS);
+    return operation_status;
+}
+
 /*
 **********************************************************************************
 **          PUBLIC API FUNCTIONS
@@ -89,7 +97,13 @@ void Test_OS_close(void)
      * Test Case For:
      * int32 OS_close (uint32 filedes)
      */
+    UT_SetHookFunction(UT_KEY(OS_ObjectIdFinalizeDelete), UT_Hook_FinalizeClose, NULL);
     OSAPI_TEST_FUNCTION_RC(OS_close(UT_OBJID_1), OS_SUCCESS);
+
+    /* A native close error must reach the caller while still releasing the OSAL ID. */
+    UT_SetDefaultReturnValue(UT_KEY(OS_GenericClose_Impl), OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_close(UT_OBJID_1), OS_ERROR);
+    UtAssert_STUB_COUNT(OS_ObjectIdFinalizeDelete, 2);
 
     UT_SetDefaultReturnValue(UT_KEY(OS_ObjectIdGetById), OS_ERR_INVALID_ID);
     OSAPI_TEST_FUNCTION_RC(OS_close(UT_OBJID_1), OS_ERR_INVALID_ID);
@@ -268,6 +282,21 @@ void Test_OS_cp(void)
     UT_SetDataBuffer(UT_KEY(OS_GenericWrite_Impl), WriteBuf, sizeof(WriteBuf), false);
     OSAPI_TEST_FUNCTION_RC(OS_cp("/cf/file1", "/cf/file2"), OS_SUCCESS);
 
+    /* Close errors must fail the copy, with both handles closed exactly once. */
+    UT_ResetState(UT_KEY(OS_GenericClose_Impl));
+    UT_SetDeferredRetcode(UT_KEY(OS_GenericClose_Impl), 1, -777);
+    OSAPI_TEST_FUNCTION_RC(OS_cp("/cf/file1", "/cf/file2"), -777);
+    UtAssert_STUB_COUNT(OS_GenericClose_Impl, 2);
+
+    UT_ResetState(UT_KEY(OS_GenericClose_Impl));
+    UT_SetDeferredRetcode(UT_KEY(OS_GenericClose_Impl), 2, -888);
+    OSAPI_TEST_FUNCTION_RC(OS_cp("/cf/file1", "/cf/file2"), -888);
+    UtAssert_STUB_COUNT(OS_GenericClose_Impl, 2);
+
+    /* Preserve the first failure, including an earlier read/write error. */
+    UT_SetDefaultReturnValue(UT_KEY(OS_GenericClose_Impl), -777);
+    OSAPI_TEST_FUNCTION_RC(OS_cp("/cf/file1", "/cf/file2"), -777);
+
     UT_SetDeferredRetcode(UT_KEY(OS_GenericRead_Impl), 1, -444);
     OSAPI_TEST_FUNCTION_RC(OS_cp("/cf/file1", "/cf/file2"), -444);
 
@@ -291,6 +320,12 @@ void Test_OS_mv(void)
      * Force rename to fail so it does a full copy and remove */
     UT_SetDefaultReturnValue(UT_KEY(OS_FileRename_Impl), OS_ERROR);
     OSAPI_TEST_FUNCTION_RC(OS_mv("/cf/file1", "/cf/file2"), OS_SUCCESS);
+
+    /* A failed destination close must not delete the source in the fallback path. */
+    UT_ResetState(UT_KEY(OS_FileRemove_Impl));
+    UT_SetDeferredRetcode(UT_KEY(OS_GenericClose_Impl), 2, OS_ERROR);
+    OSAPI_TEST_FUNCTION_RC(OS_mv("/cf/file1", "/cf/file2"), OS_ERROR);
+    UtAssert_STUB_COUNT(OS_FileRemove_Impl, 0);
 
     /* Fail the OS_cp/OS_OpenCreate */
     UT_SetDefaultReturnValue(UT_KEY(OS_TranslatePathWithSize), OS_ERROR);

@@ -74,9 +74,8 @@ int32 OS_GenericClose_Impl(const OS_object_token_t *token)
     if (result < 0)
     {
         /*
-         * close() can technically fail for various reasons, but
-         * there isn't much recourse if this call fails.  Just log
-         * the failure for debugging.
+         * close() can report delayed I/O errors.  Report the failure
+         * to the caller, but do not retry the native close.
          *
          * POSIX also does not specify the state of the filehandle
          * after a close() with an error.
@@ -87,7 +86,7 @@ int32 OS_GenericClose_Impl(const OS_object_token_t *token)
         OS_DEBUG("close: %s\n", strerror(errno));
     }
     impl->fd = -1;
-    return OS_SUCCESS;
+    return (result < 0) ? OS_ERROR : OS_SUCCESS;
 }
 
 /*----------------------------------------------------------------
