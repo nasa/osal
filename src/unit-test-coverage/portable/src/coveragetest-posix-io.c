@@ -65,10 +65,11 @@ void Test_OS_GenericClose_Impl(void)
 
     /*
      * Test path where underlying close() fails.
-     * Should still return success.
+     * Report the error without retrying close().
      */
     UT_SetDefaultReturnValue(UT_KEY(OCS_close), -1);
-    OSAPI_TEST_FUNCTION_RC(OS_GenericClose_Impl, (&token), OS_SUCCESS);
+    OSAPI_TEST_FUNCTION_RC(OS_GenericClose_Impl, (&token), OS_ERROR);
+    UtAssert_STUB_COUNT(OCS_close, 2);
 }
 
 void Test_OS_GenericSeek_Impl(void)
