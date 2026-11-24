@@ -149,13 +149,13 @@ static int32 OS_Console_CopyOut(OS_console_internal_record_t *console, const cha
 
     pmsg        = Str;
     WriteOffset = *NextWritePos;
+    return_code = OS_SUCCESS;
     while (true)
     {
         if (*pmsg == 0)
         {
             /* String is complete */
             *NextWritePos = WriteOffset;
-            return_code   = OS_SUCCESS;
             break;
         }
         console->BufBase[WriteOffset] = *pmsg;
