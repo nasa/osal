@@ -1,0 +1,35 @@
+name: Snapshot CFS module
+
+on:
+  workflow_dispatch:
+    inputs:
+      base-branch:
+        description: 'The base branch to merge into'
+        type: string
+        required: false
+        default: 'main'
+      ic-branch:
+        description: 'The temporary integration branch to create (ic)'
+        type: string
+        required: false
+        default: 'ic-snapshot-dev'
+      dev-branch:
+        description: 'The branch to pull in'
+        type: string
+        required: false
+        default: 'dev'
+      pr-label:
+        description: 'The label(s) to apply to the generated PR'
+        type: string
+        required: false
+        default: ''
+
+jobs:
+  snapshot-module:
+    name: Snapshot module
+    uses: nasa/cFS/.github/workflows/snapshot-module-reusable.yml@dev
+    with:
+      base-branch: ${{ inputs.base-branch }}
+      ic-branch: ${{ inputs.ic-branch }}
+      dev-branch: ${{ inputs.dev-branch }}
+      pr-label: ${{ inputs.pr-label }}
