@@ -100,6 +100,7 @@ int32 OS_GenericWrite_Impl(const OS_object_token_t *token, const void *buffer, s
 
     Purpose: Close a file descriptor
              This may be a normal file or a socket/pipe
+             The implementation must invalidate the native handle even on error.
 
     Returns: OS_SUCCESS on success, or relevant error code
  ------------------------------------------------------------------*/

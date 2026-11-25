@@ -169,8 +169,8 @@ int32 OS_close(osal_id_t filedes)
     {
         return_code = OS_GenericClose_Impl(&token);
 
-        /* Complete the operation via the common routine */
-        return_code = OS_ObjectIdFinalizeDelete(return_code, &token);
+        /* The native handle is no longer usable even when close reports an I/O error. */
+        OS_ObjectIdFinalizeDelete(OS_SUCCESS, &token);
     }
 
     return return_code;
@@ -462,6 +462,7 @@ int32 OS_rename(const char *old_filename, const char *new_filename)
 int32 OS_cp(const char *src, const char *dest)
 {
     int32     return_code;
+    int32     close_code;
     int32     rd_size;
     int32     wr_size;
     int32     wr_total;
@@ -508,11 +509,19 @@ int32 OS_cp(const char *src, const char *dest)
 
     if (OS_ObjectIdDefined(file1))
     {
-        OS_close(file1);
+        close_code = OS_close(file1);
+        if (return_code == OS_SUCCESS)
+        {
+            return_code = close_code;
+        }
     }
     if (OS_ObjectIdDefined(file2))
     {
-        OS_close(file2);
+        close_code = OS_close(file2);
+        if (return_code == OS_SUCCESS)
+        {
+            return_code = close_code;
+        }
     }
 
     return return_code;
